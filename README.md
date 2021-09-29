@@ -2,11 +2,13 @@
 
 [![Build Status](https://travis-ci.org/hmcts/hmc-cft-hearing-service.svg?branch=master)](https://travis-ci.org/hmcts/hmc-cft-hearing-service)
 
-## Notes
+## Getting Started
+Please note that this microservice is also available within [ccd-docker](https://github.com/hmcts/ccd-docker).
 
-Since Spring Boot 2.1 bean overriding is disabled. If you want to enable it you will need to set `spring.main.allow-bean-definition-overriding` to `true`.
+### Prerequisites
 
-JUnit 5 is now enabled by default in the project. Please refrain from using JUnit4 and use the next generation
+- [JDK 11](https://java.com)
+- [Docker](https://www.docker.com)
 
 ## Building and deploying the application
 
@@ -87,16 +89,29 @@ docker image rm <image-id>
 
 There is no need to remove postgres and java or similar core images.
 
-### Other
+## Developing
 
-Hystrix offers much more than Circuit Breaker pattern implementation or command monitoring.
-Here are some other functionalities it provides:
- * [Separate, per-dependency thread pools](https://github.com/Netflix/Hystrix/wiki/How-it-Works#isolation)
- * [Semaphores](https://github.com/Netflix/Hystrix/wiki/How-it-Works#semaphores), which you can use to limit
- the number of concurrent calls to any given dependency
- * [Request caching](https://github.com/Netflix/Hystrix/wiki/How-it-Works#request-caching), allowing
- different code paths to execute Hystrix Commands without worrying about duplicating work
+### Unit tests
 
+To run all unit tests execute the following command:
+```bash
+  ./gradlew test
+```
+
+### Integration tests
+
+To run all integration tests execute the following command:
+```bash
+  ./gradlew integration
+```
+
+### Code quality checks
+We use [Checkstyle](http://checkstyle.sourceforge.net/).
+To run all local checks execute the following command:
+
+```bash
+  ./gradlew check
+```
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details

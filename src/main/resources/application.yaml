@@ -16,7 +16,7 @@ spring:
   config:
     import: "optional:configtree:/mnt/secrets/"
   application:
-    name: Spring Boot Template
+    name: HMC-CFT-Hearing-Service
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
 #    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}${DB_OPTIONS:}
