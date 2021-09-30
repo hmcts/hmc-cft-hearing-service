@@ -23,6 +23,6 @@ public class RootController {
      */
     @GetMapping("/")
     public ResponseEntity<String> welcome() {
-        return ok("Welcome to hmc-cft-hearing-service");
+        return ok("Welcome to HMC-CFT-Hearing-Service");
     }
 }
