@@ -9,4 +9,3 @@ java:
        secrets:
         - name: AppInsightsInstrumentationKey
            alias: azure.application-insights.instrumentation-key
-  environment:
