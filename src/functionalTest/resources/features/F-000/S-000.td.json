@@ -17,26 +17,14 @@
     "responseCode": 200,
     "responseMessage": "OK",
     "headers": {
-      "Content-Encoding": "gzip",
       "Content-Length": "[[ANYTHING_PRESENT]]",
       "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
       "Date": "[[ANYTHING_PRESENT]]",
-      "Vary": "Accept-Encoding",
       "Request-Context": "[[ANY_NULLABLE]]"
     },
     "body": {
       "status": "UP",
       "components" : {
-        "discoveryComposite" : {
-          "description" : "Discovery Client not initialized",
-          "status" : "UNKNOWN",
-          "components" : {
-            "discoveryClient" : {
-              "description" : "Discovery Client not initialized",
-              "status" : "UNKNOWN"
-            }
-          }
-        },
         "diskSpace" : {
           "status" : "UP",
           "details" : {
@@ -46,17 +34,14 @@
             "exists" : true
           }
         },
-        "livenessState": {
-          "status": "UP"
+        "livenessState" : {
+          "status" : "UP"
+        },
+        "readinessState" : {
+          "status" : "UP"
         },
         "ping": {
           "status": "UP"
-        },
-        "readinessState": {
-          "status": "UP"
-        },
-        "refreshScope" : {
-          "status" : "UP"
         }
       },
       "groups": [
