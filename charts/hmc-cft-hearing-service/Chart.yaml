@@ -1,7 +1,7 @@
 apiVersion: v2
 appVersion: "1.0"
 description: A Helm chart for hmc-cft-hearing-service App
-name: hmc-hmc-cft-hearing-service
+name: hmc-cft-hearing-service
 home: https://github.com/hmcts/hmc-cft-hearing-service
 version: 1.5.7
 maintainers:
