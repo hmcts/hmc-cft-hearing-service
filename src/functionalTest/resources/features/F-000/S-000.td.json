@@ -34,10 +34,20 @@
             "exists" : true
           }
         },
+        "livenessState" : {
+          "status" : "UP"
+        },
+        "readinessState" : {
+          "status" : "UP"
+        },
         "ping": {
           "status": "UP"
         }
-      }
+      },
+      "groups": [
+        "liveness",
+        "readiness"
+      ]
     }
   }
 }
