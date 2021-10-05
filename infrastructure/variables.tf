@@ -2,6 +2,10 @@
 variable "product" {
 }
 
+variable "raw_product" {
+  default = "hmc"
+}
+
 variable "component" {
 }
 

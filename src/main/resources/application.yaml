@@ -19,7 +19,7 @@ spring:
     property-naming-strategy: SNAKE_CASE
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${HMC_HEARING_MANAGEMENT_DB_HOST:localhost}:${HMC_HEARING_MANAGEMENT_DB_PORT:5055}/${HMC_HEARING_MANAGEMENT_DB_NAME:hmc-hearing-service}${HMC_HEARING_MANAGEMENT_DB_OPTIONS:}
+    url: jdbc:postgresql://${HMC_HEARING_MANAGEMENT_DB_HOST:localhost}:${HMC_HEARING_MANAGEMENT_DB_PORT:5055}/${HMC_HEARING_MANAGEMENT_DB_NAME:hmc_hearing_service}${HMC_HEARING_MANAGEMENT_DB_OPTIONS:}
     username: ${HMC_HEARING_MANAGEMENT_DB_USERNAME:ccd}
     password: ${HMC_HEARING_MANAGEMENT_DB_PASSWORD:ccd}
     type: com.zaxxer.hikari.HikariDataSource

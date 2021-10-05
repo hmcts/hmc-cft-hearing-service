@@ -20,7 +20,7 @@ CREATE TABLE public.case_hearing_request (
                          case_restricted_flag boolean not null,
                          case_sla_start_date timestamp without time zone not null,
                          version_number integer not null,
-                         hearing_id integer not null,
+                         hearing_id varchar(10) not null,
                          interpreter_booking_required_flag boolean
 
 );
@@ -30,9 +30,7 @@ CREATE TABLE public.non_standard_durations (
 );
 
 CREATE TABLE public.required_facilities (
-                      facility_type varchar(70),
-                      id uuid not null primary key
-
+                      facility_type varchar(70)
 );
 
 CREATE TABLE public.hearing_request (
