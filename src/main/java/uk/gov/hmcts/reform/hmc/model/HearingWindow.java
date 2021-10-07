@@ -1,14 +1,11 @@
 package uk.gov.hmcts.reform.hmc.model;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class HearingWindow {
 
-    // doubt
-
-    private String hearingWindowStartDateRange;
-
-    // doubt
-    private String hearingWindowEndDateRange;
-
-    // doubt
-    private String firstDateTimeMustBe;
+    private OneOf[] oneOf;
 }
