@@ -45,6 +45,41 @@ public final class ValidationError {
     public static final String CASE_SLA_START_DATE_EMPTY = "Case sla start date can not be empty";
     public static final String INVALID_HEARING_DETAILS = "Hearing Details are required";
     public static final String INVALID_CASE_DETAILS = "Case details are required";
+    public static final String PARTY_DETAILS_NULL_EMPTY = "Party details can not be empty";
+    public static final String PARTY_DETAILS_MAX_LENGTH = "Party details must not be more than 40 characters long";
+    public static final String PARTY_ROLE_MAX_LENGTH = "Party role must not be more than 6 characters long";
+    public static final String NAME_NULL_EMPTY = "Name can not be empty";
+    public static final String NAME_MAX_LENGTH = "Name must not be more than 2000 characters long";
+    public static final String ORGANISATION_TYPE_NULL_EMPTY = "Organisation type can not be empty";
+    public static final String ORGANISATION_TYPE_MAX_LENGTH = "Organisation type must not be more than 60 "
+        + "characters long";
+    public static final String CFT_ORG_ID_NULL_EMPTY = "CFT organisation id can not be empty";
+    public static final String CFT_ORG_ID_MAX_LENGTH = "CFT organisation id must not be more than 60 characters long";
+    public static final String UNAVAILABLE_FROM_DATE_EMPTY = "Unavailable from date can not be empty";
+    public static final String UNAVAILABLE_TO_DATE_EMPTY = "Unavailable to date can not be empty";
+    public static final String RELATED_PARTY_EMPTY = "Related Party can not be empty";
+    public static final String RELATED_PARTY_MAX_LENGTH = "Related Party must not be more than 2000 characters long";
+    public static final String RELATION_SHIP_TYPE_EMPTY = "Relationship type can not be empty";
+    public static final String RELATION_SHIP_TYPE_MAX_LENGTH = "Relationship type must not be more than 2000 characters"
+        + " long";
+    public static final String TITLE_EMPTY = "Title can not be empty";
+    public static final String TITLE_MAX_LENGTH = "Title must not be more than 40 characters long";
+    public static final String FIRST_NAME_EMPTY = "First name can not be empty";
+    public static final String FIRST_NAME_MAX_LENGTH = "First name must not be more than 100 characters long";
+    public static final String LAST_NAME_EMPTY = "Last name can not be empty";
+    public static final String LAST_NAME_MAX_LENGTH = "Last name must not be more than 100 characters long";
+    public static final String PREFERRED_HEARING_CHANNEL_MAX_LENGTH = "Preferred hearing channel must not be more "
+        +  "than 70 characters long";
+    public static final String INTERPRETER_LANGUAGE_MAX_LENGTH = "Interpreter language must not be more than "
+        + " 10 characters long";
+    public static final String REASONABLE_ADJUSTMENTS_MAX_LENGTH = "Reasonable adjustments must not be more than "
+        + "10 characters long";
+    public static final String VULENERABLE_DETAILS_MAX_LENGTH = "Vulnerable details must not be more than 256 "
+        + "characters long";
+    public static final String HEARING_CHANNEL_EMAIL_MAX_LENGTH = "Hearing channel email must not be more than"
+        + " 120 characters long";
+    public static final String HEARING_CHANNEL_PHONE_MAX_LENGTH = "Hearing channel phone must not be more than "
+        + "30 characters long";
 
     private ValidationError() {
     }
