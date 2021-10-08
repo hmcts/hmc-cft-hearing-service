@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.hmc.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
-import uk.gov.hmcts.reform.hmc.validator.HearingDurationReasonMaxLengthConstraint;
 
 import java.util.List;
 import javax.validation.constraints.Min;
@@ -16,7 +15,7 @@ import javax.validation.constraints.Size;
 public class HearingDetails {
 
     @NotNull(message = ValidationError.AUTO_LIST_FLAG_NULL_EMPTY)
-    private Boolean autoListFlag;
+    private Boolean autolistFlag;
 
     @NotEmpty(message = ValidationError.HEARING_TYPE_NULL_EMPTY)
     @Size(max = 40, message = ValidationError.HEARING_TYPE_MAX_LENGTH)
@@ -26,16 +25,17 @@ public class HearingDetails {
     private HearingWindow hearingWindow;
 
     @NotNull(message = ValidationError.DURATION_EMPTY)
-    @Min(value = 1, message = "Duration should be greater than or equal to 1")
+    @Min(value = 1, message = ValidationError.DURATION_MIN_VALUE)
     private Integer duration;
 
-    @HearingDurationReasonMaxLengthConstraint
+    //@HearingDurationReasonMaxLengthConstraint
     private List<String> nonStandardHearingDurationReasons;
 
-    /*@NotEmpty(message = ValidationError.HEARING_PRIORITY_TYPE)
+    @NotEmpty(message = ValidationError.HEARING_PRIORITY_TYPE)
     @Size(max = 60, message = ValidationError.HEARING_PRIORITY_TYPE_MAX_LENGTH)
     private String hearingPriorityType;
 
+    @Min(value = 0, message = ValidationError.NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE)
     private Integer numberOfPhysicalAttendees;
 
     private Boolean hearingInWelshFlag;
@@ -43,7 +43,7 @@ public class HearingDetails {
     @NotNull(message = ValidationError.HEARING_LOCATION_EMPTY)
     private HearingLocation[] hearingLocations;
 
-    @Size(max = 70, message = ValidationError.FACILITY_TYPE_MAX_LENGTH)
+    //@Size(max = 70, message = ValidationError.FACILITY_TYPE_MAX_LENGTH)
     private String[] facilitiesRequired;
 
     @Size(max = 5000, message = ValidationError.LISTING_COMMENTS_MAX_LENGTH)
@@ -59,6 +59,6 @@ public class HearingDetails {
 
     private PanelRequirements panelRequirements;
 
-    private Boolean hearingIsLinkedFlag = false;*/
+    private Boolean hearingIsLinkedFlag = false;
 
 }

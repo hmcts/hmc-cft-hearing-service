@@ -5,5 +5,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class PartyDetails {
+public class CaseCategory {
+
+    private CategoryType categoryType;
+
+    private String categoryValue;
 }

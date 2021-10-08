@@ -14,4 +14,7 @@ public class HearingRequest {
     @Valid
     private HearingDetails hearingDetails;
 
+    @Valid
+    private CaseDetails caseDetails;
+
 }

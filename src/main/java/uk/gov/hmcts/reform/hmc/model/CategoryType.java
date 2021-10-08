@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.hmc.model;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @NoArgsConstructor
-public class PartyDetails {
+public enum CategoryType {
+    caseType,
+    caseSubType
 }

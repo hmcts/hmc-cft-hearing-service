@@ -1,20 +1,23 @@
 package uk.gov.hmcts.reform.hmc.model;
 
-import uk.gov.hmcts.reform.hmc.validator.HearingDurationReasonMaxLengthConstraint;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 public class PanelRequirements {
 
-    @HearingDurationReasonMaxLengthConstraint
+    // @HearingDurationReasonMaxLengthConstraint
     private String[] roleType;
 
-    @HearingDurationReasonMaxLengthConstraint
+    // @HearingDurationReasonMaxLengthConstraint
     private String[] authorisationTypes;
 
-    @HearingDurationReasonMaxLengthConstraint
-    private String[] authorisationSubtype;
+    //@HearingDurationReasonMaxLengthConstraint
+    private String[] authorisationSubType;
 
     private PanelPreference[] panelPreferences;
 
-    @HearingDurationReasonMaxLengthConstraint
-    private String[] panelSpecialism;
+    //@HearingDurationReasonMaxLengthConstraint
+    private String[] panelSpecialisms;
 }

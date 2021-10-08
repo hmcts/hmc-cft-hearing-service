@@ -7,5 +7,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HearingWindow {
 
-    private OneOf[] oneOf;
+    private String hearingWindowStartDateRange;
+
+    private String hearingWindowEndDateRange;
+
+    private String firstDateTimeMustBe;
 }
