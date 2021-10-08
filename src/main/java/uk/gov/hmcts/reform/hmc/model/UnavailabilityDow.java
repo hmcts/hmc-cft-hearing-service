@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UnavailabilityDow {
 
-    @JsonProperty("Dow")
+    @JsonProperty("DoW")
     private Dow dow;
 
     @JsonProperty("DOWUnavailabilityType")

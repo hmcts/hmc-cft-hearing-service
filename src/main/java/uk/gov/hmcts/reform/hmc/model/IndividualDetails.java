@@ -45,6 +45,6 @@ public class IndividualDetails {
     @Pattern(regexp = "^+(?:[0-9]●?){6,14}[0-9]$")
     private String hearingChannelPhone;
 
-    private RelatedParty relatedParty;
+    private RelatedParty[] relatedParties;
 
 }
