@@ -21,7 +21,8 @@ CREATE TABLE public.case_hearing_request (
                          case_sla_start_date timestamp without time zone not null,
                          version_number integer not null,
                          hearing_id varchar(10) not null,
-                         interpreter_booking_required_flag boolean
+                         interpreter_booking_required_flag boolean,
+                         is_linked_flag boolean
 
 );
 
@@ -84,7 +85,7 @@ CREATE TYPE public.dayofweekunavailabletype AS ENUM (
 
 CREATE TABLE public.required_locations (
                       location_level_type varchar not null,
-                      location_id public.locationid NOT NULL
+                      location_id public.locationid not null
 );
 
 CREATE TABLE public.panel_requirements (
@@ -123,7 +124,7 @@ CREATE TABLE public.individual_detail (
                       vulnerability_details varchar(256),
                       vulnerable_flag boolean,
                       interpreter_language varchar(10),
-                      channel_type varchar(40),
+                      channel_type varchar(70),
                       last_name varchar(100) not null,
                       first_name varchar(100) not null,
                       title varchar(40) not null
@@ -147,6 +148,6 @@ CREATE TABLE public.unavailability (
 );
 
 CREATE TABLE public.contact_details (
-					            contact_type varchar(20),
+					            contact_type varchar(30),
 					            contact_details varchar(120)
 );
