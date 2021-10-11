@@ -1,7 +1,7 @@
 buildscript {
     ext {
         springBootVersion = '2.4.4'
-        springCloudVersion = '3.0.1'
+        springCloudVersion = '2020.0.1'
     }
     dependencies {
         classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2'
@@ -46,7 +46,7 @@ def versions = [
   pact_version    : '4.1.7',
   reformLogging   : '5.1.7',
   springBoot      : springBoot.class.package.implementationVersion,
-  springCloud     : '3.0.1',
+  springCloud     : '2020.0.1',
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.2'
 ]
