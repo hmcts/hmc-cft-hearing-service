@@ -54,6 +54,10 @@ def versions = [
 ext['spring-security.version'] = '5.4.5'
 ext['spring-framework.version'] = '5.3.7'
 
+ext {
+  swagger2Version = '3.0.0'
+}
+
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
@@ -367,7 +371,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
-  implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
+//  implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
 
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
