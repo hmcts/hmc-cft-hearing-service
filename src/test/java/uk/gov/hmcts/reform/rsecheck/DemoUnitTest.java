@@ -10,7 +10,5 @@ class DemoUnitTest {
     @Test
     void exampleOfTest() {
         assertTrue(System.currentTimeMillis() > 0, "Example of Unit Test");
-        assertFalse(false);
-
     }
 }
