@@ -51,7 +51,6 @@ def versions = [
   testcontainers  : '1.15.2'
 ]
 
-
 ext['spring-security.version'] = '5.4.5'
 ext['spring-framework.version'] = '5.3.7'
 
@@ -321,7 +320,7 @@ project.ext {
   pactVersion = getCheckedOutGitCommitHash()
 }
 
-def getCheckedOutGitCommitHash() {
+def static getCheckedOutGitCommitHash() {
   'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
@@ -337,11 +336,6 @@ task runProviderPactVerification(type:Test) {
 
 runProviderPactVerification.finalizedBy pactVerify
 
-def timestamp() {
-  def date = new Date()
-  return date.format('yyyy-MM-dd HH:mm:ss')
-}
-
 cucumberReports {
   outputDir = file("${projectDir}/target/cucumber")
   reports = files("${projectDir}/target/cucumber.json")
@@ -350,14 +344,11 @@ cucumberReports {
 
 repositories {
   mavenLocal()
-  jcenter()
   maven {
     url "https://jitpack.io"
   }
   mavenCentral()
-  jcenter()
 }
-
 
 ext.libraries = [
   junit5: [
