@@ -45,7 +45,7 @@ def versions = [
   pact_version    : '4.1.7',
   reformLogging   : '5.1.7',
   springBoot      : springBoot.class.package.implementationVersion,
-  springCloud     : '2020.0.1',
+  springCloud     : '3.0.1',
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.2'
 ]
