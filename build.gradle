@@ -1,6 +1,7 @@
 buildscript {
     ext {
         springBootVersion = '2.4.4'
+        springCloudVersion = '3.0.1'
     }
     dependencies {
         classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2'
@@ -276,24 +277,28 @@ dependencyCheck {
 }
 
 dependencies {
-  implementation 'org.springframework.boot:spring-boot-starter-validation'
+  implementation 'org.springframework.boot:spring-boot-starter-validation:2.5.5'
   implementation group: 'io.springfox', name: 'springfox-boot-starter', version: swagger2Version
   testCompile group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.2.0'
   testCompile group: 'com.github.hmcts', name: 'befta-fw', version: '8.2.0'
 
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: '4.2.14'
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: '4.2.14'
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: '4.2.14'
   contractTestRuntime group: 'io.springfox', name: 'springfox-boot-starter', version: swagger2Version
-  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-client'
-  contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
-  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
-  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-core'
-  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
+  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: '5.5.1'
+  contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: '2.5.5'
+  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '5.5.1'
+  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.5.1'
+  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '5.5.1'
 }
 
 dependencyManagement {
   dependencies {
+    imports {
+      mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+
     dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.68'
     // CVE-2018-10237 - Unbounded memory allocation
     dependencySet(group: 'com.google.guava', version: '30.1.1-jre') {
@@ -356,22 +361,22 @@ repositories {
 
 ext.libraries = [
   junit5: [
-    "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
-    "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
-    "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
+    "org.junit.jupiter:junit-jupiter-api:5.8.1",
+    "org.junit.jupiter:junit-jupiter-engine:5.8.1",
+    "org.junit.jupiter:junit-jupiter-params:5.8.1",
+    "org.junit.platform:junit-platform-commons:1.8.1",
+    "org.junit.platform:junit-platform-engine:1.8.1"
   ]
 ]
 
 dependencies {
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.5.5'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.5.5'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '2.5.5'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: '2.5.5'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.5.5'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: '2.5.5'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.5'
 //  implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
 
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
@@ -380,14 +385,14 @@ dependencies {
   compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
   compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.1'
 
-  implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+  implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-  }
+  }, version: '2.5.5'
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
