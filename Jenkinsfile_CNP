@@ -1,4 +1,14 @@
 #!groovy
+import uk.gov.hmcts.contino.AppPipelineDsl
+properties(
+    [
+        [
+            $class       : 'GithubProjectProperty',
+            projectUrlStr: 'https://github.com/hmcts/hmc-cft-hearing-service'
+        ],
+        pipelineTriggers([[$class: 'GitHubPushTrigger']])
+    ]
+)
 
 @Library("Infrastructure")
 
@@ -22,6 +32,10 @@ env.OAUTH2_REDIRECT_URI = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect
 withPipeline(type, product, component) {
   enableAksStagingDeployment()
   disableLegacyDeployment()
+
+  enablePactAs([
+    AppPipelineDsl.PactRoles.PROVIDER
+  ])
 
   after('test') {
     builder.gradle('integration')

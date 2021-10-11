@@ -11,13 +11,51 @@ plugins {
   id 'com.github.spacialcircumstances.gradle-cucumber-reporting' version '0.1.23'
   id 'se.patrikerdes.use-latest-versions' version '0.2.7'
   id 'au.com.dius.pact' version '4.1.0'
+  id "org.jetbrains.gradle.plugin.idea-ext" version "0.7"
 }
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.sonarqube'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
+apply plugin: 'se.patrikerdes.use-latest-versions'
+
+def versions = [
+  junit           : '5.7.2',
+  junitPlatform   : '1.7.2',
+  lombok          : '1.18.8',
+  mapstruct       : '1.4.2.Final',
+  pact_version    : '4.1.7',
+  reformLogging   : '5.1.7',
+  springBoot      : springBoot.class.package.implementationVersion,
+  springCloud     : '2020.0.1',
+  springfoxSwagger: '3.0.0',
+  testcontainers  : '1.15.2'
+]
+
+
+ext['spring-security.version'] = '5.4.5'
+ext['spring-framework.version'] = '5.3.7'
 
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
 sourceCompatibility = 11
 targetCompatibility = 11
+
+configurations {
+  providedRuntime
+  annotationProcessor
+//    runtime.exclude group: 'com.microsoft.azure', module: 'applicationinsights-agent'
+
+  contractTestCompile.extendsFrom(testCompile)
+  contractTestRuntime.extendsFrom(testRuntime)
+  cucumberRuntime.extendsFrom(functionalRuntime)
+}
 
 sourceSets {
   functionalTest {
@@ -203,19 +241,6 @@ sonarqube {
     property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/hmc/Application.java"
   }
 }
-
-def versions = [
-  junit           : '5.7.2',
-  junitPlatform   : '1.7.2',
-  lombok          : '1.18.8',
-  mapstruct       : '1.4.2.Final',
-  reformLogging   : '5.1.7',
-  springBoot      : springBoot.class.package.implementationVersion,
-  springCloud     : '2020.0.1',
-  springfoxSwagger: '3.0.0',
-  testcontainers  : '1.15.2'
-]
-
 
 // before committing a change, make sure task still works
 dependencyUpdates {
