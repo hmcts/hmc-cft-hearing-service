@@ -7,7 +7,7 @@ public final class ValidationError {
     public static final String HEARING_WINDOW_NULL = "Hearing window can not be null";
     public static final String DURATION_EMPTY = "Duration can not be empty";
     public static final String DURATION_MIN_LENGTH = "Duration can not be less than 1";
-    public static final String NON_STANDARD_HEARING_DURATION_REASONS = "Non standard hearing duration reason length "
+    public static final String NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG = "Non standard hearing duration reasons length "
         + "cannot be greater than 70";
     public static final String HEARING_PRIORITY_TYPE = "Hearing priority type can not be empty";
     public static final String HEARING_PRIORITY_TYPE_MAX_LENGTH = "Hearing priority type must not be more than "
@@ -32,6 +32,7 @@ public final class ValidationError {
     public static final String EXTERNAL_CASE_REFERENCE_MAX_LENGTH = "External case reference must not be more than "
         + "70 characters long";
     public static final String CASE_DEEP_LINK_EMPTY = "Case deep link can not be empty";
+    public static final String CASE_DEEP_LINK_INVALID = "Case deep link must be a valid URL";
     public static final String CASE_DEEP_LINK_MAX_LENGTH = "Case deep link can not be more than 1024 characters long";
     public static final String HMCTS_INTERNAL_CASE_NAME_EMPTY = "Hmcts internal case name can not be empty";
     public static final String HMCTS_INTERNAL_CASE_NAME_MAX_LENGTH = "Hmcts internal case name can not be more than "
@@ -69,17 +70,28 @@ public final class ValidationError {
     public static final String LAST_NAME_EMPTY = "Last name can not be empty";
     public static final String LAST_NAME_MAX_LENGTH = "Last name must not be more than 100 characters long";
     public static final String PREFERRED_HEARING_CHANNEL_MAX_LENGTH = "Preferred hearing channel must not be more "
-        +  "than 70 characters long";
+        + "than 70 characters long";
     public static final String INTERPRETER_LANGUAGE_MAX_LENGTH = "Interpreter language must not be more than "
         + " 10 characters long";
     public static final String REASONABLE_ADJUSTMENTS_MAX_LENGTH = "Reasonable adjustments must not be more than "
         + "10 characters long";
-    public static final String VULENERABLE_DETAILS_MAX_LENGTH = "Vulnerable details must not be more than 256 "
+    public static final String VULNERABLE_DETAILS_MAX_LENGTH = "Vulnerable details must not be more than 256 "
         + "characters long";
     public static final String HEARING_CHANNEL_EMAIL_MAX_LENGTH = "Hearing channel email must not be more than"
         + " 120 characters long";
+    public static final String HEARING_CHANNEL_EMAIL_INVALID = "HearingChannelEmail must be valid email address";
     public static final String HEARING_CHANNEL_PHONE_MAX_LENGTH = "Hearing channel phone must not be more than "
         + "30 characters long";
+    public static final String HEARING_CHANNEL_PHONE_INVALID = "HearingChannel phone must be valid";
+    public static final String ROLE_TYPE_MAX_LENGTH_MSG = "Role type length cannot be greater than 70 characters long";
+    public static final String AUTHORISATION_TYPE_MAX_LENGTH_MSG = "Authorisation type length cannot be greater "
+        + "than 70 characters long";
+    public static final String AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG = "Authorisation sub type length cannot be "
+        + "greater than 70 characters long";
+    public static final String PANEL_SPECIALISMS_MAX_LENGTH_MSG = "Panel Specialisms length cannot be greater than "
+        + "70 characters long";
+    public static final String FACILITIES_REQUIRED_MAX_LENGTH_MSG = "Facilities required length cannot be greater "
+        + "than 70 characters long";
 
     private ValidationError() {
     }

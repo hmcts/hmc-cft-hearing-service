@@ -1,14 +1,20 @@
 package uk.gov.hmcts.reform.hmc.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
-
 import java.util.List;
+
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.validator.ListMaxLength;
+
+import static uk.gov.hmcts.reform.hmc.constants.Constants.FACILITIES_REQUIRED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.NON_STANDARD_HEARING_DURATION_REASONS;
 
 @Data
 @NoArgsConstructor
@@ -28,7 +34,7 @@ public class HearingDetails {
     @Min(value = 1, message = ValidationError.DURATION_MIN_VALUE)
     private Integer duration;
 
-    //@HearingDurationReasonMaxLengthConstraint
+    @ListMaxLength(ListName = NON_STANDARD_HEARING_DURATION_REASONS)
     private List<String> nonStandardHearingDurationReasons;
 
     @NotEmpty(message = ValidationError.HEARING_PRIORITY_TYPE)
@@ -43,8 +49,8 @@ public class HearingDetails {
     @NotNull(message = ValidationError.HEARING_LOCATION_EMPTY)
     private HearingLocation[] hearingLocations;
 
-    //@Size(max = 70, message = ValidationError.FACILITY_TYPE_MAX_LENGTH)
-    private String[] facilitiesRequired;
+    @ListMaxLength(ListName = FACILITIES_REQUIRED)
+    private List<String> facilitiesRequired;
 
     @Size(max = 5000, message = ValidationError.LISTING_COMMENTS_MAX_LENGTH)
     private String listingComments;
@@ -57,6 +63,7 @@ public class HearingDetails {
     @Size(max = 70, message = ValidationError.LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH)
     private String leadJudgeContractType;
 
+    @Valid
     private PanelRequirements panelRequirements;
 
     private Boolean hearingIsLinkedFlag = false;

@@ -5,10 +5,10 @@ import java.lang.annotation.RetentionPolicy;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-@Constraint(validatedBy = HearingDurationReasonMaxLengthConstraintValidator.class)
+@Constraint(validatedBy = HearingDurationReasonMaxLengthValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HearingDurationReasonMaxLengthConstraint {
-    String message() default "The NonStandardHearingDurationReasonType must not be more than 70 characters long.";
+    String message() default "The NonStandardHearingDurationReasonType values must not be more than 70 characters long";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

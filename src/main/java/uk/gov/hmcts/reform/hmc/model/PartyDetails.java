@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -21,8 +22,10 @@ public class PartyDetails {
     @Size(max = 6, message = ValidationError.PARTY_ROLE_MAX_LENGTH)
     private String partyRole;
 
+    @Valid
     private IndividualDetails individualDetails;
 
+    @Valid
     private OrganisationDetails organisationDetails;
 
     @JsonProperty("unavailabilityDOW")

@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -35,16 +37,19 @@ public class IndividualDetails {
 
     private Boolean vulnerableFlag;
 
-    @Size(max = 256, message = ValidationError.VULENERABLE_DETAILS_MAX_LENGTH)
+    @Size(max = 256, message = ValidationError.VULNERABLE_DETAILS_MAX_LENGTH)
     private String vulnerabilityDetails;
 
     @Size(max = 120, message = ValidationError.HEARING_CHANNEL_EMAIL_MAX_LENGTH)
+    @Email(message = ValidationError.HEARING_CHANNEL_EMAIL_INVALID )
     private String hearingChannelEmail;
 
     @Size(max = 30, message = ValidationError.HEARING_CHANNEL_PHONE_MAX_LENGTH)
-    @Pattern(regexp = "^+(?:[0-9]●?){6,14}[0-9]$")
+    @Pattern(regexp="^\\+?(?:[0-9] ?){6,14}[0-9]$",
+        message= ValidationError.HEARING_CHANNEL_PHONE_INVALID)
     private String hearingChannelPhone;
 
+    @Valid
     private RelatedParty[] relatedParties;
 
 }
