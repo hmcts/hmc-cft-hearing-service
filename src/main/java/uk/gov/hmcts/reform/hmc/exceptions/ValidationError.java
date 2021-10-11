@@ -73,7 +73,7 @@ public final class ValidationError {
         + "than 70 characters long";
     public static final String INTERPRETER_LANGUAGE_MAX_LENGTH = "Interpreter language must not be more than "
         + " 10 characters long";
-    public static final String REASONABLE_ADJUSTMENTS_MAX_LENGTH = "Reasonable adjustments must not be more than "
+    public static final String REASONABLE_ADJUSTMENTS_MAX_LENGTH_MSG = "Reasonable adjustments must not be more than "
         + "10 characters long";
     public static final String VULNERABLE_DETAILS_MAX_LENGTH = "Vulnerable details must not be more than 256 "
         + "characters long";
