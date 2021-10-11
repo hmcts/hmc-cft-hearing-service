@@ -24,6 +24,7 @@ plugins {
   id 'se.patrikerdes.use-latest-versions' version '0.2.7'
   id 'au.com.dius.pact' version '4.1.0'
   id "org.jetbrains.gradle.plugin.idea-ext" version "0.7"
+  id 'com.github.kt3k.coveralls' version '2.8.2'
 }
 
 apply plugin: 'java'
@@ -270,6 +271,22 @@ dependencyCheck {
   suppressionFile = 'config/owasp/suppressions.xml'
 }
 
+dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-validation'
+  testCompile group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.2.0'
+  testCompile group: 'com.github.hmcts', name: 'befta-fw', version: '8.2.0'
+
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
+  contractTestRuntime group: 'io.springfox', name: 'springfox-boot-starter', version: swagger2Version
+  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-client'
+  contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
+  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
+  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-core'
+  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
+}
+
 dependencyManagement {
   dependencies {
     dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.68'
@@ -289,8 +306,6 @@ dependencyManagement {
     }
   }
 }
-
-
 
 project.ext {
   pactVersion = getCheckedOutGitCommitHash()
@@ -316,7 +331,6 @@ def timestamp() {
   def date = new Date()
   return date.format('yyyy-MM-dd HH:mm:ss')
 }
-
 
 cucumberReports {
   outputDir = file("${projectDir}/target/cucumber")
