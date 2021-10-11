@@ -19,9 +19,9 @@ spring:
     property-naming-strategy: SNAKE_CASE
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${HMC_HEARING_MANAGEMENT_DB_HOST:localhost}:${HMC_HEARING_MANAGEMENT_DB_PORT:5060}/${HMC_HEARING_MANAGEMENT_DB_NAME:hmc_hearing_service}${HMC_HEARING_MANAGEMENT_DB_OPTIONS:}
-    username: ${HMC_HEARING_MANAGEMENT_DB_USERNAME:ccd}
-    password: ${HMC_HEARING_MANAGEMENT_DB_PASSWORD:ccd}
+    url: jdbc:postgresql://${CFT_HEARING_SERVICE_DB_HOST:localhost}:${CFT_HEARING_SERVICE_DB_PORT:5060}/${CFT_HEARING_SERVICE_DB_NAME:hmc_cft_hearing_service}${CFT_HEARING_SERVICE_DB_OPTIONS:}
+    username: ${CFT_HEARING_SERVICE_DB_USERNAME:hmc}
+    password: ${CFT_HEARING_SERVICE_DB_PASSWORD:hmc}
     type: com.zaxxer.hikari.HikariDataSource
   jpa:
     database: postgresql
@@ -32,11 +32,6 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
-      org:
-        hibernate:
-          envers:
-            audit_table_suffix: _audit
-            store_data_at_delete: true
   flyway:
     out-of-order: true
     ignore-missing-migrations: true

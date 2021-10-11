@@ -287,8 +287,6 @@ dependencies {
 
   annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: versions.mapstruct
 
-  implementation group: 'org.hibernate', name: 'hibernate-envers', version: '5.4.30.Final'
-
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 

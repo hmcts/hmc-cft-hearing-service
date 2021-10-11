@@ -21,7 +21,7 @@ module "hmc-hearing-management-db" {
   source                = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product               = var.product
   component             = var.component
-  name                  = "${local.app_full_name}-postgres-db-v11"
+  name                  = "${local.app_full_name}-postgres-db"
   location              = var.location
   env                   = var.env
   subscription          = var.subscription

@@ -8,12 +8,11 @@ java:
       secrets:
         - name: AppInsightsInstrumentationKey
   environment:
-    HMC_HEARING_MANAGEMENT_DB_HOST: "{{ .Release.Name }}-postgresql"
-    HMC_HEARING_MANAGEMENT_DB_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
-    HMC_HEARING_MANAGEMENT_DB_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
-    HMC_HEARING_MANAGEMENT_DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
-    HMC_HEARING_MANAGEMENT_DB_OPTIONS: "?stringtype=unspecified"
-    HMC_HEARING_MANAGEMENT_DB_PORT: 5432
-    # override default 'xui_webapp' permissions with values that support the FTA tests
+    CFT_HEARING_SERVICE_DB_HOST: "{{ .Release.Name }}-postgresql"
+    CFT_HEARING_SERVICE_DB_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
+    CFT_HEARING_SERVICE_DB_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    CFT_HEARING_SERVICE_DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
+    CFT_HEARING_SERVICE_DB_PORT: 5432
   postgresql:
     enabled: true

@@ -9,14 +9,14 @@ java:
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
         - name: cft-hearing-service-POSTGRES-USER
-          alias: HMC_HEARING_MANAGEMENT_DB_USERNAME
+          alias: CFT_HEARING_SERVICE_DB_USERNAME
         - name: cft-hearing-service-POSTGRES-PASS
-          alias: HMC_HEARING_MANAGEMENT_DB_PASSWORD
+          alias: CFT_HEARING_SERVICE_DB_PASSWORD
         - name: cft-hearing-service-POSTGRES-HOST
-          alias: HMC_HEARING_MANAGEMENT_DB_HOST
+          alias: CFT_HEARING_SERVICE_DB_HOST
         - name: cft-hearing-service-POSTGRES-PORT
-          alias: HMC_HEARING_MANAGEMENT_DB_PORT
+          alias: CFT_HEARING_SERVICE_DB_PORT
         - name: cft-hearing-service-POSTGRES-DATABASE
-          alias: HMC_HEARING_MANAGEMENT_DB_NAME
+          alias: CFT_HEARING_SERVICE_DB_NAME
   environment:
-    HMC_HEARING_MANAGEMENT_DB_OPTIONS: "?stringtype=unspecified&gssEncMode=disable"
+    CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified&gssEncMode=disable"

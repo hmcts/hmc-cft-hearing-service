@@ -71,7 +71,7 @@ variable "postgresql_user" {
 }
 
 variable "database_name" {
-  default = "hmc_hearing_management_component"
+  default = "hmc_cft_hearing_service"
 }
 
 variable "postgresql_version" {
