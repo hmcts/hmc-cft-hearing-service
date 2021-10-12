@@ -7,15 +7,14 @@ public final class ValidationError {
     public static final String HEARING_WINDOW_NULL = "Hearing window can not be null";
     public static final String DURATION_EMPTY = "Duration can not be empty";
     public static final String DURATION_MIN_LENGTH = "Duration can not be less than 1";
-    public static final String NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG = "Non standard hearing duration reasons length "
-        + "cannot be greater than 70";
+    public static final String NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG = "Non standard hearing duration "
+        + "reasons length cannot be greater than 70";
     public static final String HEARING_PRIORITY_TYPE = "Hearing priority type can not be empty";
     public static final String HEARING_PRIORITY_TYPE_MAX_LENGTH = "Hearing priority type must not be more than "
         + "60 characters long";
     public static final String DURATION_MIN_VALUE = "Duration should be greater than or equal to 1";
     public static final String NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE = "Duration should be greater than or equal to 0";
     public static final String HEARING_LOCATION_EMPTY = "Hearing locations can not be empty";
-    public static final String FACILITY_TYPE_MAX_LENGTH = "Facility type must not be more than 70 characters long";
     public static final String LISTING_COMMENTS_MAX_LENGTH = "Listing comments must not be more than "
         + "5000 characters long";
     public static final String HEARING_REQUESTER_MAX_LENGTH = "Hearing requester must not be more than 60 "

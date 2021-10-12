@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.validator.EnumNamePattern;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 

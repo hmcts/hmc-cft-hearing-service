@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.hmc.validator;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
 

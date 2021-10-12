@@ -1,17 +1,16 @@
 package uk.gov.hmcts.reform.hmc.model;
 
-import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.validator.ListMaxLength;
 
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
-import uk.gov.hmcts.reform.hmc.validator.ListMaxLength;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.FACILITIES_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.NON_STANDARD_HEARING_DURATION_REASONS;
