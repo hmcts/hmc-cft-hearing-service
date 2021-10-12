@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.validator.EnumNamePattern;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -19,6 +20,7 @@ public class PanelPreference {
     @Size(max = 70, message = ValidationError.MEMBER_TYPE_MAX_LENGTH)
     private String memberType;
 
+    @Valid
     @EnumNamePattern(regexp = "MUSTINC|OPTINC|EXCLUDE")
     private RequirementType requirementType;
 }

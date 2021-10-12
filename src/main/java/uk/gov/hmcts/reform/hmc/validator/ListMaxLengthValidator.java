@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
+import java.util.Collection;
 import java.util.List;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -36,66 +38,84 @@ public class ListMaxLengthValidator implements ConstraintValidator<ListMaxLength
     }
 
     @Override
-    public boolean isValid(List<String> listElements, ConstraintValidatorContext context) {
-        if (listName.equals(NON_STANDARD_HEARING_DURATION_REASONS)) {
-            for (String element : listElements) {
-                if (element.length() > NON_STANDARD_HEARING_DURATION_REASON_TYPE_MAX_LENGTH) {
-                    context.buildConstraintViolationWithTemplate(NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG)
-                        .addConstraintViolation();
-                    return false;
+    public boolean isValid(List<String> list, ConstraintValidatorContext context) {
+        if (isListNotNullAndEmpty(list)) {
+            if (listName.equals(NON_STANDARD_HEARING_DURATION_REASONS)) {
+                for (String element : list) {
+                    if (element.length() > NON_STANDARD_HEARING_DURATION_REASON_TYPE_MAX_LENGTH) {
+                        context.buildConstraintViolationWithTemplate(
+                            NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG)
+                            .addConstraintViolation();
+                        return false;
+                    }
                 }
             }
         } else if (listName.equals(ROLE_TYPE)) {
-            for (String element : listElements) {
-                if (element.length() > ROLE_TYPE_MAX_LENGTH) {
-                    context.buildConstraintViolationWithTemplate(ROLE_TYPE_MAX_LENGTH_MSG).addConstraintViolation();
-                    return false;
+            if (isListNotNullAndEmpty(list)) {
+                for (String element : list) {
+                    if (element.length() > ROLE_TYPE_MAX_LENGTH) {
+                        context.buildConstraintViolationWithTemplate(ROLE_TYPE_MAX_LENGTH_MSG).addConstraintViolation();
+                        return false;
+                    }
                 }
             }
         } else if (listName.equals(AUTHORISATION_TYPE)) {
-            for (String element : listElements) {
-                if (element.length() > AUTHORISATION_TYPE_MAX_LENGTH) {
-                    context.buildConstraintViolationWithTemplate(AUTHORISATION_TYPE_MAX_LENGTH_MSG)
-                        .addConstraintViolation();
-                    return false;
+            if (isListNotNullAndEmpty(list)) {
+                for (String element : list) {
+                    if (element.length() > AUTHORISATION_TYPE_MAX_LENGTH) {
+                        context.buildConstraintViolationWithTemplate(AUTHORISATION_TYPE_MAX_LENGTH_MSG)
+                            .addConstraintViolation();
+                        return false;
+                    }
                 }
             }
         } else if (listName.equals(AUTHORISATION_SUB_TYPE)) {
-            for (String element : listElements) {
-                if (element.length() > AUTHORISATION_SUB_TYPE_MAX_LENGTH) {
-                    context.buildConstraintViolationWithTemplate(AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG)
-                        .addConstraintViolation();
-                    return false;
+            if (isListNotNullAndEmpty(list)) {
+                for (String element : list) {
+                    if (element.length() > AUTHORISATION_SUB_TYPE_MAX_LENGTH) {
+                        context.buildConstraintViolationWithTemplate(AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG)
+                            .addConstraintViolation();
+                        return false;
+                    }
                 }
             }
         } else if (listName.equals(PANEL_SPECIALISMS)) {
-            for (String element : listElements) {
-                if (element.length() > PANEL_SPECIALISMS_MAX_LENGTH) {
-                    context.buildConstraintViolationWithTemplate(PANEL_SPECIALISMS_MAX_LENGTH_MSG)
-                        .addConstraintViolation();
-                    return false;
+            if (isListNotNullAndEmpty(list)) {
+                for (String element : list) {
+                    if (element.length() > PANEL_SPECIALISMS_MAX_LENGTH) {
+                        context.buildConstraintViolationWithTemplate(PANEL_SPECIALISMS_MAX_LENGTH_MSG)
+                            .addConstraintViolation();
+                        return false;
+                    }
                 }
             }
         } else if (listName.equals(FACILITIES_REQUIRED)) {
-            for (String element : listElements) {
-                if (element.length() > FACILITIES_REQUIRED_MAX_LENGTH) {
-                    context.buildConstraintViolationWithTemplate(FACILITIES_REQUIRED_MAX_LENGTH_MSG)
-                        .addConstraintViolation();
-                    return false;
+            if (isListNotNullAndEmpty(list)) {
+                for (String element : list) {
+                    if (element.length() > FACILITIES_REQUIRED_MAX_LENGTH) {
+                        context.buildConstraintViolationWithTemplate(FACILITIES_REQUIRED_MAX_LENGTH_MSG)
+                            .addConstraintViolation();
+                        return false;
+                    }
                 }
             }
 
         } else if (listName.equals(REASONABLE_ADJUSTMENTS)) {
-            for (String element : listElements) {
-                if (element.length() > REASONABLE_ADJUSTMENTS_MAX_LENGTH) {
-                    context.buildConstraintViolationWithTemplate(REASONABLE_ADJUSTMENTS_MAX_LENGTH_MSG)
-                        .addConstraintViolation();
-                    return false;
+            if (isListNotNullAndEmpty(list)) {
+                for (String element : list) {
+                    if (null != element && element.length() > REASONABLE_ADJUSTMENTS_MAX_LENGTH) {
+                        context.buildConstraintViolationWithTemplate(REASONABLE_ADJUSTMENTS_MAX_LENGTH_MSG)
+                            .addConstraintViolation();
+                        return false;
+                    }
                 }
             }
         }
         return true;
     }
 
+    private boolean isListNotNullAndEmpty(List<String> list) {
+        return list != null && !list.isEmpty();
+    }
 
 }

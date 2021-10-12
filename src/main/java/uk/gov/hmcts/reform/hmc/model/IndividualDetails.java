@@ -36,7 +36,6 @@ public class IndividualDetails {
     @Size(max = 10, message = ValidationError.INTERPRETER_LANGUAGE_MAX_LENGTH)
     private String interpreterLanguage;
 
-    //@Size(max = 10, message = ValidationError.REASONABLE_ADJUSTMENTS_MAX_LENGTH)
     @ListMaxLength(ListName = REASONABLE_ADJUSTMENTS)
     private List<String> reasonableAdjustments;
 

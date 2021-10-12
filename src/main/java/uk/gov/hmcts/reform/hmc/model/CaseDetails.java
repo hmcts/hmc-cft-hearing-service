@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.hmc.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import org.hibernate.mapping.Value;
 import org.hibernate.validator.constraints.URL;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
@@ -52,7 +54,8 @@ public class CaseDetails {
     @Size(max = 40, message = ValidationError.CASE_MANAGEMENT_LOCATION_CODE_MAX_LENGTH)
     private String caseManagementLocationCode;
 
-    private Boolean caserestrictedFlag;
+    @JsonProperty("caserestrictedFlag")
+    private Boolean caseRestrictedFlag;
 
     @JsonProperty("caseSLAStartDate")
     @NotNull(message = ValidationError.CASE_SLA_START_DATE_EMPTY)

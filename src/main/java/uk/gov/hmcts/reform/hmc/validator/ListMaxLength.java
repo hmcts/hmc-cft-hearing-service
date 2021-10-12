@@ -13,7 +13,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = ListMaxLengthValidator.class)
 public @interface ListMaxLength {
 
-    String message() default "{ListName} has invalid data}";
+    String message() default "Please enter a valid element for this field.";
 
     Class<?>[] groups() default {};
 

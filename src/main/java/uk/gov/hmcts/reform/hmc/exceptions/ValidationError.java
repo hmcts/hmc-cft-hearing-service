@@ -21,7 +21,7 @@ public final class ValidationError {
         + "characters long";
     public static final String LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH = "Lead judge contract type must not be more than "
         + "70 characters long";
-    public static final String MEMBER_ID_EMPTY = "Member Id can not be empty";
+    public static final String MEMBER_ID_EMPTY = "Panel Preference.Member Id can not be empty";
     public static final String MEMBER_ID_MAX_LENGTH = "Member Id must not be more than 70 characters long";
     public static final String MEMBER_TYPE_MAX_LENGTH = "Member type must not be more than 70 characters long";
     public static final String LOCATION_TYPE_EMPTY = "Location type can not be empty";
@@ -91,7 +91,7 @@ public final class ValidationError {
         + "70 characters long";
     public static final String FACILITIES_REQUIRED_MAX_LENGTH_MSG = "Facilities required length cannot be greater "
         + "than 70 characters long";
-
+    public static final String INVALID_PANEL_REQUIREMENTS = "Panel requirements are required";
     private ValidationError() {
     }
 }
