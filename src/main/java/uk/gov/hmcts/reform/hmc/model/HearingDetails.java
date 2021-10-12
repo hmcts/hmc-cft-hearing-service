@@ -46,6 +46,7 @@ public class HearingDetails {
     private Boolean hearingInWelshFlag;
 
     @NotNull(message = ValidationError.HEARING_LOCATION_EMPTY)
+    @Valid
     private HearingLocation[] hearingLocations;
 
     @ListMaxLength(ListName = FACILITIES_REQUIRED)

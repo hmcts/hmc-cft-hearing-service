@@ -23,7 +23,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
        if(hearingRequest.getHearingDetails().getPanelRequirements() == null) {
            throw new BadRequestException(INVALID_PANEL_REQUIREMENTS);
-
        }
     }
 }

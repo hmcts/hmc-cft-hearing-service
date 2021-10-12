@@ -8,6 +8,7 @@ import org.hibernate.mapping.Value;
 import org.hibernate.validator.constraints.URL;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -47,7 +48,7 @@ public class CaseDetails {
 
     private Boolean caseInterpreterRequiredFlag;
 
-    //@Valid
+    @Valid
     private CaseCategory[] caseCategories;
 
     @NotNull(message = ValidationError.CASE_MANAGEMENT_LOCATION_CODE_EMPTY)

@@ -92,6 +92,7 @@ public final class ValidationError {
     public static final String FACILITIES_REQUIRED_MAX_LENGTH_MSG = "Facilities required length cannot be greater "
         + "than 70 characters long";
     public static final String INVALID_PANEL_REQUIREMENTS = "Panel requirements are required";
+    public static final String CATEGORY_VALUE = "category Value cannot be greater than 70 characters long";
     private ValidationError() {
     }
 }

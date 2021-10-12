@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -17,7 +18,8 @@ public class PartyDetails {
     @Size(max = 40, message = ValidationError.PARTY_DETAILS_MAX_LENGTH)
     private String partyID;
 
-    private PartyType partyType;
+    @EnumPattern(enumClass = PartyType.class, fieldName = "partyType")
+    private String partyType;
 
     @Size(max = 6, message = ValidationError.PARTY_ROLE_MAX_LENGTH)
     private String partyRole;
@@ -29,7 +31,9 @@ public class PartyDetails {
     private OrganisationDetails organisationDetails;
 
     @JsonProperty("unavailabilityDOW")
+    @Valid
     private UnavailabilityDow[] unavailabilityDow;
 
+    @Valid
     private UnavailabilityRanges[] unavailabilityRanges;
 }
