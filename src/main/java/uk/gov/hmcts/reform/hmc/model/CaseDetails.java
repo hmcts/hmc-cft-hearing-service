@@ -47,6 +47,7 @@ public class CaseDetails {
     private Boolean caseInterpreterRequiredFlag;
 
     @Valid
+    @NotNull(message = ValidationError.CASE_CATEGORY_EMPTY)
     private CaseCategory[] caseCategories;
 
     @NotNull(message = ValidationError.CASE_MANAGEMENT_LOCATION_CODE_EMPTY)
@@ -54,6 +55,7 @@ public class CaseDetails {
     private String caseManagementLocationCode;
 
     @JsonProperty("caserestrictedFlag")
+    @NotNull(message = ValidationError.CASE_RESTRICTED_FLAG_NULL_EMPTY)
     private Boolean caseRestrictedFlag;
 
     @JsonProperty("caseSLAStartDate")

@@ -12,6 +12,9 @@ import javax.validation.Valid;
 public class HearingRequest {
 
     @Valid
+    private RequestDetails requestDetails;
+
+    @Valid
     private HearingDetails hearingDetails;
 
     @Valid

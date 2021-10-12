@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -19,8 +20,9 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.NON_STANDARD_HEARING_D
 @NoArgsConstructor
 public class HearingDetails {
 
+    @JsonProperty("autolistFlag")
     @NotNull(message = ValidationError.AUTO_LIST_FLAG_NULL_EMPTY)
-    private Boolean autolistFlag;
+    private Boolean autoListFlag;
 
     @NotEmpty(message = ValidationError.HEARING_TYPE_NULL_EMPTY)
     @Size(max = 40, message = ValidationError.HEARING_TYPE_MAX_LENGTH)
@@ -30,7 +32,7 @@ public class HearingDetails {
     private HearingWindow hearingWindow;
 
     @NotNull(message = ValidationError.DURATION_EMPTY)
-    @Min(value = 1, message = ValidationError.DURATION_MIN_VALUE)
+    @Min(value = 0, message = ValidationError.DURATION_MIN_VALUE)
     private Integer duration;
 
     @ListMaxLength(ListName = NON_STANDARD_HEARING_DURATION_REASONS)
@@ -45,8 +47,8 @@ public class HearingDetails {
 
     private Boolean hearingInWelshFlag;
 
-    @NotNull(message = ValidationError.HEARING_LOCATION_EMPTY)
     @Valid
+    @NotNull(message = ValidationError.HEARING_LOCATION_EMPTY)
     private HearingLocation[] hearingLocations;
 
     @ListMaxLength(ListName = FACILITIES_REQUIRED)

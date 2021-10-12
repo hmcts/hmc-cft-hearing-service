@@ -11,8 +11,9 @@ public final class ValidationError {
     public static final String HEARING_PRIORITY_TYPE = "Hearing priority type can not be empty";
     public static final String HEARING_PRIORITY_TYPE_MAX_LENGTH = "Hearing priority type must not be more than "
         + "60 characters long";
-    public static final String DURATION_MIN_VALUE = "Duration should be greater than or equal to 1";
-    public static final String NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE = "Duration should be greater than or equal to 0";
+    public static final String DURATION_MIN_VALUE = "Duration should be greater than or equal to 0";
+    public static final String NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE = "Number of physical attendees should be "
+        + " greater than or equal to 0";
     public static final String HEARING_LOCATION_EMPTY = "Hearing locations can not be empty";
     public static final String LISTING_COMMENTS_MAX_LENGTH = "Listing comments must not be more than "
         + "5000 characters long";
@@ -43,9 +44,10 @@ public final class ValidationError {
         + "than 40 characters long";
     public static final String CASE_SLA_START_DATE_EMPTY = "Case sla start date can not be empty";
     public static final String INVALID_HEARING_DETAILS = "Hearing Details are required";
+    public static final String INVALID_REQUEST_DETAILS = "Request details are required";
     public static final String INVALID_CASE_DETAILS = "Case details are required";
-    public static final String PARTY_DETAILS_NULL_EMPTY = "Party details can not be empty";
-    public static final String PARTY_DETAILS_MAX_LENGTH = "Party details must not be more than 40 characters long";
+    public static final String PARTY_DETAILS_NULL_EMPTY = "Party id can not be empty";
+    public static final String PARTY_DETAILS_MAX_LENGTH = "Party id must not be more than 40 characters long";
     public static final String PARTY_ROLE_MAX_LENGTH = "Party role must not be more than 6 characters long";
     public static final String NAME_NULL_EMPTY = "Name can not be empty";
     public static final String NAME_MAX_LENGTH = "Name must not be more than 2000 characters long";
@@ -92,6 +94,13 @@ public final class ValidationError {
         + "than 70 characters long";
     public static final String INVALID_PANEL_REQUIREMENTS = "Panel requirements are required";
     public static final String CATEGORY_VALUE = "category Value cannot be greater than 70 characters long";
+    public static final String INVALID_HEARING_WINDOW = "Hearing window details are required";
+    public static final String INVALID_HEARING_LOCATION = "Hearing locations are required";
+    public static final String INVALID_CASE_CATEGORIES = "Case categories are required";
+    public static final String CASE_CATEGORY_EMPTY = "Case category can not be empty";
+    public static final String CASE_RESTRICTED_FLAG_NULL_EMPTY = "Case restricted flag can not be empty";
+    public static final String REQUEST_TIMESTAMP_NULL_EMPTY = "Request time stamp can not be empty";
+    public static final String INVALID_HEARING_REQUEST_DETAILS = "Invalid details";
 
     private ValidationError() {
     }
