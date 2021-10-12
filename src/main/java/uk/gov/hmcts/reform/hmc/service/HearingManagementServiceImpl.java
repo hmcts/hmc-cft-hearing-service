@@ -18,12 +18,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (hearingRequest.getHearingDetails() == null) {
             throw new BadRequestException(INVALID_HEARING_DETAILS);
         }
-       if (hearingRequest.getCaseDetails() == null) {
+        if (hearingRequest.getCaseDetails() == null) {
             throw new BadRequestException(INVALID_CASE_DETAILS);
         }
-       if(hearingRequest.getHearingDetails().getPanelRequirements() == null) {
-           throw new BadRequestException(INVALID_PANEL_REQUIREMENTS);
-       }
+        if (hearingRequest.getHearingDetails().getPanelRequirements() == null) {
+            throw new BadRequestException(INVALID_PANEL_REQUIREMENTS);
+        }
     }
 }
 

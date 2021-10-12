@@ -6,7 +6,6 @@ public final class ValidationError {
     public static final String HEARING_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 characters long";
     public static final String HEARING_WINDOW_NULL = "Hearing window can not be null";
     public static final String DURATION_EMPTY = "Duration can not be empty";
-    public static final String DURATION_MIN_LENGTH = "Duration can not be less than 1";
     public static final String NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG = "Non standard hearing duration "
         + "reasons length cannot be greater than 70";
     public static final String HEARING_PRIORITY_TYPE = "Hearing priority type can not be empty";
@@ -93,6 +92,7 @@ public final class ValidationError {
         + "than 70 characters long";
     public static final String INVALID_PANEL_REQUIREMENTS = "Panel requirements are required";
     public static final String CATEGORY_VALUE = "category Value cannot be greater than 70 characters long";
+
     private ValidationError() {
     }
 }

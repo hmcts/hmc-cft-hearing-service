@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
-import java.util.Collection;
 import java.util.List;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
