@@ -1,13 +1,16 @@
 package uk.gov.hmcts.reform.hmc.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public enum LocationId {
-    court,
-    cluster,
-    region
+    COURT("court"),
+    CLUSTER("cluster"),
+    REGION("region");
 
+    public final String label;
+
+    LocationId(String label) {
+        this.label = label;
+    }
 }

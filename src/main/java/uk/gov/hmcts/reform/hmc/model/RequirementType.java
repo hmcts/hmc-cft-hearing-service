@@ -1,12 +1,16 @@
 package uk.gov.hmcts.reform.hmc.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public enum RequirementType {
-    MUSTINC,
-    OPTINC,
-    EXCLUDE
+    MUSTINC("MUSTINC"),
+    OPTINC("OPTINC"),
+    EXCLUDE("EXCLUDE");
+
+    public final String label;
+
+    RequirementType(String label) {
+        this.label = label;
+    }
 }

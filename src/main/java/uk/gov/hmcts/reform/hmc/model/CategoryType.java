@@ -1,11 +1,15 @@
 package uk.gov.hmcts.reform.hmc.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public enum CategoryType {
-    caseType,
-    caseSubType
+    CASETYPE("caseType"),
+    CASESUBTYPE("caseSubType");
+
+    public final String label;
+
+    CategoryType(String label) {
+        this.label = label;
+    }
 }

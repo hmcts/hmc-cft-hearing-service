@@ -24,6 +24,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     @Autowired
     public HearingManagementServiceImpl() {
+        //Do nothing
     }
 
     @Override

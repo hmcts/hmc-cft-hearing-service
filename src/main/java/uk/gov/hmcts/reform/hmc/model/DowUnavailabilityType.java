@@ -1,12 +1,16 @@
 package uk.gov.hmcts.reform.hmc.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public enum DowUnavailabilityType {
-    AM,
-    PM,
-    ALL
+    AM("AM"),
+    PM("PM"),
+    ALL("ALL");
+
+    public final String label;
+
+    DowUnavailabilityType(String label) {
+        this.label = label;
+    }
 }
