@@ -27,7 +27,8 @@ CREATE TABLE public.case_hearing_request (
                          listing_comments varchar(5000),
                          requester varchar(60),
                          hearing_window_start_date_range timestamp without time zone,
-                         hearing_window_end_date_range timestamp without time zone
+                         hearing_window_end_date_range timestamp without time zone,
+                         request_timestamp timestamp without time zone not null
 );
 
 ALTER TABLE ONLY public.case_hearing_request
