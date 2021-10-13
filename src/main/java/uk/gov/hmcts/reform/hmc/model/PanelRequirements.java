@@ -2,32 +2,28 @@ package uk.gov.hmcts.reform.hmc.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.hmc.validator.ListMaxLength;
 
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.AUTHORISATION_SUB_TYPE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.AUTHORISATION_TYPE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.PANEL_SPECIALISMS;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.ROLE_TYPE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AUTHORISATION_TYPE_MAX_LENGTH_MSG;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PANEL_SPECIALISMS_MAX_LENGTH_MSG;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.ROLE_TYPE_MAX_LENGTH_MSG;
 
 @Data
 @NoArgsConstructor
 public class PanelRequirements {
 
-    @ListMaxLength(ListName = ROLE_TYPE)
-    private List<String> roleType;
+    private List<@Size(max = 70, message = ROLE_TYPE_MAX_LENGTH_MSG) String> roleType;
 
-    @ListMaxLength(ListName = AUTHORISATION_TYPE)
-    private List<String> authorisationTypes;
+    private List<@Size(max = 70, message = AUTHORISATION_TYPE_MAX_LENGTH_MSG) String> authorisationTypes;
 
-    @ListMaxLength(ListName = AUTHORISATION_SUB_TYPE)
-    private List<String> authorisationSubType;
+    private List<@Size(max = 70, message = AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG) String> authorisationSubType;
 
     @Valid
     private PanelPreference[] panelPreferences;
 
-    @ListMaxLength(ListName = PANEL_SPECIALISMS)
-    private List<String> panelSpecialisms;
+    private List<@Size(max = 70, message = PANEL_SPECIALISMS_MAX_LENGTH_MSG) String> panelSpecialisms;
 }

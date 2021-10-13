@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.hmc.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
-import uk.gov.hmcts.reform.hmc.validator.ListMaxLength;
 
 import java.util.List;
 import javax.validation.Valid;
@@ -12,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.REASONABLE_ADJUSTMENTS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REASONABLE_ADJUSTMENTS_MAX_LENGTH_MSG;
 
 @Data
 @NoArgsConstructor
@@ -36,8 +35,7 @@ public class IndividualDetails {
     @Size(max = 10, message = ValidationError.INTERPRETER_LANGUAGE_MAX_LENGTH)
     private String interpreterLanguage;
 
-    @ListMaxLength(ListName = REASONABLE_ADJUSTMENTS)
-    private List<String> reasonableAdjustments;
+    private List<@Size(max = 10, message = REASONABLE_ADJUSTMENTS_MAX_LENGTH_MSG) String> reasonableAdjustments;
 
     private Boolean vulnerableFlag;
 

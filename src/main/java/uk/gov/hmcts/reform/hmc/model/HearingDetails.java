@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
-import uk.gov.hmcts.reform.hmc.validator.ListMaxLength;
 
 import java.util.List;
 import javax.validation.Valid;
@@ -13,8 +12,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.FACILITIES_REQUIRED;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.NON_STANDARD_HEARING_DURATION_REASONS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.FACILITIES_REQUIRED_MAX_LENGTH_MSG;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG;
 
 @Data
 @NoArgsConstructor
@@ -35,8 +34,8 @@ public class HearingDetails {
     @Min(value = 0, message = ValidationError.DURATION_MIN_VALUE)
     private Integer duration;
 
-    @ListMaxLength(ListName = NON_STANDARD_HEARING_DURATION_REASONS)
-    private List<String> nonStandardHearingDurationReasons;
+    private List<@Size(max = 70, message = NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG) String>
+        nonStandardHearingDurationReasons;
 
     @NotEmpty(message = ValidationError.HEARING_PRIORITY_TYPE)
     @Size(max = 60, message = ValidationError.HEARING_PRIORITY_TYPE_MAX_LENGTH)
@@ -51,8 +50,7 @@ public class HearingDetails {
     @NotNull(message = ValidationError.HEARING_LOCATION_EMPTY)
     private HearingLocation[] hearingLocations;
 
-    @ListMaxLength(ListName = FACILITIES_REQUIRED)
-    private List<String> facilitiesRequired;
+    private List<@Size(max = 70, message = FACILITIES_REQUIRED_MAX_LENGTH_MSG) String> facilitiesRequired;
 
     @Size(max = 5000, message = ValidationError.LISTING_COMMENTS_MAX_LENGTH)
     private String listingComments;
