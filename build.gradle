@@ -51,9 +51,10 @@ def versions = [
   testcontainers  : '1.15.2'
 ]
 
-ext['spring-framework.version'] = '5.3.7'
-ext['spring-security.version'] = '5.4.5'
+//ext['spring-framework.version'] = '5.3.7'
+ext['springsecurityVersion'] = '5.5.1'
 ext['swagger2Version'] = '3.0.0'
+ext['diuspactproviderVersion'] = '4.2.14'
 
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
@@ -277,15 +278,15 @@ dependencies {
   testCompile group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.2.0'
   testCompile group: 'com.github.hmcts', name: 'befta-fw', version: '8.2.0'
 
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: '4.2.14'
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: '4.2.14'
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: '4.2.14'
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: diuspactproviderVersion
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: diuspactproviderVersion
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: diuspactproviderVersion
   contractTestRuntime group: 'io.springfox', name: 'springfox-boot-starter', version: swagger2Version
-  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: '5.5.1'
   contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: '2.5.5'
-  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '5.5.1'
-  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.5.1'
-  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '5.5.1'
+  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: springsecurityVersion
+  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: springsecurityVersion
+  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: springsecurityVersion
+  contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: springsecurityVersion
 }
 
 dependencyManagement {
