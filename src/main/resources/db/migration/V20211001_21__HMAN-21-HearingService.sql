@@ -21,7 +21,7 @@ CREATE TABLE public.case_hearing_request (
                          case_restricted_flag boolean not null,
                          case_sla_start_date timestamp without time zone not null,
                          version_number integer not null,
-                         hearing_id varchar(10) not null,
+                         hearing_id bigint not null,
                          interpreter_booking_required_flag boolean,
                          is_linked_flag boolean,
                          listing_comments varchar(5000),
@@ -76,6 +76,9 @@ CREATE SEQUENCE public.hearing_id_seq
     CACHE 1;
 
 ALTER SEQUENCE public.hearing_id_seq OWNED BY public.hearing.hearing_id;
+
+ALTER TABLE ONLY public.case_hearing_request
+    ADD CONSTRAINT fk_case_hearing_request_hearing FOREIGN KEY (hearing_id) REFERENCES public.hearing(hearing_id);
 
 CREATE TYPE public.locationid AS ENUM (
     'COURT',
