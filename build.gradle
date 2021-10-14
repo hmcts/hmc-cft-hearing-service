@@ -9,13 +9,21 @@ plugins {
   id 'org.sonarqube' version '3.3'
   id 'uk.gov.hmcts.java' version '0.12.2'
   id 'com.github.spacialcircumstances.gradle-cucumber-reporting' version '0.1.23'
+  id 'au.com.dius.pact' version '4.1.0'
 }
+
+ext['diuspactproviderVersion'] = '4.2.14'
 
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
 sourceCompatibility = 11
 targetCompatibility = 11
+
+configurations {
+  contractTestCompile.extendsFrom(testCompile)
+  contractTestRuntime.extendsFrom(testRuntime)
+}
 
 sourceSets {
   functionalTest {
@@ -25,6 +33,17 @@ sourceSets {
       srcDir file('src/functionalTest/java')
     }
     resources.srcDir file('src/functionalTest/resources')
+  }
+
+  contractTest {
+    java {
+      srcDir('src/contractTest/java')
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+    }
+    resources {
+      srcDir('src/contractTest/resources')
+    }
   }
 
   integrationTest {
@@ -195,6 +214,7 @@ def versions = [
   junitPlatform   : '1.7.2',
   lombok          : '1.18.8',
   mapstruct       : '1.4.2.Final',
+  pact            : '4.1.7',
   reformLogging   : '5.1.7',
   springBoot      : springBoot.class.package.implementationVersion,
   springCloud     : '2020.0.1',
@@ -238,6 +258,26 @@ dependencyManagement {
     }
   }
 }
+
+project.ext {
+  pactVersion = getCheckedOutGitCommitHash()
+}
+
+def static getCheckedOutGitCommitHash() {
+  'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+task runProviderPactVerification(type:Test) {
+  logger.lifecycle("Runs provider pact Tests")
+  useJUnitPlatform()
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+  systemProperty 'pact.verifier.publishResults', System.getProperty('pact.verifier.publishResults')
+  systemProperty 'pact.provider.version', project.pactVersion
+  include "uk/gov/hmcts/reform/hmc/controllers/**"
+}
+
+runProviderPactVerification.finalizedBy pactVerify
 
 cucumberReports {
   outputDir = file("${projectDir}/target/cucumber")
@@ -292,6 +332,10 @@ dependencies {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
+
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: diuspactproviderVersion
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: diuspactproviderVersion
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: diuspactproviderVersion
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath

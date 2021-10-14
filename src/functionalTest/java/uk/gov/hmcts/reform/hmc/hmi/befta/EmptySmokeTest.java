@@ -10,6 +10,6 @@ class EmptySmokeTest {
     @Test
     void shouldRetrieveWhenExists() {
         Assert.assertTrue(true);
-    }
+        Assert.assertFalse(false);    }
 
 }
