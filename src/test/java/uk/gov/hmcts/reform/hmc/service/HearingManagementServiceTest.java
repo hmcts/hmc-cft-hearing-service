@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.model.CaseCategory;
+import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -58,6 +60,23 @@ class HearingManagementServiceTest {
     }
 
     @Test
+    void shouldFailAsCaseDetailsCaseCategoriesNotPresent() {
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingRequest.getCaseDetails().setCaseCategories(new CaseCategory[0]);
+        try {
+            hearingManagementService.validateHearingRequest(hearingRequest);
+            Assertions.fail("Expected an BadRequestException to be thrown");
+        } catch (Exception exception) {
+            assertEquals("Case categories are required", exception.getMessage());
+            assertThat(exception).isInstanceOf(BadRequestException.class);
+        }
+    }
+
+    @Test
     void shouldFailAsCaseDetailsNotPresent() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -68,6 +87,69 @@ class HearingManagementServiceTest {
             Assertions.fail("Expected an BadRequestException to be thrown");
         } catch (Exception exception) {
             assertEquals("Case details are required", exception.getMessage());
+            assertThat(exception).isInstanceOf(BadRequestException.class);
+        }
+    }
+
+    @Test
+    void shouldFailAsPanelRequirementsNotPresent() {
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        try {
+            hearingManagementService.validateHearingRequest(hearingRequest);
+            Assertions.fail("Expected an BadRequestException to be thrown");
+        } catch (Exception exception) {
+            assertEquals("Panel requirements are required", exception.getMessage());
+            assertThat(exception).isInstanceOf(BadRequestException.class);
+        }
+    }
+
+    @Test
+    void shouldFailAsHearingLocationsNotPresent() {
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingRequest.getHearingDetails().setHearingLocations(new HearingLocation[0]);
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        try {
+            hearingManagementService.validateHearingRequest(hearingRequest);
+            Assertions.fail("Expected an BadRequestException to be thrown");
+        } catch (Exception exception) {
+            assertEquals("Hearing locations are required", exception.getMessage());
+            assertThat(exception).isInstanceOf(BadRequestException.class);
+        }
+    }
+
+    @Test
+    void shouldFailAsHearingWindowDetailsNotPresent() {
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
+        hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
+        hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
+        try {
+            hearingManagementService.validateHearingRequest(hearingRequest);
+            Assertions.fail("Expected an BadRequestException to be thrown");
+        } catch (Exception exception) {
+            assertEquals("Hearing window details are required", exception.getMessage());
+            assertThat(exception).isInstanceOf(BadRequestException.class);
+        }
+    }
+
+    @Test
+    void shouldFailAsDetailsNotPresent() {
+        HearingRequest hearingRequest = new HearingRequest();
+        try {
+            hearingManagementService.validateHearingRequest(hearingRequest);
+            Assertions.fail("Expected an BadRequestException to be thrown");
+        } catch (Exception exception) {
+            assertEquals("Invalid details", exception.getMessage());
             assertThat(exception).isInstanceOf(BadRequestException.class);
         }
     }

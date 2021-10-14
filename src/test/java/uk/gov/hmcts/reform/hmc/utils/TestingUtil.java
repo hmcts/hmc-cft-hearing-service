@@ -4,7 +4,6 @@ import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
@@ -16,13 +15,6 @@ import java.util.Arrays;
 public class TestingUtil {
 
     private TestingUtil() {
-    }
-
-    public static HearingRequest getHearingRequest() {
-        final HearingRequest request = new HearingRequest();
-        request.setHearingDetails(hearingDetails());
-        request.setCaseDetails(caseDetails());
-        return request;
     }
 
     public static RequestDetails requestDetails() {

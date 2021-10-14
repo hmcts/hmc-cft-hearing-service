@@ -29,10 +29,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     @Override
     public void validateHearingRequest(HearingRequest hearingRequest) {
+        validateHearingRequestDetails(hearingRequest);
         validateRequestDetails(hearingRequest.getRequestDetails());
         validateHearingDetails(hearingRequest.getHearingDetails());
         validateCaseDetails(hearingRequest.getCaseDetails());
-        validateHearingRequestDetails(hearingRequest);
+
     }
 
     private void validateHearingRequestDetails(HearingRequest hearingRequest) {
