@@ -12,9 +12,6 @@ plugins {
   id 'au.com.dius.pact' version '4.1.0'
 }
 
-ext['springCloudVersion'] = '2020.0.1'
-ext['springsecurityVersion'] = '5.5.1'
-ext['swagger2Version'] = '3.0.0'
 ext['diuspactproviderVersion'] = '4.2.14'
 
 group = 'uk.gov.hmcts.reform'
@@ -221,7 +218,7 @@ def versions = [
   junitPlatform   : '1.7.2',
   lombok          : '1.18.8',
   mapstruct       : '1.4.2.Final',
-  pact_version    : '4.1.7',
+  pact            : '4.1.7',
   reformLogging   : '5.1.7',
   springBoot      : springBoot.class.package.implementationVersion,
   springCloud     : '2020.0.1',
@@ -281,7 +278,7 @@ task runProviderPactVerification(type:Test) {
   classpath = sourceSets.contractTest.runtimeClasspath
   systemProperty 'pact.verifier.publishResults', System.getProperty('pact.verifier.publishResults')
   systemProperty 'pact.provider.version', project.pactVersion
-  include "uk/gov/hmcts/ccd/v2/external/controller/**"
+  include "uk/gov/hmcts/reform/hmc/controllers/**"
 }
 
 runProviderPactVerification.finalizedBy pactVerify
@@ -322,7 +319,6 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
-//  implementation group: 'io.springfox', name: 'springfox-boot-starter', version: swagger2Version
 
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
@@ -337,18 +333,11 @@ dependencies {
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-
-    contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: diuspactproviderVersion
-    contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: diuspactproviderVersion
-    contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: diuspactproviderVersion
-    contractTestRuntime group: 'io.springfox', name: 'springfox-boot-starter', version: swagger2Version
-    contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: '2.5.5'
-    contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: springsecurityVersion
-    contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: springsecurityVersion
-    contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: springsecurityVersion
-    contractTestCompile group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: springsecurityVersion
-
   }
+
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: diuspactproviderVersion
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: diuspactproviderVersion
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: diuspactproviderVersion
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
