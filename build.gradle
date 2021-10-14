@@ -21,12 +21,8 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 configurations {
-  providedRuntime
-  annotationProcessor
-
   contractTestCompile.extendsFrom(testCompile)
   contractTestRuntime.extendsFrom(testRuntime)
-  cucumberRuntime.extendsFrom(functionalRuntime)
 }
 
 sourceSets {
