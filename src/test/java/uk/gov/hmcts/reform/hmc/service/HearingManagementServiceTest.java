@@ -179,4 +179,28 @@ class HearingManagementServiceTest {
         verify(managementService, times(1)).validateHearingRequest(any());
     }
 
+    @Test
+    void shouldPassWithHearing_Case_Request_Party_Details_InValid_Org_Individual_details_Present() {
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        PartyDetails partyDetail = TestingUtil.partyDetails();
+        partyDetail.setIndividualDetails(TestingUtil.individualDetails());
+        partyDetail.setOrganisationDetails(TestingUtil.organisationDetails());
+        PartyDetails[] partyDetails = {partyDetail};
+        hearingRequest.setPartyDetails(partyDetails);
+        try {
+            hearingManagementService.validateHearingRequest(hearingRequest);
+            Assertions.fail("Expected an BadRequestException to be thrown");
+        } catch (Exception exception) {
+            assertEquals(
+                "Either Individual or Organisation details should be present",
+                exception.getMessage()
+            );
+            assertThat(exception).isInstanceOf(BadRequestException.class);
+        }
+    }
+
 }

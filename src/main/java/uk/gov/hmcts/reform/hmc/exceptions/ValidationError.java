@@ -106,6 +106,8 @@ public final class ValidationError {
     public static final String CASE_RESTRICTED_FLAG_NULL_EMPTY = "Case restricted flag can not be empty";
     public static final String REQUEST_TIMESTAMP_NULL_EMPTY = "Request time stamp can not be empty";
     public static final String INVALID_HEARING_REQUEST_DETAILS = "Invalid details";
+    public static final String INVALID_ORG_INDIVIDUAL_DETAILS = "Either Individual or Organisation details should "
+        + "be present";
 
     private ValidationError() {
     }

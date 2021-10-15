@@ -5,6 +5,8 @@ import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
+import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
@@ -77,6 +79,22 @@ public class TestingUtil {
         partyDetails.setPartyType("IND");
         partyDetails.setPartyRole("DEF");
         return partyDetails;
+    }
+
+    public static IndividualDetails individualDetails() {
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setTitle("Mr");
+        individualDetails.setFirstName("firstName");
+        individualDetails.setLastName("lastName");
+        return individualDetails;
+    }
+
+    public static OrganisationDetails organisationDetails() {
+        OrganisationDetails organisationDetails = new OrganisationDetails();
+        organisationDetails.setName("name");
+        organisationDetails.setOrganisationType("type");
+        organisationDetails.setCftOrganisationID("cft");
+        return organisationDetails;
     }
 
 }

@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_CATEGORIES;
@@ -15,6 +16,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_LOCATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PANEL_REQUIREMENTS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_REQUEST_DETAILS;
 
@@ -33,7 +35,16 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateRequestDetails(hearingRequest.getRequestDetails());
         validateHearingDetails(hearingRequest.getHearingDetails());
         validateCaseDetails(hearingRequest.getCaseDetails());
+        validatePartyDetails(hearingRequest.getPartyDetails());
 
+    }
+
+    private void validatePartyDetails(PartyDetails[] partyDetails) {
+        for (PartyDetails detail:partyDetails) {
+            if (detail.getIndividualDetails() != null && detail.getOrganisationDetails() != null) {
+                throw new BadRequestException(INVALID_ORG_INDIVIDUAL_DETAILS);
+            }
+        }
     }
 
     private void validateHearingRequestDetails(HearingRequest hearingRequest) {
