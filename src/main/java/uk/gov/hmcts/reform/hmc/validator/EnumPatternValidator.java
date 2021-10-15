@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -10,12 +11,9 @@ public class EnumPatternValidator implements ConstraintValidator<EnumPattern, St
 
     @Override
     public void initialize(EnumPattern annotation) {
-        acceptedValues = new ArrayList<String>();
-        Class<? extends Enum<?>> enumClass = annotation.enumClass();
-        Enum[] enumValArr = enumClass.getEnumConstants();
-        for (Enum enumVal : enumValArr) {
-            acceptedValues.add(enumVal.toString().toUpperCase());
-        }
+        acceptedValues = Stream.of(annotation.enumClass().getEnumConstants())
+            .map(Enum::name)
+            .collect(Collectors.toList());
     }
 
     @Override
