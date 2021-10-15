@@ -28,12 +28,12 @@ public final class ValidationError {
     public static final String LOCATION_TYPE_EMPTY = "Location type can not be empty";
     public static final String HMCTS_SERVICE_CODE_EMPTY_INVALID = "Hmcts service code is invalid";
     public static final String CASE_REF_EMPTY = "Case ref can not be empty";
-    public static final String CASE_REF_INVALID = "Invalid Case ref details";
+    public static final String CASE_REF_INVALID = "Case ref details is invalid";
     public static final String REQUEST_TIMESTAMP_EMPTY = "Request time stamp can not be empty";
     public static final String EXTERNAL_CASE_REFERENCE_MAX_LENGTH = "External case reference must not be more than 70 "
         + CHARACTERS_LONG;
     public static final String CASE_DEEP_LINK_EMPTY = "Case deep link can not be empty";
-    public static final String CASE_DEEP_LINK_INVALID = "Case deep link must be a valid URL";
+    public static final String CASE_DEEP_LINK_INVALID = "Case deep link is invalid";
     public static final String CASE_DEEP_LINK_MAX_LENGTH = "Case deep link can not be more than 1024 "
         + CHARACTERS_LONG;
     public static final String HMCTS_INTERNAL_CASE_NAME_EMPTY = "Hmcts internal case name can not be empty";
@@ -87,7 +87,7 @@ public final class ValidationError {
     public static final String HEARING_CHANNEL_EMAIL_INVALID = "HearingChannelEmail must be valid email address";
     public static final String HEARING_CHANNEL_PHONE_MAX_LENGTH = "Hearing channel phone must not be more than 30 "
         + CHARACTERS_LONG;
-    public static final String HEARING_CHANNEL_PHONE_INVALID = "HearingChannel phone must be valid";
+    public static final String HEARING_CHANNEL_PHONE_INVALID = "HearingChannel phone is invalid";
     public static final String ROLE_TYPE_MAX_LENGTH_MSG = "Role type length cannot be greater than 70 "
         + CHARACTERS_LONG;
     public static final String AUTHORISATION_TYPE_MAX_LENGTH_MSG = "Authorisation type length cannot be greater "
@@ -109,6 +109,9 @@ public final class ValidationError {
     public static final String INVALID_HEARING_REQUEST_DETAILS = "Invalid details";
     public static final String INVALID_ORG_INDIVIDUAL_DETAILS = "Either Individual or Organisation details should "
         + "be present";
+    public static final String INVALID_UNAVAILABILITY_DOW_DETAILS = "Unavailability DOW details should be present";
+    public static final String INVALID_UNAVAILABILITY_RANGES_DETAILS = "Unavailability range details should be present";
+    public static final String INVALID_RELATED_PARTY_DETAILS = "Related Party details are not present";
 
     private ValidationError() {
     }

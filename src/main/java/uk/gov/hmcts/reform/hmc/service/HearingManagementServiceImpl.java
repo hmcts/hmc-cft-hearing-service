@@ -18,7 +18,10 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PANEL_REQUIREMENTS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_REQUEST_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
 
 @Service
 @Slf4j
@@ -42,9 +45,22 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validatePartyDetails(PartyDetails[] partyDetails) {
-        for (PartyDetails detail : partyDetails) {
-            if (detail.getIndividualDetails() != null && detail.getOrganisationDetails() != null) {
+        for (PartyDetails partyDetail : partyDetails) {
+            if (partyDetail.getIndividualDetails() != null && partyDetail.getOrganisationDetails() != null) {
                 throw new BadRequestException(INVALID_ORG_INDIVIDUAL_DETAILS);
+            }
+            if (partyDetail.getIndividualDetails() == null && partyDetail.getOrganisationDetails() == null) {
+                throw new BadRequestException(INVALID_ORG_INDIVIDUAL_DETAILS);
+            }
+            if (partyDetail.getUnavailabilityDow() != null && partyDetail.getUnavailabilityDow().length == 0) {
+                throw new BadRequestException(INVALID_UNAVAILABILITY_DOW_DETAILS);
+            }
+            if (partyDetail.getUnavailabilityRanges() != null && partyDetail.getUnavailabilityRanges().length == 0) {
+                throw new BadRequestException(INVALID_UNAVAILABILITY_RANGES_DETAILS);
+            }
+            if (partyDetail.getIndividualDetails().getRelatedParties() != null
+                && partyDetail.getIndividualDetails().getRelatedParties().length == 0) {
+                throw new BadRequestException(INVALID_RELATED_PARTY_DETAILS);
             }
         }
     }

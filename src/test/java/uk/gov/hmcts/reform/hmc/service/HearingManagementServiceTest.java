@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
+import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -180,7 +182,7 @@ class HearingManagementServiceTest {
     }
 
     @Test
-    void shouldPassWithHearing_Case_Request_Party_Details_InValid_Org_Individual_details_Present() {
+    void shouldPassWithParty_Details_InValid_Org_Individual_details_Present() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
@@ -197,6 +199,54 @@ class HearingManagementServiceTest {
         } catch (Exception exception) {
             assertEquals(
                 "Either Individual or Organisation details should be present",
+                exception.getMessage()
+            );
+            assertThat(exception).isInstanceOf(BadRequestException.class);
+        }
+    }
+
+    @Test
+    void shouldPassWithParty_Details_InValid_Dow_details_Present() {
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        PartyDetails partyDetail = TestingUtil.partyDetails();
+        partyDetail.setIndividualDetails(TestingUtil.individualDetails());
+        partyDetail.setUnavailabilityDow(new UnavailabilityDow[0]);
+        PartyDetails[] partyDetails = {partyDetail};
+        hearingRequest.setPartyDetails(partyDetails);
+        try {
+            hearingManagementService.validateHearingRequest(hearingRequest);
+            Assertions.fail("Expected an BadRequestException to be thrown");
+        } catch (Exception exception) {
+            assertEquals(
+                "Unavailability DOW details should be present",
+                exception.getMessage()
+            );
+            assertThat(exception).isInstanceOf(BadRequestException.class);
+        }
+    }
+
+    @Test
+    void shouldPassWithParty_Details_InValid_UnavailabilityRange_details_Present() {
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        PartyDetails partyDetail = TestingUtil.partyDetails();
+        partyDetail.setIndividualDetails(TestingUtil.individualDetails());
+        partyDetail.setUnavailabilityRanges(new UnavailabilityRanges[0]);
+        PartyDetails[] partyDetails = {partyDetail};
+        hearingRequest.setPartyDetails(partyDetails);
+        try {
+            hearingManagementService.validateHearingRequest(hearingRequest);
+            Assertions.fail("Expected an BadRequestException to be thrown");
+        } catch (Exception exception) {
+            assertEquals(
+                "Unavailability range details should be present",
                 exception.getMessage()
             );
             assertThat(exception).isInstanceOf(BadRequestException.class);
