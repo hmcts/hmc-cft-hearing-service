@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class EnumPatternValidatorTest {
+class EnumPatternValidatorTest {
 
     static Validator validator;
 
@@ -45,15 +45,20 @@ public class EnumPatternValidatorTest {
 
     @Test
     void whenInvalidLocationIdIsNull() {
-        HearingLocation location = new HearingLocation();
+        HearingLocation location = getHearingLocation();
         location.setLocationId(null);
-        location.setLocationType("LocType");
         Set<ConstraintViolation<HearingLocation>> violations = validator.validate(location);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertEquals("Unsupported type for locationId", validationErrors.get(0));
+    }
+
+    private HearingLocation getHearingLocation() {
+        HearingLocation location = new HearingLocation();
+        location.setLocationType("LocType");
+        return location;
     }
 
     @Test
@@ -106,8 +111,7 @@ public class EnumPatternValidatorTest {
 
     @Test
     void whenInvalidCaseCategoryIsEmpty() {
-        CaseCategory category = new CaseCategory();
-        category.setCategoryValue("categoryValue");
+        CaseCategory category = getCaseCategory();
         category.setCategoryType("");
         Set<ConstraintViolation<CaseCategory>> violations = validator.validate(category);
         assertFalse(violations.isEmpty());
@@ -115,6 +119,12 @@ public class EnumPatternValidatorTest {
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertEquals("Unsupported type for categoryType", validationErrors.get(0));
+    }
+
+    private CaseCategory getCaseCategory() {
+        CaseCategory category = new CaseCategory();
+        category.setCategoryValue("categoryValue");
+        return category;
     }
 
     @Test
@@ -141,9 +151,7 @@ public class EnumPatternValidatorTest {
 
     @Test
     void whenInvalidRequirementTypeIsNull() {
-        PanelPreference panelPreference = new PanelPreference();
-        panelPreference.setMemberID("id");
-        panelPreference.setMemberType("memType");
+        PanelPreference panelPreference = getPanelPreference();
         panelPreference.setRequirementType(null);
         Set<ConstraintViolation<PanelPreference>> violations = validator.validate(panelPreference);
         assertFalse(violations.isEmpty());
@@ -151,6 +159,13 @@ public class EnumPatternValidatorTest {
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertEquals("Unsupported type for requirementType", validationErrors.get(0));
+    }
+
+    private PanelPreference getPanelPreference() {
+        PanelPreference panelPreference = new PanelPreference();
+        panelPreference.setMemberID("id");
+        panelPreference.setMemberType("memType");
+        return panelPreference;
     }
 
     @Test
@@ -193,8 +208,7 @@ public class EnumPatternValidatorTest {
 
     @Test
     void whenInvalidPartyDetailsIsEmpty() {
-        PartyDetails partyDetails = new PartyDetails();
-        partyDetails.setPartyID("id");
+        PartyDetails partyDetails = getPartyDetails();
         partyDetails.setPartyType("");
         Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
         assertFalse(violations.isEmpty());
@@ -202,6 +216,12 @@ public class EnumPatternValidatorTest {
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertEquals("Unsupported type for partyType", validationErrors.get(0));
+    }
+
+    private PartyDetails getPartyDetails() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID("id");
+        return partyDetails;
     }
 
     @Test
@@ -241,8 +261,7 @@ public class EnumPatternValidatorTest {
 
     @Test
     void whenInValidUnavailabilityDowIsNull() {
-        UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-        unavailabilityDow.setDowUnavailabilityType(DowUnavailabilityType.ALL.toString());
+        UnavailabilityDow unavailabilityDow = getUnavailabilityDow();
         unavailabilityDow.setDow(null);
         Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
         assertFalse(violations.isEmpty());
@@ -250,6 +269,12 @@ public class EnumPatternValidatorTest {
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertEquals("Unsupported type for dow", validationErrors.get(0));
+    }
+
+    private UnavailabilityDow getUnavailabilityDow() {
+        UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
+        unavailabilityDow.setDowUnavailabilityType(DowUnavailabilityType.ALL.toString());
+        return unavailabilityDow;
     }
 
     @Test
@@ -289,15 +314,20 @@ public class EnumPatternValidatorTest {
 
     @Test
     void whenInValidDowUnavailabilityType() {
-        UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
+        UnavailabilityDow unavailabilityDow = getDow();
         unavailabilityDow.setDowUnavailabilityType("dow");
-        unavailabilityDow.setDow(Dow.MONDAY.toString());
         Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertEquals("Unsupported type for dowUnavailabilityType", validationErrors.get(0));
+    }
+
+    private UnavailabilityDow getDow() {
+        UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
+        unavailabilityDow.setDow(Dow.MONDAY.toString());
+        return unavailabilityDow;
     }
 
     @Test
