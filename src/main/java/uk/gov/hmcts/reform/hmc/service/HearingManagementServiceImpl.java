@@ -35,12 +35,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateRequestDetails(hearingRequest.getRequestDetails());
         validateHearingDetails(hearingRequest.getHearingDetails());
         validateCaseDetails(hearingRequest.getCaseDetails());
-        validatePartyDetails(hearingRequest.getPartyDetails());
+        if (hearingRequest.getPartyDetails() != null) {
+            validatePartyDetails(hearingRequest.getPartyDetails());
+        }
 
     }
 
     private void validatePartyDetails(PartyDetails[] partyDetails) {
-        for (PartyDetails detail:partyDetails) {
+        for (PartyDetails detail : partyDetails) {
             if (detail.getIndividualDetails() != null && detail.getOrganisationDetails() != null) {
                 throw new BadRequestException(INVALID_ORG_INDIVIDUAL_DETAILS);
             }
