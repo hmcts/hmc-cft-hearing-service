@@ -147,7 +147,7 @@ public class BeanValidatorTest {
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
         assertEquals(12, violations.size());
-        assertTrue(validationErrors.contains(ValidationError.HMCTS_SERVICE_CODE_EMPTY));
+        assertTrue(validationErrors.contains(ValidationError.HMCTS_SERVICE_CODE_EMPTY_INVALID));
         assertTrue(validationErrors.contains(ValidationError.CASE_REF_EMPTY));
         assertTrue(validationErrors.contains(ValidationError.REQUEST_TIMESTAMP_EMPTY));
         assertTrue(validationErrors.contains(ValidationError.EXTERNAL_CASE_REFERENCE_MAX_LENGTH));
