@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.hmc.model;
 
-import org.hibernate.validator.constraints.URL;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.URL;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDate;
