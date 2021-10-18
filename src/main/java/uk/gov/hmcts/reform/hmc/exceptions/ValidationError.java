@@ -22,7 +22,7 @@ public final class ValidationError {
         + CHARACTERS_LONG;
     public static final String LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH = "Lead judge contract type must not be more than "
         + "70 " + CHARACTERS_LONG;
-    public static final String MEMBER_ID_EMPTY = "Panel Preference.Member Id can not be empty";
+    public static final String MEMBER_ID_EMPTY = "Member Id can not be empty";
     public static final String MEMBER_ID_MAX_LENGTH = "Member Id must not be more than 70 " + CHARACTERS_LONG;
     public static final String MEMBER_TYPE_MAX_LENGTH = "Member type must not be more than 70 " + CHARACTERS_LONG;
     public static final String LOCATION_TYPE_EMPTY = "Location type can not be empty";
@@ -65,8 +65,8 @@ public final class ValidationError {
     public static final String RELATED_PARTY_EMPTY = "Related Party can not be empty";
     public static final String RELATED_PARTY_MAX_LENGTH = "Related Party must not be more than 2000 "
         + CHARACTERS_LONG;
-    public static final String RELATION_SHIP_TYPE_EMPTY = "Relationship type can not be empty";
-    public static final String RELATION_SHIP_TYPE_MAX_LENGTH = "Relationship type must not be more than 2000 characters"
+    public static final String RELATIONSHIP_TYPE_EMPTY = "Relationship type can not be empty";
+    public static final String RELATIONSHIP_TYPE_MAX_LENGTH = "Relationship type must not be more than 2000 characters"
         + " long";
     public static final String TITLE_EMPTY = "Title can not be empty";
     public static final String TITLE_MAX_LENGTH = "Title must not be more than 40 " + CHARACTERS_LONG;

@@ -52,6 +52,6 @@ public class IndividualDetails {
     private String hearingChannelPhone;
 
     @Valid
-    private RelatedParty[] relatedParties;
+    private List<RelatedParty> relatedParties;
 
 }

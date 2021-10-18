@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.utils;
 
+import org.assertj.core.util.Lists;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
@@ -11,8 +12,11 @@ import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class TestingUtil {
 
@@ -31,8 +35,8 @@ public class TestingUtil {
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange("2021-11-12");
-        hearingWindow.setHearingWindowStartDateRange("2021-11-01");
+        hearingWindow.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindow.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
         hearingDetails.setHearingWindow(hearingWindow);
         hearingDetails.setDuration(0);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
@@ -40,7 +44,8 @@ public class TestingUtil {
         HearingLocation location1 = new HearingLocation();
         location1.setLocationId("court");
         location1.setLocationType("Location type");
-        HearingLocation[] hearingLocations = {location1};
+        List<HearingLocation> hearingLocations = new ArrayList<>();
+        hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
         return hearingDetails;
     }
@@ -58,26 +63,34 @@ public class TestingUtil {
         CaseDetails caseDetails = new CaseDetails();
         caseDetails.setHmctsServiceCode("ABA1");
         caseDetails.setCaseRef("1111222233334444");
-        caseDetails.setRequestTimeStamp("2021-08-10T12:20:00.000Z");
+        caseDetails.setRequestTimeStamp(LocalDateTime.parse("2021-08-10T12:20:00"));
         caseDetails.setCaseDeepLink("https://www.google.com");
         caseDetails.setHmctsInternalCaseName("Internal case name");
         caseDetails.setPublicCaseName("Public case name");
         caseDetails.setCaseManagementLocationCode("CMLC123");
         caseDetails.setCaseRestrictedFlag(false);
-        caseDetails.setCaseSlaStartDate("2021-10-10");
+        caseDetails.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));
         CaseCategory category = new CaseCategory();
         category.setCategoryType("caseType");
         category.setCategoryValue("PROBATE");
-        CaseCategory[] caseCategories = {category};
+        List<CaseCategory> caseCategories = new ArrayList<>();
+        caseCategories.add(category);
         caseDetails.setCaseCategories(caseCategories);
         return caseDetails;
     }
 
-    public static PartyDetails partyDetails() {
-        PartyDetails partyDetails = new PartyDetails();
-        partyDetails.setPartyID("P1");
-        partyDetails.setPartyType("IND");
-        partyDetails.setPartyRole("DEF");
+    public static List<PartyDetails> partyDetails() {
+        PartyDetails partyDetails1 = new PartyDetails();
+        partyDetails1.setPartyID("P1");
+        partyDetails1.setPartyType("IND");
+        partyDetails1.setPartyRole("DEF");
+
+        PartyDetails partyDetails2 = new PartyDetails();
+        partyDetails2.setPartyID("P2");
+        partyDetails2.setPartyType("IND");
+        partyDetails2.setPartyRole("DEF2");
+
+        List<PartyDetails> partyDetails = Lists.newArrayList(partyDetails1,partyDetails2);
         return partyDetails;
     }
 

@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.hmc.model;
 
+import org.hibernate.validator.constraints.URL;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.URL;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -24,8 +27,8 @@ public class CaseDetails {
     @Pattern(regexp = "^\\d{16}$", message = ValidationError.CASE_REF_INVALID)
     private String caseRef;
 
-    @NotEmpty(message = ValidationError.REQUEST_TIMESTAMP_EMPTY)
-    private String requestTimeStamp;
+    @NotNull(message = ValidationError.REQUEST_TIMESTAMP_EMPTY)
+    private LocalDateTime requestTimeStamp;
 
     @Size(max = 70, message = ValidationError.EXTERNAL_CASE_REFERENCE_MAX_LENGTH)
     private String externalCaseReference;
@@ -49,7 +52,8 @@ public class CaseDetails {
 
     @Valid
     @NotNull(message = ValidationError.CASE_CATEGORY_EMPTY)
-    private CaseCategory[] caseCategories;
+    @NotEmpty(message = ValidationError.INVALID_CASE_CATEGORIES)
+    private List<CaseCategory> caseCategories;
 
     @NotEmpty(message = ValidationError.CASE_MANAGEMENT_LOCATION_CODE_EMPTY)
     @Size(max = 40, message = ValidationError.CASE_MANAGEMENT_LOCATION_CODE_MAX_LENGTH)
@@ -60,7 +64,7 @@ public class CaseDetails {
     private Boolean caseRestrictedFlag;
 
     @JsonProperty("caseSLAStartDate")
-    @NotEmpty(message = ValidationError.CASE_SLA_START_DATE_EMPTY)
-    private String caseSlaStartDate;
+    @NotNull(message = ValidationError.CASE_SLA_START_DATE_EMPTY)
+    private LocalDate caseSlaStartDate;
 
 }

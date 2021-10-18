@@ -48,7 +48,8 @@ public class HearingDetails {
 
     @Valid
     @NotNull(message = ValidationError.HEARING_LOCATION_EMPTY)
-    private HearingLocation[] hearingLocations;
+    @NotEmpty(message = ValidationError.INVALID_HEARING_LOCATION)
+    private List<HearingLocation> hearingLocations;
 
     private List<@Size(max = 70, message = FACILITIES_REQUIRED_MAX_LENGTH_MSG) String> facilitiesRequired;
 
@@ -64,6 +65,7 @@ public class HearingDetails {
     private String leadJudgeContractType;
 
     @Valid
+    @NotNull(message = ValidationError.INVALID_PANEL_REQUIREMENTS)
     private PanelRequirements panelRequirements;
 
     private Boolean hearingIsLinkedFlag = false;

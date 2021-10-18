@@ -23,7 +23,7 @@ public class PanelRequirements {
     private List<@Size(max = 70, message = AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG) String> authorisationSubType;
 
     @Valid
-    private PanelPreference[] panelPreferences;
+    private List<PanelPreference> panelPreferences;
 
     private List<@Size(max = 70, message = PANEL_SPECIALISMS_MAX_LENGTH_MSG) String> panelSpecialisms;
 }
