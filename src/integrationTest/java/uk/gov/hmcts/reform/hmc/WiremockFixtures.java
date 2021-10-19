@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,7 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class WiremockFixtures {
 
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
-        .modules(new Jdk8Module())
+        .modules(new Jdk8Module(), new JavaTimeModule())
         .build();
 
     private WiremockFixtures() {
