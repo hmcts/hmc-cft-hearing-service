@@ -186,7 +186,8 @@ sonarqube {
     property "sonar.projectName", "Reform :: hmc-cft-hearing-service"
     property "sonar.projectKey", "uk.gov.hmcts.reform:hmc-cft-hearing-service"
     property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
-    property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/hmc/Application.java"
+    property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/hmc/Application.java," +
+      "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageReaderFromTopicConfiguration.java"
   }
 }
 
@@ -284,6 +285,10 @@ dependencies {
 
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+
+  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.0.2'
+  implementation group: 'com.azure', name: 'azure-core', version: '1.13.0'
+  implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {

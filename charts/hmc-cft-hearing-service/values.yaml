@@ -8,3 +8,16 @@ java:
       secrets:
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
+        - name: hmc-servicebus-connection-string
+          alias: HMC_SERVICE_BUS_CONNECTION_STRING
+        - name: hmc-servicebus-subscription
+          alias: HMC_SERVICE_BUS_SUBSCRIPTION
+        - name: hmc_servicebus-topic
+          alias: HMC_SERVICE_BUS_TOPIC
+
+  environment:
+    HMC_SERVICE_BUS_TOPIC: hmc-to-cft-{{ .Values.global.environment }}
+    HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft-{{ .Values.global.environment }}
+
+servicebus:
+  enabled: false
