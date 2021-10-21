@@ -286,6 +286,8 @@ dependencies {
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
+  implementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
+
   implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.0.2'
   implementation group: 'com.azure', name: 'azure-core', version: '1.13.0'
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
@@ -296,6 +298,7 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
 
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.0.2'
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
 
