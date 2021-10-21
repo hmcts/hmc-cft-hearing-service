@@ -33,8 +33,6 @@ class HearingManagementControllerTest {
     @MockBean
     private HearingManagementService hearingManagementService;
 
-    private HearingManagementController controller;
-
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -70,6 +68,18 @@ class HearingManagementControllerTest {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        controller.invokeHearing(hearingRequest);
+        verify(hearingManagementService, times(1)).validateHearingRequest(any());
+    }
+
+    @Test
+    void shouldReturn202_whenHearingRequestDeta() {
+        doNothing().when(hearingManagementService).validateHearingRequest(Mockito.any());
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.invokeHearing(hearingRequest);
         verify(hearingManagementService, times(1)).validateHearingRequest(any());
     }

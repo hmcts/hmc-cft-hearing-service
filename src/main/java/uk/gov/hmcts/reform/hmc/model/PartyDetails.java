@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -32,8 +33,8 @@ public class PartyDetails {
 
     @JsonProperty("unavailabilityDOW")
     @Valid
-    private UnavailabilityDow[] unavailabilityDow;
+    private List<UnavailabilityDow> unavailabilityDow;
 
     @Valid
-    private UnavailabilityRanges[] unavailabilityRanges;
+    private List<UnavailabilityRanges> unavailabilityRanges;
 }

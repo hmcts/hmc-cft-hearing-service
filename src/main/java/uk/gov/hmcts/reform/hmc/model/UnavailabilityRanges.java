@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
+import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -11,8 +12,8 @@ import javax.validation.constraints.NotNull;
 public class UnavailabilityRanges {
 
     @NotNull(message = ValidationError.UNAVAILABLE_FROM_DATE_EMPTY)
-    private String unavailableFromDate;
+    private LocalDate unavailableFromDate;
 
     @NotNull(message = ValidationError.UNAVAILABLE_TO_DATE_EMPTY)
-    private String unavailableToDate;
+    private LocalDate unavailableToDate;
 }
