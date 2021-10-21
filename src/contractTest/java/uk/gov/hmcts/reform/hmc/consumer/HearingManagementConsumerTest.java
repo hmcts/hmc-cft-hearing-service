@@ -2,21 +2,22 @@ package uk.gov.hmcts.reform.hmc.consumer;
 
 import au.com.dius.pact.consumer.MockServer;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
-import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
-import com.google.common.collect.ImmutableMap;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import org.apache.http.entity.ContentType;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.util.Map;
 
@@ -30,7 +31,9 @@ public class HearingManagementConsumerTest {
     private static final String IDAM_OAUTH2_TOKEN = "pact-test-idam-token";
     private static final String SERVICE_AUTHORIZATION_TOKEN = "pact-test-s2s-token";
 
-    static Map<String, String> headers = ImmutableMap.of(
+    private static final String PATH_HEARING = "/hearing";
+
+    static Map<String, String> headers = Map.of(
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,
         SERVICE_AUTHORIZATION, SERVICE_AUTHORIZATION_TOKEN
     );
@@ -41,12 +44,12 @@ public class HearingManagementConsumerTest {
      * @return response Response object
      * @throws Exception exception
      */
-    @Pact(provider = "mca", consumer = "mca_example_consumer")
+    @Pact(provider = "hmc", consumer = "hmc_hearing_consumer")
     public RequestResponsePact createHearing(PactDslWithProvider builder) throws Exception {
         return builder
-            .given("MCA successfully returns created hearing")
+            .given("HMC successfully returns created hearing")
             .uponReceiving("Request to create hearing")
-            .path("/hearing")
+            .path(PATH_HEARING)
             .method(HttpMethod.POST.toString())
             .body(createValidCreateHearingRequest(), ContentType.APPLICATION_JSON)
             .headers(headers)
@@ -62,19 +65,19 @@ public class HearingManagementConsumerTest {
      * @return response RequestResponsePact
      * @throws Exception exception
      */
-    @Pact(provider = "mca", consumer = "mca_example_consumer")
-    public RequestResponsePact validationErrorFromCreateHearing(PactDslWithProvider builder) throws Exception {
+    @Pact(provider = "hmc", consumer = "hmc_hearing_consumer")
+    public RequestResponsePact validationErrorFromCreatingHearing(PactDslWithProvider builder) throws Exception {
         return builder
-            .given("MCA throws validation error for createHearing")
+            .given("HMC throws validation error for createHearing")
             .uponReceiving("Request to create hearing")
-            .path("/hearing")
+            .path(PATH_HEARING)
             .method(HttpMethod.POST.toString())
             .body(createInvalidCreateHearingRequest(), ContentType.APPLICATION_JSON)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.BAD_REQUEST.value())
             .body(new PactDslJsonBody()
-                      .stringType("message", "Intended assignee has to be in the same organisation")
+                      .stringType("message", "Invalid hearing details")
                       .stringValue("status", "BAD_REQUEST")
                       .eachLike("errors", 1)
                       .closeArray()
@@ -93,8 +96,10 @@ public class HearingManagementConsumerTest {
         JsonPath response = RestAssured
             .given()
             .headers(headers)
+            .contentType(io.restassured.http.ContentType.JSON)
+            .body(createValidCreateHearingRequest())
             .when()
-            .get(mockServer.getUrl() + "/hearing")
+            .post(mockServer.getUrl() + PATH_HEARING)
             .then()
             .statusCode(200)
             .and()
@@ -102,12 +107,16 @@ public class HearingManagementConsumerTest {
             .body()
             .jsonPath();
 
-        // assertThat(response.getString("status_message"))
-        //     .isEqualTo("Case-User-Role assignments returned successfully");
-        // assertThat(response.getString("case_assignments[0].case_id"))
-        //     .isEqualTo("1588234985453946");
-        // assertThat(response.getString("case_assignments[0].shared_with[0].email"))
-        //     .isEqualTo("John.Smith@gmail.com");
+        assertThat(response.getString("status_message"))
+            .isEqualTo("Hearing created successfully");
+        assertThat(response.getString("requestDetails"))
+            .isNotEmpty();
+        assertThat(response.getString("hearingDetails"))
+            .isNotEmpty();
+        assertThat(response.getString("caseDetails"))
+            .isNotEmpty();
+        assertThat(response.getString("partyDetails"))
+            .isNotEmpty();
     }
 
     /**
@@ -124,7 +133,7 @@ public class HearingManagementConsumerTest {
             .contentType(io.restassured.http.ContentType.JSON)
             .body(createInvalidCreateHearingRequest())
             .when()
-            .post(mockServer.getUrl() + "/hearing")
+            .post(mockServer.getUrl() + PATH_HEARING)
             .then()
             .statusCode(400)
             .and()
@@ -132,7 +141,7 @@ public class HearingManagementConsumerTest {
             .body()
             .jsonPath();
 
-        assertThat(response.getString("message")).isEqualTo("Some error message to be determined");
+        assertThat(response.getString("message")).isEqualTo("Invalid hearing details");
         assertThat(response.getString("status")).isEqualTo("BAD_REQUEST");
     }
 
@@ -141,27 +150,13 @@ public class HearingManagementConsumerTest {
      * @return PactJsonBody pact JSON body
      */
     private PactDslJsonBody createCreateHearingResponse() {
-        return (PactDslJsonBody) new PactDslJsonBody()
-            .stringType("status_message", "Case-User-Role assignments returned successfully")
-            .minArrayLike("case_assignments", 1, 1)
-            .stringType("case_id", "1588234985453946")
-            .minArrayLike("shared_with", 1, 1)
-            .stringType("idam_id", "33dff5a7-3b6f-45f1-b5e7-5f9be1ede355")
-            .stringType("first_name",  "John")
-            .stringType("last_name", "Smith")
-            .stringType("email", "John.Smith@gmail.com")
-            .minArrayLike("case_roles", 1, PactDslJsonRootValue.stringType("[Collaborator]"), 1)
-            .closeArray()
-            .closeArray();
-    }
-
-    /**
-     * create an Invalid Create Hearing Request.
-     * @return String JSON body
-     */
-    private String createInvalidCreateHearingRequest() {
-        StringBuilder sb = new StringBuilder();
-        return sb.toString();
+        HearingRequest hearingRequest = TestingUtil.getHearingRequest();
+        return new PactDslJsonBody()
+            .stringType("status_message", "Hearing created successfully")
+            .stringType("requestDetails", toRequestDetailsJsonString(hearingRequest))
+            .stringType("hearingDetails", toHearingDetailsJsonString(hearingRequest))
+            .stringType("caseDetails", toCaseDetailsJsonString(hearingRequest))
+            .stringType("partyDetails", toPartyDetailsJsonString(hearingRequest));
     }
 
     /**
@@ -169,8 +164,79 @@ public class HearingManagementConsumerTest {
      * @return String JSON body
      */
     private String createValidCreateHearingRequest() {
-        StringBuilder sb = new StringBuilder();
-        return sb.toString();
+        HearingRequest hearingRequest = TestingUtil.getHearingRequest();
+        return toHearingRequestJsonString(hearingRequest);
+    }
+
+    /**
+     * create an Invalid Create Hearing Request.
+     * @return String JSON body
+     */
+    private String createInvalidCreateHearingRequest() {
+        HearingRequest hearingRequest = TestingUtil.getHearingRequest();
+        hearingRequest.setCaseDetails(null);
+        return toHearingRequestJsonString(hearingRequest);
+    }
+
+    /**
+     * get JSON String from hearing Request.
+     * @return String JSON string of hearing Request
+     */
+    private String toHearingRequestJsonString(HearingRequest hearingRequest) {
+        JSONObject jsonObject = new JSONObject(hearingRequest);
+        return jsonObject.toString();
+    }
+
+    /**
+     * get Request details JSON String from Hearing Request.
+     * @return String JSON string of Request details
+     */
+    private String toRequestDetailsJsonString(HearingRequest hearingRequest) {
+        if (null != hearingRequest && null != hearingRequest.getRequestDetails()) {
+            JSONObject jsonObject = new JSONObject(hearingRequest.getRequestDetails());
+            return jsonObject.toString();
+        } else {
+            return "{}";
+        }
+    }
+
+    /**
+     * get Hearing details JSON String from Hearing Request.
+     * @return String JSON string of Hearing details
+     */
+    private String toHearingDetailsJsonString(HearingRequest hearingRequest) {
+        if (null != hearingRequest && null != hearingRequest.getHearingDetails()) {
+            JSONObject jsonObject = new JSONObject(hearingRequest.getHearingDetails());
+            return jsonObject.toString();
+        } else {
+            return "{}";
+        }
+    }
+
+    /**
+     * get Case details JSON String from Hearing Request.
+     * @return String JSON string of Case details
+     */
+    private String toCaseDetailsJsonString(HearingRequest hearingRequest) {
+        if (null != hearingRequest && null != hearingRequest.getCaseDetails()) {
+            JSONObject jsonObject = new JSONObject(hearingRequest.getCaseDetails());
+            return jsonObject.toString();
+        } else {
+            return "{}";
+        }
+    }
+
+    /**
+     * get Party details JSON String from Hearing Request.
+     * @return String JSON string of Party details
+     */
+    private String toPartyDetailsJsonString(HearingRequest hearingRequest) {
+        if (null != hearingRequest && null != hearingRequest.getPartyDetails()) {
+            JSONObject jsonObject = new JSONObject(hearingRequest.getPartyDetails());
+            return jsonObject.toString();
+        } else {
+            return "{}";
+        }
     }
 
 }
