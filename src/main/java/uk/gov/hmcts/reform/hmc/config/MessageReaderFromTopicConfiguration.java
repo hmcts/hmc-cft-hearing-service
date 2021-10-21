@@ -1,9 +1,6 @@
 package uk.gov.hmcts.reform.hmc.config;
 
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+
 import com.azure.messaging.servicebus.ServiceBusClientBuilder;
 import com.azure.messaging.servicebus.ServiceBusErrorContext;
 import com.azure.messaging.servicebus.ServiceBusException;
@@ -12,6 +9,10 @@ import com.azure.messaging.servicebus.ServiceBusProcessorClient;
 import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
 import com.azure.messaging.servicebus.ServiceBusReceivedMessageContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 
 import java.util.concurrent.CountDownLatch;
@@ -43,7 +44,7 @@ public class MessageReaderFromTopicConfiguration {
             .topicName(applicationParams.getTopicName())
             .subscriptionName(applicationParams.getSubscriptionName())
             .processMessage(MessageReaderFromTopicConfiguration::processMessage)
-            .processError(context ->processError(context, countdownLatch))
+            .processError(context -> processError(context, countdownLatch))
             .buildProcessorClient();
 
         log.info("Starting the processor");
@@ -65,7 +66,8 @@ public class MessageReaderFromTopicConfiguration {
 
     private static void processError(ServiceBusErrorContext context, CountDownLatch countdownLatch) {
         log.error("Error when receiving messages from namespace: '%s'. Entity: '%s'%n",
-                          context.getFullyQualifiedNamespace(), context.getEntityPath());
+                  context.getFullyQualifiedNamespace(), context.getEntityPath()
+        );
 
         if (!(context.getException() instanceof ServiceBusException)) {
             log.error("Non-ServiceBusException occurred: %s%n", context.getException());
@@ -79,7 +81,8 @@ public class MessageReaderFromTopicConfiguration {
             || reason == ServiceBusFailureReason.MESSAGING_ENTITY_NOT_FOUND
             || reason == ServiceBusFailureReason.UNAUTHORIZED) {
             log.error("An unrecoverable error occurred. Stopping processing with reason %s: %s%n",
-                              reason, exception.getMessage());
+                      reason, exception.getMessage()
+            );
 
             countdownLatch.countDown();
         } else if (reason == ServiceBusFailureReason.MESSAGE_LOCK_LOST) {
@@ -93,7 +96,8 @@ public class MessageReaderFromTopicConfiguration {
             }
         } else {
             log.error("Error source %s, reason %s, message: %s%n", context.getErrorSource(),
-                              reason, context.getException());
+                      reason, context.getException()
+            );
         }
     }
 }
