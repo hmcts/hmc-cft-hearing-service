@@ -202,6 +202,7 @@ def versions = [
   testcontainers  : '1.15.2'
 ]
 
+ext['spring-framework.version'] = '5.3.12'
 
 // before committing a change, make sure task still works
 dependencyUpdates {
