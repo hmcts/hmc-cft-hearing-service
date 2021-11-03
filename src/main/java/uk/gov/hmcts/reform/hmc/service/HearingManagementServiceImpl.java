@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.hmc.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
+import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
@@ -21,9 +23,13 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAIL
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
 
+    private final RoleAssignmentService roleAssignmentService;
+    private final SecurityUtils securityUtils;
+
     @Autowired
-    public HearingManagementServiceImpl() {
-        //Do nothing
+    public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils) {
+        this.roleAssignmentService = roleAssignmentService;
+        this.securityUtils = securityUtils;
     }
 
     @Override
@@ -33,7 +39,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (hearingRequest.getPartyDetails() != null) {
             validatePartyDetails(hearingRequest.getPartyDetails());
         }
-
+        verifyAccess();
     }
 
     private void validatePartyDetails(List<PartyDetails> partyDetails) {
@@ -70,6 +76,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() == null) {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
         }
+    }
+
+    private void verifyAccess() {
+        RoleAssignments roleAssignments = roleAssignmentService.getRoleAssignments(securityUtils.getUserId());
+
+
     }
 }
 
