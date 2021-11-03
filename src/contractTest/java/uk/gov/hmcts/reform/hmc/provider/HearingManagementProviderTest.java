@@ -74,13 +74,12 @@ public class HearingManagementProviderTest {
         }
     }
 
-    @State("hmc_cftHearingService successfully returns created hearing")
+    @State("hmc cftHearingService successfully returns created hearing")
     public void createHearing() {
-        HearingRequest hearingRequest = new HearingRequest();
         doNothing().when(mockService).validateHearingRequest(any(HearingRequest.class));
     }
 
-    @State("hmc_cftHearingService throws validation error for create Hearing")
+    @State("hmc cftHearingService throws validation error for create hearing")
     public void validationErrorForCreatingHearing() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setCaseDetails(null);
