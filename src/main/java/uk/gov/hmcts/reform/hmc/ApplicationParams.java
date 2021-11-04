@@ -2,13 +2,10 @@ package uk.gov.hmcts.reform.hmc;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
+import org.springframework.stereotype.Component;
 
 @Getter
-@Named
-@Singleton
+@Component
 public class ApplicationParams {
 
     @Value("${jms.servicebus.connection-string}")
