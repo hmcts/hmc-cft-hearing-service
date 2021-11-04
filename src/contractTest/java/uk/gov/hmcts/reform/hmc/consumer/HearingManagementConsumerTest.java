@@ -192,8 +192,6 @@ public class HearingManagementConsumerTest {
             .stringType("status_message", "Hearing created successfully")
             // append requestDetails object
             .object("requestDetails")
-//            .timestamp("requestTimeStamp", Timestamp.valueOf(hearingRequest.getRequestDetails().getRequestTimeStamp()).toString())
-//            .timestamp("requestTimeStamp", "yyyy-MM-ddTHH:mm:ss.zzz")
             .timestamp("requestTimeStamp", "dd-MM-yyyyy'T'HH:mm:ss'Z'", Instant.parse("2020-10-06T20:48:58.402Z"))
             .closeObject().asBody()
             // Simple/default equality checks for other fields so toString will do

@@ -330,8 +330,8 @@ dependencies {
 
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
-  implementation 'au.com.dius:pact-jvm-consumer-junit5:4.0.10'
-  implementation 'au.com.dius:pact-jvm-consumer-junit5_2.11:3.5.24'
+//  implementation 'au.com.dius:pact-jvm-consumer-junit5:4.0.10'
+//  implementation 'au.com.dius:pact-jvm-consumer-junit5_2.11:3.5.24'
 
   compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
