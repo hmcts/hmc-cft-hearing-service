@@ -20,7 +20,12 @@
     <cve>CVE-2021-30640</cve>
     <cve>CVE-2021-33037</cve>
     <cve>CVE-2021-41079</cve>
+  </suppress>
+  <suppress until="2021-11-25">
     <cve>CVE-2021-29425</cve>
     <cve>CVE-2021-42340</cve>
+    <cve>CVE-2021-37136</cve>
+    <cve>CVE-2021-37137</cve>
   </suppress>
+
 </suppressions>
