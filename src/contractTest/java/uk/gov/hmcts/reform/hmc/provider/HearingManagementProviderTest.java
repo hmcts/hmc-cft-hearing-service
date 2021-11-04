@@ -26,13 +26,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import uk.gov.hmcts.reform.hmc.Application;
-//import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-//
-//@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {
-//    Application.class
-//})
 
 @TestPropertySource("/contract-test.properties")
 @ExtendWith(SpringExtension.class)

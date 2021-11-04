@@ -41,7 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(PactConsumerTestExt.class)
 public class HearingManagementConsumerTest {
 
-
     private static final Logger logger = LoggerFactory.getLogger(HearingManagementConsumerTest.class);
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
