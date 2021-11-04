@@ -12,7 +12,7 @@ java:
           alias: HMC_SERVICE_BUS_CONNECTION_STRING
         - name: hmc-servicebus-subscription
           alias: HMC_SERVICE_BUS_SUBSCRIPTION
-        - name: hmc_servicebus-topic
+        - name: hmc-servicebus-topic
           alias: HMC_SERVICE_BUS_TOPIC
 
   environment:

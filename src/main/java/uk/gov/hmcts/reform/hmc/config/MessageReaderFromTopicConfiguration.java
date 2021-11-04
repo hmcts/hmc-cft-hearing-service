@@ -45,14 +45,6 @@ public class MessageReaderFromTopicConfiguration {
 
         log.info("Starting the processor");
         processorClient.start();
-
-        try {
-            TimeUnit.SECONDS.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        log.info("Stopping and closing the processor");
-        processorClient.close();
     }
 
     private static void processMessage(ServiceBusReceivedMessageContext context) {
