@@ -33,7 +33,7 @@ import static org.mockito.Mockito.reset;
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
     host = "${PACT_BROKER_URL:localhost}",
     port = "${PACT_BROKER_PORT:}",
-    consumerVersionSelectors = {@VersionSelector(tag = "master")})
+    consumerVersionSelectors = {@VersionSelector(tag = "HMAN-25")})
 @IgnoreNoPactsToVerify
 public class HearingManagementProviderTest {
 
