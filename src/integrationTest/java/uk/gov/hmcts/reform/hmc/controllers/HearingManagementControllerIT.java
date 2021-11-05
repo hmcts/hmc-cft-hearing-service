@@ -9,15 +9,11 @@ import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidateHearingObject;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyValidateHearingObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 class HearingManagementControllerIT extends BaseTest {
 
@@ -34,7 +30,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn204_WhenHearingExists() throws Exception {
         // stubSuccessfullyValidateHearingObject(hearingRequest);
-        mockMvc.perform(get(getHearingUrl+ "/10")
+        mockMvc.perform(get(getHearingUrl + "/10")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(204))
             .andReturn();
@@ -43,7 +39,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn404_WhenHearingIdIsInValid() throws Exception {
 
-        mockMvc.perform(get(getHearingUrl+"/12")
+        mockMvc.perform(get(getHearingUrl + "/12")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andReturn();
