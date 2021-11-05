@@ -39,7 +39,7 @@ public class MessageReaderFromTopicConfiguration {
             .processor()
             .topicName(applicationParams.getTopicName())
             .subscriptionName(applicationParams.getSubscriptionName())
-            .processMessage(MessageReaderFromTopicConfiguration::processMessage)
+            .processMessage(this::processMessage)
             .processError(context -> processError(context, countdownLatch))
             .buildProcessorClient();
 
@@ -47,12 +47,12 @@ public class MessageReaderFromTopicConfiguration {
         processorClient.start();
     }
 
-    private static void processMessage(ServiceBusReceivedMessageContext context) {
+    private void processMessage(ServiceBusReceivedMessageContext context) {
         ServiceBusReceivedMessage message = context.getMessage();
         log.info("Received message with id '{}', message: {}", message.getMessageId(), message.getBody());
     }
 
-    private static void processError(ServiceBusErrorContext context, CountDownLatch countdownLatch) {
+    private void processError(ServiceBusErrorContext context, CountDownLatch countdownLatch) {
         log.error("Error when receiving messages from namespace: {}. Entity: {}",
                   context.getFullyQualifiedNamespace(), context.getEntityPath());
         if (!(context.getException() instanceof ServiceBusException)) {
