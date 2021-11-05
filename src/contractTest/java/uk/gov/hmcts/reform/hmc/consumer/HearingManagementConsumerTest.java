@@ -80,7 +80,7 @@ public class HearingManagementConsumerTest {
             .body(jsonstringRequest, ContentType.APPLICATION_JSON)
             .headers(headers)
             .willRespondWith()
-            .status(HttpStatus.OK.value())
+            .status(HttpStatus.ACCEPTED.value())
             .body(pactdsljsonbodyResponse)
             .toPact();
     }
@@ -135,7 +135,7 @@ public class HearingManagementConsumerTest {
             .when()
             .post(mockServer.getUrl() + PATH_HEARING)
             .then()
-            .statusCode(200)
+            .statusCode(202)
             .and()
             .extract()
             .body()
@@ -191,12 +191,62 @@ public class HearingManagementConsumerTest {
             .stringType("status_message", "Hearing created successfully")
             // append requestDetails object
             .object("requestDetails")
-            .timestamp("requestTimeStamp", "dd-MM-yyyyy'T'HH:mm:ss'Z'", Instant.parse("2020-10-06T20:48:58.402Z"))
+            .timestamp("requestTimeStamp", "yyyy-MM-dd'T'HH:mm:ss'Z'", Instant.parse("2020-10-06T20:48:58.402Z"))
             .closeObject().asBody()
+
             // Simple/default equality checks for other fields so toString will do
-            .stringType("hearingDetails", toHearingDetailsJsonString(hearingRequest))
-            .stringType("caseDetails", toCaseDetailsJsonString(hearingRequest))
-            .stringType("partyDetails", toPartyDetailsJsonString(hearingRequest));
+            .object("hearingDetails")
+            .booleanType("autoListFlag", hearingRequest.getHearingDetails().getAutoListFlag())
+            .stringType("hearingType", hearingRequest.getHearingDetails().getHearingType())
+            .object("hearingWindow")
+                .timestamp("hearingWindowStartDateRange", "yyyy-MM-dd", Instant.parse("2020-10-06T20:48:58.402Z"))
+                .timestamp("hearingWindowEndDateRange", "yyyy-MM-dd", Instant.parse("2020-10-06T20:48:58.402Z"))
+                .timestamp("firstDateTimeMustBe", "yyyy-MM-dd'T'HH:mm:ss'Z'", Instant.parse("2020-10-06T20:48:58.402Z"))
+            .closeObject().asBody()
+            .integerType("duration", hearingRequest.getHearingDetails().getDuration())
+            .array("nonStandardHearingDurationReasons")
+            .closeArray().asBody()
+            .stringType("hearingPriorityType", hearingRequest.getHearingDetails().getHearingPriorityType())
+            .integerType("numberOfPhysicalAttendees",
+                         hearingRequest.getHearingDetails().getNumberOfPhysicalAttendees())
+            .booleanType("hearingInWelshFlag", hearingRequest.getHearingDetails().getHearingInWelshFlag())
+            .array("hearingLocations")
+            .closeArray().asBody()
+            .array("facilitiesRequired")
+            .closeArray().asBody()
+            .stringType("listingComments", hearingRequest.getHearingDetails().getListingComments())
+            .stringType("hearingRequester", hearingRequest.getHearingDetails().getHearingRequester())
+            .booleanType("privateHearingRequiredFlag",
+                         hearingRequest.getHearingDetails().getPrivateHearingRequiredFlag())
+            .stringType("leadJudgeContractType",
+                        hearingRequest.getHearingDetails().getLeadJudgeContractType())
+            .object("panelRequirements")
+            .closeObject().asBody()
+            .booleanType("hearingIsLinkedFlag", hearingRequest.getHearingDetails().getHearingIsLinkedFlag())
+            .closeObject().asBody()
+
+            .object("caseDetails")
+                .stringType("caseRef", hearingRequest.getCaseDetails().getCaseRef())
+                .stringType("caseDeepLink", hearingRequest.getCaseDetails().getCaseDeepLink())
+                .stringType("hmctsServiceCode", hearingRequest.getCaseDetails().getHmctsServiceCode())
+                .booleanType("caseRestrictedFlag",
+                             hearingRequest.getCaseDetails().getCaseRestrictedFlag())
+                .array("caseCategories")
+                .closeArray().asBody()
+                .datetime("requestTimeStamp", "yyyy-MM-dd'T'HH:mm",
+                          Instant.parse("2020-10-06T20:48:58.402Z"))
+                .stringType("caseManagementLocationCode",
+                            hearingRequest.getCaseDetails().getCaseManagementLocationCode())
+                .booleanType("caseAdditionalSecurityFlag",
+                             hearingRequest.getCaseDetails().getCaseAdditionalSecurityFlag())
+                .stringType("hmctsInternalCaseName",
+                            hearingRequest.getCaseDetails().getHmctsInternalCaseName())
+                .stringType("publicCaseName", hearingRequest.getCaseDetails().getPublicCaseName())
+                .timestamp("caseSlaStartDate", "yyyy-MM-dd", Instant.parse("2020-10-06T20:48:58.402Z"))
+            .closeObject().asBody()
+
+            .array("partyDetails")
+            .closeArray().asBody();
     }
 
     /**
