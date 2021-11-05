@@ -1,6 +1,0 @@
-azure:
-  jms:
-    servicebus:
-      connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING:Endpoint=sb://destination1.servicebus.windows.net;SharedAccessKeyName=[KEYNAME];SharedAccessKey=[KEY]}
-      topic-name: ${HMC_SERVICE_BUS_TOPIC:hmc-to-cft}
-      subscription-name: ${HMC_SERVICE_BUS_SUBSCRIPTION:hmc-subs-to-cft}
