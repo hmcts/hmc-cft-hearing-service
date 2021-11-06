@@ -8,3 +8,15 @@ java:
       secrets:
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
+        - name: cft-hearing-service-POSTGRES-USER
+          alias: CFT_HEARING_SERVICE_DB_USERNAME
+        - name: cft-hearing-service-POSTGRES-PASS
+          alias: CFT_HEARING_SERVICE_DB_PASSWORD
+        - name: cft-hearing-service-POSTGRES-HOST
+          alias: CFT_HEARING_SERVICE_DB_HOST
+        - name: cft-hearing-service-POSTGRES-PORT
+          alias: CFT_HEARING_SERVICE_DB_PORT
+        - name: cft-hearing-service-POSTGRES-DATABASE
+          alias: CFT_HEARING_SERVICE_DB_NAME
+  environment:
+    CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified&gssEncMode=disable"
