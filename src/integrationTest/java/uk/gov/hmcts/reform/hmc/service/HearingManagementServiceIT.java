@@ -18,7 +18,7 @@ class HearingManagementServiceIT extends BaseTest {
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingManagementService.validateHearingRequest(hearingRequest);
+        hearingManagementService.saveHearingRequest(hearingRequest);
     }
 
 }

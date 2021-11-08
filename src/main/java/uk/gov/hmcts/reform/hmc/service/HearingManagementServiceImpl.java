@@ -40,7 +40,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public void validateHearingRequest(HearingRequest hearingRequest) {
+    public void saveHearingRequest(HearingRequest hearingRequest) {
+        if (hearingRequest == null) {
+            throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
+        }
+        validateHearingRequest(hearingRequest);
+    }
+
+    private void validateHearingRequest(HearingRequest hearingRequest) {
         validateHearingRequestDetails(hearingRequest);
         validateHearingDetails(hearingRequest.getHearingDetails());
         if (hearingRequest.getPartyDetails() != null) {

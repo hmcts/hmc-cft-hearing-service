@@ -27,7 +27,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     private String url = "/hearing";
 
-    @Test
+    /*@Test
     void shouldReturn204_WhenHearingExists() throws Exception {
         // stubSuccessfullyValidateHearingObject(hearingRequest);
         mockMvc.perform(get(getHearingUrl + "/10")
@@ -35,7 +35,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(status().is(204))
             .andReturn();
     }
-
+*/
     @Test
     void shouldReturn404_WhenHearingIdIsInValid() throws Exception {
 

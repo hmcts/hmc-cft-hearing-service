@@ -41,7 +41,7 @@ public class HearingManagementController {
         @ApiResponse(code = 202, message = "Hearing are valid"),
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
-    public void invokeHearing(@RequestBody @Valid HearingRequest hearingRequest) {
-        hearingManagementService.validateHearingRequest(hearingRequest);
+    public void saveHearing(@RequestBody @Valid HearingRequest hearingRequest) {
+        hearingManagementService.saveHearingRequest(hearingRequest);
     }
 }

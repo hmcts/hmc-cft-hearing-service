@@ -33,7 +33,7 @@ class HearingManagementServiceTest {
         hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
         hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.validateHearingRequest(hearingRequest);
+            hearingManagementService.saveHearingRequest(hearingRequest);
         });
         assertEquals("Hearing window details are required", exception.getMessage());
     }
@@ -42,7 +42,7 @@ class HearingManagementServiceTest {
     void shouldFailAsDetailsNotPresent() {
         HearingRequest hearingRequest = new HearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.validateHearingRequest(hearingRequest);
+            hearingManagementService.saveHearingRequest(hearingRequest);
         });
         assertEquals("Invalid details", exception.getMessage());
     }
@@ -54,7 +54,7 @@ class HearingManagementServiceTest {
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingManagementService.validateHearingRequest(hearingRequest);
+        hearingManagementService.saveHearingRequest(hearingRequest);
     }
 
     @Test
@@ -67,7 +67,7 @@ class HearingManagementServiceTest {
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        hearingManagementService.validateHearingRequest(hearingRequest);
+        hearingManagementService.saveHearingRequest(hearingRequest);
     }
 
     @Test
@@ -82,7 +82,7 @@ class HearingManagementServiceTest {
         partyDetails.get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         hearingRequest.setPartyDetails(partyDetails);
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.validateHearingRequest(hearingRequest);
+            hearingManagementService.saveHearingRequest(hearingRequest);
         });
         assertEquals("Either Individual or Organisation details should be present", exception.getMessage());
     }
@@ -99,7 +99,7 @@ class HearingManagementServiceTest {
         partyDetails.get(0).setUnavailabilityDow(new ArrayList<>());
         hearingRequest.setPartyDetails(partyDetails);
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.validateHearingRequest(hearingRequest);
+            hearingManagementService.saveHearingRequest(hearingRequest);
         });
         assertEquals("Unavailability DOW details should be present", exception.getMessage());
     }
@@ -116,7 +116,7 @@ class HearingManagementServiceTest {
         partyDetails.get(0).setUnavailabilityRanges(new ArrayList<>());
         hearingRequest.setPartyDetails(partyDetails);
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.validateHearingRequest(hearingRequest);
+            hearingManagementService.saveHearingRequest(hearingRequest);
         });
         assertEquals("Unavailability range details should be present", exception.getMessage());
 
