@@ -1,0 +1,32 @@
+package uk.gov.hmcts.reform.hmc.data;
+
+import lombok.Data;
+import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
+import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnavailable;
+
+import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Table(name = "unavailability")
+@Entity
+@Data
+public class UnavailabilityEntity {
+
+    @Column(name = "tech_party_id", nullable = false)
+    private Long techPartyId;
+
+    @Column(name = "day_of_week_unavailable", nullable = false)
+    private DayOfWeekUnavailable dayOfWeekUnavailable;
+
+    @Column(name = "day_of_week_unavailable_type", nullable = false)
+    private DayOfWeekUnAvailableType dayOfWeekUnavailableType;
+
+    @Column(name = "start_date", nullable = false)
+    private LocalDateTime startDate;
+
+    @Column(name = "end_date", nullable = false)
+    private LocalDateTime endDate;
+
+}

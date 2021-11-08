@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.hmc.model;
 import lombok.Getter;
 
 @Getter
-public enum Dow {
+public enum DayOfWeekUnavailable {
     MONDAY("Monday"),
     TUESDAY("Tuesday"),
     WEDNESDAY("Wednesday"),
@@ -14,7 +14,7 @@ public enum Dow {
 
     public final String label;
 
-    Dow(String label) {
+    DayOfWeekUnavailable(String label) {
         this.label = label;
     }
 }
