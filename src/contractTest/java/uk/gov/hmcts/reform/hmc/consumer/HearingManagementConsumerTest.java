@@ -27,8 +27,8 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
+import uk.gov.hmcts.reform.hmc.utility.HearingResponsePactUtil;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,13 +50,21 @@ public class HearingManagementConsumerTest {
 
     private static final String PATH_HEARING = "/hearing";
 
+    // Test data 1 - valid HearingRequest
+    HearingRequest validHearingRequest1 = createValidCreateHearingRequest();
+    String jsonstringRequest1 = toHearingRequestJsonString(validHearingRequest1);
+    HearingResponsePactUtil hrPactUtil = new HearingResponsePactUtil();
+    PactDslJsonBody pactdsljsonbodyResponse1 = hrPactUtil.generateJsonBody(validHearingRequest1);
+
+    // Test data 2 - invalid HearingRequest
+    HearingRequest invalidHearingRequest2 = createInvalidCreateHearingRequest();
+    String jsonstringRequest2 = toHearingRequestJsonString(invalidHearingRequest2);
+
+
     static Map<String, String> headers = Map.of(
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,
         SERVICE_AUTHORIZATION, SERVICE_AUTHORIZATION_TOKEN
     );
-
-    HearingRequest validHearingRequest = createValidCreateHearingRequest();
-    HearingRequest invalidHearingRequest = createInvalidCreateHearingRequest();
 
     /**
      * create Hearing - send valid request.
@@ -66,22 +74,16 @@ public class HearingManagementConsumerTest {
      */
     @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
     public RequestResponsePact createHearing(PactDslWithProvider builder) throws Exception {
-        logger.info("createHearing(PactDslWithProvider builder)");
-        String jsonstringRequest = toHearingRequestJsonString(validHearingRequest);
-        PactDslJsonBody pactdsljsonbodyResponse = createCreateHearingResponse(validHearingRequest);
-        logger.info("VALID REQUEST: {}", jsonstringRequest);
-        logger.info("EXPECTED RESPONSE: {}", pactdsljsonbodyResponse);
-
         return builder
             .given("hmc cftHearingService successfully returns created hearing")
             .uponReceiving("Request to create hearing")
             .path(PATH_HEARING)
             .method(HttpMethod.POST.toString())
-            .body(jsonstringRequest, ContentType.APPLICATION_JSON)
+            .body(jsonstringRequest1, ContentType.APPLICATION_JSON)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.ACCEPTED.value())
-            .body(pactdsljsonbodyResponse)
+            .body(pactdsljsonbodyResponse1)
             .toPact();
     }
 
@@ -93,16 +95,12 @@ public class HearingManagementConsumerTest {
      */
     @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
     public RequestResponsePact validationErrorFromCreatingHearing(PactDslWithProvider builder) throws Exception {
-        logger.info("validationErrorFromCreatingHearing(PactDslWithProvider builder)");
-        String jsonstringRequest = toHearingRequestJsonString(invalidHearingRequest);
-        logger.info("INVALID REQUEST: {}", jsonstringRequest);
-
         return builder
             .given("hmc cftHearingService throws validation error for create hearing")
             .uponReceiving("Request to create hearing")
             .path(PATH_HEARING)
             .method(HttpMethod.POST.toString())
-            .body(jsonstringRequest, ContentType.APPLICATION_JSON)
+            .body(jsonstringRequest2, ContentType.APPLICATION_JSON)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.BAD_REQUEST.value())
@@ -123,15 +121,11 @@ public class HearingManagementConsumerTest {
     @Test
     @PactTestFor(pactMethod = "createHearing")
     public void shouldReturnCreatedHearing(MockServer mockServer) throws Exception {
-        logger.info("shouldReturnCreatedHearing(MockServer mockServer)");
-        logger.debug("VALID REQUEST: {}", toHearingRequestJsonString(validHearingRequest));
-        logger.debug("EXPECTED RESPONSE: {}", createCreateHearingResponse(validHearingRequest));
-
-        JsonPath response = RestAssured
+         JsonPath response = RestAssured
             .given()
             .headers(headers)
             .contentType(io.restassured.http.ContentType.JSON)
-            .body(toHearingRequestJsonString(validHearingRequest))
+            .body(toHearingRequestJsonString(validHearingRequest1))
             .when()
             .post(mockServer.getUrl() + PATH_HEARING)
             .then()
@@ -161,13 +155,11 @@ public class HearingManagementConsumerTest {
     @Test
     @PactTestFor(pactMethod = "validationErrorFromCreatingHearing")
     public void shouldReturn400BadRequestForCreateHearing(MockServer mockServer) throws Exception {
-        logger.info("INVALID REQUEST: {}", toHearingRequestJsonString(invalidHearingRequest));
-
         JsonPath response = RestAssured
             .given()
             .headers(headers)
             .contentType(io.restassured.http.ContentType.JSON)
-            .body(toHearingRequestJsonString(invalidHearingRequest))
+            .body(toHearingRequestJsonString(invalidHearingRequest2))
             .when()
             .post(mockServer.getUrl() + PATH_HEARING)
             .then()
@@ -179,74 +171,6 @@ public class HearingManagementConsumerTest {
 
         assertThat(response.getString("message")).isEqualTo("Invalid hearing details");
         assertThat(response.getString("status")).isEqualTo("BAD_REQUEST");
-    }
-
-    /**
-     * create the create Hearing Response.
-     * @param  hearingRequest hearing Request
-     * @return PactJsonBody pact JSON body
-     */
-    private PactDslJsonBody createCreateHearingResponse(HearingRequest hearingRequest) {
-        return new PactDslJsonBody()
-            .stringType("status_message", "Hearing created successfully")
-            // append requestDetails object
-            .object("requestDetails")
-            .timestamp("requestTimeStamp", "yyyy-MM-dd'T'HH:mm:ss'Z'", Instant.parse("2020-10-06T20:48:58.402Z"))
-            .closeObject().asBody()
-
-            // Simple/default equality checks for other fields so toString will do
-            .object("hearingDetails")
-            .booleanType("autoListFlag", hearingRequest.getHearingDetails().getAutoListFlag())
-            .stringType("hearingType", hearingRequest.getHearingDetails().getHearingType())
-            .object("hearingWindow")
-                .timestamp("hearingWindowStartDateRange", "yyyy-MM-dd", Instant.parse("2020-10-06T20:48:58.402Z"))
-                .timestamp("hearingWindowEndDateRange", "yyyy-MM-dd", Instant.parse("2020-10-06T20:48:58.402Z"))
-                .timestamp("firstDateTimeMustBe", "yyyy-MM-dd'T'HH:mm:ss'Z'", Instant.parse("2020-10-06T20:48:58.402Z"))
-            .closeObject().asBody()
-            .integerType("duration", hearingRequest.getHearingDetails().getDuration())
-            .array("nonStandardHearingDurationReasons")
-            .closeArray().asBody()
-            .stringType("hearingPriorityType", hearingRequest.getHearingDetails().getHearingPriorityType())
-            .integerType("numberOfPhysicalAttendees",
-                         hearingRequest.getHearingDetails().getNumberOfPhysicalAttendees())
-            .booleanType("hearingInWelshFlag", hearingRequest.getHearingDetails().getHearingInWelshFlag())
-            .array("hearingLocations")
-            .closeArray().asBody()
-            .array("facilitiesRequired")
-            .closeArray().asBody()
-            .stringType("listingComments", hearingRequest.getHearingDetails().getListingComments())
-            .stringType("hearingRequester", hearingRequest.getHearingDetails().getHearingRequester())
-            .booleanType("privateHearingRequiredFlag",
-                         hearingRequest.getHearingDetails().getPrivateHearingRequiredFlag())
-            .stringType("leadJudgeContractType",
-                        hearingRequest.getHearingDetails().getLeadJudgeContractType())
-            .object("panelRequirements")
-            .closeObject().asBody()
-            .booleanType("hearingIsLinkedFlag", hearingRequest.getHearingDetails().getHearingIsLinkedFlag())
-            .closeObject().asBody()
-
-            .object("caseDetails")
-                .stringType("caseRef", hearingRequest.getCaseDetails().getCaseRef())
-                .stringType("caseDeepLink", hearingRequest.getCaseDetails().getCaseDeepLink())
-                .stringType("hmctsServiceCode", hearingRequest.getCaseDetails().getHmctsServiceCode())
-                .booleanType("caseRestrictedFlag",
-                             hearingRequest.getCaseDetails().getCaseRestrictedFlag())
-                .array("caseCategories")
-                .closeArray().asBody()
-                .datetime("requestTimeStamp", "yyyy-MM-dd'T'HH:mm",
-                          Instant.parse("2020-10-06T20:48:58.402Z"))
-                .stringType("caseManagementLocationCode",
-                            hearingRequest.getCaseDetails().getCaseManagementLocationCode())
-                .booleanType("caseAdditionalSecurityFlag",
-                             hearingRequest.getCaseDetails().getCaseAdditionalSecurityFlag())
-                .stringType("hmctsInternalCaseName",
-                            hearingRequest.getCaseDetails().getHmctsInternalCaseName())
-                .stringType("publicCaseName", hearingRequest.getCaseDetails().getPublicCaseName())
-                .timestamp("caseSlaStartDate", "yyyy-MM-dd", Instant.parse("2020-10-06T20:48:58.402Z"))
-            .closeObject().asBody()
-
-            .array("partyDetails")
-            .closeArray().asBody();
     }
 
     /**
@@ -285,59 +209,19 @@ public class HearingManagementConsumerTest {
     }
 
     /**
-     * get Hearing details JSON String from Hearing Request.
-     * @return String JSON string of Hearing details
+     * Create Request Details test data.
+     * @return requestDetails Request Details
      */
-    private String toHearingDetailsJsonString(HearingRequest hearingRequest) {
-        StringBuilder sb = new StringBuilder();
-        if (null != hearingRequest && null != hearingRequest.getHearingDetails()) {
-            JSONObject jsonObject = new JSONObject(hearingRequest.getHearingDetails());
-            sb = sb.append(jsonObject);
-        } else {
-            sb = sb.append("{}");
-        }
-        logger.debug("hearingRequest hearingDetails to JSON: {}", sb);
-        return sb.toString();
-    }
-
-    /**
-     * get Case details JSON String from Hearing Request.
-     * @return String JSON string of Case details
-     */
-    private String toCaseDetailsJsonString(HearingRequest hearingRequest) {
-        StringBuilder sb = new StringBuilder();
-        if (null != hearingRequest && null != hearingRequest.getCaseDetails()) {
-            JSONObject jsonObject = new JSONObject(hearingRequest.getCaseDetails());
-            sb = sb.append(jsonObject);
-        } else {
-            sb = sb.append("{}");
-        }
-        logger.debug("hearingRequest caseDetails to JSON: {}", sb);
-        return sb.toString();
-    }
-
-    /**
-     * get Party details JSON String from Hearing Request.
-     * @return String JSON string of Party details
-     */
-    private String toPartyDetailsJsonString(HearingRequest hearingRequest) {
-        StringBuilder sb = new StringBuilder();
-        if (null != hearingRequest && null != hearingRequest.getPartyDetails()) {
-            JSONObject jsonObject = new JSONObject(hearingRequest.getPartyDetails());
-            sb = sb.append(jsonObject);
-        } else {
-            sb = sb.append("{}");
-        }
-        logger.debug("hearingRequest partyDetails to JSON: {}", sb);
-        return sb.toString();
-    }
-
     private RequestDetails requestDetails() {
         RequestDetails requestDetails = new RequestDetails();
         requestDetails.setRequestTimeStamp(LocalDateTime.now());
         return requestDetails;
     }
 
+    /**
+     * create HearingDetails test data.
+     * @return hearingDetails Hearing Details
+     */
     public static HearingDetails hearingDetails() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
@@ -358,6 +242,10 @@ public class HearingManagementConsumerTest {
         return hearingDetails;
     }
 
+    /**
+     * Create Case Details tets data.
+     * @return caseDetails Case Details
+     */
     public CaseDetails caseDetails() {
         CaseDetails caseDetails = new CaseDetails();
         caseDetails.setHmctsServiceCode("ABA1");
@@ -378,6 +266,10 @@ public class HearingManagementConsumerTest {
         return caseDetails;
     }
 
+    /**
+     * Create party details data.
+     * @return partyDetails Party Details
+     */
     public List<PartyDetails> partyDetails() {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
@@ -389,8 +281,7 @@ public class HearingManagementConsumerTest {
         partyDetails2.setPartyType("IND");
         partyDetails2.setPartyRole("DEF2");
 
-        List<PartyDetails> partyDetails = Lists.newArrayList(partyDetails1, partyDetails2);
-        return partyDetails;
+        return Lists.newArrayList(partyDetails1, partyDetails2);
     }
 
 }
