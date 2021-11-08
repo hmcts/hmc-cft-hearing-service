@@ -4,6 +4,9 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Table(name = "organisation_detail")
@@ -11,8 +14,9 @@ import javax.persistence.Table;
 @Data
 public class OrganisationDetailEntity {
 
-    @Column(name = "tech_party_id", nullable = false)
-    private Long techPartyId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tech_party_id")
+    private HearingPartyEntity hearingParty;
 
     @Column(name = "organisation_name", nullable = false)
     private String organisationName;

@@ -5,6 +5,11 @@ import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Table(name = "case_categories")
@@ -12,9 +17,11 @@ import javax.persistence.Table;
 @Data
 public class CaseCategoriesEntity {
 
-    @Column(name = "case_hearing_id", nullable = false)
-    private Long caseHearingID;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_hearing_id")
+    private CaseHearingRequestEntity caseHearing;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "case_category_type", nullable = false)
     private CaseCategoryType locationId;
 

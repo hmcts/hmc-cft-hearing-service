@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.hmc.data;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Table(name = "case_hearing_request")
@@ -106,5 +108,8 @@ public class CaseHearingRequestEntity {
 
     @Column(name = "request_timestamp", nullable = false)
     private LocalDateTime requestTimeStamp;
+
+    @OneToOne(mappedBy = "caseHearing")
+    private CaseCategoriesEntity caseCategoriesEntity;
 
 }

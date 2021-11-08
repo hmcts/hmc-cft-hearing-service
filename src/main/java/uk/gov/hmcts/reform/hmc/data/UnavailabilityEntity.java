@@ -7,6 +7,11 @@ import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnavailable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Table(name = "unavailability")
@@ -14,12 +19,15 @@ import javax.persistence.Table;
 @Data
 public class UnavailabilityEntity {
 
-    @Column(name = "tech_party_id", nullable = false)
-    private Long techPartyId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tech_party_id")
+    private HearingPartyEntity hearingParty;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "day_of_week_unavailable", nullable = false)
     private DayOfWeekUnavailable dayOfWeekUnavailable;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "day_of_week_unavailable_type", nullable = false)
     private DayOfWeekUnAvailableType dayOfWeekUnavailableType;
 
