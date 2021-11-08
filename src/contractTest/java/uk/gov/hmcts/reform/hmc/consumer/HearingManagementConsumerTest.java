@@ -10,7 +10,6 @@ import au.com.dius.pact.core.model.annotations.Pact;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import org.apache.http.entity.ContentType;
-import org.assertj.core.util.Lists;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,12 +53,11 @@ public class HearingManagementConsumerTest {
     HearingRequest validHearingRequest1 = createValidCreateHearingRequest();
     String jsonstringRequest1 = toHearingRequestJsonString(validHearingRequest1);
     HearingResponsePactUtil hrPactUtil = new HearingResponsePactUtil();
-    PactDslJsonBody pactdsljsonbodyResponse1 = hrPactUtil.generateJsonBody(validHearingRequest1);
+    PactDslJsonBody pactdsljsonbodyResponse = hrPactUtil.generateJsonBody();
 
     // Test data 2 - invalid HearingRequest
     HearingRequest invalidHearingRequest2 = createInvalidCreateHearingRequest();
     String jsonstringRequest2 = toHearingRequestJsonString(invalidHearingRequest2);
-
 
     static Map<String, String> headers = Map.of(
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,
@@ -74,6 +72,7 @@ public class HearingManagementConsumerTest {
      */
     @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
     public RequestResponsePact createHearing(PactDslWithProvider builder) throws Exception {
+
         return builder
             .given("hmc cftHearingService successfully returns created hearing")
             .uponReceiving("Request to create hearing")
@@ -83,7 +82,7 @@ public class HearingManagementConsumerTest {
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.ACCEPTED.value())
-            .body(pactdsljsonbodyResponse1)
+            .body(pactdsljsonbodyResponse)
             .toPact();
     }
 
@@ -121,7 +120,7 @@ public class HearingManagementConsumerTest {
     @Test
     @PactTestFor(pactMethod = "createHearing")
     public void shouldReturnCreatedHearing(MockServer mockServer) throws Exception {
-         JsonPath response = RestAssured
+        JsonPath response = RestAssured
             .given()
             .headers(headers)
             .contentType(io.restassured.http.ContentType.JSON)
@@ -159,7 +158,7 @@ public class HearingManagementConsumerTest {
             .given()
             .headers(headers)
             .contentType(io.restassured.http.ContentType.JSON)
-            .body(toHearingRequestJsonString(invalidHearingRequest2))
+            .body(jsonstringRequest2)
             .when()
             .post(mockServer.getUrl() + PATH_HEARING)
             .then()
@@ -181,19 +180,19 @@ public class HearingManagementConsumerTest {
         HearingRequest request = new HearingRequest();
         request.setHearingDetails(hearingDetails());
         request.setCaseDetails(caseDetails());
-        request.setPartyDetails(partyDetails());
+        request.setPartyDetails(partyDetails1());
         request.setRequestDetails(requestDetails());
         return request;
     }
 
     /**
-     * create an Invalid Create Hearing Request.
+     * create an Invalid Create Hearing Request - omit caseDetails.
      * @return HearingRequest hearing request
      */
     private HearingRequest createInvalidCreateHearingRequest() {
         HearingRequest request = new HearingRequest();
         request.setHearingDetails(hearingDetails());
-        request.setPartyDetails(partyDetails());
+        request.setPartyDetails(partyDetails2());
         request.setRequestDetails(requestDetails());
         return request;
     }
@@ -270,18 +269,33 @@ public class HearingManagementConsumerTest {
      * Create party details data.
      * @return partyDetails Party Details
      */
-    public List<PartyDetails> partyDetails() {
-        PartyDetails partyDetails1 = new PartyDetails();
-        partyDetails1.setPartyID("P1");
-        partyDetails1.setPartyType("IND");
-        partyDetails1.setPartyRole("DEF");
-
-        PartyDetails partyDetails2 = new PartyDetails();
-        partyDetails2.setPartyID("P2");
-        partyDetails2.setPartyType("IND");
-        partyDetails2.setPartyRole("DEF2");
-
-        return Lists.newArrayList(partyDetails1, partyDetails2);
+    public List<PartyDetails> partyDetails1() {
+        ArrayList<PartyDetails> partyDetailsArrayList = new ArrayList<>();
+        partyDetailsArrayList.add(createPartyDetails("P1", "IND", "DEF"));
+        partyDetailsArrayList.add(createPartyDetails("P2", "IND", "DEF2"));
+        return partyDetailsArrayList;
     }
+
+    /**
+     * Create party details data.
+     * @return partyDetails Party Details
+     */
+    public List<PartyDetails> partyDetails2() {
+        ArrayList<PartyDetails> partyDetailsArrayList = new ArrayList<>();
+        partyDetailsArrayList.add(createPartyDetails("P1", "IND", "DEF"));
+        partyDetailsArrayList.add(createPartyDetails("P2", "IND2", "DEF2"));
+        partyDetailsArrayList.add(createPartyDetails("P3", "IND3", "DEF3"));
+        partyDetailsArrayList.add(createPartyDetails("P4", "IND4", "DEF4"));
+        return partyDetailsArrayList;
+    }
+
+    private PartyDetails createPartyDetails(String partyID, String partyType, String partyRole) {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID(partyID);
+        partyDetails.setPartyType(partyType);
+        partyDetails.setPartyRole(partyRole);
+        return partyDetails;
+    }
+
 
 }
