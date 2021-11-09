@@ -19,11 +19,11 @@ java:
         - name: cft-hearing-service-POSTGRES-DATABASE
           alias: CFT_HEARING_SERVICE_DB_NAME
         - name: hmc-servicebus-connection-string
-            alias: HMC_SERVICE_BUS_CONNECTION_STRING
-              - name: hmc-servicebus-subscription
-                alias: HMC_SERVICE_BUS_SUBSCRIPTION
-              - name: hmc-servicebus-topic
-                alias: HMC_SERVICE_BUS_TOPIC
+          alias: HMC_SERVICE_BUS_CONNECTION_STRING
+        - name: hmc-servicebus-subscription
+          alias: HMC_SERVICE_BUS_SUBSCRIPTION
+        - name: hmc-servicebus-topic
+          alias: HMC_SERVICE_BUS_TOPIC
   environment:
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified&gssEncMode=disable"
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft-{{ .Values.global.environment }}
