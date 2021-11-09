@@ -3,14 +3,18 @@ package uk.gov.hmcts.reform.hmc.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import uk.gov.hmcts.reform.hmc.BaseTest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404InValidHearingId;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyForValidHearingID;
 
 
-class HearingManagementControllerIT {
+class HearingManagementControllerIT extends BaseTest {
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -20,10 +24,14 @@ class HearingManagementControllerIT {
 
     private String getHearingUrl = "/hearing";
 
+    private static final String INSERT_DATA_SCRIPT = "classpath:sql/insert-hearing.sql";
+
+
     @Test
+    @Sql(INSERT_DATA_SCRIPT)
     void shouldReturn204_WhenHearingExists() throws Exception {
-       // stubSuccessfullyValidateHearingObject(hearingRequest);
-        mockMvc.perform(get(getHearingUrl+ "/10")
+        stubSuccessfullyForValidHearingID("1234");
+        mockMvc.perform(get(getHearingUrl+ "/1234")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(204))
             .andReturn();
@@ -31,7 +39,7 @@ class HearingManagementControllerIT {
 
     @Test
     void shouldReturn404_WhenHearingIdIsInValid() throws Exception {
-
+        stubReturn404InValidHearingId("12");
         mockMvc.perform(get(getHearingUrl+"/12")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))

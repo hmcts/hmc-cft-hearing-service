@@ -281,28 +281,34 @@ dependencies {
 
   compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
   compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.1'
-
+  compile group: 'javax.inject', name: 'javax.inject', version: '1'
+  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
   compile group: 'org.flywaydb', name: 'flyway-core', version: '7.7.0'
   compileOnly group: 'org.mapstruct', name: 'mapstruct', version: versions.mapstruct
 
   annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: versions.mapstruct
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+  implementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
+
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.0.2'
 
+  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
-
+  functionalTestImplementation sourceSets.test.runtimeClasspath
   functionalTestImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '6.14.2'
   functionalTestImplementation libraries.junit5
+
   runtime group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
 
 }
