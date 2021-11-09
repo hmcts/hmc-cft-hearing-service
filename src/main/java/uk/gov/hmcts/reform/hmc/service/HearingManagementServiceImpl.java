@@ -45,7 +45,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
         validateHearingRequest(hearingRequest);
-       // insertHearingRequest(hearingRequest);
+        insertHearingRequest(hearingRequest);
     }
 
     private void insertHearingRequest(HearingRequest hearingRequest) {
