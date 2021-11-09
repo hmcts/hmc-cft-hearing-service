@@ -29,7 +29,7 @@ class HearingManagementServiceTest {
         hearing.setStatus("RESPONDED");
         hearing.setId(1L);
         Exception exception = assertThrows(HearingNotFoundException.class, () -> {
-            hearingManagementService.getHearingRequest("1L");
+            hearingManagementService.getHearingRequest(1L);
         });
         assertEquals("No hearing found for reference: 1L", exception.getMessage());
     }

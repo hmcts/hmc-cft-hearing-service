@@ -40,7 +40,7 @@ class HearingManagementControllerTest {
     void shouldReturn200_whenRequestIdIsValid() {
         doNothing().when(hearingManagementService).getHearingRequest(Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        controller.getHearing("1234");
+        controller.getHearing(1234L);
         verify(hearingManagementService, times(1)).getHearingRequest(any());
 
     }

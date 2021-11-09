@@ -28,7 +28,7 @@ public class HearingManagementController {
         @ApiResponse(code = 204, message = "Hearing id is valid"),
         @ApiResponse(code = 404, message = "Invalid hearing id")
     })
-    public void getHearing(@PathVariable("id") String hearingId) {
+    public void getHearing(@PathVariable("id") Long hearingId) {
         //    @RequestAttribute(value = "isValid", required = false) Boolean isvalid
             hearingManagementService.getHearingRequest(hearingId);
     }

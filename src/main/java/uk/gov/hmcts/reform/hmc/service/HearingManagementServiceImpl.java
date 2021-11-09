@@ -6,11 +6,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
+import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 
 @Service
 @Component
 @Slf4j
-public class HearingManagementServiceImpl implements HearingManagementService, Runnable {
+public class HearingManagementServiceImpl implements HearingManagementService {
 
     private HearingRepository hearingRepository;
 
@@ -21,12 +22,11 @@ public class HearingManagementServiceImpl implements HearingManagementService, R
 
 
     @Override
-    public void getHearingRequest(String hearingId) {
+    public void getHearingRequest(Long hearingId) {
        HearingEntity hearingEntity =  hearingRepository.findHearing(hearingId);
+        if (hearingEntity == null) {
+            throw new HearingNotFoundException(hearingId);
+        }
     }
 
-    @Override
-    public void run() {
-        getHearingRequest("1234");
-    }
 }
