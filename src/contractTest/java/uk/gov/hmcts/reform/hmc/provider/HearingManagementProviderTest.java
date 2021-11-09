@@ -18,7 +18,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
-import uk.gov.hmcts.reform.hmc.exceptions.ValidationException;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
@@ -76,7 +75,7 @@ public class HearingManagementProviderTest {
     public void validationErrorForCreatingHearing() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setCaseDetails(null);
-        doThrow(new ValidationException(ValidationError.INVALID_HEARING_REQUEST_DETAILS))
+        doThrow(new Exception(ValidationError.INVALID_HEARING_REQUEST_DETAILS))
             .when(mockService).validateHearingRequest(any(HearingRequest.class));
     }
 

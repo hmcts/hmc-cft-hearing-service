@@ -24,6 +24,8 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.PanelPreference;
+import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.utility.HearingResponsePactUtil;
@@ -71,8 +73,7 @@ public class HearingManagementConsumerTest {
      * @throws Exception exception
      */
     @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
-    public RequestResponsePact createHearing(PactDslWithProvider builder) throws Exception {
-
+    public RequestResponsePact createHearing(PactDslWithProvider builder) {
         return builder
             .given("hmc cftHearingService successfully returns created hearing")
             .uponReceiving("Request to create hearing")
@@ -93,7 +94,7 @@ public class HearingManagementConsumerTest {
      * @throws Exception exception
      */
     @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
-    public RequestResponsePact validationErrorFromCreatingHearing(PactDslWithProvider builder) throws Exception {
+    public RequestResponsePact validationErrorFromCreatingHearing(PactDslWithProvider builder) {
         return builder
             .given("hmc cftHearingService throws validation error for create hearing")
             .uponReceiving("Request to create hearing")
@@ -119,7 +120,7 @@ public class HearingManagementConsumerTest {
      */
     @Test
     @PactTestFor(pactMethod = "createHearing")
-    public void shouldReturnCreatedHearing(MockServer mockServer) throws Exception {
+    public void shouldReturnCreatedHearing(MockServer mockServer) {
         JsonPath response = RestAssured
             .given()
             .headers(headers)
@@ -153,7 +154,7 @@ public class HearingManagementConsumerTest {
      */
     @Test
     @PactTestFor(pactMethod = "validationErrorFromCreatingHearing")
-    public void shouldReturn400BadRequestForCreateHearing(MockServer mockServer) throws Exception {
+    public void shouldReturn400BadRequestForCreateHearing(MockServer mockServer) {
         JsonPath response = RestAssured
             .given()
             .headers(headers)
@@ -221,13 +222,13 @@ public class HearingManagementConsumerTest {
      * create HearingDetails test data.
      * @return hearingDetails Hearing Details
      */
-    public static HearingDetails hearingDetails() {
+    public HearingDetails hearingDetails() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
-        hearingWindow.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+        hearingWindow.setHearingWindowStartDateRange(LocalDate.now());
         hearingDetails.setHearingWindow(hearingWindow);
         hearingDetails.setDuration(0);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
@@ -238,6 +239,7 @@ public class HearingManagementConsumerTest {
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
+        hearingDetails.setPanelRequirements(panelRequirements1());
         return hearingDetails;
     }
 
@@ -249,20 +251,70 @@ public class HearingManagementConsumerTest {
         CaseDetails caseDetails = new CaseDetails();
         caseDetails.setHmctsServiceCode("ABA1");
         caseDetails.setCaseRef("1111222233334444");
-        caseDetails.setRequestTimeStamp(LocalDateTime.parse("2021-08-10T12:20:00"));
+        caseDetails.setRequestTimeStamp(LocalDateTime.now());
         caseDetails.setCaseDeepLink("https://www.google.com");
         caseDetails.setHmctsInternalCaseName("Internal case name");
         caseDetails.setPublicCaseName("Public case name");
         caseDetails.setCaseManagementLocationCode("CMLC123");
         caseDetails.setCaseRestrictedFlag(false);
-        caseDetails.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));
+        caseDetails.setCaseSlaStartDate(LocalDate.now());
         CaseCategory category = new CaseCategory();
-        category.setCategoryType("caseType");
+        category.setCategoryType("caseType27");
         category.setCategoryValue("PROBATE");
         List<CaseCategory> caseCategories = new ArrayList<>();
         caseCategories.add(category);
         caseDetails.setCaseCategories(caseCategories);
         return caseDetails;
+    }
+
+    /**
+     * Create party details data.
+     * @return partyDetails Party Details
+     */
+    public PanelRequirements panelRequirements1() {
+        List<String> roleType = new ArrayList<>();
+        roleType.add("role 1");
+        roleType.add("role 2");
+        List<String> authorisationTypes = new ArrayList<>();
+        authorisationTypes.add("authorisation type 1");
+        authorisationTypes.add("authorisation type 2");
+        authorisationTypes.add("authorisation type 3");
+        List<String> authorisationSubType = new ArrayList<>();
+        authorisationSubType.add("authorisation sub 1");
+        authorisationSubType.add("authorisation sub 2");
+        authorisationSubType.add("authorisation sub 3");
+        authorisationSubType.add("authorisation sub 4");
+        final PanelPreference panelPreference1 = new PanelPreference();
+        panelPreference1.setMemberID("Member 1");
+        panelPreference1.setMemberType("Member Type 1");
+        panelPreference1.setRequirementType("WHOINC");
+        final PanelPreference panelPreference2 = new PanelPreference();
+        panelPreference2.setMemberID("Member 2");
+        panelPreference2.setMemberType("Member Type 2");
+        panelPreference2.setRequirementType("OPTINC");
+        final PanelPreference panelPreference3 = new PanelPreference();
+        panelPreference3.setMemberID("Member 3");
+        panelPreference3.setMemberType("Member Type 3");
+        panelPreference3.setRequirementType("EXCLUDE");
+        List<PanelPreference> panelPreferences = new ArrayList<>();
+        panelPreferences.add(panelPreference1);
+        panelPreferences.add(panelPreference2);
+        panelPreferences.add(panelPreference3);
+        List<String> panelSpecialisms = new ArrayList<>();
+        panelSpecialisms.add("Specialism 1");
+        panelSpecialisms.add("Specialism 2");
+        panelSpecialisms.add("Specialism 3");
+        panelSpecialisms.add("Specialism 4");
+        panelSpecialisms.add("Specialism 5");
+
+        PanelRequirements panelRequirements = new PanelRequirements();
+        panelRequirements.setRoleType(roleType);
+        panelRequirements.setAuthorisationTypes(authorisationTypes);
+        panelRequirements.setAuthorisationSubType(authorisationSubType);
+        panelRequirements.setPanelPreferences(panelPreferences);
+        panelRequirements.setPanelSpecialisms(panelSpecialisms);
+
+        return panelRequirements;
     }
 
     /**
@@ -296,6 +348,5 @@ public class HearingManagementConsumerTest {
         partyDetails.setPartyRole(partyRole);
         return partyDetails;
     }
-
 
 }
