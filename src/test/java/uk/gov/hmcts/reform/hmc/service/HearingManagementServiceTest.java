@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
@@ -16,10 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class HearingManagementServiceTest {
 
     private HearingManagementServiceImpl hearingManagementService;
+    private HearingRepository hearingRepository;
 
     @BeforeEach
     public void setUp() {
-        hearingManagementService = new HearingManagementServiceImpl();
+        hearingManagementService = new HearingManagementServiceImpl(hearingRepository);
     }
 
     @Test
