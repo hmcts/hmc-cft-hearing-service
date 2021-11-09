@@ -2,12 +2,15 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -100,15 +103,26 @@ public class CaseHearingRequestEntity {
     private String requester;
 
     @Column(name = "hearing_window_start_date_range")
-    private LocalDateTime hearingWindowStartDateRange;
+    private LocalDate hearingWindowStartDateRange;
 
     @Column(name = "hearing_window_end_date_range")
-    private LocalDateTime hearingWindowEndDateRange;
+    private LocalDate hearingWindowEndDateRange;
 
     @Column(name = "request_timestamp", nullable = false)
     private LocalDateTime requestTimeStamp;
 
     @OneToOne(mappedBy = "caseHearing")
     private CaseCategoriesEntity caseCategoriesEntity;
+
+    @OneToMany(mappedBy = "caseHearingNonStandardDurations")
+    private List<NonStandardDurationsEntity> nonStandardDurations;
+
+    @OneToMany(mappedBy = "caseHearingRequiredLocations")
+    private List<RequiredLocationsEntity> requiredLocations;
+
+    @OneToMany(mappedBy = "caseHearingRequiredFacilities")
+    private List<RequiredFacilitiesEntity> requiredFacilities;
+
+
 
 }
