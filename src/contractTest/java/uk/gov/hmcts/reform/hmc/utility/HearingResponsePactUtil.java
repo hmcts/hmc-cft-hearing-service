@@ -8,7 +8,7 @@ public class HearingResponsePactUtil {
     static final String FORMATYYYYMMDDHHMMSSZ = "yyyy-MM-dd'T'HH:mm:SSSSSS";
 
     /**
-     * generate Pact JSON body from given hearing Request
+     * generate Pact JSON body from given hearing Request.
      *
      * @return PactDslJsonBody Pact Dsl JSON body
      */
@@ -32,7 +32,7 @@ public class HearingResponsePactUtil {
     }
 
     /**
-     * append status message to given Pact Dsl JSON Body
+     * append status message to given Pact Dsl JSON Body.
      *
      * @param pdjBody       Pact Dsl JSON Body
      * @param statusMessage response status message
@@ -44,7 +44,7 @@ public class HearingResponsePactUtil {
     }
 
     /**
-     * append request details to given Pact Dsl JSON Body
+     * append request details to given Pact Dsl JSON Body.
      *
      * @param pdjBody        Pact Dsl JSON Body
      */
@@ -56,7 +56,7 @@ public class HearingResponsePactUtil {
     }
 
     /**
-     * append hearing details to given Pact Dsl JSON Body
+     * append hearing details to given Pact Dsl JSON Body.
      *
      * @param pdjBody        Pact Dsl JSON Body
      */
@@ -95,7 +95,7 @@ public class HearingResponsePactUtil {
     }
 
     /**
-     * append case details to given Pact Dsl JSON Body
+     * append case details to given Pact Dsl JSON Body.
      *
      * @param pdjBody     Pact Dsl JSON Body
      */
@@ -119,7 +119,7 @@ public class HearingResponsePactUtil {
     }
 
     /**
-     * append party details to given Pact Dsl JSON Body
+     * append party details to given Pact Dsl JSON Body.
      *
      * @param pdjBody          Pact Dsl JSON Body
      */
