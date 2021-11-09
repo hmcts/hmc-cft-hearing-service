@@ -49,6 +49,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void insertHearingRequest(HearingRequest hearingRequest) {
+        hearingRepository.saveHearing(hearingRequest);
 
     }
 
@@ -58,7 +59,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (hearingRequest.getPartyDetails() != null) {
             validatePartyDetails(hearingRequest.getPartyDetails());
         }
-
     }
 
     private void validatePartyDetails(List<PartyDetails> partyDetails) {
