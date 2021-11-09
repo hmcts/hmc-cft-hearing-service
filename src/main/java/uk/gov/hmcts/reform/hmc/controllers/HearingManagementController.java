@@ -38,7 +38,7 @@ public class HearingManagementController {
     @PostMapping(path = "/hearing", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ApiResponses(value = {
-        @ApiResponse(code = 202, message = "Hearing are valid"),
+        @ApiResponse(code = 202, message = "Hearing details are valid"),
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
     public void saveHearing(@RequestBody @Valid HearingRequest hearingRequest) {

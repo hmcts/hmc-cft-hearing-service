@@ -1,17 +1,16 @@
 package uk.gov.hmcts.reform.hmc.data;
 
-import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.reform.hmc.helper.CaseHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 
-@Service
-@Slf4j
+@Repository
 public class HearingRepositoryImpl implements  HearingRepository {
 
     private final CaseHearingRequestMapper caseHearingRequestMapper;
 
-
+    @Autowired
     public HearingRepositoryImpl(CaseHearingRequestMapper caseHearingRequestMapper) {
         this.caseHearingRequestMapper = caseHearingRequestMapper;
     }
