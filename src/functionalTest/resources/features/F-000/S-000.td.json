@@ -25,6 +25,13 @@
     "body": {
       "status": "UP",
       "components" : {
+        "db" : {
+          "status" : "UP",
+          "details" : {
+            "database" : "PostgreSQL",
+            "validationQuery" : "isValid()"
+          }
+        },
         "diskSpace" : {
           "status" : "UP",
           "details" : {
