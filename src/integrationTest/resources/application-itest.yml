@@ -1,6 +1,5 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${CFT_HEARING_SERVICE_DB_HOST:localhost}:${CFT_HEARING_SERVICE_DB_PORT:5060}/${CFT_HEARING_SERVICE_DB_NAME:hmc_cft_hearing_service}${CFT_HEARING_SERVICE_DB_OPTIONS:}
-    username: ${CFT_HEARING_SERVICE_DB_USERNAME:hmc}
-    password: ${CFT_HEARING_SERVICE_DB_PASSWORD:hmc}
+    url: jdbc:tc:postgresql:9.6:///databasename?TC_INITSCRIPT=sql/init-db.sql
+
