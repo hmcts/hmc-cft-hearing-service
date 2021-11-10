@@ -36,7 +36,7 @@ public class CaseHearingRequestMapper {
 
 
         // panel requirements
-        caseHearingRequestEntity.setLinkedFlag(hearingDetails.getHearingIsLinkedFlag());
+        caseHearingRequestEntity.setIsLinkedFlag(hearingDetails.getHearingIsLinkedFlag());
         return caseHearingRequestEntity;
 
     }

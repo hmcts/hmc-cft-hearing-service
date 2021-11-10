@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
@@ -13,10 +14,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
 
 class HearingManagementServiceTest {
 
     private HearingManagementServiceImpl hearingManagementService;
+
+    @Mock
     private HearingRepository hearingRepository;
 
     @BeforeEach
@@ -34,6 +38,7 @@ class HearingManagementServiceTest {
         hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
         hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
         hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
+        given(hearingRepository.saveHearing(hearingRequest)).willReturn(TestingUtil.hearingResponse());
         Exception exception = assertThrows(BadRequestException.class, () -> {
             hearingManagementService.saveHearingRequest(hearingRequest);
         });

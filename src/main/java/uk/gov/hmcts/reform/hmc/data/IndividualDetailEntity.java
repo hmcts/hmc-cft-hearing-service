@@ -36,7 +36,7 @@ public class IndividualDetailEntity {
     private String vulnerabilityDetails;
 
     @Column(name = "vulnerable_flag")
-    private boolean vulnerableFlag;
+    private Boolean vulnerableFlag;
 
     @Column(name = "interpreter_language")
     private String interpreterLanguage;

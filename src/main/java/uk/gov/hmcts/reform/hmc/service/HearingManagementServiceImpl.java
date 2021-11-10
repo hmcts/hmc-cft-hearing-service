@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 
 import java.util.List;
@@ -40,16 +41,16 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public void saveHearingRequest(HearingRequest hearingRequest) {
+    public HearingResponse saveHearingRequest(HearingRequest hearingRequest) {
         if (hearingRequest == null) {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
         validateHearingRequest(hearingRequest);
-        insertHearingRequest(hearingRequest);
+        return insertHearingRequest(hearingRequest);
     }
 
-    private void insertHearingRequest(HearingRequest hearingRequest) {
-        hearingRepository.saveHearing(hearingRequest);
+    private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
+        return hearingRepository.saveHearing(hearingRequest);
 
     }
 

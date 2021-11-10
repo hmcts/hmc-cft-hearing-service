@@ -25,7 +25,7 @@ public class CaseHearingRequestEntity {
     private Long caseHearingID;
 
     @Column(name = "auto_list_flag", nullable = false)
-    private boolean autoListFlag;
+    private Boolean autoListFlag;
 
     @Column(name = "hearing_type", nullable = false)
     private String hearingType;
@@ -40,10 +40,10 @@ public class CaseHearingRequestEntity {
     private Integer numberOfPhysicalAttendees;
 
     @Column(name = "hearing_in_welsh_flag")
-    private boolean hearingInWelshFlag;
+    private Boolean hearingInWelshFlag;
 
     @Column(name = "private_hearing_required_flag")
-    private boolean privateHearingRequiredFlag;
+    private Boolean privateHearingRequiredFlag;
 
     @Column(name = "lead_judge_contract_type")
     private String leadJudgeContractType;
@@ -73,13 +73,13 @@ public class CaseHearingRequestEntity {
     private String publicCaseName;
 
     @Column(name = "additional_security_required_flag")
-    private boolean additionalSecurityRequiredFlag;
+    private Boolean additionalSecurityRequiredFlag;
 
     @Column(name = "owning_location_id", nullable = false)
     private String owningLocationId;
 
     @Column(name = "case_restricted_flag", nullable = false)
-    private boolean caseRestrictedFlag;
+    private Boolean caseRestrictedFlag;
 
     @Column(name = "case_sla_start_date", nullable = false)
     private LocalDateTime caseSlaStartDate;
@@ -91,10 +91,10 @@ public class CaseHearingRequestEntity {
     private Long hearingId;
 
     @Column(name = "interpreter_booking_required_flag")
-    private boolean interpreterBookingRequiredFlag;
+    private Boolean interpreterBookingRequiredFlag;
 
     @Column(name = "is_linked_flag")
-    private boolean isLinkedFlag;
+    private Boolean isLinkedFlag;
 
     @Column(name = "listing_comments")
     private String listingComments;

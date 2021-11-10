@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import javax.validation.Valid;
@@ -41,7 +42,7 @@ public class HearingManagementController {
         @ApiResponse(code = 202, message = "Hearing details are valid"),
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
-    public void saveHearing(@RequestBody @Valid HearingRequest hearingRequest) {
-        hearingManagementService.saveHearingRequest(hearingRequest);
+    public HearingResponse saveHearing(@RequestBody @Valid HearingRequest hearingRequest) {
+        return hearingManagementService.saveHearingRequest(hearingRequest);
     }
 }
