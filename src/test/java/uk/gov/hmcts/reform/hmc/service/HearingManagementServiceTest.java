@@ -15,7 +15,7 @@ class HearingManagementServiceTest {
 
     private HearingManagementServiceImpl hearingManagementService;
 
-    @MockBean
+    @Mock
     HearingRepository hearingRepository;
 
     @BeforeEach

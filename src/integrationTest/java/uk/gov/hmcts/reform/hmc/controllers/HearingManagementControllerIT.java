@@ -30,8 +30,8 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(INSERT_DATA_SCRIPT)
     void shouldReturn204_WhenHearingExists() throws Exception {
-        stubSuccessfullyForValidHearingID("1234");
-        mockMvc.perform(get(getHearingUrl+ "/1234")
+        stubSuccessfullyForValidHearingID("123");
+        mockMvc.perform(get(getHearingUrl+ "/123")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(204))
             .andReturn();
