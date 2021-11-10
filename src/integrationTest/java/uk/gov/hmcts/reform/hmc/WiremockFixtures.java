@@ -50,7 +50,7 @@ public class WiremockFixtures {
     }
 
     public static void stubSuccessfullyForValidHearingID(String hearingId) {
-        stubFor(WireMock.post(urlEqualTo("/hearing/" + hearingId))
+        stubFor(WireMock.post(urlEqualTo("/hearing/" + hearingId + "?isValid"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .willReturn(aResponse().withStatus(HTTP_ACCEPTED)));
@@ -58,7 +58,7 @@ public class WiremockFixtures {
 
 
     public static void stubReturn404InValidHearingId(String hearingId) {
-        stubFor(WireMock.post(urlEqualTo("/hearing/" + hearingId))
+        stubFor(WireMock.post(urlEqualTo("/hearing/" + hearingId + "?isValid"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .willReturn(aResponse().withStatus(HTTP_NOT_FOUND)));

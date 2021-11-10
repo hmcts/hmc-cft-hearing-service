@@ -14,6 +14,7 @@ import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -38,10 +39,10 @@ class HearingManagementControllerTest {
 
     @Test
     void shouldReturn200_whenRequestIdIsValid() {
-        doNothing().when(hearingManagementService).getHearingRequest(Mockito.any());
+        doNothing().when(hearingManagementService).getHearingRequest(Mockito.any(), anyBoolean());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        controller.getHearing(1234L);
-        verify(hearingManagementService, times(1)).getHearingRequest(any());
+        controller.getHearing(1234L, true);
+        verify(hearingManagementService, times(1)).getHearingRequest(any(), anyBoolean());
 
     }
 

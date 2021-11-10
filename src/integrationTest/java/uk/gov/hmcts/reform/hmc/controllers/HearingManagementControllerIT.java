@@ -31,7 +31,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(INSERT_DATA_SCRIPT)
     void shouldReturn204_WhenHearingExists() throws Exception {
         stubSuccessfullyForValidHearingID("123");
-        mockMvc.perform(get(getHearingUrl + "/123")
+        mockMvc.perform(get(getHearingUrl + "/123" + "?isValid")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(204))
             .andReturn();
@@ -40,7 +40,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn404_WhenHearingIdIsInValid() throws Exception {
         stubReturn404InValidHearingId("12");
-        mockMvc.perform(get(getHearingUrl + "/12")
+        mockMvc.perform(get(getHearingUrl + "/12" + "?isValid")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andReturn();

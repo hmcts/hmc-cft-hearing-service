@@ -22,10 +22,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
 
     @Override
-    public void getHearingRequest(Long hearingId) {
-        HearingEntity hearingEntity = hearingRepository.findHearing(hearingId);
-        if (hearingEntity == null) {
-            throw new HearingNotFoundException(hearingId);
+    public void getHearingRequest(Long hearingId, boolean isValid) {
+        if (isValid) {
+            HearingEntity hearingEntity = hearingRepository.findHearing(hearingId);
+            if (hearingEntity == null) {
+                throw new HearingNotFoundException(hearingId);
+            }
         }
     }
 
