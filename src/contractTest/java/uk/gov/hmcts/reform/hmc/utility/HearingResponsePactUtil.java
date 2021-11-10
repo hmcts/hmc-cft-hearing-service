@@ -3,17 +3,23 @@ package uk.gov.hmcts.reform.hmc.utility;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 
+import java.time.Instant;
+
 public class HearingResponsePactUtil {
 
     static final String FORMATYYYYMMDD = "yyyy-MM-dd";
-    static final String FORMATYYYYMMDDHHMMSSZ = "yyyy-MM-dd'T'HH:mm:SSSSSS";
+    static final String FORMATYYYYMMDDHHMMSSSSSSZ = "yyyy-MM-dd'T'HH:mm:SSSSSS";
+    static final String FORMATYYYYMMDDHHMMSSZ = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
+    private HearingResponsePactUtil() {
+        //not called
+    }
 
     /**
      * generate Pact JSON body.
-     *
      * @return PactDslJsonBody Pact Dsl JSON body
      */
-    public PactDslJsonBody generateJsonBody() {
+    public static PactDslJsonBody generateJsonBody() {
         // Build structural parts of the JSON body
         PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
 
@@ -38,7 +44,7 @@ public class HearingResponsePactUtil {
      * @param pactDslJsonBody       Pact Dsl JSON Body
      * @param statusMessage response status message
      */
-    private void addStatusMessage(PactDslJsonBody pactDslJsonBody, String statusMessage) {
+    private static void addStatusMessage(PactDslJsonBody pactDslJsonBody, String statusMessage) {
         // append status message
         pactDslJsonBody
             .stringType("status_message", statusMessage);
@@ -49,10 +55,10 @@ public class HearingResponsePactUtil {
      *
      * @param pactDslJsonBody        Pact Dsl JSON Body
      */
-    private void addRequestDetails(PactDslJsonBody pactDslJsonBody) {
+    private static void addRequestDetails(PactDslJsonBody pactDslJsonBody) {
         pactDslJsonBody
             .object("requestDetails")
-            .datetime("requestTimeStamp", FORMATYYYYMMDDHHMMSSZ)
+            .datetime("requestTimeStamp", FORMATYYYYMMDDHHMMSSSSSSZ, Instant.parse("2021-01-29T01:23:34.123456Z"))
             .closeObject().asBody();
     }
 
@@ -61,34 +67,34 @@ public class HearingResponsePactUtil {
      *
      * @param pactDslJsonBody        Pact Dsl JSON Body
      */
-    private void addHearingDetails(PactDslJsonBody pactDslJsonBody) {
+    private static void addHearingDetails(PactDslJsonBody pactDslJsonBody) {
         // append hearingDetails object
         pactDslJsonBody
             // Simple/default equality checks for other fields so toString will do
             .object("hearingDetails")
-            .booleanType("autoListFlag")
+            .booleanType("autoListFlag", true)
             .stringType("hearingType")
             .object("hearingWindow")
               .date("hearingWindowStartDateRange", FORMATYYYYMMDD)
               .date("hearingWindowEndDateRange", FORMATYYYYMMDD)
-              .datetime("firstDateTimeMustBe", "yyyy-MM-dd'T'HH:mm:ss'Z'")
+              .datetime("firstDateTimeMustBe", FORMATYYYYMMDDHHMMSSZ, Instant.parse("2021-01-29T02:42:25.123000002Z"))
             .closeObject().asBody()
-            .integerType("duration")
+            .integerType("duration", 1)
             .eachLike("nonStandardHearingDurationReasons")
             .closeArray().asBody()
-            .stringType("hearingPriorityType")
-            .integerType("numberOfPhysicalAttendees")
-            .booleanType("hearingInWelshFlag")
+            .stringType("hearingPriorityType", "type 1")
+            .integerType("numberOfPhysicalAttendees", 3)
+            .booleanType("hearingInWelshFlag", true)
             .eachLike("hearingLocations")
-              .stringType("locationType", "Any location type")
-              .stringType("locationId", "Any location id")
+              .stringType("locationType", "Location type 1")
+              .stringType("locationId", "Location id 1")
             .closeArray().asBody()
             .eachLike("facilitiesRequired")
             .closeArray().asBody()
-            .stringType("listingComments")
-            .stringType("hearingRequester")
-            .booleanType("privateHearingRequiredFlag")
-            .stringType("leadJudgeContractType")
+            .stringType("listingComments", "One big listing of comments")
+            .stringType("hearingRequester", "hearing requester")
+            .booleanType("privateHearingRequiredFlag", false)
+            .stringType("leadJudgeContractType", "Lead contract type 1")
             .object("panelRequirements")
               .eachLike("roleType")
               .closeArray().asBody()
@@ -97,14 +103,14 @@ public class HearingResponsePactUtil {
               .eachLike("authorisationSubTypes")
               .closeArray().asBody()
               .eachLike("panelPreferences")
-                 .stringType("memberID")
-                 .stringType("memberType")
+                 .stringType("memberID", "1122334444")
+                 .stringType("memberType", "Member Type 1")
                  .eachLike("requirementType", PactDslJsonRootValue.stringMatcher("MUSTINC|OPTINC|EXCLUDE", "MUSTINC"))
               .closeArray().asBody()
               .eachLike("panelSpecialisms")
               .closeArray().asBody()
             .closeObject().asBody()
-            .booleanType("hearingIsLinkedFlag")
+            .booleanType("hearingIsLinkedFlag", true)
             .closeObject().asBody();
     }
 
@@ -113,25 +119,25 @@ public class HearingResponsePactUtil {
      *
      * @param pactDslJsonBody     Pact Dsl JSON Body
      */
-    private void addCaseDetails(PactDslJsonBody pactDslJsonBody) {
+    private static void addCaseDetails(PactDslJsonBody pactDslJsonBody) {
         // append requestDetails object
         pactDslJsonBody
             .object("caseDetails")
             .stringMatcher("hmctsServiceCode", "^\\w{4}$", "A2B4")
             .stringMatcher("caseRef", "^\\d{16}$", "1234567890123456")
-            .datetime("requestTimeStamp", "yyyy-MM-dd'T'HH:mm")
-            .stringType("externalCaseReference") // max = 70
-            .stringType("caseDeepLink") // max = 1024, match URL pattern?
-            .stringType("hmctsInternalCaseName") // max = 1024
-            .stringType("publicCaseName")// max = 1024
-            .booleanType("caseAdditionalSecurityFlag")
+            .datetime("requestTimeStamp", "yyyy-MM-dd'T'HH:mm", Instant.parse("2021-11-30T02:42:25.123000002Z"))
+            .stringType("externalCaseReference", "237dkjdhkihji933333333111dddffff2434") // max = 70
+            .stringType("caseDeepLink", "http://localhost/link") // max = 1024, match URL pattern?
+            .stringType("hmctsInternalCaseName", "HHGASlLLGGGGGGHJKKKKLLLLLKJ") // max = 1024
+            .stringType("publicCaseName","DEFRAUDED ETC")// max = 1024
+            .booleanType("caseAdditionalSecurityFlag", true)
             .eachLike("caseCategories")
               .eachLike("categoryType", PactDslJsonRootValue.stringMatcher("caseType|caseSubType", "caseType"))
-              .stringType("categoryValue") // max = 70
+              .stringType("categoryValue", "CATEGORY VALUE 1") // max = 70
             .closeArray().asBody()
-            .stringType("caseManagementLocationCode")
-            .booleanType("caseInterpreterRequiredFlag")
-            .booleanType("caserestrictedFlag") // camelCase name?!!**
+            .stringType("caseManagementLocationCode", "LOCATION 1")
+            .booleanType("caseInterpreterRequiredFlag", false)
+            .booleanType("caserestrictedFlag", false) // camelCase name?!!**
             .date("caseSLAStartDate", FORMATYYYYMMDD)
             .closeObject().asBody();
     }
@@ -141,29 +147,29 @@ public class HearingResponsePactUtil {
      *
      * @param pactDslJsonBody          Pact Dsl JSON Body
      */
-    private void addPartyDetails(PactDslJsonBody pactDslJsonBody) {
+    private static void addPartyDetails(PactDslJsonBody pactDslJsonBody) {
         // append requestDetails object
         pactDslJsonBody
             .eachLike("partyDetails")
-              .stringType("partyID") // max = 40
-              .stringType("partyType") // enum
-              .stringType("partyRole") // max = 6
+              .stringType("partyID", "PARTYIDFFJKJKLKLIOIIIIKMNMMNMSSDF") // max = 40
+              .eachLike("partyType", PactDslJsonRootValue.stringMatcher("IND|ORG", "IND"))
+              .stringType("partyRole", "ROLE01") // max = 6
               .object("individualDetails")
-                .stringType("title") // max = 40, can't be empty
-                .stringType("firstName") // max = 100, can't be empty
-                .stringType("lastName") // max = 100, can't be empty
-                .stringType("preferredHearingChannel") // max = 70
-                .stringType("interpreterLanguage") // max = 10
+                .stringType("title", "HIS ROYAL HIGHNESS") // max = 40, can't be empty
+                .stringType("firstName", "CHARLES") // max = 100, can't be empty
+                .stringType("lastName", "WINDSOR") // max = 100, can't be empty
+                .stringType("preferredHearingChannel", "CHANNEL 1") // max = 70
+                .stringType("interpreterLanguage", "FARSI") // max = 10
                 .eachLike("reasonableAdjustments")
                     .stringType("reasonableAdjustment") // max = 10
                 .closeArray().asBody()
-                .booleanType("vulnerableFlag")
+                .booleanType("vulnerableFlag", true)
                 .stringType("vulnerabilityDetails") // max = 256
                 .stringType("hearingChannelEmail") // max = 120, invalid email
                 .stringMatcher("hearingChannelPhone", "^\\+?(?:[0-9] ?){6,14}[0-9]$", "01234 112233")
                 .eachLike("relatedParties")
-                  .stringType("relatedPartyID") // max = 2000
-                  .stringType("relationshipType") // max = 2000
+                  .stringType("relatedPartyID", "RELATED PARTY 1") // max = 2000
+                  .stringType("relationshipType", "RELATIONSHIP TYPE 1") // max = 2000
                 .closeArray().asBody()
               .closeObject().asBody()
             .closeArray().asBody();

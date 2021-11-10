@@ -50,16 +50,15 @@ public class HearingManagementConsumerTest {
     private static final String SERVICE_AUTHORIZATION_TOKEN = "pact-test-s2s-token";
 
     private static final String PATH_HEARING = "/hearing";
+    private static final PactDslJsonBody pactdsljsonbodyResponse = HearingResponsePactUtil.generateJsonBody();
 
     // Test data 1 - valid HearingRequest
-    HearingRequest validHearingRequest1 = createValidCreateHearingRequest();
-    String jsonstringRequest1 = toHearingRequestJsonString(validHearingRequest1);
-    HearingResponsePactUtil hrPactUtil = new HearingResponsePactUtil();
-    PactDslJsonBody pactdsljsonbodyResponse = hrPactUtil.generateJsonBody();
+    HearingRequest validHearingRequest = createValidCreateHearingRequest();
+    String jsonstringRequest1 = toHearingRequestJsonString(validHearingRequest);
 
     // Test data 2 - invalid HearingRequest
-    HearingRequest invalidHearingRequest2 = createInvalidCreateHearingRequest();
-    String jsonstringRequest2 = toHearingRequestJsonString(invalidHearingRequest2);
+    HearingRequest invalidHearingRequest = createInvalidCreateHearingRequest();
+    String jsonstringRequest2 = toHearingRequestJsonString(invalidHearingRequest);
 
     static Map<String, String> headers = Map.of(
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,
@@ -125,7 +124,7 @@ public class HearingManagementConsumerTest {
             .given()
             .headers(headers)
             .contentType(io.restassured.http.ContentType.JSON)
-            .body(toHearingRequestJsonString(validHearingRequest1))
+            .body(toHearingRequestJsonString(validHearingRequest))
             .when()
             .post(mockServer.getUrl() + PATH_HEARING)
             .then()
