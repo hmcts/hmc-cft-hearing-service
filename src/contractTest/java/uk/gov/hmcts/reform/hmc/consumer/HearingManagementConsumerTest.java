@@ -18,16 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.hmc.model.CaseCategory;
-import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.HearingDetails;
-import uk.gov.hmcts.reform.hmc.model.HearingLocation;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
-import uk.gov.hmcts.reform.hmc.model.HearingWindow;
-import uk.gov.hmcts.reform.hmc.model.PanelPreference;
-import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
-import uk.gov.hmcts.reform.hmc.model.PartyDetails;
-import uk.gov.hmcts.reform.hmc.model.RequestDetails;
+import uk.gov.hmcts.reform.hmc.model.*;
 import uk.gov.hmcts.reform.hmc.utility.HearingResponsePactUtil;
 
 import java.time.LocalDate;
@@ -50,7 +41,11 @@ public class HearingManagementConsumerTest {
     private static final String SERVICE_AUTHORIZATION_TOKEN = "pact-test-s2s-token";
 
     private static final String PATH_HEARING = "/hearing";
-    private static final PactDslJsonBody pactdsljsonbodyResponse = HearingResponsePactUtil.generateJsonBody();
+
+    private static final PactDslJsonBody pactdsljsonbodyIndividualResponse =
+        HearingResponsePactUtil.generateJsonBody(true);
+    private static final PactDslJsonBody pactdsljsonbodyOrganisationResponse =
+        HearingResponsePactUtil.generateJsonBody(false);
 
     // Test data 1 - valid HearingRequest
     HearingRequest validHearingRequest = createValidCreateHearingRequest();
@@ -66,28 +61,52 @@ public class HearingManagementConsumerTest {
     );
 
     /**
-     * create Hearing - send valid request.
+     * create Hearing with Individual - send valid request.
+     *
      * @param builder Builder object
      * @return response Response object
      * @throws Exception exception
      */
     @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
-    public RequestResponsePact createHearing(PactDslWithProvider builder) {
+    public RequestResponsePact createHearingWithIndividual(PactDslWithProvider builder) {
         return builder
-            .given("hmc cftHearingService successfully returns created hearing")
-            .uponReceiving("Request to create hearing")
+            .given("hmc cftHearingService successfully returns created hearing with individual")
+            .uponReceiving("Request to create hearing with individual details")
             .path(PATH_HEARING)
             .method(HttpMethod.POST.toString())
             .body(jsonstringRequest1, ContentType.APPLICATION_JSON)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.ACCEPTED.value())
-            .body(pactdsljsonbodyResponse)
+            .body(pactdsljsonbodyIndividualResponse)
+            .toPact();
+    }
+
+    /**
+     * create Hearing with Organisation- send valid request.
+     *
+     * @param builder Builder object
+     * @return response Response object
+     * @throws Exception exception
+     */
+    @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
+    public RequestResponsePact createHearingWithOrganisation(PactDslWithProvider builder) {
+        return builder
+            .given("hmc cftHearingService successfully returns created hearing with organisation")
+            .uponReceiving("Request to create hearing with organisation details")
+            .path(PATH_HEARING)
+            .method(HttpMethod.POST.toString())
+            .body(jsonstringRequest1, ContentType.APPLICATION_JSON)
+            .headers(headers)
+            .willRespondWith()
+            .status(HttpStatus.ACCEPTED.value())
+            .body(pactdsljsonbodyOrganisationResponse)
             .toPact();
     }
 
     /**
      * validation error from create Hearing - send faulty request.
+     *
      * @param builder builder object
      * @return response RequestResponsePact
      * @throws Exception exception
@@ -114,25 +133,37 @@ public class HearingManagementConsumerTest {
 
     /**
      * test expects to return the created hearing.
+     *
      * @param mockServer MockServer
      * @throws Exception exception
      */
     @Test
-    @PactTestFor(pactMethod = "createHearing")
-    public void shouldReturnCreatedHearing(MockServer mockServer) {
-        JsonPath response = RestAssured
-            .given()
-            .headers(headers)
-            .contentType(io.restassured.http.ContentType.JSON)
-            .body(toHearingRequestJsonString(validHearingRequest))
-            .when()
-            .post(mockServer.getUrl() + PATH_HEARING)
-            .then()
-            .statusCode(202)
-            .and()
-            .extract()
-            .body()
-            .jsonPath();
+    @PactTestFor(pactMethod = "createHearingWithIndividual")
+    public void shouldReturnCreatedHearingWithIndividual(MockServer mockServer) {
+        JsonPath response = getRestAssuredJsonPath(mockServer);
+
+        assertThat(response.getString("caseDetails"))
+            .isNotEmpty();
+        assertThat(response.getString("requestDetails"))
+            .isNotEmpty();
+        assertThat(response.getString("hearingDetails"))
+            .isNotEmpty();
+        assertThat(response.getString("partyDetails"))
+            .isNotEmpty();
+        assertThat(response.getString("status_message"))
+            .isEqualTo("Hearing created successfully");
+    }
+
+    /**
+     * test expects to return the created hearing.
+     *
+     * @param mockServer MockServer
+     * @throws Exception exception
+     */
+    @Test
+    @PactTestFor(pactMethod = "createHearingWithOrganisation")
+    public void shouldReturnCreatedHearingWithOrganisation(MockServer mockServer) {
+        JsonPath response = getRestAssuredJsonPath(mockServer);
 
         assertThat(response.getString("status_message"))
             .isEqualTo("Hearing created successfully");
@@ -147,7 +178,29 @@ public class HearingManagementConsumerTest {
     }
 
     /**
+     * getRestAssuredJsonPath
+     *
+     * @param mockServer MockServer
+     */
+    public JsonPath getRestAssuredJsonPath(MockServer mockServer) {
+        return RestAssured
+            .given()
+            .headers(headers)
+            .contentType(io.restassured.http.ContentType.JSON)
+            .body(toHearingRequestJsonString(validHearingRequest))
+            .when()
+            .post(mockServer.getUrl() + PATH_HEARING)
+            .then()
+            .statusCode(202)
+            .and()
+            .extract()
+            .body()
+            .jsonPath();
+    }
+
+    /**
      * test expects an error 400.
+     *
      * @param mockServer MockServer object
      * @throws Exception exception
      */
@@ -174,6 +227,7 @@ public class HearingManagementConsumerTest {
 
     /**
      * create a Valid Create Hearing Request.
+     *
      * @return HearingRequest hearing request
      */
     private HearingRequest createValidCreateHearingRequest() {
@@ -187,6 +241,7 @@ public class HearingManagementConsumerTest {
 
     /**
      * create an Invalid Create Hearing Request - omit caseDetails.
+     *
      * @return HearingRequest hearing request
      */
     private HearingRequest createInvalidCreateHearingRequest() {
@@ -199,16 +254,21 @@ public class HearingManagementConsumerTest {
 
     /**
      * get JSON String from hearing Request.
+     *
      * @return String JSON string of hearing Request
      */
     private String toHearingRequestJsonString(HearingRequest hearingRequest) {
         JSONObject jsonObject = new JSONObject(hearingRequest);
-        logger.debug("hearingRequest to JSON: {}", jsonObject);
-        return jsonObject.toString();
+        String jsonString = jsonObject.toString().replace("autoListFlag", "autolistFlag")
+            .replace("caseRestrictedFlag", "caserestrictedFlag")
+            .replace("caseSlaStartDate", "caseSLAStartDate");
+        logger.debug("hearingRequest to JSON: {}", jsonString);
+        return jsonString;
     }
 
     /**
      * Create Request Details test data.
+     *
      * @return requestDetails Request Details
      */
     private RequestDetails requestDetails() {
@@ -219,6 +279,7 @@ public class HearingManagementConsumerTest {
 
     /**
      * create HearingDetails test data.
+     *
      * @return hearingDetails Hearing Details
      */
     public HearingDetails hearingDetails() {
@@ -244,6 +305,7 @@ public class HearingManagementConsumerTest {
 
     /**
      * Create Case Details tets data.
+     *
      * @return caseDetails Case Details
      */
     public CaseDetails caseDetails() {
@@ -258,7 +320,7 @@ public class HearingManagementConsumerTest {
         caseDetails.setCaseRestrictedFlag(false);
         caseDetails.setCaseSlaStartDate(LocalDate.now());
         CaseCategory category = new CaseCategory();
-        category.setCategoryType("caseType27");
+        category.setCategoryType("caseType");
         category.setCategoryValue("PROBATE");
         List<CaseCategory> caseCategories = new ArrayList<>();
         caseCategories.add(category);
@@ -268,6 +330,7 @@ public class HearingManagementConsumerTest {
 
     /**
      * Create party details data.
+     *
      * @return partyDetails Party Details
      */
     public PanelRequirements panelRequirements1() {
@@ -286,7 +349,7 @@ public class HearingManagementConsumerTest {
         final PanelPreference panelPreference1 = new PanelPreference();
         panelPreference1.setMemberID("Member 1");
         panelPreference1.setMemberType("Member Type 1");
-        panelPreference1.setRequirementType("WHOINC");
+        panelPreference1.setRequirementType("MUSTINC");
         final PanelPreference panelPreference2 = new PanelPreference();
         panelPreference2.setMemberID("Member 2");
         panelPreference2.setMemberType("Member Type 2");
@@ -318,34 +381,137 @@ public class HearingManagementConsumerTest {
 
     /**
      * Create party details data.
+     *
      * @return partyDetails Party Details
      */
     public List<PartyDetails> partyDetails1() {
         ArrayList<PartyDetails> partyDetailsArrayList = new ArrayList<>();
-        partyDetailsArrayList.add(createPartyDetails("P1", "IND", "DEF"));
-        partyDetailsArrayList.add(createPartyDetails("P2", "IND", "DEF2"));
+        partyDetailsArrayList.add(createPartyDetails("P1", "IND", "DEF", createOrganisationDetails()));
+        partyDetailsArrayList.add(createPartyDetails("P2", "IND", "DEF2", createIndividualDetails()));
         return partyDetailsArrayList;
     }
 
     /**
      * Create party details data.
+     *
      * @return partyDetails Party Details
      */
     public List<PartyDetails> partyDetails2() {
         ArrayList<PartyDetails> partyDetailsArrayList = new ArrayList<>();
-        partyDetailsArrayList.add(createPartyDetails("P1", "IND", "DEF"));
-        partyDetailsArrayList.add(createPartyDetails("P2", "IND2", "DEF2"));
-        partyDetailsArrayList.add(createPartyDetails("P3", "IND3", "DEF3"));
-        partyDetailsArrayList.add(createPartyDetails("P4", "IND4", "DEF4"));
+        partyDetailsArrayList.add(createPartyDetails("P1", "IND", "DEF", createOrganisationDetails()));
+        partyDetailsArrayList.add(createPartyDetails("P2", "IND2", "DEF2", createIndividualDetails()));
+        partyDetailsArrayList.add(createPartyDetails("P3", "IND3", "DEF3", createOrganisationDetails()));
+        partyDetailsArrayList.add(createPartyDetails("P4", "IND4", "DEF4", createIndividualDetails()));
         return partyDetailsArrayList;
     }
 
-    private PartyDetails createPartyDetails(String partyID, String partyType, String partyRole) {
+    private PartyDetails createPartyDetails(String partyID, String partyType, String partyRole, OrganisationDetails organisationDetails) {
         PartyDetails partyDetails = new PartyDetails();
         partyDetails.setPartyID(partyID);
         partyDetails.setPartyType(partyType);
         partyDetails.setPartyRole(partyRole);
+        partyDetails.setOrganisationDetails(organisationDetails);
         return partyDetails;
+    }
+
+    private OrganisationDetails createOrganisationDetails() {
+        OrganisationDetails organisationDetails = new OrganisationDetails();
+        organisationDetails.setName("name");
+        organisationDetails.setOrganisationType("organisationType");
+        organisationDetails.setCftOrganisationID("cftOrganisationId01001");
+        return organisationDetails;
+    }
+
+    private IndividualDetails createIndividualDetails() {
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setTitle("Master");
+        individualDetails.setFirstName("Harry");
+        individualDetails.setLastName("Styles");
+        individualDetails.setHearingChannelEmail("harry.styles.neveragin@gmailsss.com");
+        individualDetails.setInterpreterLanguage("German");
+        individualDetails.setPreferredHearingChannel("CBeebies");
+        individualDetails.setReasonableAdjustments(createReasonableAdjustments());
+        individualDetails.setRelatedParties(createRelatedParties());
+        individualDetails.setVulnerableFlag(false);
+        individualDetails.setVulnerabilityDetails("Vulnerability details 1");
+        return individualDetails;
+    }
+
+    private List<RelatedParty> createRelatedParties() {
+        List<RelatedParty> relatedParties = new ArrayList<>();
+        RelatedParty relatedParty1 = new RelatedParty();
+        relatedParty1.setRelatedPartyID("relatedParty1111");
+        relatedParty1.setRelationshipType("Family");
+        RelatedParty relatedParty2 = new RelatedParty();
+        relatedParty1.setRelatedPartyID("relatedParty3333");
+        relatedParty1.setRelationshipType("Blood Brother");
+
+        relatedParties.add(relatedParty1);
+        relatedParties.add(relatedParty2);
+        return relatedParties;
+    }
+
+    private PartyDetails createPartyDetails(String partyID, String partyType, String partyRole, IndividualDetails individualDetails) {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID(partyID);
+        partyDetails.setPartyType(partyType);
+        partyDetails.setPartyRole(partyRole);
+        partyDetails.setIndividualDetails(individualDetails);
+
+        partyDetails.setUnavailabilityRanges(createUnavailableDateRanges());
+        partyDetails.setUnavailabilityDow(createUnavailableDaysOfTheWeek());
+        return partyDetails;
+    }
+
+    /**
+     * get Unavailability Date Ranges.
+     * @return List<UnavailabilityDow>
+     */
+    private List<String> createReasonableAdjustments() {
+        List<String> reasonableAdjustments = new ArrayList<>();
+        reasonableAdjustments.add("adjust 1");
+        reasonableAdjustments.add("adjust 2");
+        reasonableAdjustments.add("adjust 3");
+        return reasonableAdjustments;
+    }
+
+    /**
+     * get Unavailability Date Ranges.
+     * @return List<UnavailabilityDow>
+     */
+    private List<UnavailabilityRanges> createUnavailableDateRanges() {
+        List<UnavailabilityRanges> listUnavailabilityRanges = new ArrayList<>();
+        UnavailabilityRanges unavailabilityRanges1 = new UnavailabilityRanges();
+        unavailabilityRanges1.setUnavailableFromDate(LocalDate.parse("2021-01-01"));
+        unavailabilityRanges1.setUnavailableToDate(LocalDate.parse("2021-01-15"));
+        UnavailabilityRanges unavailabilityRanges2 = new UnavailabilityRanges();
+        unavailabilityRanges2.setUnavailableFromDate(LocalDate.parse("2021-06-01"));
+        unavailabilityRanges2.setUnavailableToDate(LocalDate.parse("2021-06-21"));
+
+        listUnavailabilityRanges.add(unavailabilityRanges1);
+        listUnavailabilityRanges.add(unavailabilityRanges2);
+        return listUnavailabilityRanges;
+    }
+
+    /**
+     * get Days of the Week Unavailability.
+     * @return List<UnavailabilityDow>
+     */
+    private List<UnavailabilityDow> createUnavailableDaysOfTheWeek() {
+        List<UnavailabilityDow> unavailabilityDows = new ArrayList<>();
+        UnavailabilityDow unavailabilityDowFriday = new UnavailabilityDow();
+        unavailabilityDowFriday.setDowUnavailabilityType(DowUnavailabilityType.PM.getLabel());
+        unavailabilityDowFriday.setDow(Dow.FRIDAY.getLabel());
+        UnavailabilityDow unavailabilityDowSaturday = new UnavailabilityDow();
+        unavailabilityDowSaturday.setDowUnavailabilityType(DowUnavailabilityType.ALL.getLabel());
+        unavailabilityDowSaturday.setDow(Dow.SATURDAY.getLabel());
+        UnavailabilityDow unavailabilityDowSunday = new UnavailabilityDow();
+        unavailabilityDowSunday.setDowUnavailabilityType(DowUnavailabilityType.ALL.getLabel());
+        unavailabilityDowSunday.setDow(Dow.SUNDAY.getLabel());
+        unavailabilityDows.add(unavailabilityDowFriday);
+        unavailabilityDows.add(unavailabilityDowSaturday);
+        unavailabilityDows.add(unavailabilityDowSunday);
+        return unavailabilityDows;
     }
 
 }

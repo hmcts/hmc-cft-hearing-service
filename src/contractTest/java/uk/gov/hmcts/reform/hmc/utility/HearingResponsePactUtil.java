@@ -19,7 +19,7 @@ public class HearingResponsePactUtil {
      * generate Pact JSON body.
      * @return PactDslJsonBody Pact Dsl JSON body
      */
-    public static PactDslJsonBody generateJsonBody() {
+    public static PactDslJsonBody generateJsonBody(Boolean individualDetails) {
         // Build structural parts of the JSON body
         PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
 
@@ -32,7 +32,11 @@ public class HearingResponsePactUtil {
         // Case Details object
         addCaseDetails(pactDslJsonBody);
         // List of Party Details
-        addPartyDetails(pactDslJsonBody);
+        if (Boolean.TRUE.equals(individualDetails)) {
+            addPartyAndIndividualDetails(pactDslJsonBody);
+        } else {
+            addPartyAndOrganisationDetails(pactDslJsonBody);
+        }
 
         // return constructed body
         return pactDslJsonBody;
@@ -147,7 +151,7 @@ public class HearingResponsePactUtil {
      *
      * @param pactDslJsonBody          Pact Dsl JSON Body
      */
-    private static void addPartyDetails(PactDslJsonBody pactDslJsonBody) {
+    private static void addPartyAndIndividualDetails(PactDslJsonBody pactDslJsonBody) {
         // append requestDetails object
         pactDslJsonBody
             .eachLike("partyDetails")
@@ -171,6 +175,26 @@ public class HearingResponsePactUtil {
                   .stringType("relatedPartyID", "RELATED PARTY 1") // max = 2000
                   .stringType("relationshipType", "RELATIONSHIP TYPE 1") // max = 2000
                 .closeArray().asBody()
+              .closeObject().asBody()
+            .closeArray().asBody();
+    }
+
+    /**
+     * append party details to given Pact Dsl JSON Body.
+     *
+     * @param pactDslJsonBody          Pact Dsl JSON Body
+     */
+    private static void addPartyAndOrganisationDetails(PactDslJsonBody pactDslJsonBody) {
+        // append requestDetails object
+        pactDslJsonBody
+            .eachLike("partyDetails")
+              .stringType("partyID", "PARTYIDFFJKJKLKLIOIIIIKMNMMNMSSDF") // max = 40
+              .eachLike("partyType", PactDslJsonRootValue.stringMatcher("IND|ORG", "IND"))
+              .stringType("partyRole", "ROLE01") // max = 6
+              .object("organisationDetails")
+                .stringType("name", "CGI LIMITED") // max = 2000, can't be empty
+                .stringType("organisationType", "BUSINESS") // max = 60, can't be empty
+                .stringType("cftOrganisationID", "CGI122333111X") // max = 60, can't be empty
               .closeObject().asBody()
             .closeArray().asBody();
     }
