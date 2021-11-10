@@ -20,7 +20,7 @@ class GetWelcomeTest {
     private transient MockMvc mockMvc;
 
     @MockBean
-    private HearingManagementService hms;
+    private HearingManagementService hearingManagementService;
 
     @DisplayName("Should welcome upon root request with 200 response code")
     @Test

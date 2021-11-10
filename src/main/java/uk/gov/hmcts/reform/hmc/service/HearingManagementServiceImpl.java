@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
@@ -22,6 +23,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAIL
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
 
 @Service
+@Component
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
 
@@ -32,9 +34,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.hearingRepository = hearingRepository;
     }
 
+
     @Override
-    public void getHearingRequest(String hearingId) {
-        HearingEntity hearingEntity = hearingRepository.getHearingByHearingId(hearingId);
+    public void getHearingRequest(Long hearingId) {
+       HearingEntity hearingEntity =  hearingRepository.findHearing(hearingId);
         if (hearingEntity == null) {
             throw new HearingNotFoundException(hearingId);
         }
@@ -102,4 +105,4 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
 
 
-
+}

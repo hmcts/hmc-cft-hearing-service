@@ -17,6 +17,7 @@ public class HearingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "hearing_id")
     private Long id;
 
     @Column(name = "status", nullable = false)

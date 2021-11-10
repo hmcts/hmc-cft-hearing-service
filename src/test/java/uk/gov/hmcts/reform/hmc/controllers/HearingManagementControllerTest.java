@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -36,6 +37,15 @@ class HearingManagementControllerTest {
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
+
+    @Test
+    void shouldReturn200_whenRequestIdIsValid() {
+        doNothing().when(hearingManagementService).getHearingRequest(Mockito.any());
+        HearingManagementController controller = new HearingManagementController(hearingManagementService);
+        controller.getHearing(1234L);
+        verify(hearingManagementService, times(1)).getHearingRequest(any());
+
     }
 
     @Test

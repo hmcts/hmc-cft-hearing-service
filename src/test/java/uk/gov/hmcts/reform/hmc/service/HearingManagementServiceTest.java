@@ -3,6 +3,15 @@ package uk.gov.hmcts.reform.hmc.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingRepository;
+import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
@@ -21,14 +30,37 @@ class HearingManagementServiceTest {
     private HearingManagementServiceImpl hearingManagementService;
 
     @Mock
-    private HearingRepository hearingRepository;
+    HearingRepository hearingRepository;
 
     @BeforeEach
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         hearingManagementService = new HearingManagementServiceImpl(hearingRepository);
     }
 
     @Test
+    void shouldFailWithInvalidHearingId() {
+        HearingEntity hearing = new HearingEntity();
+        hearing.setStatus("RESPONDED");
+        hearing.setId(1L);
+
+        Exception exception = assertThrows(HearingNotFoundException.class, () -> {
+            hearingManagementService.getHearingRequest(1L);
+        });
+        assertEquals("No hearing found for reference: 1", exception.getMessage());
+    }
+
+    @Test
+    void shouldPassWithValidHearingId() {
+        HearingEntity hearing = new HearingEntity();
+        hearing.setStatus("RESPONDED");
+        hearing.setId(1L);
+        when(hearingRepository.findHearing(1L)).thenReturn(hearing);
+        hearingManagementService.getHearingRequest(1L);
+        verify(hearingRepository).findHearing(1L);
+
+    }
+
     void shouldFailAsHearingWindowDetailsNotPresent() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());

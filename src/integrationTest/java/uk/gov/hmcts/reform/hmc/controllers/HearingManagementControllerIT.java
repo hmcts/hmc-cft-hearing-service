@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -12,8 +15,11 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404InValidHearingId;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyForValidHearingID;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidateHearingObject;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyValidateHearingObject;
+
 
 class HearingManagementControllerIT extends BaseTest {
 
@@ -25,21 +31,23 @@ class HearingManagementControllerIT extends BaseTest {
 
     private String getHearingUrl = "/hearing";
 
-    private String url = "/hearing";
+    private static final String INSERT_DATA_SCRIPT = "classpath:sql/insert-hearing.sql";
 
-    /*@Test
+
+    @Test
+    @Sql(INSERT_DATA_SCRIPT)
     void shouldReturn204_WhenHearingExists() throws Exception {
-        // stubSuccessfullyValidateHearingObject(hearingRequest);
-        mockMvc.perform(get(getHearingUrl + "/10")
+        stubSuccessfullyForValidHearingID("123");
+        mockMvc.perform(get(getHearingUrl+ "/123")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(204))
             .andReturn();
     }
-*/
+
     @Test
     void shouldReturn404_WhenHearingIdIsInValid() throws Exception {
-
-        mockMvc.perform(get(getHearingUrl + "/12")
+        stubReturn404InValidHearingId("12");
+        mockMvc.perform(get(getHearingUrl+"/12")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andReturn();
