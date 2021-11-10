@@ -3,13 +3,15 @@ package uk.gov.hmcts.reform.hmc.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class HearingManagementServiceTest {
 
@@ -20,6 +22,7 @@ class HearingManagementServiceTest {
 
     @BeforeEach
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         hearingManagementService = new HearingManagementServiceImpl(hearingRepository);
     }
 
@@ -28,10 +31,22 @@ class HearingManagementServiceTest {
         HearingEntity hearing = new HearingEntity();
         hearing.setStatus("RESPONDED");
         hearing.setId(1L);
+
         Exception exception = assertThrows(HearingNotFoundException.class, () -> {
             hearingManagementService.getHearingRequest(1L);
         });
-        assertEquals("No hearing found for reference: 1L", exception.getMessage());
+        assertEquals("No hearing found for reference: 1", exception.getMessage());
+    }
+
+    @Test
+    void shouldPassWithValidHearingId() {
+        HearingEntity hearing = new HearingEntity();
+        hearing.setStatus("RESPONDED");
+        hearing.setId(1L);
+        when(hearingRepository.findHearing(1L)).thenReturn(hearing);
+        hearingManagementService.getHearingRequest(1L);
+        verify(hearingRepository).findHearing(1L);
+
     }
 
 
