@@ -11,7 +11,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -50,7 +49,6 @@ class HearingManagementControllerTest {
 
     @Test
     void shouldReturn400_whenRequest_Details_Are_NotPresent() {
-        doNothing().when(hearingManagementService).saveHearingRequest(Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -62,7 +60,6 @@ class HearingManagementControllerTest {
 
     @Test
     void shouldReturn400_whenHearing_Details_Are_NotPresent() {
-        doNothing().when(hearingManagementService).saveHearingRequest(Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -73,7 +70,6 @@ class HearingManagementControllerTest {
 
     @Test
     void shouldReturn400_whenCase_Details_Are_NotPresent() {
-        doNothing().when(hearingManagementService).saveHearingRequest(Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -83,8 +79,7 @@ class HearingManagementControllerTest {
     }
 
     @Test
-    void shouldReturn202_whenHearingRequestDeta() {
-        doNothing().when(hearingManagementService).saveHearingRequest(Mockito.any());
+    void shouldReturn202_whenHearingRequestData() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());

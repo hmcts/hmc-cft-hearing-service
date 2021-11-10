@@ -2,12 +2,9 @@ package uk.gov.hmcts.reform.hmc.controllers;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -37,8 +34,6 @@ public class HearingManagementController {
     })
     public void getHearing(@PathVariable("id") Long hearingId) {
         //    @RequestAttribute(value = "isValid", required = false) Boolean isvalid
-            hearingManagementService.getHearingRequest(hearingId);
-    public void getHearing(@PathVariable("id") String hearingId) {
         hearingManagementService.getHearingRequest(hearingId);
     }
 

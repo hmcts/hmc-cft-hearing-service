@@ -37,7 +37,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     @Override
     public void getHearingRequest(Long hearingId) {
-       HearingEntity hearingEntity =  hearingRepository.findHearing(hearingId);
+        HearingEntity hearingEntity = hearingRepository.findHearing(hearingId);
         if (hearingEntity == null) {
             throw new HearingNotFoundException(hearingId);
         }
@@ -100,9 +100,4 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
         }
     }
-}
-
-
-
-
 }

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc;
 
-import com.github.tomakehurst.wiremock.core.WireMockApp;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;

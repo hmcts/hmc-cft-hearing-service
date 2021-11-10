@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.hmc;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -13,6 +11,8 @@ import com.github.tomakehurst.wiremock.extension.Parameters;
 import com.github.tomakehurst.wiremock.extension.ResponseDefinitionTransformer;
 import com.github.tomakehurst.wiremock.http.Request;
 import com.github.tomakehurst.wiremock.http.ResponseDefinition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -52,7 +52,7 @@ public class WiremockFixtures {
     }
 
     public static void stubSuccessfullyForValidHearingID(String hearingId) {
-        stubFor(WireMock.post(urlEqualTo("/hearing/" + hearingId))
+        stubFor(WireMock.get(urlEqualTo("/hearing/" + hearingId))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .willReturn(aResponse().withStatus(HTTP_ACCEPTED)));
@@ -60,10 +60,12 @@ public class WiremockFixtures {
 
 
     public static void stubReturn404InValidHearingId(String hearingId) {
-        stubFor(WireMock.post(urlEqualTo("/hearing/"+ hearingId))
+        stubFor(WireMock.get(urlEqualTo("/hearing/" + hearingId))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .willReturn(aResponse().withStatus(HTTP_NOT_FOUND)));
+    }
+
     public static void stubSuccessfullyValidateHearingObject(HearingRequest hearingRequest) {
         stubFor(WireMock.post(urlEqualTo("/hearing"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
