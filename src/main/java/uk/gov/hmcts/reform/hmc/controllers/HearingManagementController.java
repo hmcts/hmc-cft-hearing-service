@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import javax.validation.Valid;
+
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -33,7 +35,6 @@ public class HearingManagementController {
         @ApiResponse(code = 404, message = "Invalid hearing id")
     })
     public void getHearing(@PathVariable("id") Long hearingId) {
-        //    @RequestAttribute(value = "isValid", required = false) Boolean isvalid
         hearingManagementService.getHearingRequest(hearingId);
     }
 
