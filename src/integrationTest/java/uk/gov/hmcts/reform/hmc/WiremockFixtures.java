@@ -14,14 +14,13 @@ import com.github.tomakehurst.wiremock.http.ResponseDefinition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
 public class WiremockFixtures {
@@ -59,7 +58,7 @@ public class WiremockFixtures {
 
 
     public static void stubReturn404InValidHearingId(String hearingId) {
-        stubFor(WireMock.post(urlEqualTo("/hearing/"+ hearingId))
+        stubFor(WireMock.post(urlEqualTo("/hearing/" + hearingId))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .willReturn(aResponse().withStatus(HTTP_NOT_FOUND)));
