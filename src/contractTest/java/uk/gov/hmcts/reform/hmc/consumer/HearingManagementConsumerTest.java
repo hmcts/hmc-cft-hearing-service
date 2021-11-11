@@ -18,7 +18,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.hmc.model.*;
+import uk.gov.hmcts.reform.hmc.model.CaseCategory;
+import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.Dow;
+import uk.gov.hmcts.reform.hmc.model.DowUnavailabilityType;
+import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.HearingLocation;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
+import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
+import uk.gov.hmcts.reform.hmc.model.PanelPreference;
+import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
+import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.model.RelatedParty;
+import uk.gov.hmcts.reform.hmc.model.RequestDetails;
+import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
+import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.utility.HearingResponsePactUtil;
 
 import java.time.LocalDate;
@@ -178,7 +194,7 @@ public class HearingManagementConsumerTest {
     }
 
     /**
-     * getRestAssuredJsonPath
+     * get RestAssuredJsonPath.
      *
      * @param mockServer MockServer
      */
@@ -405,15 +421,10 @@ public class HearingManagementConsumerTest {
         return partyDetailsArrayList;
     }
 
-    private PartyDetails createPartyDetails(String partyID, String partyType, String partyRole, OrganisationDetails organisationDetails) {
-        PartyDetails partyDetails = new PartyDetails();
-        partyDetails.setPartyID(partyID);
-        partyDetails.setPartyType(partyType);
-        partyDetails.setPartyRole(partyRole);
-        partyDetails.setOrganisationDetails(organisationDetails);
-        return partyDetails;
-    }
-
+    /**
+     * create Organisation Details.
+     * @return OrganisationDetails organisation Details
+     */
     private OrganisationDetails createOrganisationDetails() {
         OrganisationDetails organisationDetails = new OrganisationDetails();
         organisationDetails.setName("name");
@@ -422,6 +433,10 @@ public class HearingManagementConsumerTest {
         return organisationDetails;
     }
 
+    /**
+     * create Individual Details.
+     * @return IndividualDetails individual Details
+     */
     private IndividualDetails createIndividualDetails() {
         IndividualDetails individualDetails = new IndividualDetails();
         individualDetails.setTitle("Master");
@@ -437,21 +452,52 @@ public class HearingManagementConsumerTest {
         return individualDetails;
     }
 
+    /**
+     * create Related Parties.
+     * @return List>RelatedParties>
+     */
     private List<RelatedParty> createRelatedParties() {
-        List<RelatedParty> relatedParties = new ArrayList<>();
         RelatedParty relatedParty1 = new RelatedParty();
         relatedParty1.setRelatedPartyID("relatedParty1111");
         relatedParty1.setRelationshipType("Family");
         RelatedParty relatedParty2 = new RelatedParty();
-        relatedParty1.setRelatedPartyID("relatedParty3333");
-        relatedParty1.setRelationshipType("Blood Brother");
+        relatedParty2.setRelatedPartyID("relatedParty3333");
+        relatedParty2.setRelationshipType("Blood Brother");
 
+        List<RelatedParty> relatedParties = new ArrayList<>();
         relatedParties.add(relatedParty1);
         relatedParties.add(relatedParty2);
         return relatedParties;
     }
 
-    private PartyDetails createPartyDetails(String partyID, String partyType, String partyRole, IndividualDetails individualDetails) {
+    /**
+     * create Party Details.
+     * @param partyID party Id
+     * @param partyType party Type
+     * @param partyRole party Role
+     * @param organisationDetails organisation Details
+     * @return PartyDetails party details
+     */
+    private PartyDetails createPartyDetails(String partyID, String partyType, String partyRole,
+                                            OrganisationDetails organisationDetails) {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID(partyID);
+        partyDetails.setPartyType(partyType);
+        partyDetails.setPartyRole(partyRole);
+        partyDetails.setOrganisationDetails(organisationDetails);
+        return partyDetails;
+    }
+
+    /**
+     * create Party Details.
+     * @param partyID party Id
+     * @param partyType party Type
+     * @param partyRole party Role
+     * @param individualDetails individual Details
+     * @return PartyDetails
+     */
+    private PartyDetails createPartyDetails(String partyID, String partyType, String partyRole,
+                                            IndividualDetails individualDetails) {
         PartyDetails partyDetails = new PartyDetails();
         partyDetails.setPartyID(partyID);
         partyDetails.setPartyType(partyType);
@@ -464,8 +510,8 @@ public class HearingManagementConsumerTest {
     }
 
     /**
-     * get Unavailability Date Ranges.
-     * @return List<UnavailabilityDow>
+     * create Unavailability Date Ranges.
+     * @return List of String
      */
     private List<String> createReasonableAdjustments() {
         List<String> reasonableAdjustments = new ArrayList<>();
@@ -476,11 +522,10 @@ public class HearingManagementConsumerTest {
     }
 
     /**
-     * get Unavailability Date Ranges.
-     * @return List<UnavailabilityDow>
+     * create Unavailability Date Ranges.
+     * @return List of UnavailabilityDow
      */
     private List<UnavailabilityRanges> createUnavailableDateRanges() {
-        List<UnavailabilityRanges> listUnavailabilityRanges = new ArrayList<>();
         UnavailabilityRanges unavailabilityRanges1 = new UnavailabilityRanges();
         unavailabilityRanges1.setUnavailableFromDate(LocalDate.parse("2021-01-01"));
         unavailabilityRanges1.setUnavailableToDate(LocalDate.parse("2021-01-15"));
@@ -488,17 +533,17 @@ public class HearingManagementConsumerTest {
         unavailabilityRanges2.setUnavailableFromDate(LocalDate.parse("2021-06-01"));
         unavailabilityRanges2.setUnavailableToDate(LocalDate.parse("2021-06-21"));
 
+        List<UnavailabilityRanges> listUnavailabilityRanges = new ArrayList<>();
         listUnavailabilityRanges.add(unavailabilityRanges1);
         listUnavailabilityRanges.add(unavailabilityRanges2);
         return listUnavailabilityRanges;
     }
 
     /**
-     * get Days of the Week Unavailability.
-     * @return List<UnavailabilityDow>
+     * create Days of the Week Unavailability.
+     * @return List of UnavailabilityDow
      */
     private List<UnavailabilityDow> createUnavailableDaysOfTheWeek() {
-        List<UnavailabilityDow> unavailabilityDows = new ArrayList<>();
         UnavailabilityDow unavailabilityDowFriday = new UnavailabilityDow();
         unavailabilityDowFriday.setDowUnavailabilityType(DowUnavailabilityType.PM.getLabel());
         unavailabilityDowFriday.setDow(Dow.FRIDAY.getLabel());
@@ -508,6 +553,8 @@ public class HearingManagementConsumerTest {
         UnavailabilityDow unavailabilityDowSunday = new UnavailabilityDow();
         unavailabilityDowSunday.setDowUnavailabilityType(DowUnavailabilityType.ALL.getLabel());
         unavailabilityDowSunday.setDow(Dow.SUNDAY.getLabel());
+
+        List<UnavailabilityDow> unavailabilityDows = new ArrayList<>();
         unavailabilityDows.add(unavailabilityDowFriday);
         unavailabilityDows.add(unavailabilityDowSaturday);
         unavailabilityDows.add(unavailabilityDowSunday);
