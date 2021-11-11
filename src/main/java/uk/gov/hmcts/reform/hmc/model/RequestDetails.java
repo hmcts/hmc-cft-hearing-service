@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,5 +12,6 @@ import javax.validation.constraints.NotNull;
 public class RequestDetails {
 
     @NotNull
+    @JsonProperty("requestTimeStamp")
     private LocalDateTime requestTimeStamp;
 }
