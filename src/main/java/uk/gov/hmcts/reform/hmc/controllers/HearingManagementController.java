@@ -30,6 +30,6 @@ public class HearingManagementController {
     public void getHearing(@PathVariable("id") Long hearingId,
                            @RequestParam(value = "isValid", required = false) Boolean isValid) {
 
-        hearingManagementService.getHearingRequest(hearingId, (isValid == null)? true : false);
+        hearingManagementService.getHearingRequest(hearingId, (isValid == null) ? true : false);
     }
 }
