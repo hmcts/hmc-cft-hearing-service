@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 
 import java.util.List;
 
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
@@ -20,6 +21,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAIL
 @Service
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
+    public static final String CASE_REF_ID_PATTERN = "^\\d{16}$";
 
     @Autowired
     public HearingManagementServiceImpl() {
@@ -33,7 +35,19 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (hearingRequest.getPartyDetails() != null) {
             validatePartyDetails(hearingRequest.getPartyDetails());
         }
+    }
 
+    /**
+     * validate Get Hearing Request by caseRefId or caseRefId/caseStatus.
+     * @param caseRefId case Ref Id
+     * @param caseStatus case Status
+     * @return HearingRequest HearingRequest
+     */
+    @Override
+    public HearingRequest validateGetHearingRequest(String caseRefId, String caseStatus) {
+        validateCaseRefId(caseRefId);
+        // TODO: select hearing request from given caseRefId and status (if any)
+        return new HearingRequest();
     }
 
     private void validatePartyDetails(List<PartyDetails> partyDetails) {
@@ -71,9 +85,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
         }
     }
+
+    /**
+     * validate the caseRefId - throw BadRequestException if invalid.
+     * @param caseRefId case Ref Id
+     */
+    private void validateCaseRefId(String caseRefId) {
+        if (caseRefId == null || !caseRefId.matches(CASE_REF_ID_PATTERN)) {
+            throw new BadRequestException(CASE_REF_INVALID);
+        }
+    }
+
 }
-
-
-
-
-
