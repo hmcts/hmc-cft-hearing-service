@@ -291,6 +291,9 @@ dependencies {
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   implementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
 
+  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+  implementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.0.2'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {

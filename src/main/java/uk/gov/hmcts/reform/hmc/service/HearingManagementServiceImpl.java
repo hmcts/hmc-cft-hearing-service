@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 
 @Service
 @Component
@@ -30,5 +31,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             }
         }
     }
+
+    @Override
+    public void validateHearingRequest(HearingRequest hearingRequest) {
+
+    }
+
 
 }
