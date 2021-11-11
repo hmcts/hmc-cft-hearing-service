@@ -30,6 +30,10 @@ public class SecurityUtils {
         this.idamRepository = idamRepository;
     }
 
+    public String getS2SToken() {
+        return authTokenGenerator.generate();
+    }
+
     public HttpHeaders authorizationHeaders() {
         final HttpHeaders headers = new HttpHeaders();
         headers.add(SERVICE_AUTHORIZATION, authTokenGenerator.generate());
@@ -73,5 +77,8 @@ public class SecurityUtils {
             .collect(Collectors.joining(","));
     }
 
+    public String getCaaSystemUserToken() {
+        return idamRepository.getCaaSystemUserAccessToken();
+    }
 }
 

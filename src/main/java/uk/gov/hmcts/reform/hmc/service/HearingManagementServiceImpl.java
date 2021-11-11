@@ -4,12 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
+import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
@@ -39,7 +41,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (hearingRequest.getPartyDetails() != null) {
             validatePartyDetails(hearingRequest.getPartyDetails());
         }
-        verifyAccess();
+        verifyAccess(hearingRequest.getCaseDetails().getCaseRef());
     }
 
     private void validatePartyDetails(List<PartyDetails> partyDetails) {
@@ -78,9 +80,18 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    private void verifyAccess() {
+    private void verifyAccess(String caseReference) {
         RoleAssignments roleAssignments = roleAssignmentService.getRoleAssignments(securityUtils.getUserId());
+        List<RoleAssignment> filteredRoleAssignments = new ArrayList<>();
+        for(RoleAssignment roleAssignment : roleAssignments.getRoleAssignments()) {
+            if(roleAssignment.getRoleName().equalsIgnoreCase("Hearing Manage") && roleAssignment.getRoleType().equalsIgnoreCase("ORGANISATION")) {
+                filteredRoleAssignments.add(roleAssignment);
+            }
+        }
+        if(!filteredRoleAssignments.isEmpty()) {
+            //call API with caseReference
 
+        }
 
     }
 }

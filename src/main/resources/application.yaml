@@ -28,6 +28,11 @@ spring:
         provider:
           oidc:
             issuer-uri: ${IDAM_OIDC_URL:http://localhost:5000}/o
+        registration:
+          oidc:
+            client-id: internal
+            client-secret: internal
+
 
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
@@ -64,9 +69,21 @@ idam:
   api:
     url: ${IDAM_API_URL:http://localhost:5000}
   s2s-auth:
-    microservice: aac_manage_case_assignment
-    totp_secret: ${MANAGE_CASE_S2S_KEY:AAAAAAAAAAAAAAAA}
+    microservice: hmc_cft_hearing_service
+    totp_secret: ${CFT_HEARING_SERVICE_IDAM_KEY:AAAAAAAAAAAAAAAA}
     url: ${S2S_URL:http://localhost:4502}
+  s2s-authorised:
+    services: ${CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES:xui_webapp,ccd_data,am_role_assignment_service}
+  client:
+    id: hmc_cft_hearing_service
+    secret: ${CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET:hmc_cft_hearing_service_secret}
+    redirect_uri: http://localhost:4561/oauth2redirect
+  caa:
+    username: ${IDAM_CAA_USERNAME:master.caa@gmail.com}
+    password: ${IDAM_CAA_PASSWORD:Pa55word11}
+  noc-approver:
+    username: ${IDAM_NOC_APPROVER_USERNAME:noc.approver@gmail.com}
+    password: ${IDAM_NOC_APPROVER_PASSWORD:Pa55word11}
 
 oidc:
   issuer: ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}

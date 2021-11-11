@@ -13,6 +13,10 @@ import javax.inject.Singleton;
 public class ApplicationParams {
     @Value("${role.assignment.api.host}")
     private String roleAssignmentServiceHost;
+    @Value("${idam.caa.username}")
+    private String caaSystemUserId;
+    @Value("${idam.caa.password}")
+    private String caaSystemUserPassword;
 
     public static String encode(final String stringToEncode) {
         try {
@@ -28,5 +32,13 @@ public class ApplicationParams {
 
     public String amGetRoleAssignmentsUrl() {
         return roleAssignmentBaseUrl() + "/actors/{uid}";
+    }
+
+    public String getCaaSystemUserId() {
+        return caaSystemUserId;
+    }
+
+    public String getCaaSystemUserPassword() {
+        return caaSystemUserPassword;
     }
 }
