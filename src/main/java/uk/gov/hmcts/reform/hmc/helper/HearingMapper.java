@@ -5,17 +5,8 @@ import org.mapstruct.Mapping;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 
 @Mapper(componentModel = "spring")
-public interface CaseHearingRequestMapper {
+public interface HearingMapper {
 
     @Mapping(target = "id", ignore = true)
     HearingEntity modelToEntity(String status);
-
 }
-
-
-
-
-
-
-
-

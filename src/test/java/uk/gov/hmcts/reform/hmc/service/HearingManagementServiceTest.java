@@ -4,13 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.CaseHearingRequestMapper;
+import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -28,9 +28,14 @@ class HearingManagementServiceTest {
 
     private HearingManagementServiceImpl hearingManagementService;
 
+    @Mock
     private CaseHearingRequestRepository caseHearingRequestRepository;
 
+    @Mock
     private CaseHearingRequestMapper caseHearingRequestMapper;
+
+    @Mock
+    private HearingMapper hearingMapper;
 
     @Mock
     HearingRepository hearingRepository;
@@ -39,7 +44,7 @@ class HearingManagementServiceTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         hearingManagementService = new HearingManagementServiceImpl(hearingRepository, caseHearingRequestRepository,
-                                                                    caseHearingRequestMapper);
+                                                                    caseHearingRequestMapper, hearingMapper);
     }
 
     @Test
@@ -75,7 +80,6 @@ class HearingManagementServiceTest {
         hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
         hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
         hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
-        CaseHearingRequestEntity entity = new CaseHearingRequestEntity();
         given(caseHearingRequestRepository.saveCaseHearingRequest(hearingRequest))
             .willReturn(TestingUtil.hearingResponse());
         Exception exception = assertThrows(BadRequestException.class, () -> {

@@ -101,3 +101,5 @@ ALTER TABLE ONLY public.contact_details
 
 ALTER TABLE ONLY public.contact_details
     ADD CONSTRAINT contact_details_pkey PRIMARY KEY (id);
+
+ALTER SEQUENCE IF EXISTS hearing_id_seq START WITH 2000000000;

@@ -4,20 +4,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.CaseHearingRequestMapper;
+import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
@@ -36,13 +40,20 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private final CaseHearingRequestMapper caseHearingRequestMapper;
 
+    private final HearingMapper hearingMapper;
+
+    @PersistenceContext
+    private EntityManager em;
+
     @Autowired
     public HearingManagementServiceImpl(HearingRepository hearingRepository,
                                         CaseHearingRequestRepository caseHearingRequestRepository,
-                                        CaseHearingRequestMapper caseHearingRequestMapper) {
+                                        CaseHearingRequestMapper caseHearingRequestMapper,
+                                        HearingMapper hearingMapper) {
         this.hearingRepository = hearingRepository;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.caseHearingRequestMapper = caseHearingRequestMapper;
+        this.hearingMapper = hearingMapper;
     }
 
 
@@ -54,6 +65,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
+    @Transactional
     @Override
     public HearingResponse saveHearingRequest(HearingRequest hearingRequest) {
         if (hearingRequest == null) {
@@ -64,9 +76,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
-        HearingEntity hearingEntity = caseHearingRequestMapper.setHearing();
+        saveHearing();
+        return new HearingResponse();
+    }
+
+    private void saveHearing() {
+        HearingEntity hearingEntity = hearingMapper.modelToEntity(HEARING_STATUS);
         hearingRepository.save(hearingEntity);
-        return caseHearingRequestRepository.saveCaseHearingRequest(hearingRequest);
     }
 
     private void validateHearingRequest(HearingRequest hearingRequest) {
