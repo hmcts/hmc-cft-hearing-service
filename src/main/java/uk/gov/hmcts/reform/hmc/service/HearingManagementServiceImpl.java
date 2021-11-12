@@ -4,10 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.CaseHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
@@ -29,9 +32,17 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private HearingRepository hearingRepository;
 
+    private CaseHearingRequestRepository caseHearingRequestRepository;
+
+    private final CaseHearingRequestMapper caseHearingRequestMapper;
+
     @Autowired
-    public HearingManagementServiceImpl(HearingRepository hearingRepository) {
+    public HearingManagementServiceImpl(HearingRepository hearingRepository,
+                                        CaseHearingRequestRepository caseHearingRequestRepository,
+                                        CaseHearingRequestMapper caseHearingRequestMapper) {
         this.hearingRepository = hearingRepository;
+        this.caseHearingRequestRepository = caseHearingRequestRepository;
+        this.caseHearingRequestMapper = caseHearingRequestMapper;
     }
 
 
@@ -53,8 +64,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
-        return hearingRepository.saveHearing(hearingRequest);
-
+        HearingEntity hearingEntity = caseHearingRequestMapper.setHearing();
+        hearingRepository.save(hearingEntity);
+        return caseHearingRequestRepository.saveCaseHearingRequest(hearingRequest);
     }
 
     private void validateHearingRequest(HearingRequest hearingRequest) {

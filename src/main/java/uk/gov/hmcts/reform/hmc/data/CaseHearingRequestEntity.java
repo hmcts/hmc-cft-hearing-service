@@ -82,7 +82,7 @@ public class CaseHearingRequestEntity {
     private Boolean caseRestrictedFlag;
 
     @Column(name = "case_sla_start_date", nullable = false)
-    private LocalDateTime caseSlaStartDate;
+    private LocalDate caseSlaStartDate;
 
     @Column(name = "version_number", nullable = false)
     private Integer versionNumber;

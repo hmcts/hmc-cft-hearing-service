@@ -32,7 +32,7 @@ class HearingManagementControllerIT extends BaseTest {
     private static final String INSERT_DATA_SCRIPT = "classpath:sql/insert-hearing.sql";
 
 
-   /* @Test
+    @Test
     @Sql(INSERT_DATA_SCRIPT)
     void shouldReturn204_WhenHearingExists() throws Exception {
         stubSuccessfullyForValidHearingID("123");
@@ -40,7 +40,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(204))
             .andReturn();
-    }*/
+    }
 
     @Test
     void shouldReturn404_WhenHearingIdIsInValid() throws Exception {

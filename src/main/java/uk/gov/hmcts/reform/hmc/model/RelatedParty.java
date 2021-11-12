@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -13,10 +14,12 @@ public class RelatedParty {
 
     @NotEmpty(message = ValidationError.RELATED_PARTY_EMPTY)
     @Size(max = 2000, message = ValidationError.RELATED_PARTY_MAX_LENGTH)
+    @JsonProperty("relatedPartyID")
     private String relatedPartyID;
 
     @NotEmpty(message = ValidationError.RELATIONSHIP_TYPE_EMPTY)
     @Size(max = 2000, message = ValidationError.RELATIONSHIP_TYPE_MAX_LENGTH)
+    @JsonProperty("relationshipType")
     private String relationshipType;
 
 }
