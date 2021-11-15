@@ -28,6 +28,7 @@ public class WiremockFixtures {
 
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
         .modules(new Jdk8Module(), new JavaTimeModule())
+        .build();
 
     private WiremockFixtures() {
     }
