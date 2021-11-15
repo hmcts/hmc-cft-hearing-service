@@ -2,3 +2,10 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  environment:
+    CFT_HEARING_SERVICE_DB_HOST: "{{ .Release.Name }}-postgresql"
+    CFT_HEARING_SERVICE_DB_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
+    CFT_HEARING_SERVICE_DB_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    CFT_HEARING_SERVICE_DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
+    CFT_HEARING_SERVICE_DB_PORT: 5432
