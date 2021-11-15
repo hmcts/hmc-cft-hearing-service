@@ -6,5 +6,5 @@ public interface HearingManagementService {
 
     void validateHearingRequest(HearingRequest hearingRequest);
 
-    HearingRequest validateGetHearingRequest(String caseRefId, String caseStatus);
+    HearingRequest validateGetHearingsRequest(String caseRefId, String caseStatus);
 }
