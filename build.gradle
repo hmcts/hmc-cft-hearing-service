@@ -186,7 +186,8 @@ sonarqube {
     property "sonar.projectName", "Reform :: hmc-cft-hearing-service"
     property "sonar.projectKey", "uk.gov.hmcts.reform:hmc-cft-hearing-service"
     property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
-    property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/hmc/Application.java"
+    property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/hmc/Application.java," +
+      "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageReaderFromTopicConfiguration.java"
   }
 }
 
@@ -202,6 +203,7 @@ def versions = [
   testcontainers  : '1.15.2'
 ]
 
+ext['spring-framework.version'] = '5.3.12'
 
 // before committing a change, make sure task still works
 dependencyUpdates {
@@ -231,7 +233,7 @@ dependencyManagement {
       entry 'json-path'
       entry 'xml-path'
     }
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.43') {
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.54') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
       entry 'tomcat-embed-websocket'
@@ -292,6 +294,9 @@ dependencies {
   implementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
 
 
+  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.0.2'
+  implementation group: 'com.azure', name: 'azure-core', version: '1.13.0'
+
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
@@ -300,8 +305,11 @@ dependencies {
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.0.2'
 
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.0.2'
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
+
+  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath

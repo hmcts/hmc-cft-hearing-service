@@ -39,3 +39,9 @@ spring:
 azure:
   application-insights:
     instrumentation-key: ${hmc.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
+
+jms:
+  servicebus:
+    connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING}
+    topic-name: ${HMC_SERVICE_BUS_TOPIC}
+    subscription-name: ${HMC_SERVICE_BUS_SUBSCRIPTION}
