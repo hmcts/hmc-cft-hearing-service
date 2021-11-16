@@ -3,7 +3,7 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
-    CFT_HEARING_SERVICE_DB_HOST: hmc-cft-hearing-service-postgres-db-v11-aat.postgres.database.azure.com
+    CFT_HEARING_SERVICE_DB_HOST: hmc-cft-hearing-service-postgres-db-aat.postgres.database.azure.com
     CFT_HEARING_SERVICE_DB_NAME: hmc_cft_hearing_service
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
     CFT_HEARING_SERVICE_DB_PORT: 5432
