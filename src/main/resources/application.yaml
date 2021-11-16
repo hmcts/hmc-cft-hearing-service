@@ -14,7 +14,7 @@ spring:
   application:
     name: HMC-CFT-Hearing-Service
   config:
-    import: "optional:configtree:/mnt/secrets/"
+    import: "optional:configtree:/mnt/secrets/hmc/"
   jackson:
     property-naming-strategy: SNAKE_CASE
   datasource:
