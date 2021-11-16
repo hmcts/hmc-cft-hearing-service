@@ -49,9 +49,7 @@ public class HearingMapper {
             hearingRequest, hearingEntity);
 
         setNonStandardDurations(hearingRequest.getHearingDetails().getNonStandardHearingDurationReasons(), caseHearingRequestEntity);
-        // setRequiredLocations(hearingRequest.getHearingDetails().getHearingLocations(), caseHearingRequestEntity);
         if (hearingRequest.getHearingDetails().getFacilitiesRequired() != null) {
-            // TO DO not inserting
             setRequiredFacilities(hearingRequest, caseHearingRequestEntity);
         }
         setCaseCategories(hearingRequest, caseHearingRequestEntity);
