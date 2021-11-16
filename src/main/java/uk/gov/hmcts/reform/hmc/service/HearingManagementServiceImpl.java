@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -17,8 +16,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
@@ -36,26 +33,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private HearingRepository hearingRepository;
 
-    private CaseHearingRequestRepository caseHearingRequestRepository;
-
-    private final CaseHearingRequestMapper caseHearingRequestMapper;
-
     private final HearingMapper hearingMapper;
-
-    @PersistenceContext
-    private EntityManager em;
 
     @Autowired
     public HearingManagementServiceImpl(HearingRepository hearingRepository,
-                                        CaseHearingRequestRepository caseHearingRequestRepository,
-                                        CaseHearingRequestMapper caseHearingRequestMapper,
                                         HearingMapper hearingMapper) {
         this.hearingRepository = hearingRepository;
-        this.caseHearingRequestRepository = caseHearingRequestRepository;
-        this.caseHearingRequestMapper = caseHearingRequestMapper;
         this.hearingMapper = hearingMapper;
     }
-
 
     @Override
     public void getHearingRequest(Long hearingId) {
@@ -65,8 +50,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    @Transactional
     @Override
+    @Transactional
     public HearingResponse saveHearingRequest(HearingRequest hearingRequest) {
         if (hearingRequest == null) {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
@@ -76,12 +61,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
-        saveHearing();
+        saveHearingDetails(hearingRequest);
         return new HearingResponse();
     }
 
-    private void saveHearing() {
-        HearingEntity hearingEntity = hearingMapper.modelToEntity(HEARING_STATUS);
+    private void saveHearingDetails(HearingRequest hearingRequest) {
+        HearingEntity hearingEntity = hearingMapper.modelToEntity(HEARING_STATUS, hearingRequest);
         hearingRepository.save(hearingEntity);
     }
 

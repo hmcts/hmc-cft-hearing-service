@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -29,12 +28,6 @@ class HearingManagementServiceTest {
     private HearingManagementServiceImpl hearingManagementService;
 
     @Mock
-    private CaseHearingRequestRepository caseHearingRequestRepository;
-
-    @Mock
-    private CaseHearingRequestMapper caseHearingRequestMapper;
-
-    @Mock
     private HearingMapper hearingMapper;
 
     @Mock
@@ -43,8 +36,7 @@ class HearingManagementServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        hearingManagementService = new HearingManagementServiceImpl(hearingRepository, caseHearingRequestRepository,
-                                                                    caseHearingRequestMapper, hearingMapper);
+        hearingManagementService = new HearingManagementServiceImpl(hearingRepository, hearingMapper);
     }
 
     @Test
@@ -73,6 +65,7 @@ class HearingManagementServiceTest {
     @Test
     void shouldFailAsHearingWindowDetailsNotPresent() {
         HearingRequest hearingRequest = new HearingRequest();
+        HearingEntity hearingEntity = new HearingEntity();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
@@ -80,8 +73,7 @@ class HearingManagementServiceTest {
         hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
         hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
         hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
-        given(caseHearingRequestRepository.saveCaseHearingRequest(hearingRequest))
-            .willReturn(TestingUtil.hearingResponse());
+        given(hearingRepository.save(hearingEntity)).willReturn(TestingUtil.hearingEntity());
         Exception exception = assertThrows(BadRequestException.class, () -> {
             hearingManagementService.saveHearingRequest(hearingRequest);
         });

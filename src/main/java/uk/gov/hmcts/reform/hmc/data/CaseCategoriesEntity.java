@@ -25,15 +25,15 @@ public class CaseCategoriesEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_hearing_id")
-    private CaseHearingRequestEntity caseHearing;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "case_category_type", nullable = false)
-    private CaseCategoryType locationId;
+    private CaseCategoryType categoryType;
 
     @Column(name = "case_category_value")
     private String caseCategoryValue;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_hearing_id")
+    private CaseHearingRequestEntity caseHearing;
 
 }

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.utils;
 
 import org.assertj.core.util.Lists;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
@@ -117,6 +118,13 @@ public class TestingUtil {
         response.setStatus("Requested");
         response.setTimeStamp(LocalDateTime.now());
         return response;
+    }
+
+    public static HearingEntity hearingEntity() {
+        HearingEntity hearingEntity= new HearingEntity();
+        hearingEntity.setId(2000000L);
+        hearingEntity.setStatus("Requested");
+        return hearingEntity;
     }
 
 }

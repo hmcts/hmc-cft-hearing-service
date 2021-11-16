@@ -5,11 +5,14 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -87,9 +90,6 @@ public class CaseHearingRequestEntity {
     @Column(name = "version_number", nullable = false)
     private Integer versionNumber;
 
-    @Column(name = "hearing_id", nullable = false)
-    private Long hearingId;
-
     @Column(name = "interpreter_booking_required_flag")
     private Boolean interpreterBookingRequiredFlag;
 
@@ -111,18 +111,23 @@ public class CaseHearingRequestEntity {
     @Column(name = "request_timestamp", nullable = false)
     private LocalDateTime requestTimeStamp;
 
-    @OneToOne(mappedBy = "caseHearing")
-    private CaseCategoriesEntity caseCategoriesEntity;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hearing_id")
+    private HearingEntity hearing;
 
-    @OneToMany(mappedBy = "caseHearingNonStandardDurations")
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<NonStandardDurationsEntity> nonStandardDurations;
 
-    @OneToMany(mappedBy = "caseHearingRequiredLocations")
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<RequiredLocationsEntity> requiredLocations;
 
-    @OneToMany(mappedBy = "caseHearingRequiredFacilities")
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<RequiredFacilitiesEntity> requiredFacilities;
 
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<CaseCategoriesEntity> caseCategories;
 
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<HearingPartyEntity> hearingParties;
 
 }
