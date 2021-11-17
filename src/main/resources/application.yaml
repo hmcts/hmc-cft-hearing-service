@@ -70,20 +70,17 @@ idam:
     url: ${IDAM_API_URL:http://localhost:5000}
   s2s-auth:
     microservice: hmc_cft_hearing_service
-    totp_secret: ${CFT_HEARING_SERVICE_IDAM_KEY:AAAAAAAAAAAAAAAA}
+    totp_secret: ${IDAM_KEY_CFT_HEARING_SERVICE:AAAAAAAAAAAAAAAA}
     url: ${S2S_URL:http://localhost:4502}
   s2s-authorised:
     services: ${CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES:xui_webapp,ccd_data,am_role_assignment_service}
   client:
     id: hmc_cft_hearing_service
-    secret: ${CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET:hmc_cft_hearing_service_secret}
+    secret: ${CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET:AAAAAAAAAAAAAAAA}
     redirect_uri: http://localhost:4561/oauth2redirect
   caa:
     username: ${IDAM_CAA_USERNAME:master.caa@gmail.com}
     password: ${IDAM_CAA_PASSWORD:Pa55word11}
-  noc-approver:
-    username: ${IDAM_NOC_APPROVER_USERNAME:noc.approver@gmail.com}
-    password: ${IDAM_NOC_APPROVER_PASSWORD:Pa55word11}
 
 oidc:
   issuer: ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}
@@ -103,3 +100,6 @@ http:
       timeout: ${HTTP_CLIENT_CONNECTION_TIMEOUT:30000}
     read:
       timeout: ${HTTP_CLIENT_READ_TIMEOUT:60000}
+ccd:
+  data-store:
+    host: ${CCD_DATA_STORE_API_BASE_URL:http://localhost:4452}

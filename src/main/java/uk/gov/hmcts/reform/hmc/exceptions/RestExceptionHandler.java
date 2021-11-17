@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.exceptions;
 
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestControllerAdvice
@@ -32,10 +34,30 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(InvalidRoleAssignmentException.class)
+    protected ResponseEntity<Object> handleBadRequestException(InvalidRoleAssignmentException ex) {
+        log.debug("InvalidRoleAssignmentException:{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    @ExceptionHandler(CaseCouldNotBeFoundException.class)
+    public ResponseEntity<Object> handleCaseCouldNotBeFoundException(CaseCouldNotBeFoundException ex) {
+        log.error("Case could not be found: {}", ex.getMessage(), ex);
+        return toResponseEntity(HttpStatus.NOT_FOUND, ex.getLocalizedMessage());
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<Object> handleFeignStatusException(FeignException ex) {
+        String errorMessage = ex.responseBody()
+            .map(res -> new String(res.array(), StandardCharsets.UTF_8))
+            .orElse(ex.getMessage());
+        log.error("Downstream service errors: {}", errorMessage, ex);
+        return toResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
+    }
+
     private ResponseEntity<Object> toResponseEntity(HttpStatus status, String... errors) {
         var apiError = new ApiError(status, errors == null ? null : List.of(errors));
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
-
 
 }

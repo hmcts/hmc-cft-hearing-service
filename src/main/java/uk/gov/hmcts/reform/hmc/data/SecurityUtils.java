@@ -65,7 +65,7 @@ public class SecurityUtils {
         return jwt.getTokenValue();
     }
 
-    private String getUserBearerToken() {
+    public String getUserBearerToken() {
         return BEARER + getUserToken();
     }
 

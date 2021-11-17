@@ -1,35 +1,51 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
+import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.CaseCouldNotBeFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
+import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
+import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
 
 @Service
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
 
+    private final DataStoreRepository dataStoreRepository;
     private final RoleAssignmentService roleAssignmentService;
     private final SecurityUtils securityUtils;
 
     @Autowired
-    public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils) {
+    public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
+                                        @Qualifier("defaultDataStoreRepository")
+                                            DataStoreRepository dataStoreRepository) {
+        this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
     }
@@ -83,20 +99,36 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private void verifyAccess(String caseReference) {
         RoleAssignments roleAssignments = roleAssignmentService.getRoleAssignments(securityUtils.getUserId());
         List<RoleAssignment> filteredRoleAssignments = new ArrayList<>();
-        for(RoleAssignment roleAssignment : roleAssignments.getRoleAssignments()) {
-            if(roleAssignment.getRoleName().equalsIgnoreCase("Hearing Manage") && roleAssignment.getRoleType().equalsIgnoreCase("ORGANISATION")) {
+        for (RoleAssignment roleAssignment : roleAssignments.getRoleAssignments()) {
+            if (roleAssignment.getRoleName().equalsIgnoreCase("Hearing Manage")
+                && roleAssignment.getRoleType().equalsIgnoreCase(
+                "ORGANISATION")) {
                 filteredRoleAssignments.add(roleAssignment);
             }
         }
-        if(!filteredRoleAssignments.isEmpty()) {
-            //call API with caseReference
-
+        if (filteredRoleAssignments.isEmpty()) {
+            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ROLE);
+        } else {
+            DataStoreCaseDetails caseDetails;
+            try {
+                caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
+            } catch (FeignException e) {
+                if (HttpStatus.NOT_FOUND.value() == e.status()) {
+                    throw new CaseCouldNotBeFoundException(CASE_NOT_FOUND);
+                }
+                throw e;
+            }
+            for (RoleAssignment roleAssignment : filteredRoleAssignments) {
+                RoleAssignmentAttributes attributes = roleAssignment.getAttributes();
+                if ((attributes.getJurisdiction().isEmpty() && attributes.getCaseType().isEmpty())
+                    || (attributes.getJurisdiction() != null && attributes.getJurisdiction().isPresent()
+                        && attributes.getJurisdiction().equals(Optional.of(caseDetails.getJurisdiction())))
+                    || (attributes.getCaseType() != null && attributes.getCaseType().isPresent()
+                        && attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId())))) {
+                    return;
+                }
+            }
+            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
         }
-
     }
 }
-
-
-
-
-

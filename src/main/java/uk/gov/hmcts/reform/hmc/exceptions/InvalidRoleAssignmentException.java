@@ -4,13 +4,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.FORBIDDEN)
-public class ResourceNotFoundException extends ApiException {
+public class InvalidRoleAssignmentException extends ApiException {
 
-    public ResourceNotFoundException(final String message) {
+    public InvalidRoleAssignmentException(final String message) {
         this(message, null);
     }
 
-    public ResourceNotFoundException(final String message, final Throwable cause) {
-        super(message, cause);
+    public InvalidRoleAssignmentException(String message, Throwable e) {
+        super(message, e);
     }
 }

@@ -4,7 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -20,7 +20,7 @@ public interface DataStoreApiClient {
     String CASES_WITH_ID = "/cases/{caseId}";
 
     @GetMapping(CASES_WITH_ID)
-    CaseDetails getCaseDetailsByCaseIdViaExternalApi(@RequestHeader(AUTHORIZATION) String userAuthorizationHeader,
-                                                     @PathVariable(CASE_ID) String caseId);
+    DataStoreCaseDetails getCaseDetailsByCaseIdViaExternalApi(
+        @RequestHeader(AUTHORIZATION) String userAuthorizationHeader, @PathVariable(CASE_ID) String caseId);
 
 }

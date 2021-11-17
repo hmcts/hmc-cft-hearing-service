@@ -113,6 +113,8 @@ public final class ValidationError {
     public static final String INVALID_UNAVAILABILITY_RANGES_DETAILS = "Unavailability range details should be present";
     public static final String INVALID_RELATED_PARTY_DETAILS = "Related Party details are not present";
 
+    public static final String CASE_NOT_FOUND = "Case could not be found";
+
     private ValidationError() {
     }
 }
