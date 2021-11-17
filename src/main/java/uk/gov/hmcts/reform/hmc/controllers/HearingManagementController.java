@@ -28,8 +28,8 @@ public class HearingManagementController {
         @ApiResponse(code = 404, message = "Invalid hearing id")
     })
     public void getHearing(@PathVariable("id") Long hearingId,
-                           @RequestParam(value = "isValid", required = false) Boolean isValid) {
+                           @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {
 
-        hearingManagementService.getHearingRequest(hearingId, (isValid == null) ? true : false);
+        hearingManagementService.getHearingRequest(hearingId, isValid);
     }
 }
