@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 
+import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404InValidHearingId;
-import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyForValidHearingID;
 
 
 class HearingManagementControllerIT extends BaseTest {
@@ -30,19 +30,20 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(INSERT_DATA_SCRIPT)
     void shouldReturn204_WhenHearingExists() throws Exception {
-        stubSuccessfullyForValidHearingID("123");
         mockMvc.perform(get(getHearingUrl + "/123" + "?isValid")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(204))
             .andReturn();
+
     }
 
     @Test
     void shouldReturn404_WhenHearingIdIsInValid() throws Exception {
-        stubReturn404InValidHearingId("12");
-        mockMvc.perform(get(getHearingUrl + "/12" + "?isValid")
-                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+        MvcResult result = mockMvc.perform(get(getHearingUrl + "/12" + "?isValid")
+                                               .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andReturn();
+
+        assertEquals("No hearing found for reference: 12", result.getResolvedException().getMessage());
     }
 }

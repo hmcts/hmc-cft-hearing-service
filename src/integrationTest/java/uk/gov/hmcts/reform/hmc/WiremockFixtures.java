@@ -49,21 +49,6 @@ public class WiremockFixtures {
         }
     }
 
-    public static void stubSuccessfullyForValidHearingID(String hearingId) {
-        stubFor(WireMock.post(urlEqualTo("/hearing/" + hearingId + "?isValid"))
-                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
-                    .willReturn(aResponse().withStatus(HTTP_ACCEPTED)));
-    }
-
-
-    public static void stubReturn404InValidHearingId(String hearingId) {
-        stubFor(WireMock.post(urlEqualTo("/hearing/" + hearingId + "?isValid"))
-                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
-                    .willReturn(aResponse().withStatus(HTTP_NOT_FOUND)));
-    }
-
     @SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "squid:S112"})
     // Required as wiremock's Json.getObjectMapper().registerModule(..); not working
     // see https://github.com/tomakehurst/wiremock/issues/1127
