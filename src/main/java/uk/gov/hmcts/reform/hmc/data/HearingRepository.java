@@ -9,6 +9,4 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface HearingRepository extends CrudRepository<HearingEntity, Long> {
 
-    boolean existsById(Long id);
-
 }
