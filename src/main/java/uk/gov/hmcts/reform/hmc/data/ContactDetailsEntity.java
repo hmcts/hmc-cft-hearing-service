@@ -22,14 +22,14 @@ public class ContactDetailsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tech_party_id")
-    private HearingPartyEntity hearingParty;
-
     @Column(name = "contact_type")
     private String contactType;
 
     @Column(name = "contact_details")
     private String contactDetails;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tech_party_id")
+    private HearingPartyEntity hearingParty;
 
 }

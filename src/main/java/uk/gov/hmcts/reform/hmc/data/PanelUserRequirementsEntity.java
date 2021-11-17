@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import org.hibernate.annotations.Type;
 import lombok.Data;
 import uk.gov.hmcts.reform.hmc.model.RequirementType;
 
@@ -37,6 +38,7 @@ public class PanelUserRequirementsEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "requirement_type", nullable = false)
+    @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
     private RequirementType requirementType;
 
 }

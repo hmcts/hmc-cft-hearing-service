@@ -130,4 +130,16 @@ public class CaseHearingRequestEntity {
     @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<HearingPartyEntity> hearingParties;
 
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<PanelRequirementsEntity> panelRequirements;
+
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<PanelAuthorisationRequirementsEntity> panelAuthorisationRequirements;
+
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<PanelSpecialismsEntity> panelSpecialisms;
+
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<PanelUserRequirementsEntity> panelUserRequirements;
+
 }

@@ -22,10 +22,6 @@ public class IndividualDetailEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tech_party_id")
-    private HearingPartyEntity hearingParty;
-
     @Column(name = "related_party_relationship_type", nullable = false)
     private String relatedPartyRelationshipType;
 
@@ -52,5 +48,9 @@ public class IndividualDetailEntity {
 
     @Column(name = "title", nullable = false)
     private String title;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tech_party_id")
+    private HearingPartyEntity hearingParty;
 
 }

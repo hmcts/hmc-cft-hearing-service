@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import org.hibernate.annotations.Type;
 import lombok.Data;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnavailable;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -27,22 +28,24 @@ public class UnavailabilityEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tech_party_id")
-    private HearingPartyEntity hearingParty;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "day_of_week_unavailable", nullable = false)
+    @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
     private DayOfWeekUnavailable dayOfWeekUnavailable;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "day_of_week_unavailable_type", nullable = false)
+    @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
     private DayOfWeekUnAvailableType dayOfWeekUnavailableType;
 
     @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tech_party_id")
+    private HearingPartyEntity hearingParty;
 
 }

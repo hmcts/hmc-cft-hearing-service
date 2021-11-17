@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import org.hibernate.annotations.Type;
 import lombok.Data;
 import uk.gov.hmcts.reform.hmc.model.LocationId;
 
@@ -29,6 +30,7 @@ public class RequiredLocationsEntity {
     private String locationLevelType;
 
     @Column(name = "location_id", columnDefinition = "locationid", nullable = false)
+    @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
     @Enumerated(EnumType.STRING)
     private LocationId locationId;
 

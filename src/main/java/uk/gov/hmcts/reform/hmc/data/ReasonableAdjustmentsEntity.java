@@ -22,11 +22,11 @@ public class ReasonableAdjustmentsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "reasonable_adjustment_code")
+    private String reasonableAdjustmentCode;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tech_party_id")
     private HearingPartyEntity hearingParty;
-
-    @Column(name = "reasonable_adjustment_code")
-    private String reasonableAdjustmentCode;
 
 }

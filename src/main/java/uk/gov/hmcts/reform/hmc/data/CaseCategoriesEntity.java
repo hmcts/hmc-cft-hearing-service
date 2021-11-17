@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import org.hibernate.annotations.Type;
 import lombok.Data;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 
@@ -25,8 +26,8 @@ public class CaseCategoriesEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "case_category_type", nullable = false)
+    @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
     private CaseCategoryType categoryType;
 
     @Column(name = "case_category_value")

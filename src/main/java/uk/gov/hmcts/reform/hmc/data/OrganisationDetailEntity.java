@@ -22,10 +22,6 @@ public class OrganisationDetailEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tech_party_id")
-    private HearingPartyEntity hearingParty;
-
     @Column(name = "organisation_name", nullable = false)
     private String organisationName;
 
@@ -34,5 +30,9 @@ public class OrganisationDetailEntity {
 
     @Column(name = "hmcts_organisation_reference", nullable = false)
     private String hmctsOrganisationReference;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tech_party_id")
+    private HearingPartyEntity hearingParty;
 
 }
