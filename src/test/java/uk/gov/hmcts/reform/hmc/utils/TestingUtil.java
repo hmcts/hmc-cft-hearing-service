@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
+
 public class TestingUtil {
 
     private TestingUtil() {
@@ -44,7 +46,7 @@ public class TestingUtil {
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         HearingLocation location1 = new HearingLocation();
-        location1.setLocationId("court");
+        location1.setLocationId("COURT");
         location1.setLocationType("Location type");
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
@@ -73,7 +75,7 @@ public class TestingUtil {
         caseDetails.setCaseRestrictedFlag(false);
         caseDetails.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));
         CaseCategory category = new CaseCategory();
-        category.setCategoryType("caseType");
+        category.setCategoryType("CASETYPE");
         category.setCategoryValue("PROBATE");
         List<CaseCategory> caseCategories = new ArrayList<>();
         caseCategories.add(category);
@@ -115,7 +117,7 @@ public class TestingUtil {
     public static HearingResponse hearingResponse() {
         HearingResponse response = new HearingResponse();
         response.setHearingRequestId(2000000L);
-        response.setStatus("Requested");
+        response.setStatus(HEARING_STATUS);
         response.setTimeStamp(LocalDateTime.now());
         return response;
     }
@@ -123,7 +125,7 @@ public class TestingUtil {
     public static HearingEntity hearingEntity() {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(2000000L);
-        hearingEntity.setStatus("Requested");
+        hearingEntity.setStatus(HEARING_STATUS);
         return hearingEntity;
     }
 

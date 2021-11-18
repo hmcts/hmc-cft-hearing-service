@@ -66,6 +66,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
+    @Test
     void shouldReturn202_WhenHearingRequestHasPartyDetails() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
