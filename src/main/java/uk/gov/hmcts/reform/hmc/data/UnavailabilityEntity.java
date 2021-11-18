@@ -29,20 +29,23 @@ public class UnavailabilityEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "day_of_week_unavailable", nullable = false)
+    @Column(name = "day_of_week_unavailable")
     @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
     private DayOfWeekUnavailable dayOfWeekUnavailable;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "day_of_week_unavailable_type", nullable = false)
+    @Column(name = "day_of_week_unavailable_type")
     @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
     private DayOfWeekUnAvailableType dayOfWeekUnavailableType;
 
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date")
     private LocalDate startDate;
 
-    @Column(name = "end_date", nullable = false)
+    @Column(name = "end_date")
     private LocalDate endDate;
+
+    @Column(name = "unavailability_type")
+    private String unAvailabilityType;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tech_party_id")

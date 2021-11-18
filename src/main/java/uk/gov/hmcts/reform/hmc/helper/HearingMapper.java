@@ -149,7 +149,7 @@ public class HearingMapper {
                     setOrganisationDetails(partyDetail.getOrganisationDetails(), hearingPartyEntity);
                 }
                 if (partyDetail.getUnavailabilityDow() != null || partyDetail.getUnavailabilityRanges() != null) {
-                   // setUnavailabilityDetails(partyDetail, hearingPartyEntity);
+                    setUnavailabilityDetails(partyDetail, hearingPartyEntity);
                 }
                 hearingPartyEntities.add(hearingPartyEntity);
             }
