@@ -96,9 +96,8 @@ class HearingManagementServiceTest {
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        HearingEntity hearingEntity = new HearingEntity();
         given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
-        given(hearingRepository.save(hearingEntity)).willReturn(TestingUtil.hearingEntity());
+        given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.findById(1L)).willReturn(Optional.of(TestingUtil.hearingEntity()));
         hearingManagementService.saveHearingRequest(hearingRequest);
     }
@@ -113,6 +112,9 @@ class HearingManagementServiceTest {
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
+        given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
+        given(hearingRepository.findById(1L)).willReturn(Optional.of(TestingUtil.hearingEntity()));
         hearingManagementService.saveHearingRequest(hearingRequest);
     }
 
