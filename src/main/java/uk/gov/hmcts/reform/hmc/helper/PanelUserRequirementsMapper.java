@@ -18,12 +18,12 @@ public class PanelUserRequirementsMapper {
     public List<PanelUserRequirementsEntity> modelToEntity(List<PanelPreference> panelPreferences,
                                                            CaseHearingRequestEntity caseHearingRequestEntity) {
         List<PanelUserRequirementsEntity> panelUserRequirementsEntities = new ArrayList<>();
-        for(PanelPreference panelPreference : panelPreferences) {
+        for (PanelPreference panelPreference : panelPreferences) {
             final PanelUserRequirementsEntity panelUserRequirementsEntity = new PanelUserRequirementsEntity();
             panelUserRequirementsEntity.setJudicialUserId(panelPreference.getMemberID());
             panelUserRequirementsEntity.setUserType(panelPreference.getMemberType());
-            panelUserRequirementsEntity.setRequirementType(RequirementType.
-                valueOf(panelPreference.getRequirementType()));
+            panelUserRequirementsEntity.setRequirementType(
+                RequirementType.valueOf(panelPreference.getRequirementType()));
             panelUserRequirementsEntity.setCaseHearing(caseHearingRequestEntity);
             panelUserRequirementsEntities.add(panelUserRequirementsEntity);
         }

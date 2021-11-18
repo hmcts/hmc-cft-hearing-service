@@ -17,7 +17,7 @@ public class ReasonableAdjustmentMapper {
     public List<ReasonableAdjustmentsEntity> modelToEntity(List<String> reasonableAdjustments,
                                                            HearingPartyEntity hearingPartyEntity) {
         List<ReasonableAdjustmentsEntity> reasonableAdjustmentsEntities = new ArrayList<>();
-        for(String adjustmentReason : reasonableAdjustments) {
+        for (String adjustmentReason : reasonableAdjustments) {
             final ReasonableAdjustmentsEntity reasonableAdjustmentsEntity = new ReasonableAdjustmentsEntity();
             reasonableAdjustmentsEntity.setReasonableAdjustmentCode(adjustmentReason);
             reasonableAdjustmentsEntity.setHearingParty(hearingPartyEntity);

@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
-import uk.gov.hmcts.reform.hmc.helper.CaseHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
@@ -65,7 +64,6 @@ class HearingManagementServiceTest {
     @Test
     void shouldFailAsHearingWindowDetailsNotPresent() {
         HearingRequest hearingRequest = new HearingRequest();
-        HearingEntity hearingEntity = new HearingEntity();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
@@ -73,6 +71,7 @@ class HearingManagementServiceTest {
         hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
         hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
         hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
+        HearingEntity hearingEntity = new HearingEntity();
         given(hearingRepository.save(hearingEntity)).willReturn(TestingUtil.hearingEntity());
         Exception exception = assertThrows(BadRequestException.class, () -> {
             hearingManagementService.saveHearingRequest(hearingRequest);

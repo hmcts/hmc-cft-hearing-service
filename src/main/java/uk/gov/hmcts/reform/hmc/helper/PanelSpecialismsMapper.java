@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
-import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelSpecialismsEntity;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ public class PanelSpecialismsMapper {
     public List<PanelSpecialismsEntity> modelToEntity(List<String> panelSpecialisms,
                                                       CaseHearingRequestEntity caseHearingRequestEntity) {
         List<PanelSpecialismsEntity> panelSpecialismEntities = new ArrayList<>();
-        for(String panelSpecialism : panelSpecialisms) {
+        for (String panelSpecialism : panelSpecialisms) {
             final PanelSpecialismsEntity panelSpecialismsEntity = new PanelSpecialismsEntity();
             panelSpecialismsEntity.setSpecialismType(panelSpecialism);
             panelSpecialismsEntity.setCaseHearing(caseHearingRequestEntity);

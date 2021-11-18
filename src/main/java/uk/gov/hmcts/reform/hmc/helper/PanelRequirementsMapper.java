@@ -16,7 +16,7 @@ public class PanelRequirementsMapper {
     public List<PanelRequirementsEntity> modelToEntity(List<String> roleTypes,
                                                        CaseHearingRequestEntity caseHearingRequestEntity) {
         List<PanelRequirementsEntity> panelRequirementsEntities = new ArrayList<>();
-        for(String roleType : roleTypes) {
+        for (String roleType : roleTypes) {
             final PanelRequirementsEntity panelRequirementsEntity = new PanelRequirementsEntity();
             panelRequirementsEntity.setRoleType(roleType);
             panelRequirementsEntity.setCaseHearing(caseHearingRequestEntity);

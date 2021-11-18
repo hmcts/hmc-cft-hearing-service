@@ -16,7 +16,7 @@ public class NonStandardDurationsMapper {
     public List<NonStandardDurationsEntity> modelToEntity(List<String> durations,
                                                           CaseHearingRequestEntity caseHearingRequestEntity) {
         List<NonStandardDurationsEntity> nonStandardDurationsEntities = new ArrayList<>();
-        for(String duration : durations) {
+        for (String duration : durations) {
             final NonStandardDurationsEntity nonStandardDurationEntity = new NonStandardDurationsEntity();
             nonStandardDurationEntity.setNonStandardHearingDurationReasonType(duration);
             nonStandardDurationEntity.setCaseHearing(caseHearingRequestEntity);

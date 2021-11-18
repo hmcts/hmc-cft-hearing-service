@@ -20,7 +20,7 @@ public class CaseCategoriesMapper {
                                                     CaseHearingRequestEntity caseHearingRequestEntity) {
         List<CaseCategoriesEntity> caseCategoriesEntities = new ArrayList<>();
         List<CaseCategory> caseCategories = hearingRequest.getCaseDetails().getCaseCategories();
-        for(CaseCategory category : caseCategories) {
+        for (CaseCategory category : caseCategories) {
             final CaseCategoriesEntity categoryEntity = new CaseCategoriesEntity();
             categoryEntity.setCategoryType(CaseCategoryType.valueOf(category.getCategoryType()));
             categoryEntity.setCaseCategoryValue(category.getCategoryValue());

@@ -32,23 +32,23 @@ public class PanelAuthorisationRequirementsMapper {
 
     private void setAuthorisationSubType(PanelRequirements panelRequirements,
                                          CaseHearingRequestEntity caseHearingRequestEntity,
-                                         List<PanelAuthorisationRequirementsEntity> panelAuthorisationRequirementsEntities) {
+                                         List<PanelAuthorisationRequirementsEntity> authorisationEntities) {
         for (String authorisationSubType : panelRequirements.getAuthorisationSubType()) {
             final PanelAuthorisationRequirementsEntity entity = new PanelAuthorisationRequirementsEntity();
             entity.setAuthorisationSubType(authorisationSubType);
             entity.setCaseHearing(caseHearingRequestEntity);
-            panelAuthorisationRequirementsEntities.add(entity);
+            authorisationEntities.add(entity);
         }
     }
 
     private void setAuthorisationType(PanelRequirements panelRequirements,
                                       CaseHearingRequestEntity caseHearingRequestEntity,
-                                      List<PanelAuthorisationRequirementsEntity> panelAuthorisationRequirementsEntities) {
+                                      List<PanelAuthorisationRequirementsEntity> authorisationRequirementsEntities) {
         for (String authorisationType : panelRequirements.getAuthorisationTypes()) {
             final PanelAuthorisationRequirementsEntity entity = new PanelAuthorisationRequirementsEntity();
             entity.setAuthorisationType(authorisationType);
             entity.setCaseHearing(caseHearingRequestEntity);
-            panelAuthorisationRequirementsEntities.add(entity);
+            authorisationRequirementsEntities.add(entity);
         }
     }
 }

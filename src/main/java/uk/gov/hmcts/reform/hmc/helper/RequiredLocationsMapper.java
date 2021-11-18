@@ -2,10 +2,8 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
-import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.LocationId;
 
 import java.util.ArrayList;
@@ -20,7 +18,7 @@ public class RequiredLocationsMapper {
     public List<RequiredLocationsEntity> modelToEntity(List<HearingLocation> hearingLocations,
                                                        CaseHearingRequestEntity caseHearingRequestEntity) {
         List<RequiredLocationsEntity> requiredLocationsEntities = new ArrayList<>();
-        for(HearingLocation location : hearingLocations) {
+        for (HearingLocation location : hearingLocations) {
             final RequiredLocationsEntity locationEntity = new RequiredLocationsEntity();
             locationEntity.setLocationLevelType(location.getLocationType());
             locationEntity.setLocationId(LocationId.valueOf(location.getLocationId()));

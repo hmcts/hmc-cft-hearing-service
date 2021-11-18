@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.hmc.data;
 
-import org.hibernate.annotations.Type;
 import lombok.Data;
+import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

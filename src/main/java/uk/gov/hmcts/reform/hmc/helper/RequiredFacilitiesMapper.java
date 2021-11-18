@@ -18,7 +18,7 @@ public class RequiredFacilitiesMapper {
                                                         CaseHearingRequestEntity caseHearingRequestEntity) {
         List<RequiredFacilitiesEntity> requiredFacilitiesEntities = new ArrayList<>();
         List<String> facilities = hearingRequest.getHearingDetails().getFacilitiesRequired();
-        for(String facility : facilities) {
+        for (String facility : facilities) {
             final RequiredFacilitiesEntity requiredFacilitiesEntity = new RequiredFacilitiesEntity();
             requiredFacilitiesEntity.setFacilityType(facility);
             requiredFacilitiesEntity.setCaseHearing(caseHearingRequestEntity);

@@ -92,7 +92,7 @@ public class TestingUtil {
         partyDetails2.setPartyType("IND");
         partyDetails2.setPartyRole("DEF2");
 
-        List<PartyDetails> partyDetails = Lists.newArrayList(partyDetails1,partyDetails2);
+        List<PartyDetails> partyDetails = Lists.newArrayList(partyDetails1, partyDetails2);
         return partyDetails;
     }
 
@@ -121,7 +121,7 @@ public class TestingUtil {
     }
 
     public static HearingEntity hearingEntity() {
-        HearingEntity hearingEntity= new HearingEntity();
+        HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(2000000L);
         hearingEntity.setStatus("Requested");
         return hearingEntity;

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
+import uk.gov.hmcts.reform.hmc.data.ContactDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.IndividualDetailEntity;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.hmc.model.PanelPreference;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -57,6 +59,8 @@ public class HearingMapper {
 
     private PanelUserRequirementsMapper panelUserRequirementsMapper;
 
+    private ContactDetailMapper contactDetailMapper;
+
     public HearingMapper(CaseHearingRequestMapper caseHearingRequestMapper,
                          NonStandardDurationsMapper nonStandardDurationsMapper,
                          RequiredLocationsMapper requiredLocationsMapper,
@@ -70,7 +74,8 @@ public class HearingMapper {
                          PanelRequirementsMapper panelRequirementsMapper,
                          PanelAuthorisationRequirementsMapper panelAuthorisationRequirementsMapper,
                          PanelSpecialismsMapper panelSpecialismsMapper,
-                         PanelUserRequirementsMapper panelUserRequirementsMapper) {
+                         PanelUserRequirementsMapper panelUserRequirementsMapper,
+                         ContactDetailMapper contactDetailMapper) {
         this.caseHearingRequestMapper = caseHearingRequestMapper;
         this.nonStandardDurationsMapper = nonStandardDurationsMapper;
         this.requiredLocationsMapper = requiredLocationsMapper;
@@ -85,6 +90,7 @@ public class HearingMapper {
         this.panelAuthorisationRequirementsMapper = panelAuthorisationRequirementsMapper;
         this.panelSpecialismsMapper = panelSpecialismsMapper;
         this.panelUserRequirementsMapper = panelUserRequirementsMapper;
+        this.contactDetailMapper = contactDetailMapper;
     }
 
     public HearingEntity modelToEntity(String status, HearingRequest hearingRequest) {
@@ -101,48 +107,65 @@ public class HearingMapper {
         }
         setCaseCategories(hearingRequest, caseHearingRequestEntity);
         setRequiredLocations(hearingRequest.getHearingDetails().getHearingLocations(), caseHearingRequestEntity);
-        if(hearingRequest.getHearingDetails().getPanelRequirements().getRoleType() != null) {
-            setPanelRequirements(hearingRequest.getHearingDetails().getPanelRequirements().getRoleType(),
-                                 caseHearingRequestEntity);
+        if (hearingRequest.getHearingDetails().getPanelRequirements().getRoleType() != null) {
+            setPanelRequirements(
+                hearingRequest.getHearingDetails().getPanelRequirements().getRoleType(),
+                caseHearingRequestEntity
+            );
         }
-        setPanelAutorisationRequirements(hearingRequest.getHearingDetails().getPanelRequirements(),
-                                         caseHearingRequestEntity );
-        if(hearingRequest.getHearingDetails().getPanelRequirements().getPanelSpecialisms() != null) {
-            setPanelSpecialisms(hearingRequest.getHearingDetails().getPanelRequirements().getPanelSpecialisms(),
-                                 caseHearingRequestEntity);
+        setPanelAutorisationRequirements(
+            hearingRequest.getHearingDetails().getPanelRequirements(),
+            caseHearingRequestEntity
+        );
+        if (hearingRequest.getHearingDetails().getPanelRequirements().getPanelSpecialisms() != null) {
+            setPanelSpecialisms(
+                hearingRequest.getHearingDetails().getPanelRequirements().getPanelSpecialisms(),
+                caseHearingRequestEntity
+            );
         }
-        if(hearingRequest.getHearingDetails().getPanelRequirements().getPanelPreferences() != null) {
-            setPanelUserRequirements(hearingRequest.getHearingDetails().getPanelRequirements().getPanelPreferences(),
-                                caseHearingRequestEntity);
+        if (hearingRequest.getHearingDetails().getPanelRequirements().getPanelPreferences() != null) {
+            setPanelUserRequirements(
+                hearingRequest.getHearingDetails().getPanelRequirements().getPanelPreferences(),
+                caseHearingRequestEntity
+            );
         }
 
 
-      /*  if (hearingRequest.getPartyDetails() != null) {
+        if (hearingRequest.getPartyDetails() != null) {
             List<HearingPartyEntity> hearingPartyEntities = new ArrayList<>();
             for (PartyDetails partyDetail : hearingRequest.getPartyDetails()) {
                 HearingPartyEntity hearingPartyEntity = setHearingPartyDetails(partyDetail, caseHearingRequestEntity);
-                hearingPartyEntities.add(hearingPartyEntity);
-
                 if (partyDetail.getIndividualDetails() != null) {
                     setIndividualDetails(partyDetail.getIndividualDetails(), hearingPartyEntity);
-
                     if (partyDetail.getIndividualDetails().getReasonableAdjustments() != null) {
-                       setReasonableAdjustments(partyDetail.getIndividualDetails().getReasonableAdjustments(), hearingPartyEntity );
+                        setReasonableAdjustments(
+                            partyDetail.getIndividualDetails().getReasonableAdjustments(),
+                            hearingPartyEntity
+                        );
                     }
+                    setContactDetails(partyDetail.getIndividualDetails(), hearingPartyEntity);
                 }
                 if (partyDetail.getOrganisationDetails() != null) {
                     setOrganisationDetails(partyDetail.getOrganisationDetails(), hearingPartyEntity);
                 }
                 if (partyDetail.getUnavailabilityDow() != null || partyDetail.getUnavailabilityRanges() != null) {
-                    setUnavailabilityDetails(partyDetail, hearingPartyEntity);
+                   // setUnavailabilityDetails(partyDetail, hearingPartyEntity);
                 }
+                hearingPartyEntities.add(hearingPartyEntity);
             }
             caseHearingRequestEntity.setHearingParties(hearingPartyEntities);
-        }*/
+        }
 
         hearingEntity.setStatus(status);
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
         return hearingEntity;
+    }
+
+    private void setContactDetails(IndividualDetails individualDetails, HearingPartyEntity hearingPartyEntity) {
+        final List<ContactDetailsEntity> contactDetailsEntity =
+            contactDetailMapper.modelToEntity(individualDetails, hearingPartyEntity);
+        hearingPartyEntity.setContactDetails(contactDetailsEntity);
+
     }
 
     private void setPanelUserRequirements(List<PanelPreference> panelPreferences,
@@ -166,34 +189,34 @@ public class HearingMapper {
     }
 
     private void setPanelRequirements(List<String> roleTypes, CaseHearingRequestEntity caseHearingRequestEntity) {
-        final List<PanelRequirementsEntity> panelRequirementsEntities = panelRequirementsMapper.
-            modelToEntity(roleTypes, caseHearingRequestEntity);
+        final List<PanelRequirementsEntity> panelRequirementsEntities =
+            panelRequirementsMapper.modelToEntity(roleTypes, caseHearingRequestEntity);
         caseHearingRequestEntity.setPanelRequirements(panelRequirementsEntities);
     }
 
     private void setReasonableAdjustments(List<String> reasonableAdjustments, HearingPartyEntity hearingPartyEntity) {
-        final List<ReasonableAdjustmentsEntity> reasonableAdjustmentsEntities = reasonableAdjustmentMapper.
-            modelToEntity(reasonableAdjustments, hearingPartyEntity);
+        final List<ReasonableAdjustmentsEntity> reasonableAdjustmentsEntities =
+            reasonableAdjustmentMapper.modelToEntity(reasonableAdjustments, hearingPartyEntity);
         hearingPartyEntity.setReasonableAdjustmentsEntity(reasonableAdjustmentsEntities);
     }
 
     private void setUnavailabilityDetails(PartyDetails partyDetail, HearingPartyEntity hearingPartyEntity) {
 
-        final List<UnavailabilityEntity> unavailabilityEntities = unAvailabilityDetailMapper.
-            modelToEntity(partyDetail, hearingPartyEntity);
+        final List<UnavailabilityEntity> unavailabilityEntities =
+            unAvailabilityDetailMapper.modelToEntity(partyDetail, hearingPartyEntity);
         hearingPartyEntity.setUnavailabilityEntity(unavailabilityEntities);
     }
 
     private void setOrganisationDetails(OrganisationDetails organisationDetails,
                                         HearingPartyEntity hearingPartyEntity) {
-        final OrganisationDetailEntity organisationDetailEntity = organisationDetailMapper.
-            modelToEntity(organisationDetails, hearingPartyEntity);
+        final OrganisationDetailEntity organisationDetailEntity =
+            organisationDetailMapper.modelToEntity(organisationDetails, hearingPartyEntity);
         hearingPartyEntity.setOrganisationDetailEntity(organisationDetailEntity);
     }
 
     private void setIndividualDetails(IndividualDetails individualDetails, HearingPartyEntity hearingPartyEntity) {
-        final IndividualDetailEntity individualDetailEntity = individualDetailMapper.
-            modelToEntity(individualDetails, hearingPartyEntity);
+        final IndividualDetailEntity individualDetailEntity =
+            individualDetailMapper.modelToEntity(individualDetails, hearingPartyEntity);
         hearingPartyEntity.setIndividualDetailEntity(individualDetailEntity);
     }
 
@@ -204,28 +227,28 @@ public class HearingMapper {
 
     private void setRequiredFacilities(HearingRequest hearingRequest,
                                        CaseHearingRequestEntity caseHearingRequestEntity) {
-        final List<RequiredFacilitiesEntity> requiredFacilitiesEntities = requiredFacilitiesMapper.
-            modelToEntity(hearingRequest, caseHearingRequestEntity);
+        final List<RequiredFacilitiesEntity> requiredFacilitiesEntities =
+            requiredFacilitiesMapper.modelToEntity(hearingRequest, caseHearingRequestEntity);
         caseHearingRequestEntity.setRequiredFacilities(requiredFacilitiesEntities);
     }
 
     private void setNonStandardDurations(List<String> durations, CaseHearingRequestEntity caseHearingRequestEntity) {
-        final List<NonStandardDurationsEntity> nonStandardDurationsEntities = nonStandardDurationsMapper.
-            modelToEntity(durations, caseHearingRequestEntity);
+        final List<NonStandardDurationsEntity> nonStandardDurationsEntities =
+            nonStandardDurationsMapper.modelToEntity(durations, caseHearingRequestEntity);
         caseHearingRequestEntity.setNonStandardDurations(nonStandardDurationsEntities);
     }
 
     private void setRequiredLocations(List<HearingLocation> hearingLocations,
                                       CaseHearingRequestEntity caseHearingRequestEntity) {
-        final List<RequiredLocationsEntity> requiredLocationsEntities = requiredLocationsMapper.
-            modelToEntity(hearingLocations, caseHearingRequestEntity);
+        final List<RequiredLocationsEntity> requiredLocationsEntities =
+            requiredLocationsMapper.modelToEntity(hearingLocations, caseHearingRequestEntity);
         caseHearingRequestEntity.setRequiredLocations(requiredLocationsEntities);
     }
 
     private void setCaseCategories(HearingRequest hearingRequest,
                                    CaseHearingRequestEntity caseHearingRequestEntity) {
-        final List<CaseCategoriesEntity> caseCategoriesEntities = caseCategoriesMapper.
-            modelToEntity(hearingRequest, caseHearingRequestEntity);
+        final List<CaseCategoriesEntity> caseCategoriesEntities =
+            caseCategoriesMapper.modelToEntity(hearingRequest, caseHearingRequestEntity);
         caseHearingRequestEntity.setCaseCategories(caseCategoriesEntities);
     }
 
