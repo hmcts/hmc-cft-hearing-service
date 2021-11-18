@@ -1,22 +1,28 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+
+import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
 
 @Component
 public class CaseHearingRequestMapper {
 
-    public CaseHearingRequestMapper() {
+    private final CaseCategoriesMapper caseCategoriesMapper;
+
+    public CaseHearingRequestMapper(CaseCategoriesMapper caseCategoriesMapper) {
+        this.caseCategoriesMapper = caseCategoriesMapper;
     }
 
     public CaseHearingRequestEntity modelToEntity(HearingRequest hearingRequest, HearingEntity hearingEntity) {
-        // check time stamp insertion
         final CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         HearingDetails hearingDetails = hearingRequest.getHearingDetails();
         CaseDetails caseDetails = hearingRequest.getCaseDetails();
@@ -53,6 +59,13 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setRequestTimeStamp(hearingRequest.getRequestDetails().getRequestTimeStamp());
         caseHearingRequestEntity.setHearing(hearingEntity);
         return caseHearingRequestEntity;
+    }
+
+    public void mapCaseCategories(List<CaseCategory> caseCategories,
+                                  CaseHearingRequestEntity caseHearingRequestEntity) {
+        final List<CaseCategoriesEntity> caseCategoriesEntities =
+            caseCategoriesMapper.modelToEntity(caseCategories, caseHearingRequestEntity);
+        caseHearingRequestEntity.setCaseCategories(caseCategoriesEntities);
     }
 
 }

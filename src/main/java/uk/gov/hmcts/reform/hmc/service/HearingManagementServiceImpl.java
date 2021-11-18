@@ -15,9 +15,9 @@ import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 
 import java.util.List;
+import java.util.Optional;
 import javax.transaction.Transactional;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
@@ -60,13 +60,23 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
-        saveHearingDetails(hearingRequest);
-        return new HearingResponse();
+        HearingEntity savedEntity = saveHearingDetails(hearingRequest);
+        return getSaveHearingResponseDetails(savedEntity);
     }
 
-    private void saveHearingDetails(HearingRequest hearingRequest) {
-        HearingEntity hearingEntity = hearingMapper.modelToEntity(HEARING_STATUS, hearingRequest);
-        hearingRepository.save(hearingEntity);
+    private HearingEntity saveHearingDetails(HearingRequest hearingRequest) {
+        HearingEntity hearingEntity = hearingMapper.modelToEntity(hearingRequest);
+        return hearingRepository.save(hearingEntity);
+    }
+
+    private HearingResponse getSaveHearingResponseDetails(HearingEntity savedEntity) {
+        Optional<HearingEntity> entity = hearingRepository.findById(savedEntity.getId());
+        log.info("Hearing details saved successfully with id: {}", savedEntity.getId());
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setHearingRequestId(entity.get().getId());
+        hearingResponse.setTimeStamp(entity.get().getCaseHearingRequest().getHearingRequestReceivedDateTime());
+        hearingResponse.setStatus(entity.get().getStatus());
+        return hearingResponse;
     }
 
     private void validateHearingRequest(HearingRequest hearingRequest) {
