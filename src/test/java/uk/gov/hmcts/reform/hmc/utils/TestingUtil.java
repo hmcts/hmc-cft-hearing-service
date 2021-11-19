@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 
 import java.time.LocalDate;
@@ -104,6 +105,16 @@ public class TestingUtil {
         individualDetails.setTitle("Mr");
         individualDetails.setFirstName("firstName");
         individualDetails.setLastName("lastName");
+        List<RelatedParty> relatedParties = new ArrayList<>();
+        RelatedParty relatedParty1 = new RelatedParty();
+        relatedParty1.setRelatedPartyID("P1");
+        relatedParty1.setRelationshipType("R1");
+        relatedParties.add(relatedParty1);
+        RelatedParty relatedParty2 = new RelatedParty();
+        relatedParty2.setRelatedPartyID("P2");
+        relatedParty2.setRelationshipType("R2");
+        relatedParties.add(relatedParty2);
+        individualDetails.setRelatedParties(relatedParties);
         return individualDetails;
     }
 
