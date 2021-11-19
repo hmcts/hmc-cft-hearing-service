@@ -114,7 +114,6 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
-
     @Test
     void shouldReturn200_WhenGetHearingsForValidCaseRefLuhn() throws Exception {
         mockMvc.perform(get("/hearings/9372710950276233")
