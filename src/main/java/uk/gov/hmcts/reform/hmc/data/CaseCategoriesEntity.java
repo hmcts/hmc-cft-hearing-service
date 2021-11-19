@@ -4,15 +4,7 @@ import lombok.Data;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Table(name = "case_categories")
 @Entity
@@ -20,8 +12,12 @@ import javax.persistence.Table;
 public class CaseCategoriesEntity {
 
     @Id
+    @SequenceGenerator(name="case_hearing_id_seq",
+        sequenceName="case_hearing_id_seq",
+        allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+        generator="case_hearing_id_seq")
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "case_category_type", nullable = false)

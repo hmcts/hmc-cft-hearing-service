@@ -5,17 +5,7 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Table(name = "case_hearing_request")
 @Entity
@@ -23,8 +13,12 @@ import javax.persistence.Table;
 public class CaseHearingRequestEntity {
 
     @Id
-    @Column(name = "case_hearing_id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name="case_hearing_id_seq",
+        sequenceName="case_hearing_id_seq",
+        allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+        generator="case_hearing_id_seq")
+    @Column(name = "case_hearing_id")
     private Long caseHearingID;
 
     @Column(name = "auto_list_flag", nullable = false)
