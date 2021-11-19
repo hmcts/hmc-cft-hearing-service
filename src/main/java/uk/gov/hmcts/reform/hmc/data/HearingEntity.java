@@ -2,14 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Table(name = "hearing")
 @Entity
@@ -17,7 +10,11 @@ import javax.persistence.Table;
 public class HearingEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name="hearing_id_seq",
+        sequenceName="hearing_id_seq",
+        allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+        generator="hearing_id_seq")
     @Column(name = "hearing_id")
     private Long id;
 
