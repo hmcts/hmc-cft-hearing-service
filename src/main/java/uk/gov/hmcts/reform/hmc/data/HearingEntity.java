@@ -2,19 +2,33 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 
 @Table(name = "hearing")
 @Entity
 @Data
+@SecondaryTable(name = "CASE_HEARING_REQUEST",
+    pkJoinColumns = {
+        @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
 public class HearingEntity {
 
     @Id
-    @SequenceGenerator(name="hearing_id_seq",
-        sequenceName="hearing_id_seq",
-        allocationSize=1)
+    @SequenceGenerator(name = "hearing_id_seq",
+        sequenceName = "hearing_id_seq",
+        allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
-        generator="hearing_id_seq")
+        generator = "hearing_id_seq")
     @Column(name = "hearing_id")
     private Long id;
 

@@ -4,22 +4,33 @@ import lombok.Data;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Table(name = "case_categories")
 @Entity
 @Data
-@SecondaryTable(name="CASE_HEARING_REQUEST",
-    pkJoinColumns={
-        @PrimaryKeyJoinColumn(name="CASE_HEARING_ID")})
+@SecondaryTable(name = "CASE_HEARING_REQUEST",
+    pkJoinColumns = {
+        @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
 public class CaseCategoriesEntity {
 
     @Id
-    @SequenceGenerator(name="case_categories_id_seq",
-        sequenceName="case_categories_id_seq",
-        allocationSize=1)
+    @SequenceGenerator(name = "case_categories_id_seq",
+        sequenceName = "case_categories_id_seq",
+        allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
-        generator="case_categories_id_seq")
+        generator = "case_categories_id_seq")
     @Column(name = "id")
     private Long id;
 

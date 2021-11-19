@@ -5,19 +5,35 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Table(name = "case_hearing_request")
 @Entity
 @Data
+@SecondaryTable(name = "HEARING",
+    pkJoinColumns = {
+        @PrimaryKeyJoinColumn(name = "hearing_id")})
 public class CaseHearingRequestEntity {
 
     @Id
-    @SequenceGenerator(name="case_hearing_id_seq",
-        sequenceName="case_hearing_id_seq",
-        allocationSize=1)
+    @SequenceGenerator(name = "case_hearing_id_seq",
+        sequenceName = "case_hearing_id_seq",
+        allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
-        generator="case_hearing_id_seq")
+        generator = "case_hearing_id_seq")
     @Column(name = "case_hearing_id")
     private Long caseHearingID;
 

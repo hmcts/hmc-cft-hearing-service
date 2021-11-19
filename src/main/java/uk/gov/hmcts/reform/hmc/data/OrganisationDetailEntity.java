@@ -10,16 +10,26 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Table(name = "organisation_detail")
 @Entity
 @Data
+@SecondaryTable(name = "hearing_party",
+    pkJoinColumns = {
+        @PrimaryKeyJoinColumn(name = "TECH_PARTY_ID")})
 public class OrganisationDetailEntity {
 
     @Id
+    @SequenceGenerator(name = "organisation_detail_id_seq",
+        sequenceName = "organisation_detail_id_seq",
+        allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+        generator = "organisation_detail_id_seq")
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "organisation_name", nullable = false)

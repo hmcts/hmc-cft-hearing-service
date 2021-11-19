@@ -17,11 +17,17 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Table(name = "hearing_party")
 @Entity
 @Data
+@SecondaryTable(name = "CASE_HEARING_REQUEST",
+    pkJoinColumns = {
+        @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
 public class HearingPartyEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -29,8 +35,12 @@ public class HearingPartyEntity {
     private CaseHearingRequestEntity caseHearing;
 
     @Id
+    @SequenceGenerator(name = "tech_party_id_seq",
+        sequenceName = "tech_party_id_seq",
+        allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+        generator = "tech_party_id_seq")
     @Column(name = "tech_party_id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long techPartyId;
 
     @Column(name = "party_reference", nullable = false)
