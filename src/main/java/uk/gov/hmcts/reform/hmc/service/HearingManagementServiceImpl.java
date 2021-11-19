@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
@@ -42,9 +41,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public void getHearingRequest(Long hearingId) {
-        HearingEntity hearingEntity = hearingRepository.findHearing(hearingId);
-        if (hearingEntity == null) {
+    public void getHearingRequest(Long hearingId, boolean isValid) {
+        if (isValid && !hearingRepository.existsById(hearingId)) {
             throw new HearingNotFoundException(hearingId);
         }
     }

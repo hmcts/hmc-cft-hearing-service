@@ -5,7 +5,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 
 public interface HearingManagementService {
 
-    void getHearingRequest(Long hearingId);
+    void getHearingRequest(Long hearingId, boolean isValid);
 
     HearingResponse saveHearingRequest(HearingRequest hearingRequest);
 

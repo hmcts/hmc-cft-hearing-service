@@ -46,7 +46,7 @@ class HearingManagementServiceTest {
         hearing.setId(1L);
 
         Exception exception = assertThrows(HearingNotFoundException.class, () -> {
-            hearingManagementService.getHearingRequest(1L);
+            hearingManagementService.getHearingRequest(1L, true);
         });
         assertEquals("No hearing found for reference: 1", exception.getMessage());
     }
@@ -56,10 +56,9 @@ class HearingManagementServiceTest {
         HearingEntity hearing = new HearingEntity();
         hearing.setStatus("RESPONDED");
         hearing.setId(1L);
-        when(hearingRepository.findHearing(1L)).thenReturn(hearing);
-        hearingManagementService.getHearingRequest(1L);
-        verify(hearingRepository).findHearing(1L);
-
+        when(hearingRepository.existsById(1L)).thenReturn(true);
+        hearingManagementService.getHearingRequest(1L, true);
+        verify(hearingRepository).existsById(1L);
     }
 
     @Test
