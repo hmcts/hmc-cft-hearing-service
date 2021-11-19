@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 
@@ -24,10 +23,7 @@ import javax.persistence.Table;
 public class HearingEntity {
 
     @Id
-    @SequenceGenerator(name = "hearing_id_seq",
-        sequenceName = "hearing_id_seq",
-        allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+    @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "hearing_id_seq")
     @Column(name = "hearing_id")
     private Long id;

@@ -10,9 +10,6 @@ import java.util.List;
 @Component
 public class RequiredFacilitiesMapper {
 
-    public RequiredFacilitiesMapper() {
-    }
-
     public List<RequiredFacilitiesEntity> modelToEntity(List<String> facilities,
                                                         CaseHearingRequestEntity caseHearingRequestEntity) {
         List<RequiredFacilitiesEntity> requiredFacilitiesEntities = new ArrayList<>();

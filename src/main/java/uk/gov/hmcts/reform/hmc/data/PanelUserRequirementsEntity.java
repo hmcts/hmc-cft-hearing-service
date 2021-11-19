@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
-import lombok.Data;
 import org.hibernate.annotations.Type;
+import lombok.Data;
 import uk.gov.hmcts.reform.hmc.model.RequirementType;
 
 import javax.persistence.Column;
@@ -16,7 +16,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Table(name = "panel_user_requirements")
@@ -28,10 +27,7 @@ import javax.persistence.Table;
 public class PanelUserRequirementsEntity {
 
     @Id
-    @SequenceGenerator(name = "panel_user_requirements_id_seq",
-        sequenceName = "panel_user_requirements_id_seq",
-        allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+    @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "panel_user_requirements_id_seq")
     @Column(name = "id")
     private Long id;

@@ -12,9 +12,6 @@ import java.util.List;
 @Component
 public class CaseCategoriesMapper {
 
-    public CaseCategoriesMapper() {
-    }
-
     public List<CaseCategoriesEntity> modelToEntity(List<CaseCategory> caseCategories,
                                                     CaseHearingRequestEntity caseHearingRequestEntity) {
         List<CaseCategoriesEntity> caseCategoriesEntities = new ArrayList<>();

@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 
 import java.util.List;
-import java.util.Optional;
 import javax.transaction.Transactional;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
@@ -69,12 +68,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private HearingResponse getSaveHearingResponseDetails(HearingEntity savedEntity) {
-        Optional<HearingEntity> entity = hearingRepository.findById(savedEntity.getId());
         log.info("Hearing details saved successfully with id: {}", savedEntity.getId());
         HearingResponse hearingResponse = new HearingResponse();
-        hearingResponse.setHearingRequestId(entity.get().getId());
-        hearingResponse.setTimeStamp(entity.get().getCaseHearingRequest().getHearingRequestReceivedDateTime());
-        hearingResponse.setStatus(entity.get().getStatus());
+        hearingResponse.setHearingRequestId(savedEntity.getId());
+        hearingResponse.setTimeStamp(savedEntity.getCaseHearingRequest().getHearingRequestReceivedDateTime());
+        hearingResponse.setStatus(savedEntity.getStatus());
         return hearingResponse;
     }
 

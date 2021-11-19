@@ -9,9 +9,6 @@ import uk.gov.hmcts.reform.hmc.model.PartyType;
 @Component
 public class HearingPartyMapper {
 
-    public HearingPartyMapper() {
-    }
-
     public HearingPartyEntity modelToEntity(PartyDetails partyDetail,
                                                   CaseHearingRequestEntity caseHearingRequestEntity) {
         final HearingPartyEntity hearingPartyEntity = new HearingPartyEntity();

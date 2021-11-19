@@ -12,9 +12,6 @@ import java.util.List;
 @Component
 public class RequiredLocationsMapper {
 
-    public RequiredLocationsMapper() {
-    }
-
     public List<RequiredLocationsEntity> modelToEntity(List<HearingLocation> hearingLocations,
                                                        CaseHearingRequestEntity caseHearingRequestEntity) {
         List<RequiredLocationsEntity> requiredLocationsEntities = new ArrayList<>();

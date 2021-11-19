@@ -10,10 +10,6 @@ import java.util.List;
 @Component
 public class ReasonableAdjustmentMapper {
 
-    public ReasonableAdjustmentMapper() {
-    }
-
-
     public List<ReasonableAdjustmentsEntity> modelToEntity(List<String> reasonableAdjustments,
                                                            HearingPartyEntity hearingPartyEntity) {
         List<ReasonableAdjustmentsEntity> reasonableAdjustmentsEntities = new ArrayList<>();

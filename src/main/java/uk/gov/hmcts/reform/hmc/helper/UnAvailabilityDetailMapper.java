@@ -18,9 +18,6 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_RANGE_T
 @Component
 public class UnAvailabilityDetailMapper {
 
-    public UnAvailabilityDetailMapper() {
-    }
-
     public List<UnavailabilityEntity> modelToEntity(PartyDetails partyDetail, HearingPartyEntity hearingPartyEntity) {
         List<UnavailabilityEntity> unavailabilityEntities = new ArrayList<>();
         setDowDetails(partyDetail, hearingPartyEntity, unavailabilityEntities);

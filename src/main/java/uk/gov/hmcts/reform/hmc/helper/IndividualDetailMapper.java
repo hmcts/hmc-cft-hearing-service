@@ -9,9 +9,6 @@ import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 @Component
 public class IndividualDetailMapper {
 
-    public IndividualDetailMapper() {
-    }
-
     public IndividualDetailEntity modelToEntity(IndividualDetails individualDetail,
                                                 HearingPartyEntity hearingPartyEntity) {
         final IndividualDetailEntity individualDetailEntity = new IndividualDetailEntity();

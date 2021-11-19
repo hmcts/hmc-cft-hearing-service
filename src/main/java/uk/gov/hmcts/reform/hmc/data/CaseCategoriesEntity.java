@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
-import lombok.Data;
 import org.hibernate.annotations.Type;
+import lombok.Data;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 
 import javax.persistence.Column;
@@ -14,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Table(name = "case_categories")
@@ -26,10 +25,7 @@ import javax.persistence.Table;
 public class CaseCategoriesEntity {
 
     @Id
-    @SequenceGenerator(name = "case_categories_id_seq",
-        sequenceName = "case_categories_id_seq",
-        allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+    @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "case_categories_id_seq")
     @Column(name = "id")
     private Long id;

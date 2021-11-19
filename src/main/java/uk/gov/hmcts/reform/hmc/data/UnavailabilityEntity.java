@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
-import lombok.Data;
 import org.hibernate.annotations.Type;
+import lombok.Data;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnavailable;
 
@@ -18,7 +18,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Table(name = "unavailability")
@@ -30,10 +29,7 @@ import javax.persistence.Table;
 public class UnavailabilityEntity {
 
     @Id
-    @SequenceGenerator(name = "unavailability_id_seq",
-        sequenceName = "unavailability_id_seq",
-        allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+    @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "unavailability_id_seq")
     @Column(name = "id")
     private Long id;

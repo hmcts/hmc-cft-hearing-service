@@ -14,9 +14,6 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.PHONE_TYPE;
 @Component
 public class ContactDetailMapper {
 
-    public ContactDetailMapper() {
-    }
-
     public List<ContactDetailsEntity> modelToEntity(IndividualDetails individualDetails,
                                                     HearingPartyEntity hearingPartyEntity) {
         List<ContactDetailsEntity> contactDetailsEntities = new ArrayList<>();

@@ -12,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Table(name = "required_facilities")
@@ -24,10 +23,7 @@ import javax.persistence.Table;
 public class RequiredFacilitiesEntity {
 
     @Id
-    @SequenceGenerator(name = "required_facilities_id_seq",
-        sequenceName = "required_facilities_id_seq",
-        allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+    @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "required_facilities_id_seq")
     @Column(name = "id")
     private Long id;

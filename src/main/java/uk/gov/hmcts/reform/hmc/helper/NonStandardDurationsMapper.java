@@ -10,9 +10,6 @@ import java.util.List;
 @Component
 public class NonStandardDurationsMapper {
 
-    public NonStandardDurationsMapper() {
-    }
-
     public List<NonStandardDurationsEntity> modelToEntity(List<String> durations,
                                                           CaseHearingRequestEntity caseHearingRequestEntity) {
         List<NonStandardDurationsEntity> nonStandardDurationsEntities = new ArrayList<>();

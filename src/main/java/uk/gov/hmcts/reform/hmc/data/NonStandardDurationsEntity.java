@@ -12,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Table(name = "non_standard_durations")
@@ -24,10 +23,7 @@ import javax.persistence.Table;
 public class NonStandardDurationsEntity {
 
     @Id
-    @SequenceGenerator(name = "non_standard_durations_id_seq",
-        sequenceName = "non_standard_durations_id_seq",
-        allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+    @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "non_standard_durations_id_seq")
     @Column(name = "id")
     private Long id;

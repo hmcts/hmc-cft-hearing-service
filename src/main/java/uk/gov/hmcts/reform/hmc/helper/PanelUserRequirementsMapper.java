@@ -12,9 +12,6 @@ import java.util.List;
 @Component
 public class PanelUserRequirementsMapper {
 
-    public PanelUserRequirementsMapper() {
-    }
-
     public List<PanelUserRequirementsEntity> modelToEntity(List<PanelPreference> panelPreferences,
                                                            CaseHearingRequestEntity caseHearingRequestEntity) {
         List<PanelUserRequirementsEntity> panelUserRequirementsEntities = new ArrayList<>();

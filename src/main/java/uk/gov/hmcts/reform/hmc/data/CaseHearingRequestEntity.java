@@ -17,7 +17,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Table(name = "case_hearing_request")
@@ -29,10 +28,7 @@ import javax.persistence.Table;
 public class CaseHearingRequestEntity {
 
     @Id
-    @SequenceGenerator(name = "case_hearing_id_seq",
-        sequenceName = "case_hearing_id_seq",
-        allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+    @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "case_hearing_id_seq")
     @Column(name = "case_hearing_id")
     private Long caseHearingID;

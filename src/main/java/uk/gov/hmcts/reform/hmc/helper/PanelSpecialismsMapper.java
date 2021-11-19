@@ -10,9 +10,6 @@ import java.util.List;
 @Component
 public class PanelSpecialismsMapper {
 
-    public PanelSpecialismsMapper() {
-    }
-
     public List<PanelSpecialismsEntity> modelToEntity(List<String> panelSpecialisms,
                                                       CaseHearingRequestEntity caseHearingRequestEntity) {
         List<PanelSpecialismsEntity> panelSpecialismEntities = new ArrayList<>();

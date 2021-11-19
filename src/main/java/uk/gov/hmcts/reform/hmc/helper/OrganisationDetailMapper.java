@@ -8,9 +8,6 @@ import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 @Component
 public class OrganisationDetailMapper {
 
-    public OrganisationDetailMapper() {
-    }
-
     public OrganisationDetailEntity modelToEntity(OrganisationDetails organisationDetail,
                                                   HearingPartyEntity hearingPartyEntity) {
         final OrganisationDetailEntity organisationDetailEntity = new OrganisationDetailEntity();
