@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
-import org.hibernate.annotations.Type;
 import lombok.Data;
+import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 
 import java.util.List;
