@@ -24,7 +24,10 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @TestPropertySource("/contract-test.properties")
 @ExtendWith(SpringExtension.class)
@@ -73,8 +76,10 @@ public class HearingManagementGetHearingsProviderTest extends BasePactTesting {
             .validateGetHearingsRequest(any(), any());
         HearingManagementController controller = new HearingManagementController(mockService);
         HearingRequest hearingRequest = controller.getHearingsRequest(validCaseRef, null);
-        verify(mockService, times(1)).validateGetHearingsRequest(any(), any());
-        Assert.isTrue(hearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef), "Case ref value is not as expected.");
+        verify(mockService, times(1))
+            .validateGetHearingsRequest(any(), any());
+        Assert.isTrue(hearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef),
+                      "Case ref value is not as expected.");
     }
 
     @State("hmc cftHearingService throws validation error for invalid case ref")
@@ -85,8 +90,10 @@ public class HearingManagementGetHearingsProviderTest extends BasePactTesting {
             .validateGetHearingsRequest(any(), any());
         HearingManagementController controller = new HearingManagementController(mockService);
         HearingRequest hearingRequest = controller.getHearingsRequest(validCaseRef, status);
-        verify(mockService, times(1)).validateGetHearingsRequest(any(), any());
-        Assert.isTrue(hearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef), "Case ref value is not as expected.");
+        verify(mockService, times(1))
+            .validateGetHearingsRequest(any(), any());
+        Assert.isTrue(hearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef),
+                      "Case ref value is not as expected.");
     }
 
 }

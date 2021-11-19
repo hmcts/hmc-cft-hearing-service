@@ -16,7 +16,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.hmc.model.*;
+import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
+import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
+import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -141,8 +147,10 @@ class HearingManagementControllerTest {
         hearingRequest.setCaseDetails(createCaseDetails(caseRef));
         hearingRequest.setPartyDetails(createPartyDetailsList());
         try {
-             logger.info(objectMapper.writeValueAsString(hearingRequest));
-        } catch (Exception e) {}
+            logger.info(objectMapper.writeValueAsString(hearingRequest));
+        } catch (Exception e) {
+            logger.error("Unable to write log for mapper value");
+        }
         return hearingRequest;
     }
 
@@ -156,7 +164,6 @@ class HearingManagementControllerTest {
         CaseDetails caseDetails = new CaseDetails();
         caseDetails.setCaseRef(caseRef);
         caseDetails.setCaseDeepLink("localhost/hearings");
-//        caseDetails.setCaseCategories();
         caseDetails.setCaseManagementLocationCode("MLC1");
         caseDetails.setRequestTimeStamp(LocalDateTime.now());
         caseDetails.setCaseAdditionalSecurityFlag(false);
@@ -172,17 +179,10 @@ class HearingManagementControllerTest {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(false);
         hearingDetails.setDuration(30);
-//        hearingDetails.setFacilitiesRequired(false);
-//        hearingDetails.setHearingLocations();
-//        hearingDetails.setHearingRequester();
         hearingDetails.setHearingType("TYPE1");
         hearingDetails.setHearingInWelshFlag(false);
         hearingDetails.setHearingIsLinkedFlag(false);
         hearingDetails.setHearingPriorityType("TYPE1");
-//        hearingDetails.setHearingWindow();
-//        hearingDetails.setLeadJudgeContractType();
-//        hearingDetails.setListingComments();
-//        hearingDetails.setPanelRequirements();
         return hearingDetails;
     }
 

@@ -210,7 +210,8 @@ public class BasePactTesting {
         ArrayList<PartyDetails> partyDetailsArrayList = new ArrayList<>();
         partyDetailsArrayList.add(createPartyDetails("P1", "IND", "DEF", null, createOrganisationDetails()));
         partyDetailsArrayList.add(createPartyDetails("P2", "IND", "DEF2", createIndividualDetails(), null));
-        partyDetailsArrayList.add(createPartyDetails("P3", "IND", "DEF3", createIndividualDetails(), createOrganisationDetails()));
+        partyDetailsArrayList.add(createPartyDetails("P3", "IND", "DEF3", createIndividualDetails(),
+                                                     createOrganisationDetails()));
         return partyDetailsArrayList;
     }
 
@@ -224,7 +225,8 @@ public class BasePactTesting {
         partyDetailsArrayList.add(createPartyDetails("P1", "IND", "DEF", null, createOrganisationDetails()));
         partyDetailsArrayList.add(createPartyDetails("P2", "IND2", "DEF2", createIndividualDetails(), null));
         partyDetailsArrayList.add(createPartyDetails("P3", "IND3", "DEF3", null, createOrganisationDetails()));
-        partyDetailsArrayList.add(createPartyDetails("P4", "IND4", "DEF4", createIndividualDetails(), createOrganisationDetails()));
+        partyDetailsArrayList.add(createPartyDetails("P4", "IND4", "DEF4", createIndividualDetails(),
+                                                     createOrganisationDetails()));
         return partyDetailsArrayList;
     }
 
