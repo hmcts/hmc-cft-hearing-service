@@ -142,4 +142,43 @@ public class TestingUtil {
         return hearingEntity;
     }
 
+    public static CaseHearingRequestEntity caseHearingRequestEntity() {
+        CaseHearingRequestEntity entity = new CaseHearingRequestEntity();
+        entity.setAutoListFlag(false);
+        entity.setHearingType("Some hearing type");
+        entity.setRequiredDurationInMinutes(10);
+        entity.setHearingPriorityType("Priority type");
+        entity.setHmctsServiceID("ABA1");
+        entity.setCaseReference("1111222233334444");
+        entity.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
+        entity.setCaseUrlContextPath("https://www.google.com");
+        entity.setHmctsInternalCaseName("Internal case name");
+        entity.setOwningLocationId("CMLC123");
+        entity.setCaseRestrictedFlag(true);
+        entity.setCaseSlaStartDate(LocalDate.parse("2020-08-10"));
+        entity.setVersionNumber(1);
+        entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00."));
+        return entity;
+
+    }
+
+    public static IndividualDetails individualContactDetails_HearingChannelEmail() {
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setHearingChannelEmail("hearing.channel@email.com");
+        return individualDetails;
+    }
+
+    public static IndividualDetails individualContactDetails_HearingChannelPhone() {
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setHearingChannelPhone("01234567890");
+        return individualDetails;
+    }
+
+    public static IndividualDetails individualContactDetails() {
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setHearingChannelEmail("hearing.channel@email.com");
+        individualDetails.setHearingChannelPhone("01234567890");
+        return individualDetails;
+
+    }
 }
