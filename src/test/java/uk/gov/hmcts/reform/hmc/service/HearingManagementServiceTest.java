@@ -135,7 +135,7 @@ class HearingManagementServiceTest {
     }
 
     @Test
-    void shouldPassWithParty_Details_InValid_Dow_details_Present() {
+    void shouldFailWithParty_Details_InValid_Dow_details_Present() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
@@ -152,7 +152,7 @@ class HearingManagementServiceTest {
     }
 
     @Test
-    void shouldPassWithParty_Details_InValid_UnavailabilityRange_details_Present() {
+    void shouldFailWithParty_Details_InValid_UnavailabilityRange_details_Present() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());

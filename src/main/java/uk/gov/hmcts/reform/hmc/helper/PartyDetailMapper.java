@@ -91,7 +91,7 @@ public class PartyDetailMapper {
     }
 
     private void setIndividualDetails(IndividualDetails individualDetails, HearingPartyEntity hearingPartyEntity) {
-        final IndividualDetailEntity individualDetailEntity =
+        final List<IndividualDetailEntity> individualDetailEntity =
             individualDetailMapper.modelToEntity(individualDetails, hearingPartyEntity);
         hearingPartyEntity.setIndividualDetailEntity(individualDetailEntity);
     }

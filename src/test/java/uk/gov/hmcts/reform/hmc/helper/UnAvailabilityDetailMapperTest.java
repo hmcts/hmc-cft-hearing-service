@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class UnAvailabilityDetailMapperTest {
 
@@ -53,19 +54,19 @@ class UnAvailabilityDetailMapperTest {
         List<UnavailabilityEntity> entities = mapper.modelToEntity(partyDetail, hearingPartyEntity);
         assertEquals(DayOfWeekUnavailable.MONDAY, entities.get(0).getDayOfWeekUnavailable());
         assertEquals(DayOfWeekUnAvailableType.ALL, entities.get(0).getDayOfWeekUnavailableType());
-        assertEquals(null, entities.get(0).getEndDate());
-        assertEquals(null, entities.get(0).getStartDate());
+        assertNull(entities.get(0).getEndDate());
+        assertNull(entities.get(0).getStartDate());
         assertEquals(DayOfWeekUnavailable.TUESDAY, entities.get(1).getDayOfWeekUnavailable());
         assertEquals(DayOfWeekUnAvailableType.AM, entities.get(1).getDayOfWeekUnavailableType());
-        assertEquals(null, entities.get(1).getEndDate());
-        assertEquals(null, entities.get(1).getStartDate());
+        assertNull(entities.get(1).getEndDate());
+        assertNull(entities.get(1).getStartDate());
 
-        assertEquals(null, entities.get(2).getDayOfWeekUnavailable());
-        assertEquals(null, entities.get(2).getDayOfWeekUnavailableType());
+        assertNull(entities.get(2).getDayOfWeekUnavailable());
+        assertNull(entities.get(2).getDayOfWeekUnavailableType());
         assertEquals(LocalDate.parse("2020-09-10"), entities.get(2).getEndDate());
         assertEquals(LocalDate.parse("2021-10-10"), entities.get(2).getStartDate());
-        assertEquals(null, entities.get(3).getDayOfWeekUnavailable());
-        assertEquals(null, entities.get(3).getDayOfWeekUnavailableType());
+        assertNull(entities.get(3).getDayOfWeekUnavailable());
+        assertNull(entities.get(3).getDayOfWeekUnavailableType());
         assertEquals(LocalDate.parse("2022-10-15"), entities.get(3).getEndDate());
         assertEquals(LocalDate.parse("2023-10-20"), entities.get(3).getStartDate());
     }
