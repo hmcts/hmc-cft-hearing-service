@@ -20,8 +20,12 @@ public class UnAvailabilityDetailMapper {
 
     public List<UnavailabilityEntity> modelToEntity(PartyDetails partyDetail, HearingPartyEntity hearingPartyEntity) {
         List<UnavailabilityEntity> unavailabilityEntities = new ArrayList<>();
-        setDowDetails(partyDetail, hearingPartyEntity, unavailabilityEntities);
-        setRangeDetails(partyDetail, hearingPartyEntity, unavailabilityEntities);
+        if (partyDetail.getUnavailabilityDow() != null) {
+            setDowDetails(partyDetail, hearingPartyEntity, unavailabilityEntities);
+        }
+        if (partyDetail.getUnavailabilityRanges() != null) {
+            setRangeDetails(partyDetail, hearingPartyEntity, unavailabilityEntities);
+        }
         return unavailabilityEntities;
     }
 
