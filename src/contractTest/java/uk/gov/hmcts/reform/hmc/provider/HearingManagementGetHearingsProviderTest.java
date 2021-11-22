@@ -69,7 +69,7 @@ public class HearingManagementGetHearingsProviderTest extends BasePactTesting {
         }
     }
 
-    @State("hmc cftHearingService successfully returns hearing")
+    @State("hmc cftHearingService successfully returns hearing for valid case ref")
     public void getHearings() {
         final String validCaseRef = "9372710950276233";
         doReturn(generateHearingRequest(validCaseRef)).when(mockService)
@@ -82,7 +82,7 @@ public class HearingManagementGetHearingsProviderTest extends BasePactTesting {
                       "Case ref value is not as expected.");
     }
 
-    @State("hmc cftHearingService throws validation error for invalid case ref")
+    @State("hmc cftHearingService throws validation error while trying to get hearing for an invalid case ref")
     public void validationErrorForGetHearings() {
         final String validCaseRef = "9372710950276233";
         final String status = "UPDATED"; // for example

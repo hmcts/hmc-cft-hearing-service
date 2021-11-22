@@ -34,8 +34,9 @@ public class HearingManagementGetHearingsConsumerTest {
     private static final String VALID_CASE_STATUS = "UPDATED";
     private static final String INVALID_CASE_REF = "9372710950276230";
 
+    private static final String EXPECTED_STATUS_MESSAGE = "Hearing obtained successfully";
     private static final PactDslJsonBody pactdsljsonbodyResponse =
-        HearingResponsePactUtil.generateJsonBody();
+        HearingResponsePactUtil.generateJsonBody(EXPECTED_STATUS_MESSAGE);
 
     static Map<String, String> headers = Map.of(
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,
@@ -74,7 +75,7 @@ public class HearingManagementGetHearingsConsumerTest {
     @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
     public RequestResponsePact getHearingsForInvalidCaseRef(PactDslWithProvider builder) {
         return builder
-            .given("hmc cftHearingService fails to return case hearings")
+            .given("hmc cftHearingService throws validation error while trying to return case hearings")
             .uponReceiving("Request to get hearings for given invalid case ref")
             .path("/hearings/" + INVALID_CASE_REF)
             .method(HttpMethod.GET.toString())
@@ -111,7 +112,7 @@ public class HearingManagementGetHearingsConsumerTest {
         assertThat(response.getString("partyDetails"))
             .isNotEmpty();
         assertThat(response.getString("status_message"))
-            .isEqualTo("Hearing created successfully");
+            .isEqualTo(EXPECTED_STATUS_MESSAGE);
     }
 
     /**

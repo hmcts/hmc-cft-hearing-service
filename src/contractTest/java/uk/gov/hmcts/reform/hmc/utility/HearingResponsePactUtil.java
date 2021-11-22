@@ -23,12 +23,12 @@ public class HearingResponsePactUtil {
      * generate Pact JSON body.
      * @return PactDslJsonBody Pact Dsl JSON body
      */
-    public static PactDslJsonBody generateJsonBody() {
+    public static PactDslJsonBody generateJsonBody(String statusMessage) {
         // Build structural parts of the JSON body
         PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
 
         // Starting with the status message
-        addStatusMessage(pactDslJsonBody, "Hearing created successfully");
+        addStatusMessage(pactDslJsonBody, statusMessage);
         // Request Details object
         addRequestDetails(pactDslJsonBody);
         // Hearing Details object
@@ -63,7 +63,7 @@ public class HearingResponsePactUtil {
     private static void addRequestDetails(PactDslJsonBody pactDslJsonBody) {
         pactDslJsonBody
             .object("requestDetails")
-            .datetime("requestTimeStamp", FORMATYYYYMMDDHHMMSSSSSSZ, Instant.parse("2021-01-29T01:23:34.123456Z"))
+            .datetime("requestTimeStamp", FORMATYYYYMMDDHHMMSSSSSSZ, Instant.parse("2021-10-29T01:23:34.123456Z"))
             .closeObject().asBody();
     }
 
@@ -82,7 +82,7 @@ public class HearingResponsePactUtil {
             .object("hearingWindow")
               .date("hearingWindowStartDateRange", FORMATYYYYMMDD)
               .date("hearingWindowEndDateRange", FORMATYYYYMMDD)
-              .datetime("firstDateTimeMustBe", FORMATYYYYMMDDHHMMSSZ, Instant.parse("2021-01-29T02:42:25.123000002Z"))
+              .datetime("firstDateTimeMustBe", FORMATYYYYMMDDHHMMSSZ, Instant.parse("2021-10-29T02:42:25.123000002Z"))
             .closeObject().asBody()
             .integerType("duration", 1)
             .eachLike("nonStandardHearingDurationReasons")

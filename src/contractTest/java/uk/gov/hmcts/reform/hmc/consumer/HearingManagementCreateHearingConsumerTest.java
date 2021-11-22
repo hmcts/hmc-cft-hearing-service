@@ -28,8 +28,9 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
 
     private static final String PATH_HEARING = "/hearing";
 
+    private static final String EXPECTED_STATUS_MESSAGE = "Hearing created successfully";
     private static final PactDslJsonBody pactdsljsonbodyResponse =
-        HearingResponsePactUtil.generateJsonBody();
+        HearingResponsePactUtil.generateJsonBody(EXPECTED_STATUS_MESSAGE);
 
     // Test data 1 - valid HearingRequest
     HearingRequest validHearingRequest = generateHearingRequest(VALID_CASE_REF);
@@ -54,8 +55,8 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
     @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
     public RequestResponsePact createHearing(PactDslWithProvider builder) {
         return builder
-            .given("hmc cftHearingService successfully returns created hearing with individual")
-            .uponReceiving("Request to create hearing with individual details")
+            .given("hmc cftHearingService successfully returns created hearing")
+            .uponReceiving("Request to create hearing")
             .path(PATH_HEARING)
             .method(HttpMethod.POST.toString())
             .body(jsonstringRequest1, ContentType.APPLICATION_JSON)
@@ -76,7 +77,7 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
     @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
     public RequestResponsePact validationErrorFromCreatingHearing(PactDslWithProvider builder) {
         return builder
-            .given("hmc cftHearingService throws validation error for create hearing")
+            .given("hmc cftHearingService throws validation error while trying to create hearing")
             .uponReceiving("Request to create hearing")
             .path(PATH_HEARING)
             .method(HttpMethod.POST.toString())
@@ -113,28 +114,7 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
         assertThat(response.getString("partyDetails"))
             .isNotEmpty();
         assertThat(response.getString("status_message"))
-            .isEqualTo("Hearing created successfully");
-    }
-
-    /**
-     * get RestAssuredJsonPath.
-     *
-     * @param mockServer MockServer
-     */
-    public JsonPath getRestAssuredJsonPath(MockServer mockServer) {
-        return RestAssured
-            .given()
-            .headers(headers)
-            .contentType(io.restassured.http.ContentType.JSON)
-            .body(toHearingRequestJsonString(validHearingRequest))
-            .when()
-            .post(mockServer.getUrl() + PATH_HEARING)
-            .then()
-            .statusCode(202)
-            .and()
-            .extract()
-            .body()
-            .jsonPath();
+            .isEqualTo(EXPECTED_STATUS_MESSAGE);
     }
 
     /**
@@ -162,6 +142,27 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
 
         assertThat(response.getString("message")).isEqualTo("Invalid hearing details");
         assertThat(response.getString("status")).isEqualTo("BAD_REQUEST");
+    }
+
+    /**
+     * get RestAssuredJsonPath.
+     *
+     * @param mockServer MockServer
+     */
+    public JsonPath getRestAssuredJsonPath(MockServer mockServer) {
+        return RestAssured
+            .given()
+            .headers(headers)
+            .contentType(io.restassured.http.ContentType.JSON)
+            .body(toHearingRequestJsonString(validHearingRequest))
+            .when()
+            .post(mockServer.getUrl() + PATH_HEARING)
+            .then()
+            .statusCode(202)
+            .and()
+            .extract()
+            .body()
+            .jsonPath();
     }
 
 }

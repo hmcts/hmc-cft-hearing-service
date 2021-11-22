@@ -34,7 +34,7 @@ import static org.mockito.Mockito.reset;
     port = "${PACT_BROKER_PORT:}",
     consumerVersionSelectors = {@VersionSelector(tag = "master")})
 @IgnoreNoPactsToVerify
-public class HearingManagementProviderTest {
+public class HearingManagementCreateHearingProviderTest {
 
     @LocalServerPort
     private int port;
@@ -71,7 +71,7 @@ public class HearingManagementProviderTest {
         doNothing().when(mockService).validateHearingRequest(any(HearingRequest.class));
     }
 
-    @State("hmc cftHearingService throws validation error for create hearing")
+    @State("hmc cftHearingService throws validation error while trying to create hearing")
     public void validationErrorForCreatingHearing() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setCaseDetails(null);
