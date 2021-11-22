@@ -24,7 +24,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(PactConsumerTestExt.class)
-public class HearingManagementConsumerTest extends BasePactTesting {
+public class HearingManagementCreateHearingConsumerTest extends BasePactTesting {
 
     private static final String PATH_HEARING = "/hearing";
 
