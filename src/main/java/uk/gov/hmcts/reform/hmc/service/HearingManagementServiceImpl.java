@@ -111,17 +111,43 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         } else {
             DataStoreCaseDetails caseDetails;
             caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
-            for (RoleAssignment roleAssignment : filteredRoleAssignments) {
-                RoleAssignmentAttributes attributes = roleAssignment.getAttributes();
-                if ((attributes.getJurisdiction() == null && attributes.getCaseType() == null)
-                    || (attributes.getJurisdiction() != null && attributes.getJurisdiction().isPresent()
-                        && attributes.getJurisdiction().equals(Optional.of(caseDetails.getJurisdiction())))
-                    || (attributes.getCaseType() != null && attributes.getCaseType().isPresent()
-                        && attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId())))) {
-                    return;
+            if(!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
+                throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
+            }
+        }
+    }
+
+    @SuppressWarnings("java:S2789")
+    public boolean checkRoleAssignmentMatchesCaseDetails(DataStoreCaseDetails caseDetails, List<RoleAssignment> roleAssignments) {
+        for (RoleAssignment roleAssignment : roleAssignments) {
+            RoleAssignmentAttributes attributes = roleAssignment.getAttributes();
+            if (attributes.getJurisdiction() == null) {
+                if (attributes.getCaseType() == null) {
+                    return true;
+                } else if (attributes.getCaseType().isEmpty()) {
+                    return true;
+                }
+                else if (attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))) {
+                    return true;
                 }
             }
-            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
+            else if (attributes.getJurisdiction().isEmpty()) {
+                if (attributes.getCaseType() == null) {
+                    return true;
+                } else if (attributes.getCaseType().isEmpty()) {
+                    return true;
+                }
+                else if (attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))) {
+                    return true;
+                }
+            }
+            else if (attributes.getJurisdiction().equals(Optional.of(caseDetails.getJurisdiction()))) {
+                return true;
+            }
+            if(attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))){
+                return true;
+            }
         }
+        return false;
     }
 }

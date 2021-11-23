@@ -230,8 +230,186 @@ class HearingManagementServiceTest {
     }
 
     @Test
-    void shouldVerifyAccessWhenRoleAssignmentValidAndNoJursdictionOrCaseTypeIdGivenInRoleAssignment() {
+    void shouldVerifyAccessWhenRoleAssignmentValidAndNoJurisdictionOrCaseTypeIdGivenInRoleAssignment() {
         RoleAssignmentAttributes roleAssignmentAttributes = RoleAssignmentAttributes.builder()
+            .build();
+        RoleAssignment roleAssignment = RoleAssignment.builder()
+            .roleName(ROLE_NAME)
+            .roleType(ROLE_TYPE)
+            .attributes(roleAssignmentAttributes)
+            .build();
+        List<RoleAssignment> roleAssignmentList = new ArrayList<>();
+        roleAssignmentList.add(roleAssignment);
+        RoleAssignments roleAssignments = RoleAssignments.builder()
+            .roleAssignments(roleAssignmentList)
+            .build();
+        doReturn(roleAssignments).when(roleAssignmentService).getRoleAssignments(USER_ID);
+        doReturn(USER_ID).when(securityUtils).getUserId();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .build();
+        doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
+        hearingManagementService.verifyAccess(CASE_REFERENCE);
+    }
+
+    @Test
+    void shouldVerifyAccessWhenRoleAssignmentValidAndJurisdictionAndCaseTypeIdIsEmptyInRoleAssignment() {
+        RoleAssignmentAttributes roleAssignmentAttributes = RoleAssignmentAttributes.builder()
+            .jurisdiction(Optional.empty())
+            .caseType(Optional.empty())
+            .build();
+        RoleAssignment roleAssignment = RoleAssignment.builder()
+            .roleName(ROLE_NAME)
+            .roleType(ROLE_TYPE)
+            .attributes(roleAssignmentAttributes)
+            .build();
+        List<RoleAssignment> roleAssignmentList = new ArrayList<>();
+        roleAssignmentList.add(roleAssignment);
+        RoleAssignments roleAssignments = RoleAssignments.builder()
+            .roleAssignments(roleAssignmentList)
+            .build();
+        doReturn(roleAssignments).when(roleAssignmentService).getRoleAssignments(USER_ID);
+        doReturn(USER_ID).when(securityUtils).getUserId();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .jurisdiction("different Jurisdiction")
+            .caseTypeId(CASE_TYPE)
+            .build();
+        doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
+        hearingManagementService.verifyAccess(CASE_REFERENCE);
+    }
+
+    @Test
+    void shouldVerifyAccessWhenRoleAssignmentValidAndCaseTypeIdMatchesAndJurisdictionIsEmptyInRoleAssignment() {
+        RoleAssignmentAttributes roleAssignmentAttributes = RoleAssignmentAttributes.builder()
+            .jurisdiction(Optional.empty())
+            .caseType(Optional.of(CASE_TYPE))
+            .build();
+        RoleAssignment roleAssignment = RoleAssignment.builder()
+            .roleName(ROLE_NAME)
+            .roleType(ROLE_TYPE)
+            .attributes(roleAssignmentAttributes)
+            .build();
+        List<RoleAssignment> roleAssignmentList = new ArrayList<>();
+        roleAssignmentList.add(roleAssignment);
+        RoleAssignments roleAssignments = RoleAssignments.builder()
+            .roleAssignments(roleAssignmentList)
+            .build();
+        doReturn(roleAssignments).when(roleAssignmentService).getRoleAssignments(USER_ID);
+        doReturn(USER_ID).when(securityUtils).getUserId();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .build();
+        doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
+        hearingManagementService.verifyAccess(CASE_REFERENCE);
+    }
+
+    @Test
+    void shouldVerifyAccessWhenRoleAssignmentValidAndJurisdictionMatchesAndCaseTypeIdIsEmptyInRoleAssignment() {
+        RoleAssignmentAttributes roleAssignmentAttributes = RoleAssignmentAttributes.builder()
+            .jurisdiction(Optional.of(JURISDICTION))
+            .caseType(Optional.empty())
+            .build();
+        RoleAssignment roleAssignment = RoleAssignment.builder()
+            .roleName(ROLE_NAME)
+            .roleType(ROLE_TYPE)
+            .attributes(roleAssignmentAttributes)
+            .build();
+        List<RoleAssignment> roleAssignmentList = new ArrayList<>();
+        roleAssignmentList.add(roleAssignment);
+        RoleAssignments roleAssignments = RoleAssignments.builder()
+            .roleAssignments(roleAssignmentList)
+            .build();
+        doReturn(roleAssignments).when(roleAssignmentService).getRoleAssignments(USER_ID);
+        doReturn(USER_ID).when(securityUtils).getUserId();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .build();
+        doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
+        hearingManagementService.verifyAccess(CASE_REFERENCE);
+    }
+
+    @Test
+    void shouldVerifyAccessWhenRoleAssignmentValidAndJurisdictionMatchesAndCaseTypeIdIsNullInRoleAssignment() {
+        RoleAssignmentAttributes roleAssignmentAttributes = RoleAssignmentAttributes.builder()
+            .jurisdiction(Optional.of(JURISDICTION))
+            .build();
+        RoleAssignment roleAssignment = RoleAssignment.builder()
+            .roleName(ROLE_NAME)
+            .roleType(ROLE_TYPE)
+            .attributes(roleAssignmentAttributes)
+            .build();
+        List<RoleAssignment> roleAssignmentList = new ArrayList<>();
+        roleAssignmentList.add(roleAssignment);
+        RoleAssignments roleAssignments = RoleAssignments.builder()
+            .roleAssignments(roleAssignmentList)
+            .build();
+        doReturn(roleAssignments).when(roleAssignmentService).getRoleAssignments(USER_ID);
+        doReturn(USER_ID).when(securityUtils).getUserId();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .build();
+        doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
+        hearingManagementService.verifyAccess(CASE_REFERENCE);
+    }
+
+    @Test
+    void shouldVerifyAccessWhenRoleAssignmentValidAndCaseTypeIdMatchesAndJurisdictionIsNullInRoleAssignment() {
+        RoleAssignmentAttributes roleAssignmentAttributes = RoleAssignmentAttributes.builder()
+            .caseType(Optional.of(CASE_TYPE))
+            .build();
+        RoleAssignment roleAssignment = RoleAssignment.builder()
+            .roleName(ROLE_NAME)
+            .roleType(ROLE_TYPE)
+            .attributes(roleAssignmentAttributes)
+            .build();
+        List<RoleAssignment> roleAssignmentList = new ArrayList<>();
+        roleAssignmentList.add(roleAssignment);
+        RoleAssignments roleAssignments = RoleAssignments.builder()
+            .roleAssignments(roleAssignmentList)
+            .build();
+        doReturn(roleAssignments).when(roleAssignmentService).getRoleAssignments(USER_ID);
+        doReturn(USER_ID).when(securityUtils).getUserId();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .build();
+        doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
+        hearingManagementService.verifyAccess(CASE_REFERENCE);
+    }
+
+    @Test
+    void shouldVerifyAccessWhenRoleAssignmentValidAndCaseTypeIdIsEmptyAndJurisdictionIsNullInRoleAssignment() {
+        RoleAssignmentAttributes roleAssignmentAttributes = RoleAssignmentAttributes.builder()
+            .caseType(Optional.empty())
+            .build();
+        RoleAssignment roleAssignment = RoleAssignment.builder()
+            .roleName(ROLE_NAME)
+            .roleType(ROLE_TYPE)
+            .attributes(roleAssignmentAttributes)
+            .build();
+        List<RoleAssignment> roleAssignmentList = new ArrayList<>();
+        roleAssignmentList.add(roleAssignment);
+        RoleAssignments roleAssignments = RoleAssignments.builder()
+            .roleAssignments(roleAssignmentList)
+            .build();
+        doReturn(roleAssignments).when(roleAssignmentService).getRoleAssignments(USER_ID);
+        doReturn(USER_ID).when(securityUtils).getUserId();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .build();
+        doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
+        hearingManagementService.verifyAccess(CASE_REFERENCE);
+    }
+
+    @Test
+    void shouldVerifyAccessWhenRoleAssignmentValidAndCaseTypeIdIsNullAndJurisdictionIsEmptyInRoleAssignment() {
+        RoleAssignmentAttributes roleAssignmentAttributes = RoleAssignmentAttributes.builder()
+            .jurisdiction(Optional.empty())
             .build();
         RoleAssignment roleAssignment = RoleAssignment.builder()
             .roleName(ROLE_NAME)
@@ -305,8 +483,8 @@ class HearingManagementServiceTest {
         doReturn(roleAssignments).when(roleAssignmentService).getRoleAssignments(USER_ID);
         doReturn(USER_ID).when(securityUtils).getUserId();
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
-            .jurisdiction("Invalid Jurisdiction")
-            .caseTypeId("Invalid CaseTypeId")
+            .jurisdiction("Different Jurisdiction")
+            .caseTypeId("Different CaseTypeId")
             .build();
         doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
         Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> {
