@@ -77,45 +77,48 @@ public class HearingResponsePactUtil {
         pactDslJsonBody
             // Simple/default equality checks for other fields so toString will do
             .object("hearingDetails")
-            .booleanType("autoListFlag", true)
+            .booleanType("autoListFlag")
             .stringType("hearingType")
             .object("hearingWindow")
-              .date("hearingWindowStartDateRange", FORMATYYYYMMDD)
-              .date("hearingWindowEndDateRange", FORMATYYYYMMDD)
-              .datetime("firstDateTimeMustBe", FORMATYYYYMMDDHHMMSSZ, Instant.parse("2021-10-29T02:42:25.123000002Z"))
+                .date("hearingWindowStartDateRange", FORMATYYYYMMDD)
+                .date("hearingWindowEndDateRange", FORMATYYYYMMDD)
+                .datetime("firstDateTimeMustBe", FORMATYYYYMMDDHHMMSSZ, Instant.parse("2021-01-29T02:42:25.123000002Z"))
             .closeObject().asBody()
             .integerType("duration", 1)
-            .eachLike("nonStandardHearingDurationReasons")
+            .array("nonStandardHearingDurationReasons")
             .closeArray().asBody()
-            .stringType("hearingPriorityType", "type 1")
-            .integerType("numberOfPhysicalAttendees", 3)
-            .booleanType("hearingInWelshFlag", true)
-            .eachLike("hearingLocations")
-              .stringType("locationType", "Location type 1")
-              .stringType("locationId", "Location id 1")
-            .closeArray().asBody()
-            .eachLike("facilitiesRequired")
+            .stringType("hearingPriorityType")
+            .integerType("numberOfPhysicalAttendees")
+            .booleanType("hearingInWelshFlag")
+            .array("hearingLocations")
+                    .stringType("locationType")
+                    .stringType("locationId")
+            .closeArray()
+            .array("facilitiesRequired")
+                .stringType("facilityRequired") //??
             .closeArray().asBody()
             .stringType("listingComments", "One big listing of comments")
             .stringType("hearingRequester", "hearing requester")
             .booleanType("privateHearingRequiredFlag", false)
             .stringType("leadJudgeContractType", "Lead contract type 1")
             .object("panelRequirements")
-              .eachLike("roleType")
+              .array("roleType")
               .closeArray().asBody()
-              .eachLike("authorisationTypes")
+              .array("authorisationTypes")
               .closeArray().asBody()
-              .eachLike("authorisationSubTypes")
+              .array("authorisationSubTypes")
               .closeArray().asBody()
-              .eachLike("panelPreferences")
+              .array("panelPreferences")
+                .object()
                  .stringType("memberID", "1122334444")
                  .stringType("memberType", "Member Type 1")
-                 .eachLike("requirementType", PactDslJsonRootValue.stringMatcher("MUSTINC|OPTINC|EXCLUDE", "MUSTINC"))
+                 .stringType("requirementType", "MUSTINC")
+                .closeObject()
               .closeArray().asBody()
               .eachLike("panelSpecialisms")
               .closeArray().asBody()
             .closeObject().asBody()
-            .booleanType("hearingIsLinkedFlag", true)
+            .booleanType("hearingIsLinkedFlag")
             .closeObject().asBody();
     }
 
@@ -155,33 +158,35 @@ public class HearingResponsePactUtil {
     private static void addPartyDetails(PactDslJsonBody pactDslJsonBody) {
         // append requestDetails object
         pactDslJsonBody
-            .eachLike("partyDetails")
-            .stringType("partyID", "PARTYIDFFJKJKLKLIOIIIIKMNMMNMSSDF") // max = 40
-            .eachLike("partyType", PactDslJsonRootValue.stringMatcher("IND|ORG", "IND"))
-            .stringType("partyRole", "ROLE01") // max = 6
-            .object("individualDetails")
-                .stringType("title", "HIS ROYAL HIGHNESS") // max = 40, can't be empty
-                .stringType("firstName", "CHARLES") // max = 100, can't be empty
-                .stringType("lastName", "WINDSOR") // max = 100, can't be empty
-                .stringType("preferredHearingChannel", "CHANNEL 1") // max = 70
-                .stringType("interpreterLanguage", "FARSI") // max = 10
-                .eachLike("reasonableAdjustments")
-                    .stringType("reasonableAdjustment") // max = 10
-                .closeArray().asBody()
-                .booleanType("vulnerableFlag", true)
-                .stringType("vulnerabilityDetails") // max = 256
-                .stringType("hearingChannelEmail") // max = 120, invalid email
-                .stringMatcher("hearingChannelPhone", "^\\+?(?:[0-9] ?){6,14}[0-9]$", "01234 112233")
-                .eachLike("relatedParties")
-                    .stringType("relatedPartyID", "RELATED PARTY 1") // max = 2000
-                    .stringType("relationshipType", "RELATIONSHIP TYPE 1") // max = 2000
-                .closeArray().asBody()
-            .closeObject().asBody()
-            .object("organisationDetails")
-                .stringType("name", "CGI LIMITED") // max = 2000, can't be empty
-                .stringType("organisationType", "BUSINESS") // max = 60, can't be empty
-                .stringType("cftOrganisationID", "CGI122333111X") // max = 60, can't be empty
-            .closeObject().asBody()
+            .array("partyDetails")
+                .object()
+                    .stringType("partyID") // max = 40
+                    .stringType("partyType")
+                    .stringType("partyRole") // max = 6
+                    .object("individualDetails")
+                        .stringType("title", "HIS ROYAL HIGHNESS") // max = 40, can't be empty
+                        .stringType("firstName", "CHARLES") // max = 100, can't be empty
+                        .stringType("lastName", "WINDSOR") // max = 100, can't be empty
+                        .stringType("preferredHearingChannel", "CHANNEL 1") // max = 70
+                        .stringType("interpreterLanguage", "FARSI") // max = 10
+                        .array("reasonableAdjustments")
+                            .stringType("reasonableAdjustment")
+                        .closeArray().asBody()
+                        .booleanType("vulnerableFlag", true)
+                        .stringType("vulnerabilityDetails") // max = 256
+                        .stringType("hearingChannelEmail") // max = 120, invalid email
+                        .stringMatcher("hearingChannelPhone", "^\\+?(?:[0-9] ?){6,14}[0-9]$", "01234 112233")
+                        .eachLike("relatedParties")
+                            .stringType("relatedPartyID", "RELATED PARTY 1") // max = 2000
+                            .stringType("relationshipType", "RELATIONSHIP TYPE 1") // max = 2000
+                        .closeArray().asBody()
+                    .closeObject()
+                    .object("organisationDetails")
+                        .stringType("name", "CGI LIMITED") // max = 2000, can't be empty
+                        .stringType("organisationType", "BUSINESS") // max = 60, can't be empty
+                        .stringType("cftOrganisationID", "CGI122333111X") // max = 60, can't be empty
+                    .closeObject()
+                .closeObject()
             .closeArray().asBody();
     }
 

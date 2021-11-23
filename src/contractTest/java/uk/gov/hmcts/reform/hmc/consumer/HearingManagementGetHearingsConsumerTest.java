@@ -14,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.hmc.BasePactTesting;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.utility.HearingResponsePactUtil;
 
 import java.util.Map;
@@ -21,7 +23,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(PactConsumerTestExt.class)
-public class HearingManagementGetHearingsConsumerTest {
+public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
@@ -33,6 +35,10 @@ public class HearingManagementGetHearingsConsumerTest {
     private static final String VALID_CASE_REF = "9372710950276233";
     private static final String VALID_CASE_STATUS = "UPDATED";
     private static final String INVALID_CASE_REF = "9372710950276230";
+
+
+    // Test data 1 - valid HearingRequest
+    HearingRequest validHearingRequest = generateHearingRequest(VALID_CASE_REF);
 
     private static final String EXPECTED_STATUS_MESSAGE = "Hearing obtained successfully";
     private static final PactDslJsonBody pactdsljsonbodyResponse =
