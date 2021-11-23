@@ -118,7 +118,7 @@ class HearingManagementServiceTest {
     }
 
     @Test
-    void shouldPassWithParty_Details_InValid_Org_Individual_details_Present() {
+    void shouldFailWithParty_Details_InValid_Org_Individual_details_Present() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
