@@ -113,7 +113,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
             for (RoleAssignment roleAssignment : filteredRoleAssignments) {
                 RoleAssignmentAttributes attributes = roleAssignment.getAttributes();
-                if ((attributes.getJurisdiction().isEmpty() && attributes.getCaseType().isEmpty())
+                if ((attributes.getJurisdiction() == null && attributes.getCaseType() == null)
                     || (attributes.getJurisdiction() != null && attributes.getJurisdiction().isPresent()
                         && attributes.getJurisdiction().equals(Optional.of(caseDetails.getJurisdiction())))
                     || (attributes.getCaseType() != null && attributes.getCaseType().isPresent()
