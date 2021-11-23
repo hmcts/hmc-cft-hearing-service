@@ -284,7 +284,10 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
   compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
+  compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
 
+
+  testImplementation group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.0.0'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
 

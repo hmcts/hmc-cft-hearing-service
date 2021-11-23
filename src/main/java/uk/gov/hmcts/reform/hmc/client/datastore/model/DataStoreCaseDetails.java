@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.hmc.client.datastore.model;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 
+@Builder
 @Data
 public class DataStoreCaseDetails {
 

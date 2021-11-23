@@ -31,5 +31,6 @@ public class HearingManagementController {
     })
     public void invokeHearing(@RequestBody @Valid HearingRequest hearingRequest) {
         hearingManagementService.validateHearingRequest(hearingRequest);
+        hearingManagementService.verifyAccess(hearingRequest.getCaseDetails().getCaseRef());
     }
 }

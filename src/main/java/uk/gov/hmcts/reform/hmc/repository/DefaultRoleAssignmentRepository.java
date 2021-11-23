@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
-import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.ServiceException;
 
 import java.net.URI;
@@ -35,7 +34,7 @@ import static org.springframework.http.HttpHeaders.ETAG;
 public class DefaultRoleAssignmentRepository implements RoleAssignmentRepository {
     public static final String QUALIFIER = "default";
     public static final String ROLE_ASSIGNMENTS_NOT_FOUND =
-        "No Role Assignments found for userId=%s when getting from Role Assignment Service because of %s";
+        "No Role Assignments found for userId=%s when getting from Role Assignment Service";
     public static final String ROLE_ASSIGNMENTS_CLIENT_ERROR =
         "Client error when %s Role Assignments from Role Assignment Service because of %s";
     public static final String ROLE_ASSIGNMENT_SERVICE_ERROR =
@@ -71,13 +70,7 @@ public class DefaultRoleAssignmentRepository implements RoleAssignmentRepository
             return getRoleAssignmentResponse(userId, requestEntity);
         } catch (Exception e) {
             log.warn("Error while retrieving Role Assignments", e);
-            if (e instanceof HttpClientErrorException
-                && ((HttpClientErrorException) e).getRawStatusCode() == HttpStatus.NOT_FOUND.value()) {
-                throw new ResourceNotFoundException(String.format(ROLE_ASSIGNMENTS_NOT_FOUND,
-                                                                  userId, e.getMessage()));
-            } else {
-                throw mapException(e, "getting");
-            }
+            throw mapException(e, "getting");
         }
     }
 

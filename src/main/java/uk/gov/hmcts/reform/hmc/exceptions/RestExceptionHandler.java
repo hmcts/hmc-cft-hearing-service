@@ -40,10 +40,22 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return toResponseEntity(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        log.error("Resource could not be found: {}", ex.getMessage(), ex);
+        return toResponseEntity(HttpStatus.FORBIDDEN, ex.getLocalizedMessage());
+    }
+
     @ExceptionHandler(CaseCouldNotBeFoundException.class)
     public ResponseEntity<Object> handleCaseCouldNotBeFoundException(CaseCouldNotBeFoundException ex) {
         log.error("Case could not be found: {}", ex.getMessage(), ex);
-        return toResponseEntity(HttpStatus.NOT_FOUND, ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.FORBIDDEN, ex.getLocalizedMessage());
+    }
+
+    @ExceptionHandler(ServiceException.class)
+    protected ResponseEntity<Object> handleServiceException(ServiceException ex) {
+        log.debug("BadRequestException:{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
     @ExceptionHandler(FeignException.class)
