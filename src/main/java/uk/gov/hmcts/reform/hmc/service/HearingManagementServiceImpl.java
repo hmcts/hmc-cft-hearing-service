@@ -73,6 +73,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         hearingResponse.setHearingRequestId(savedEntity.getId());
         hearingResponse.setTimeStamp(savedEntity.getCaseHearingRequest().getHearingRequestReceivedDateTime());
         hearingResponse.setStatus(savedEntity.getStatus());
+        hearingResponse.setVersionNumber(savedEntity.getCaseHearingRequest().getVersionNumber());
         return hearingResponse;
     }
 

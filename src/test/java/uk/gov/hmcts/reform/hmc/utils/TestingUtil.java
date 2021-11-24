@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
-import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
@@ -124,14 +123,6 @@ public class TestingUtil {
         organisationDetails.setOrganisationType("type");
         organisationDetails.setCftOrganisationID("cft");
         return organisationDetails;
-    }
-
-    public static HearingResponse hearingResponse() {
-        HearingResponse response = new HearingResponse();
-        response.setHearingRequestId(1L);
-        response.setStatus(HEARING_STATUS);
-        response.setTimeStamp(LocalDateTime.now());
-        return response;
     }
 
     public static HearingEntity hearingEntity() {
