@@ -21,7 +21,6 @@ class PanelRequirementsMapperTest {
         assertEquals("RoleType2", entities.get(1).getRoleType());
     }
 
-
     private List<String> getRoleTypes() {
         List<String> roleTypes = new ArrayList<>();
         roleTypes.add("RoleType1");

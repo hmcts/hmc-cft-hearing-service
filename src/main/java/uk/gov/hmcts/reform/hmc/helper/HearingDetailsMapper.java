@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
@@ -33,6 +34,7 @@ public class HearingDetailsMapper {
 
     private PanelUserRequirementsMapper panelUserRequirementsMapper;
 
+    @Autowired
     public HearingDetailsMapper(NonStandardDurationsMapper nonStandardDurationsMapper,
                                 RequiredLocationsMapper requiredLocationsMapper,
                                 RequiredFacilitiesMapper requiredFacilitiesMapper,

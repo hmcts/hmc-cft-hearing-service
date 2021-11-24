@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
@@ -18,6 +19,7 @@ public class CaseHearingRequestMapper {
 
     private final CaseCategoriesMapper caseCategoriesMapper;
 
+    @Autowired
     public CaseHearingRequestMapper(CaseCategoriesMapper caseCategoriesMapper) {
         this.caseCategoriesMapper = caseCategoriesMapper;
     }
