@@ -13,10 +13,8 @@ import javax.validation.constraints.NotNull;
 public class UnavailabilityRanges {
 
     @NotNull(message = ValidationError.UNAVAILABLE_FROM_DATE_EMPTY)
-    @JsonProperty("unavailableFromDate")
     private LocalDate unavailableFromDate;
 
     @NotNull(message = ValidationError.UNAVAILABLE_TO_DATE_EMPTY)
-    @JsonProperty("unavailableToDate")
     private LocalDate unavailableToDate;
 }

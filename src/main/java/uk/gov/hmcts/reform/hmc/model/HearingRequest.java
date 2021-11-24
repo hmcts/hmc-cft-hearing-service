@@ -17,21 +17,17 @@ public class HearingRequest {
 
     @Valid
     @NotNull(message = ValidationError.INVALID_REQUEST_DETAILS)
-    @JsonProperty("requestDetails")
     private RequestDetails requestDetails;
 
     @Valid
     @NotNull(message = ValidationError.INVALID_HEARING_DETAILS)
-    @JsonProperty("hearingDetails")
     private HearingDetails hearingDetails;
 
     @Valid
     @NotNull(message = ValidationError.INVALID_CASE_DETAILS)
-    @JsonProperty("caseDetails")
     private CaseDetails caseDetails;
 
     @Valid
-    @JsonProperty("partyDetails")
     private List<PartyDetails> partyDetails;
 
 }

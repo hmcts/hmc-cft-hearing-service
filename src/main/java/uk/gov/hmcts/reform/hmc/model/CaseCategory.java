@@ -13,10 +13,8 @@ import javax.validation.constraints.Size;
 public class CaseCategory {
 
     @EnumPattern(enumClass = CaseCategoryType.class, fieldName = "categoryType")
-    @JsonProperty("categoryType")
     private String categoryType;
 
-    @JsonProperty("categoryValue")
     @Size(max = 70, message = ValidationError.CATEGORY_VALUE)
     private String categoryValue;
 }

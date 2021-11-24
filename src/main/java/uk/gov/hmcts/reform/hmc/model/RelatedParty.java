@@ -14,12 +14,10 @@ public class RelatedParty {
 
     @NotEmpty(message = ValidationError.RELATED_PARTY_EMPTY)
     @Size(max = 2000, message = ValidationError.RELATED_PARTY_MAX_LENGTH)
-    @JsonProperty("relatedPartyID")
     private String relatedPartyID;
 
     @NotEmpty(message = ValidationError.RELATIONSHIP_TYPE_EMPTY)
     @Size(max = 2000, message = ValidationError.RELATIONSHIP_TYPE_MAX_LENGTH)
-    @JsonProperty("relationshipType")
     private String relationshipType;
 
 }

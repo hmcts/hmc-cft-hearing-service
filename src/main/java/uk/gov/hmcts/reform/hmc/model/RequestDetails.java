@@ -13,6 +13,5 @@ import javax.validation.constraints.NotNull;
 public class RequestDetails {
 
     @NotNull(message = ValidationError.REQUEST_TIMESTAMP_NULL_EMPTY)
-    @JsonProperty("requestTimeStamp")
     private LocalDateTime requestTimeStamp;
 }

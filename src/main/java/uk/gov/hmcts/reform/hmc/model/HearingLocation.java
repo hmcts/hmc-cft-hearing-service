@@ -13,11 +13,9 @@ import javax.validation.constraints.NotEmpty;
 public class HearingLocation {
 
     @NotEmpty(message = ValidationError.LOCATION_TYPE_EMPTY)
-    @JsonProperty("locationType")
     private String locationType;
 
     @EnumPattern(enumClass = LocationId.class, fieldName = "locationId")
-    @JsonProperty("locationId")
     private String locationId;
 
 }

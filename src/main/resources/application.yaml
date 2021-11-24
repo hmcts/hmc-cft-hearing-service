@@ -16,7 +16,6 @@ spring:
   config:
     import: "optional:configtree:/mnt/secrets/hmc/"
   jackson:
-    property-naming-strategy: SNAKE_CASE
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
   datasource:

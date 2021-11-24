@@ -11,12 +11,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class HearingWindow {
 
-    @JsonProperty("hearingWindowStartDateRange")
     private LocalDate hearingWindowStartDateRange;
 
-    @JsonProperty("hearingWindowEndDateRange")
     private LocalDate hearingWindowEndDateRange;
 
-    @JsonProperty("firstDateTimeMustBe")
     private LocalDateTime firstDateTimeMustBe;
 }
