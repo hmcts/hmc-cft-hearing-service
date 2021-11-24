@@ -7,6 +7,7 @@ import uk.gov.hmcts.contino.GradleBuilder
 def type = "java"
 def product = "hmc"
 def component = "cft-hearing-service"
+def branchesToSync = ['demo', 'ithc', 'perftest']
 
 GradleBuilder builder = new GradleBuilder(this, product)
 
@@ -19,6 +20,7 @@ env.OAUTH2_CLIENT_ID = "ccd_gateway"
 env.OAUTH2_REDIRECT_URI = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
 
 withPipeline(type, product, component) {
+  syncBranchesWithMaster(branchesToSync)
   enableAksStagingDeployment()
   disableLegacyDeployment()
 
