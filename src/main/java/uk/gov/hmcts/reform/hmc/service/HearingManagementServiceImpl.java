@@ -111,14 +111,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         } else {
             DataStoreCaseDetails caseDetails;
             caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
-            if(!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
+            if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
                 throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
             }
         }
     }
 
     @SuppressWarnings("java:S2789")
-    public boolean checkRoleAssignmentMatchesCaseDetails(DataStoreCaseDetails caseDetails, List<RoleAssignment> roleAssignments) {
+    public boolean checkRoleAssignmentMatchesCaseDetails(DataStoreCaseDetails caseDetails,
+                                                         List<RoleAssignment> roleAssignments) {
         for (RoleAssignment roleAssignment : roleAssignments) {
             RoleAssignmentAttributes attributes = roleAssignment.getAttributes();
             if (attributes.getJurisdiction() == null) {
@@ -126,25 +127,21 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                     return true;
                 } else if (attributes.getCaseType().isEmpty()) {
                     return true;
-                }
-                else if (attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))) {
+                } else if (attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))) {
                     return true;
                 }
-            }
-            else if (attributes.getJurisdiction().isEmpty()) {
+            } else if (attributes.getJurisdiction().isEmpty()) {
                 if (attributes.getCaseType() == null) {
                     return true;
                 } else if (attributes.getCaseType().isEmpty()) {
                     return true;
-                }
-                else if (attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))) {
+                } else if (attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))) {
                     return true;
                 }
-            }
-            else if (attributes.getJurisdiction().equals(Optional.of(caseDetails.getJurisdiction()))) {
+            } else if (attributes.getJurisdiction().equals(Optional.of(caseDetails.getJurisdiction()))) {
                 return true;
             }
-            if(attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))){
+            if (attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))) {
                 return true;
             }
         }
