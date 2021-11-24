@@ -129,7 +129,8 @@ public class TestingUtil {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(1L);
         hearingEntity.setStatus(HEARING_STATUS);
-        hearingEntity.setCaseHearingRequest(new CaseHearingRequestEntity());
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
+        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
         return hearingEntity;
     }
 
@@ -148,7 +149,7 @@ public class TestingUtil {
         entity.setCaseRestrictedFlag(true);
         entity.setCaseSlaStartDate(LocalDate.parse("2020-08-10"));
         entity.setVersionNumber(1);
-        entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00."));
+        entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00"));
         return entity;
 
     }
