@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.reform.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository;
 import uk.gov.hmcts.reform.hmc.repository.RoleAssignmentRepository;
