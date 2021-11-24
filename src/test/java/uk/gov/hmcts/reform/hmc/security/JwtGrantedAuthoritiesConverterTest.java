@@ -67,6 +67,7 @@ class JwtGrantedAuthoritiesConverterTest {
 
     @Test
     @DisplayName("Should return empty authorities when token value is not matching with expected")
+    @SuppressWarnings("unchecked")
     void shouldReturnEmptyAuthoritiesWhenIdamReturnsNoUsers() {
         Jwt jwt = mock(Jwt.class);
         when(jwt.containsClaim(anyString())).thenReturn(true);
@@ -83,6 +84,7 @@ class JwtGrantedAuthoritiesConverterTest {
 
     @Test
     @DisplayName("Should return empty authorities when token value is not matching with expected")
+    @SuppressWarnings("unchecked")
     void shouldReturnAuthoritiesWhenIdamReturnsUserRoles() {
         Jwt jwt = mock(Jwt.class);
         when(jwt.containsClaim(anyString())).thenReturn(true);
