@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -22,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
 
 class HearingManagementServiceTest {
 
@@ -114,7 +117,8 @@ class HearingManagementServiceTest {
         given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.findById(1L)).willReturn(Optional.of(TestingUtil.hearingEntity()));
-        hearingManagementService.saveHearingRequest(hearingRequest);
+        HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
+        assertEquals(VERSION_NUMBER,response.getVersionNumber());
     }
 
     @Test
