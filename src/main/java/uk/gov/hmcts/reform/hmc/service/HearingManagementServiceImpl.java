@@ -118,26 +118,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @SuppressWarnings("java:S2789")
-    public boolean checkRoleAssignmentMatchesCaseDetails(DataStoreCaseDetails caseDetails,
-                                                         List<RoleAssignment> roleAssignments) {
+    private boolean checkRoleAssignmentMatchesCaseDetails(DataStoreCaseDetails caseDetails,
+                                                          List<RoleAssignment> roleAssignments) {
         for (RoleAssignment roleAssignment : roleAssignments) {
             RoleAssignmentAttributes attributes = roleAssignment.getAttributes();
             if (attributes.getJurisdiction() == null) {
-                if (attributes.getCaseType() == null) {
-                    return true;
-                } else if (attributes.getCaseType().isEmpty()) {
-                    return true;
-                } else if (attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))) {
-                    return true;
-                }
+                return ifJurisdictionIsNullOrEmpty(attributes, caseDetails);
             } else if (attributes.getJurisdiction().isEmpty()) {
-                if (attributes.getCaseType() == null) {
-                    return true;
-                } else if (attributes.getCaseType().isEmpty()) {
-                    return true;
-                } else if (attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))) {
-                    return true;
-                }
+                return ifJurisdictionIsNullOrEmpty(attributes, caseDetails);
             } else if (attributes.getJurisdiction().equals(Optional.of(caseDetails.getJurisdiction()))) {
                 return true;
             }
@@ -146,5 +134,16 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             }
         }
         return false;
+    }
+
+    @SuppressWarnings("java:S2789")
+    private boolean ifJurisdictionIsNullOrEmpty(RoleAssignmentAttributes attributes, DataStoreCaseDetails caseDetails) {
+        if (attributes.getCaseType() == null) {
+            return true;
+        } else if (attributes.getCaseType().isEmpty()) {
+            return true;
+        } else {
+            return attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()));
+        }
     }
 }
