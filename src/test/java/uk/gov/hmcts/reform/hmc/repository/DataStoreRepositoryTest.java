@@ -43,7 +43,6 @@ class DataStoreRepositoryTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        given(securityUtils.getCaaSystemUserToken()).willReturn(SYSTEM_USER_TOKEN);
         given(securityUtils.getUserBearerToken()).willReturn(SYSTEM_USER_TOKEN);
     }
 

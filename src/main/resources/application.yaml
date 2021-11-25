@@ -100,9 +100,6 @@ idam:
     id: hmc_cft_hearing_service
     secret: ${CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET:AAAAAAAAAAAAAAAA}
     redirect_uri: http://localhost:4561/oauth2redirect
-  caa:
-    username: ${IDAM_CAA_USERNAME:master.caa@gmail.com}
-    password: ${IDAM_CAA_PASSWORD:Pa55word11}
 
 oidc:
   issuer: ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}

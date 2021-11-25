@@ -12,13 +12,11 @@ import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 
 class SystemUserAuthHeadersInterceptorTest {
 
 
-    public static final String SYSTEM_USER_TOKEN = "fdsf";
     public static final String S2S_TOKEN = "dcdsfda";
     @InjectMocks
     private SystemUserAuthHeadersInterceptor interceptor;
@@ -36,12 +34,10 @@ class SystemUserAuthHeadersInterceptorTest {
     @Test
     @DisplayName("System user auth headers should apply")
     void shouldApplyAuthHeaders() {
-        given(securityUtils.getCaaSystemUserToken()).willReturn(SYSTEM_USER_TOKEN);
         given(securityUtils.getS2SToken()).willReturn(S2S_TOKEN);
 
         interceptor.apply(template);
 
-        assertThat(template.headers().get(AUTHORIZATION)).containsOnly(SYSTEM_USER_TOKEN);
         assertThat(template.headers().get(SERVICE_AUTHORIZATION)).containsOnly(S2S_TOKEN);
     }
 }

@@ -28,12 +28,6 @@ public class ApplicationParams {
     @Value("${role.assignment.api.host}")
     private String roleAssignmentServiceHost;
 
-    @Value("${idam.caa.username}")
-    private String caaSystemUserId;
-
-    @Value("${idam.caa.password}")
-    private String caaSystemUserPassword;
-
     public static String encode(final String stringToEncode) {
         try {
             return URLEncoder.encode(stringToEncode, "UTF-8");
@@ -48,13 +42,5 @@ public class ApplicationParams {
 
     public String amGetRoleAssignmentsUrl() {
         return roleAssignmentBaseUrl() + "/actors/{uid}";
-    }
-
-    public String getCaaSystemUserId() {
-        return caaSystemUserId;
-    }
-
-    public String getCaaSystemUserPassword() {
-        return caaSystemUserPassword;
     }
 }

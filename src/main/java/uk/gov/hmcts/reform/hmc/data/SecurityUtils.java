@@ -76,9 +76,5 @@ public class SecurityUtils {
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.joining(","));
     }
-
-    public String getCaaSystemUserToken() {
-        return idamRepository.getCaaSystemUserAccessToken();
-    }
 }
 

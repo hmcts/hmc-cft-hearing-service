@@ -29,9 +29,4 @@ public class IdamRepository {
         }
         return userInfo;
     }
-
-    @Cacheable("caaAccessTokenCache")
-    public String getCaaSystemUserAccessToken() {
-        return idamClient.getAccessToken(appParams.getCaaSystemUserId(), appParams.getCaaSystemUserPassword());
-    }
 }
