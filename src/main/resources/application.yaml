@@ -42,6 +42,11 @@ azure:
 
 jms:
   servicebus:
-    connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING}
-    topic-name: ${HMC_SERVICE_BUS_TOPIC}
-    subscription-name: ${HMC_SERVICE_BUS_SUBSCRIPTION}
+    inbound:
+      connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING}
+      topic-name: ${HMC_SERVICE_BUS_TOPIC}
+      subscription-name: ${HMC_SERVICE_BUS_SUBSCRIPTION}
+    outbound:
+      connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING_OUTBOUND}
+      topic-name: ${HMC_SERVICE_BUS_TOPIC_OUTBOUND}
+

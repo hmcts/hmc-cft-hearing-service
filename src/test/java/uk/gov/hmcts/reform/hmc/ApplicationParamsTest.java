@@ -11,20 +11,32 @@ class ApplicationParamsTest {
     private final ApplicationParams applicationParams = new ApplicationParams();
 
     @Test
-    void shouldGetTopicName() {
-        ReflectionTestUtils.setField(applicationParams, "topicName", VALUE);
-        assertEquals(VALUE, applicationParams.getTopicName());
+    void shouldGetInboundTopicName() {
+        ReflectionTestUtils.setField(applicationParams, "inboundTopicName", VALUE);
+        assertEquals(VALUE, applicationParams.getInboundTopicName());
     }
 
     @Test
-    void shouldGetConnectionString() {
-        ReflectionTestUtils.setField(applicationParams, "connectionString", VALUE);
-        assertEquals(VALUE, applicationParams.getConnectionString());
+    void shouldGetInboundConnectionString() {
+        ReflectionTestUtils.setField(applicationParams, "inboundConnectionString", VALUE);
+        assertEquals(VALUE, applicationParams.getInboundConnectionString());
     }
 
     @Test
-    void shouldGetSubscriptionName() {
-        ReflectionTestUtils.setField(applicationParams, "subscriptionName", VALUE);
-        assertEquals(VALUE, applicationParams.getSubscriptionName());
+    void shouldGetInboundSubscriptionName() {
+        ReflectionTestUtils.setField(applicationParams, "inboundSubscriptionName", VALUE);
+        assertEquals(VALUE, applicationParams.getInboundSubscriptionName());
+    }
+
+    @Test
+    void shouldGetOutboundTopicName() {
+        ReflectionTestUtils.setField(applicationParams, "outboundTopicName", VALUE);
+        assertEquals(VALUE, applicationParams.getOutboundTopicName());
+    }
+
+    @Test
+    void shouldGetOutboundConnectionString() {
+        ReflectionTestUtils.setField(applicationParams, "outboundConnectionString", VALUE);
+        assertEquals(VALUE, applicationParams.getOutboundConnectionString());
     }
 }

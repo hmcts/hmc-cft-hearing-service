@@ -35,10 +35,10 @@ public class MessageReaderFromTopicConfiguration {
 
         // Create an instance of the processor through the ServiceBusClientBuilder
         ServiceBusProcessorClient processorClient = new ServiceBusClientBuilder()
-            .connectionString(applicationParams.getConnectionString())
+            .connectionString(applicationParams.getInboundConnectionString())
             .processor()
-            .topicName(applicationParams.getTopicName())
-            .subscriptionName(applicationParams.getSubscriptionName())
+            .topicName(applicationParams.getInboundTopicName())
+            .subscriptionName(applicationParams.getInboundSubscriptionName())
             .processMessage(this::processMessage)
             .processError(context -> processError(context, countdownLatch))
             .buildProcessorClient();
