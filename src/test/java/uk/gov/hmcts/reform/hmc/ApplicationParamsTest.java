@@ -7,7 +7,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ApplicationParamsTest {
 
-    private ApplicationParams applicationParams = new ApplicationParams();
+    private static final String VALUE = "test-value";
+    private final ApplicationParams applicationParams = new ApplicationParams();
+
+    @Test
+    void shouldGetTopicName() {
+        ReflectionTestUtils.setField(applicationParams, "topicName", VALUE);
+        assertEquals(VALUE, applicationParams.getTopicName());
+    }
+
+    @Test
+    void shouldGetConnectionString() {
+        ReflectionTestUtils.setField(applicationParams, "connectionString", VALUE);
+        assertEquals(VALUE, applicationParams.getConnectionString());
+    }
+
+    @Test
+    void shouldGetSubscriptionName() {
+        ReflectionTestUtils.setField(applicationParams, "subscriptionName", VALUE);
+        assertEquals(VALUE, applicationParams.getSubscriptionName());
+    }
 
     @Test
     void shouldGetRoleAssignmentServiceHost() {

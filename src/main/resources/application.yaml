@@ -10,16 +10,32 @@ management:
       base-path: /
       exposure:
         include: health, info, prometheus
-
-#If you use a database then uncomment below lines and update db properties accordingly
 spring:
-  config:
-    import: "optional:configtree:/mnt/secrets/"
   application:
     name: HMC-CFT-Hearing-Service
+  config:
+    import: "optional:configtree:/mnt/secrets/hmc/"
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${CFT_HEARING_SERVICE_DB_HOST:localhost}:${CFT_HEARING_SERVICE_DB_PORT:5060}/${CFT_HEARING_SERVICE_DB_NAME:hmc_cft_hearing_service}${CFT_HEARING_SERVICE_DB_OPTIONS:}
+    username: ${CFT_HEARING_SERVICE_DB_USERNAME:hmc}
+    password: ${CFT_HEARING_SERVICE_DB_PASSWORD:hmc}
+    type: com.zaxxer.hikari.HikariDataSource
+  jpa:
+    database: postgresql
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    out-of-order: true
+    ignore-missing-migrations: true
   main:
     allow-bean-definition-overriding: true
   security:
@@ -59,6 +75,12 @@ spring:
 azure:
   application-insights:
     instrumentation-key: ${hmc.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
+
+jms:
+  servicebus:
+    connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING}
+    topic-name: ${HMC_SERVICE_BUS_TOPIC}
+    subscription-name: ${HMC_SERVICE_BUS_SUBSCRIPTION}
 
 role:
   assignment:

@@ -14,9 +14,6 @@
     ]]></notes>
     <cve>CVE-2020-10663</cve>
     <cve>CVE-2020-7712</cve>
-  </suppress>
-  <suppress until="2021-12-25">
-    <notes><![CDATA[Temporary suppressions pending investigation]]></notes>
     <cve>CVE-2021-30640</cve>
     <cve>CVE-2021-33037</cve>
     <cve>CVE-2021-41079</cve>
@@ -34,7 +31,5 @@
     <cve>CVE-2021-22118</cve>
     <cve>CVE-2021-22119</cve>
     <cve>CVE-2021-42340</cve>
-
-
   </suppress>
 </suppressions>
