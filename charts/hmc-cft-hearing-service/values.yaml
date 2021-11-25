@@ -24,6 +24,7 @@ java:
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified&gssEncMode=disable"
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft-{{ .Values.global.environment }}
     HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft-{{ .Values.global.environment }}
+    IDAM_OIDC_URL: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net
 
 servicebus:
   enabled: false
