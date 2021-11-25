@@ -28,11 +28,11 @@ class CaseCategoriesMapperTest {
 
     private List<CaseCategory> getListOfCaseCategories() {
         CaseCategory category1 = new CaseCategory();
-        category1.setCategoryType("CASETYPE");
+        category1.setCategoryType("caseType");
         category1.setCategoryValue("PROBATE");
 
         CaseCategory category2 = new CaseCategory();
-        category2.setCategoryType("CASESUBTYPE");
+        category2.setCategoryType("caseSubType");
         category2.setCategoryValue("PROBATE2");
 
         List<CaseCategory> caseCategories = new ArrayList<>();

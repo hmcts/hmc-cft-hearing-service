@@ -87,7 +87,7 @@ public class TestingUtil {
     public static List<PartyDetails> partyDetails() {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
-        partyDetails1.setPartyType("IND");
+        partyDetails1.setPartyType("ind");
         partyDetails1.setPartyRole("DEF");
 
         PartyDetails partyDetails2 = new PartyDetails();

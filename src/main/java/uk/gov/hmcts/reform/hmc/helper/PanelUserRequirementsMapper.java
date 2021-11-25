@@ -20,7 +20,7 @@ public class PanelUserRequirementsMapper {
             panelUserRequirementsEntity.setJudicialUserId(panelPreference.getMemberID());
             panelUserRequirementsEntity.setUserType(panelPreference.getMemberType());
             panelUserRequirementsEntity.setRequirementType(
-                RequirementType.valueOf(panelPreference.getRequirementType()));
+                RequirementType.getByLabel(panelPreference.getRequirementType()));
             panelUserRequirementsEntity.setCaseHearing(caseHearingRequestEntity);
             panelUserRequirementsEntities.add(panelUserRequirementsEntity);
         }

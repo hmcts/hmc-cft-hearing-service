@@ -15,6 +15,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_DOW_TYPE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_RANGE_TYPE;
 
 class UnAvailabilityDetailMapperTest {
 
@@ -30,6 +32,8 @@ class UnAvailabilityDetailMapperTest {
         assertEquals(DayOfWeekUnAvailableType.ALL, entities.get(0).getDayOfWeekUnavailableType());
         assertEquals(DayOfWeekUnavailable.TUESDAY, entities.get(1).getDayOfWeekUnavailable());
         assertEquals(DayOfWeekUnAvailableType.AM, entities.get(1).getDayOfWeekUnavailableType());
+        assertEquals(DayOfWeekUnavailable.WEDNESDAY, entities.get(2).getDayOfWeekUnavailable());
+        assertEquals(DayOfWeekUnAvailableType.PM, entities.get(2).getDayOfWeekUnavailableType());
     }
 
     @Test
@@ -56,19 +60,31 @@ class UnAvailabilityDetailMapperTest {
         assertEquals(DayOfWeekUnAvailableType.ALL, entities.get(0).getDayOfWeekUnavailableType());
         assertNull(entities.get(0).getEndDate());
         assertNull(entities.get(0).getStartDate());
+        assertEquals(UNAVAILABILITY_DOW_TYPE, entities.get(0).getUnAvailabilityType());
+
         assertEquals(DayOfWeekUnavailable.TUESDAY, entities.get(1).getDayOfWeekUnavailable());
         assertEquals(DayOfWeekUnAvailableType.AM, entities.get(1).getDayOfWeekUnavailableType());
         assertNull(entities.get(1).getEndDate());
         assertNull(entities.get(1).getStartDate());
+        assertEquals(UNAVAILABILITY_DOW_TYPE, entities.get(1).getUnAvailabilityType());
 
-        assertNull(entities.get(2).getDayOfWeekUnavailable());
-        assertNull(entities.get(2).getDayOfWeekUnavailableType());
-        assertEquals(LocalDate.parse("2020-09-10"), entities.get(2).getEndDate());
-        assertEquals(LocalDate.parse("2021-10-10"), entities.get(2).getStartDate());
+        assertEquals(DayOfWeekUnavailable.WEDNESDAY, entities.get(2).getDayOfWeekUnavailable());
+        assertEquals(DayOfWeekUnAvailableType.PM, entities.get(2).getDayOfWeekUnavailableType());
+        assertNull(entities.get(2).getEndDate());
+        assertNull(entities.get(2).getStartDate());
+        assertEquals(UNAVAILABILITY_DOW_TYPE, entities.get(2).getUnAvailabilityType());
+
         assertNull(entities.get(3).getDayOfWeekUnavailable());
         assertNull(entities.get(3).getDayOfWeekUnavailableType());
-        assertEquals(LocalDate.parse("2022-10-15"), entities.get(3).getEndDate());
-        assertEquals(LocalDate.parse("2023-10-20"), entities.get(3).getStartDate());
+        assertEquals(LocalDate.parse("2020-09-10"), entities.get(3).getEndDate());
+        assertEquals(LocalDate.parse("2021-10-10"), entities.get(3).getStartDate());
+        assertEquals(UNAVAILABILITY_RANGE_TYPE, entities.get(3).getUnAvailabilityType());
+
+        assertNull(entities.get(4).getDayOfWeekUnavailable());
+        assertNull(entities.get(4).getDayOfWeekUnavailableType());
+        assertEquals(LocalDate.parse("2022-10-15"), entities.get(4).getEndDate());
+        assertEquals(LocalDate.parse("2023-10-20"), entities.get(4).getStartDate());
+        assertEquals(UNAVAILABILITY_RANGE_TYPE, entities.get(4).getUnAvailabilityType());
     }
 
     private PartyDetails getUnAvailabilityDetails() {
@@ -96,18 +112,21 @@ class UnAvailabilityDetailMapperTest {
     }
 
     private List<UnavailabilityDow> getUnAvailabilityDowDetails() {
+        List<UnavailabilityDow> dowList = new ArrayList<>();
         UnavailabilityDow unavailabilityDow1 = new UnavailabilityDow();
-        unavailabilityDow1.setDow("MONDAY");
+        unavailabilityDow1.setDow("Monday");
         unavailabilityDow1.setDowUnavailabilityType("ALL");
+        dowList.add(unavailabilityDow1);
 
         UnavailabilityDow unavailabilityDow2 = new UnavailabilityDow();
-        unavailabilityDow2.setDow("TUESDAY");
+        unavailabilityDow2.setDow("tuesday");
         unavailabilityDow2.setDowUnavailabilityType("AM");
-
-
-        List<UnavailabilityDow> dowList = new ArrayList<>();
-        dowList.add(unavailabilityDow1);
         dowList.add(unavailabilityDow2);
+
+        UnavailabilityDow unavailabilityDow3 = new UnavailabilityDow();
+        unavailabilityDow3.setDow("WEDNESDAY");
+        unavailabilityDow3.setDowUnavailabilityType("pm");
+        dowList.add(unavailabilityDow3);
         return dowList;
     }
 }

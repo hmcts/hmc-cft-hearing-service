@@ -33,7 +33,7 @@ class PanelUserRequirementsMapperTest {
         PanelPreference preference1 = new PanelPreference();
         preference1.setMemberID("MID123");
         preference1.setMemberType("Member type 1");
-        preference1.setRequirementType("MUSTINC");
+        preference1.setRequirementType("Mustinc");
 
         PanelPreference preference2 = new PanelPreference();
         preference2.setMemberID("MID999");

@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NON_STANDARD_HE
 @NoArgsConstructor
 public class HearingDetails {
 
+    @JsonProperty("autolistFlag")
     @NotNull(message = ValidationError.AUTO_LIST_FLAG_NULL_EMPTY)
     private Boolean autoListFlag;
 

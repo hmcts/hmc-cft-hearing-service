@@ -31,6 +31,7 @@ public class PartyDetails {
     @Valid
     private OrganisationDetails organisationDetails;
 
+    @JsonProperty("unavailabilityDOW")
     @Valid
     private List<UnavailabilityDow> unavailabilityDow;
 

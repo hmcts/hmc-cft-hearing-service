@@ -13,7 +13,7 @@ public class HearingPartyMapper {
                                                   CaseHearingRequestEntity caseHearingRequestEntity) {
         final HearingPartyEntity hearingPartyEntity = new HearingPartyEntity();
         hearingPartyEntity.setPartyReference(partyDetail.getPartyID());
-        hearingPartyEntity.setPartyType(PartyType.valueOf(partyDetail.getPartyType()));
+        hearingPartyEntity.setPartyType(PartyType.getByLabel(partyDetail.getPartyType()));
         hearingPartyEntity.setPartyRoleType(partyDetail.getPartyRole());
         hearingPartyEntity.setCaseHearing(caseHearingRequestEntity);
         return hearingPartyEntity;

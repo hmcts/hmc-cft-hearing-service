@@ -45,9 +45,9 @@ public class UnAvailabilityDetailMapper {
                                List<UnavailabilityEntity> unavailabilityEntities) {
         for (UnavailabilityDow dow : partyDetail.getUnavailabilityDow()) {
             final UnavailabilityEntity dowEntity = new UnavailabilityEntity();
-            dowEntity.setDayOfWeekUnavailable(DayOfWeekUnavailable.valueOf(dow.getDow()));
+            dowEntity.setDayOfWeekUnavailable(DayOfWeekUnavailable.getByLabel(dow.getDow()));
             dowEntity.setDayOfWeekUnavailableType(
-                DayOfWeekUnAvailableType.valueOf(dow.getDowUnavailabilityType()));
+                DayOfWeekUnAvailableType.getByLabel(dow.getDowUnavailabilityType()));
             dowEntity.setUnAvailabilityType(UNAVAILABILITY_DOW_TYPE);
             dowEntity.setHearingParty(hearingPartyEntity);
             unavailabilityEntities.add(dowEntity);

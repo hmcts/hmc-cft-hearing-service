@@ -59,9 +59,11 @@ public class CaseDetails {
     @Size(max = 40, message = ValidationError.CASE_MANAGEMENT_LOCATION_CODE_MAX_LENGTH)
     private String caseManagementLocationCode;
 
+    @JsonProperty("caserestrictedFlag")
     @NotNull(message = ValidationError.CASE_RESTRICTED_FLAG_NULL_EMPTY)
     private Boolean caseRestrictedFlag;
 
+    @JsonProperty("caseSLAStartDate")
     @NotNull(message = ValidationError.CASE_SLA_START_DATE_EMPTY)
     private LocalDate caseSlaStartDate;
 
