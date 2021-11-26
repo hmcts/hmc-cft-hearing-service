@@ -16,18 +16,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.CaseHearing;
+import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
-import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
-import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
-import uk.gov.hmcts.reform.hmc.model.PartyDetails;
-import uk.gov.hmcts.reform.hmc.model.RequestDetails;
+import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.nio.charset.Charset;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,113 +110,85 @@ class HearingManagementControllerTest {
     }
 
     @Test
-    void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhn() throws Exception {
+    void shouldReturnHearingsGetResponse_WhenGetHearingsForValidCaseRefLuhn() throws Exception {
         final String validCaseRef = "9372710950276233";
-        doReturn(createHearingRequest(validCaseRef)).when(hearingManagementService)
+        doReturn(createHearingsGetResponse(validCaseRef)).when(hearingManagementService)
             .validateGetHearingsRequest(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        HearingRequest hearingRequest = controller.getHearingsRequest(validCaseRef, null);
+        HearingsGetResponse hearingsGetResponse = controller.getHearingsRequest(validCaseRef, null);
         verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());
-        Assert.isTrue(hearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef));
+        Assert.isTrue(hearingsGetResponse.getCaseRef().equals(validCaseRef));
     }
 
     @Test
-    void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhnAndStatus() throws Exception {
+    void shouldReturnHearingsGetResponse_WhenGetHearingsForValidCaseRefLuhnAndStatus() throws Exception {
         final String validCaseRef = "9372710950276233";
-        final String status = "UPDATED"; // for example
-        doReturn(createHearingRequest(validCaseRef, status)).when(hearingManagementService)
+        final String status = "status1"; // for example
+        doReturn(createHearingsGetResponse(validCaseRef, status)).when(hearingManagementService)
             .validateGetHearingsRequest(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        HearingRequest hearingRequest = controller.getHearingsRequest(validCaseRef, status);
+        HearingsGetResponse hearingsGetResponse = controller.getHearingsRequest(validCaseRef, status);
         verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());
-        Assert.isTrue(hearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef));
+        Assert.isTrue(hearingsGetResponse.getCaseRef().equals(validCaseRef));
     }
 
-    private HearingRequest createHearingRequest(String caseRef) {
-        return createHearingRequest(caseRef, null);
+    private HearingsGetResponse createHearingsGetResponse(String caseRef) {
+        return createHearingsGetResponse(caseRef, null);
     }
 
-    private HearingRequest createHearingRequest(String caseRef, String status) {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(createRequestDetails());
-        hearingRequest.setHearingDetails(createHearingDetails());
-        hearingRequest.setCaseDetails(createCaseDetails(caseRef));
-        hearingRequest.setPartyDetails(createPartyDetailsList());
+    private HearingsGetResponse createHearingsGetResponse(String caseRef, String status) {
+        HearingsGetResponse hearingsGetResponse = new HearingsGetResponse();
+        hearingsGetResponse.setHmctsServiceCode("hmc1");
+        hearingsGetResponse.setCaseRef(caseRef);
+        hearingsGetResponse.setCaseHearings(createCaseHearings(status));
         try {
-            logger.info(objectMapper.writeValueAsString(hearingRequest));
+            logger.info(objectMapper.writeValueAsString(hearingsGetResponse));
         } catch (Exception e) {
             logger.error("Unable to write log for mapper value");
         }
-        return hearingRequest;
+        return hearingsGetResponse;
     }
 
-    private RequestDetails createRequestDetails() {
-        RequestDetails requestDetails = new RequestDetails();
-        requestDetails.setRequestTimeStamp(LocalDateTime.now());
-        return requestDetails;
-    }
-
-    private CaseDetails createCaseDetails(String caseRef) {
-        CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setCaseRef(caseRef);
-        caseDetails.setCaseDeepLink("localhost/hearings");
-        caseDetails.setCaseManagementLocationCode("MLC1");
-        caseDetails.setRequestTimeStamp(LocalDateTime.now());
-        caseDetails.setCaseAdditionalSecurityFlag(false);
-        caseDetails.setCaseInterpreterRequiredFlag(true);
-        caseDetails.setCaseSlaStartDate(LocalDate.now());
-        caseDetails.setCaseRestrictedFlag(false);
-        caseDetails.setHmctsInternalCaseName("FRAUD1");
-        caseDetails.setPublicCaseName("GLOBALFRAUD1");
-        return caseDetails;
-    }
-
-    private HearingDetails createHearingDetails() {
-        HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(false);
-        hearingDetails.setDuration(30);
-        hearingDetails.setHearingType("TYPE1");
-        hearingDetails.setHearingInWelshFlag(false);
-        hearingDetails.setHearingIsLinkedFlag(false);
-        hearingDetails.setHearingPriorityType("TYPE1");
-        return hearingDetails;
-    }
-
-    private List<PartyDetails> createPartyDetailsList() {
-        List<PartyDetails> partyDetailsList = new ArrayList<>();
-        partyDetailsList.add(createPartyDetails(true, 1));
-        partyDetailsList.add(createPartyDetails(false, 2));
-        return partyDetailsList;
-    }
-
-    private PartyDetails createPartyDetails(boolean individual, int id) {
-        PartyDetails partyDetails = new PartyDetails();
-        partyDetails.setPartyID("PARTYID" + id);
-        partyDetails.setPartyRole("PARTYROLE" + id);
-        partyDetails.setPartyType("PARTYTYPE" + id);
-        if (individual) {
-            partyDetails.setIndividualDetails(createIndividualDetails(1));
+    private List<CaseHearing> createCaseHearings(String status) {
+        List<CaseHearing> caseHearings = new ArrayList<>();
+        if (null != status) {
+            CaseHearing caseHearing = createCaseHearing(1, status);
+            caseHearings.add(caseHearing);
         } else {
-            partyDetails.setOrganisationDetails(createOrganisationDetails(2));
+            CaseHearing caseHearing1 = createCaseHearing(1, "NEW");
+            caseHearings.add(caseHearing1);
+            CaseHearing caseHearing2 = createCaseHearing(2, "UPDATED");
+            caseHearings.add(caseHearing2);
+            CaseHearing caseHearing3 = createCaseHearing(3, "PROGRESS");
+            caseHearings.add(caseHearing3);
+            CaseHearing caseHearing4 = createCaseHearing(4, "ARCHIVE");
+            caseHearings.add(caseHearing4);
         }
-        return partyDetails;
+        return caseHearings;
     }
 
-    private IndividualDetails createIndividualDetails(int id) {
-        IndividualDetails individualDetails = new IndividualDetails();
-        individualDetails.setTitle("Mr");
-        individualDetails.setFirstName("First" + id);
-        individualDetails.setLastName("Last" + id);
-        individualDetails.setInterpreterLanguage("Turkish");
-        return individualDetails;
+    private CaseHearing createCaseHearing(Integer id, String status) {
+        CaseHearing caseHearing = new CaseHearing();
+        caseHearing.setHearingID("hearing" + id);
+        caseHearing.setHearingRequestDateTime(LocalDateTime.now());
+        caseHearing.setHearingType("hearingType" + id);
+        caseHearing.setHmcStatus("hmcStatus" + id);
+        caseHearing.setLastResponseReceivedDateTime(LocalDateTime.now());
+        caseHearing.setResponseVersion("00" + id);
+        caseHearing.setHearingListingStatus("liststat" + id);
+        caseHearing.setLstAssistCaseStatus(status);
+        caseHearing.setHearingDaySchedule(createHearingDaySchedule(id));
+        return caseHearing;
     }
 
-    private OrganisationDetails createOrganisationDetails(int id) {
-        OrganisationDetails organisationDetails = new OrganisationDetails();
-        organisationDetails.setCftOrganisationID("ORGID" + id);
-        organisationDetails.setOrganisationType("ORGTYPE");
-        organisationDetails.setName("Name" + id);
-        return organisationDetails;
+    private HearingDaySchedule createHearingDaySchedule(Integer id) {
+        HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
+        hearingDaySchedule.setHearingRoomId("room" + id);
+        hearingDaySchedule.setHearingJudgeId("judge" + id);
+        hearingDaySchedule.setHearingStartDateTime(LocalDateTime.now());
+        hearingDaySchedule.setHearingEndDateTime(LocalDateTime.now());
+        hearingDaySchedule.setListAssistSessionID("session" + id);
+        return hearingDaySchedule;
     }
 
 }

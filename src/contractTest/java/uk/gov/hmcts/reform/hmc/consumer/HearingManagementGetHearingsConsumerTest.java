@@ -25,12 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(PactConsumerTestExt.class)
 public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
 
-    private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
-
-    private static final String IDAM_OAUTH2_TOKEN = "pact-test-idam-token";
-    private static final String SERVICE_AUTHORIZATION_TOKEN = "pact-test-s2s-token";
-
-
     private static final String PATH_HEARINGS = "/hearings";
     private static final String VALID_CASE_REF = "9372710950276233";
     private static final String VALID_CASE_STATUS = "UPDATED";
@@ -42,7 +36,7 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
 
     private static final String EXPECTED_STATUS_MESSAGE = "Hearing obtained successfully";
     private static final PactDslJsonBody pactdsljsonbodyResponse =
-        HearingResponsePactUtil.generateJsonBody(EXPECTED_STATUS_MESSAGE);
+        HearingResponsePactUtil.generateGetHearingsJsonBody(EXPECTED_STATUS_MESSAGE);
 
     static Map<String, String> headers = Map.of(
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,
@@ -61,12 +55,12 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
         return builder
             .given("hmc cftHearingService successfully returns case hearings")
             .uponReceiving("Request to get hearings for given valid case ref and (optionally) case status")
-                .path("/hearings/" + VALID_CASE_REF)
+                .path(PATH_HEARINGS + "/" + VALID_CASE_REF)
                 .method(HttpMethod.GET.toString())
                 .query("status=UPDATED")
                 .headers(headers)
             .willRespondWith()
-                .status(HttpStatus.ACCEPTED.value())
+                .status(HttpStatus.OK.value())
                 .body(pactdsljsonbodyResponse)
             .toPact();
     }
@@ -107,15 +101,9 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
     @PactTestFor(pactMethod = "getHearingsForValidCaseRef")
     public void shouldSuccessfullyGetHearings(MockServer mockServer) {
         JsonPath response = getRestAssuredJsonPath(mockServer, VALID_CASE_REF,
-                               VALID_CASE_STATUS, 202);
+                               VALID_CASE_STATUS, 200);
 
-        assertThat(response.getString("caseDetails"))
-            .isNotEmpty();
-        assertThat(response.getString("requestDetails"))
-            .isNotEmpty();
-        assertThat(response.getString("hearingDetails"))
-            .isNotEmpty();
-        assertThat(response.getString("partyDetails"))
+        assertThat(response.getString("caseHearings"))
             .isNotEmpty();
         assertThat(response.getString("status_message"))
             .isEqualTo(EXPECTED_STATUS_MESSAGE);

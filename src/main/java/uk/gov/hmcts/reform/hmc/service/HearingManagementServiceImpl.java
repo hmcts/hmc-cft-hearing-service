@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 
 import java.util.List;
@@ -42,10 +43,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      * @return HearingRequest HearingRequest
      */
     @Override
-        public HearingRequest validateGetHearingsRequest(String caseRef, String status) {
+        public HearingsGetResponse validateGetHearingsRequest(String caseRef, String status) {
         log.info("caseRef:{} ; status:{}", caseRef, status);
         // TODO: select hearing request from given caseRefId and status (if any)
-        return new HearingRequest();
+        return new HearingsGetResponse();
     }
 
     private void validatePartyDetails(List<PartyDetails> partyDetails) {

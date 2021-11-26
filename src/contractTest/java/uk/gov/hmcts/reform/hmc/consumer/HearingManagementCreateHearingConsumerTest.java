@@ -30,15 +30,15 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
 
     // Test data 1 - valid HearingRequest
     HearingRequest validHearingRequest = generateHearingRequest(VALID_CASE_REF);
-    String jsonstringRequest1 = toHearingRequestJsonString(validHearingRequest);
+    String jsonstringRequest1 = jsonCreatedHearingResponse(validHearingRequest);
 
     // Test data 2 - invalid HearingRequest
     HearingRequest invalidHearingRequest = generateInvalidHearingRequest();
-    String jsonstringRequest2 = toHearingRequestJsonString(invalidHearingRequest);
+    String jsonstringRequest2 = jsonCreatedHearingResponse(invalidHearingRequest);
 
     private static final String EXPECTED_STATUS_MESSAGE = "Hearing created successfully";
     private static final PactDslJsonBody pactdsljsonbodyResponse =
-        HearingResponsePactUtil.generateJsonBody(EXPECTED_STATUS_MESSAGE);
+        HearingResponsePactUtil.generateCreateHearingJsonBody(EXPECTED_STATUS_MESSAGE);
 
     static Map<String, String> headers = Map.of(
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,
@@ -102,17 +102,9 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
      */
     @Test
     @PactTestFor(pactMethod = "createHearing")
-    public void shouldReturnCreatedHearing(MockServer mockServer) {
+    public void shouldReturn202CreatedHearing(MockServer mockServer) {
         JsonPath response = getRestAssuredJsonPath(mockServer);
 
-        assertThat(response.getString("caseDetails"))
-            .isNotEmpty();
-        assertThat(response.getString("requestDetails"))
-            .isNotEmpty();
-        assertThat(response.getString("hearingDetails"))
-            .isNotEmpty();
-        assertThat(response.getString("partyDetails"))
-            .isNotEmpty();
         assertThat(response.getString("status_message"))
             .isEqualTo(EXPECTED_STATUS_MESSAGE);
     }
@@ -154,7 +146,7 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
             .given()
             .headers(headers)
             .contentType(io.restassured.http.ContentType.JSON)
-            .body(toHearingRequestJsonString(validHearingRequest))
+            .body(jsonCreatedHearingResponse(validHearingRequest))
             .when()
             .post(mockServer.getUrl() + PATH_HEARING)
             .then()

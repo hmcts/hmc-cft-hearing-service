@@ -20,7 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.Assert;
 import uk.gov.hmcts.reform.hmc.BasePactTesting;
 import uk.gov.hmcts.reform.hmc.controllers.HearingManagementController;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -75,10 +75,10 @@ public class HearingManagementGetHearingsProviderTest extends BasePactTesting {
         doReturn(generateHearingRequest(validCaseRef)).when(mockService)
             .validateGetHearingsRequest(any(), any());
         HearingManagementController controller = new HearingManagementController(mockService);
-        HearingRequest hearingRequest = controller.getHearingsRequest(validCaseRef, null);
+        HearingsGetResponse hearingsGetResponse = controller.getHearingsRequest(validCaseRef, null);
         verify(mockService, times(1))
             .validateGetHearingsRequest(any(), any());
-        Assert.isTrue(hearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef),
+        Assert.isTrue(hearingsGetResponse.getCaseRef().equals(validCaseRef),
                       "Case ref value is not as expected.");
     }
 
@@ -89,10 +89,10 @@ public class HearingManagementGetHearingsProviderTest extends BasePactTesting {
         doReturn(generateHearingRequest(validCaseRef)).when(mockService)
             .validateGetHearingsRequest(any(), any());
         HearingManagementController controller = new HearingManagementController(mockService);
-        HearingRequest hearingRequest = controller.getHearingsRequest(validCaseRef, status);
+        HearingsGetResponse hearingsGetResponse = controller.getHearingsRequest(validCaseRef, status);
         verify(mockService, times(1))
             .validateGetHearingsRequest(any(), any());
-        Assert.isTrue(hearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef),
+        Assert.isTrue(hearingsGetResponse.getCaseRef().equals(validCaseRef),
                       "Case ref value is not as expected.");
     }
 
