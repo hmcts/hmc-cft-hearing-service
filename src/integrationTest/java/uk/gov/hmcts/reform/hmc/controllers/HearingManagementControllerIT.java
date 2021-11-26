@@ -48,7 +48,7 @@ class HearingManagementControllerIT extends BaseTest {
     public static final String ROLE_TYPE = "ORGANISATION";
 
     @Test
-    void shouldReturn202_WhenHearingRequestIsValid() throws Exception {
+    void shouldReturn201_WhenHearingRequestIsValid() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
@@ -75,12 +75,12 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
-            .andExpect(status().is(202))
+            .andExpect(status().is(201))
             .andReturn();
     }
 
     @Test
-    void shouldReturn202_WhenHearingRequestHasPartyDetails() throws Exception {
+    void shouldReturn201_WhenHearingRequestHasPartyDetails() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
@@ -110,7 +110,7 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
-            .andExpect(status().is(202))
+            .andExpect(status().is(201))
             .andReturn();
     }
 
