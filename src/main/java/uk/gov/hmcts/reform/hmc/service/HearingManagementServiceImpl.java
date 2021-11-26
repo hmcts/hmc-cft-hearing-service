@@ -51,7 +51,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private Integer getVersionNumber(String hearingId) {
-        return caseHearingRequestRepository.getVersionNumber(hearingId);
+        return caseHearingRequestRepository.getVersionNumber(Long.valueOf(hearingId));
     }
 
     private void validateHearingId(String hearingId) {

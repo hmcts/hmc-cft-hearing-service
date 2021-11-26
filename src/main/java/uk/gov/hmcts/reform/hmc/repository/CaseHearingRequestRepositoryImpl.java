@@ -14,10 +14,10 @@ public class CaseHearingRequestRepositoryImpl implements CaseHearingRequestRepos
     private EntityManager em;
 
     @Override
-    public Integer getVersionNumber(String hearingId) {
+    public Integer getVersionNumber(Long hearingId) {
         TypedQuery<Integer> namedQuery = em.createNamedQuery(CaseHearingRequestEntity.GET_VERSION_NUMBER_BY_HEARING_ID,
                                                              Integer.class);
-        namedQuery.setParameter("id", hearingId);
+        namedQuery.setParameter("hearingId", hearingId);
         return namedQuery.getSingleResult();
     }
 }
