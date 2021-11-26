@@ -7,6 +7,7 @@ import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -17,13 +18,15 @@ class HearingManagementServiceTest {
 
     private HearingManagementServiceImpl hearingManagementService;
 
+    private CaseHearingRequestRepository caseHearingRequestRepository;
+
     @Mock
     HearingRepository hearingRepository;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        hearingManagementService = new HearingManagementServiceImpl(hearingRepository);
+        MockitoAnnotations.openMocks(this);
+        hearingManagementService = new HearingManagementServiceImpl(hearingRepository, caseHearingRequestRepository);
     }
 
     @Test

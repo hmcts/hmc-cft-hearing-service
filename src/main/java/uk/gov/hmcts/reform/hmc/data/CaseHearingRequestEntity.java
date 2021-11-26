@@ -27,7 +27,7 @@ import javax.persistence.Table;
     query = "SELECT versionNumber from CaseHearingRequestEntity where hearing.id = :hearingId")
 public class CaseHearingRequestEntity {
 
-    protected static final String GET_VERSION_NUMBER_BY_HEARING_ID = "GET_VERSION_NUMBER";
+    public static final String GET_VERSION_NUMBER_BY_HEARING_ID = "GET_VERSION_NUMBER";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

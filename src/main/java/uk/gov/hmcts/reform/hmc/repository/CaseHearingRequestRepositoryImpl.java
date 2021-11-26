@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.repository;
 
 import org.springframework.stereotype.Repository;
-
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 
 import javax.persistence.EntityManager;
@@ -15,9 +14,10 @@ public class CaseHearingRequestRepositoryImpl implements CaseHearingRequestRepos
     private EntityManager em;
 
     @Override
-    public boolean isValidVersionNumber(Long hearingId) {
-        TypedQuery<Long> namedQuery = em.createNamedQuery(CaseHearingRequestEntity.GET_VERSION_NUMBER_BY_HEARING_ID, Long.class);
+    public Integer getVersionNumber(String hearingId) {
+        TypedQuery<Integer> namedQuery = em.createNamedQuery(CaseHearingRequestEntity.GET_VERSION_NUMBER_BY_HEARING_ID,
+                                                             Integer.class);
         namedQuery.setParameter("id", hearingId);
-        return false;
+        return namedQuery.getSingleResult();
     }
 }
