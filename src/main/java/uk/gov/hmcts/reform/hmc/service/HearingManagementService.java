@@ -6,5 +6,5 @@ public interface HearingManagementService {
 
     void getHearingRequest(Long hearingId, boolean isValid);
 
-    void deleteHearingRequest(String hearingId, DeleteHearingRequest deleteRequest);
+    void deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest);
 }

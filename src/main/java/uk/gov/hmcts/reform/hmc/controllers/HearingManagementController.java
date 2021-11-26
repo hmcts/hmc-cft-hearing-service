@@ -39,13 +39,13 @@ public class HearingManagementController {
         hearingManagementService.getHearingRequest(hearingId, isValid);
     }
 
-    @DeleteMapping(path = "/hearing", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Hearing are valid"),
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
-    public void deleteHearing(@RequestHeader String hearingId, @RequestBody @Valid DeleteHearingRequest deleteRequest) {
+    public void deleteHearing(@PathVariable("id") Long hearingId, @RequestBody @Valid DeleteHearingRequest deleteRequest) {
         hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
     }
 }

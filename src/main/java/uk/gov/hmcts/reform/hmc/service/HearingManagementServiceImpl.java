@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,27 +39,39 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public void deleteHearingRequest(String hearingId, DeleteHearingRequest deleteRequest) {
+    public void deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
     }
 
-    private void validateVersionNumber(String hearingId, Integer versionNumber) {
+    private void validateVersionNumber(Long hearingId, Integer versionNumber) {
         Integer versionNumberFromDb = getVersionNumber(hearingId);
         if (!versionNumberFromDb.equals(versionNumber)) {
             throw new BadRequestException(INVALID_VERSION_NUMBER);
         }
     }
 
-    private Integer getVersionNumber(String hearingId) {
-        return caseHearingRequestRepository.getVersionNumber(Long.valueOf(hearingId));
+    private Integer getVersionNumber(Long hearingId) {
+        return caseHearingRequestRepository.getVersionNumber(hearingId);
     }
 
-    private void validateHearingId(String hearingId) {
-        if (hearingId == null || hearingId.length() > HEARING_ID_MAX_LENGTH) {
+    private void validateHearingId(Long hearingId) {
+        if (hearingId == null) {
+            throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
+        } else {
+            String hearingIdStr = String.valueOf(hearingId);
+            isValidFormat(hearingIdStr);
+            if (!hearingRepository.existsById(hearingId)) {
+                throw new HearingNotFoundException(hearingId);
+            }
+        }
+
+    }
+
+    private void isValidFormat(String hearingIdStr) {
+        if (hearingIdStr.length() > HEARING_ID_MAX_LENGTH || StringUtils.isNumeric(hearingIdStr) ||
+            hearingIdStr.charAt(0) != '2') {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
         }
-        // compare if it starts with 2
-
     }
 }
