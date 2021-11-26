@@ -80,7 +80,7 @@ class HearingManagementControllerTest {
     }
 
     @Test
-    void shouldReturn202_whenHearingRequestData() {
+    void shouldReturn201_whenHearingRequestData() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
