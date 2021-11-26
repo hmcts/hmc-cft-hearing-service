@@ -3,12 +3,18 @@ package uk.gov.hmcts.reform.hmc.controllers;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
+
+import javax.validation.Valid;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -31,5 +37,15 @@ public class HearingManagementController {
                            @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {
 
         hearingManagementService.getHearingRequest(hearingId, isValid);
+    }
+
+    @DeleteMapping(path = "/hearing", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Hearing are valid"),
+        @ApiResponse(code = 400, message = "Invalid hearing details found")
+    })
+    public void deleteHearing(@RequestHeader String hearingId, @RequestBody @Valid DeleteHearingRequest deleteRequest) {
+        hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
     }
 }
