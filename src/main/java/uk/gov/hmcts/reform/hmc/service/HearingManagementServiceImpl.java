@@ -128,9 +128,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                 return ifJurisdictionIsNullOrEmpty(attributes, caseDetails);
             } else if (attributes.getJurisdiction().equals(Optional.of(caseDetails.getJurisdiction()))) {
                 return true;
-            }
-            if (attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))) {
-                return true;
+            } else if (attributes.getCaseType() != null) {
+                if (attributes.getCaseType().isPresent()) {
+                    if (attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))) {
+                        return true;
+                    }
+                }
             }
         }
         return false;
