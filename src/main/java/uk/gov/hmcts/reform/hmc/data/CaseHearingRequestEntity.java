@@ -11,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
@@ -23,11 +22,7 @@ import javax.persistence.Table;
 @SecondaryTable(name = "HEARING",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "hearing_id")})
-@NamedQuery(name = CaseHearingRequestEntity.GET_VERSION_NUMBER_BY_HEARING_ID,
-    query = "SELECT versionNumber from CaseHearingRequestEntity where hearing.id = :hearingId")
 public class CaseHearingRequestEntity {
-
-    public static final String GET_VERSION_NUMBER_BY_HEARING_ID = "GET_VERSION_NUMBER";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

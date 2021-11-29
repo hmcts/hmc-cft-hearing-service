@@ -69,8 +69,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void isValidFormat(String hearingIdStr) {
-        if (hearingIdStr.length() > HEARING_ID_MAX_LENGTH || StringUtils.isNumeric(hearingIdStr) ||
-            hearingIdStr.charAt(0) != '2') {
+        if (hearingIdStr.length() != HEARING_ID_MAX_LENGTH || !StringUtils.isNumeric(hearingIdStr)
+            || hearingIdStr.charAt(0) != '2') {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
         }
     }

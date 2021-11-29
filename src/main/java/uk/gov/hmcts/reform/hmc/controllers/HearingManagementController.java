@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,9 +42,12 @@ public class HearingManagementController {
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Hearing are valid"),
-        @ApiResponse(code = 400, message = "Invalid hearing details found")
+        @ApiResponse(code = 400, message = "Invalid hearing details found"),
+        @ApiResponse(code = 404, message = "Hearing id not found"),
+        @ApiResponse(code = 500, message = "Error occurred on the server")
     })
-    public void deleteHearing(@PathVariable("id") Long hearingId, @RequestBody @Valid DeleteHearingRequest deleteRequest) {
+    public void deleteHearing(@PathVariable("id") Long hearingId,
+                              @RequestBody @Valid DeleteHearingRequest deleteRequest) {
         hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
     }
 }
