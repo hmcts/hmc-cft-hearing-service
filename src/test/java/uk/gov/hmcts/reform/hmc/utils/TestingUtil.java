@@ -62,7 +62,7 @@ public class TestingUtil {
     public static CaseDetails caseDetails() {
         CaseDetails caseDetails = new CaseDetails();
         caseDetails.setHmctsServiceCode("ABA1");
-        caseDetails.setCaseRef("1111222233334444");
+        caseDetails.setCaseRef("9372710950276233");
         caseDetails.setRequestTimeStamp(LocalDateTime.parse("2021-08-10T12:20:00"));
         caseDetails.setCaseDeepLink("https://www.google.com");
         caseDetails.setHmctsInternalCaseName("Internal case name");

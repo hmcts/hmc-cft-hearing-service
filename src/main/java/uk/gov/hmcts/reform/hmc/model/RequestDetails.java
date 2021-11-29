@@ -18,7 +18,7 @@ public class RequestDetails {
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     @NotNull(message = ValidationError.REQUEST_TIMESTAMP_NULL_EMPTY)
     private LocalDateTime requestTimeStamp;
 }
