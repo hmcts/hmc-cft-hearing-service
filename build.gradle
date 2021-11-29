@@ -210,7 +210,7 @@ sonarqube {
 def versions = [
   junit           : '5.7.2',
   junitPlatform   : '1.7.2',
-  jsr310Version   : '2.12.4',
+  jsr310          : '2.12.4',
   lombok          : '1.18.8',
   log4j           : '2.14.1',
   mapstruct       : '1.4.2.Final',
@@ -334,7 +334,7 @@ dependencies {
 
   compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
-//  compile ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jsr310Version")
+  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jsr310
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
 
