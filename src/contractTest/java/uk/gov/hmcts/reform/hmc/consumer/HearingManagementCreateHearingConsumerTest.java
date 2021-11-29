@@ -37,8 +37,6 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
     String jsonstringRequest2 = jsonCreatedHearingResponse(invalidHearingRequest);
 
     private static final String EXPECTED_STATUS_MESSAGE = "Hearing created successfully";
-    private static final PactDslJsonBody pactdsljsonbodyResponse =
-        HearingResponsePactUtil.generateCreateHearingJsonBody(EXPECTED_STATUS_MESSAGE);
 
     static Map<String, String> headers = Map.of(
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,
@@ -63,7 +61,7 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.ACCEPTED.value())
-            .body(pactdsljsonbodyResponse)
+            .body(HearingResponsePactUtil.generateCreateHearingJsonBody(EXPECTED_STATUS_MESSAGE))
             .toPact();
     }
 
