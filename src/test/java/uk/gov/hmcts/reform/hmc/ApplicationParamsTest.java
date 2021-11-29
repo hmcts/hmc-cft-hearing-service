@@ -8,35 +8,36 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ApplicationParamsTest {
 
     private static final String VALUE = "test-value";
+    private static final int INT_VALUE = 1;
     private final ApplicationParams applicationParams = new ApplicationParams();
 
     @Test
-    void shouldGetInboundTopicName() {
-        ReflectionTestUtils.setField(applicationParams, "inboundTopicName", VALUE);
-        assertEquals(VALUE, applicationParams.getInboundTopicName());
+    void shouldGetExponentialMultiplier() {
+        ReflectionTestUtils.setField(applicationParams, "exponentialMultiplier", VALUE);
+        assertEquals(VALUE, applicationParams.getExponentialMultiplier());
     }
 
     @Test
-    void shouldGetInboundConnectionString() {
-        ReflectionTestUtils.setField(applicationParams, "inboundConnectionString", VALUE);
-        assertEquals(VALUE, applicationParams.getInboundConnectionString());
+    void shouldGetInternalConnectionString() {
+        ReflectionTestUtils.setField(applicationParams, "internalConnectionString", VALUE);
+        assertEquals(VALUE, applicationParams.getInternalConnectionString());
     }
 
     @Test
-    void shouldGetInboundSubscriptionName() {
-        ReflectionTestUtils.setField(applicationParams, "inboundSubscriptionName", VALUE);
-        assertEquals(VALUE, applicationParams.getInboundSubscriptionName());
+    void shouldGetMaxRetryAttempts() {
+        ReflectionTestUtils.setField(applicationParams, "maxRetryAttempts", INT_VALUE);
+        assertEquals(INT_VALUE, applicationParams.getMaxRetryAttempts());
     }
 
     @Test
-    void shouldGetOutboundTopicName() {
-        ReflectionTestUtils.setField(applicationParams, "outboundTopicName", VALUE);
-        assertEquals(VALUE, applicationParams.getOutboundTopicName());
+    void shouldGetExternalTopicName() {
+        ReflectionTestUtils.setField(applicationParams, "externalTopicName", VALUE);
+        assertEquals(VALUE, applicationParams.getExternalTopicName());
     }
 
     @Test
-    void shouldGetOutboundConnectionString() {
-        ReflectionTestUtils.setField(applicationParams, "outboundConnectionString", VALUE);
-        assertEquals(VALUE, applicationParams.getOutboundConnectionString());
+    void shouldGetExternalConnectionString() {
+        ReflectionTestUtils.setField(applicationParams, "externalConnectionString", VALUE);
+        assertEquals(VALUE, applicationParams.getExternalConnectionString());
     }
 }

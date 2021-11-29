@@ -20,12 +20,13 @@ java:
           alias: CFT_HEARING_SERVICE_DB_NAME
         - name: hmc-servicebus-connection-string
           alias: HMC_SERVICE_BUS_CONNECTION_STRING
-        - name: hmc-servicebus-connection-string-outbound
-          alias: HMC_SERVICE_BUS_CONNECTION_STRING_OUTBOUND
+        - name: hmc-queue-connection-string
+          alias: HMC_QUEUE_CONNECTION_STRING
   environment:
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified&gssEncMode=disable"
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft-{{ .Values.global.environment }}
     HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft-{{ .Values.global.environment }}
+    HMC_QUEUE_NAME: hmc-from-hmi-{{ .Values.global.environment }}
 
 servicebus:
   enabled: false

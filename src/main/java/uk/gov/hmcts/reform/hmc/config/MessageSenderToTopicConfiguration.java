@@ -10,11 +10,11 @@ import uk.gov.hmcts.reform.hmc.ApplicationParams;
 
 @Slf4j
 @Component
-public class MessageSenderConfiguration {
+public class MessageSenderToTopicConfiguration {
 
     private final ApplicationParams applicationParams;
 
-    public MessageSenderConfiguration(ApplicationParams applicationParams) {
+    public MessageSenderToTopicConfiguration(ApplicationParams applicationParams) {
         this.applicationParams = applicationParams;
     }
 
@@ -22,14 +22,14 @@ public class MessageSenderConfiguration {
         try {
 
             ServiceBusSenderClient senderClient = new ServiceBusClientBuilder()
-                .connectionString(applicationParams.getOutboundConnectionString())
+                .connectionString(applicationParams.getExternalConnectionString())
                 .sender()
-                .topicName(applicationParams.getOutboundTopicName())
+                .topicName(applicationParams.getExternalTopicName())
                 .buildClient();
 
-            log.debug("Connected to Topic {}", applicationParams.getInboundTopicName());
+            log.debug("Connected to Topic {}", applicationParams.getExternalTopicName());
             senderClient.sendMessage(new ServiceBusMessage(message));
-            log.debug("Message has been sent to the topic {}", applicationParams.getInboundTopicName());
+            log.debug("Message has been sent to the topic {}", applicationParams.getExternalTopicName());
         } catch (Exception e) {
             log.error("Error while sending the message to topic:{}", e.getMessage());
         }

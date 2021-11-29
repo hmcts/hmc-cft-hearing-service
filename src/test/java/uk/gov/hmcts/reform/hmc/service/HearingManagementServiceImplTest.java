@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import uk.gov.hmcts.reform.hmc.config.MessageSenderConfiguration;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -22,7 +22,7 @@ public class HearingManagementServiceImplTest {
     private HearingManagementServiceImpl hearingManagementService;
 
     @Mock
-    private MessageSenderConfiguration messageSenderConfiguration;
+    private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
 
     @Mock
     private ObjectMapperService objectMapperService;
@@ -30,7 +30,8 @@ public class HearingManagementServiceImplTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        hearingManagementService = new HearingManagementServiceImpl(messageSenderConfiguration, objectMapperService);
+        hearingManagementService =
+            new HearingManagementServiceImpl(messageSenderToTopicConfiguration, objectMapperService);
     }
 
     @Test
@@ -38,10 +39,10 @@ public class HearingManagementServiceImplTest {
         String json = "{\"query\": {\"match\": \"blah blah\"}}";
         JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
         when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode);
-        doNothing().when(messageSenderConfiguration).sendMessage(Mockito.any());
+        doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any());
         hearingManagementService.sendResponse(json);
         verify(objectMapperService, times(1)).convertObjectToJsonNode(any());
-        verify(messageSenderConfiguration, times(1)).sendMessage(any());
+        verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any());
     }
 
 }

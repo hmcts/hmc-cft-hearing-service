@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.hmc.config.MessageSenderConfiguration;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 
 @Service
@@ -12,14 +12,14 @@ import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
 
-    private final MessageSenderConfiguration messageSenderConfiguration;
+    private final MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
 
     private final ObjectMapperService objectMapperService;
 
     @Autowired
-    public HearingManagementServiceImpl(MessageSenderConfiguration messageSenderConfiguration,
+    public HearingManagementServiceImpl(MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
                                         ObjectMapperService objectMapperService) {
-        this.messageSenderConfiguration = messageSenderConfiguration;
+        this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
     }
 
@@ -30,6 +30,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private void sendRspToTopic(Object response) {
         var jsonNode  = objectMapperService.convertObjectToJsonNode(response);
-        messageSenderConfiguration.sendMessage(jsonNode.toString());
+        messageSenderToTopicConfiguration.sendMessage(jsonNode.toString());
     }
 }

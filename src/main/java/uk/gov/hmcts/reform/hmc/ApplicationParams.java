@@ -8,19 +8,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApplicationParams {
 
-    @Value("${jms.servicebus.inbound.connection-string}")
-    private String inboundConnectionString;
+    @Value("${jms.servicebus.internal.connection-string}")
+    private String internalConnectionString;
 
-    @Value("${jms.servicebus.inbound.topic-name}")
-    private String inboundTopicName;
+    @Value("${jms.servicebus.internal.queue-name}")
+    private String internalQueueName;
 
-    @Value("${jms.servicebus.inbound.subscription-name}")
-    private String inboundSubscriptionName;
+    @Value("${jms.servicebus.internal.exponential-multiplier}")
+    private String exponentialMultiplier;
 
-    @Value("${jms.servicebus.outbound.connection-string}")
-    private String outboundConnectionString;
+    @Value("${jms.servicebus.internal.max-retry-attempts}")
+    private int maxRetryAttempts;
 
-    @Value("${jms.servicebus.outbound.topic-name}")
-    private String outboundTopicName;
+    @Value("${jms.servicebus.external.connection-string}")
+    private String externalConnectionString;
+
+    @Value("${jms.servicebus.external.topic-name}")
+    private String externalTopicName;
 
 }
