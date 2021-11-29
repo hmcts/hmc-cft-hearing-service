@@ -78,8 +78,8 @@ public class HearingResponsePactUtil {
     private static void addMainDetails(PactDslJsonBody pactDslJsonBody) {
         // append main Details object
         pactDslJsonBody
-            .stringType("hmctsServiceID")
-            .stringType("caseRef");
+            .stringMatcher("hmctsServiceCode", "^\\w{4}$", "AB1A")
+            .stringMatcher("caseRef", "^\\d{16}$", "9372710950276233");
         addCaseHearings(pactDslJsonBody);
     }
 
@@ -96,7 +96,9 @@ public class HearingResponsePactUtil {
             .datetime("hearingRequestDateTime", FORMATYYYYMMDDHHMMSSZ,
                       Instant.parse("2021-01-29T02:42:25.123000002Z"))
             .stringType("hearingType")
-            .stringType("hmcStatus")
+            .stringMatcher("hmcStatus","HEARING REQUESTED|UPDATE REQUESTED|"
+                + "UPDATE SUBMITTED|AWAITING LISTING|LISTED|CANCELLATION REQUESTED|"
+                + "EXCEPTION","HEARING REQUESTED")
             .datetime("lastResponseReceivedDateTime", FORMATYYYYMMDDHHMMSSZ,
                       Instant.parse("2021-01-29T02:42:25.123000002Z"))
             .stringType("responseVersion")
