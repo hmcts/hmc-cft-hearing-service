@@ -33,7 +33,6 @@ class MessageReaderFromQueueConfigurationIT extends BaseTest {
     private ApplicationParams applicationParams;
 
     @Test
-    @Disabled
     void shouldInitiateProcessingOfRequest() {
         Map<String, Object> applicationProperties = new HashMap<>();
 
