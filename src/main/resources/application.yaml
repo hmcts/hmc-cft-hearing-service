@@ -49,6 +49,6 @@ jms:
       queue-name: ${HMC_QUEUE_NAME}
       max-retry-attempts: ${HMC_QUEUE_MAX_RETRIES:5}
     external:
-      connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING_OUTBOUND}
-      topic-name: ${HMC_SERVICE_BUS_TOPIC_OUTBOUND}
+      connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING}
+      topic-name: ${HMC_SERVICE_BUS_TOPIC}
 
