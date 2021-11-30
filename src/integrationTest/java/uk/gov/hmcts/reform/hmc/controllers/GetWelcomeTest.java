@@ -26,6 +26,9 @@ class GetWelcomeTest {
     @MockBean
     private MessageReaderFromTopicConfiguration messageReaderFromTopicConfiguration;
 
+    @MockBean
+    private HearingManagementService hms;
+
     @DisplayName("Should welcome upon root request with 200 response code")
     @Test
     void welcomeRootEndpoint() throws Exception {

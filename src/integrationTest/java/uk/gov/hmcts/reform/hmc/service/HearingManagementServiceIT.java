@@ -2,6 +2,10 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.hmc.BaseTest;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
+
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -17,9 +21,17 @@ class HearingManagementServiceIT extends BaseTest {
     @Autowired
     private HearingManagementService hearingManagementService;
 
-    private static final String INSERT_DATA_SCRIPT = "classpath:sql/insert-hearing.sql";
-
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
+
+    @Test
+    void testValidateHearingRequest() {
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingManagementService.validateHearingRequest(hearingRequest);
+    }
 
     @Test
     @Sql(INSERT_CASE_HEARING_DATA_SCRIPT)
