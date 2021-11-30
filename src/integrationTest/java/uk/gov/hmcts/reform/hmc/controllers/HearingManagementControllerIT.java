@@ -74,4 +74,14 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
+    @Test
+    @Sql(INSERT_CASE_HEARING_DATA_SCRIPT)
+    void shouldReturn400_WhenDeleteHearingIdIsNonNumeric() throws Exception {
+        mockMvc.perform(delete(getHearingUrl + "/200000000P")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(TestingUtil.deleteHearingRequest())))
+            .andExpect(status().is(400))
+            .andReturn();
+    }
+
 }

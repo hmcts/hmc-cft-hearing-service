@@ -93,7 +93,7 @@ class HearingManagementServiceTest {
     @Test
     void testExpectedException_DeleteHearing_HearingId_Exceeds_MaxLength() {
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.deleteHearingRequest(20000001001L, TestingUtil.deleteHearingRequest());
+            hearingManagementService.deleteHearingRequest(20000000001111L, TestingUtil.deleteHearingRequest());
         });
         assertEquals("Invalid hearing Id", exception.getMessage());
     }
@@ -105,6 +105,5 @@ class HearingManagementServiceTest {
         });
         assertEquals("Invalid hearing Id", exception.getMessage());
     }
-
 
 }
