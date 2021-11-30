@@ -52,21 +52,6 @@ public class WiremockFixtures {
         }
     }
 
-    public static void stubSuccessfullyForValidHearingID(String hearingId) {
-        stubFor(WireMock.get(urlEqualTo("/hearing/" + hearingId))
-                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
-                    .willReturn(aResponse().withStatus(HTTP_ACCEPTED)));
-    }
-
-
-    public static void stubReturn404InValidHearingId(String hearingId) {
-        stubFor(WireMock.get(urlEqualTo("/hearing/" + hearingId))
-                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
-                    .willReturn(aResponse().withStatus(HTTP_NOT_FOUND)));
-    }
-
     public static void stubSuccessfullyValidateHearingObject(HearingRequest hearingRequest) {
         stubFor(WireMock.post(urlEqualTo("/hearing"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
@@ -97,4 +82,5 @@ public class WiremockFixtures {
             throw new RuntimeException(e);
         }
     }
+
 }

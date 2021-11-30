@@ -200,7 +200,8 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   springCloud     : '2020.0.1',
   springfoxSwagger: '3.0.0',
-  testcontainers  : '1.15.2'
+  testcontainers  : '1.15.2',
+  netty           : '4.1.68.Final'
 ]
 
 ext['spring-framework.version'] = '5.3.12'
@@ -284,36 +285,55 @@ dependencies {
   compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
   compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.1'
 
+  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+
   compile group: 'org.flywaydb', name: 'flyway-core', version: '7.7.0'
   compileOnly group: 'org.mapstruct', name: 'mapstruct', version: versions.mapstruct
 
   annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: versions.mapstruct
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+
+  implementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
 
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.0.2'
   implementation group: 'com.azure', name: 'azure-core', version: '1.13.0'
 
-  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.0.2'
+  // Explicitly set versions of io.netty components to resolve CVE-2021-37136 and CVE-2021-37137
+  implementation group: 'io.netty', name: 'netty-buffer', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-codec', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-codec-dns', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-codec-http', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-codec-http2', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-codec-socks', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-common', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-handler', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-handler-proxy', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-resolver', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-resolver-dns', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-resolver-dns-native-macos', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-transport', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-transport-native-kqueue', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-transport-native-unix-common', version: versions.netty
+
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
-  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.0.2'
 
-  integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
-  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
-  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.0.2'
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
 
+  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
+
   functionalTestImplementation sourceSets.main.runtimeClasspath
-  functionalTestImplementation sourceSets.test.runtimeClasspath
+
   functionalTestImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '6.14.2'
   functionalTestImplementation libraries.junit5
-
   runtime group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
 
 }

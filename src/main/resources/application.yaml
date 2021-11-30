@@ -37,7 +37,6 @@ spring:
     out-of-order: true
     ignore-missing-migrations: true
 
-
 azure:
   application-insights:
     instrumentation-key: ${hmc.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}

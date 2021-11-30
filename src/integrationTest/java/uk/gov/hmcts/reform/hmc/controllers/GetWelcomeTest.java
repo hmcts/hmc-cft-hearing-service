@@ -21,10 +21,10 @@ class GetWelcomeTest {
     private transient MockMvc mockMvc;
 
     @MockBean
-    private HearingManagementService hearingManagementService;
+    private MessageReaderFromTopicConfiguration messageReaderFromTopicConfiguration;
 
     @MockBean
-    private MessageReaderFromTopicConfiguration messageReaderFromTopicConfiguration;
+    private HearingManagementService hearingManagementService;
 
     @DisplayName("Should welcome upon root request with 200 response code")
     @Test
