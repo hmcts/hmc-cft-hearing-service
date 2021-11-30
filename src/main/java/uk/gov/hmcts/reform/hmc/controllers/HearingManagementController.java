@@ -27,6 +27,7 @@ public class HearingManagementController {
         this.hearingManagementService = hearingManagementService;
     }
 
+
     @GetMapping(path = "/hearing/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiResponses(value = {

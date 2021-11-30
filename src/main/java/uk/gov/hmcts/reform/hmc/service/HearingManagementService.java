@@ -8,5 +8,4 @@ public interface HearingManagementService {
     void getHearingRequest(Long hearingId, boolean isValid);
 
     HearingResponse saveHearingRequest(HearingRequest hearingRequest);
-
 }

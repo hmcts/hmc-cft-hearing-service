@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -121,3 +121,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 }
+
+
+
+
+
