@@ -16,7 +16,8 @@ spring:
   config:
     import: "optional:configtree:/mnt/secrets/hmc/"
   jackson:
-    property-naming-strategy: SNAKE_CASE
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${CFT_HEARING_SERVICE_DB_HOST:localhost}:${CFT_HEARING_SERVICE_DB_PORT:5060}/${CFT_HEARING_SERVICE_DB_NAME:hmc_cft_hearing_service}${CFT_HEARING_SERVICE_DB_OPTIONS:}

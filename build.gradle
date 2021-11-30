@@ -285,10 +285,14 @@ dependencies {
   compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
   compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.1'
 
+  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+
   compile group: 'org.flywaydb', name: 'flyway-core', version: '7.7.0'
   compileOnly group: 'org.mapstruct', name: 'mapstruct', version: versions.mapstruct
 
   annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: versions.mapstruct
+
+  implementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
 
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
