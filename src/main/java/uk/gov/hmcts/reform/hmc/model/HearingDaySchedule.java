@@ -31,6 +31,10 @@ public class HearingDaySchedule {
     @Size(max = 60, message = ValidationError.LIST_ASSIST_SESSION_ID_MAX_LENGTH)
     private String listAssistSessionID;
 
+    @NotEmpty(message = ValidationError.HEARING_VENUE_ID_NULL_EMPTY)
+    @Size(max = 60, message = ValidationError.HEARING_VENUE_ID_MAX_LENGTH)
+    private String hearingVenueId;
+
     @NotEmpty(message = ValidationError.HEARING_ROOM_ID_NULL_EMPTY)
     @Size(max = 60, message = ValidationError.HEARING_ROOM_ID_MAX_LENGTH)
     private String hearingRoomId;
@@ -38,4 +42,6 @@ public class HearingDaySchedule {
     @NotEmpty(message = ValidationError.HEARING_JUDGE_ID_NULL_EMPTY)
     @Size(max = 60, message = ValidationError.HEARING_JUDGE_ID_MAX_LENGTH)
     private String hearingJudgeId;
+
+    private Attendees attendees;
 }

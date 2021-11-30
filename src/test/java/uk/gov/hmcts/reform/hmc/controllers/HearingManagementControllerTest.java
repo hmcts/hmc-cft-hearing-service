@@ -176,7 +176,7 @@ class HearingManagementControllerTest {
         caseHearing.setLastResponseReceivedDateTime(LocalDateTime.now());
         caseHearing.setResponseVersion("00" + id);
         caseHearing.setHearingListingStatus("liststat" + id);
-        caseHearing.setLstAssistCaseStatus(status);
+        caseHearing.setListAssistCaseStatus(status);
         caseHearing.setHearingDaySchedule(createHearingDaySchedule(id));
         return caseHearing;
     }

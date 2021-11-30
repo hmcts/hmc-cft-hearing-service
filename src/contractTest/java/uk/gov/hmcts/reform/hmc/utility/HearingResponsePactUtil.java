@@ -12,6 +12,9 @@ public class HearingResponsePactUtil {
 
     private static final String FORMATYYYYMMDDHHMMSSSSSSZ = "yyyy-MM-dd'T'HH:mm:SSSSSS";
     private static final String FORMATYYYYMMDDHHMMSSZ = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    private static final String STATUS_OPTIONS_STRING = "HEARING REQUESTED|UPDATE REQUESTED|"
+        + "UPDATE SUBMITTED|AWAITING LISTING|LISTED|CANCELLATION REQUESTED|"
+        + "EXCEPTION";
 
     private HearingResponsePactUtil() {
         //not called
@@ -30,7 +33,7 @@ public class HearingResponsePactUtil {
 
         pactDslJsonBody
             .stringType("hearingRequestID")
-            .stringType("status")
+            .stringMatcher("status", STATUS_OPTIONS_STRING,"HEARING REQUESTED")
             .timestamp("timeStamp", FORMATYYYYMMDDHHMMSSSSSSZ, Instant.parse("2021-10-29T01:23:34.123456Z"))
             .integerType("versionNumber")
             .asBody();
@@ -78,7 +81,7 @@ public class HearingResponsePactUtil {
     private static void addMainDetails(PactDslJsonBody pactDslJsonBody) {
         // append main Details object
         pactDslJsonBody
-            .stringMatcher("hmctsServiceCode", "^\\w{4}$", "AB1A")
+            .stringMatcher("hmctsServiceCode", "^[a-zA-Z0-9]{1,4}$", "AB1A")
             .stringMatcher("caseRef", "^\\d{16}$", "9372710950276233");
         addCaseHearings(pactDslJsonBody);
     }
@@ -92,29 +95,27 @@ public class HearingResponsePactUtil {
         pactDslJsonBody
             .array("caseHearings")
             .object()
-            .stringType("hearingID")
+            .stringMatcher("hearingID", "^[a-zA-Z0-9]{1,60}$", "ABBBAAA000111NNBA")
             .datetime("hearingRequestDateTime", FORMATYYYYMMDDHHMMSSZ,
                       Instant.parse("2021-01-29T02:42:25.123000002Z"))
             .stringType("hearingType")
-            .stringMatcher("hmcStatus","HEARING REQUESTED|UPDATE REQUESTED|"
-                + "UPDATE SUBMITTED|AWAITING LISTING|LISTED|CANCELLATION REQUESTED|"
-                + "EXCEPTION","HEARING REQUESTED")
+            .stringMatcher("hmcStatus",STATUS_OPTIONS_STRING,"HEARING REQUESTED")
             .datetime("lastResponseReceivedDateTime", FORMATYYYYMMDDHHMMSSZ,
                       Instant.parse("2021-01-29T02:42:25.123000002Z"))
             .stringType("responseVersion")
-            .stringMatcher("hearingListingStatus","HEARING REQUESTED|UPDATE REQUESTED|"
-                + "UPDATE SUBMITTED|AWAITING LISTING|LISTED|CANCELLATION REQUESTED|"
-                + "EXCEPTION","HEARING REQUESTED")
-            .stringMatcher("lstAssistCaseStatus",
-                    "HEARING REQUESTED|UPDATE REQUESTED|"
-                + "UPDATE SUBMITTED|AWAITING LISTING|LISTED|CANCELLATION REQUESTED|"
-                + "EXCEPTION","UPDATE REQUESTED")
+            .stringMatcher("hearingListingStatus",STATUS_OPTIONS_STRING,"HEARING REQUESTED")
+            .stringMatcher("listAssistCaseStatus", STATUS_OPTIONS_STRING,"HEARING REQUESTED")
             .object("hearingDaySchedule")
               .datetime("hearingStartDateTime", FORMATYYYYMMDDHHMMSSZ)
               .datetime("hearingEndDateTime", FORMATYYYYMMDDHHMMSSZ)
               .stringType("ListAssistSessionID")
+              .stringType("hearingVenueId")
               .stringType("hearingRoomId")
               .stringType("hearingJudgeId")
+              .object("attendees")
+                .stringType("partyID")
+                .stringType("hearingSubChannel")
+              .closeObject().asBody()
             .closeObject().asBody()
           .closeArray().asBody();
     }

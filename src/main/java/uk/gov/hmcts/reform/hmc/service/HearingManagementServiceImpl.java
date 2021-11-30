@@ -78,9 +78,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validateHearingDetails(HearingDetails hearingDetails) {
-        if (hearingDetails.getHearingWindow().getHearingWindowEndDateRange() == null
-            && hearingDetails.getHearingWindow().getHearingWindowStartDateRange() == null
-            && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() == null) {
+        if (hearingDetails.getHearingWindow().getHearingWindowDateRange()
+            .getHearingWindowEndDateRange() == null
+            && hearingDetails.getHearingWindow().getHearingWindowDateRange()
+            .getHearingWindowStartDateRange() == null
+            && hearingDetails.getHearingWindow().getHearingWindowFirstDate()
+            .getFirstDateTimeMustBe() == null) {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
         }
     }

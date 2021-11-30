@@ -6,6 +6,8 @@ import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.HearingWindowDateRange;
+import uk.gov.hmcts.reform.hmc.model.HearingWindowFirstDate;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
@@ -35,11 +37,20 @@ public class TestingUtil {
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
-        hearingWindow.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
+        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
+        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
+        hearingWindow.getHearingWindowDateRange()
+            .setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindow.getHearingWindowDateRange()
+            .setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
+        HearingWindowFirstDate hearingWindowFirstDate = new HearingWindowFirstDate();
+        hearingWindow.setHearingWindowFirstDate(hearingWindowFirstDate);
+        hearingWindow.getHearingWindowFirstDate()
+            .setFirstDateTimeMustBe(LocalDateTime.parse("2017-04-01T08:00:01"));
         hearingDetails.setHearingWindow(hearingWindow);
         hearingDetails.setDuration(0);
-        hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
+        hearingDetails.setNonStandardHearingDurationReasons(
+            Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         HearingLocation location1 = new HearingLocation();
         location1.setLocationId("court");

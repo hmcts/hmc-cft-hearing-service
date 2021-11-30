@@ -49,7 +49,7 @@ public class CaseHearing {
 
     @NotEmpty(message = ValidationError.LIST_ASSIST_CASE_STATUS_NULL_EMPTY)
     @Size(max = 60, message = ValidationError.LIST_ASSIST_CASE_STATUS_MAX_LENGTH)
-    private String lstAssistCaseStatus;
+    private String listAssistCaseStatus;
 
     private HearingDaySchedule hearingDaySchedule;
 }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -8,14 +9,14 @@ import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
-import uk.gov.hmcts.reform.hmc.model.Dow;
-import uk.gov.hmcts.reform.hmc.model.DowUnavailabilityType;
 import uk.gov.hmcts.reform.hmc.model.HearingCreatePostResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.HearingWindowDateRange;
+import uk.gov.hmcts.reform.hmc.model.HearingWindowFirstDate;
 import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 public class BasePactTesting {
@@ -52,6 +54,8 @@ public class BasePactTesting {
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,
         SERVICE_AUTHORIZATION, SERVICE_AUTHORIZATION_TOKEN
     );
+
+    private final Random random = new Random();
 
     /**
      * generate Hearing Request.
@@ -113,6 +117,7 @@ public class BasePactTesting {
      */
     protected String jsonCreatedHearingResponse(HearingRequest hearingRequest) {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         String jsonString = "";
         try {
             jsonString = objectMapper.writeValueAsString(hearingRequest);
@@ -143,11 +148,8 @@ public class BasePactTesting {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
-        HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
-        hearingWindow.setHearingWindowStartDateRange(LocalDate.now());
-        hearingDetails.setHearingWindow(hearingWindow);
-        hearingDetails.setDuration(0);
+        hearingDetails.setHearingWindow(hearingWindow());
+        hearingDetails.setDuration(1);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         HearingLocation location1 = new HearingLocation();
@@ -158,6 +160,60 @@ public class BasePactTesting {
         hearingDetails.setHearingLocations(hearingLocations);
         hearingDetails.setPanelRequirements(panelRequirements1());
         return hearingDetails;
+    }
+
+    /**
+     * is random number ODD?.
+     *
+     * @return boolean true if odd
+     */
+    private boolean isRandomlyOdd() {
+        int x = random.nextInt();
+        if (x < 0) {
+            x *= -1;
+        }
+        x = x % 2;
+        return (x > 0);
+    }
+
+    /**
+     * Create Hearing Window test data.
+     *
+     * @return hearingWindow hearing Window
+     */
+    protected HearingWindow hearingWindow() {
+        HearingWindow hearingWindow = new HearingWindow();
+        if (isRandomlyOdd()) {
+            logger.info("using hearing window first date");
+            hearingWindow.setHearingWindowFirstDate(hearingWindowFirstDate());
+        } else {
+            logger.info("using hearing window date range");
+            hearingWindow.setHearingWindowDateRange(hearingWindowDateRange());
+        }
+        return hearingWindow;
+    }
+
+    /**
+     * Create Hearing Window First Date test data.
+     *
+     * @return hearingWindowFirstDate hearing Window First Date
+     */
+    protected HearingWindowFirstDate hearingWindowFirstDate() {
+        HearingWindowFirstDate hearingWindowFirstDate = new HearingWindowFirstDate();
+        hearingWindowFirstDate.getFirstDateTimeMustBe();
+        return hearingWindowFirstDate;
+    }
+
+    /**
+     * Create Hearing Window Date Range test data.
+     *
+     * @return hearingWindowDateRange hearing Window Date Range
+     */
+    protected HearingWindowDateRange hearingWindowDateRange() {
+        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
+        hearingWindowDateRange.setHearingWindowEndDateRange(LocalDate.now());
+        hearingWindowDateRange.setHearingWindowStartDateRange(LocalDate.now());
+        return hearingWindowDateRange;
     }
 
     /**
@@ -387,28 +443,6 @@ public class BasePactTesting {
         return listUnavailabilityRanges;
     }
 
-    /**
-     * create Days of the Week Unavailability.
-     * @return List of UnavailabilityDow
-     */
-    private List<UnavailabilityDow> createUnavailableDaysOfTheWeek() {
-        UnavailabilityDow unavailabilityDowFriday = new UnavailabilityDow();
-        unavailabilityDowFriday.setDowUnavailabilityType(DowUnavailabilityType.PM.getLabel());
-        unavailabilityDowFriday.setDow(Dow.FRIDAY.getLabel());
-        UnavailabilityDow unavailabilityDowSaturday = new UnavailabilityDow();
-        unavailabilityDowSaturday.setDowUnavailabilityType(DowUnavailabilityType.ALL.getLabel());
-        unavailabilityDowSaturday.setDow(Dow.SATURDAY.getLabel());
-        UnavailabilityDow unavailabilityDowSunday = new UnavailabilityDow();
-        unavailabilityDowSunday.setDowUnavailabilityType(DowUnavailabilityType.ALL.getLabel());
-        unavailabilityDowSunday.setDow(Dow.SUNDAY.getLabel());
-
-        List<UnavailabilityDow> unavailabilityDows = new ArrayList<>();
-        unavailabilityDows.add(unavailabilityDowFriday);
-        unavailabilityDows.add(unavailabilityDowSaturday);
-        unavailabilityDows.add(unavailabilityDowSunday);
-        return unavailabilityDows;
-    }
-
     private List<CaseHearing> createCaseHearings() {
         List<CaseHearing> caseHearings = new ArrayList<>();
         IntStream.range(1, 4).forEach(i ->
@@ -426,7 +460,7 @@ public class BasePactTesting {
         caseHearing.setLastResponseReceivedDateTime(LocalDateTime.now());
         caseHearing.setResponseVersion("00" + id);
         caseHearing.setHearingListingStatus("liststat" + id);
-        caseHearing.setLstAssistCaseStatus("status" + id);
+        caseHearing.setListAssistCaseStatus("status" + id);
         caseHearing.setHearingDaySchedule(createHearingDaySchedule(id));
         return caseHearing;
     }

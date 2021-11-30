@@ -133,12 +133,23 @@ public final class ValidationError {
     public static final String HEARING_STATUS_MAX_LENGTH_EMPTY_INVALID = "Hearing status must not be more than 100 "
         + CHARACTERS_LONG;
     public static final String LIST_ASSIST_SESSION_ID_NULL_EMPTY = "List Assist session id can not be null or empty";
-    public static final String LIST_ASSIST_SESSION_ID_MAX_LENGTH = "List Assist session id must not be more than 60 ";
+    public static final String LIST_ASSIST_SESSION_ID_MAX_LENGTH = "List Assist session id must not be more than 60 "
+        + CHARACTERS_LONG;
     public static final String HEARING_ROOM_ID_NULL_EMPTY = "Hearing room id can not be null or empty";
-    public static final String HEARING_ROOM_ID_MAX_LENGTH = "Hearing room id must not be more than 60 ";
+    public static final String HEARING_ROOM_ID_MAX_LENGTH = "Hearing room id must not be more than 60 "
+        + CHARACTERS_LONG;
     public static final String HEARING_JUDGE_ID_NULL_EMPTY = "Hearing judge id can not be null or empty";
-    public static final String HEARING_JUDGE_ID_MAX_LENGTH = "Hearing judge id must not be more than 60 ";
-
+    public static final String HEARING_JUDGE_ID_MAX_LENGTH = "Hearing judge id must not be more than 60 "
+        + CHARACTERS_LONG;
+    public static final String HEARING_SUB_CHANNEL_NULL_EMPTY = "Hearing sub channel can not be null or empty";
+    public static final String HEARING_SUB_CHANNEL_MAX_LENGTH = "Hearing sub channel must not be more than 60 "
+        + CHARACTERS_LONG;
+    public static final String PARTY_ID_NULL_EMPTY = "Party id can not be null or empty";
+    public static final String PARTY_ID_MAX_LENGTH = "Party id must not be more than 60 "
+        + CHARACTERS_LONG;
+    public static final String HEARING_VENUE_ID_NULL_EMPTY = "Hearing venue id can not be null or empty";
+    public static final String HEARING_VENUE_ID_MAX_LENGTH = "Hearing venue id must not be more than 60 "
+        + CHARACTERS_LONG;
 
     private ValidationError() {
     }
