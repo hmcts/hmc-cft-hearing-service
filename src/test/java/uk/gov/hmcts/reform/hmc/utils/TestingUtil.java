@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.utils;
 import org.assertj.core.util.Lists;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
@@ -17,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 
 public class TestingUtil {
 

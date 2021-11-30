@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -150,7 +150,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(INSERT_CASE_HEARING_DATA_SCRIPT)
     void shouldReturn404_WhenDeleteHearingIdIsInValid() throws Exception {
-        mockMvc.perform(delete(getHearingUrl + "/2000000001")
+        mockMvc.perform(delete(url + "/2000000001")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.deleteHearingRequest())))
             .andExpect(status().is(404))
@@ -160,7 +160,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(INSERT_CASE_HEARING_DATA_SCRIPT)
     void shouldReturn200_WhenDeleteHearingIdIsInValid() throws Exception {
-        mockMvc.perform(delete(getHearingUrl + "/2000000000")
+        mockMvc.perform(delete(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.deleteHearingRequest())))
             .andExpect(status().is(200))
@@ -170,7 +170,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(INSERT_CASE_HEARING_DATA_SCRIPT)
     void shouldReturn400_WhenDeleteHearingIdIsNonNumeric() throws Exception {
-        mockMvc.perform(delete(getHearingUrl + "/200000000P")
+        mockMvc.perform(delete(url + "/200000000P")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.deleteHearingRequest())))
             .andExpect(status().is(400))

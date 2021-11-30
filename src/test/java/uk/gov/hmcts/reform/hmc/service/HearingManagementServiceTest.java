@@ -10,12 +10,11 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
-import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
