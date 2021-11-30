@@ -54,7 +54,7 @@ public class HearingManagementController {
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Hearing are valid"),
+        @ApiResponse(code = 200, message = "Hearing cancellation processed"),
         @ApiResponse(code = 400, message = "Invalid hearing details found"),
         @ApiResponse(code = 404, message = "Hearing id not found"),
         @ApiResponse(code = 500, message = "Error occurred on the server")
