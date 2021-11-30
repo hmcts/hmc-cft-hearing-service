@@ -11,7 +11,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
+import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -38,6 +40,52 @@ class HearingManagementControllerTest {
     }
 
     @Test
+    void shouldReturn400_whenRequest_Details_Are_NotPresent() {
+        doNothing().when(hearingManagementService).validateHearingRequest(Mockito.any());
+        HearingManagementController controller = new HearingManagementController(hearingManagementService);
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        controller.invokeHearing(hearingRequest);
+        verify(hearingManagementService, times(1)).validateHearingRequest(any());
+
+    }
+
+    @Test
+    void shouldReturn400_whenHearing_Details_Are_NotPresent() {
+        doNothing().when(hearingManagementService).validateHearingRequest(Mockito.any());
+        HearingManagementController controller = new HearingManagementController(hearingManagementService);
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        controller.invokeHearing(hearingRequest);
+        verify(hearingManagementService, times(1)).validateHearingRequest(any());
+    }
+
+    @Test
+    void shouldReturn400_whenCase_Details_Are_NotPresent() {
+        doNothing().when(hearingManagementService).validateHearingRequest(Mockito.any());
+        HearingManagementController controller = new HearingManagementController(hearingManagementService);
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        controller.invokeHearing(hearingRequest);
+        verify(hearingManagementService, times(1)).validateHearingRequest(any());
+    }
+
+    @Test
+    void shouldReturn202_whenHearingRequestDeta() {
+        doNothing().when(hearingManagementService).validateHearingRequest(Mockito.any());
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        HearingManagementController controller = new HearingManagementController(hearingManagementService);
+        controller.invokeHearing(hearingRequest);
+        verify(hearingManagementService, times(1)).validateHearingRequest(any());
+    }
+
+    @Test
     void shouldReturn200_whenRequestIdIsValid() {
         doNothing().when(hearingManagementService).getHearingRequest(Mockito.any(), anyBoolean());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
@@ -45,5 +93,6 @@ class HearingManagementControllerTest {
         verify(hearingManagementService, times(1)).getHearingRequest(any(), anyBoolean());
 
     }
+
 
 }
