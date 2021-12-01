@@ -22,8 +22,8 @@ import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
-import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
+import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.util.ArrayList;
@@ -71,15 +71,16 @@ class HearingManagementServiceTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        hearingManagementService =
-            new HearingManagementServiceImpl(roleAssignmentService,
-                                             securityUtils,
-                                             dataStoreRepository,
-                                             hearingRepository,
-                                             hearingMapper);
         MockitoAnnotations.openMocks(this);
-        hearingManagementService = new HearingManagementServiceImpl(hearingRepository, caseHearingRequestRepository);
+        hearingManagementService =
+            new HearingManagementServiceImpl(
+                roleAssignmentService,
+                securityUtils,
+                dataStoreRepository,
+                hearingRepository,
+                hearingMapper,
+                caseHearingRequestRepository
+            );
     }
 
     public static final String JURISDICTION = "Jurisdiction1";
@@ -147,7 +148,7 @@ class HearingManagementServiceTest {
         given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
         HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
-        assertEquals(VERSION_NUMBER,response.getVersionNumber());
+        assertEquals(VERSION_NUMBER, response.getVersionNumber());
         assertEquals(HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
     }
@@ -165,7 +166,7 @@ class HearingManagementServiceTest {
         given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
         HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
-        assertEquals(VERSION_NUMBER,response.getVersionNumber());
+        assertEquals(VERSION_NUMBER, response.getVersionNumber());
         assertEquals(HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
 

@@ -121,5 +121,6 @@ public final class ValidationError {
         + "reasons length cannot be greater than 100 characters";
     public static final String INVALID_VERSION_NUMBER = "Invalid Version number";
     public static final String INVALID_HEARING_ID_DETAILS = "Invalid hearing Id";
+    public static final String CASE_NOT_FOUND = "Case could not be found";
 
 }
