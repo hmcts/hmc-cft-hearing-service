@@ -44,7 +44,7 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
     );
 
     /**
-     * create Hearing with Individual - send valid request.
+     * create Hearing - send valid request.
      *
      * @param builder Builder object
      * @return response Response object
@@ -54,7 +54,7 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
     public RequestResponsePact createHearing(PactDslWithProvider builder) {
         return builder
             .given("hmc cftHearingService successfully returns created hearing")
-            .uponReceiving("Request to create hearing")
+            .uponReceiving("Request to create hearing with valid hearing request")
             .path(PATH_HEARING)
             .method(HttpMethod.POST.toString())
             .body(jsonstringRequest1, ContentType.APPLICATION_JSON)
@@ -76,7 +76,7 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
     public RequestResponsePact validationErrorFromCreatingHearing(PactDslWithProvider builder) {
         return builder
             .given("hmc cftHearingService throws validation error while trying to create hearing")
-            .uponReceiving("Request to create hearing")
+            .uponReceiving("Request to create hearing for invalid hearing request")
             .path(PATH_HEARING)
             .method(HttpMethod.POST.toString())
             .body(jsonstringRequest2, ContentType.APPLICATION_JSON)

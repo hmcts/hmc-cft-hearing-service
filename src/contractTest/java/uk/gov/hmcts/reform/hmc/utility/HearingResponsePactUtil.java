@@ -99,12 +99,12 @@ public class HearingResponsePactUtil {
             .datetime("hearingRequestDateTime", FORMATYYYYMMDDHHMMSSZ,
                       Instant.parse("2021-01-29T02:42:25.123000002Z"))
             .stringType("hearingType")
-            .stringMatcher("hmcStatus",STATUS_OPTIONS_STRING,"HEARING REQUESTED")
+            .stringMatcher("hmcStatus",STATUS_OPTIONS_STRING)
             .datetime("lastResponseReceivedDateTime", FORMATYYYYMMDDHHMMSSZ,
                       Instant.parse("2021-01-29T02:42:25.123000002Z"))
             .stringType("responseVersion")
-            .stringMatcher("hearingListingStatus",STATUS_OPTIONS_STRING,"HEARING REQUESTED")
-            .stringMatcher("listAssistCaseStatus", STATUS_OPTIONS_STRING,"HEARING REQUESTED")
+            .stringMatcher("hearingListingStatus",STATUS_OPTIONS_STRING)
+            .stringMatcher("listAssistCaseStatus", STATUS_OPTIONS_STRING)
             .object("hearingDaySchedule")
               .datetime("hearingStartDateTime", FORMATYYYYMMDDHHMMSSZ)
               .datetime("hearingEndDateTime", FORMATYYYYMMDDHHMMSSZ)

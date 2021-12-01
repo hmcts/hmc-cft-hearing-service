@@ -108,7 +108,7 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
     }
 
     /**
-     * test expects to return the found hearings.
+     * test expects to fail to get hearings.
      *
      * @param mockServer MockServer
      * @throws Exception exception
