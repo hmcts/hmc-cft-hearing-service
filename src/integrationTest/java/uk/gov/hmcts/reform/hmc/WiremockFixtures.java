@@ -23,8 +23,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -62,7 +62,7 @@ public class WiremockFixtures {
                     .withRequestBody(
                         equalToJson(
                             getJsonString(hearingRequest)))
-                    .willReturn(aResponse().withStatus(HTTP_ACCEPTED)));
+                    .willReturn(aResponse().withStatus(HTTP_CREATED)));
     }
 
     public static void stubReturn400WhileValidateHearingObject(HearingRequest hearingRequest) {

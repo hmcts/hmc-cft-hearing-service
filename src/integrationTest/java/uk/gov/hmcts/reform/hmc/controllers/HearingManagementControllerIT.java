@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,6 +48,35 @@ class HearingManagementControllerIT extends BaseTest {
     public static final String CASE_TYPE = "CaseType1";
     public static final String ROLE_NAME = "Hearing Manage";
     public static final String ROLE_TYPE = "ORGANISATION";
+
+    private static final String INSERT_DATA_SCRIPT = "classpath:sql/insert-hearing.sql";
+
+    @Test
+    @Sql(INSERT_DATA_SCRIPT)
+    void shouldReturn204_WhenHearingExists() throws Exception {
+        mockMvc.perform(get(url + "/123" + "?isValid=true")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(204))
+            .andReturn();
+
+    }
+
+    @Test
+    void shouldReturn404_WhenHearingIdIsInValid() throws Exception {
+        mockMvc.perform(get(url + "/12" + "?isValid=true")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(404))
+            .andReturn();
+    }
+
+    @Test
+    void shouldReturn204_WhenIsValidIsNotProvided() throws Exception {
+        mockMvc.perform(get(url + "/12")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(204))
+            .andReturn();
+    }
+
 
     @Test
     void shouldReturn201_WhenHearingRequestIsValid() throws Exception {

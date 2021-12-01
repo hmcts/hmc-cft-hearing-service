@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class CaseCategory {
 
-    @EnumPattern(enumClass = CategoryType.class, fieldName = "categoryType")
+    @EnumPattern(enumClass = CaseCategoryType.class, fieldName = "categoryType")
     private String categoryType;
 
     @Size(max = 70, message = ValidationError.CATEGORY_VALUE)
