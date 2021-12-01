@@ -7,9 +7,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
@@ -49,15 +49,20 @@ class HearingManagementServiceTest {
     @Mock
     private SecurityUtils securityUtils;
 
-    private HearingManagementServiceImpl hearingManagementService;
-
     @Mock
     HearingRepository hearingRepository;
+
+    @InjectMocks
+    private HearingManagementServiceImpl hearingManagementService;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        hearingManagementService = new HearingManagementServiceImpl(hearingRepository);
+        hearingManagementService =
+            new HearingManagementServiceImpl(roleAssignmentService,
+                                             securityUtils,
+                                             dataStoreRepository,
+                                             hearingRepository);
     }
 
     public static final String JURISDICTION = "Jurisdiction1";

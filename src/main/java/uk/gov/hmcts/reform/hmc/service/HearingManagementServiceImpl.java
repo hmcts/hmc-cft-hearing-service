@@ -46,7 +46,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
                                         @Qualifier("defaultDataStoreRepository")
                                             DataStoreRepository dataStoreRepository,
-                                        HearingRepository hearingRepository){
+                                        HearingRepository hearingRepository) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
