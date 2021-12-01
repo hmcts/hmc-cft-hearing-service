@@ -2,36 +2,36 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
-
-@Table(name = "hearing")
+@Table(name = "panel_requirements")
 @Entity
 @Data
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class HearingEntity {
+public class PanelRequirementsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "hearing_id_seq")
-    @Column(name = "hearing_id")
+        generator = "panel_requirements_id_seq")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "status", nullable = false)
-    private String status;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_hearing_id")
+    private CaseHearingRequestEntity caseHearing;
 
-    @OneToOne(mappedBy = "hearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private CaseHearingRequestEntity caseHearingRequest;
-
+    @Column(name = "role_type")
+    private String roleType;
 }

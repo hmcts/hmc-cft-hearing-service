@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import javax.validation.Valid;
@@ -26,16 +27,6 @@ public class HearingManagementController {
         this.hearingManagementService = hearingManagementService;
     }
 
-    @PostMapping(path = "/hearing", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    @ApiResponses(value = {
-        @ApiResponse(code = 201, message = "Hearing is valid"),
-        @ApiResponse(code = 400, message = "Invalid hearing details found")
-    })
-    public void invokeHearing(@RequestBody @Valid HearingRequest hearingRequest) {
-        hearingManagementService.validateHearingRequest(hearingRequest);
-        hearingManagementService.verifyAccess(hearingRequest.getCaseDetails().getCaseRef());
-    }
 
     @GetMapping(path = "/hearing/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -47,5 +38,17 @@ public class HearingManagementController {
                            @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {
 
         hearingManagementService.getHearingRequest(hearingId, isValid);
+    }
+
+    @PostMapping(path = "/hearing", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = "Hearing Id is created"),
+        @ApiResponse(code = 400, message = "Invalid hearing details found")
+    })
+    public HearingResponse saveHearing(@RequestBody @Valid HearingRequest hearingRequest) {
+        hearingManagementService.saveHearingRequest(hearingRequest);
+        hearingManagementService.verifyAccess(hearingRequest.getCaseDetails().getCaseRef());
+
     }
 }

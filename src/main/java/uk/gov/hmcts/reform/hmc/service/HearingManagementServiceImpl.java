@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.hmc.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
@@ -14,13 +16,16 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
@@ -34,6 +39,7 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
 
 @Service
+@Component
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
 
@@ -41,16 +47,19 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final RoleAssignmentService roleAssignmentService;
     private final SecurityUtils securityUtils;
     private HearingRepository hearingRepository;
+    private final HearingMapper hearingMapper;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
                                         @Qualifier("defaultDataStoreRepository")
                                             DataStoreRepository dataStoreRepository,
-                                        HearingRepository hearingRepository) {
+                                        HearingRepository hearingRepository,
+                                        HearingMapper hearingMapper) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
         this.hearingRepository = hearingRepository;
+        this.hearingMapper = hearingMapper;
     }
 
     @Override
@@ -61,7 +70,36 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public void validateHearingRequest(HearingRequest hearingRequest) {
+    @Transactional
+    public HearingResponse saveHearingRequest(HearingRequest hearingRequest) {
+        if (hearingRequest == null) {
+            throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
+        }
+        validateHearingRequest(hearingRequest);
+        return insertHearingRequest(hearingRequest);
+    }
+
+    private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
+        HearingEntity savedEntity = saveHearingDetails(hearingRequest);
+        return getSaveHearingResponseDetails(savedEntity);
+    }
+
+    private HearingEntity saveHearingDetails(HearingRequest hearingRequest) {
+        HearingEntity hearingEntity = hearingMapper.modelToEntity(hearingRequest);
+        return hearingRepository.save(hearingEntity);
+    }
+
+    private HearingResponse getSaveHearingResponseDetails(HearingEntity savedEntity) {
+        log.info("Hearing details saved successfully with id: {}", savedEntity.getId());
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setHearingRequestId(savedEntity.getId());
+        hearingResponse.setTimeStamp(savedEntity.getCaseHearingRequest().getHearingRequestReceivedDateTime());
+        hearingResponse.setStatus(savedEntity.getStatus());
+        hearingResponse.setVersionNumber(savedEntity.getCaseHearingRequest().getVersionNumber());
+        return hearingResponse;
+    }
+
+    private void validateHearingRequest(HearingRequest hearingRequest) {
         validateHearingRequestDetails(hearingRequest);
         validateHearingDetails(hearingRequest.getHearingDetails());
         if (hearingRequest.getPartyDetails() != null) {
