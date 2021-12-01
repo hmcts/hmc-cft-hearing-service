@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
-import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
@@ -24,7 +22,6 @@ import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
-import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -70,14 +67,13 @@ class HearingManagementServiceTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        hearingManagementService = new HearingManagementServiceImpl(hearingRepository, hearingMapper);
         MockitoAnnotations.initMocks(this);
         hearingManagementService =
             new HearingManagementServiceImpl(roleAssignmentService,
                                              securityUtils,
                                              dataStoreRepository,
-                                             hearingRepository);
+                                             hearingRepository,
+                                             hearingMapper);
     }
 
     public static final String JURISDICTION = "Jurisdiction1";
@@ -120,7 +116,6 @@ class HearingManagementServiceTest {
         hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
         hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
         HearingEntity hearingEntity = new HearingEntity();
-        given(hearingRepository.save(hearingEntity)).willReturn(TestingUtil.hearingEntity());
         Exception exception = assertThrows(BadRequestException.class, () -> {
             hearingManagementService.saveHearingRequest(hearingRequest);
         });
@@ -145,7 +140,6 @@ class HearingManagementServiceTest {
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
         given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-        given(hearingRepository.findById(1L)).willReturn(Optional.of(TestingUtil.hearingEntity()));
         HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
         assertEquals(VERSION_NUMBER,response.getVersionNumber());
         assertEquals(HEARING_STATUS, response.getStatus());
@@ -164,7 +158,6 @@ class HearingManagementServiceTest {
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
         given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-        given(hearingRepository.findById(1L)).willReturn(Optional.of(TestingUtil.hearingEntity()));
         HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
         assertEquals(VERSION_NUMBER,response.getVersionNumber());
         assertEquals(HEARING_STATUS, response.getStatus());

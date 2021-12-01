@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
+import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
@@ -52,10 +53,13 @@ class HearingManagementControllerTest {
 
     @Test
     void shouldReturn400_whenRequest_Details_Are_NotPresent() {
-        HearingManagementController controller = new HearingManagementController(hearingManagementService);
+        CaseDetails caseDetails = new CaseDetails();
+        caseDetails.setCaseRef("200000L");
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.setCaseDetails(caseDetails);
+        HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.saveHearing(hearingRequest);
         verify(hearingManagementService, times(1)).saveHearingRequest(any());
 
@@ -73,10 +77,13 @@ class HearingManagementControllerTest {
 
     @Test
     void shouldReturn400_whenCase_Details_Are_NotPresent() {
-        HearingManagementController controller = new HearingManagementController(hearingManagementService);
         HearingRequest hearingRequest = new HearingRequest();
+        CaseDetails caseDetails = new CaseDetails();
+        caseDetails.setCaseRef("200000L");
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.setCaseDetails(caseDetails);
+        HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.saveHearing(hearingRequest);
         verify(hearingManagementService, times(1)).saveHearingRequest(any());
     }

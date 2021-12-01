@@ -25,8 +25,8 @@ import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.transaction.Transactional;
 import java.util.Optional;
+import javax.transaction.Transactional;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;

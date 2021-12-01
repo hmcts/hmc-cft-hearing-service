@@ -133,7 +133,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
-            .validateHearingRequest(any(HearingRequest.class));
+            .saveHearingRequest(any(HearingRequest.class));
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
