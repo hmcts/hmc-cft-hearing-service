@@ -24,12 +24,13 @@ public class HearingManagementController {
     }
 
     @PostMapping(path = "/hearing", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
-        @ApiResponse(code = 202, message = "Hearing are valid"),
+        @ApiResponse(code = 201, message = "Hearing is valid"),
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
     public void invokeHearing(@RequestBody @Valid HearingRequest hearingRequest) {
         hearingManagementService.validateHearingRequest(hearingRequest);
+        hearingManagementService.verifyAccess(hearingRequest.getCaseDetails().getCaseRef());
     }
 }
