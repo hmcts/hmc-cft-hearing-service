@@ -2,15 +2,20 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 
 import java.util.List;
+import javax.transaction.Transactional;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
@@ -20,14 +25,19 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAIL
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
 
 @Service
+@Component
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
 
     private HearingRepository hearingRepository;
 
+    private final HearingMapper hearingMapper;
+
     @Autowired
-    public HearingManagementServiceImpl(HearingRepository hearingRepository) {
+    public HearingManagementServiceImpl(HearingRepository hearingRepository,
+                                        HearingMapper hearingMapper) {
         this.hearingRepository = hearingRepository;
+        this.hearingMapper = hearingMapper;
     }
 
     @Override
@@ -38,13 +48,41 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public void validateHearingRequest(HearingRequest hearingRequest) {
+    @Transactional
+    public HearingResponse saveHearingRequest(HearingRequest hearingRequest) {
+        if (hearingRequest == null) {
+            throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
+        }
+        validateHearingRequest(hearingRequest);
+        return insertHearingRequest(hearingRequest);
+    }
+
+    private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
+        HearingEntity savedEntity = saveHearingDetails(hearingRequest);
+        return getSaveHearingResponseDetails(savedEntity);
+    }
+
+    private HearingEntity saveHearingDetails(HearingRequest hearingRequest) {
+        HearingEntity hearingEntity = hearingMapper.modelToEntity(hearingRequest);
+        return hearingRepository.save(hearingEntity);
+    }
+
+    private HearingResponse getSaveHearingResponseDetails(HearingEntity savedEntity) {
+        log.info("Hearing details saved successfully with id: {}", savedEntity.getId());
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setHearingRequestId(savedEntity.getId());
+        hearingResponse.setTimeStamp(savedEntity.getCaseHearingRequest().getHearingRequestReceivedDateTime());
+        hearingResponse.setStatus(savedEntity.getStatus());
+        hearingResponse.setVersionNumber(savedEntity.getCaseHearingRequest().getVersionNumber());
+        return hearingResponse;
+    }
+
+    private void validateHearingRequest(HearingRequest hearingRequest) {
         validateHearingRequestDetails(hearingRequest);
         validateHearingDetails(hearingRequest.getHearingDetails());
         if (hearingRequest.getPartyDetails() != null) {
             validatePartyDetails(hearingRequest.getPartyDetails());
         }
-
     }
 
     private void validatePartyDetails(List<PartyDetails> partyDetails) {

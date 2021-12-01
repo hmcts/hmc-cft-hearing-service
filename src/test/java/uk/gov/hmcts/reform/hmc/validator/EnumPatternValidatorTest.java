@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
-import uk.gov.hmcts.reform.hmc.model.CategoryType;
-import uk.gov.hmcts.reform.hmc.model.Dow;
-import uk.gov.hmcts.reform.hmc.model.DowUnavailabilityType;
+import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
+import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
+import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnavailable;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.LocationId;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
@@ -144,7 +144,7 @@ class EnumPatternValidatorTest {
     void whenValidCaseCategory() {
         CaseCategory category = new CaseCategory();
         category.setCategoryValue("caseValue");
-        category.setCategoryType(CategoryType.CASESUBTYPE.toString());
+        category.setCategoryType(CaseCategoryType.CASESUBTYPE.toString());
         Set<ConstraintViolation<CaseCategory>> violations = validator.validate(category);
         assertTrue(violations.isEmpty());
     }
@@ -273,14 +273,14 @@ class EnumPatternValidatorTest {
 
     private UnavailabilityDow getUnavailabilityDow() {
         UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-        unavailabilityDow.setDowUnavailabilityType(DowUnavailabilityType.ALL.toString());
+        unavailabilityDow.setDowUnavailabilityType(DayOfWeekUnAvailableType.ALL.toString());
         return unavailabilityDow;
     }
 
     @Test
     void whenInValidUnavailabilityDowIsEmpty() {
         UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-        unavailabilityDow.setDowUnavailabilityType(DowUnavailabilityType.ALL.toString());
+        unavailabilityDow.setDowUnavailabilityType(DayOfWeekUnAvailableType.ALL.toString());
         unavailabilityDow.setDow("");
         Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
         assertFalse(violations.isEmpty());
@@ -293,8 +293,8 @@ class EnumPatternValidatorTest {
     @Test
     void whenValidUnavailabilityDow() {
         UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-        unavailabilityDow.setDowUnavailabilityType(DowUnavailabilityType.ALL.toString());
-        unavailabilityDow.setDow(Dow.FRIDAY.toString());
+        unavailabilityDow.setDowUnavailabilityType(DayOfWeekUnAvailableType.ALL.toString());
+        unavailabilityDow.setDow(DayOfWeekUnavailable.FRIDAY.toString());
         Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
         assertTrue(violations.isEmpty());
     }
@@ -302,7 +302,7 @@ class EnumPatternValidatorTest {
     @Test
     void whenInValidUnavailabilityDow() {
         UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-        unavailabilityDow.setDowUnavailabilityType(DowUnavailabilityType.ALL.toString());
+        unavailabilityDow.setDowUnavailabilityType(DayOfWeekUnAvailableType.ALL.toString());
         unavailabilityDow.setDow("January");
         Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
         assertFalse(violations.isEmpty());
@@ -326,7 +326,7 @@ class EnumPatternValidatorTest {
 
     private UnavailabilityDow getDow() {
         UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-        unavailabilityDow.setDow(Dow.MONDAY.toString());
+        unavailabilityDow.setDow(DayOfWeekUnavailable.MONDAY.toString());
         return unavailabilityDow;
     }
 
@@ -334,7 +334,7 @@ class EnumPatternValidatorTest {
     void whenInValidDowUnavailabilityTypeIsNull() {
         UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
         unavailabilityDow.setDowUnavailabilityType(null);
-        unavailabilityDow.setDow(Dow.MONDAY.toString());
+        unavailabilityDow.setDow(DayOfWeekUnavailable.MONDAY.toString());
         Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -347,7 +347,7 @@ class EnumPatternValidatorTest {
     void whenInValidDowUnavailabilityTypeIsEmpty() {
         UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
         unavailabilityDow.setDowUnavailabilityType("");
-        unavailabilityDow.setDow(Dow.MONDAY.toString());
+        unavailabilityDow.setDow(DayOfWeekUnavailable.MONDAY.toString());
         Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -360,8 +360,8 @@ class EnumPatternValidatorTest {
     @Test
     void whenValidUnavailabilityDowUnavailabilityType() {
         UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-        unavailabilityDow.setDowUnavailabilityType(DowUnavailabilityType.ALL.toString());
-        unavailabilityDow.setDow(Dow.FRIDAY.toString());
+        unavailabilityDow.setDowUnavailabilityType(DayOfWeekUnAvailableType.ALL.toString());
+        unavailabilityDow.setDow(DayOfWeekUnavailable.FRIDAY.toString());
         Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
         assertTrue(violations.isEmpty());
     }

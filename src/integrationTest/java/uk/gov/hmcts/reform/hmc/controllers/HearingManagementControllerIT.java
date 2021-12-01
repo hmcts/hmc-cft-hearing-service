@@ -67,7 +67,7 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
-            .andExpect(status().is(202))
+            .andExpect(status().is(201))
             .andReturn();
     }
 
@@ -85,7 +85,7 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
-            .andExpect(status().is(202))
+            .andExpect(status().is(201))
             .andReturn();
     }
 
