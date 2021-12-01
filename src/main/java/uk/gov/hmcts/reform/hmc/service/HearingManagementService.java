@@ -7,4 +7,6 @@ public interface HearingManagementService {
     void getHearingRequest(Long hearingId, boolean isValid);
 
     void validateHearingRequest(HearingRequest hearingRequest);
+
+    void verifyAccess(String caseReference);
 }
