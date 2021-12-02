@@ -11,14 +11,11 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyGetRespon
 
 class MessageSenderToTopicConfigurationIT extends BaseTest {
 
-    private final String caseListingId = "test-listing-id";
-
     @MockBean
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
 
     @Test
     void shouldSuccessfullyProcessRequest() {
-        stubSuccessfullyGetResponseFromHmi(caseListingId);
         messageSenderToTopicConfiguration.sendMessage("Test Message");
         verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any());
     }
