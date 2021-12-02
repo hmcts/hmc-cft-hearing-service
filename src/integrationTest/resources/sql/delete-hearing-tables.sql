@@ -1,0 +1,17 @@
+DELETE FROM non_standard_durations;
+DELETE FROM required_locations;
+DELETE FROM required_facilities;
+DELETE FROM case_categories;
+DELETE FROM individual_detail;
+DELETE FROM organisation_detail;
+DELETE FROM unavailability;
+DELETE FROM contact_details;
+DELETE FROM reasonable_adjustments;
+DELETE FROM contact_details;
+DELETE FROM hearing_party;
+DELETE FROM panel_requirements;
+DELETE FROM panel_authorisation_requirements;
+DELETE FROM panel_specialisms;
+DELETE FROM panel_user_requirements;
+DELETE FROM case_hearing_request;
+DELETE FROM hearing;

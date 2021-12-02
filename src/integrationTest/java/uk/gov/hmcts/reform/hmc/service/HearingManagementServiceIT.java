@@ -24,7 +24,10 @@ class HearingManagementServiceIT extends BaseTest {
 
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
 
+    private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
+
     @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void testValidateHearingRequest_WithAllMandatoryFields() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -39,6 +42,7 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void testValidateHearingRequest_WithPartyDetails() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -56,6 +60,7 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void testValidateHearingRequest_WithOutOrgDetails() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -73,6 +78,7 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void testValidateHearingRequest_WithOutIndividualDetails() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -90,7 +96,7 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
-    @Sql(INSERT_CASE_HEARING_DATA_SCRIPT)
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testDeleteHearingRequest_WithAllMandatoryFields() {
         DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
         hearingManagementService.deleteHearingRequest(2000000000L, request);
@@ -98,7 +104,7 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
-    @Sql(INSERT_CASE_HEARING_DATA_SCRIPT)
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testDeleteHearingRequest_WithNullHearingId() {
         DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> {
@@ -108,7 +114,7 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
-    @Sql(INSERT_CASE_HEARING_DATA_SCRIPT)
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testDeleteHearingRequest_WithHearingId_NotPresentInDB() {
         DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
         Exception exception = assertThrows(HearingNotFoundException.class, () -> {
@@ -118,7 +124,7 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
-    @Sql(INSERT_CASE_HEARING_DATA_SCRIPT)
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testDeleteHearingRequest_WithInvalidHearingIdFormat() {
         DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> {

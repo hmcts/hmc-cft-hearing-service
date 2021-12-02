@@ -54,6 +54,8 @@ class HearingManagementControllerIT extends BaseTest {
 
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
 
+    private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
+
     @Test
     @Sql(INSERT_DATA_SCRIPT)
     void shouldReturn204_WhenHearingExists() throws Exception {
@@ -82,6 +84,7 @@ class HearingManagementControllerIT extends BaseTest {
 
 
     @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn201_WhenHearingRequestIsValid() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -89,7 +92,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
         stubSuccessfullyValidateHearingObject(hearingRequest);
-        RoleAssignmentResource resource =  new RoleAssignmentResource();
+        RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(ROLE_NAME);
         resource.setRoleType(ROLE_TYPE);
         RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
@@ -114,6 +117,7 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn201_WhenHearingRequestHasPartyDetails() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -124,7 +128,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         stubSuccessfullyValidateHearingObject(hearingRequest);
-        RoleAssignmentResource resource =  new RoleAssignmentResource();
+        RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(ROLE_NAME);
         resource.setRoleType(ROLE_TYPE);
         RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
@@ -211,7 +215,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
         stubSuccessfullyValidateHearingObject(hearingRequest);
-        List<RoleAssignmentResource> resourceList =  new ArrayList<>();
+        List<RoleAssignmentResource> resourceList = new ArrayList<>();
         RoleAssignmentResponse roleAssignmentResponse = new RoleAssignmentResponse();
         roleAssignmentResponse.setRoleAssignments(resourceList);
         stubReturn200RoleAssignments(USER_ID, roleAssignmentResponse);
@@ -219,7 +223,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect((status().is(403)))
-            .andExpect(jsonPath("$.errors",hasItem(String.format(ROLE_ASSIGNMENTS_NOT_FOUND,  USER_ID))))
+            .andExpect(jsonPath("$.errors", hasItem(String.format(ROLE_ASSIGNMENTS_NOT_FOUND, USER_ID))))
             .andReturn();
     }
 
@@ -231,7 +235,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
         stubSuccessfullyValidateHearingObject(hearingRequest);
-        RoleAssignmentResource resource =  new RoleAssignmentResource();
+        RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName("invalid");
         resource.setRoleType(ROLE_TYPE);
         List<RoleAssignmentResource> roleAssignmentList = new ArrayList<>();
@@ -243,7 +247,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect((status().is(403)))
-            .andExpect(jsonPath("$.errors",hasItem(ROLE_ASSIGNMENT_INVALID_ROLE)))
+            .andExpect(jsonPath("$.errors", hasItem(ROLE_ASSIGNMENT_INVALID_ROLE)))
             .andReturn();
     }
 
@@ -255,7 +259,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
         stubSuccessfullyValidateHearingObject(hearingRequest);
-        RoleAssignmentResource resource =  new RoleAssignmentResource();
+        RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(ROLE_NAME);
         resource.setRoleType(ROLE_TYPE);
         RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
@@ -272,7 +276,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(403))
-            .andExpect(jsonPath("$.errors",hasItem(CASE_NOT_FOUND)))
+            .andExpect(jsonPath("$.errors", hasItem(CASE_NOT_FOUND)))
             .andReturn();
     }
 
@@ -284,7 +288,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
         stubSuccessfullyValidateHearingObject(hearingRequest);
-        RoleAssignmentResource resource =  new RoleAssignmentResource();
+        RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(ROLE_NAME);
         resource.setRoleType(ROLE_TYPE);
         RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
@@ -305,12 +309,12 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(403))
-            .andExpect(jsonPath("$.errors",hasItem(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES)))
+            .andExpect(jsonPath("$.errors", hasItem(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES)))
             .andReturn();
     }
 
     @Test
-    @Sql(INSERT_CASE_HEARING_DATA_SCRIPT)
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn404_WhenDeleteHearingIdIsInValid() throws Exception {
         mockMvc.perform(delete(url + "/2000000001")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -320,7 +324,7 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(INSERT_CASE_HEARING_DATA_SCRIPT)
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn200_WhenDeleteHearingIdIsInValid() throws Exception {
         mockMvc.perform(delete(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -330,7 +334,7 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(INSERT_CASE_HEARING_DATA_SCRIPT)
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn400_WhenDeleteHearingIdIsNonNumeric() throws Exception {
         mockMvc.perform(delete(url + "/200000000P")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
