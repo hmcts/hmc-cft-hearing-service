@@ -40,4 +40,27 @@ class ApplicationParamsTest {
         ReflectionTestUtils.setField(applicationParams, "externalConnectionString", VALUE);
         assertEquals(VALUE, applicationParams.getExternalConnectionString());
     }
+
+    @Test
+    void shouldGetRoleAssignmentServiceHost() {
+        final var roleAssignmentServiceHost = "test-value";
+        final var baseUrl = roleAssignmentServiceHost + "/am/role-assignments";
+
+        ReflectionTestUtils.setField(applicationParams, "roleAssignmentServiceHost", roleAssignmentServiceHost);
+
+        assertEquals(baseUrl, applicationParams.roleAssignmentBaseUrl());
+
+    }
+
+
+    @Test
+    void shouldGetAmGetRoleAssignmentsUrl() {
+        final var roleAssignmentServiceHost = "test-value";
+        final var baseUrl = roleAssignmentServiceHost + "/am/role-assignments/actors/{uid}";
+
+        ReflectionTestUtils.setField(applicationParams, "roleAssignmentServiceHost", roleAssignmentServiceHost);
+
+        assertEquals(baseUrl, applicationParams.amGetRoleAssignmentsUrl());
+
+    }
 }
