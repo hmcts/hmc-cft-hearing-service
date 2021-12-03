@@ -96,3 +96,4 @@ CREATE SEQUENCE public.hearing_attendee_details_id_seq
 ALTER SEQUENCE public.hearing_attendee_details_id_seq OWNED BY public.hearing_attendee_details.id;
 
 ALTER TABLE ONLY public.hearing_attendee_details ALTER COLUMN id SET DEFAULT nextval('public.hearing_attendee_details_id_seq'::regclass);
+
