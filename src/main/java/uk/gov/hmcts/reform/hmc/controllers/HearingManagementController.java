@@ -58,7 +58,7 @@ public class HearingManagementController {
         @ApiResponse(code = 204, message = "Hearing id is valid"),
         @ApiResponse(code = 404, message = "Invalid hearing id")
     })
-    public void getHearing(@RequestBody String json) {
+    public void getHearingTest(@RequestBody String json) {
 
         hearingManagementService.sendResponse(json);
     }

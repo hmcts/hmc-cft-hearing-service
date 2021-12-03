@@ -1,13 +1,18 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
@@ -23,6 +28,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.util.ArrayList;
@@ -32,8 +38,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
@@ -58,22 +67,32 @@ class HearingManagementServiceTest {
     @Mock
     private SecurityUtils securityUtils;
 
-
     @Mock
     private HearingMapper hearingMapper;
 
     @Mock
     HearingRepository hearingRepository;
 
+    @Mock
+    private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
+
+    @Mock
+    private ObjectMapperService objectMapperService;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         hearingManagementService =
-            new HearingManagementServiceImpl(roleAssignmentService,
-                                             securityUtils,
-                                             dataStoreRepository,
-                                             hearingRepository,
-                                             hearingMapper);
+            new HearingManagementServiceImpl(
+                roleAssignmentService,
+                securityUtils,
+                dataStoreRepository,
+                hearingRepository,
+                hearingMapper,
+                messageSenderToTopicConfiguration,
+                objectMapperService
+            );
+
     }
 
     public static final String JURISDICTION = "Jurisdiction1";
@@ -82,6 +101,16 @@ class HearingManagementServiceTest {
     public static final String ROLE_NAME = "Hearing Manage";
     public static final String ROLE_TYPE = "ORGANISATION";
 
+    @Test
+    void shouldVerifySubsequentCalls() throws JsonProcessingException {
+        String json = "{\"query\": {\"match\": \"blah blah\"}}";
+        JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+        when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode);
+        doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any());
+        hearingManagementService.sendResponse(json);
+        verify(objectMapperService, times(1)).convertObjectToJsonNode(any());
+        verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any());
+    }
 
     @Test
     void shouldFailWithInvalidHearingId() {
@@ -141,7 +170,7 @@ class HearingManagementServiceTest {
         given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
         HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
-        assertEquals(VERSION_NUMBER,response.getVersionNumber());
+        assertEquals(VERSION_NUMBER, response.getVersionNumber());
         assertEquals(HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
     }
@@ -159,7 +188,7 @@ class HearingManagementServiceTest {
         given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
         HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
-        assertEquals(VERSION_NUMBER,response.getVersionNumber());
+        assertEquals(VERSION_NUMBER, response.getVersionNumber());
         assertEquals(HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
 
