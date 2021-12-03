@@ -14,7 +14,7 @@ public class UpdateRequestDetails {
     @NotNull(message = ValidationError.REQUEST_TIMESTAMP_NULL_EMPTY)
     private LocalDateTime requestTimeStamp;
 
-    @NotNull(message = ValidationError.INVALID_VERSION_NUMBER)
+    @NotNull(message = ValidationError.VERSION_NUMBER_NULL_EMPTY)
     private Integer versionNumber;
 
 }

@@ -73,7 +73,9 @@ public class HearingManagementController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = "Hearing successfully updated"),
-        @ApiResponse(code = 400, message = "Invalid hearing details found")
+        @ApiResponse(code = 400, message = "Invalid hearing details found"),
+        @ApiResponse(code = 404, message = "Hearing id not found"),
+        @ApiResponse(code = 500, message = "Error occurred on the server")
     })
     public void updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
                               @PathVariable("id") Long hearingId) {

@@ -20,6 +20,6 @@ public class DeleteHearingRequest {
     @Size(max = 100, message = CANCELLATION_REASON_CODE_MAX_LENGTH_MSG)
     private String cancellationReasonCode;
 
-    @NotNull(message = ValidationError.INVALID_VERSION_NUMBER)
+    @NotNull(message = ValidationError.VERSION_NUMBER_NULL_EMPTY)
     private Integer versionNumber;
 }

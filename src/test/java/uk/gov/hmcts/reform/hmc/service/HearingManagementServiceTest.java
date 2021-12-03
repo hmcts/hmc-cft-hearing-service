@@ -713,7 +713,7 @@ class HearingManagementServiceTest {
         Exception exception = assertThrows(BadRequestException.class, () -> {
             hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
         });
-        assertEquals("Invalid Version number", exception.getMessage());
+        assertEquals(INVALID_VERSION_NUMBER, exception.getMessage());
     }
 
     @Test
