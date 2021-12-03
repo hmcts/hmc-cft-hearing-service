@@ -34,4 +34,6 @@ public class HearingEntity {
     @OneToOne(mappedBy = "hearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private CaseHearingRequestEntity caseHearingRequest;
 
+    @OneToOne(mappedBy = "hearing")
+    private HearingResponseEntity hearingResponseEntity;
 }
