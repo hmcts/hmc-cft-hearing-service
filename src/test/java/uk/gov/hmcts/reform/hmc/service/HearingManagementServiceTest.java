@@ -762,8 +762,9 @@ class HearingManagementServiceTest {
     void updateHearingRequestShouldThrowErrorWhenVersionNumberDoesNotMatchRequest() {
         when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(2);
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-            .updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest()));
+            .updateHearingRequest(2000000000L, updateHearingRequest));
         assertEquals(INVALID_VERSION_NUMBER, exception.getMessage());
     }
 
@@ -899,30 +900,34 @@ class HearingManagementServiceTest {
 
     @Test
     void updateHearingRequestShouldThrowErrorWhenHearingIdIsNull() {
+        UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-            .updateHearingRequest(null, TestingUtil.updateHearingRequest()));
+            .updateHearingRequest(null, updateHearingRequest));
         assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
     }
 
     @Test
     void updateHearingRequestShouldThrowErrorWhenHearingIdExceedsMaxLength() {
+        UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-            .updateHearingRequest(20000000001111L, TestingUtil.updateHearingRequest()));
+            .updateHearingRequest(20000000001111L, updateHearingRequest));
         assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
     }
 
     @Test
     void updateHearingRequestShouldThrowErrorWhenHearingIdDoesNotStartWith2() {
+        UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-            .updateHearingRequest(1000000100L, TestingUtil.updateHearingRequest()));
+            .updateHearingRequest(1000000100L, updateHearingRequest));
         assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
     }
 
     @Test
     void updateHearingRequestShouldThrowErrorWhenHearingIdNotPresentInDB() {
         when(hearingRepository.existsById(2000000000L)).thenReturn(false);
+        UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
         Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
-            .updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest()));
+            .updateHearingRequest(2000000000L, updateHearingRequest));
         assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
     }
 }
