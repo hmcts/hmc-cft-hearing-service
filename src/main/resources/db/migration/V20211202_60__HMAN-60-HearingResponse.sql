@@ -3,7 +3,7 @@ CREATE TABLE public.hearing_response (
                          hearing_id bigint not null,
                          received_date_time timestamp without time zone not null,
                          listing_status varchar(60) not null,
-                         lisitng_case_status varchar(60) not null
+                         listing_case_status varchar(60) not null
 );
 
 ALTER TABLE ONLY public.hearing_response
