@@ -20,10 +20,10 @@ public class HearingDaySchedule {
     @NotNull
     private LocalDateTime hearingEndDateTime;
 
-    @JsonProperty("ListAssistSessionID")
+    @JsonProperty("listAssistSessionID")
     @Size(max = 60)
     @NotNull
-    private String listAssistSessionID;
+    private String listAssistSessionId;
 
     @Size(max = 60)
     @NotNull
@@ -35,7 +35,7 @@ public class HearingDaySchedule {
 
     @Size(max = 60)
     @NotNull
-    private String hearingPanel;
+    private String hearingJudgeId;
 
     @Valid
     @NotNull

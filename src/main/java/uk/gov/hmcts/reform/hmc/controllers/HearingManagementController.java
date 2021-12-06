@@ -58,9 +58,9 @@ public class HearingManagementController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Hearing details retrieved successfully")
     })
-    public GetHearingsResponse getHearings(@RequestParam(value = "CaseRef") String caseReference,
+    public GetHearingsResponse getHearings(@PathVariable("CaseRef")  String caseReference,
                                            @RequestParam(required = false) String status) {
-        hearingManagementService.verifyAccess(caseReference);
+      //  hearingManagementService.verifyAccess(caseReference);
         return hearingManagementService.getHearings(caseReference, status);
     }
 }
