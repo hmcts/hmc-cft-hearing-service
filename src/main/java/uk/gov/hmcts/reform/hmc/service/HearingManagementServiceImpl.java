@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
@@ -78,6 +79,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateHearingRequest(hearingRequest);
         return insertHearingRequest(hearingRequest);
     }
+
+
 
     private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
         HearingEntity savedEntity = saveHearingDetails(hearingRequest);
@@ -165,6 +168,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                 throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
             }
         }
+    }
+
+    @Override
+    public GetHearingsResponse getHearings(String caseReference, String status) {
+        return null;
     }
 
     @SuppressWarnings("java:S2789")

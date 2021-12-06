@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
@@ -50,5 +51,16 @@ public class HearingManagementController {
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(hearingRequest);
         hearingManagementService.verifyAccess(hearingRequest.getCaseDetails().getCaseRef());
         return hearingResponse;
+    }
+
+    @GetMapping(path = "/hearings", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Hearing details retrieved successfully")
+    })
+    public GetHearingsResponse getHearings(@RequestParam(value = "CaseRef") String caseReference,
+                                           @RequestParam(required = false) String status) {
+        hearingManagementService.verifyAccess(caseReference);
+        return hearingManagementService.getHearings(caseReference, status);
     }
 }
