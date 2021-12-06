@@ -32,7 +32,7 @@ public class HearingDayDetailsEntity {
     private Long hearingDayId;
 
     @Column(name = "start_date_time", nullable = false)
-    private LocalDateTime startDate_time;
+    private LocalDateTime startDateTime;
 
     @Column(name = "end_date_time", nullable = false)
     private LocalDateTime endDateTime;
