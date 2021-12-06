@@ -17,14 +17,14 @@ public class HearingResponsePactUtil {
         + "EXCEPTION";
 
     private HearingResponsePactUtil() {
-        //not called
     }
 
     /**
      * generate Pact JSON body.
+     *
      * @return PactDslJsonBody Pact Dsl JSON body
      */
-    public static PactDslJsonBody generateCreateHearingJsonBody(String statusMessage) {
+    public static PactDslJsonBody genericCreateHearingJsonBody(String statusMessage) {
         // Build structural parts of the JSON body
         PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
 
@@ -35,11 +35,39 @@ public class HearingResponsePactUtil {
             .stringType("hearingRequestID")
             .stringMatcher("status", STATUS_OPTIONS_STRING,"HEARING REQUESTED")
             .timestamp("timeStamp", FORMATYYYYMMDDHHMMSSSSSSZ, Instant.parse("2021-10-29T01:23:34.123456Z"))
+            .asBody();
+
+        return pactDslJsonBody;
+    }
+
+    /**
+     * generate Pact JSON body.
+     *
+     * @return PactDslJsonBody Pact Dsl JSON body
+     */
+    public static PactDslJsonBody generateCreateHearingByPostJsonBody(String statusMessage) {
+        // Build structural parts of the JSON body
+        PactDslJsonBody pactDslJsonBody = genericCreateHearingJsonBody(statusMessage);
+
+        // return constructed body
+        logger.info("pactDslJsonBody (CreateHearingByPost): {}", pactDslJsonBody);
+        return pactDslJsonBody;
+    }
+
+    /**
+     * generate Pact JSON body.
+     * @return PactDslJsonBody Pact Dsl JSON body
+     */
+    public static PactDslJsonBody generateCreateHearingByPutJsonBody(String statusMessage) {
+        // Build structural parts of the JSON body
+        PactDslJsonBody pactDslJsonBody = genericCreateHearingJsonBody(statusMessage);
+
+        pactDslJsonBody
             .integerType("versionNumber")
             .asBody();
 
         // return constructed body
-        logger.info("pactDslJsonBody: {}", pactDslJsonBody);
+        logger.info("pactDslJsonBody (CreateHearingByPut): {}", pactDslJsonBody);
         return pactDslJsonBody;
     }
 
