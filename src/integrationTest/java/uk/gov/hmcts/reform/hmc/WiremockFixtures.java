@@ -102,7 +102,7 @@ public class WiremockFixtures {
     }
 
     public static void stubSuccessfullyGetResponseFromHmi(String json) {
-        stubFor(WireMock.put(urlEqualTo("/hearing/"))
+        stubFor(WireMock.put(urlEqualTo("/hearing-test/"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .withRequestBody(
