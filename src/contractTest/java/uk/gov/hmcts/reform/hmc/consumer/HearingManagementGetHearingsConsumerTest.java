@@ -31,6 +31,7 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
     private static final String INVALID_CASE_REF = "9372710950276230";
 
     private static final String FIELD_STATUS = "status";
+    private static final String BAD_REQUEST = "BAD_REQUEST";
 
     static Map<String, String> headers = Map.of(
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,
@@ -50,7 +51,7 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
             .uponReceiving("Request to GET hearings for given valid case ref and (optionally) case status")
                 .path(PATH_HEARINGS + "/" + VALID_CASE_REF)
                 .method(HttpMethod.GET.toString())
-                .query("status=UPDATED")
+                .query(FIELD_STATUS + "=" + VALID_CASE_STATUS)
                 .headers(headers)
                 .willRespondWith()
                 .status(HttpStatus.OK.value())
@@ -72,13 +73,13 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
             .uponReceiving("Request to GET hearings for given invalid case ref")
             .path("/hearings/" + INVALID_CASE_REF)
             .method(HttpMethod.GET.toString())
-            .query("status=UPDATED")
+            .query(FIELD_STATUS + "=" + VALID_CASE_STATUS)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.BAD_REQUEST.value())
             .body(new PactDslJsonBody()
                       .stringType("message", HearingManagementController.MSG_400_GET_HEARINGS)
-                      .stringValue(FIELD_STATUS, "BAD_REQUEST")
+                      .stringValue(FIELD_STATUS, BAD_REQUEST)
                       .eachLike("errors", 1)
                       .closeArray())
             .toPact();
@@ -133,6 +134,5 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
             .body()
             .jsonPath();
     }
-
 
 }
