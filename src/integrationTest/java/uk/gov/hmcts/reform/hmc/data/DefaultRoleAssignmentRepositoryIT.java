@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
@@ -38,7 +39,7 @@ class DefaultRoleAssignmentRepositoryIT extends BaseTest {
     @MockBean
     private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
 
-    @MockBean
+    @Autowired
     private ApplicationParams applicationParams;
 
     private static final String ID = "4d96923f-891a-4cb1-863e-9bec44d1689d";
