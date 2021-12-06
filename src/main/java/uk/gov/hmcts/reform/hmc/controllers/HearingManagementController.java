@@ -60,7 +60,6 @@ public class HearingManagementController {
     })
     public GetHearingsResponse getHearings(@PathVariable("CaseRef")  String caseReference,
                                            @RequestParam(required = false) String status) {
-      //  hearingManagementService.verifyAccess(caseReference);
         return hearingManagementService.getHearings(caseReference, status);
     }
 }
