@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.hmc.config;
 
+import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
@@ -16,8 +18,11 @@ class MessageSenderToTopicConfigurationIT extends BaseTest {
     @MockBean
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
 
-    @Autowired
+    @MockBean
     private ApplicationParams applicationParams;
+
+    @Mock
+    ServiceBusSenderClient serviceBusSenderClient;
 
     @Test
     void shouldSuccessfullyProcessRequest() {
