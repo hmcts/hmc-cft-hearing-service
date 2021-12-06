@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.hmc.config;
 import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
@@ -26,9 +25,9 @@ class MessageSenderToTopicConfigurationIT extends BaseTest {
 
     @Test
     void shouldSuccessfullyProcessRequest() {
-        stubSuccessfullyGetResponseFromHmi("{\n" +
-                                               "  \"test\": \"value\"\n" +
-                                               "}");
+        stubSuccessfullyGetResponseFromHmi("{\n"
+                                               + "  \"test\": \"value\"\n"
+                                               + "}");
         messageSenderToTopicConfiguration.sendMessage("Test Message");
         verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any());
     }
