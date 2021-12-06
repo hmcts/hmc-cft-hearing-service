@@ -49,7 +49,7 @@ class HearingManagementControllerIT extends BaseTest {
     @MockBean
     private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
 
-    @MockBean
+    @Autowired
     private ApplicationParams applicationParams;
 
     private String url = "/hearing";
@@ -283,8 +283,6 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
-    //Disabling tests due to frequent intermittent failures
-    @Disabled
     @Test
     void shouldReturn403WhenRoleAssignmentDoesNotMatchCaseDetails() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
