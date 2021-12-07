@@ -117,6 +117,19 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
+    /**
+     * validate Get Hearing Request by caseRefId or caseRefId/caseStatus.
+     * @param caseRef case Ref
+     * @param status status
+     * @return HearingRequest HearingRequest
+     */
+    @Override
+    public HearingRequest validateGetHearingsRequest(String caseRef, String status) {
+        log.info("caseRef:{} ; status:{}", caseRef, status);
+        // TODO: select hearing request from given caseRefId and status (if any)
+        return new HearingRequest();
+    }
+
     private void validatePartyDetails(List<PartyDetails> partyDetails) {
         for (PartyDetails partyDetail : partyDetails) {
             if ((partyDetail.getIndividualDetails() != null && partyDetail.getOrganisationDetails() != null)
