@@ -69,11 +69,19 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return toResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
     }
 
+    @ExceptionHandler(HearingNotFoundException.class)
+    protected ResponseEntity<Object> handleHearingNotFoundException(HearingNotFoundException ex) {
+        log.debug("HearingNotFoundException:{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<Object> handleConstraintViolationException(Exception ex) {
         log.debug("BadRequestException:{}", ex.getLocalizedMessage());
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
+
+
 
     private ResponseEntity<Object> toResponseEntity(HttpStatus status, String... errors) {
         var apiError = new ApiError(status, errors == null ? null : List.of(errors));

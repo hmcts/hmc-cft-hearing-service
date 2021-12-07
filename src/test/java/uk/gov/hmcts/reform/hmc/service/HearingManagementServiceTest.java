@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -65,15 +66,21 @@ class HearingManagementServiceTest {
     @Mock
     HearingRepository hearingRepository;
 
+    @Mock
+    CaseHearingRequestRepository caseHearingRequestRepository;
+
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         hearingManagementService =
-            new HearingManagementServiceImpl(roleAssignmentService,
-                                             securityUtils,
-                                             dataStoreRepository,
-                                             hearingRepository,
-                                             hearingMapper);
+            new HearingManagementServiceImpl(
+                roleAssignmentService,
+                securityUtils,
+                dataStoreRepository,
+                hearingRepository,
+                hearingMapper,
+                caseHearingRequestRepository
+            );
     }
 
     public static final String JURISDICTION = "Jurisdiction1";
@@ -141,7 +148,7 @@ class HearingManagementServiceTest {
         given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
         HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
-        assertEquals(VERSION_NUMBER,response.getVersionNumber());
+        assertEquals(VERSION_NUMBER, response.getVersionNumber());
         assertEquals(HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
     }
@@ -159,7 +166,7 @@ class HearingManagementServiceTest {
         given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
         HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
-        assertEquals(VERSION_NUMBER,response.getVersionNumber());
+        assertEquals(VERSION_NUMBER, response.getVersionNumber());
         assertEquals(HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
 
@@ -671,5 +678,57 @@ class HearingManagementServiceTest {
             hearingManagementService.verifyAccess(CASE_REFERENCE);
         });
         assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
+    }
+
+    @Test
+    void deleteHearingRequestShouldPassWithValidDetails() {
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
+        verify(hearingRepository).existsById(2000000000L);
+        verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
+    }
+
+    @Test
+    void testExpectedException_DeleteHearing_VersionNumber_Not_Equal_To_DB_VersionNumber() {
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(2);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
+        });
+        assertEquals("Invalid Version number", exception.getMessage());
+    }
+
+    @Test
+    void testExpectedException_DeleteHearing_HearingId_NotPresent_inDB() {
+        when(hearingRepository.existsById(2000000000L)).thenReturn(false);
+        Exception exception = assertThrows(HearingNotFoundException.class, () -> {
+            hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
+        });
+        assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
+    }
+
+    @Test
+    void testExpectedException_DeleteHearing_HearingId_Null() {
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.deleteHearingRequest(null, TestingUtil.deleteHearingRequest());
+        });
+        assertEquals("Invalid hearing Id", exception.getMessage());
+    }
+
+    @Test
+    void testExpectedException_DeleteHearing_HearingId_Exceeds_MaxLength() {
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.deleteHearingRequest(20000000001111L, TestingUtil.deleteHearingRequest());
+        });
+        assertEquals("Invalid hearing Id", exception.getMessage());
+    }
+
+    @Test
+    void testExpectedException_DeleteHearing_HearingId_First_Char_Is_Not_2() {
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.deleteHearingRequest(1000000100L, TestingUtil.deleteHearingRequest());
+        });
+        assertEquals("Invalid hearing Id", exception.getMessage());
     }
 }
