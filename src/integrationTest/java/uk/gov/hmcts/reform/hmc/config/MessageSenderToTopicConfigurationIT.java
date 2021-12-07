@@ -1,11 +1,6 @@
 package uk.gov.hmcts.reform.hmc.config;
 
-import com.azure.messaging.servicebus.ServiceBusSenderClient;
-import org.junit.Ignore;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
