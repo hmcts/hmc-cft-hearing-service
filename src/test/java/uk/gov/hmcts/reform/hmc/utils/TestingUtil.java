@@ -5,6 +5,8 @@ import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
@@ -174,5 +176,12 @@ public class TestingUtil {
         individualDetails.setHearingChannelPhone("01234567890");
         return individualDetails;
 
+    }
+
+    public static DeleteHearingRequest deleteHearingRequest() {
+        DeleteHearingRequest request = new DeleteHearingRequest();
+        request.setVersionNumber(1);
+        request.setCancellationReasonCode("test");
+        return request;
     }
 }
