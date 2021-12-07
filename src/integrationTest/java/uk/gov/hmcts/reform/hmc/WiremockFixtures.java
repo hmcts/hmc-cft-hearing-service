@@ -101,16 +101,6 @@ public class WiremockFixtures {
 
     }
 
-    public static void stubSuccessfullyGetResponseFromHmi(String json) {
-        stubFor(WireMock.put(urlEqualTo("/hearing-test/"))
-                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
-                    .withRequestBody(
-                        equalToJson(
-                            getJsonString(json)))
-                    .willReturn(aResponse().withStatus(HTTP_ACCEPTED)));
-    }
-
     @SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "squid:S112"})
     // Required as wiremock's Json.getObjectMapper().registerModule(..); not working
     // see https://github.com/tomakehurst/wiremock/issues/1127
