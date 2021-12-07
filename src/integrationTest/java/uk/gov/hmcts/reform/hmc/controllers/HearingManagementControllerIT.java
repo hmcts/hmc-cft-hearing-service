@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidateHearingObject;
@@ -111,5 +112,47 @@ class HearingManagementControllerIT extends BaseTest {
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
             .andReturn();
+    }
+
+
+    @Test
+    void shouldReturn200_WhenGetHearingsForValidCaseRefLuhn() throws Exception {
+        mockMvc.perform(get("/hearings/9372710950276233")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+                        .andExpect(status().is(200))
+                        .andReturn();
+    }
+
+    @Test
+    void shouldReturn200_WhenGetHearingsForValidCaseRefLuhnAndStatus() throws Exception {
+        mockMvc.perform(get("/hearings/9372710950276233")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("status", "UPDATED"))
+                        .andExpect(status().is(200))
+                        .andReturn();
+    }
+
+    @Test
+    void shouldReturn400_WhenGetHearingsForInvalidCaseRefNonDigits() throws Exception {
+        mockMvc.perform(get("/hearings/A234567890123456")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+                        .andExpect(status().is(400))
+                        .andReturn();
+    }
+
+    @Test
+    void shouldReturn400_WhenGetHearingsForInvalidCaseRefNonLuhn() throws Exception {
+        mockMvc.perform(get("/hearings/9372710950276230")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+                        .andExpect(status().is(400))
+                        .andReturn();
+    }
+
+    @Test
+    void shouldReturn400_WhenGetHearingsForInvalidCaseRefSize() throws Exception {
+        mockMvc.perform(get("/hearings/123456")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+                        .andExpect(status().is(400))
+                        .andReturn();
     }
 }
