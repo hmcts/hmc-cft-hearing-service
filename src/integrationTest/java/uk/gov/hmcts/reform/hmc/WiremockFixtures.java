@@ -80,4 +80,5 @@ public class WiremockFixtures {
             throw new RuntimeException(e);
         }
     }
+
 }

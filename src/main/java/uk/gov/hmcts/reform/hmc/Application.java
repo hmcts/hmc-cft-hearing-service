@@ -2,11 +2,9 @@ package uk.gov.hmcts.reform.hmc;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
-@SuppressWarnings("HideUtilityClassConstructor")
-// Spring needs a constructor, it's not a utility class
+@SpringBootApplication
+@SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
 public class Application {
 
     public static void main(final String[] args) {

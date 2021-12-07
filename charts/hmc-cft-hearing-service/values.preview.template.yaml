@@ -2,8 +2,34 @@ java:
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  environment:
+    HMC_SERVICE_BUS_TOPIC: hmc-to-cft
+    HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft
+    CFT_HEARING_SERVICE_DB_HOST: "{{ .Release.Name }}-postgresql"
+    CFT_HEARING_SERVICE_DB_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
+    CFT_HEARING_SERVICE_DB_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    CFT_HEARING_SERVICE_DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
+    CFT_HEARING_SERVICE_DB_PORT: 5432
+  postgresql:
+    enabled: true
+  secrets:
+    HMC_SERVICE_BUS_CONNECTION_STRING:
+      secretRef: servicebus-secret-topic-{{ .Release.Name }}-servicebus-hmc-to-cft
+      key: connectionString
   keyVaults:
     hmc:
       resourceGroup: hmc-shared
       secrets:
         - name: AppInsightsInstrumentationKey
+
+servicebus:
+  enabled: true
+  teamName: CCD
+  resourceGroup: hmc-aks
+  serviceplan: standard
+  setup:
+    topics:
+      - name: hmc-to-cft
+    subscriptions:
+      - name: hmc-subs-to-cft
