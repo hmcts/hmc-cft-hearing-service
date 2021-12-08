@@ -121,6 +121,14 @@ public class TestingUtil {
         return individualDetails;
     }
 
+    public static IndividualDetails individualWithoutRelatedPartyDetails() {
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setTitle("Mr");
+        individualDetails.setFirstName("firstName");
+        individualDetails.setLastName("lastName");
+        return individualDetails;
+    }
+
     public static OrganisationDetails organisationDetails() {
         OrganisationDetails organisationDetails = new OrganisationDetails();
         organisationDetails.setName("name");
