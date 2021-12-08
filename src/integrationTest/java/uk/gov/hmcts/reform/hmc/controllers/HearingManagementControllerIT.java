@@ -153,7 +153,6 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn404_WhenHearingRequestHasNoRequestDetails() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
@@ -168,7 +167,6 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn404_WhenHearingRequestHasNoHearingDetails() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -182,7 +180,6 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn404_WhenHearingRequestHasNoCaseDetails() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -197,7 +194,6 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn404_WhenHearingRequestHasNoPanelDetails() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -212,7 +208,6 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn403WhenNoRoleAssignmentsFound() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -233,7 +228,6 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn403WhenRoleAssignmentsDoNotMeetCriteria() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -258,7 +252,6 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn403WhenCaseCannotBeFound() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -288,7 +281,6 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn403WhenRoleAssignmentDoesNotMatchCaseDetails() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
