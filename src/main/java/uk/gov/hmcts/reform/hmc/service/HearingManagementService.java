@@ -15,5 +15,5 @@ public interface HearingManagementService {
 
     void deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest);
 
-    GetHearingsResponse validateGetHearingsRequest(String caseRefId, String caseStatus);
+    GetHearingsResponse getHearings(String caseRefId, String caseStatus);
 }

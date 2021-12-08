@@ -13,12 +13,12 @@ import javax.validation.constraints.NotNull;
 public class GetHearingsResponse {
 
     @JsonProperty("hmctsServiceID")
-    private String hmctsServiceCode;
+    private String hmctsServiceId;
 
     private String caseRef;
 
     @Valid
-    @NotNull
+    //@NotNull
     private List<CaseHearing> caseHearings;
 
 }

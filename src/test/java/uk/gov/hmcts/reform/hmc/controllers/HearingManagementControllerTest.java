@@ -144,10 +144,10 @@ class HearingManagementControllerTest {
     void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhn() throws Exception {
         final String validCaseRef = "9372710950276233";
         doReturn(TestingUtil.createHearingRequest(validCaseRef, "")).when(hearingManagementService)
-            .validateGetHearingsRequest(Mockito.any(), Mockito.any());
+            .getHearings(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        GetHearingsResponse hearingRequest = controller.getHearingsRequest(validCaseRef, null);
-        verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());
+        GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, null);
+        verify(hearingManagementService, times(1)).getHearings(any(), any());
         assertTrue(hearingRequest.getCaseRef().equals(validCaseRef));
     }
 
@@ -156,14 +156,11 @@ class HearingManagementControllerTest {
         final String validCaseRef = "9372710950276233";
         final String status = "UPDATED"; // for example
         doReturn(TestingUtil.createHearingRequest(validCaseRef, status)).when(hearingManagementService)
-            .validateGetHearingsRequest(Mockito.any(), Mockito.any());
+            .getHearings(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        GetHearingsResponse hearingRequest = controller.getHearingsRequest(validCaseRef, status);
-        verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());
+        GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, status);
+        verify(hearingManagementService, times(1)).getHearings(any(), any());
         assertTrue(hearingRequest.getCaseRef().equals(validCaseRef));
     }
-
-
-
 
 }

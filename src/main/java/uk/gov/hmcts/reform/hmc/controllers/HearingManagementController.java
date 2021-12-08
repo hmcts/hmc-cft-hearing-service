@@ -94,7 +94,7 @@ public class HearingManagementController {
         @ApiResponse(code = 200, message = "Success (with content)"),
         @ApiResponse(code = 400, message = "Invalid request")
     })
-    public GetHearingsResponse getHearingsRequest(@PathVariable("ccdCaseRef")
+    public GetHearingsResponse getHearings(@PathVariable("ccdCaseRef")
                                              @Valid
                                              @NotEmpty(message = CASE_REF_EMPTY)
                                              @Size(min = 16, max = 16, message = CASE_REF_INVALID_LENGTH)
@@ -102,6 +102,6 @@ public class HearingManagementController {
                                                  String ccdCaseRef,
                                                   @RequestParam(required = false)
                                                  String status) {
-        return hearingManagementService.validateGetHearingsRequest(ccdCaseRef, status);
+        return hearingManagementService.getHearings(ccdCaseRef, status);
     }
 }

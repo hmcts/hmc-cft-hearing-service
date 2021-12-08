@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
@@ -125,10 +126,18 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      * @return HearingRequest HearingRequest
      */
     @Override
-    public GetHearingsResponse validateGetHearingsRequest(String caseRef, String status) {
+    public GetHearingsResponse getHearings(String caseRef, String status) {
         log.info("caseRef:{} ; status:{}", caseRef, status);
-        // TODO: select hearing request from given caseRefId and status (if any)
-        return new GetHearingsResponse();
+        CaseHearingRequestEntity entity = caseHearingRequestRepository.getHearingDetails(caseRef);
+
+        return getHearingResponseDetails(entity);
+    }
+
+    private GetHearingsResponse getHearingResponseDetails(CaseHearingRequestEntity entity) {
+        GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
+        getHearingsResponse.setCaseRef(entity.getCaseReference());
+        getHearingsResponse.setHmctsServiceId(entity.getHmctsServiceID());
+        return getHearingsResponse;
     }
 
     private void validatePartyDetails(List<PartyDetails> partyDetails) {
