@@ -14,6 +14,6 @@ public interface CaseHearingRequestRepository extends CrudRepository<CaseHearing
     @Query("SELECT versionNumber from CaseHearingRequestEntity where hearing.id = :hearingId")
     Integer getVersionNumber(Long hearingId);
 
-    @Query("SELECT hmctsServiceID,caseReference,hearingRequestReceivedDateTime,hearingType  from CaseHearingRequestEntity where caseReference = :caseRef")
+    @Query("SELECT csr from CaseHearingRequestEntity csr LEFT JOIN FETCH csr.hearing WHERE csr.caseReference = :caseRef")
     CaseHearingRequestEntity getHearingDetails(String caseRef);
 }

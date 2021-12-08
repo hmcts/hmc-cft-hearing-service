@@ -127,7 +127,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      */
     @Override
     public GetHearingsResponse getHearings(String caseRef, String status) {
-        log.info("caseRef:{} ; status:{}", caseRef, status);
+       // log.info("caseRef:{} ; status:{}", caseRef, status);
         CaseHearingRequestEntity entity = caseHearingRequestRepository.getHearingDetails(caseRef);
 
         return getHearingResponseDetails(entity);
