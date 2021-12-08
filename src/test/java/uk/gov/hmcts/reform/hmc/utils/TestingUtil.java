@@ -3,10 +3,14 @@ package uk.gov.hmcts.reform.hmc.utils;
 import org.assertj.core.util.Lists;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.model.Attendees;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
@@ -183,5 +187,33 @@ public class TestingUtil {
         request.setVersionNumber(1);
         request.setCancellationReasonCode("test");
         return request;
+    }
+
+    public static GetHearingsResponse createHearingRequest(String caseRef, String status) {
+        GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
+        getHearingsResponse.setCaseRef("9372710950276233");
+        getHearingsResponse.setHmctsServiceCode("AB1A");
+        CaseHearing caseHearing = new CaseHearing();
+        caseHearing.setHearingId("hearingId");
+        caseHearing.setHearingRequestDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        caseHearing.setHearingType("45YAO6VflHAmYy7N85fv");
+        caseHearing.setHmcStatus("HEARING REQUESTED");
+        caseHearing.setLastResponseReceivedDateTime(LocalDateTime.parse("2020-08-10T12:20:00"));
+        caseHearing.setListAssistCaseStatus("EXCEPTION");
+        List<CaseHearing> caseHearingList = new ArrayList<>();
+        caseHearingList.add(caseHearing);
+        HearingDaySchedule schedule = new HearingDaySchedule();
+        schedule.setHearingStartDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        schedule.setHearingEndDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        schedule.setListAssistSessionId("jvjyVv8aecmpBgo3RnGb");
+        schedule.setHearingVenueId("venue");
+        schedule.setHearingRoomId("room1");
+        schedule.setHearingJudgeId("judge1");
+        Attendees attendees = new Attendees();
+        attendees.setPartyId("partyId1");
+        attendees.setHearingSubChannel("subChannel1");
+        List<Attendees> attendeesList = new ArrayList<>();
+        attendeesList.add(attendees);
+        return getHearingsResponse;
     }
 }

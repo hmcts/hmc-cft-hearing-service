@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
@@ -124,10 +125,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      * @return HearingRequest HearingRequest
      */
     @Override
-    public HearingRequest validateGetHearingsRequest(String caseRef, String status) {
+    public GetHearingsResponse validateGetHearingsRequest(String caseRef, String status) {
         log.info("caseRef:{} ; status:{}", caseRef, status);
         // TODO: select hearing request from given caseRefId and status (if any)
-        return new HearingRequest();
+        return new GetHearingsResponse();
     }
 
     private void validatePartyDetails(List<PartyDetails> partyDetails) {

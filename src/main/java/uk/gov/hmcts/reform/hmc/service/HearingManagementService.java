@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.service;
 
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 
@@ -14,5 +15,5 @@ public interface HearingManagementService {
 
     void deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest);
 
-    HearingRequest validateGetHearingsRequest(String caseRefId, String caseStatus);
+    GetHearingsResponse validateGetHearingsRequest(String caseRefId, String caseStatus);
 }
