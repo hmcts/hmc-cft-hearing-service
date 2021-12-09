@@ -155,7 +155,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
-    void shouldReturn404_WhenHearingRequestHasNoRequestDetails() throws Exception {
+    void shouldReturn400_WhenHearingRequestHasNoRequestDetails() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
@@ -170,7 +170,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
-    void shouldReturn404_WhenHearingRequestHasNoHearingDetails() throws Exception {
+    void shouldReturn400_WhenHearingRequestHasNoHearingDetails() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
@@ -184,7 +184,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
-    void shouldReturn404_WhenHearingRequestHasNoCaseDetails() throws Exception {
+    void shouldReturn400_WhenHearingRequestHasNoCaseDetails() throws Exception {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
@@ -204,6 +204,25 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        stubReturn400WhileValidateHearingObject(hearingRequest);
+        mockMvc.perform(post(url)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(400))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void shouldReturn400_WhenHearingRequestHasNoRelatedPartyDetails() throws Exception {
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.relatedPartyMandatoryFieldMissing());
         stubReturn400WhileValidateHearingObject(hearingRequest);
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
