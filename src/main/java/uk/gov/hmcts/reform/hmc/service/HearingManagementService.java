@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.service;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 
 public interface HearingManagementService {
 
@@ -15,4 +16,7 @@ public interface HearingManagementService {
     void deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest);
 
     HearingRequest validateGetHearingsRequest(String caseRefId, String caseStatus);
+
+    void updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest);
+
 }

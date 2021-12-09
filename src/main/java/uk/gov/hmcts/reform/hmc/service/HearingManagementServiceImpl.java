@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 
@@ -89,6 +90,26 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         return insertHearingRequest(hearingRequest);
     }
 
+    @Override
+    public void updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
+        validateHearingRequest(hearingRequest);
+        validateHearingId(hearingId);
+        validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
+    }
+
+    /**
+     * validate Get Hearing Request by caseRefId or caseRefId/caseStatus.
+     * @param caseRef case Ref
+     * @param status status
+     * @return HearingRequest HearingRequest
+     */
+    @Override
+    public HearingRequest validateGetHearingsRequest(String caseRef, String status) {
+        log.info("caseRef:{} ; status:{}", caseRef, status);
+        // TODO: select hearing request from given caseRefId and status (if any)
+        return new HearingRequest();
+    }
+
     private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
         HearingEntity savedEntity = saveHearingDetails(hearingRequest);
         return getSaveHearingResponseDetails(savedEntity);
@@ -117,17 +138,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    /**
-     * validate Get Hearing Request by caseRefId or caseRefId/caseStatus.
-     * @param caseRef case Ref
-     * @param status status
-     * @return HearingRequest HearingRequest
-     */
-    @Override
-    public HearingRequest validateGetHearingsRequest(String caseRef, String status) {
-        log.info("caseRef:{} ; status:{}", caseRef, status);
-        // TODO: select hearing request from given caseRefId and status (if any)
-        return new HearingRequest();
+    private void validateHearingRequest(UpdateHearingRequest hearingRequest) {
+        validateHearingRequestDetails(hearingRequest);
+        validateHearingDetails(hearingRequest.getHearingDetails());
+        if (hearingRequest.getPartyDetails() != null) {
+            validatePartyDetails(hearingRequest.getPartyDetails());
+        }
     }
 
     private void validatePartyDetails(List<PartyDetails> partyDetails) {
@@ -151,6 +167,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validateHearingRequestDetails(HearingRequest hearingRequest) {
+        if (hearingRequest.getRequestDetails() == null
+            && hearingRequest.getHearingDetails() == null
+            && hearingRequest.getCaseDetails() == null) {
+            throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
+        }
+    }
+
+    private void validateHearingRequestDetails(UpdateHearingRequest hearingRequest) {
         if (hearingRequest.getRequestDetails() == null
             && hearingRequest.getHearingDetails() == null
             && hearingRequest.getCaseDetails() == null) {
@@ -249,7 +273,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                 throw new HearingNotFoundException(hearingId);
             }
         }
-
     }
 
     private void isValidFormat(String hearingIdStr) {

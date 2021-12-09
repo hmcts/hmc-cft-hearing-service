@@ -179,4 +179,11 @@ class HearingManagementControllerTest {
     }
 
 
+    @Test
+    void shouldCallUpdateHearingRequest() {
+        doNothing().when(hearingManagementService).updateHearingRequest(Mockito.any(), Mockito.any());
+        HearingManagementController controller = new HearingManagementController(hearingManagementService);
+        controller.updateHearing(null, 1234L);
+        verify(hearingManagementService, times(1)).updateHearingRequest(any(), any());
+    }
 }

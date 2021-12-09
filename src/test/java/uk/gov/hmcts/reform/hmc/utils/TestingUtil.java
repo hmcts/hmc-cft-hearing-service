@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
@@ -16,6 +15,8 @@ import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
+import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.UpdateRequestDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -204,4 +205,17 @@ public class TestingUtil {
         request.setCancellationReasonCode("test");
         return request;
     }
+
+    public static UpdateHearingRequest updateHearingRequest() {
+        UpdateHearingRequest request = new UpdateHearingRequest();
+        request.setHearingDetails(hearingDetails());
+        request.setCaseDetails(caseDetails());
+        request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        UpdateRequestDetails requestDetails = new UpdateRequestDetails();
+        requestDetails.setRequestTimeStamp(LocalDateTime.now());
+        requestDetails.setVersionNumber(1);
+        request.setRequestDetails(requestDetails);
+        return request;
+    }
+
 }
