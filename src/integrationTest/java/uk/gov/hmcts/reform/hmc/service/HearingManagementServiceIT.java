@@ -96,6 +96,25 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void testValidateHearingRequest_WithOutRelatedPartyDetails() {
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setIndividualDetails(
+            TestingUtil.individualWithoutRelatedPartyDetails());
+        hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
+        assertEquals(VERSION_NUMBER,response.getVersionNumber());
+        assertEquals(HEARING_STATUS, response.getStatus());
+        assertNotNull(response.getHearingRequestId());
+        assertNotNull(response.getTimeStamp());
+    }
+
+    @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testDeleteHearingRequest_WithAllMandatoryFields() {
         DeleteHearingRequest request = TestingUtil.deleteHearingRequest();

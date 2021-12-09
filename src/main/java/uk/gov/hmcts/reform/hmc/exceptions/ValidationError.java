@@ -33,6 +33,7 @@ public final class ValidationError {
     public static final String HMCTS_SERVICE_CODE_EMPTY_INVALID = "Hmcts service code is invalid";
     public static final String CASE_REF_EMPTY = "Case ref can not be empty";
     public static final String CASE_REF_INVALID = "Case ref details is invalid";
+    public static final String CASE_REF_INVALID_LENGTH = "Case ref has invalid length";
     public static final String REQUEST_TIMESTAMP_EMPTY = "Request time stamp can not be empty";
     public static final String EXTERNAL_CASE_REFERENCE_MAX_LENGTH = "External case reference must not be more than 70 "
         + CHARACTERS_LONG;

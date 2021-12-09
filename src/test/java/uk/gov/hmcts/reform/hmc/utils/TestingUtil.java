@@ -122,6 +122,26 @@ public class TestingUtil {
         return individualDetails;
     }
 
+    public static IndividualDetails relatedPartyMandatoryFieldMissing() {
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setTitle("Mr");
+        individualDetails.setFirstName("firstName");
+        individualDetails.setLastName("lastName");
+        List<RelatedParty> relatedParties = new ArrayList<>();
+        RelatedParty relatedParty1 = new RelatedParty();
+        relatedParties.add(relatedParty1);
+        individualDetails.setRelatedParties(relatedParties);
+        return individualDetails;
+    }
+
+    public static IndividualDetails individualWithoutRelatedPartyDetails() {
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setTitle("Mr");
+        individualDetails.setFirstName("firstName");
+        individualDetails.setLastName("lastName");
+        return individualDetails;
+    }
+
     public static OrganisationDetails organisationDetails() {
         OrganisationDetails organisationDetails = new OrganisationDetails();
         organisationDetails.setName("name");
