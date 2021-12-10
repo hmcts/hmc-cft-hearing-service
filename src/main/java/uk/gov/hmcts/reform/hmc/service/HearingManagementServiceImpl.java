@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 
@@ -94,6 +95,26 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
         validateHearingRequest(hearingRequest);
         return insertHearingRequest(hearingRequest);
+    }
+
+    @Override
+    public void updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
+        validateHearingRequest(hearingRequest);
+        validateHearingId(hearingId);
+        validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
+    }
+
+    /**
+     * validate Get Hearing Request by caseRefId or caseRefId/caseStatus.
+     * @param caseRef case Ref
+     * @param status status
+     * @return HearingRequest HearingRequest
+     */
+    @Override
+    public HearingRequest validateGetHearingsRequest(String caseRef, String status) {
+        log.info("caseRef:{} ; status:{}", caseRef, status);
+        // TODO: select hearing request from given caseRefId and status (if any)
+        return new HearingRequest();
     }
 
     private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
@@ -325,7 +346,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                 throw new HearingNotFoundException(hearingId);
             }
         }
-
     }
 
     private void isValidFormat(String hearingIdStr) {

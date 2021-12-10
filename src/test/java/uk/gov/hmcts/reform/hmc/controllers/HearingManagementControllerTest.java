@@ -61,8 +61,7 @@ class HearingManagementControllerTest {
     private static final MediaType JSON_CONTENT_TYPE = new MediaType(
         MediaType.APPLICATION_JSON.getType(),
         MediaType.APPLICATION_JSON.getSubtype(),
-        Charset.forName("utf8")
-    );
+        Charset.forName("utf8"));
 
     @Test
     void shouldReturn400_whenRequest_Details_Are_NotPresent() {
@@ -163,4 +162,20 @@ class HearingManagementControllerTest {
         assertTrue(hearingRequest.getCaseRef().equals(validCaseRef));
     }
 
+    private HearingRequest createHearingRequest(String caseRef, String status) {
+        HearingRequest hearingRequest = new HearingRequest();
+        CaseDetails caseDetails = new CaseDetails();
+        caseDetails.setCaseRef(caseRef);
+        hearingRequest.setCaseDetails(caseDetails);
+        return hearingRequest;
+    }
+
+
+    @Test
+    void shouldCallUpdateHearingRequest() {
+        doNothing().when(hearingManagementService).updateHearingRequest(Mockito.any(), Mockito.any());
+        HearingManagementController controller = new HearingManagementController(hearingManagementService);
+        controller.updateHearing(null, 1234L);
+        verify(hearingManagementService, times(1)).updateHearingRequest(any(), any());
+    }
 }
