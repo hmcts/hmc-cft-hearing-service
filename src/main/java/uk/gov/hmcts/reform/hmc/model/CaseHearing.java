@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -15,7 +16,7 @@ public class CaseHearing {
     @JsonProperty("hearingID")
     @Size(max = 60)
     @NotNull
-    private String hearingId;
+    private Long hearingId;
 
     @NotNull
     private LocalDateTime hearingRequestDateTime;
@@ -33,8 +34,16 @@ public class CaseHearing {
 
     @Size(max = 60)
     @NotNull
+    private Long responseVersion;
+
+    @Size(max = 60)
+    @NotNull
+    private String hearingListingStatus;
+
+    @Size(max = 60)
+    @NotNull
     private String listAssistCaseStatus;
 
     @NotNull
-    private HearingDaySchedule hearingDaySchedule;
+    private List<HearingDaySchedule> hearingDaySchedule;
 }

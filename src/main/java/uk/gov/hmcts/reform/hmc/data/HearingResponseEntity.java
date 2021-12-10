@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.data;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
@@ -42,6 +44,6 @@ public class HearingResponseEntity {
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
 
-    @OneToOne(mappedBy = "hearingResponse")
-    private HearingDayDetailsEntity hearingDayDetails;
+    @OneToMany(mappedBy = "hearingResponse")
+    private List<HearingDayDetailsEntity> hearingDayDetails;
 }

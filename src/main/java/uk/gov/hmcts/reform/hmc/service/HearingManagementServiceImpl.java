@@ -8,8 +8,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
@@ -19,8 +21,11 @@ import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.model.Attendees;
+import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
@@ -128,16 +133,77 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     public GetHearingsResponse getHearings(String caseRef, String status) {
        // log.info("caseRef:{} ; status:{}", caseRef, status);
-        CaseHearingRequestEntity entity = caseHearingRequestRepository.getHearingDetails(caseRef);
+        List<HearingEntity> entities1 = hearingRepository.getHearingEntityDetails(caseRef);
+        List<CaseHearingRequestEntity> entities = caseHearingRequestRepository.getHearingDetails(caseRef);
+        if(entities.size() == 0) {
+            return null;
+        }
 
-        return getHearingResponseDetails(entity);
+        return getHearingResponseDetails(entities);
     }
 
-    private GetHearingsResponse getHearingResponseDetails(CaseHearingRequestEntity entity) {
+    private GetHearingsResponse getHearingResponseDetails(List<CaseHearingRequestEntity> entities) {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
-        getHearingsResponse.setCaseRef(entity.getCaseReference());
-        getHearingsResponse.setHmctsServiceId(entity.getHmctsServiceID());
+        getHearingsResponse.setCaseRef(entities.get(0).getCaseReference());
+        getHearingsResponse.setHmctsServiceId(entities.get(0).getHmctsServiceID());
+        setCaseHearings(entities, getHearingsResponse);
         return getHearingsResponse;
+    }
+
+    private void setCaseHearings(List<CaseHearingRequestEntity> entities, GetHearingsResponse getHearingsResponse) {
+       List<CaseHearing> caseHearingList = new ArrayList<>();
+        for (CaseHearingRequestEntity entity:entities) {
+            CaseHearing caseHearing = new CaseHearing();
+            caseHearing.setHearingId(entity.getHearing().getId());
+            caseHearing.setHearingRequestDateTime(entity.getHearingRequestReceivedDateTime());
+            caseHearing.setHearingType(entity.getHearingType());
+            caseHearing.setHmcStatus(entity.getHearing().getStatus());
+
+            HearingResponseEntity hearingResponseEntity = entity.getHearing().getHearingResponse();
+            setHearingResponseDetails(caseHearing, hearingResponseEntity);
+            List<HearingDaySchedule> scheduleList = new ArrayList<>();
+
+            List<HearingDayDetailsEntity> hearingDayDetailEntities = hearingResponseEntity.getHearingDayDetails();
+            for(HearingDayDetailsEntity detailEntity : hearingDayDetailEntities){
+
+                HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
+
+                setHearingDayPanelDetails(hearingDaySchedule);
+
+                setHearingAttendeeDetails(scheduleList, hearingDaySchedule);
+            }
+            caseHearing.setHearingDaySchedule(scheduleList);
+            caseHearingList.add(caseHearing);
+        }
+        getHearingsResponse.setCaseHearings(caseHearingList);
+    }
+
+    private void setHearingResponseDetails(CaseHearing caseHearing, HearingResponseEntity hearingResponseEntity) {
+        caseHearing.setLastResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
+        caseHearing.setResponseVersion(hearingResponseEntity.getHearingResponseId());
+        caseHearing.setHearingListingStatus(hearingResponseEntity.getListingStatus());
+        caseHearing.setListAssistCaseStatus(hearingResponseEntity.getListingCaseStatus());
+    }
+
+    private HearingDaySchedule setHearingDayScheduleDetails(HearingDayDetailsEntity detailEntity) {
+        HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
+        hearingDaySchedule.setHearingStartDateTime(detailEntity.getStartDateTime());
+        hearingDaySchedule.setHearingEndDateTime(detailEntity.getEndDateTime());
+        hearingDaySchedule.setListAssistSessionId(detailEntity.getListAssistSessionId());
+        hearingDaySchedule.setHearingVenueId(detailEntity.getVenueId());
+        hearingDaySchedule.setHearingRoomId(detailEntity.getRoomId());
+        return hearingDaySchedule;
+    }
+
+    private void setHearingAttendeeDetails(List<HearingDaySchedule> scheduleList, HearingDaySchedule hearingDaySchedule) {
+        List<Attendees> attendeesList = new ArrayList<>();
+        hearingDaySchedule.setAttendees(attendeesList);
+        scheduleList.add(hearingDaySchedule);
+    }
+
+    private void setHearingDayPanelDetails(HearingDaySchedule hearingDaySchedule) {
+        List<String> hearingDayPanelList = new ArrayList<>();
+        hearingDaySchedule.setHearingJudgeId(hearingDayPanelList);
     }
 
     private void validatePartyDetails(List<PartyDetails> partyDetails) {

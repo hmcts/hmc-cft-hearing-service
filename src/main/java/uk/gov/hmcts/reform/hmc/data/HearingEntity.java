@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,9 +32,9 @@ public class HearingEntity {
     @Column(name = "status", nullable = false)
     private String status;
 
-    @OneToOne(mappedBy = "hearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToOne(mappedBy = "hearing", fetch = FetchType.EAGER,  cascade = CascadeType.PERSIST, orphanRemoval = true)
     private CaseHearingRequestEntity caseHearingRequest;
 
-    @OneToOne(mappedBy = "hearing")
-    private HearingResponseEntity hearingResponseEntity;
+    @OneToOne(mappedBy = "hearing", fetch = FetchType.EAGER,  cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private HearingResponseEntity hearingResponse;
 }
