@@ -206,6 +206,7 @@ def versions = [
 ]
 
 ext['spring-framework.version'] = '5.3.12'
+ext['log4j2.version'] = '2.15.0'
 
 // before committing a change, make sure task still works
 dependencyUpdates {
@@ -283,8 +284,6 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
 
-  compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
-  compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.1'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
   compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
