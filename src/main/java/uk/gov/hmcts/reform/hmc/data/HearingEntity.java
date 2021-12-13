@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,11 +10,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
-
 
 @Table(name = "hearing")
 @Entity
@@ -32,9 +33,9 @@ public class HearingEntity {
     @Column(name = "status", nullable = false)
     private String status;
 
-    @OneToOne(mappedBy = "hearing", fetch = FetchType.EAGER,  cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToOne(mappedBy = "hearing", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private CaseHearingRequestEntity caseHearingRequest;
 
-    @OneToOne(mappedBy = "hearing", fetch = FetchType.EAGER,  cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private HearingResponseEntity hearingResponse;
+    @OneToMany(mappedBy = "hearing", fetch = FetchType.EAGER)
+    private List<HearingResponseEntity> hearingResponse;
 }

@@ -227,9 +227,9 @@ public class TestingUtil {
     public static GetHearingsResponse createHearingRequest(String caseRef, String status) {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
         getHearingsResponse.setCaseRef("9372710950276233");
-        getHearingsResponse.setHmctsServiceCode("AB1A");
+        getHearingsResponse.setHmctsServiceId("AB1A");
         CaseHearing caseHearing = new CaseHearing();
-        caseHearing.setHearingId("hearingId");
+        caseHearing.setHearingId(2000000063L);
         caseHearing.setHearingRequestDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         caseHearing.setHearingType("45YAO6VflHAmYy7N85fv");
         caseHearing.setHmcStatus("HEARING REQUESTED");
@@ -243,7 +243,7 @@ public class TestingUtil {
         schedule.setListAssistSessionId("jvjyVv8aecmpBgo3RnGb");
         schedule.setHearingVenueId("venue");
         schedule.setHearingRoomId("room1");
-        schedule.setHearingJudgeId("judge1");
+        schedule.setHearingJudgeId(Arrays.asList("judge1"));
         Attendees attendees = new Attendees();
         attendees.setPartyId("partyId1");
         attendees.setHearingSubChannel("subChannel1");

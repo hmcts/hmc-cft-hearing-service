@@ -18,7 +18,7 @@ public class GetHearingsResponse {
     private String caseRef;
 
     @Valid
-    //@NotNull
+    @NotNull
     private List<CaseHearing> caseHearings;
 
 }

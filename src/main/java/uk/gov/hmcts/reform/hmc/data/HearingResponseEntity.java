@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,5 +47,6 @@ public class HearingResponseEntity {
     private HearingEntity hearing;
 
     @OneToMany(mappedBy = "hearingResponse")
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingDayDetailsEntity> hearingDayDetails;
 }
