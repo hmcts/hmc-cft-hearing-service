@@ -114,9 +114,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      */
     @Override
     public GetHearingsResponse getHearings(String caseRef, String status) {
-        // log.info("caseRef:{} ; status:{}", caseRef, status);
+        log.info("caseRef:{} ; status:{}", caseRef, status);
         List<CaseHearingRequestEntity> entities = caseHearingRequestRepository.getHearingDetails(caseRef);
-        if (entities.size() == 0) {
+        if (entities.isEmpty()) {
             return null;
         }
         return getHearingsResponseDetails(entities);
@@ -229,7 +229,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void setAttendeeDetails(List<HearingAttendeeDetailsEntity> attendeeDetailsEntities,
-                                           HearingDaySchedule hearingDaySchedule) {
+                                    HearingDaySchedule hearingDaySchedule) {
         List<Attendees> attendeesList = new ArrayList<>();
         for (HearingAttendeeDetailsEntity attendeeDetailEntity : attendeeDetailsEntities) {
             Attendees attendee = new Attendees();
@@ -241,7 +241,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void setHearingJudgeIds(List<HearingDayPanelEntity> hearingDayPanelEntities,
-                                           HearingDaySchedule hearingDaySchedule) {
+                                    HearingDaySchedule hearingDaySchedule) {
         List<String> hearingDayPanelList = new ArrayList<>();
         for (HearingDayPanelEntity dayPanelEntity : hearingDayPanelEntities) {
             hearingDayPanelList.add(dayPanelEntity.getPanelUserId());

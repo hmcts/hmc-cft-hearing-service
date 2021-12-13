@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.nio.charset.Charset;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
@@ -61,7 +61,8 @@ class HearingManagementControllerTest {
     private static final MediaType JSON_CONTENT_TYPE = new MediaType(
         MediaType.APPLICATION_JSON.getType(),
         MediaType.APPLICATION_JSON.getSubtype(),
-        Charset.forName("utf8"));
+        Charset.forName("utf8")
+    );
 
     @Test
     void shouldReturn400_whenRequest_Details_Are_NotPresent() {
@@ -147,7 +148,7 @@ class HearingManagementControllerTest {
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, null);
         verify(hearingManagementService, times(1)).getHearings(any(), any());
-        assertTrue(hearingRequest.getCaseRef().equals(validCaseRef));
+        assertEquals(hearingRequest.getCaseRef(), validCaseRef);
     }
 
     @Test
@@ -159,7 +160,7 @@ class HearingManagementControllerTest {
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, status);
         verify(hearingManagementService, times(1)).getHearings(any(), any());
-        assertTrue(hearingRequest.getCaseRef().equals(validCaseRef));
+        assertEquals(hearingRequest.getCaseRef(), validCaseRef);
     }
 
     private HearingRequest createHearingRequest(String caseRef, String status) {
