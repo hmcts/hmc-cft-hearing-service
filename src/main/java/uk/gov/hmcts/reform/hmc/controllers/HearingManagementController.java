@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.HmiCreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import javax.validation.Valid;
@@ -117,5 +118,17 @@ public class HearingManagementController {
     public void updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
                               @PathVariable("id") Long hearingId) {
         hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
+    }
+
+    @PostMapping(path = "/hearing/test", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = "Hearing Id is created"),
+        @ApiResponse(code = 400, message = "Invalid hearing details found")
+    })
+    public HmiCreateHearingRequest test(@RequestBody @Valid HearingRequest hearingRequest) {
+        hearingManagementService.verifyAccess(hearingRequest.getCaseDetails().getCaseRef());
+        HmiCreateHearingRequest hearingResponse = hearingManagementService.testSave(hearingRequest);
+        return hearingResponse;
     }
 }

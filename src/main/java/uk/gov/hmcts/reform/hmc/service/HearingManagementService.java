@@ -4,6 +4,7 @@ import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.HmiCreateHearingRequest;
 
 public interface HearingManagementService {
 
@@ -18,5 +19,7 @@ public interface HearingManagementService {
     HearingRequest validateGetHearingsRequest(String caseRefId, String caseStatus);
 
     void updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest);
+
+    HmiCreateHearingRequest testSave(HearingRequest hearingRequest);
 
 }
