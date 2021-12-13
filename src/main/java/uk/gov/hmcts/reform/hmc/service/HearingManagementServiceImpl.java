@@ -119,8 +119,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (entities.size() == 0) {
             return null;
         }
-
-        return getHearingResponseDetails(entities);
+        return getHearingsResponseDetails(entities);
     }
 
     private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
@@ -159,7 +158,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    private GetHearingsResponse getHearingResponseDetails(List<CaseHearingRequestEntity> entities) {
+    private GetHearingsResponse getHearingsResponseDetails(List<CaseHearingRequestEntity> entities) {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
         getHearingsResponse.setCaseRef(entities.get(0).getCaseReference());
         getHearingsResponse.setHmctsServiceId(entities.get(0).getHmctsServiceID());
@@ -170,40 +169,51 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private void setCaseHearings(List<CaseHearingRequestEntity> entities, GetHearingsResponse getHearingsResponse) {
         List<CaseHearing> caseHearingList = new ArrayList<>();
         for (CaseHearingRequestEntity entity : entities) {
-            CaseHearing caseHearing = new CaseHearing();
-            caseHearing.setHearingId(entity.getHearing().getId());
-            caseHearing.setHearingRequestDateTime(entity.getHearingRequestReceivedDateTime());
-            caseHearing.setHearingType(entity.getHearingType());
-            caseHearing.setHmcStatus(entity.getHearing().getStatus());
-
-            List<HearingResponseEntity> hearingResponseEntities = entity.getHearing().getHearingResponse();
-            setHearingResponseDetails(caseHearing, hearingResponseEntities);
-            List<HearingDaySchedule> scheduleList = new ArrayList<>();
-
-            for (HearingResponseEntity hearingResponseEntity : hearingResponseEntities) {
-                List<HearingDayDetailsEntity> hearingDayDetailEntities = hearingResponseEntity.getHearingDayDetails();
-                for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
-                    HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
-                    setHearingDayPanelDetails(detailEntity.getHearingDayPanel(), hearingDaySchedule);
-                    setHearingAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
-                    scheduleList.add(hearingDaySchedule);
-                }
-                caseHearing.setHearingDaySchedule(scheduleList);
-                caseHearingList.add(caseHearing);
-            }
+            CaseHearing caseHearing = getCaseHearing(entity);
+            List<HearingResponseEntity> hearingResponses = getHearingResponseEntities(entity, caseHearing);
+            setHearingDaySchedule(caseHearingList, caseHearing, hearingResponses);
         }
         getHearingsResponse.setCaseHearings(caseHearingList);
     }
 
-    private void setHearingResponseDetails(CaseHearing caseHearing, List<HearingResponseEntity> entities) {
+    private void setHearingDaySchedule(List<CaseHearing> caseHearingList, CaseHearing caseHearing, List<HearingResponseEntity> hearingResponses) {
+        List<HearingDaySchedule> scheduleList = new ArrayList<>();
 
+        for (HearingResponseEntity hearingResponseEntity : hearingResponses) {
+            List<HearingDayDetailsEntity> hearingDayDetailEntities = hearingResponseEntity.getHearingDayDetails();
+            for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
+                HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
+                setHearingJudgeIds(detailEntity.getHearingDayPanel(), hearingDaySchedule);
+                setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
+                scheduleList.add(hearingDaySchedule);
+            }
+            caseHearing.setHearingDaySchedule(scheduleList);
+            caseHearingList.add(caseHearing);
+        }
+    }
+
+    private List<HearingResponseEntity> getHearingResponseEntities(CaseHearingRequestEntity entity, CaseHearing caseHearing) {
+        List<HearingResponseEntity> hearingResponses = entity.getHearing().getHearingResponse();
+        setHearingResponseDetails(caseHearing, hearingResponses);
+        return hearingResponses;
+    }
+
+    private CaseHearing getCaseHearing(CaseHearingRequestEntity entity) {
+        CaseHearing caseHearing = new CaseHearing();
+        caseHearing.setHearingId(entity.getHearing().getId());
+        caseHearing.setHearingRequestDateTime(entity.getHearingRequestReceivedDateTime());
+        caseHearing.setHearingType(entity.getHearingType());
+        caseHearing.setHmcStatus(entity.getHearing().getStatus());
+        return caseHearing;
+    }
+
+    private void setHearingResponseDetails(CaseHearing caseHearing, List<HearingResponseEntity> entities) {
         for (HearingResponseEntity hearingResponseEntity : entities) {
             caseHearing.setLastResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
             caseHearing.setResponseVersion(hearingResponseEntity.getHearingResponseId());
             caseHearing.setHearingListingStatus(hearingResponseEntity.getListingStatus());
             caseHearing.setListAssistCaseStatus(hearingResponseEntity.getListingCaseStatus());
         }
-
     }
 
     private HearingDaySchedule setHearingDayScheduleDetails(HearingDayDetailsEntity detailEntity) {
@@ -216,7 +226,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         return hearingDaySchedule;
     }
 
-    private void setHearingAttendeeDetails(List<HearingAttendeeDetailsEntity> attendeeDetailsEntities,
+    private void setAttendeeDetails(List<HearingAttendeeDetailsEntity> attendeeDetailsEntities,
                                            HearingDaySchedule hearingDaySchedule) {
         List<Attendees> attendeesList = new ArrayList<>();
         for (HearingAttendeeDetailsEntity attendeeDetailEntity : attendeeDetailsEntities) {
@@ -228,7 +238,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         hearingDaySchedule.setAttendees(attendeesList);
     }
 
-    private void setHearingDayPanelDetails(List<HearingDayPanelEntity> hearingDayPanelEntities,
+    private void setHearingJudgeIds(List<HearingDayPanelEntity> hearingDayPanelEntities,
                                            HearingDaySchedule hearingDaySchedule) {
         List<String> hearingDayPanelList = new ArrayList<>();
         for (HearingDayPanelEntity dayPanelEntity : hearingDayPanelEntities) {
