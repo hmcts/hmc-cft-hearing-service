@@ -176,7 +176,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         getHearingsResponse.setCaseHearings(caseHearingList);
     }
 
-    private void setHearingDaySchedule(List<CaseHearing> caseHearingList, CaseHearing caseHearing, List<HearingResponseEntity> hearingResponses) {
+    private void setHearingDaySchedule(List<CaseHearing> caseHearingList, CaseHearing caseHearing,
+                                       List<HearingResponseEntity> hearingResponses) {
         List<HearingDaySchedule> scheduleList = new ArrayList<>();
 
         for (HearingResponseEntity hearingResponseEntity : hearingResponses) {
@@ -192,7 +193,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    private List<HearingResponseEntity> getHearingResponseEntities(CaseHearingRequestEntity entity, CaseHearing caseHearing) {
+    private List<HearingResponseEntity> getHearingResponseEntities(CaseHearingRequestEntity entity,
+                                                                   CaseHearing caseHearing) {
         List<HearingResponseEntity> hearingResponses = entity.getHearing().getHearingResponse();
         setHearingResponseDetails(caseHearing, hearingResponses);
         return hearingResponses;
