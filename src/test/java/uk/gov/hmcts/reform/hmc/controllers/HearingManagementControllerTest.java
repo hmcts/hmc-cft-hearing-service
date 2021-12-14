@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.controllers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -15,15 +16,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.Assert;
-import org.springframework.util.Assert;
-import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -34,10 +35,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 
 @ExtendWith(SpringExtension.class)
@@ -68,52 +69,25 @@ class HearingManagementControllerTest {
         Charset.forName("utf8"));
 
     @Test
-    void shouldReturn400_whenRequest_Details_Are_NotPresent() {
-        CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setCaseRef("200000L");
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.setCaseDetails(caseDetails);
-        HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        controller.saveHearing(hearingRequest);
-        verify(hearingManagementService, times(1)).saveHearingRequest(any());
-
-    }
-
-    @Test
-    void shouldReturn400_whenHearing_Details_Are_NotPresent() {
-        HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        controller.saveHearing(hearingRequest);
-        verify(hearingManagementService, times(1)).saveHearingRequest(any());
-    }
-
-    @Test
-    void shouldReturn400_whenCase_Details_Are_NotPresent() {
+    void shouldCallSaveHearingMethods() {
         HearingRequest hearingRequest = new HearingRequest();
         CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setCaseRef("200000L");
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        caseDetails.setCaseRef("caseReference");
         hearingRequest.setCaseDetails(caseDetails);
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setHearingRequestId(1L);
+        when(hearingManagementService.saveHearingRequest(hearingRequest)).thenReturn(hearingResponse);
+        doNothing().when(hearingManagementService).verifyAccess(hearingRequest.getCaseDetails().getCaseRef());
+        //doNothing().when(hearingManagementService).sendCreateRequestToHmi(1L, hearingRequest);
+        HmiSubmitHearingRequest hmiSubmitHearingRequest = new HmiSubmitHearingRequest();
+        when(hearingManagementService.sendCreateRequestToHmi(1L, hearingRequest)).thenReturn(hmiSubmitHearingRequest);
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.saveHearing(hearingRequest);
-        verify(hearingManagementService, times(1)).saveHearingRequest(any());
-    }
-
-    @Test
-    void shouldReturn201_whenHearingRequestData() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        controller.saveHearing(hearingRequest);
-        verify(hearingManagementService, times(1)).saveHearingRequest(any());
-        verify(hearingManagementService, times(1)).verifyAccess(any());
+        InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
+        orderVerifier.verify(hearingManagementService).verifyAccess("caseReference");
+        orderVerifier.verify(hearingManagementService).saveHearingRequest(hearingRequest);
+        orderVerifier.verify(hearingManagementService).sendCreateRequestToHmi(1L, hearingRequest);
+        verifyNoMoreInteractions(hearingManagementService);
     }
 
     @Test
@@ -178,12 +152,20 @@ class HearingManagementControllerTest {
         return hearingRequest;
     }
 
-
     @Test
     void shouldCallUpdateHearingRequest() {
-        doNothing().when(hearingManagementService).updateHearingRequest(Mockito.any(), Mockito.any());
+        UpdateHearingRequest hearingRequest = new UpdateHearingRequest();
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setHearingRequestId(1L);
+        doNothing().when(hearingManagementService).updateHearingRequest(1L, hearingRequest);
+        //doNothing().when(hearingManagementService).updateHearingRequest(1L, hearingRequest);
+        HmiSubmitHearingRequest hmiSubmitHearingRequest = new HmiSubmitHearingRequest();
+        when(hearingManagementService.sendUpdateRequestToHmi(1L, hearingRequest)).thenReturn(hmiSubmitHearingRequest);
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        controller.updateHearing(null, 1234L);
-        verify(hearingManagementService, times(1)).updateHearingRequest(any(), any());
+        controller.updateHearing(hearingRequest, 1L);
+        InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
+        orderVerifier.verify(hearingManagementService).updateHearingRequest(1L, hearingRequest);
+        orderVerifier.verify(hearingManagementService).sendUpdateRequestToHmi(1L, hearingRequest);
+        verifyNoMoreInteractions(hearingManagementService);
     }
 }

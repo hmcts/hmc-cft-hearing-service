@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
@@ -86,6 +87,9 @@ class HearingManagementServiceTest {
     @Mock
     CaseHearingRequestRepository caseHearingRequestRepository;
 
+    @Mock
+    HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -96,7 +100,8 @@ class HearingManagementServiceTest {
                 dataStoreRepository,
                 hearingRepository,
                 hearingMapper,
-                caseHearingRequestRepository
+                caseHearingRequestRepository,
+                hmiSubmitHearingRequestMapper
             );
     }
 

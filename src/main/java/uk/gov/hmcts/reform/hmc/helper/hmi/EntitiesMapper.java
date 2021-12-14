@@ -66,7 +66,6 @@ public class EntitiesMapper {
                         .entityTypeCode(party.getPartyType())
                         .entityRoleCode(party.getPartyRole())
                         .entitySubType(entitySubType)
-                        .entityHearingChannel(party.getIndividualDetails().getPreferredHearingChannel())
                         .build();
                     entities.add(entity);
                 }
