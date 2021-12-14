@@ -1,6 +1,13 @@
 package uk.gov.hmcts.reform.hmc.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
@@ -27,6 +34,9 @@ public class CaseDetails {
     @Pattern(regexp = "^\\d{16}$", message = ValidationError.CASE_REF_INVALID)
     private String caseRef;
 
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     @NotNull(message = ValidationError.REQUEST_TIMESTAMP_EMPTY)
     private LocalDateTime requestTimeStamp;
 
@@ -63,6 +73,9 @@ public class CaseDetails {
     @NotNull(message = ValidationError.CASE_RESTRICTED_FLAG_NULL_EMPTY)
     private Boolean caseRestrictedFlag;
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @JsonProperty("caseSLAStartDate")
     @NotNull(message = ValidationError.CASE_SLA_START_DATE_EMPTY)
     private LocalDate caseSlaStartDate;

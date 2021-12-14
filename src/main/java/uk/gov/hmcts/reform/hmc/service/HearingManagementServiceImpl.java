@@ -4,7 +4,6 @@ import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.S
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -22,11 +21,13 @@ import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +47,6 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
 
 @Service
-@Component
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
 
@@ -117,7 +117,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         return hearingResponse;
     }
 
-    private void validateHearingRequest(HearingRequest hearingRequest) {
+    @Override
+    public void validateHearingRequest(HearingRequest hearingRequest) {
         validateHearingRequestDetails(hearingRequest);
         validateHearingDetails(hearingRequest.getHearingDetails());
         if (hearingRequest.getPartyDetails() != null) {
@@ -125,12 +126,25 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    private void validateHearingRequest(UpdateHearingRequest hearingRequest) {
+    public void validateHearingRequest(UpdateHearingRequest hearingRequest) {
         validateHearingRequestDetails(hearingRequest);
         validateHearingDetails(hearingRequest.getHearingDetails());
         if (hearingRequest.getPartyDetails() != null) {
             validatePartyDetails(hearingRequest.getPartyDetails());
         }
+    }
+
+    /**
+     * validate Get Hearing Request by caseRefId or caseRefId/caseStatus.
+     * @param caseRef case Ref
+     * @param status status
+     * @return HearingRequest HearingRequest
+     */
+    @Override
+    public HearingsGetResponse validateGetHearingsRequest(String caseRef, String status) {
+        log.info("caseRef:{} ; status:{}", caseRef, status);
+        // TODO: select hearing request from given caseRefId and status (if any)
+        return new HearingsGetResponse();
     }
 
     private void validatePartyDetails(List<PartyDetails> partyDetails) {
@@ -170,9 +184,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validateHearingDetails(HearingDetails hearingDetails) {
-        if (hearingDetails.getHearingWindow().getHearingWindowEndDateRange() == null
-            && hearingDetails.getHearingWindow().getHearingWindowStartDateRange() == null
-            && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() == null) {
+        if (hearingDetails.getHearingWindow().getHearingWindowDateRange() == null
+            && hearingDetails.getHearingWindow().getHearingWindowFirstDate() == null) {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
         }
     }
@@ -232,11 +245,18 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-
     @Override
-    public void deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
+    public HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
+
+        // TODO: load the response details
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setHearingRequestId(hearingId);
+        hearingResponse.setTimeStamp(LocalDateTime.now());
+        hearingResponse.setStatus("LISTED");
+        hearingResponse.setVersionNumber(3);
+        return hearingResponse;
     }
 
     private void validateVersionNumber(Long hearingId, Integer versionNumber) {

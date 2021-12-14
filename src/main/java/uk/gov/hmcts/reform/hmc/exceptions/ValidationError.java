@@ -1,10 +1,6 @@
 package uk.gov.hmcts.reform.hmc.exceptions;
 
 public final class ValidationError {
-
-    private ValidationError() {
-    }
-
     private static final String CHARACTERS_LONG = "characters long";
     public static final String AUTO_LIST_FLAG_NULL_EMPTY = "Auto list flag can not be null or empty";
     public static final String HEARING_TYPE_NULL_EMPTY = "Hearing type can not be null or empty";
@@ -33,6 +29,7 @@ public final class ValidationError {
     public static final String HMCTS_SERVICE_CODE_EMPTY_INVALID = "Hmcts service code is invalid";
     public static final String CASE_REF_EMPTY = "Case ref can not be empty";
     public static final String CASE_REF_INVALID = "Case ref details is invalid";
+    public static final String CASE_REF_INVALID_LENGTH = "Case ref has invalid length";
     public static final String REQUEST_TIMESTAMP_EMPTY = "Request time stamp can not be empty";
     public static final String EXTERNAL_CASE_REFERENCE_MAX_LENGTH = "External case reference must not be more than 70 "
         + CHARACTERS_LONG;
@@ -116,6 +113,43 @@ public final class ValidationError {
     public static final String INVALID_UNAVAILABILITY_DOW_DETAILS = "Unavailability DOW details should be present";
     public static final String INVALID_UNAVAILABILITY_RANGES_DETAILS = "Unavailability range details should be present";
     public static final String INVALID_RELATED_PARTY_DETAILS = "Related Party details are not present";
+    public static final String HEARING_ID_NULL_EMPTY = "Hearing id can not be null or empty";
+    public static final String HEARING_ID_MAX_LENGTH = "Hearing id must not be more than 60 " + CHARACTERS_LONG;
+    public static final String HMC_STATUS_NULL_EMPTY = "HMC status can not be null or empty";
+    public static final String HMC_STATUS_MAX_LENGTH = "HMC status must not be more than 60 " + CHARACTERS_LONG;
+    public static final String RESPONSE_VERSION_NULL_EMPTY = "Response version can not be null or empty";
+    public static final String RESPONSE_VERSION_MAX_LENGTH = "Response version must not be more than 60 "
+        + CHARACTERS_LONG;
+    public static final String HEARING_LISTING_STATUS_NULL_EMPTY = "Listing status can not be null or empty";
+    public static final String HEARING_LISTING_STATUS_MAX_LENGTH = "Listing status must not be more than 8 "
+        + CHARACTERS_LONG;
+    public static final String LIST_ASSIST_CASE_STATUS_NULL_EMPTY = "List Assist case status can not be null or empty";
+    public static final String LIST_ASSIST_CASE_STATUS_MAX_LENGTH = "List Assist case status must not be more than 60 "
+        + CHARACTERS_LONG;
+    public static final String HEARING_REQUEST_ID_NULL_EMPTY_INVALID = "Hearing request id can not be null or empty";
+    public static final String HEARING_REQUEST_ID_MAX_LENGTH_EMPTY_INVALID = "Hearing request id must not be "
+        + "more than 30 " + CHARACTERS_LONG;
+    public static final String HEARING_STATUS_NULL_EMPTY_INVALID = "Hearing status can not be null or empty";
+    public static final String HEARING_STATUS_MAX_LENGTH_EMPTY_INVALID = "Hearing status must not be more than 100 "
+        + CHARACTERS_LONG;
+    public static final String LIST_ASSIST_SESSION_ID_NULL_EMPTY = "List Assist session id can not be null or empty";
+    public static final String LIST_ASSIST_SESSION_ID_MAX_LENGTH = "List Assist session id must not be more than 60 "
+        + CHARACTERS_LONG;
+    public static final String HEARING_ROOM_ID_NULL_EMPTY = "Hearing room id can not be null or empty";
+    public static final String HEARING_ROOM_ID_MAX_LENGTH = "Hearing room id must not be more than 60 "
+        + CHARACTERS_LONG;
+    public static final String HEARING_JUDGE_ID_NULL_EMPTY = "Hearing judge id can not be null or empty";
+    public static final String HEARING_JUDGE_ID_MAX_LENGTH = "Hearing judge id must not be more than 60 "
+        + CHARACTERS_LONG;
+    public static final String HEARING_SUB_CHANNEL_NULL_EMPTY = "Hearing sub channel can not be null or empty";
+    public static final String HEARING_SUB_CHANNEL_MAX_LENGTH = "Hearing sub channel must not be more than 60 "
+        + CHARACTERS_LONG;
+    public static final String PARTY_ID_NULL_EMPTY = "Party id can not be null or empty";
+    public static final String PARTY_ID_MAX_LENGTH = "Party id must not be more than 60 "
+        + CHARACTERS_LONG;
+    public static final String HEARING_VENUE_ID_NULL_EMPTY = "Hearing venue id can not be null or empty";
+    public static final String HEARING_VENUE_ID_MAX_LENGTH = "Hearing venue id must not be more than 60 "
+        + CHARACTERS_LONG;
     public static final String INVALID_CANCELLATION_REASON_CODE = "Cancellation Reason code details are not present";
     public static final String CANCELLATION_REASON_CODE_MAX_LENGTH_MSG = "Non standard hearing duration "
         + "reasons length cannot be greater than 100 characters";
@@ -123,5 +157,9 @@ public final class ValidationError {
     public static final String INVALID_HEARING_ID_DETAILS = "Invalid hearing Id";
     public static final String CASE_NOT_FOUND = "Case could not be found";
     public static final String VERSION_NUMBER_NULL_EMPTY = "Version number must be present";
+    public static final String VERSION_NUMBER_MAX_LENGTH = "Version number must not be more than 60 "
+        + CHARACTERS_LONG;
 
+    private ValidationError() {
+    }
 }

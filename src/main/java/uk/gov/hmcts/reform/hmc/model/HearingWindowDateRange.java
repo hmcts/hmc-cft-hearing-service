@@ -7,24 +7,20 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDate;
-import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
-public class UnavailabilityRanges {
+public class HearingWindowDateRange {
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @NotNull(message = ValidationError.UNAVAILABLE_FROM_DATE_EMPTY)
-    private LocalDate unavailableFromDate;
+    private LocalDate hearingWindowStartDateRange;
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @NotNull(message = ValidationError.UNAVAILABLE_TO_DATE_EMPTY)
-    private LocalDate unavailableToDate;
+    private LocalDate hearingWindowEndDateRange;
 }
