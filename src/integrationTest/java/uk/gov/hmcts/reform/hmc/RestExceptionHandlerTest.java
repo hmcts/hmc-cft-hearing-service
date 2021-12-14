@@ -47,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc(addFilters = false)
 @ImportAutoConfiguration(TestIdamConfiguration.class)
-public class RestExceptionHandlerTest extends BaseTest {
+class RestExceptionHandlerTest extends BaseTest {
 
     public static String ERROR_PATH_ERROR = "$.errors";
     public static String ERROR_PATH_STATUS = "$.status";
@@ -71,8 +71,8 @@ public class RestExceptionHandlerTest extends BaseTest {
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
-        hearingWindow.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindow.getHearingWindowDateRange().setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindow.getHearingWindowDateRange().setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
         hearingDetails.setHearingWindow(hearingWindow);
         hearingDetails.setDuration(0);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
