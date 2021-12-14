@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class HmiCreateHearingRequest {
+public class HmiSubmitHearingRequest {
 
     @JsonProperty("hearingRequest")
     private HmiHearingRequest hearingRequest;

@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiCreateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import javax.validation.Valid;
@@ -62,10 +62,14 @@ public class HearingManagementController {
         @ApiResponse(code = 201, message = "Hearing Id is created"),
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
-    public HearingResponse saveHearing(@RequestBody @Valid HearingRequest hearingRequest) {
+    public HmiSubmitHearingRequest saveHearing(@RequestBody @Valid HearingRequest hearingRequest) {
         hearingManagementService.verifyAccess(hearingRequest.getCaseDetails().getCaseRef());
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(hearingRequest);
-        return hearingResponse;
+        HmiSubmitHearingRequest hmiSubmitHearingRequest = hearingManagementService.sendCreateRequestToHmi(
+            hearingResponse.getHearingRequestId(),
+            hearingRequest
+        );
+        return hmiSubmitHearingRequest;
     }
 
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -83,8 +87,9 @@ public class HearingManagementController {
 
     /**
      * get Case either by caseRefId OR CaseRefId/caseStatus.
+     *
      * @param ccdCaseRef case Ref
-     * @param status optional Status
+     * @param status     optional Status
      * @return Hearing
      */
     @Transactional
@@ -115,20 +120,9 @@ public class HearingManagementController {
         @ApiResponse(code = 404, message = "Hearing id not found"),
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
-    public void updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
-                              @PathVariable("id") Long hearingId) {
+    public HmiSubmitHearingRequest updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
+                                                 @PathVariable("id") Long hearingId) {
         hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
-    }
-
-    @PostMapping(path = "/hearing/test", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    @ApiResponses(value = {
-        @ApiResponse(code = 201, message = "Hearing Id is created"),
-        @ApiResponse(code = 400, message = "Invalid hearing details found")
-    })
-    public HmiCreateHearingRequest test(@RequestBody @Valid HearingRequest hearingRequest) {
-        hearingManagementService.verifyAccess(hearingRequest.getCaseDetails().getCaseRef());
-        HmiCreateHearingRequest hearingResponse = hearingManagementService.testSave(hearingRequest);
-        return hearingResponse;
+        return hearingManagementService.sendUpdateRequestToHmi(hearingId, hearingRequest);
     }
 }

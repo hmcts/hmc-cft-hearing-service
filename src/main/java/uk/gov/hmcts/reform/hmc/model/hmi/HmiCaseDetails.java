@@ -23,7 +23,7 @@ public class HmiCaseDetails {
 
     private String caseJurisdiction;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd@HH:mm:ss.SSSZ")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T00:00:00Z'")
     private LocalDate caseRegistered;
 
     private String caseCourt;
