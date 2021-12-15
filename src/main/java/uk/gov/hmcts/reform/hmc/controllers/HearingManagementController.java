@@ -127,43 +127,4 @@ public class HearingManagementController {
                                                       String status) {
         return hearingManagementService.validateGetHearingsRequest(ccdCaseRef, status);
     }
-
-    /**
-     * get Case either by caseRefId OR CaseRefId/caseStatus.
-     * @param ccdCaseRef case Ref
-     * @param status optional Status
-     * @return Hearing
-     */
-    @Transactional
-    @GetMapping(value = {"/hearings/{ccdCaseRef}"},
-        produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Get hearings")
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "Success (with content)"),
-        @ApiResponse(code = 400, message = "Invalid request")
-    })
-    public HearingRequest getHearingsRequest(@PathVariable("ccdCaseRef")
-                                             @Valid
-                                             @NotEmpty(message = CASE_REF_EMPTY)
-                                             @Size(min = 16, max = 16, message = CASE_REF_INVALID_LENGTH)
-                                             @LuhnCheck(message = CASE_REF_INVALID, ignoreNonDigitCharacters = false)
-                                                 String ccdCaseRef,
-                                             @RequestParam(required = false)
-                                                 String status) {
-        return hearingManagementService.validateGetHearingsRequest(ccdCaseRef, status);
-    }
-
-    @PutMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    @ApiResponses(value = {
-        @ApiResponse(code = 201, message = "Hearing successfully updated"),
-        @ApiResponse(code = 400, message = "Invalid hearing details found"),
-        @ApiResponse(code = 404, message = "Hearing id not found"),
-        @ApiResponse(code = 500, message = "Error occurred on the server")
-    })
-    public void updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
-                              @PathVariable("id") Long hearingId) {
-        hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
-    }
 }

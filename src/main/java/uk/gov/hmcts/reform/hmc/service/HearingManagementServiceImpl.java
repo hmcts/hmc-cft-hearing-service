@@ -2,8 +2,11 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -47,6 +50,7 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
 
 @Service
+@Component
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
 
@@ -57,6 +61,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final HearingMapper hearingMapper;
 
     private CaseHearingRequestRepository caseHearingRequestRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(HearingManagementServiceImpl.class);
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -87,6 +93,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
         validateHearingRequest(hearingRequest);
+        logger.info("hearingRequest: {}", hearingRequest);
         return insertHearingRequest(hearingRequest);
     }
 
@@ -95,19 +102,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateHearingRequest(hearingRequest);
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
-    }
-
-    /**
-     * validate Get Hearing Request by caseRefId or caseRefId/caseStatus.
-     * @param caseRef case Ref
-     * @param status status
-     * @return HearingRequest HearingRequest
-     */
-    @Override
-    public HearingRequest validateGetHearingsRequest(String caseRef, String status) {
-        log.info("caseRef:{} ; status:{}", caseRef, status);
-        // TODO: select hearing request from given caseRefId and status (if any)
-        return new HearingRequest();
     }
 
     private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
@@ -130,7 +124,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         return hearingResponse;
     }
 
-    @Override
     public void validateHearingRequest(HearingRequest hearingRequest) {
         validateHearingRequestDetails(hearingRequest);
         validateHearingDetails(hearingRequest.getHearingDetails());
@@ -153,7 +146,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      * @param status status
      * @return HearingRequest HearingRequest
      */
-    @Override
     public HearingsGetResponse validateGetHearingsRequest(String caseRef, String status) {
         log.info("caseRef:{} ; status:{}", caseRef, status);
         // TODO: select hearing request from given caseRefId and status (if any)

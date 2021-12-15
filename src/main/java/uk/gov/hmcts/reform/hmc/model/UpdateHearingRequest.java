@@ -2,13 +2,17 @@ package uk.gov.hmcts.reform.hmc.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+@Getter
+@Setter
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)

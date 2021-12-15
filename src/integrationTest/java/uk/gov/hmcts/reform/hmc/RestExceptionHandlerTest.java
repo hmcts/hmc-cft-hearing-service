@@ -22,7 +22,15 @@ import uk.gov.hmcts.reform.hmc.exceptions.CaseCouldNotBeFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.ServiceException;
-import uk.gov.hmcts.reform.hmc.model.*;
+import uk.gov.hmcts.reform.hmc.model.CaseCategory;
+import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.HearingLocation;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.HearingWindowDateRange;
+import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
+import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementServiceImpl;
 
 import java.time.LocalDate;

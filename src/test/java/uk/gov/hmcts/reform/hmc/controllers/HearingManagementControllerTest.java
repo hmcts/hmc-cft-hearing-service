@@ -15,26 +15,24 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.Assert;
-import org.springframework.util.Assert;
-import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.nio.charset.Charset;
+import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -127,7 +125,8 @@ class HearingManagementControllerTest {
 
     @Test
     void shouldReturn200_whenDeleteRequestIdIsValid() {
-        doNothing().when(hearingManagementService).deleteHearingRequest(Mockito.any(), Mockito.any());
+        doReturn(generateHearingResponse()).when(hearingManagementService)
+            .deleteHearingRequest(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.deleteHearing(1234L, TestingUtil.deleteHearingRequest());
         verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());
@@ -137,7 +136,8 @@ class HearingManagementControllerTest {
     void shouldReturn404_whenDeleteRequestIdIsInValid() {
         DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
         request.setCancellationReasonCode("");
-        doNothing().when(hearingManagementService).deleteHearingRequest(Mockito.any(), Mockito.any());
+        doReturn(generateHearingResponse()).when(hearingManagementService)
+            .deleteHearingRequest(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.deleteHearing(1234L, request);
         verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());
@@ -149,9 +149,9 @@ class HearingManagementControllerTest {
         doReturn(createHearingRequest(validCaseRef)).when(hearingManagementService)
             .validateGetHearingsRequest(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        HearingRequest hearingRequest = controller.getHearingsRequest(validCaseRef, null);
+        HearingsGetResponse hearingsGetResponse = controller.getHearingsRequest(validCaseRef, null);
         verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());
-        Assert.isTrue(hearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef));
+        Assert.isTrue(hearingsGetResponse.getCaseRef().equals(validCaseRef));
     }
 
     @Test
@@ -161,9 +161,9 @@ class HearingManagementControllerTest {
         doReturn(createHearingRequest(validCaseRef, status)).when(hearingManagementService)
             .validateGetHearingsRequest(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        HearingRequest hearingRequest = controller.getHearingsRequest(validCaseRef, status);
+        HearingsGetResponse hearingsGetResponse = controller.getHearingsRequest(validCaseRef, status);
         verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());
-        Assert.isTrue(hearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef));
+        Assert.isTrue(hearingsGetResponse.getCaseRef().equals(validCaseRef));
     }
 
     private HearingRequest createHearingRequest(String caseRef) {
@@ -185,5 +185,14 @@ class HearingManagementControllerTest {
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.updateHearing(null, 1234L);
         verify(hearingManagementService, times(1)).updateHearingRequest(any(), any());
+    }
+
+    private HearingResponse generateHearingResponse() {
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setVersionNumber(3);
+        hearingResponse.setHearingRequestId(200000000111L);
+        hearingResponse.setStatus("LISTED");
+        hearingResponse.setTimeStamp(LocalDateTime.now());
+        return hearingResponse;
     }
 }
