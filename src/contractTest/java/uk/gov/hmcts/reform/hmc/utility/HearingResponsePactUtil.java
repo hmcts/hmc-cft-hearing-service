@@ -32,8 +32,8 @@ public class HearingResponsePactUtil {
         addStatusMessage(pactDslJsonBody, statusMessage);
 
         pactDslJsonBody
-            .stringType("hearingRequestID")
-            .stringMatcher("status", STATUS_OPTIONS_STRING,"HEARING REQUESTED")
+            .stringMatcher("hearingRequestID", "^[a-zA-Z0-9]{1,30}$", "A123456789B123456789C123456789")
+            .stringMatcher("status", STATUS_OPTIONS_STRING)
             .timestamp("timeStamp", FORMATYYYYMMDDHHMMSSSSSSZ, Instant.parse("2021-10-29T01:23:34.123456Z"))
             .asBody();
 
@@ -68,6 +68,23 @@ public class HearingResponsePactUtil {
 
         // return constructed body
         logger.info("pactDslJsonBody (CreateHearingByPut): {}", pactDslJsonBody);
+        return pactDslJsonBody;
+    }
+
+    /**
+     * generate Pact JSON body.
+     * @return PactDslJsonBody Pact Dsl JSON body
+     */
+    public static PactDslJsonBody generateDeleteHearingJsonBody(String statusMessage) {
+        // Build structural parts of the JSON body
+        PactDslJsonBody pactDslJsonBody = genericCreateHearingJsonBody(statusMessage);
+
+        pactDslJsonBody
+            .integerType("versionNumber")
+            .asBody();
+
+        // return constructed body
+        logger.info("pactDslJsonBody (DeleteHearing): {}", pactDslJsonBody);
         return pactDslJsonBody;
     }
 

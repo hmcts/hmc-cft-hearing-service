@@ -9,7 +9,7 @@ import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
-import uk.gov.hmcts.reform.hmc.model.HearingCreatePostResponse;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
@@ -101,6 +101,29 @@ public class BasePactTesting {
     }
 
     /**
+     * generate Delete Hearing Request.
+     *
+     * @return DeleteHearingRequest delete hearing request
+     */
+    protected DeleteHearingRequest generateDeleteHearingRequest() {
+        DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
+        deleteHearingRequest.setCancellationReasonCode("1XXX1");
+        deleteHearingRequest.setVersionNumber(2);
+        return deleteHearingRequest;
+    }
+
+    /**
+     * generate invalid Delete Hearing Request.
+     *
+     * @return DeleteHearingRequest delete hearing request
+     */
+    protected DeleteHearingRequest generateInvalidDeleteHearingRequest() {
+        DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
+        deleteHearingRequest.setCancellationReasonCode("1XXX1");
+        return deleteHearingRequest;
+    }
+
+    /**
      * get JSON String from hearing Request.
      *
      * @return String JSON string of hearing Request
@@ -115,6 +138,24 @@ public class BasePactTesting {
             e.printStackTrace();
         }
         logger.debug("hearingRequest to JSON: {}", jsonString);
+        return jsonString;
+    }
+
+    /**
+     * get JSON String from hearing Request.
+     *
+     * @return String JSON string of hearing Request
+     */
+    protected String toJsonString(Object object) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        String jsonString = "";
+        try {
+            jsonString = objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        logger.info("toJsonString: {}", jsonString);
         return jsonString;
     }
 

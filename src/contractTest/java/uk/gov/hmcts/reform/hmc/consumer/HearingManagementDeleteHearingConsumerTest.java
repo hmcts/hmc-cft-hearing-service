@@ -16,7 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.hmc.BasePactTesting;
 import uk.gov.hmcts.reform.hmc.controllers.HearingManagementController;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.utility.HearingResponsePactUtil;
 
 import java.util.Map;
@@ -33,13 +33,13 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
     private static final String BAD_REQUEST = "BAD_REQUEST";
     private static final String TEST_HEARIMG_ID = "2000000001";
 
-    // Test data 1 - valid HearingRequest
-    HearingRequest validHearingRequest = generateHearingRequest(VALID_CASE_REF);
-    String jsonValidHearingRequest = jsonCreatedHearingResponse(validHearingRequest);
+    // Test data 1 - valid DeleteHearingRequest
+    DeleteHearingRequest validRequest = generateDeleteHearingRequest();
+    String jsonValidRequest = toJsonString(validRequest);
 
-    // Test data 2 - invalid HearingRequest
-    HearingRequest invalidHearingRequest = generateInvalidHearingRequest();
-    String jsonInvalidHearingRequest = jsonCreatedHearingResponse(invalidHearingRequest);
+    // Test data 2 - invalid DeleteHearingRequest
+    DeleteHearingRequest invalidRequest = generateInvalidDeleteHearingRequest();
+    String jsonInvalidRequest = toJsonString(invalidRequest);
 
     static Map<String, String> headers = Map.of(
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,
@@ -60,11 +60,11 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
             .path(PATH_HEARING)
             .query(FIELD_HEARING_ID + "=" + TEST_HEARIMG_ID)
             .method(HttpMethod.DELETE.toString())
-            .body(jsonValidHearingRequest, ContentType.APPLICATION_JSON)
+            .body(jsonValidRequest, ContentType.APPLICATION_JSON)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.ACCEPTED.value())
-            .body(HearingResponsePactUtil.generateCreateHearingByPutJsonBody(
+            .body(HearingResponsePactUtil.generateDeleteHearingJsonBody(
                 HearingManagementController.MSG_200_DELETE_HEARING))
             .toPact();
     }
@@ -83,12 +83,12 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
             .path(PATH_HEARING)
             .query(FIELD_HEARING_ID + "=" + TEST_HEARIMG_ID)
             .method(HttpMethod.DELETE.toString())
-            .body(jsonInvalidHearingRequest, ContentType.APPLICATION_JSON)
+            .body(jsonInvalidRequest, ContentType.APPLICATION_JSON)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.BAD_REQUEST.value())
             .body(new PactDslJsonBody()
-                      .stringType(FIELD_MESSAGE, HearingManagementController.MSG_400_CREATE_HEARING)
+                      .stringType(FIELD_MESSAGE, HearingManagementController.MSG_400_DELETE_HEARING)
                       .stringValue(FIELD_STATUS, BAD_REQUEST)
                       .eachLike(FIELD_ERRORS, 1)
                       .closeArray()
@@ -109,7 +109,7 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
             .headers(headers)
             .contentType(io.restassured.http.ContentType.JSON)
             .queryParam(FIELD_HEARING_ID, TEST_HEARIMG_ID)
-            .body(jsonCreatedHearingResponse(validHearingRequest))
+            .body(jsonValidRequest)
             .when()
             .delete(mockServer.getUrl() + PATH_HEARING)
             .then()
@@ -133,7 +133,7 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
             .headers(headers)
             .contentType(io.restassured.http.ContentType.JSON)
             .queryParam(FIELD_HEARING_ID, TEST_HEARIMG_ID)
-            .body(jsonInvalidHearingRequest)
+            .body(jsonInvalidRequest)
             .when()
             .delete(mockServer.getUrl() + PATH_HEARING)
             .then()

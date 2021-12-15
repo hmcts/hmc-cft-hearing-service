@@ -22,14 +22,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.CaseCouldNotBeFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.ServiceException;
-import uk.gov.hmcts.reform.hmc.model.CaseCategory;
-import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.HearingDetails;
-import uk.gov.hmcts.reform.hmc.model.HearingLocation;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
-import uk.gov.hmcts.reform.hmc.model.HearingWindow;
-import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
-import uk.gov.hmcts.reform.hmc.model.RequestDetails;
+import uk.gov.hmcts.reform.hmc.model.*;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementServiceImpl;
 
 import java.time.LocalDate;
@@ -71,8 +64,10 @@ class RestExceptionHandlerTest extends BaseTest {
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.getHearingWindowDateRange().setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
-        hearingWindow.getHearingWindowDateRange().setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
+        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
+        hearingWindowDateRange.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindowDateRange.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
         hearingDetails.setHearingWindow(hearingWindow);
         hearingDetails.setDuration(0);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
