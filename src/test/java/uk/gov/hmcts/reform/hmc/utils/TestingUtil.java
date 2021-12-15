@@ -3,7 +3,20 @@ package uk.gov.hmcts.reform.hmc.utils;
 import org.assertj.core.util.Lists;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.model.*;
+import uk.gov.hmcts.reform.hmc.model.CaseCategory;
+import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.HearingLocation;
+import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
+import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
+import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
+import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.model.RelatedParty;
+import uk.gov.hmcts.reform.hmc.model.RequestDetails;
+import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.UpdateRequestDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -108,6 +121,26 @@ public class TestingUtil {
         relatedParty2.setRelationshipType("R2");
         relatedParties.add(relatedParty2);
         individualDetails.setRelatedParties(relatedParties);
+        return individualDetails;
+    }
+
+    public static IndividualDetails relatedPartyMandatoryFieldMissing() {
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setTitle("Mr");
+        individualDetails.setFirstName("firstName");
+        individualDetails.setLastName("lastName");
+        List<RelatedParty> relatedParties = new ArrayList<>();
+        RelatedParty relatedParty1 = new RelatedParty();
+        relatedParties.add(relatedParty1);
+        individualDetails.setRelatedParties(relatedParties);
+        return individualDetails;
+    }
+
+    public static IndividualDetails individualWithoutRelatedPartyDetails() {
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setTitle("Mr");
+        individualDetails.setFirstName("firstName");
+        individualDetails.setLastName("lastName");
         return individualDetails;
     }
 

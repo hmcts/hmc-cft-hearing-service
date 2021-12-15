@@ -97,6 +97,19 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
     }
 
+    /**
+     * validate Get Hearing Request by caseRefId or caseRefId/caseStatus.
+     * @param caseRef case Ref
+     * @param status status
+     * @return HearingRequest HearingRequest
+     */
+    @Override
+    public HearingRequest validateGetHearingsRequest(String caseRef, String status) {
+        log.info("caseRef:{} ; status:{}", caseRef, status);
+        // TODO: select hearing request from given caseRefId and status (if any)
+        return new HearingRequest();
+    }
+
     private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
         HearingEntity savedEntity = saveHearingDetails(hearingRequest);
         return getSaveHearingResponseDetails(savedEntity);
