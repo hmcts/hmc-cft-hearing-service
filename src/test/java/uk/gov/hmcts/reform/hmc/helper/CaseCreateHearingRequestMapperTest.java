@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
@@ -12,18 +12,18 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class CaseHearingRequestMapperTest {
+class CaseCreateHearingRequestMapperTest {
 
     @Test
     void modelToEntity() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         HearingEntity hearingEntity = new HearingEntity();
         CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
         CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper);
-        CaseHearingRequestEntity entity = caseHearingRequestMapper.modelToEntity(hearingRequest, hearingEntity);
+        CaseHearingRequestEntity entity = caseHearingRequestMapper.modelToEntity(createHearingRequest, hearingEntity);
         assertEquals(Boolean.TRUE, entity.getAutoListFlag());
         assertEquals("Some hearing type", entity.getHearingType());
         assertEquals(0, entity.getRequiredDurationInMinutes());

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.helper.hmi;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
+import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.CaseClassification;
 
@@ -14,19 +15,14 @@ public class CaseClassificationsMapper {
     public List<CaseClassification> getCaseClassifications(CaseDetails caseDetails) {
         List<CaseClassification> caseClassifications = new ArrayList<>();
         for (CaseCategory caseCategory : caseDetails.getCaseCategories()) {
-            if (caseCategory.getCategoryType().equalsIgnoreCase("caseType")) {
-                CaseClassification caseClassification = CaseClassification.builder()
-                    .caseClassificationService(caseDetails.getHmctsServiceCode())
-                    .caseClassificationType(caseCategory.getCategoryValue())
-                    .build();
-                caseClassifications.add(caseClassification);
-            } else if (caseCategory.getCategoryType().equalsIgnoreCase("caseSubType")) {
-                CaseClassification caseClassification = CaseClassification.builder()
-                    .caseClassificationService(caseDetails.getHmctsServiceCode())
-                    .caseClassificationSubType(caseCategory.getCategoryValue())
-                    .build();
-                caseClassifications.add(caseClassification);
+            CaseClassification.CaseClassificationBuilder caseClassificationBuilder = CaseClassification.builder()
+                .caseClassificationService(caseDetails.getHmctsServiceCode());
+            if (caseCategory.getCategoryType().equalsIgnoreCase(CaseCategoryType.CASETYPE.getLabel())) {
+                caseClassificationBuilder.caseClassificationType(caseCategory.getCategoryValue());
+            } else if (caseCategory.getCategoryType().equalsIgnoreCase(CaseCategoryType.CASESUBTYPE.getLabel())) {
+                caseClassificationBuilder.caseClassificationSubType(caseCategory.getCategoryValue());
             }
+            caseClassifications.add(caseClassificationBuilder.build());
         }
         return caseClassifications;
     }

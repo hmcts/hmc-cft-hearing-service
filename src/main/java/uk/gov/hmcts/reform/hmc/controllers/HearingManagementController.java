@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
@@ -62,12 +62,12 @@ public class HearingManagementController {
         @ApiResponse(code = 201, message = "Hearing Id is created"),
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
-    public HmiSubmitHearingRequest saveHearing(@RequestBody @Valid HearingRequest hearingRequest) {
-        hearingManagementService.verifyAccess(hearingRequest.getCaseDetails().getCaseRef());
-        HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(hearingRequest);
-        HmiSubmitHearingRequest hmiSubmitHearingRequest = hearingManagementService.sendCreateRequestToHmi(
+    public HmiSubmitHearingRequest saveHearing(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
+        hearingManagementService.verifyAccess(createHearingRequest.getCaseDetails().getCaseRef());
+        HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
+        HmiSubmitHearingRequest hmiSubmitHearingRequest = hearingManagementService.sendRequestToHmi(
             hearingResponse.getHearingRequestId(),
-            hearingRequest
+            createHearingRequest
         );
         return hmiSubmitHearingRequest;
     }
@@ -101,13 +101,13 @@ public class HearingManagementController {
         @ApiResponse(code = 200, message = "Success (with content)"),
         @ApiResponse(code = 400, message = "Invalid request")
     })
-    public HearingRequest getHearingsRequest(@PathVariable("ccdCaseRef")
+    public CreateHearingRequest getHearingsRequest(@PathVariable("ccdCaseRef")
                                              @Valid
                                              @NotEmpty(message = CASE_REF_EMPTY)
                                              @Size(min = 16, max = 16, message = CASE_REF_INVALID_LENGTH)
                                              @LuhnCheck(message = CASE_REF_INVALID, ignoreNonDigitCharacters = false)
                                                  String ccdCaseRef,
-                                             @RequestParam(required = false)
+                                                   @RequestParam(required = false)
                                                  String status) {
         return hearingManagementService.validateGetHearingsRequest(ccdCaseRef, status);
     }
@@ -123,6 +123,6 @@ public class HearingManagementController {
     public HmiSubmitHearingRequest updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
                                                  @PathVariable("id") Long hearingId) {
         hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
-        return hearingManagementService.sendUpdateRequestToHmi(hearingId, hearingRequest);
+        return hearingManagementService.sendRequestToHmi(hearingId, hearingRequest);
     }
 }

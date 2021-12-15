@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
-import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
-import uk.gov.hmcts.reform.hmc.model.hmi.EntitySubType;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +41,7 @@ public class EntitiesMapper {
                         .entityId(party.getPartyID())
                         .entityTypeCode(party.getPartyType())
                         .entityRoleCode(party.getPartyRole())
-                        .entitySubType(entitySubTypeMapper.getEntitySubType(party))
+                        .entitySubType(entitySubTypeMapper.getPersonEntitySubType(party))
                         .entityHearingChannel(party.getIndividualDetails().getPreferredHearingChannel())
                         .entityCommunications(communicationsMapper.getCommunications(party))
                         .entitySpecialMeasures(party.getIndividualDetails().getReasonableAdjustments())
@@ -57,62 +55,12 @@ public class EntitiesMapper {
                         preferredHearingChannels.add(party.getIndividualDetails().getPreferredHearingChannel());
                     }
                 } else if (party.getOrganisationDetails() != null) {
-                    EntitySubType entitySubType = EntitySubType.builder()
-                        .entityCompanyName(party.getOrganisationDetails().getName())
-                        .entityClassCode("ORG/ORG")
-                        .build();
-                    Entity entity = Entity.builder()
-                        .entityId(party.getPartyID())
-                        .entityTypeCode(party.getPartyType())
-                        .entityRoleCode(party.getPartyRole())
-                        .entitySubType(entitySubType)
-                        .build();
-                    entities.add(entity);
-                }
-            }
-        }
-        List<String> uniquePreferredHearingChannels = new ArrayList<>(preferredHearingChannels);
-        return EntitiesMapperObject.builder()
-            .entities(entities)
-            .preferredHearingChannels(uniquePreferredHearingChannels)
-            .build();
-    }
-
-    public EntitiesMapperObject getEntities(UpdateHearingRequest hearingRequest) {
-        List<Entity> entities = new ArrayList<>();
-        HashSet<String> preferredHearingChannels = new HashSet<>();
-        if (hearingRequest.getPartyDetails() != null) {
-            for (PartyDetails party : hearingRequest.getPartyDetails()) {
-                if (party.getIndividualDetails() != null) {
 
                     Entity entity = Entity.builder()
                         .entityId(party.getPartyID())
                         .entityTypeCode(party.getPartyType())
                         .entityRoleCode(party.getPartyRole())
-                        .entitySubType(entitySubTypeMapper.getEntitySubType(party))
-                        .entityHearingChannel(party.getIndividualDetails().getPreferredHearingChannel())
-                        .entityCommunications(communicationsMapper.getCommunications(party))
-                        .entitySpecialMeasures(party.getIndividualDetails().getReasonableAdjustments())
-                        .entityUnavailableDays(unavailableDaysMapper.getUnavailableDays(party))
-                        .entityUnavailableDates(unavailableDatesMapper.getUnavailableDates(party))
-                        .entityRelatedEntities(relatedEntitiesMapper.getRelatedEntities(party))
-                        .build();
-
-                    entities.add(entity);
-                    if (party.getIndividualDetails().getPreferredHearingChannel() != null) {
-                        preferredHearingChannels.add(party.getIndividualDetails().getPreferredHearingChannel());
-                    }
-                } else if (party.getOrganisationDetails() != null) {
-                    EntitySubType entitySubType = EntitySubType.builder()
-                        .entityCompanyName(party.getOrganisationDetails().getName())
-                        .entityClassCode("ORG/ORG")
-                        .build();
-                    Entity entity = Entity.builder()
-                        .entityId(party.getPartyID())
-                        .entityTypeCode(party.getPartyType())
-                        .entityRoleCode(party.getPartyRole())
-                        .entitySubType(entitySubType)
-                        .entityHearingChannel(party.getIndividualDetails().getPreferredHearingChannel())
+                        .entitySubType(entitySubTypeMapper.getOrgEntitySubType(party))
                         .build();
                     entities.add(entity);
                 }

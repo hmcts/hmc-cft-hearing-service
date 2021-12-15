@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
@@ -38,7 +38,6 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -188,12 +187,12 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn201_WhenHearingRequestIsValid() throws Exception {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        stubSuccessfullyValidateHearingObject(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        stubSuccessfullyValidateHearingObject(createHearingRequest);
         RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(ROLE_NAME);
         resource.setRoleType(ROLE_TYPE);
@@ -213,7 +212,7 @@ class HearingManagementControllerIT extends BaseTest {
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingRequest)))
+                            .content(objectMapper.writeValueAsString(createHearingRequest)))
             .andExpect(status().is(201))
             .andReturn();
     }
@@ -221,15 +220,15 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn201_WhenHearingRequestHasPartyDetails() throws Exception {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-        hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
-        hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
-        stubSuccessfullyValidateHearingObject(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        stubSuccessfullyValidateHearingObject(createHearingRequest);
         RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(ROLE_NAME);
         resource.setRoleType(ROLE_TYPE);
@@ -249,7 +248,7 @@ class HearingManagementControllerIT extends BaseTest {
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingRequest)))
+                            .content(objectMapper.writeValueAsString(createHearingRequest)))
             .andExpect(status().is(201))
             .andReturn();
     }
@@ -257,14 +256,14 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn400_WhenHearingRequestHasNoRequestDetails() throws Exception {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        stubReturn400WhileValidateHearingObject(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        stubReturn400WhileValidateHearingObject(createHearingRequest);
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingRequest)))
+                            .content(objectMapper.writeValueAsString(createHearingRequest)))
             .andExpect(status().is(400))
             .andReturn();
     }
@@ -272,13 +271,13 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn400_WhenHearingRequestHasNoHearingDetails() throws Exception {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        stubReturn400WhileValidateHearingObject(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        stubReturn400WhileValidateHearingObject(createHearingRequest);
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingRequest)))
+                            .content(objectMapper.writeValueAsString(createHearingRequest)))
             .andExpect(status().is(400))
             .andReturn();
     }
@@ -286,14 +285,14 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn400_WhenHearingRequestHasNoCaseDetails() throws Exception {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        stubReturn400WhileValidateHearingObject(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        stubReturn400WhileValidateHearingObject(createHearingRequest);
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingRequest)))
+                            .content(objectMapper.writeValueAsString(createHearingRequest)))
             .andExpect(status().is(400))
             .andReturn();
     }
@@ -301,14 +300,14 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn404_WhenHearingRequestHasNoPanelDetails() throws Exception {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        stubReturn400WhileValidateHearingObject(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        stubReturn400WhileValidateHearingObject(createHearingRequest);
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingRequest)))
+                            .content(objectMapper.writeValueAsString(createHearingRequest)))
             .andExpect(status().is(400))
             .andReturn();
     }
@@ -316,18 +315,19 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn400_WhenHearingRequestHasNoRelatedPartyDetails() throws Exception {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-        hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
-        hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.relatedPartyMandatoryFieldMissing());
-        stubReturn400WhileValidateHearingObject(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil
+                                                                               .relatedPartyMandatoryFieldMissing());
+        stubReturn400WhileValidateHearingObject(createHearingRequest);
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingRequest)))
+                            .content(objectMapper.writeValueAsString(createHearingRequest)))
             .andExpect(status().is(400))
             .andReturn();
     }
@@ -335,19 +335,19 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn403WhenNoRoleAssignmentsFound() throws Exception {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        stubSuccessfullyValidateHearingObject(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        stubSuccessfullyValidateHearingObject(createHearingRequest);
         List<RoleAssignmentResource> resourceList = new ArrayList<>();
         RoleAssignmentResponse roleAssignmentResponse = new RoleAssignmentResponse();
         roleAssignmentResponse.setRoleAssignments(resourceList);
         stubReturn200RoleAssignments(USER_ID, roleAssignmentResponse);
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingRequest)))
+                            .content(objectMapper.writeValueAsString(createHearingRequest)))
             .andExpect((status().is(403)))
             .andExpect(jsonPath("$.errors", hasItem(String.format(ROLE_ASSIGNMENTS_NOT_FOUND, USER_ID))))
             .andReturn();
@@ -356,12 +356,12 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn403WhenRoleAssignmentsDoNotMeetCriteria() throws Exception {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        stubSuccessfullyValidateHearingObject(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        stubSuccessfullyValidateHearingObject(createHearingRequest);
         RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName("invalid");
         resource.setRoleType(ROLE_TYPE);
@@ -372,7 +372,7 @@ class HearingManagementControllerIT extends BaseTest {
         stubReturn200RoleAssignments(USER_ID, response);
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingRequest)))
+                            .content(objectMapper.writeValueAsString(createHearingRequest)))
             .andExpect((status().is(403)))
             .andExpect(jsonPath("$.errors", hasItem(ROLE_ASSIGNMENT_INVALID_ROLE)))
             .andReturn();
@@ -381,12 +381,12 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn403WhenCaseCannotBeFound() throws Exception {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        stubSuccessfullyValidateHearingObject(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        stubSuccessfullyValidateHearingObject(createHearingRequest);
         RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(ROLE_NAME);
         resource.setRoleType(ROLE_TYPE);
@@ -402,7 +402,7 @@ class HearingManagementControllerIT extends BaseTest {
         stubReturn404FromDataStore(CASE_REFERENCE);
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingRequest)))
+                            .content(objectMapper.writeValueAsString(createHearingRequest)))
             .andExpect(status().is(403))
             .andExpect(jsonPath("$.errors", hasItem(CASE_NOT_FOUND)))
             .andReturn();
@@ -411,12 +411,12 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn403WhenRoleAssignmentDoesNotMatchCaseDetails() throws Exception {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        stubSuccessfullyValidateHearingObject(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        stubSuccessfullyValidateHearingObject(createHearingRequest);
         RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(ROLE_NAME);
         resource.setRoleType(ROLE_TYPE);
@@ -436,7 +436,7 @@ class HearingManagementControllerIT extends BaseTest {
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingRequest)))
+                            .content(objectMapper.writeValueAsString(createHearingRequest)))
             .andExpect(status().is(403))
             .andExpect(jsonPath("$.errors", hasItem(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES)))
             .andReturn();
