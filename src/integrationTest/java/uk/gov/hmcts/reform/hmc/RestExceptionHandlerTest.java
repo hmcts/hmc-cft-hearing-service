@@ -119,6 +119,7 @@ class RestExceptionHandlerTest extends BaseTest {
         hearingWindow.setHearingWindowFirstDate(new HearingWindowFirstDate());
         return hearingWindow;
     }
+
     @DisplayName("should return correct response when InvalidRoleAssignmentException is thrown")
     @Test
     void shouldHandleInvalidRoleAssignmentException() throws Exception {
@@ -216,7 +217,6 @@ class RestExceptionHandlerTest extends BaseTest {
 
     private void assertHttpErrorResponse(ResultActions result, int expectedStatusCode, String expectedMessage,
                                          String expectedStatus) throws Exception {
-
         result
             .andExpect(status().is(expectedStatusCode))
             .andExpect(jsonPath(ERROR_PATH_STATUS).value(expectedStatus))
