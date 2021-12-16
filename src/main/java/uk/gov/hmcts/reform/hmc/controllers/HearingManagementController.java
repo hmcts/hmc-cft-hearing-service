@@ -50,7 +50,6 @@ public class HearingManagementController {
         this.hearingManagementService = hearingManagementService;
     }
 
-
     @GetMapping(path = "/hearing/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiResponses(value = {
@@ -99,7 +98,6 @@ public class HearingManagementController {
                               @PathVariable("id") Long hearingId) {
         hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
     }
-
 
     /**
      * get Case either by caseRefId OR CaseRefId/caseStatus.
