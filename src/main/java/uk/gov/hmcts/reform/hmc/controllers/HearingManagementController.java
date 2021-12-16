@@ -86,6 +86,12 @@ public class HearingManagementController {
         return hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
     }
 
+    /**
+     * update Hearing Request.
+     *
+     * @param hearingRequest hearing Request
+     * @param hearingId hearing Id
+     */
     @PutMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
