@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.HearingWindowDateRange;
-import uk.gov.hmcts.reform.hmc.model.HearingWindowFirstDate;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
