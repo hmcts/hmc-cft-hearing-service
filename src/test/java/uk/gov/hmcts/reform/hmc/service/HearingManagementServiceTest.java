@@ -788,8 +788,7 @@ class HearingManagementServiceTest {
         UpdateHearingRequest request = new UpdateHearingRequest();
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
-        HearingWindow hearingWindow = new HearingWindow();
-        hearingDetails.setHearingWindow(hearingWindow);
+        hearingDetails.setHearingWindow(generateHearingWindow());
         request.setHearingDetails(hearingDetails);
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .updateHearingRequest(2000000000L, request));
@@ -800,8 +799,7 @@ class HearingManagementServiceTest {
     void updateHearingRequestShouldThrowErrorWhenPartyIndividualAndOrgDetailsNull() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
-        HearingWindow hearingWindow = generateHearingWindow();
-        hearingDetails.setHearingWindow(hearingWindow);
+        hearingDetails.setHearingWindow(generateHearingWindow());
         PartyDetails partyDetails = new PartyDetails();
         List<PartyDetails> partyDetailsList = new ArrayList<>();
         partyDetailsList.add(partyDetails);
@@ -817,8 +815,7 @@ class HearingManagementServiceTest {
     void updateHearingRequestShouldThrowErrorWhenPartyIndividualAndOrgDetailsBothExist() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
-        HearingWindow hearingWindow = generateHearingWindow();
-        hearingDetails.setHearingWindow(hearingWindow);
+        hearingDetails.setHearingWindow(generateHearingWindow());
         PartyDetails partyDetails = new PartyDetails();
         OrganisationDetails organisationDetails = new OrganisationDetails();
         partyDetails.setOrganisationDetails(organisationDetails);
@@ -838,8 +835,7 @@ class HearingManagementServiceTest {
     void updateHearingRequestShouldThrowErrorWhenPartyUnavailabilityDowIsNotPresent() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
-        HearingWindow hearingWindow = generateHearingWindow();
-        hearingDetails.setHearingWindow(hearingWindow);
+        hearingDetails.setHearingWindow(generateHearingWindow());
         PartyDetails partyDetails = new PartyDetails();
         IndividualDetails individualDetails = new IndividualDetails();
         individualDetails.setHearingChannelEmail("email");
@@ -861,8 +857,7 @@ class HearingManagementServiceTest {
     void updateHearingRequestShouldThrowErrorWhenPartyUnavailabilityRangesIsNotPresent() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
-        HearingWindow hearingWindow = generateHearingWindow();
-        hearingDetails.setHearingWindow(hearingWindow);
+        hearingDetails.setHearingWindow(generateHearingWindow());
         PartyDetails partyDetails = new PartyDetails();
         IndividualDetails individualDetails = new IndividualDetails();
         individualDetails.setHearingChannelEmail("email");
@@ -883,8 +878,7 @@ class HearingManagementServiceTest {
     void updateHearingRequestShouldThrowErrorWhenRelatedPartyDetailsAreNotPresent() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
-        HearingWindow hearingWindow = generateHearingWindow();
-        hearingDetails.setHearingWindow(hearingWindow);
+        hearingDetails.setHearingWindow(generateHearingWindow());
         PartyDetails partyDetails = new PartyDetails();
         IndividualDetails individualDetails = new IndividualDetails();
         individualDetails.setHearingChannelEmail("email");

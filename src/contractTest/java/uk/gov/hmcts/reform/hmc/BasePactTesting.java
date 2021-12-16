@@ -214,42 +214,17 @@ public class BasePactTesting {
      */
     protected HearingWindow hearingWindow() {
         HearingWindow hearingWindow = new HearingWindow();
+        hearingWindow.setHearingWindowFirstDate(new HearingWindowFirstDate());
+        hearingWindow.setHearingWindowDateRange(new HearingWindowDateRange());
         if (isRandomlyOdd()) {
             logger.debug("using hearing window first date");
-            HearingWindowFirstDate hearingWindowFirstDate = new HearingWindowFirstDate();
-            hearingWindowFirstDate.setFirstDateTimeMustBe(LocalDateTime.now());
-            hearingWindow.setHearingWindowFirstDate(hearingWindowFirstDate);
+            hearingWindow.getHearingWindowFirstDate().setFirstDateTimeMustBe(LocalDateTime.now());
         } else {
             logger.debug("using hearing window date range");
-            HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
-            hearingWindowDateRange.setHearingWindowStartDateRange(LocalDate.now());
-            hearingWindowDateRange.setHearingWindowEndDateRange(LocalDate.now());
-            hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
+            hearingWindow.getHearingWindowDateRange().setHearingWindowStartDateRange(LocalDate.now());
+            hearingWindow.getHearingWindowDateRange().setHearingWindowEndDateRange(LocalDate.now());
         }
         return hearingWindow;
-    }
-
-    /**
-     * Create Hearing Window First Date test data.
-     *
-     * @return hearingWindowFirstDate hearing Window First Date
-     */
-    protected HearingWindowFirstDate hearingWindowFirstDate() {
-        HearingWindowFirstDate hearingWindowFirstDate = new HearingWindowFirstDate();
-        hearingWindowFirstDate.getFirstDateTimeMustBe();
-        return hearingWindowFirstDate;
-    }
-
-    /**
-     * Create Hearing Window Date Range test data.
-     *
-     * @return hearingWindowDateRange hearing Window Date Range
-     */
-    protected HearingWindowDateRange hearingWindowDateRange() {
-        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
-        hearingWindowDateRange.setHearingWindowEndDateRange(LocalDate.now());
-        hearingWindowDateRange.setHearingWindowStartDateRange(LocalDate.now());
-        return hearingWindowDateRange;
     }
 
     /**

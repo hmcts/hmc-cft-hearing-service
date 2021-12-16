@@ -3,21 +3,7 @@ package uk.gov.hmcts.reform.hmc.utils;
 import org.assertj.core.util.Lists;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.model.CaseCategory;
-import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.HearingDetails;
-import uk.gov.hmcts.reform.hmc.model.HearingLocation;
-import uk.gov.hmcts.reform.hmc.model.HearingWindow;
-import uk.gov.hmcts.reform.hmc.model.HearingWindowDateRange;
-import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
-import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
-import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
-import uk.gov.hmcts.reform.hmc.model.PartyDetails;
-import uk.gov.hmcts.reform.hmc.model.RelatedParty;
-import uk.gov.hmcts.reform.hmc.model.RequestDetails;
-import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.UpdateRequestDetails;
+import uk.gov.hmcts.reform.hmc.model.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,12 +31,7 @@ public class TestingUtil {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
-        HearingWindow hearingWindow = new HearingWindow();
-        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
-        hearingWindowDateRange.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
-        hearingWindowDateRange.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
-        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
-        hearingDetails.setHearingWindow(hearingWindow);
+        hearingDetails.setHearingWindow(createHearingWindow());
         hearingDetails.setDuration(0);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
@@ -219,6 +200,16 @@ public class TestingUtil {
         requestDetails.setVersionNumber(1);
         request.setRequestDetails(requestDetails);
         return request;
+    }
+
+    private static HearingWindow createHearingWindow() {
+        HearingWindow hearingWindow = new HearingWindow();
+        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
+        hearingWindowDateRange.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindowDateRange.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
+        hearingWindow.setHearingWindowFirstDate(new HearingWindowFirstDate());
+        return hearingWindow;
     }
 
 }
