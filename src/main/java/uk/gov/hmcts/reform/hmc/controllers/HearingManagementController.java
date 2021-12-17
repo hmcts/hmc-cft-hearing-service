@@ -90,7 +90,7 @@ public class HearingManagementController {
      *
      * @param hearingId hearing Id
      * @param deleteRequest delete Request
-     * @return HearingResponse hearing response
+     * @return HearingResponse response
      */
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
