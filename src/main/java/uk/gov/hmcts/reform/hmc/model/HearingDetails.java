@@ -27,7 +27,7 @@ public class HearingDetails {
     @Size(max = 40, message = ValidationError.HEARING_TYPE_MAX_LENGTH)
     private String hearingType;
 
-    @NotNull(message = ValidationError.HEARING_WINDOW_NULL)
+    @NotNull(message = ValidationError.INVALID_HEARING_WINDOW)
     private HearingWindow hearingWindow;
 
     @NotNull(message = ValidationError.DURATION_EMPTY)

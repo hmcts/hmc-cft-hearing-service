@@ -51,7 +51,7 @@ public class HearingManagementController {
     }
 
     /**
-     * get Hearing.
+     * get Hearing by Id .
      *
      * @param hearingId hearing Id
      * @param isValid is valid
