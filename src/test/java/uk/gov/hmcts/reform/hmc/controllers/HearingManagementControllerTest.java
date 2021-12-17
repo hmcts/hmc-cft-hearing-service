@@ -149,7 +149,8 @@ class HearingManagementControllerTest {
     @Test
     void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhn() throws Exception {
         final String validCaseRef = "9372710950276233";
-        doReturn(createHearingRequest(validCaseRef)).when(hearingManagementService)
+        HearingRequest hearingRequest =  createHearingRequest(validCaseRef);
+        doReturn(generateHearingsGetResponse(hearingRequest)).when(hearingManagementService)
             .validateGetHearingsRequest(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         HearingsGetResponse hearingsGetResponse = controller.getHearingsRequest(validCaseRef, null);
