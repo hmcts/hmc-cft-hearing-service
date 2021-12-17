@@ -158,7 +158,7 @@ class HearingManagementControllerTest {
         final String validCaseRef = "9372710950276233";
         final String status = "UPDATED"; // for example
         HearingRequest hearingRequest =  createHearingRequest(validCaseRef, status);
-        doReturn(generateHearingsGetResponse(hearingRequest) ).when(hearingManagementService)
+        doReturn(generateHearingsGetResponse(hearingRequest)).when(hearingManagementService)
             .validateGetHearingsRequest(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         HearingsGetResponse hearingsGetResponse = controller.getHearingsRequest(validCaseRef, status);
