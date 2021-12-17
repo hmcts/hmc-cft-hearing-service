@@ -50,9 +50,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_NULL;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
@@ -792,7 +792,7 @@ class HearingManagementServiceTest {
         request.setHearingDetails(hearingDetails);
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .updateHearingRequest(2000000000L, request));
-        assertEquals(INVALID_HEARING_WINDOW, exception.getMessage());
+        assertEquals(HEARING_WINDOW_NULL, exception.getMessage());
     }
 
     @Test

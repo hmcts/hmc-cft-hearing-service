@@ -86,7 +86,7 @@ public class HearingManagementController {
     }
 
     /**
-     *  Delete hearing.
+     *  Delete hearing with given Id.
      *
      * @param hearingId hearing Id
      * @param deleteRequest delete Request
@@ -106,7 +106,7 @@ public class HearingManagementController {
     }
 
     /**
-     * update Hearing Request.
+     * update Hearing Request given Id.
      *
      * @param hearingRequest hearing Request
      * @param hearingId hearing Id
@@ -125,7 +125,7 @@ public class HearingManagementController {
     }
 
     /**
-     * get Hearings either by caseRefId OR CaseRefId & caseStatus.
+     * get Hearings with given caseRefId OR given CaseRefId & caseStatus.
      *
      * @param ccdCaseRef case Ref
      * @param status optional Status

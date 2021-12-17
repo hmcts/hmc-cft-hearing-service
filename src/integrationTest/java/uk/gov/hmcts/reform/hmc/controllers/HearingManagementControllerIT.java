@@ -829,7 +829,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.errors", hasSize(1)))
-            .andExpect(jsonPath("$.errors", hasItem((INVALID_HEARING_WINDOW))))
+            .andExpect(jsonPath("$.errors", hasItem((HEARING_WINDOW_NULL))))
             .andReturn();
     }
 

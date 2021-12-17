@@ -37,9 +37,9 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_NULL;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
@@ -191,7 +191,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private void validateHearingDetails(HearingDetails hearingDetails) {
         if (hearingDetails.getHearingWindow().getHearingWindowDateRange() == null
             && hearingDetails.getHearingWindow().getHearingWindowFirstDate() == null) {
-            throw new BadRequestException(INVALID_HEARING_WINDOW);
+            throw new BadRequestException(HEARING_WINDOW_NULL);
         }
     }
 
