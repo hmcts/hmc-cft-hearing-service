@@ -138,16 +138,9 @@ class HearingManagementServiceTest {
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
         hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.getHearingDetails().getHearingWindow().getHearingWindowDateRange()
-            .setHearingWindowStartDateRange(null);
-        hearingRequest.getHearingDetails().getHearingWindow().getHearingWindowDateRange()
-            .setHearingWindowEndDateRange(null);
-        hearingRequest.getHearingDetails().getHearingWindow().getHearingWindowFirstDate()
-            .setFirstDateTimeMustBe(null);
+        hearingRequest.getHearingDetails().setHearingWindow(null);
 
-        HearingEntity hearingEntity = new HearingEntity();
         Exception exception = assertThrows(BadRequestException.class, () -> {
-
             hearingManagementService.saveHearingRequest(hearingRequest);
         });
         assertEquals("Hearing window details are required", exception.getMessage());
