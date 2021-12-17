@@ -89,10 +89,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     @Transactional
     public HearingResponse saveHearingRequest(HearingRequest hearingRequest) {
-        if (hearingRequest == null
-//            || hearingRequest.getHearingDetails() == null
-//            || hearingRequest.getHearingDetails().getHearingWindow() == null
-        ) {
+        if (hearingRequest == null) {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
         validateHearingRequest(hearingRequest);
