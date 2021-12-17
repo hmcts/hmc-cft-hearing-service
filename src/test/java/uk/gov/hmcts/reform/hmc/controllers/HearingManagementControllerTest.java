@@ -23,8 +23,8 @@ import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
-import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -81,7 +81,6 @@ class HearingManagementControllerTest {
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.saveHearing(hearingRequest);
         verify(hearingManagementService, times(1)).saveHearingRequest(any());
-
     }
 
     @Test
@@ -125,7 +124,6 @@ class HearingManagementControllerTest {
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.getHearing(1234L, true);
         verify(hearingManagementService, times(1)).getHearingRequest(any(), anyBoolean());
-
     }
 
     @Test
