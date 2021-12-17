@@ -50,6 +50,12 @@ public class HearingManagementController {
         this.hearingManagementService = hearingManagementService;
     }
 
+    /**
+     * get Hearing.
+     *
+     * @param hearingId hearing Id
+     * @param isValid is valid
+     */
     @GetMapping(path = "/hearing/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiResponses(value = {
@@ -62,6 +68,12 @@ public class HearingManagementController {
         hearingManagementService.getHearingRequest(hearingId, isValid);
     }
 
+    /**
+     * Save hearing.
+     *
+     * @param hearingRequest hearing Request
+     * @return HearingResponse hearing response
+     */
     @PostMapping(path = "/hearing", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
@@ -73,6 +85,13 @@ public class HearingManagementController {
         return hearingManagementService.saveHearingRequest(hearingRequest);
     }
 
+    /**
+     *  Delete hearing.
+     *
+     * @param hearingId hearing Id
+     * @param deleteRequest delete Request
+     * @return HearingResponse hearing response
+     */
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
@@ -106,10 +125,11 @@ public class HearingManagementController {
     }
 
     /**
-     * get Case either by caseRefId OR CaseRefId/caseStatus.
+     * get Hearings either by caseRefId OR CaseRefId & caseStatus.
+     *
      * @param ccdCaseRef case Ref
      * @param status optional Status
-     * @return HearingsGetResponse
+     * @return HearingsGetResponse response
      */
     @Transactional
     @GetMapping(value = {"/hearings/{ccdCaseRef}"},

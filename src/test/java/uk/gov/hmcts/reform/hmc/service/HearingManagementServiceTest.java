@@ -131,27 +131,27 @@ class HearingManagementServiceTest {
         verify(hearingRepository).existsById(1L);
     }
 
-    //    @ Test
-    //    void shouldFailAsHearingWindowDetailsNotPresent() {
-    //        HearingRequest hearingRequest = new HearingRequest();
-    //        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-    //        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-    //        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-    //        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-    //        hearingRequest.getHearingDetails().getHearingWindow().getHearingWindowDateRange()
-    //            .setHearingWindowStartDateRange(null);
-    //        hearingRequest.getHearingDetails().getHearingWindow().getHearingWindowDateRange()
-    //            .setHearingWindowEndDateRange(null);
-    //        hearingRequest.getHearingDetails().getHearingWindow().getHearingWindowFirstDate()
-    //            .setFirstDateTimeMustBe(null);
-    //
-    //        HearingEntity hearingEntity = new HearingEntity();
-    //        Exception exception = assertThrows(BadRequestException.class, () -> {
-    //
-    //            hearingManagementService.saveHearingRequest(hearingRequest);
-    //        });
-    //        assertEquals("Hearing window details are required", exception.getMessage());
-    //    }
+    @ Test
+    void shouldFailAsHearingWindowDetailsNotPresent() {
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        hearingRequest.getHearingDetails().getHearingWindow().getHearingWindowDateRange()
+            .setHearingWindowStartDateRange(null);
+        hearingRequest.getHearingDetails().getHearingWindow().getHearingWindowDateRange()
+            .setHearingWindowEndDateRange(null);
+        hearingRequest.getHearingDetails().getHearingWindow().getHearingWindowFirstDate()
+            .setFirstDateTimeMustBe(null);
+
+        HearingEntity hearingEntity = new HearingEntity();
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+
+            hearingManagementService.saveHearingRequest(hearingRequest);
+        });
+        assertEquals("Hearing window details are required", exception.getMessage());
+    }
 
     @Test
     void shouldFailAsDetailsNotPresent() {
