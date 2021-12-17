@@ -18,17 +18,16 @@ import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
-import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
-import uk.gov.hmcts.reform.hmc.model.HearingResponse;
-import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
+import uk.gov.hmcts.reform.hmc.model.*;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -158,7 +157,8 @@ class HearingManagementControllerTest {
     void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhnAndStatus() throws Exception {
         final String validCaseRef = "9372710950276233";
         final String status = "UPDATED"; // for example
-        doReturn(createHearingRequest(validCaseRef, status)).when(hearingManagementService)
+        HearingRequest hearingRequest =  createHearingRequest(validCaseRef, status);
+        doReturn(generateHearingsGetResponse(hearingRequest) ).when(hearingManagementService)
             .validateGetHearingsRequest(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         HearingsGetResponse hearingsGetResponse = controller.getHearingsRequest(validCaseRef, status);
@@ -166,18 +166,18 @@ class HearingManagementControllerTest {
         Assert.isTrue(hearingsGetResponse.getCaseRef().equals(validCaseRef));
     }
 
-    private HearingRequest createHearingRequest(String caseRef) {
-        return createHearingRequest(caseRef, null);
+    /**
+     * generate Hearings Response from Hearing Request.
+     *
+     * @return HearingsGetResponse hearings Get Ressponse
+     */
+    private HearingsGetResponse generateHearingsGetResponse(HearingRequest hearingRequest) {
+        HearingsGetResponse hearingsGetResponse = new HearingsGetResponse();
+        hearingsGetResponse.setCaseRef(hearingRequest.getCaseDetails().getCaseRef());
+        hearingsGetResponse.setHmctsServiceCode(hearingRequest.getCaseDetails().getHmctsServiceCode());
+        hearingsGetResponse.setCaseHearings(createCaseHearings());
+        return hearingsGetResponse;
     }
-
-    private HearingRequest createHearingRequest(String caseRef, String status) {
-        HearingRequest hearingRequest = new HearingRequest();
-        CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setCaseRef(caseRef);
-        hearingRequest.setCaseDetails(caseDetails);
-        return hearingRequest;
-    }
-
 
     @Test
     void shouldCallUpdateHearingRequest() {
@@ -194,5 +194,48 @@ class HearingManagementControllerTest {
         hearingResponse.setStatus("LISTED");
         hearingResponse.setTimeStamp(LocalDateTime.now());
         return hearingResponse;
+    }
+
+    private HearingRequest createHearingRequest(String caseRef) {
+        return createHearingRequest(caseRef, null);
+    }
+
+    private HearingRequest createHearingRequest(String caseRef, String status) {
+        HearingRequest hearingRequest = new HearingRequest();
+        CaseDetails caseDetails = new CaseDetails();
+        caseDetails.setCaseRef(caseRef);
+        hearingRequest.setCaseDetails(caseDetails);
+        return hearingRequest;
+    }
+
+    private List<CaseHearing> createCaseHearings() {
+        List<CaseHearing> caseHearings = new ArrayList<>();
+        IntStream.range(1, 4).forEach(i ->
+                                          caseHearings.add(createCaseHearing(i))
+        );
+        return caseHearings;
+    }
+
+    private CaseHearing createCaseHearing(Integer id) {
+        CaseHearing caseHearing = new CaseHearing();
+        caseHearing.setHearingID("hearing" + id);
+        caseHearing.setHearingRequestDateTime(LocalDateTime.now());
+        caseHearing.setHearingType("hearingType" + id);
+        caseHearing.setHmcStatus("hmcStatus" + id);
+        caseHearing.setLastResponseReceivedDateTime(LocalDateTime.now());
+        caseHearing.setResponseVersion("00" + id);
+        caseHearing.setHearingListingStatus("liststat" + id);
+        caseHearing.setListAssistCaseStatus("status" + id);
+        caseHearing.setHearingDaySchedule(createHearingDaySchedule(id));
+        return caseHearing;
+    }
+
+    private HearingDaySchedule createHearingDaySchedule(Integer id) {
+        HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
+        hearingDaySchedule.setHearingRoomId("room" + id);
+        hearingDaySchedule.setHearingJudgeId("judge" + id);
+        hearingDaySchedule.setHearingStartDateTime(LocalDateTime.now());
+        hearingDaySchedule.setHearingEndDateTime(LocalDateTime.now());
+        return hearingDaySchedule;
     }
 }

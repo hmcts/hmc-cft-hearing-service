@@ -125,7 +125,7 @@ public class HearingManagementController {
     }
 
     /**
-     * get Hearings for given caseRefId OR given CaseRefId & caseStatus.
+     * get Hearings for given caseRefId OR (caseRefId & caseStatus).
      *
      * @param ccdCaseRef case Ref
      * @param status optional Status
