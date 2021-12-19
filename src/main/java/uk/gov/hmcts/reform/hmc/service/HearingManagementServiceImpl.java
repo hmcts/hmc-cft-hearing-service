@@ -195,8 +195,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      * @param hearingDetails hearingDtails
      */
     private void validateHearingDetails(HearingDetails hearingDetails) {
-        if (hearingDetails.getHearingWindow() == null ||
-            (hearingDetails.getHearingWindow().getHearingWindowDateRange() == null
+        if (hearingDetails.getHearingWindow() == null
+            || (hearingDetails.getHearingWindow().getHearingWindowDateRange() == null
             && hearingDetails.getHearingWindow().getHearingWindowFirstDate() == null)
         ) {
             throw new BadRequestException(HEARING_WINDOW_NULL);
