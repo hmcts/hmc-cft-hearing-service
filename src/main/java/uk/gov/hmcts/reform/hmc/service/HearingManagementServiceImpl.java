@@ -182,15 +182,23 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private void validateHearingRequestDetails(UpdateHearingRequest hearingRequest) {
         if (hearingRequest.getRequestDetails() == null
-            && hearingRequest.getHearingDetails() == null
-            && hearingRequest.getCaseDetails() == null) {
+            || hearingRequest.getHearingDetails() == null
+            || hearingRequest.getCaseDetails() == null
+        ) {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
     }
 
+    /**
+     * validate Hearing Details. Hearing Windowq cannot be null
+     *
+     * @param hearingDetails hearingDtails
+     */
     private void validateHearingDetails(HearingDetails hearingDetails) {
-        if (hearingDetails.getHearingWindow().getHearingWindowDateRange() == null
-            && hearingDetails.getHearingWindow().getHearingWindowFirstDate() == null) {
+        if (hearingDetails.getHearingWindow() == null ||
+            (hearingDetails.getHearingWindow().getHearingWindowDateRange() == null
+            && hearingDetails.getHearingWindow().getHearingWindowFirstDate() == null)
+        ) {
             throw new BadRequestException(HEARING_WINDOW_NULL);
         }
     }
