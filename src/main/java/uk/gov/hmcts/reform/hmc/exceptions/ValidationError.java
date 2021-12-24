@@ -150,6 +150,9 @@ public final class ValidationError {
     public static final String HEARING_VENUE_ID_NULL_EMPTY = "Hearing venue id can not be null or empty";
     public static final String HEARING_VENUE_ID_MAX_LENGTH = "Hearing venue id must not be more than 60 "
         + CHARACTERS_LONG;
+    public static final String VERSION_NUMBER_NULL_EMPTY = "Version number can not be null or empty";
+    public static final String VERSION_NUMBER_MAX_LENGTH = "Version number must not be more than 60 "
+        + CHARACTERS_LONG;
 
     private ValidationError() {
     }

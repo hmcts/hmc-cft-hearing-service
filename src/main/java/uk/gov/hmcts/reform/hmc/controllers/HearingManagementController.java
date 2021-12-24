@@ -32,6 +32,11 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALI
 @Validated
 public class HearingManagementController {
 
+    public static final String MSG_202_CREATE_HEARING = "Hearing is valid";
+    public static final String MSG_400_CREATE_HEARING = "Invalid hearing details found";
+    public static final String MSG_200_GET_HEARINGS = "Success (with content)";
+    public static final String MSG_400_GET_HEARINGS = "Invalid request";
+
     private final HearingManagementService hearingManagementService;
 
     public HearingManagementController(HearingManagementService hearingManagementService) {
@@ -41,8 +46,8 @@ public class HearingManagementController {
     @PostMapping(path = "/hearing", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ApiResponses(value = {
-        @ApiResponse(code = 202, message = "Hearing are valid"),
-        @ApiResponse(code = 400, message = "Invalid hearing details found")
+        @ApiResponse(code = 202, message = MSG_202_CREATE_HEARING),
+        @ApiResponse(code = 400, message = MSG_400_CREATE_HEARING)
     })
     public void invokeHearing(@RequestBody @Valid HearingRequest hearingRequest) {
         hearingManagementService.validateHearingRequest(hearingRequest);
@@ -60,8 +65,8 @@ public class HearingManagementController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get hearings")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "Success (with content)"),
-        @ApiResponse(code = 400, message = "Invalid request")
+        @ApiResponse(code = 200, message = MSG_200_GET_HEARINGS),
+        @ApiResponse(code = 400, message = MSG_400_GET_HEARINGS)
     })
     public HearingsGetResponse getHearingsRequest(@PathVariable("ccdCaseRef")
         @Valid

@@ -8,7 +8,6 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,27 +15,32 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.hmc.BasePactTesting;
+import uk.gov.hmcts.reform.hmc.controllers.HearingManagementController;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.utility.HearingResponsePactUtil;
 
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @ExtendWith(PactConsumerTestExt.class)
 public class HearingManagementCreateHearingConsumerTest extends BasePactTesting {
 
     private static final String PATH_HEARING = "/hearing";
+    private static final String BROKER_SERVICE_NAME = "hmc cftHearingService";
+
+    private static final String FIELD_HEARING_ID = "hearingId";
+    private static final String FIELD_MESSAGE = "message";
+    private static final String FIELD_STATUS = "status";
+    private static final String FIELD_ERRORS = "errors";
+    private static final String BAD_REQUEST = "BAD_REQUEST";
+    private static final String TEST_HEARIMG_ID = "2000000001";
 
     // Test data 1 - valid HearingRequest
     HearingRequest validHearingRequest = generateHearingRequest(VALID_CASE_REF);
-    String jsonstringRequest1 = jsonCreatedHearingResponse(validHearingRequest);
+    String jsonValidHearingRequest = jsonCreatedHearingResponse(validHearingRequest);
 
     // Test data 2 - invalid HearingRequest
     HearingRequest invalidHearingRequest = generateInvalidHearingRequest();
-    String jsonstringRequest2 = jsonCreatedHearingResponse(invalidHearingRequest);
-
-    private static final String EXPECTED_STATUS_MESSAGE = "Hearing created successfully";
+    String jsonInvalidHearingRequest = jsonCreatedHearingResponse(invalidHearingRequest);
 
     static Map<String, String> headers = Map.of(
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,
@@ -44,103 +48,112 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
     );
 
     /**
-     * create Hearing - send valid request.
+     * create Hearing by POST - send valid request.
      *
      * @param builder Builder object
      * @return response Response object
-     * @throws Exception exception
      */
     @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
-    public RequestResponsePact createHearing(PactDslWithProvider builder) {
+    public RequestResponsePact createHearingByPost(PactDslWithProvider builder) {
         return builder
-            .given("hmc cftHearingService successfully returns created hearing")
-            .uponReceiving("Request to create hearing with valid hearing request")
+            .given(BROKER_SERVICE_NAME + " successfully returns created hearing")
+            .uponReceiving("Request to create hearing by POST with valid hearing request")
             .path(PATH_HEARING)
             .method(HttpMethod.POST.toString())
-            .body(jsonstringRequest1, ContentType.APPLICATION_JSON)
+            .body(jsonValidHearingRequest, ContentType.APPLICATION_JSON)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.ACCEPTED.value())
-            .body(HearingResponsePactUtil.generateCreateHearingJsonBody(EXPECTED_STATUS_MESSAGE))
+            .body(HearingResponsePactUtil.generateCreateHearingByPostJsonBody(
+                HearingManagementController.MSG_202_CREATE_HEARING))
             .toPact();
     }
 
     /**
-     * validation error from create Hearing - send faulty request.
+     * create Hearing by PUT - send valid request.
+     *
+     * @param builder Builder object
+     * @return response Response object
+     */
+    @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
+    public RequestResponsePact createHearingByPut(PactDslWithProvider builder) {
+        return builder
+            .given(BROKER_SERVICE_NAME + " successfully returns created hearing")
+            .uponReceiving("Request to create hearing by PUT with valid hearing request")
+            .path(PATH_HEARING)
+            .query(FIELD_HEARING_ID + "=" + TEST_HEARIMG_ID)
+            .method(HttpMethod.PUT.toString())
+            .body(jsonValidHearingRequest, ContentType.APPLICATION_JSON)
+            .headers(headers)
+            .willRespondWith()
+            .status(HttpStatus.ACCEPTED.value())
+            .body(HearingResponsePactUtil.generateCreateHearingByPutJsonBody(
+                HearingManagementController.MSG_202_CREATE_HEARING))
+            .toPact();
+    }
+
+    /**
+     * validation error from create Hearing by POST - send faulty request.
      *
      * @param builder builder object
      * @return response RequestResponsePact
-     * @throws Exception exception
      */
     @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
-    public RequestResponsePact validationErrorFromCreatingHearing(PactDslWithProvider builder) {
+    public RequestResponsePact validationErrorFromCreateHearingByPost(PactDslWithProvider builder) {
         return builder
-            .given("hmc cftHearingService throws validation error while trying to create hearing")
-            .uponReceiving("Request to create hearing for invalid hearing request")
+            .given(BROKER_SERVICE_NAME + " throws validation error while trying to create hearing")
+            .uponReceiving("Request to create hearing by POST for invalid hearing request")
             .path(PATH_HEARING)
             .method(HttpMethod.POST.toString())
-            .body(jsonstringRequest2, ContentType.APPLICATION_JSON)
+            .body(jsonInvalidHearingRequest, ContentType.APPLICATION_JSON)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.BAD_REQUEST.value())
             .body(new PactDslJsonBody()
-                      .stringType("message", "Invalid hearing details")
-                      .stringValue("status", "BAD_REQUEST")
-                      .eachLike("errors", 1)
+                      .stringType(FIELD_MESSAGE, HearingManagementController.MSG_400_CREATE_HEARING)
+                      .stringValue(FIELD_STATUS, BAD_REQUEST)
+                      .eachLike(FIELD_ERRORS, 1)
                       .closeArray()
             )
             .toPact();
     }
 
     /**
-     * test expects to return the created hearing.
+     * validation error from create Hearing by PUT - send faulty request.
      *
-     * @param mockServer MockServer
-     * @throws Exception exception
+     * @param builder builder object
+     * @return response RequestResponsePact
      */
-    @Test
-    @PactTestFor(pactMethod = "createHearing")
-    public void shouldReturn202CreatedHearing(MockServer mockServer) {
-        JsonPath response = getRestAssuredJsonPath(mockServer);
-
-        assertThat(response.getString("status_message"))
-            .isEqualTo(EXPECTED_STATUS_MESSAGE);
-    }
-
-    /**
-     * test expects an error 400.
-     *
-     * @param mockServer MockServer object
-     * @throws Exception exception
-     */
-    @Test
-    @PactTestFor(pactMethod = "validationErrorFromCreatingHearing")
-    public void shouldReturn400BadRequestForCreateHearing(MockServer mockServer) {
-        JsonPath response = RestAssured
-            .given()
+    @Pact(provider = "hmc_cftHearingService", consumer = "hmc_hearing_service_consumer")
+    public RequestResponsePact validationErrorFromCreateHearingByPut(PactDslWithProvider builder) {
+        return builder
+            .given(BROKER_SERVICE_NAME + " throws validation error while trying to create hearing by PUT")
+            .uponReceiving("Request to create hearing by PUT for invalid hearing request")
+            .path(PATH_HEARING)
+            .query(FIELD_HEARING_ID + "=" + TEST_HEARIMG_ID)
+            .method(HttpMethod.PUT.toString())
+            .body(jsonInvalidHearingRequest, ContentType.APPLICATION_JSON)
             .headers(headers)
-            .contentType(io.restassured.http.ContentType.JSON)
-            .body(jsonstringRequest2)
-            .when()
-            .post(mockServer.getUrl() + PATH_HEARING)
-            .then()
-            .statusCode(400)
-            .and()
-            .extract()
-            .body()
-            .jsonPath();
-
-        assertThat(response.getString("message")).isEqualTo("Invalid hearing details");
-        assertThat(response.getString("status")).isEqualTo("BAD_REQUEST");
+            .willRespondWith()
+            .status(HttpStatus.BAD_REQUEST.value())
+            .body(new PactDslJsonBody()
+                      .stringType(FIELD_MESSAGE, HearingManagementController.MSG_400_CREATE_HEARING)
+                      .stringValue(FIELD_STATUS, BAD_REQUEST)
+                      .eachLike(FIELD_ERRORS, 1)
+                      .closeArray()
+            )
+            .toPact();
     }
 
     /**
-     * get RestAssuredJsonPath.
+     * test expects to return the created hearing by POST.
      *
      * @param mockServer MockServer
      */
-    public JsonPath getRestAssuredJsonPath(MockServer mockServer) {
-        return RestAssured
+    @Test
+    @PactTestFor(pactMethod = "createHearingByPost")
+    public void shouldReturn202CreatedHearingByPost(MockServer mockServer) {
+        RestAssured
             .given()
             .headers(headers)
             .contentType(io.restassured.http.ContentType.JSON)
@@ -148,7 +161,78 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
             .when()
             .post(mockServer.getUrl() + PATH_HEARING)
             .then()
-            .statusCode(202)
+            .statusCode(HttpStatus.ACCEPTED.value())
+            .and()
+            .extract()
+            .body()
+            .jsonPath();
+    }
+
+    /**
+     * test expects to return the created hearing by PUT.
+     *
+     * @param mockServer MockServer
+     */
+    @Test
+    @PactTestFor(pactMethod = "createHearingByPut")
+    public void shouldReturn202CreatedHearingByPut(MockServer mockServer) {
+        RestAssured
+            .given()
+            .headers(headers)
+            .contentType(io.restassured.http.ContentType.JSON)
+            .queryParam(FIELD_HEARING_ID, TEST_HEARIMG_ID)
+            .body(jsonCreatedHearingResponse(validHearingRequest))
+            .when()
+            .put(mockServer.getUrl() + PATH_HEARING)
+            .then()
+            .statusCode(HttpStatus.ACCEPTED.value())
+            .and()
+            .extract()
+            .body()
+            .jsonPath();
+    }
+
+    /**
+     * test expects an error 400 on create Hearing by Post.
+     *
+     * @param mockServer MockServer object
+     */
+    @Test
+    @PactTestFor(pactMethod = "validationErrorFromCreateHearingByPost")
+    public void shouldReturn400BadRequestForCreateHearingByPost(MockServer mockServer) {
+        RestAssured
+            .given()
+            .headers(headers)
+            .contentType(io.restassured.http.ContentType.JSON)
+            .body(jsonInvalidHearingRequest)
+            .when()
+            .post(mockServer.getUrl() + PATH_HEARING)
+            .then()
+            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .and()
+            .extract()
+            .body()
+            .jsonPath();
+    }
+
+    /**
+     * test expects to return an error 400 on create Hearing by Put.
+     *
+     * @param mockServer MockServer object
+     */
+    @Test
+    @PactTestFor(pactMethod = "validationErrorFromCreateHearingByPut")
+    public void shouldReturn400BadRequestForCreateHearingByPut(MockServer mockServer) {
+        RestAssured
+            .given()
+            .headers(headers)
+            .contentType(io.restassured.http.ContentType.JSON)
+            .queryParam(FIELD_HEARING_ID, TEST_HEARIMG_ID)
+            .body(jsonInvalidHearingRequest)
+            .when()
+            .put(mockServer.getUrl() + PATH_HEARING)
+            .then()
+            .statusCode(HttpStatus.BAD_REQUEST.value())
             .and()
             .extract()
             .body()
