@@ -1,0 +1,24 @@
+jms:
+  servicebus:
+    connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING:Endpoint=sb://destination1.servicebus.windows.net;SharedAccessKeyName=[KEYNAME];SharedAccessKey=[KEY]}
+    topic-name: ${HMC_SERVICE_BUS_TOPIC:hmc-to-cft}
+    subscription-name: ${HMC_SERVICE_BUS_SUBSCRIPTION:hmc-subs-to-cft}
+
+spring:
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:postgresql:11:///databasename
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: http://localhost:${wiremock.server.port:5000}/o
+ccd:
+  data-store:
+    host: http://localhost:${wiremock.server.port:4452}
+idam:
+  api:
+    url: http://localhost:${wiremock.server.port:5000}
+  s2s-auth:
+    url: http://localhost:${wiremock.server.port:5000}/s2s

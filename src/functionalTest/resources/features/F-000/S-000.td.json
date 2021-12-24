@@ -25,6 +25,23 @@
     "body": {
       "status": "UP",
       "components" : {
+        "db" : {
+          "status" : "UP",
+          "details" : {
+            "database" : "PostgreSQL",
+            "validationQuery" : "isValid()"
+          }
+        },
+        "discoveryComposite" : {
+          "description" : "Discovery Client not initialized",
+          "status" : "UNKNOWN",
+          "components" : {
+            "discoveryClient" : {
+              "description" : "Discovery Client not initialized",
+              "status" : "UNKNOWN"
+            }
+          }
+        },
         "diskSpace" : {
           "status" : "UP",
           "details" : {
@@ -41,6 +58,12 @@
           "status" : "UP"
         },
         "ping": {
+          "status": "UP"
+        },
+        "refreshScope": {
+          "status": "UP"
+        },
+        "serviceAuth": {
           "status": "UP"
         }
       },

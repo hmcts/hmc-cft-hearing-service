@@ -10,13 +10,46 @@ management:
       base-path: /
       exposure:
         include: health, info, prometheus
-
-#If you use a database then uncomment below lines and update db properties accordingly
 spring:
-  config:
-    import: "optional:configtree:/mnt/secrets/"
   application:
     name: HMC-CFT-Hearing-Service
+  config:
+    import: "optional:configtree:/mnt/secrets/hmc/"
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${CFT_HEARING_SERVICE_DB_HOST:localhost}:${CFT_HEARING_SERVICE_DB_PORT:5060}/${CFT_HEARING_SERVICE_DB_NAME:hmc_cft_hearing_service}${CFT_HEARING_SERVICE_DB_OPTIONS:}
+    username: ${CFT_HEARING_SERVICE_DB_USERNAME:hmc}
+    password: ${CFT_HEARING_SERVICE_DB_PASSWORD:hmc}
+    type: com.zaxxer.hikari.HikariDataSource
+  jpa:
+    database: postgresql
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    out-of-order: true
+    ignore-missing-migrations: true
+  main:
+    allow-bean-definition-overriding: true
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: ${IDAM_OIDC_URL:http://localhost:5000}/o
+        registration:
+          oidc:
+            client-id: internal
+            client-secret: internal
+
+
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
 #    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}${DB_OPTIONS:}
@@ -42,3 +75,50 @@ spring:
 azure:
   application-insights:
     instrumentation-key: ${hmc.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
+
+jms:
+  servicebus:
+    connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING}
+    topic-name: ${HMC_SERVICE_BUS_TOPIC}
+    subscription-name: ${HMC_SERVICE_BUS_SUBSCRIPTION}
+
+role:
+  assignment:
+    api:
+      host: ${ROLE_ASSIGNMENT_URL:http://localhost:4096}
+
+idam:
+  api:
+    url: ${IDAM_API_URL:http://localhost:5000}
+  s2s-auth:
+    microservice: hmc_cft_hearing_service
+    totp_secret: ${IDAM_KEY_CFT_HEARING_SERVICE:AAAAAAAAAAAAAAAA}
+    url: ${S2S_URL:http://localhost:4502}
+  s2s-authorised:
+    services: ${CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES:xui_webapp,ccd_data,am_role_assignment_service}
+  client:
+    id: hmc_cft_hearing_service
+    secret: ${CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET:AAAAAAAAAAAAAAAA}
+    redirect_uri: http://localhost:4561/oauth2redirect
+
+oidc:
+  issuer: ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}
+
+http:
+  client:
+    max:
+      total: ${HTTP_CLIENT_MAX_TOTAL:100}
+      client_per_route: ${HTTP_CLIENT_MAX_CLIENT_PER_ROUTE:20}
+    seconds:
+      idle:
+        connection: ${HTTP_CLIENT_SECONDS_IDLE_CONNECTION:120}
+    validate:
+      after:
+        inactivity: ${HTTP_CLIENT_VALIDATE_AFTER_INACTIVITY:2000}
+    connection:
+      timeout: ${HTTP_CLIENT_CONNECTION_TIMEOUT:30000}
+    read:
+      timeout: ${HTTP_CLIENT_READ_TIMEOUT:60000}
+ccd:
+  data-store:
+    host: ${CCD_DATA_STORE_API_BASE_URL:http://localhost:4452}
