@@ -13,6 +13,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import javax.validation.ConstraintViolationException;
+import javax.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 @Slf4j
@@ -66,6 +68,20 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         log.error("Downstream service errors: {}", errorMessage, ex);
         return toResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
     }
+
+    @ExceptionHandler(HearingNotFoundException.class)
+    protected ResponseEntity<Object> handleHearingNotFoundException(HearingNotFoundException ex) {
+        log.debug("HearingNotFoundException:{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<Object> handleConstraintViolationException(Exception ex) {
+        log.debug("BadRequestException:{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+
 
     private ResponseEntity<Object> toResponseEntity(HttpStatus status, String... errors) {
         var apiError = new ApiError(status, errors == null ? null : List.of(errors));

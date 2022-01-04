@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,10 +19,13 @@ import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 
@@ -30,12 +34,15 @@ import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_VERSION_NUMBER;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
@@ -53,12 +60,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
     private final ObjectMapperService objectMapperService;
 
+    private CaseHearingRequestRepository caseHearingRequestRepository;
+
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
                                         @Qualifier("defaultDataStoreRepository")
                                             DataStoreRepository dataStoreRepository,
                                         HearingRepository hearingRepository,
                                         HearingMapper hearingMapper,
+                                        CaseHearingRequestRepository caseHearingRequestRepository,
                                         MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
                                         ObjectMapperService objectMapperService) {
         this.dataStoreRepository = dataStoreRepository;
@@ -66,6 +76,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.securityUtils = securityUtils;
         this.hearingRepository = hearingRepository;
         this.hearingMapper = hearingMapper;
+        this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
     }
@@ -85,6 +96,26 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
         validateHearingRequest(hearingRequest);
         return insertHearingRequest(hearingRequest);
+    }
+
+    @Override
+    public void updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
+        validateHearingRequest(hearingRequest);
+        validateHearingId(hearingId);
+        validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
+    }
+
+    /**
+     * validate Get Hearing Request by caseRefId or caseRefId/caseStatus.
+     * @param caseRef case Ref
+     * @param status status
+     * @return HearingRequest HearingRequest
+     */
+    @Override
+    public HearingRequest validateGetHearingsRequest(String caseRef, String status) {
+        log.info("caseRef:{} ; status:{}", caseRef, status);
+        // TODO: select hearing request from given caseRefId and status (if any)
+        return new HearingRequest();
     }
 
     private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
@@ -115,6 +146,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
+    private void validateHearingRequest(UpdateHearingRequest hearingRequest) {
+        validateHearingRequestDetails(hearingRequest);
+        validateHearingDetails(hearingRequest.getHearingDetails());
+        if (hearingRequest.getPartyDetails() != null) {
+            validatePartyDetails(hearingRequest.getPartyDetails());
+        }
+    }
+
     private void validatePartyDetails(List<PartyDetails> partyDetails) {
         for (PartyDetails partyDetail : partyDetails) {
             if ((partyDetail.getIndividualDetails() != null && partyDetail.getOrganisationDetails() != null)
@@ -136,6 +175,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validateHearingRequestDetails(HearingRequest hearingRequest) {
+        if (hearingRequest.getRequestDetails() == null
+            && hearingRequest.getHearingDetails() == null
+            && hearingRequest.getCaseDetails() == null) {
+            throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
+        }
+    }
+
+    private void validateHearingRequestDetails(UpdateHearingRequest hearingRequest) {
         if (hearingRequest.getRequestDetails() == null
             && hearingRequest.getHearingDetails() == null
             && hearingRequest.getCaseDetails() == null) {
@@ -203,6 +250,43 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             return true;
         } else {
             return attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()));
+        }
+    }
+
+
+    @Override
+    public void deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
+        validateHearingId(hearingId);
+        validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
+    }
+
+    private void validateVersionNumber(Long hearingId, Integer versionNumber) {
+        Integer versionNumberFromDb = getVersionNumber(hearingId);
+        if (!versionNumberFromDb.equals(versionNumber)) {
+            throw new BadRequestException(INVALID_VERSION_NUMBER);
+        }
+    }
+
+    private Integer getVersionNumber(Long hearingId) {
+        return caseHearingRequestRepository.getVersionNumber(hearingId);
+    }
+
+    private void validateHearingId(Long hearingId) {
+        if (hearingId == null) {
+            throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
+        } else {
+            String hearingIdStr = String.valueOf(hearingId);
+            isValidFormat(hearingIdStr);
+            if (!hearingRepository.existsById(hearingId)) {
+                throw new HearingNotFoundException(hearingId);
+            }
+        }
+    }
+
+    private void isValidFormat(String hearingIdStr) {
+        if (hearingIdStr.length() != HEARING_ID_MAX_LENGTH || !StringUtils.isNumeric(hearingIdStr)
+            || hearingIdStr.charAt(0) != '2') {
+            throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
         }
     }
 
