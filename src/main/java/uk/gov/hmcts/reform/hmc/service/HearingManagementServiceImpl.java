@@ -190,7 +190,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     /**
-     * validate Hearing Details. Hearing Windowq cannot be null
+     * validate Hearing Details. Hearing Window cannot be null
      *
      * @param hearingDetails hearingDtails
      */

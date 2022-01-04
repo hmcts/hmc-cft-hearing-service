@@ -19,24 +19,13 @@ import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
-import uk.gov.hmcts.reform.hmc.model.HearingDetails;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
-import uk.gov.hmcts.reform.hmc.model.HearingResponse;
-import uk.gov.hmcts.reform.hmc.model.HearingWindow;
-import uk.gov.hmcts.reform.hmc.model.HearingWindowDateRange;
-import uk.gov.hmcts.reform.hmc.model.HearingWindowFirstDate;
-import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
-import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
-import uk.gov.hmcts.reform.hmc.model.PartyDetails;
-import uk.gov.hmcts.reform.hmc.model.RelatedParty;
-import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
-import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
-import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.*;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -143,7 +132,7 @@ class HearingManagementServiceTest {
         Exception exception = assertThrows(BadRequestException.class, () -> {
             hearingManagementService.saveHearingRequest(hearingRequest);
         });
-        assertEquals("Hearing window details are required", exception.getMessage());
+        assertEquals("Hearing window can not be null", exception.getMessage());
     }
 
     @Test
@@ -779,10 +768,19 @@ class HearingManagementServiceTest {
     @Test
     void updateHearingRequestShouldThrowErrorWhenHearingWindowFieldsAreNull() {
         UpdateHearingRequest request = new UpdateHearingRequest();
+
+        UpdateRequestDetails requestDetails = new UpdateRequestDetails();
+        requestDetails.setRequestTimeStamp(LocalDateTime.now());
+        requestDetails.setVersionNumber(10);
+        request.setRequestDetails(requestDetails);
+
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingWindow(generateHearingWindow());
         request.setHearingDetails(hearingDetails);
+
+        request.setCaseDetails(TestingUtil.caseDetails());
+
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .updateHearingRequest(2000000000L, request));
         assertEquals(HEARING_WINDOW_NULL, exception.getMessage());
@@ -797,8 +795,13 @@ class HearingManagementServiceTest {
         List<PartyDetails> partyDetailsList = new ArrayList<>();
         partyDetailsList.add(partyDetails);
         UpdateHearingRequest request = new UpdateHearingRequest();
+        UpdateRequestDetails requestDetails = new UpdateRequestDetails();
+        requestDetails.setRequestTimeStamp(LocalDateTime.now());
+        requestDetails.setVersionNumber(10);
+        request.setRequestDetails(requestDetails);
         request.setHearingDetails(hearingDetails);
         request.setPartyDetails(partyDetailsList);
+        request.setCaseDetails(TestingUtil.caseDetails());
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .updateHearingRequest(2000000000L, request));
         assertEquals(INVALID_ORG_INDIVIDUAL_DETAILS, exception.getMessage());
@@ -806,19 +809,23 @@ class HearingManagementServiceTest {
 
     @Test
     void updateHearingRequestShouldThrowErrorWhenPartyIndividualAndOrgDetailsBothExist() {
-        HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(true);
-        hearingDetails.setHearingWindow(generateHearingWindow());
         PartyDetails partyDetails = new PartyDetails();
         OrganisationDetails organisationDetails = new OrganisationDetails();
         partyDetails.setOrganisationDetails(organisationDetails);
         IndividualDetails individualDetails = new IndividualDetails();
         partyDetails.setIndividualDetails(individualDetails);
-        List<PartyDetails> partyDetailsList = new ArrayList<>();
-        partyDetailsList.add(partyDetails);
+        List<PartyDetails> listPartyDetails = new ArrayList<>();
+        listPartyDetails.add(partyDetails);
+
+        UpdateRequestDetails requestDetails = new UpdateRequestDetails();
+        requestDetails.setRequestTimeStamp(LocalDateTime.now());
+        requestDetails.setVersionNumber(10);
+
         UpdateHearingRequest request = new UpdateHearingRequest();
-        request.setHearingDetails(hearingDetails);
-        request.setPartyDetails(partyDetailsList);
+        request.setHearingDetails(TestingUtil.hearingDetails());
+        request.setRequestDetails(requestDetails);
+        request.setPartyDetails(listPartyDetails);
+        request.setCaseDetails(TestingUtil.caseDetails());
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .updateHearingRequest(2000000000L, request));
         assertEquals(INVALID_ORG_INDIVIDUAL_DETAILS, exception.getMessage());
@@ -837,9 +844,16 @@ class HearingManagementServiceTest {
         partyDetails.setUnavailabilityDow(unavailabilityDowList);
         List<PartyDetails> partyDetailsList = new ArrayList<>();
         partyDetailsList.add(partyDetails);
+
+        UpdateRequestDetails requestDetails = new UpdateRequestDetails();
+        requestDetails.setRequestTimeStamp(LocalDateTime.now());
+        requestDetails.setVersionNumber(10);
+
         UpdateHearingRequest request = new UpdateHearingRequest();
+        request.setRequestDetails(requestDetails);
         request.setHearingDetails(hearingDetails);
         request.setPartyDetails(partyDetailsList);
+        request.setCaseDetails(TestingUtil.caseDetails());
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .updateHearingRequest(2000000000L, request));
         assertEquals(INVALID_UNAVAILABILITY_DOW_DETAILS, exception.getMessage());
@@ -860,8 +874,14 @@ class HearingManagementServiceTest {
         List<PartyDetails> partyDetailsList = new ArrayList<>();
         partyDetailsList.add(partyDetails);
         UpdateHearingRequest request = new UpdateHearingRequest();
+
+        UpdateRequestDetails requestDetails = new UpdateRequestDetails();
+        requestDetails.setRequestTimeStamp(LocalDateTime.now());
+        requestDetails.setVersionNumber(10);
+        request.setRequestDetails(requestDetails);
         request.setHearingDetails(hearingDetails);
         request.setPartyDetails(partyDetailsList);
+        request.setCaseDetails(TestingUtil.caseDetails());
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .updateHearingRequest(2000000000L, request));
         assertEquals(INVALID_UNAVAILABILITY_RANGES_DETAILS, exception.getMessage());
@@ -881,8 +901,14 @@ class HearingManagementServiceTest {
         List<PartyDetails> partyDetailsList = new ArrayList<>();
         partyDetailsList.add(partyDetails);
         UpdateHearingRequest request = new UpdateHearingRequest();
+        UpdateRequestDetails requestDetails = new UpdateRequestDetails();
+        requestDetails.setRequestTimeStamp(LocalDateTime.now());
+        requestDetails.setVersionNumber(10);
+
+        request.setRequestDetails(requestDetails);
         request.setHearingDetails(hearingDetails);
         request.setPartyDetails(partyDetailsList);
+        request.setCaseDetails(TestingUtil.caseDetails());
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .updateHearingRequest(2000000000L, request));
         assertEquals(INVALID_RELATED_PARTY_DETAILS, exception.getMessage());
@@ -930,5 +956,28 @@ class HearingManagementServiceTest {
         HearingWindowFirstDate hearingWindowFirstDate = new HearingWindowFirstDate();
         hearingWindow.setHearingWindowFirstDate(hearingWindowFirstDate);
         return hearingWindow;
+    }
+
+    private UpdateHearingRequest generateValidUpdateHearingRequest() {
+        HearingDetails hearingDetails = new HearingDetails();
+        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setHearingWindow(generateHearingWindow());
+
+        PartyDetails partyDetails = new PartyDetails();
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setHearingChannelEmail("email");
+
+        List<RelatedParty> relatedParties = new ArrayList<>();
+        individualDetails.setRelatedParties(relatedParties);
+        partyDetails.setIndividualDetails(individualDetails);
+
+        List<PartyDetails> partyDetailsList = new ArrayList<>();
+        partyDetailsList.add(partyDetails);
+
+        UpdateHearingRequest request = new UpdateHearingRequest();
+        request.setHearingDetails(hearingDetails);
+        request.setPartyDetails(partyDetailsList);
+
+        return request;
     }
 }
