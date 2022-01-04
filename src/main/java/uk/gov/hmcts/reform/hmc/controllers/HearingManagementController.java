@@ -151,4 +151,5 @@ public class HearingManagementController {
                                                       String status) {
         return hearingManagementService.validateGetHearingsRequest(ccdCaseRef, status);
     }
+
 }
