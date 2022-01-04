@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
@@ -115,11 +116,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     public GetHearingsResponse getHearings(String caseRef, String status) {
         log.info("caseRef:{} ; status:{}", caseRef, status);
-        List<CaseHearingRequestEntity> entities = caseHearingRequestRepository.getHearingDetails(caseRef);
-        if (entities.isEmpty()) {
-            return null;
+        List<CaseHearingRequestEntity> entities;
+        if (!isBlank(status)) {
+            entities = caseHearingRequestRepository.getHearingDetailsWithStatus(caseRef, status);
+        } else {
+            entities = caseHearingRequestRepository.getHearingDetails(caseRef);
         }
-        return getHearingsResponseDetails(entities);
+        return getHearingsResponseDetails(caseRef,entities);
     }
 
     private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
@@ -158,11 +161,16 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    private GetHearingsResponse getHearingsResponseDetails(List<CaseHearingRequestEntity> entities) {
+    private GetHearingsResponse getHearingsResponseDetails(String caseRef, List<CaseHearingRequestEntity> entities) {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
-        getHearingsResponse.setCaseRef(entities.get(0).getCaseReference());
-        getHearingsResponse.setHmctsServiceId(entities.get(0).getHmctsServiceID());
-        setCaseHearings(entities, getHearingsResponse);
+        if (!entities.isEmpty()) {
+            getHearingsResponse.setCaseRef(entities.get(0).getCaseReference());
+            getHearingsResponse.setHmctsServiceId(entities.get(0).getHmctsServiceID());
+            setCaseHearings(entities, getHearingsResponse);
+        } else {
+            getHearingsResponse.setCaseRef(caseRef);
+            getHearingsResponse.setCaseHearings(new ArrayList<>());
+        }
         return getHearingsResponse;
     }
 

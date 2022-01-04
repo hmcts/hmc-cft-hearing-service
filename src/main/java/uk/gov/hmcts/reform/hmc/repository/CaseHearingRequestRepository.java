@@ -18,4 +18,8 @@ public interface CaseHearingRequestRepository extends CrudRepository<CaseHearing
 
     @Query("from CaseHearingRequestEntity csr WHERE csr.caseReference = :caseRef")
     List<CaseHearingRequestEntity> getHearingDetails(String caseRef);
+
+    @Query("from CaseHearingRequestEntity csr WHERE csr.caseReference = :caseRef and csr.hearing.status = :status")
+    List<CaseHearingRequestEntity> getHearingDetailsWithStatus(String caseRef, String status);
+
 }

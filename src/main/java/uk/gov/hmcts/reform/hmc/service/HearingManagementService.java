@@ -19,4 +19,6 @@ public interface HearingManagementService {
     void updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest);
 
     GetHearingsResponse getHearings(String caseRefId, String caseStatus);
+
+
 }
