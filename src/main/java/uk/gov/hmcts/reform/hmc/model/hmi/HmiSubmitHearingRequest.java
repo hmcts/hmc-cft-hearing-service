@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.hmc.model.hmi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
+@Builder
 public class HmiSubmitHearingRequest {
 
     @JsonProperty("hearingRequest")

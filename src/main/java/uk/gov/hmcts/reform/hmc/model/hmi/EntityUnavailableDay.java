@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.hmc.model.hmi;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EntityUnavailableDay {
 

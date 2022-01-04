@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.helper.hmi;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
 
@@ -30,24 +29,25 @@ public class EntitiesMapper {
         this.entitySubTypeMapper = entitySubTypeMapper;
     }
 
-    public EntitiesMapperObject getEntities(HearingRequest hearingRequest) {
+    public EntitiesMapperObject getEntities(List<PartyDetails> partyDetails) {
         List<Entity> entities = new ArrayList<>();
         HashSet<String> preferredHearingChannels = new HashSet<>();
-        if (hearingRequest.getPartyDetails() != null) {
-            for (PartyDetails party : hearingRequest.getPartyDetails()) {
+        if (partyDetails != null) {
+            for (PartyDetails party : partyDetails) {
                 if (party.getIndividualDetails() != null) {
-
                     Entity entity = Entity.builder()
                         .entityId(party.getPartyID())
                         .entityTypeCode(party.getPartyType())
                         .entityRoleCode(party.getPartyRole())
-                        .entitySubType(entitySubTypeMapper.getPersonEntitySubType(party))
+                        .entitySubType(entitySubTypeMapper.getPersonEntitySubType(party.getIndividualDetails()))
                         .entityHearingChannel(party.getIndividualDetails().getPreferredHearingChannel())
                         .entityCommunications(communicationsMapper.getCommunications(party))
                         .entitySpecialMeasures(party.getIndividualDetails().getReasonableAdjustments())
-                        .entityUnavailableDays(unavailableDaysMapper.getUnavailableDays(party))
-                        .entityUnavailableDates(unavailableDatesMapper.getUnavailableDates(party))
-                        .entityRelatedEntities(relatedEntitiesMapper.getRelatedEntities(party))
+                        .entityUnavailableDays(unavailableDaysMapper.getUnavailableDays(party.getUnavailabilityDow()))
+                        .entityUnavailableDates(unavailableDatesMapper
+                                                    .getUnavailableDates(party.getUnavailabilityRanges()))
+                        .entityRelatedEntities(relatedEntitiesMapper.getRelatedEntities(party.getIndividualDetails()
+                                                                                            .getRelatedParties()))
                         .build();
 
                     entities.add(entity);
@@ -60,7 +60,7 @@ public class EntitiesMapper {
                         .entityId(party.getPartyID())
                         .entityTypeCode(party.getPartyType())
                         .entityRoleCode(party.getPartyRole())
-                        .entitySubType(entitySubTypeMapper.getOrgEntitySubType(party))
+                        .entitySubType(entitySubTypeMapper.getOrgEntitySubType(party.getOrganisationDetails()))
                         .build();
                     entities.add(entity);
                 }

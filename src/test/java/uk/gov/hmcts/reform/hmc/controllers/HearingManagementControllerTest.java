@@ -78,8 +78,7 @@ class HearingManagementControllerTest {
         hearingResponse.setHearingRequestId(1L);
         when(hearingManagementService.saveHearingRequest(createHearingRequest)).thenReturn(hearingResponse);
         doNothing().when(hearingManagementService).verifyAccess(createHearingRequest.getCaseDetails().getCaseRef());
-        //doNothing().when(hearingManagementService).sendCreateRequestToHmi(1L, createHearingRequest);
-        HmiSubmitHearingRequest hmiSubmitHearingRequest = new HmiSubmitHearingRequest();
+        HmiSubmitHearingRequest hmiSubmitHearingRequest = HmiSubmitHearingRequest.builder().build();
         when(hearingManagementService.sendRequestToHmi(1L,
                                                              createHearingRequest
         )).thenReturn(hmiSubmitHearingRequest);
@@ -160,8 +159,7 @@ class HearingManagementControllerTest {
         HearingResponse hearingResponse = new HearingResponse();
         hearingResponse.setHearingRequestId(1L);
         doNothing().when(hearingManagementService).updateHearingRequest(1L, hearingRequest);
-        //doNothing().when(hearingManagementService).updateHearingRequest(1L, hearingRequest);
-        HmiSubmitHearingRequest hmiSubmitHearingRequest = new HmiSubmitHearingRequest();
+        HmiSubmitHearingRequest hmiSubmitHearingRequest = HmiSubmitHearingRequest.builder().build();
         when(hearingManagementService.sendRequestToHmi(1L, hearingRequest)).thenReturn(hmiSubmitHearingRequest);
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.updateHearing(hearingRequest, 1L);

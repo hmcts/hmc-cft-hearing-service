@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.hmi.RelatedEntity;
 
@@ -11,9 +10,9 @@ import java.util.List;
 @Component
 public class RelatedEntitiesMapper {
 
-    public List<RelatedEntity> getRelatedEntities(PartyDetails partyDetails) {
+    public List<RelatedEntity> getRelatedEntities(List<RelatedParty> relatedParties) {
         List<RelatedEntity> relatedEntities = new ArrayList<>();
-        for (RelatedParty relatedParty : partyDetails.getIndividualDetails().getRelatedParties()) {
+        for (RelatedParty relatedParty :  relatedParties) {
             RelatedEntity relatedEntity = RelatedEntity.builder()
                 .relatedEntityId(relatedParty.getRelatedPartyID())
                 .relatedEntityRelationshipType(relatedParty.getRelationshipType())

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.hmi.EntityUnavailableDay;
 
@@ -11,13 +10,14 @@ import java.util.List;
 @Component
 public class UnavailableDaysMapper {
 
-    public List<EntityUnavailableDay> getUnavailableDays(PartyDetails partyDetails) {
+    public List<EntityUnavailableDay> getUnavailableDays(List<UnavailabilityDow> unavailabilityDows) {
         List<EntityUnavailableDay> unavailableDays = new ArrayList<>();
-        if (partyDetails.getUnavailabilityDow() != null) {
-            for (UnavailabilityDow unavailabilityDow : partyDetails.getUnavailabilityDow()) {
-                EntityUnavailableDay entityUnavailableDay = new EntityUnavailableDay();
-                entityUnavailableDay.setUnavailableDayOfWeek(unavailabilityDow.getDow());
-                entityUnavailableDay.setUnavailableType(unavailabilityDow.getDowUnavailabilityType());
+        if (unavailabilityDows != null) {
+            for (UnavailabilityDow unavailabilityDow : unavailabilityDows) {
+                EntityUnavailableDay entityUnavailableDay = EntityUnavailableDay.builder()
+                    .unavailableDayOfWeek(unavailabilityDow.getDow())
+                    .unavailableType(unavailabilityDow.getDowUnavailabilityType())
+                    .build();
                 unavailableDays.add(entityUnavailableDay);
             }
         }

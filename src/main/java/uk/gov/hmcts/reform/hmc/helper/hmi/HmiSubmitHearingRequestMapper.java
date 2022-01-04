@@ -22,7 +22,7 @@ public class HmiSubmitHearingRequestMapper {
     }
 
     public HmiSubmitHearingRequest mapRequest(Long hearingId, HearingRequest hearingRequest) {
-        EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest);
+        EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest.getPartyDetails());
 
         HmiHearingRequest hmiHearingRequest = HmiHearingRequest.builder()
             .caseDetails(hmiCaseDetailsMapper.getCaseDetails(hearingRequest.getCaseDetails(), hearingId))
@@ -31,9 +31,9 @@ public class HmiSubmitHearingRequestMapper {
                 .getPreferredHearingChannels()))
             .build();
 
-        HmiSubmitHearingRequest hmiSubmitHearingRequest = new HmiSubmitHearingRequest();
-        hmiSubmitHearingRequest.setHearingRequest(hmiHearingRequest);
-        return hmiSubmitHearingRequest;
+        return HmiSubmitHearingRequest.builder()
+            .hearingRequest(hmiHearingRequest)
+            .build();
     }
 
 }
