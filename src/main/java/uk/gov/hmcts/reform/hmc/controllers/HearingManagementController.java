@@ -69,7 +69,7 @@ public class HearingManagementController {
     }
 
     /**
-     * Save hearing.
+     * Save given hearing.
      *
      * @param hearingRequest hearing Request
      * @return HearingResponse hearing response
