@@ -785,12 +785,16 @@ class HearingManagementServiceTest {
 
         UpdateRequestDetails requestDetails = new UpdateRequestDetails();
         requestDetails.setRequestTimeStamp(LocalDateTime.now());
-        requestDetails.setVersionNumber(10);
+        requestDetails.setVersionNumber(2);
         request.setRequestDetails(requestDetails);
 
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingWindow(generateHearingWindow());
+        hearingDetails.getHearingWindow().setHearingWindowFirstDate(null);
+        hearingDetails.getHearingWindow().getHearingWindowDateRange().setHearingWindowStartDateRange(null);
+        hearingDetails.getHearingWindow().getHearingWindowDateRange().setHearingWindowEndDateRange(null);
+
         request.setHearingDetails(hearingDetails);
 
         request.setCaseDetails(TestingUtil.caseDetails());
