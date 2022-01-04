@@ -196,10 +196,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      */
     private void validateHearingDetails(HearingDetails hearingDetails) {
         if (null == hearingDetails.getHearingWindow()
-          || (null != hearingDetails.getHearingWindow()
+            || (null != hearingDetails.getHearingWindow()
             && null == hearingDetails.getHearingWindow().getHearingWindowFirstDate()
             && null == hearingDetails.getHearingWindow().getHearingWindowDateRange())
-          || (null != hearingDetails.getHearingWindow()
+            || (null != hearingDetails.getHearingWindow()
             && null == hearingDetails.getHearingWindow().getHearingWindowFirstDate()
             && null != hearingDetails.getHearingWindow().getHearingWindowDateRange()
             && null == hearingDetails.getHearingWindow().getHearingWindowDateRange().getHearingWindowStartDateRange()
