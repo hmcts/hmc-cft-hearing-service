@@ -82,7 +82,7 @@ jms:
       connection-string: ${HMC_QUEUE_CONNECTION_STRING}
       # should be an integer that is interpreted as seconds
       exponential-multiplier: ${HMC_QUEUE_EXPONENTIAL_MULTIPLIER:2}
-      queue-name: ${HMC_QUEUE_NAME}
+      queue-name: ${HMC_SERVICE_BUS_QUEUE}
       max-retry-attempts: ${HMC_QUEUE_MAX_RETRIES:5}
     external:
       connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING}

@@ -5,7 +5,7 @@ java:
   environment:
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft
     HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft
-    HMC_QUEUE_NAME: hmc-from-hmi
+    HMC_SERVICE_BUS_QUEUE: hmc-from-hmi
     CFT_HEARING_SERVICE_DB_HOST: "{{ .Release.Name }}-postgresql"
     CFT_HEARING_SERVICE_DB_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
     CFT_HEARING_SERVICE_DB_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
