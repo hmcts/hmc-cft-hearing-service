@@ -148,7 +148,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      */
     public HearingsGetResponse validateGetHearingsRequest(String caseRef, String status) {
         log.info("caseRef:{} ; status:{}", caseRef, status);
-        // TODO: select hearing request from given caseRefId and status (if any)
+
+        // select hearing request from given caseRefId and status (if any)
+        // TEMPORARILY return new response
         return new HearingsGetResponse();
     }
 
@@ -269,7 +271,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
 
-        // TODO: load the response details
         HearingResponse hearingResponse = new HearingResponse();
         hearingResponse.setHearingRequestId(hearingId);
         hearingResponse.setTimeStamp(LocalDateTime.now());
