@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class RelatedEntitiesMapper {
+class RelatedEntitiesMapper {
 
     public List<RelatedEntity> getRelatedEntities(List<RelatedParty> relatedParties) {
         List<RelatedEntity> relatedEntities = new ArrayList<>();

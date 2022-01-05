@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.hmc.helper.hmi.EntitySubTypeMapper.ORGANISATION_CLASS_CODE;
 import static uk.gov.hmcts.reform.hmc.helper.hmi.EntitySubTypeMapper.PERSON_CLASS_CODE;
 
-public class EntitySubTypeMapperTest {
+class EntitySubTypeMapperTest {
 
     private static final String TITLE = "Title";
     private static final String FIRST_NAME = "FirstName";

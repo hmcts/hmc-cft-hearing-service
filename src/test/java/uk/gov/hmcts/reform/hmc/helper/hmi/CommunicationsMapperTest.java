@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.EMAIL_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PHONE_TYPE;
 
-public class CommunicationsMapperTest {
+class CommunicationsMapperTest {
 
     @Test
     void shouldMapWhenPartyDetailsContainsEmailAndPhone() {

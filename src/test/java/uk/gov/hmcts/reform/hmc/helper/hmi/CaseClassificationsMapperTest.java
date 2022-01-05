@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CaseClassificationsMapperTest {
+class CaseClassificationsMapperTest {
 
     private static final String SERVICE_CODE = "AB1";
     private static final String CATEGORY_VALUE = "CategoryValue";

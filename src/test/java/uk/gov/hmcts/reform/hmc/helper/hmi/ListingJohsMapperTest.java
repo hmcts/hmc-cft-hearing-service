@@ -9,9 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class ListingJohsMapperTest {
+class ListingJohsMapperTest {
 
     private static final String MEMBER_ID = "MemberId";
     private static final String MEMBER_ID_TWO = "MemberIdTwo";
@@ -46,13 +47,15 @@ public class ListingJohsMapperTest {
     @Test
     void shouldHandleNullPanelRequirements() {
         ListingJohsMapper listingJohsMapper = new ListingJohsMapper();
-        listingJohsMapper.getListingJohs(null);
+        List<ListingJoh> listingJohs = listingJohsMapper.getListingJohs(null);
+        assertTrue(listingJohs.isEmpty());
     }
 
     @Test
     void shouldHandleNullPanelPreferences() {
         ListingJohsMapper listingJohsMapper = new ListingJohsMapper();
         PanelRequirements panelRequirements = new PanelRequirements();
-        listingJohsMapper.getListingJohs(panelRequirements);
+        List<ListingJoh> listingJohs = listingJohsMapper.getListingJohs(panelRequirements);
+        assertTrue(listingJohs.isEmpty());
     }
 }

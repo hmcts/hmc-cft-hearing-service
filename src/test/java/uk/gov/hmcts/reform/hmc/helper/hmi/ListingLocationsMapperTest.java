@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ListingLocationsMapperTest {
+class ListingLocationsMapperTest {
 
     private static final String LOCATION_ID = "LocationId";
     private static final String LOCATION_ID_TWO = "LocationIdTwo";

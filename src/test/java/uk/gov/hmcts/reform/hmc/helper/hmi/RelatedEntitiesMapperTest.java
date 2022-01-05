@@ -5,12 +5,12 @@ import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.hmi.RelatedEntity;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class RelatedEntitiesMapperTest {
+class RelatedEntitiesMapperTest {
 
     private static final String PARTY_ID = "PartyId";
     private static final String PARTY_ID_TWO = "PartyIdTwo";
@@ -44,13 +44,7 @@ public class RelatedEntitiesMapperTest {
     @Test
     void shouldHandleNullRelatedParties() {
         RelatedEntitiesMapper relatedEntitiesMapper = new RelatedEntitiesMapper();
-        relatedEntitiesMapper.getRelatedEntities(null);
-    }
-
-    @Test
-    void shouldHandleEmptyRelatedParties() {
-        RelatedEntitiesMapper relatedEntitiesMapper = new RelatedEntitiesMapper();
-        RelatedParty relatedParty = new RelatedParty();
-        relatedEntitiesMapper.getRelatedEntities(Collections.singletonList(relatedParty));
+        List<RelatedEntity> relatedEntities = relatedEntitiesMapper.getRelatedEntities(null);
+        assertTrue(relatedEntities.isEmpty());
     }
 }

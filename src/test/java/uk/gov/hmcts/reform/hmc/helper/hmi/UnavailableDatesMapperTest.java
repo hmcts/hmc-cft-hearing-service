@@ -6,12 +6,12 @@ import uk.gov.hmcts.reform.hmc.model.hmi.EntityUnavailableDate;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class UnavailableDatesMapperTest {
+class UnavailableDatesMapperTest {
 
     @Test
     void shouldReturnUnavailableDates() {
@@ -43,13 +43,8 @@ public class UnavailableDatesMapperTest {
     @Test
     void shouldHandleNullUnavailabilityRanges() {
         UnavailableDatesMapper unavailableDatesMapper = new UnavailableDatesMapper();
-        unavailableDatesMapper.getUnavailableDates(null);
-    }
-
-    @Test
-    void shouldHandleEmptyUnavailabilityRanges() {
-        UnavailableDatesMapper unavailableDatesMapper = new UnavailableDatesMapper();
-        UnavailabilityRanges unavailabilityRanges = new UnavailabilityRanges();
-        unavailableDatesMapper.getUnavailableDates(Collections.singletonList(unavailabilityRanges));
+        List<EntityUnavailableDate> entityUnavailableDates = unavailableDatesMapper
+            .getUnavailableDates(null);
+        assertTrue(entityUnavailableDates.isEmpty());
     }
 }

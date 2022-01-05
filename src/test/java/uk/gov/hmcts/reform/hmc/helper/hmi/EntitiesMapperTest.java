@@ -25,12 +25,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.helper.hmi.EntitySubTypeMapper.ORGANISATION_CLASS_CODE;
 import static uk.gov.hmcts.reform.hmc.helper.hmi.EntitySubTypeMapper.PERSON_CLASS_CODE;
 
 @ExtendWith(MockitoExtension.class)
-public class EntitiesMapperTest {
+class EntitiesMapperTest {
 
     @InjectMocks
     private EntitiesMapper entitiesMapper;
@@ -164,21 +166,22 @@ public class EntitiesMapperTest {
     @Test
     void shouldHandleNullPartyDetails() {
         entitiesMapper.getEntities(null);
+        verify(entitySubTypeMapper, never()).getPersonEntitySubType(any());
     }
 
     @Test
     void shouldHandleEmptyPartyDetails() {
         PartyDetails partyDetails = new PartyDetails();
         entitiesMapper.getEntities(Collections.singletonList(partyDetails));
+        verify(entitySubTypeMapper, never()).getPersonEntitySubType(any());
     }
 
     @Test
     void shouldHandlePartyDetailsWithoutOrgDetailsOrIndividualDetails() {
         PartyDetails partyDetails = new PartyDetails();
-        IndividualDetails individualDetails = new IndividualDetails();
-        individualDetails.setVulnerableFlag(false);
-        partyDetails.setIndividualDetails(individualDetails);
-        entitiesMapper.getEntities(Collections.singletonList(partyDetails));
+        partyDetails.setPartyID("id");
+        EntitiesMapperObject entitiesMapperObject = entitiesMapper.getEntities(Collections.singletonList(partyDetails));
+        assertTrue(entitiesMapperObject.getEntities().isEmpty());
     }
 
     @Test
@@ -187,6 +190,7 @@ public class EntitiesMapperTest {
         IndividualDetails individualDetails = new IndividualDetails();
         partyDetails.setIndividualDetails(individualDetails);
         entitiesMapper.getEntities(Collections.singletonList(partyDetails));
+        verify(entitySubTypeMapper, never()).getOrgEntitySubType(any());
     }
 
     @Test
@@ -195,5 +199,6 @@ public class EntitiesMapperTest {
         OrganisationDetails organisationDetails = new OrganisationDetails();
         partyDetails.setOrganisationDetails(organisationDetails);
         entitiesMapper.getEntities(Collections.singletonList(partyDetails));
+        verify(entitySubTypeMapper, never()).getPersonEntitySubType(any());
     }
 }
