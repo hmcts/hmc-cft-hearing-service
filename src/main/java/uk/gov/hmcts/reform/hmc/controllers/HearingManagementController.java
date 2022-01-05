@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import javax.validation.Valid;
@@ -118,12 +117,13 @@ public class HearingManagementController {
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
     public void updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
-                                                 @PathVariable("id") Long hearingId) {
+                              @PathVariable("id") Long hearingId) {
         hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
         hearingManagementService.sendRequestToHmi(hearingId, hearingRequest);
     }
 
-   /* @PostMapping(path = "/test", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    /*
+    @PostMapping(path = "/test", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public HmiSubmitHearingRequest test(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
         hearingManagementService.verifyAccess(createHearingRequest.getCaseDetails().getCaseRef());
@@ -137,7 +137,7 @@ public class HearingManagementController {
     @PutMapping(path = "/test/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public HmiSubmitHearingRequest test(@RequestBody @Valid UpdateHearingRequest hearingRequest,
-                                                 @PathVariable("id") Long hearingId) {
+                                        @PathVariable("id") Long hearingId) {
         hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
         return hearingManagementService.test(hearingId, hearingRequest);
     }*/
