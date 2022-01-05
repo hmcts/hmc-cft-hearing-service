@@ -105,9 +105,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public HmiSubmitHearingRequest sendRequestToHmi(Long hearingId, HearingRequest hearingRequest) {
-        return hmiSubmitHearingRequestMapper.mapRequest(hearingId, hearingRequest);
+    public void sendRequestToHmi(Long hearingId, HearingRequest hearingRequest) {
+        hmiSubmitHearingRequestMapper.mapRequest(hearingId, hearingRequest);
     }
+
+    /*@Override
+    public HmiSubmitHearingRequest test(Long hearingId, HearingRequest hearingRequest) {
+        return hmiSubmitHearingRequestMapper.mapRequest(hearingId, hearingRequest);
+    }*/
 
     /**
      * validate Get Hearing Request by caseRefId or caseRefId/caseStatus.

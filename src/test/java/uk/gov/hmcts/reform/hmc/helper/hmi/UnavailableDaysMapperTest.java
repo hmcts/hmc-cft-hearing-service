@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.hmi.EntityUnavailableDay;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,6 +40,19 @@ public class UnavailableDaysMapperTest {
         List<EntityUnavailableDay> expectedUnavailableDays = Arrays.asList(entityUnavailableDay,
                                                                            entityUnavailableDayTwo);
         assertEquals(expectedUnavailableDays, actualUnavailableDays);
+    }
+
+    @Test
+    void shouldHandleNullUnavailabilityDows() {
+        UnavailableDaysMapper unavailableDaysMapper = new UnavailableDaysMapper();
+        unavailableDaysMapper.getUnavailableDays(null);
+    }
+
+    @Test
+    void shouldHandleEmptyUnavailabilityDows() {
+        UnavailableDaysMapper unavailableDaysMapper = new UnavailableDaysMapper();
+        UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
+        unavailableDaysMapper.getUnavailableDays(Collections.singletonList(unavailabilityDow));
     }
 
 }

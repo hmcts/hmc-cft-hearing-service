@@ -160,4 +160,40 @@ public class EntitiesMapperTest {
 
         assertEquals(5, entities.size());
     }
+
+    @Test
+    void shouldHandleNullPartyDetails() {
+        entitiesMapper.getEntities(null);
+    }
+
+    @Test
+    void shouldHandleEmptyPartyDetails() {
+        PartyDetails partyDetails = new PartyDetails();
+        entitiesMapper.getEntities(Collections.singletonList(partyDetails));
+    }
+
+    @Test
+    void shouldHandlePartyDetailsWithoutOrgDetailsOrIndividualDetails() {
+        PartyDetails partyDetails = new PartyDetails();
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setVulnerableFlag(false);
+        partyDetails.setIndividualDetails(individualDetails);
+        entitiesMapper.getEntities(Collections.singletonList(partyDetails));
+    }
+
+    @Test
+    void shouldHandlePartyDetailsWithoutOrgDetails() {
+        PartyDetails partyDetails = new PartyDetails();
+        IndividualDetails individualDetails = new IndividualDetails();
+        partyDetails.setIndividualDetails(individualDetails);
+        entitiesMapper.getEntities(Collections.singletonList(partyDetails));
+    }
+
+    @Test
+    void shouldHandlePartyDetailsWithoutIndividualDetails() {
+        PartyDetails partyDetails = new PartyDetails();
+        OrganisationDetails organisationDetails = new OrganisationDetails();
+        partyDetails.setOrganisationDetails(organisationDetails);
+        entitiesMapper.getEntities(Collections.singletonList(partyDetails));
+    }
 }

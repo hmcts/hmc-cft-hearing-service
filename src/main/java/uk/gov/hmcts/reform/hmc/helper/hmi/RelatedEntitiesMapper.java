@@ -12,12 +12,14 @@ public class RelatedEntitiesMapper {
 
     public List<RelatedEntity> getRelatedEntities(List<RelatedParty> relatedParties) {
         List<RelatedEntity> relatedEntities = new ArrayList<>();
-        for (RelatedParty relatedParty :  relatedParties) {
-            RelatedEntity relatedEntity = RelatedEntity.builder()
-                .relatedEntityId(relatedParty.getRelatedPartyID())
-                .relatedEntityRelationshipType(relatedParty.getRelationshipType())
-                .build();
-            relatedEntities.add(relatedEntity);
+        if (relatedParties != null) {
+            for (RelatedParty relatedParty : relatedParties) {
+                RelatedEntity relatedEntity = RelatedEntity.builder()
+                    .relatedEntityId(relatedParty.getRelatedPartyID())
+                    .relatedEntityRelationshipType(relatedParty.getRelationshipType())
+                    .build();
+                relatedEntities.add(relatedEntity);
+            }
         }
         return relatedEntities;
     }

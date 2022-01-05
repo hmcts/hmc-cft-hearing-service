@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -78,10 +77,7 @@ class HearingManagementControllerTest {
         hearingResponse.setHearingRequestId(1L);
         when(hearingManagementService.saveHearingRequest(createHearingRequest)).thenReturn(hearingResponse);
         doNothing().when(hearingManagementService).verifyAccess(createHearingRequest.getCaseDetails().getCaseRef());
-        HmiSubmitHearingRequest hmiSubmitHearingRequest = HmiSubmitHearingRequest.builder().build();
-        when(hearingManagementService.sendRequestToHmi(1L,
-                                                             createHearingRequest
-        )).thenReturn(hmiSubmitHearingRequest);
+        doNothing().when(hearingManagementService).sendRequestToHmi(1L, createHearingRequest);
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.saveHearing(createHearingRequest);
         InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
@@ -159,8 +155,7 @@ class HearingManagementControllerTest {
         HearingResponse hearingResponse = new HearingResponse();
         hearingResponse.setHearingRequestId(1L);
         doNothing().when(hearingManagementService).updateHearingRequest(1L, hearingRequest);
-        HmiSubmitHearingRequest hmiSubmitHearingRequest = HmiSubmitHearingRequest.builder().build();
-        when(hearingManagementService.sendRequestToHmi(1L, hearingRequest)).thenReturn(hmiSubmitHearingRequest);
+        doNothing().when(hearingManagementService).sendRequestToHmi(1L, hearingRequest);
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.updateHearing(hearingRequest, 1L);
         InOrder orderVerifier = Mockito.inOrder(hearingManagementService);

@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.hmi.RelatedEntity;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,5 +39,18 @@ public class RelatedEntitiesMapperTest {
         RelatedEntitiesMapper relatedEntitiesMapper = new RelatedEntitiesMapper();
         List<RelatedEntity> actualRelatedEntities = relatedEntitiesMapper.getRelatedEntities(relatedPartyList);
         assertEquals(expectedRelatedEntities, actualRelatedEntities);
+    }
+
+    @Test
+    void shouldHandleNullRelatedParties() {
+        RelatedEntitiesMapper relatedEntitiesMapper = new RelatedEntitiesMapper();
+        relatedEntitiesMapper.getRelatedEntities(null);
+    }
+
+    @Test
+    void shouldHandleEmptyRelatedParties() {
+        RelatedEntitiesMapper relatedEntitiesMapper = new RelatedEntitiesMapper();
+        RelatedParty relatedParty = new RelatedParty();
+        relatedEntitiesMapper.getRelatedEntities(Collections.singletonList(relatedParty));
     }
 }

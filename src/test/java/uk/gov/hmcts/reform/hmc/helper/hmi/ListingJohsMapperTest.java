@@ -42,4 +42,17 @@ public class ListingJohsMapperTest {
         List<ListingJoh> actualListingJohs = listingJohsMapper.getListingJohs(panelRequirements);
         assertEquals(expectedListingJohs, actualListingJohs);
     }
+
+    @Test
+    void shouldHandleNullPanelRequirements() {
+        ListingJohsMapper listingJohsMapper = new ListingJohsMapper();
+        listingJohsMapper.getListingJohs(null);
+    }
+
+    @Test
+    void shouldHandleNullPanelPreferences() {
+        ListingJohsMapper listingJohsMapper = new ListingJohsMapper();
+        PanelRequirements panelRequirements = new PanelRequirements();
+        listingJohsMapper.getListingJohs(panelRequirements);
+    }
 }

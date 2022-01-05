@@ -62,14 +62,11 @@ public class HearingManagementController {
         @ApiResponse(code = 201, message = "Hearing Id is created"),
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
-    public HmiSubmitHearingRequest saveHearing(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
+    public HearingResponse saveHearing(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
         hearingManagementService.verifyAccess(createHearingRequest.getCaseDetails().getCaseRef());
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
-        HmiSubmitHearingRequest hmiSubmitHearingRequest = hearingManagementService.sendRequestToHmi(
-            hearingResponse.getHearingRequestId(),
-            createHearingRequest
-        );
-        return hmiSubmitHearingRequest;
+        hearingManagementService.sendRequestToHmi(hearingResponse.getHearingRequestId(), createHearingRequest);
+        return hearingResponse;
     }
 
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -120,9 +117,28 @@ public class HearingManagementController {
         @ApiResponse(code = 404, message = "Hearing id not found"),
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
-    public HmiSubmitHearingRequest updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
+    public void updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
                                                  @PathVariable("id") Long hearingId) {
         hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
-        return hearingManagementService.sendRequestToHmi(hearingId, hearingRequest);
+        hearingManagementService.sendRequestToHmi(hearingId, hearingRequest);
     }
+
+   /* @PostMapping(path = "/test", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public HmiSubmitHearingRequest test(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
+        hearingManagementService.verifyAccess(createHearingRequest.getCaseDetails().getCaseRef());
+        HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
+        return hearingManagementService.test(
+            hearingResponse.getHearingRequestId(),
+            createHearingRequest
+        );
+    }
+
+    @PutMapping(path = "/test/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public HmiSubmitHearingRequest test(@RequestBody @Valid UpdateHearingRequest hearingRequest,
+                                                 @PathVariable("id") Long hearingId) {
+        hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
+        return hearingManagementService.test(hearingId, hearingRequest);
+    }*/
 }

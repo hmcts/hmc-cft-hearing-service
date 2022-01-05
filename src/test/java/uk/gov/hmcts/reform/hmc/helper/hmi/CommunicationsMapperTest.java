@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.EntityCommunication;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,6 +33,17 @@ public class CommunicationsMapperTest {
         List<EntityCommunication> expectedCommunications = Arrays.asList(entityCommunicationTwo, entityCommunication);
         CommunicationsMapper communicationsMapper = new CommunicationsMapper();
         List<EntityCommunication> actualCommunications = communicationsMapper.getCommunications(partyDetails);
+        assertEquals(expectedCommunications, actualCommunications);
+    }
+
+    @Test
+    void shouldMapWhenPartyDetailsLacksBothEmailAndPhone() {
+        PartyDetails partyDetails = new PartyDetails();
+        IndividualDetails individualDetails = new IndividualDetails();
+        partyDetails.setIndividualDetails(individualDetails);
+        CommunicationsMapper communicationsMapper = new CommunicationsMapper();
+        List<EntityCommunication> actualCommunications = communicationsMapper.getCommunications(partyDetails);
+        List<EntityCommunication> expectedCommunications = new ArrayList<>();
         assertEquals(expectedCommunications, actualCommunications);
     }
 
