@@ -157,25 +157,29 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private void validatePartyDetails(List<PartyDetails> partyDetails) {
         for (PartyDetails partyDetail : partyDetails) {
-            if ((partyDetail.getIndividualDetails() != null && partyDetail.getOrganisationDetails() != null)
-                || (partyDetail.getIndividualDetails() == null && partyDetail.getOrganisationDetails() == null)) {
-                throw new BadRequestException(INVALID_ORG_INDIVIDUAL_DETAILS);
-            }
-            if (partyDetail.getUnavailabilityDow() != null && partyDetail.getUnavailabilityDow().isEmpty()) {
-                throw new BadRequestException(INVALID_UNAVAILABILITY_DOW_DETAILS);
-            }
-            if (partyDetail.getUnavailabilityRanges() != null && partyDetail.getUnavailabilityRanges().isEmpty()) {
-                throw new BadRequestException(INVALID_UNAVAILABILITY_RANGES_DETAILS);
-            }
-            if (partyDetail.getIndividualDetails() != null
-                && (partyDetail.getIndividualDetails().getRelatedParties() != null
-                && partyDetail.getIndividualDetails().getRelatedParties().isEmpty())) {
-                throw new BadRequestException(INVALID_RELATED_PARTY_DETAILS);
-            }
+            validatePartyDetail(partyDetail);
         }
     }
 
-    private void validateHearingRequestDetails(HearingRequest hearingRequest) {
+    protected void validatePartyDetail(PartyDetails partyDetail) {
+        if ((partyDetail.getIndividualDetails() != null && partyDetail.getOrganisationDetails() != null)
+            || (partyDetail.getIndividualDetails() == null && partyDetail.getOrganisationDetails() == null)) {
+            throw new BadRequestException(INVALID_ORG_INDIVIDUAL_DETAILS);
+        }
+        if (partyDetail.getUnavailabilityDow() != null && partyDetail.getUnavailabilityDow().isEmpty()) {
+            throw new BadRequestException(INVALID_UNAVAILABILITY_DOW_DETAILS);
+        }
+        if (partyDetail.getUnavailabilityRanges() != null && partyDetail.getUnavailabilityRanges().isEmpty()) {
+            throw new BadRequestException(INVALID_UNAVAILABILITY_RANGES_DETAILS);
+        }
+        if (partyDetail.getIndividualDetails() != null
+            && (partyDetail.getIndividualDetails().getRelatedParties() != null
+            && partyDetail.getIndividualDetails().getRelatedParties().isEmpty())) {
+            throw new BadRequestException(INVALID_RELATED_PARTY_DETAILS);
+        }
+    }
+
+    protected void validateHearingRequestDetails(HearingRequest hearingRequest) {
         if (hearingRequest.getRequestDetails() == null
             && hearingRequest.getHearingDetails() == null
             && hearingRequest.getCaseDetails() == null) {
@@ -183,10 +187,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    private void validateHearingRequestDetails(UpdateHearingRequest hearingRequest) {
+    protected void validateHearingRequestDetails(UpdateHearingRequest hearingRequest) {
         if (hearingRequest.getRequestDetails() == null
-            || hearingRequest.getHearingDetails() == null
-            || hearingRequest.getCaseDetails() == null
+            && hearingRequest.getHearingDetails() == null
+            && hearingRequest.getCaseDetails() == null
         ) {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
@@ -197,7 +201,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      *
      * @param hearingDetails hearing Details
      */
-    public void validateHearingDetails(HearingDetails hearingDetails) {
+    protected void validateHearingDetails(HearingDetails hearingDetails) {
         validateHearingWindow(hearingDetails.getHearingWindow());
     }
 
@@ -206,7 +210,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      *
      * @param hearingWindow hearing Window
      */
-    public void validateHearingWindow(HearingWindow hearingWindow) {
+    protected void validateHearingWindow(HearingWindow hearingWindow) {
         if (null == hearingWindow
             || (null == hearingWindow.getHearingWindowFirstDate()
             && null == hearingWindow.getHearingWindowDateRange())

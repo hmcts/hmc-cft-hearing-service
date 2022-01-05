@@ -133,7 +133,7 @@ class HearingManagementServiceTest {
         verify(hearingRepository).existsById(1L);
     }
 
-    @ Test
+    @Test
     void shouldFailAsHearingWindowDetailsNotPresent() {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
@@ -146,6 +146,14 @@ class HearingManagementServiceTest {
             hearingManagementService.saveHearingRequest(hearingRequest);
         });
         assertEquals("Hearing window can not be null", exception.getMessage());
+    }
+
+    @Test
+    void shouldFailAsNullHearingRequest() {
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.saveHearingRequest(null);
+        });
+        assertEquals("Invalid details", exception.getMessage());
     }
 
     @Test
@@ -997,6 +1005,95 @@ class HearingManagementServiceTest {
 
         assertThrows(BadRequestException.class, () -> hearingManagementService
             .validateHearingWindow(hearingWindow));
+    }
+
+    @Test
+    void validateHearingRequestDetailsShouldThrowErrorWhenHearingRequestDetailsAreNotPresent() {
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setRequestDetails(null);
+        hearingRequest.setHearingDetails(null);
+        hearingRequest.setCaseDetails(null);
+        hearingRequest.setPartyDetails(null);
+
+        assertThrows(BadRequestException.class, () -> hearingManagementService
+            .validateHearingRequestDetails(hearingRequest));
+    }
+
+    @Test
+    void validateHearingRequestDetailsShouldThrowErrorWhenUpdateHearingRequestDetailsAreNotPresent() {
+        UpdateHearingRequest hearingRequest = new UpdateHearingRequest();
+        hearingRequest.setRequestDetails(null);
+        hearingRequest.setHearingDetails(null);
+        hearingRequest.setCaseDetails(null);
+        hearingRequest.setPartyDetails(null);
+
+        assertThrows(BadRequestException.class, () -> hearingManagementService
+            .validateHearingRequestDetails(hearingRequest));
+    }
+
+    @Test
+    void validatePartyDetailShouldThrowErrorWhenBothNullIndividualAndOrganisation() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setIndividualDetails(null);
+        partyDetails.setOrganisationDetails(null);
+
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .validatePartyDetail(partyDetails));
+        assertEquals(INVALID_ORG_INDIVIDUAL_DETAILS, exception.getMessage());
+    }
+
+    @Test
+    void validatePartyDetailShouldThrowErrorWhenBothEntriesIndividualAndOrganisation() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setIndividualDetails(new IndividualDetails());
+        partyDetails.setOrganisationDetails(new OrganisationDetails());
+
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .validatePartyDetail(partyDetails));
+        assertEquals(INVALID_ORG_INDIVIDUAL_DETAILS, exception.getMessage());
+    }
+
+    @Test
+    void validatePartyDetailShouldThrowErrorWhenUnavailabilityDowInvalid() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setIndividualDetails(new IndividualDetails());
+        partyDetails.setOrganisationDetails(null);
+        List<UnavailabilityDow> lstUnavailabilityDow = new ArrayList<>();
+        partyDetails.setUnavailabilityDow(lstUnavailabilityDow);
+
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .validatePartyDetail(partyDetails));
+        assertEquals(INVALID_UNAVAILABILITY_DOW_DETAILS, exception.getMessage());
+    }
+
+    @Test
+    void validatePartyDetailShouldThrowErrorWhenUnavailabilityRangesInvalid() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setIndividualDetails(new IndividualDetails());
+        partyDetails.setOrganisationDetails(null);
+        partyDetails.setUnavailabilityDow(null);
+        List<UnavailabilityRanges> lstUnavailabilityRanges = new ArrayList<>();
+        partyDetails.setUnavailabilityRanges(lstUnavailabilityRanges);
+
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .validatePartyDetail(partyDetails));
+        assertEquals(INVALID_UNAVAILABILITY_RANGES_DETAILS, exception.getMessage());
+    }
+
+    @Test
+    void validatePartyDetailShouldThrowErrorWhenRelatedPartiesIsEmpty() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setIndividualDetails(new IndividualDetails());
+
+        partyDetails.setOrganisationDetails(null);
+        partyDetails.setUnavailabilityDow(null);
+        partyDetails.setUnavailabilityRanges(null);
+        List<RelatedParty> lstRelatedParties = new ArrayList<>();
+        partyDetails.getIndividualDetails().setRelatedParties(lstRelatedParties);
+
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .validatePartyDetail(partyDetails));
+        assertEquals(INVALID_RELATED_PARTY_DETAILS, exception.getMessage());
     }
 
     private HearingWindow generateHearingWindow() {
