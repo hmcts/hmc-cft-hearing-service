@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
@@ -192,20 +193,27 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     /**
-     * validate Hearing Details. Hearing Window cannot be null
+     * validate Hearing Details.
      *
-     * @param hearingDetails hearingDtails
+     * @param hearingDetails hearing Details
      */
-    private void validateHearingDetails(HearingDetails hearingDetails) {
-        if (null == hearingDetails.getHearingWindow()
-            || (null != hearingDetails.getHearingWindow()
-            && null == hearingDetails.getHearingWindow().getHearingWindowFirstDate()
-            && null == hearingDetails.getHearingWindow().getHearingWindowDateRange())
-            || (null != hearingDetails.getHearingWindow()
-            && null == hearingDetails.getHearingWindow().getHearingWindowFirstDate()
-            && null != hearingDetails.getHearingWindow().getHearingWindowDateRange()
-            && null == hearingDetails.getHearingWindow().getHearingWindowDateRange().getHearingWindowStartDateRange()
-            && null == hearingDetails.getHearingWindow().getHearingWindowDateRange().getHearingWindowEndDateRange())
+    public void validateHearingDetails(HearingDetails hearingDetails) {
+        validateHearingWindow(hearingDetails.getHearingWindow());
+    }
+
+    /**
+     * validate Hearing Window. Hearing Window cannot be null
+     *
+     * @param hearingWindow hearing Window
+     */
+    public void validateHearingWindow(HearingWindow hearingWindow) {
+        if (null == hearingWindow
+            || (null == hearingWindow.getHearingWindowFirstDate()
+            && null == hearingWindow.getHearingWindowDateRange())
+            || (null == hearingWindow.getHearingWindowFirstDate()
+            && null != hearingWindow.getHearingWindowDateRange()
+            && null == hearingWindow.getHearingWindowDateRange().getHearingWindowStartDateRange()
+            && null == hearingWindow.getHearingWindowDateRange().getHearingWindowEndDateRange())
         ) {
             throw new BadRequestException(HEARING_WINDOW_NULL);
         }

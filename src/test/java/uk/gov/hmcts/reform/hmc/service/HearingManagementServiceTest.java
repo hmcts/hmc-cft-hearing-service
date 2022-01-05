@@ -964,6 +964,41 @@ class HearingManagementServiceTest {
         assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
     }
 
+    @Test
+    void validateGetHearingsRequestShouldReturnResponse() {
+        assertNotNull(hearingManagementService
+            .validateGetHearingsRequest("9372710950276233", null));
+    }
+
+    @Test
+    void validateHearingWindowShouldThrowErrorWhenNullWindow() {
+        assertThrows(BadRequestException.class, () -> hearingManagementService
+            .validateHearingWindow(null));
+    }
+
+    @Test
+    void validateHearingWindowShouldThrowErrorWhenNullRangeAndFirstDate() {
+        HearingWindow hearingWindow = new HearingWindow();
+        hearingWindow.setHearingWindowFirstDate(null);
+        hearingWindow.setHearingWindowDateRange(null);
+
+        assertThrows(BadRequestException.class, () -> hearingManagementService
+            .validateHearingWindow(hearingWindow));
+    }
+
+    @Test
+    void validateHearingWindowShouldThrowErrorWhenNoDetailsArePresent() {
+        HearingWindow hearingWindow = new HearingWindow();
+        hearingWindow.setHearingWindowFirstDate(null);
+        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
+        hearingWindowDateRange.setHearingWindowStartDateRange(null);
+        hearingWindowDateRange.setHearingWindowStartDateRange(null);
+        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
+
+        assertThrows(BadRequestException.class, () -> hearingManagementService
+            .validateHearingWindow(hearingWindow));
+    }
+
     private HearingWindow generateHearingWindow() {
         HearingWindow hearingWindow = new HearingWindow();
         HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
