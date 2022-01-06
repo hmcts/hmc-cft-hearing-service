@@ -21,6 +21,4 @@ public interface HearingManagementService {
     void updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest);
 
     void sendRequestToHmi(Long hearingId, HearingRequest hearingRequest);
-
-    //HmiSubmitHearingRequest test(Long hearingId, HearingRequest hearingRequest);
 }
