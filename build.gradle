@@ -187,8 +187,9 @@ sonarqube {
     property "sonar.projectKey", "uk.gov.hmcts.reform:hmc-cft-hearing-service"
     property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
     property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/hmc/Application.java," +
-      "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageReaderFromTopicConfiguration.java," +
-      "**/config/SecurityConfiguration.java"
+      "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageReaderFromQueueConfiguration.java," +
+      "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageSenderConfiguration.java," +
+      "src/main/java/uk/gov/hmcts/reform/hmc/controllers/HearingManagementController.java"
   }
 }
 

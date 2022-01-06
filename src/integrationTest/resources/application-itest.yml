@@ -1,6 +1,28 @@
+jms:
+  servicebus:
+    internal:
+      connection-string: ${HMC_QUEUE_CONNECTION_STRING:Endpoint=sb://destination1.servicebus.windows.net;SharedAccessKeyName=[KEYNAME];SharedAccessKey=[KEY]}
+      # should be an integer that is interpreted as seconds
+      exponential-multiplier: ${HMC_QUEUE_EXPONENTIAL_MULTIPLIER:2}
+      queue-name: ${HMC_SERVICE_BUS_QUEUE:hmc-to-hmi}
+      max-retry-attempts: ${HMC_QUEUE_MAX_RETRIES:5}
+
 spring:
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    url: jdbc:tc:postgresql:11:///databasename?stringtype=unspecified
-
+    url: jdbc:tc:postgresql:11:///databasename
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: http://localhost:${wiremock.server.port:5000}/o
+ccd:
+  data-store:
+    host: http://localhost:${wiremock.server.port:4452}
+idam:
+  api:
+    url: http://localhost:${wiremock.server.port:5000}
+  s2s-auth:
+    url: http://localhost:${wiremock.server.port:5000}/s2s
 

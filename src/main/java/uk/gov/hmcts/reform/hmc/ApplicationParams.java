@@ -16,14 +16,17 @@ import javax.inject.Singleton;
 @Singleton
 public class ApplicationParams {
 
-    @Value("${jms.servicebus.connection-string}")
-    private String connectionString;
+    @Value("${jms.servicebus.internal.connection-string}")
+    private String internalConnectionString;
 
-    @Value("${jms.servicebus.topic-name}")
-    private String topicName;
+    @Value("${jms.servicebus.internal.queue-name}")
+    private String internalQueueName;
 
-    @Value("${jms.servicebus.subscription-name}")
-    private String subscriptionName;
+    @Value("${jms.servicebus.internal.exponential-multiplier}")
+    private String exponentialMultiplier;
+
+    @Value("${jms.servicebus.internal.max-retry-attempts}")
+    private int maxRetryAttempts;
 
     @Value("${role.assignment.api.host}")
     private String roleAssignmentServiceHost;
