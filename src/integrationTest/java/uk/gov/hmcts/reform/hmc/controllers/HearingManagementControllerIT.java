@@ -3,11 +3,14 @@ package uk.gov.hmcts.reform.hmc.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
@@ -144,6 +147,12 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
+
+    @Autowired
+    private ApplicationParams applicationParams;
 
     private String url = "/hearing";
     public static final String USER_ID = "e8275d41-7f22-4ee7-8ed3-14644d6db096";

@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
+import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
@@ -22,6 +24,9 @@ class GetWelcomeTest {
 
     @MockBean
     private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
+
+    @MockBean
+    private ApplicationParams applicationParams;
 
     @MockBean
     private HearingManagementService hearingManagementService;
