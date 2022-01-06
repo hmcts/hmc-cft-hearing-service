@@ -49,7 +49,7 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
         assertEquals("HEARING_UPDATED", entities.get(0).getHearing().getStatus());
         assertEquals("HEARING_REQUESTED", entities.get(1).getHearing().getStatus());
         assertEquals("HEARING_REQUESTED", entities.get(2).getHearing().getStatus());
-        assertEquals(2, entities.get(0).getHearing().getHearingResponse().get(0).getHearingResponseId());
+        assertEquals(2, entities.get(0).getHearing().getHearingResponses().get(0).getHearingResponseId());
     }
 
     @Test
@@ -62,7 +62,7 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
         assertEquals("9372710950276233", entities.get(1).getCaseReference());
         assertEquals("ABA1", entities.get(0).getHmctsServiceID());
         assertEquals("HEARING_REQUESTED", entities.get(0).getHearing().getStatus());
-        assertEquals(3, entities.get(0).getHearing().getHearingResponse().get(0).getHearingResponseId());
+        assertEquals(3, entities.get(0).getHearing().getHearingResponses().get(0).getHearingResponseId());
     }
 
     @Test

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
@@ -90,6 +91,9 @@ class HearingManagementServiceTest {
     @Mock
     CaseHearingRequestRepository caseHearingRequestRepository;
 
+    @Mock
+    private GetHearingsResponseMapper getHearingsResponseMapper;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -100,7 +104,8 @@ class HearingManagementServiceTest {
                 dataStoreRepository,
                 hearingRepository,
                 hearingMapper,
-                caseHearingRequestRepository
+                caseHearingRequestRepository,
+                getHearingsResponseMapper
             );
     }
 
@@ -979,15 +984,17 @@ class HearingManagementServiceTest {
         List<CaseHearingRequestEntity> entities = Arrays.asList(TestingUtil.getCaseHearingsEntities());
         when(caseHearingRequestRepository.getHearingDetailsWithStatus("12345", "HEARING_REQUESTED"))
             .thenReturn(entities);
+        given(getHearingsResponseMapper.toHearingsResponse("12345", entities))
+            .willReturn(TestingUtil.getHearingsResponseWhenDataIsPresent("12345"));
         GetHearingsResponse response = hearingManagementService.getHearings("12345", "HEARING_REQUESTED");
         assertEquals("12345", response.getCaseRef());
-        assertEquals("ABA1", response.getHmctsServiceId());
+        assertEquals("AB1A", response.getHmctsServiceId());
         assertEquals(1, response.getCaseHearings().size());
         assertEquals(2000000000L, response.getCaseHearings().get(0).getHearingId());
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
-        assertEquals("venue1", response.getCaseHearings().get(0)
+        assertEquals("venue", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getHearingVenueId());
-        assertEquals("SubChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
+        assertEquals("subChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getAttendees().get(0).getHearingSubChannel());
         assertEquals(1, response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getHearingJudgeId().size());
@@ -995,7 +1002,9 @@ class HearingManagementServiceTest {
 
     @Test
     void getHearings_shouldReturnNoDataWithStatus_Null() {
-        when(caseHearingRequestRepository.getHearingDetails("12345")).thenReturn(new ArrayList<>());
+        when(caseHearingRequestRepository.getHearingDetails("12345")).thenReturn(null);
+        given(getHearingsResponseMapper.toHearingsResponse("12345", null))
+            .willReturn(TestingUtil.getHearingsResponseWhenNoData("12345"));
         GetHearingsResponse response = hearingManagementService.getHearings("12345", null);
         assertEquals("12345", response.getCaseRef());
         assertNull(response.getHmctsServiceId());
@@ -1004,20 +1013,11 @@ class HearingManagementServiceTest {
 
     @Test
     void getHearings_shouldReturnNoDataWithInValidStatus() {
-        when(caseHearingRequestRepository.getHearingDetailsWithStatus(
-            "12345",
-            "InvalidStatus"
-        )).thenReturn(new ArrayList<>());
+        when(caseHearingRequestRepository.getHearingDetailsWithStatus("12345","InvalidStatus"))
+            .thenReturn(null);
+        given(getHearingsResponseMapper.toHearingsResponse("12345", null))
+            .willReturn(TestingUtil.getHearingsResponseWhenNoData("12345"));
         GetHearingsResponse response = hearingManagementService.getHearings("12345", "InvalidStatus");
-        assertEquals("12345", response.getCaseRef());
-        assertNull(response.getHmctsServiceId());
-        assertEquals(0, response.getCaseHearings().size());
-    }
-
-    @Test
-    void getHearings_shouldReturnNoDataWithBlankStatus() {
-        when(caseHearingRequestRepository.getHearingDetails("12345")).thenReturn(new ArrayList<>());
-        GetHearingsResponse response = hearingManagementService.getHearings("12345", "");
         assertEquals("12345", response.getCaseRef());
         assertNull(response.getHmctsServiceId());
         assertEquals(0, response.getCaseHearings().size());

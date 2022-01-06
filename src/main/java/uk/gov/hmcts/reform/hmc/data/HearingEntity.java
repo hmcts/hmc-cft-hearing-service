@@ -37,5 +37,5 @@ public class HearingEntity {
     private CaseHearingRequestEntity caseHearingRequest;
 
     @OneToMany(mappedBy = "hearing", fetch = FetchType.EAGER)
-    private List<HearingResponseEntity> hearingResponse;
+    private List<HearingResponseEntity> hearingResponses;
 }

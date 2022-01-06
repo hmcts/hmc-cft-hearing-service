@@ -39,7 +39,7 @@ public class HearingDaySchedule {
 
     @Valid
     @NotNull
-    private List<Attendees> attendees;
+    private List<Attendee> attendees;
 
 
 }

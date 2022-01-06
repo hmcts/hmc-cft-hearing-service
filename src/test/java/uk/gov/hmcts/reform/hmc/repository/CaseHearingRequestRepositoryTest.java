@@ -66,7 +66,7 @@ class CaseHearingRequestRepositoryTest {
             () -> assertEquals("ABA1", entities.get(0).getHmctsServiceID()),
             () -> assertEquals("HEARING_REQUESTED", entities.get(0).getHearing().getStatus()),
             () -> assertEquals(2000000000L, entities.get(0).getHearing().getId()),
-            () -> assertEquals(1, entities.get(0).getHearing().getHearingResponse().size()),
+            () -> assertEquals(1, entities.get(0).getHearing().getHearingResponses().size()),
             () -> assertEquals("4567", entities.get(1).getCaseReference()),
             () -> assertEquals("ABA1", entities.get(1).getHmctsServiceID()),
             () -> assertEquals("HEARING_UPDATED", entities.get(1).getHearing().getStatus()),
@@ -85,7 +85,7 @@ class CaseHearingRequestRepositoryTest {
             () -> assertEquals("12345", entities.get(0).getCaseReference()),
             () -> assertEquals("ABA1", entities.get(0).getHmctsServiceID()),
             () -> assertEquals(2000000000L, entities.get(0).getHearing().getId()),
-            () -> assertEquals(1, entities.get(0).getHearing().getHearingResponse().size()),
+            () -> assertEquals(1, entities.get(0).getHearing().getHearingResponses().size()),
             () -> verify(caseHearingRequestRepository, times(1)).getHearingDetails(any())
         );
     }

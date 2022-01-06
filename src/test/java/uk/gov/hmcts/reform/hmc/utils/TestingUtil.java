@@ -7,11 +7,10 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
-import uk.gov.hmcts.reform.hmc.model.Attendees;
+import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
-import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
@@ -228,19 +227,18 @@ public class TestingUtil {
     }
 
 
-    public static GetHearingsResponse createHearingRequest(String caseRef, String status) {
+    public static GetHearingsResponse getHearingsResponseWhenDataIsPresent(String caseRef) {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
-        getHearingsResponse.setCaseRef("9372710950276233");
+        getHearingsResponse.setCaseRef(caseRef);
         getHearingsResponse.setHmctsServiceId("AB1A");
         CaseHearing caseHearing = new CaseHearing();
-        caseHearing.setHearingId(2000000063L);
+        caseHearing.setHearingId(2000000000L);
         caseHearing.setHearingRequestDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         caseHearing.setHearingType("45YAO6VflHAmYy7N85fv");
-        caseHearing.setHmcStatus("HEARING REQUESTED");
+        caseHearing.setHmcStatus("HEARING_REQUESTED");
         caseHearing.setLastResponseReceivedDateTime(LocalDateTime.parse("2020-08-10T12:20:00"));
         caseHearing.setListAssistCaseStatus("EXCEPTION");
-        List<CaseHearing> caseHearingList = new ArrayList<>();
-        caseHearingList.add(caseHearing);
+        caseHearing.setHearingListingStatus("listingStatus");
         HearingDaySchedule schedule = new HearingDaySchedule();
         schedule.setHearingStartDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         schedule.setHearingEndDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
@@ -248,11 +246,16 @@ public class TestingUtil {
         schedule.setHearingVenueId("venue");
         schedule.setHearingRoomId("room1");
         schedule.setHearingJudgeId(Arrays.asList("judge1"));
-        Attendees attendees = new Attendees();
-        attendees.setPartyId("partyId1");
-        attendees.setHearingSubChannel("subChannel1");
-        List<Attendees> attendeesList = new ArrayList<>();
-        attendeesList.add(attendees);
+        Attendee attendee = new Attendee();
+        attendee.setPartyId("partyId1");
+        attendee.setHearingSubChannel("subChannel1");
+        List<Attendee> attendeeList = new ArrayList<>();
+        attendeeList.add(attendee);
+        schedule.setAttendees(attendeeList);
+        caseHearing.setHearingDaySchedule(Arrays.asList(schedule));
+        List<CaseHearing> caseHearingList = new ArrayList<>();
+        caseHearingList.add(caseHearing);
+        getHearingsResponse.setCaseHearings(caseHearingList);
         return getHearingsResponse;
     }
 
@@ -267,8 +270,8 @@ public class TestingUtil {
         entity.setCaseReference("12345");
         entity.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity.setHearingType("Some hearing type");
-        entity.getHearing().setHearingResponse(Arrays.asList(hearingResponseEntities()));
-        entity.getHearing().getHearingResponse().get(0)
+        entity.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntities()));
+        entity.getHearing().getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntities()));
         return entity;
     }
@@ -291,8 +294,8 @@ public class TestingUtil {
         entity1.setCaseReference("12345");
         entity1.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity1.setHearingType("Some hearing type");
-        entity1.getHearing().setHearingResponse(Arrays.asList(hearingResponseEntities()));
-        entity1.getHearing().getHearingResponse().get(0)
+        entity1.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntities()));
+        entity1.getHearing().getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntities()));
         entities.add(entity1);
     }
@@ -308,8 +311,8 @@ public class TestingUtil {
         entity1.setCaseReference("4567");
         entity1.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity1.setHearingType("Some hearing type");
-        entity1.getHearing().setHearingResponse(Arrays.asList(hearingResponseEntities()));
-        entity1.getHearing().getHearingResponse().get(0)
+        entity1.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntities()));
+        entity1.getHearing().getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntities()));
         entities.add(entity1);
     }
@@ -347,4 +350,12 @@ public class TestingUtil {
         entity.setPartySubChannelType("SubChannel1");
         return entity;
     }
+
+    public static GetHearingsResponse getHearingsResponseWhenNoData(String caseRef) {
+        GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
+        getHearingsResponse.setCaseRef(caseRef);
+        getHearingsResponse.setCaseHearings(new ArrayList<>());
+        return getHearingsResponse;
+    }
 }
+

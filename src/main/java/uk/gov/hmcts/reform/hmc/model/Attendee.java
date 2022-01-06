@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
-public class Attendees {
+public class Attendee {
 
     @JsonProperty("partyID")
     @Size(max = 40)
