@@ -10,6 +10,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
+import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
+import uk.gov.hmcts.reform.hmc.security.idam.IdamRepository;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,16 +19,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
-class GetWelcomeTest {
+class GetWelcomeTest extends BaseTest {
 
     @Autowired
     private transient MockMvc mockMvc;
 
     @MockBean
     private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
-
-    @MockBean
-    private ApplicationParams applicationParams;
 
     @MockBean
     private HearingManagementService hearingManagementService;
