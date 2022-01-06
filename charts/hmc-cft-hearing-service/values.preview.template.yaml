@@ -2,6 +2,10 @@ java:
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  devmemoryRequests: '1524Mi'
+  devmemoryLimits: '2048Mi'
+  memoryRequests: '1524Mi'
+  memoryLimits: '2048Mi'
   environment:
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft
     HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft
