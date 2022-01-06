@@ -46,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
@@ -959,5 +960,127 @@ class HearingManagementServiceTest {
         Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
             .updateHearingRequest(2000000000L, updateHearingRequest));
         assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenCreateRequestHasPartyDetails() {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
+                                                                   createHearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenCreateRequestHasOnlyMandatoryFields() {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
+                                                                   createHearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenCreateRequestHasNoOrgsDetailsPresent() {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
+                                                                   createHearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenCreateRequestHasNoIndividualDetailsPresent() {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
+                                                                   createHearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenCreateRequestHasNoRelatedPartyDetailsPresent() {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil
+                                                                               .individualWithoutRelatedPartyDetails());
+        createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
+                                                                   createHearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenUpdateRequestHasPartyDetails() {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenUpdateRequestHasOnlyMandatoryFields() {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenUpdateRequestHasNoOrgsDetailsPresent() {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenUpdateRequestHasNoIndividualDetailsPresent() {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenUpdateRequestHasNoRelatedPartyDetailsPresent() {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil
+                                                                         .individualWithoutRelatedPartyDetails());
+        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
     }
 }
