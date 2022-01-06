@@ -14,6 +14,8 @@ public interface HearingManagementService {
 
     void validateHearingRequest(HearingRequest hearingRequest);
 
+    void validateHearingRequest(UpdateHearingRequest hearingRequest);
+
     HearingsGetResponse validateGetHearingsRequest(String caseRefId, String caseStatus);
 
     void verifyAccess(String caseReference);
