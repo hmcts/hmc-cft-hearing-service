@@ -42,6 +42,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -790,7 +791,8 @@ class HearingManagementServiceTest {
 
     @Test
     void updateHearingRequestShouldPassWithValidDetails() {
-        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(
+            TestingUtil.updateHearingRequest().getRequestDetails().getVersionNumber());
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         hearingManagementService.updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest());
         verify(hearingRepository).existsById(2000000000L);
@@ -799,7 +801,7 @@ class HearingManagementServiceTest {
 
     @Test
     void updateHearingRequestShouldThrowErrorWhenVersionNumberDoesNotMatchRequest() {
-        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(2);
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(6);
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
@@ -969,4 +971,24 @@ class HearingManagementServiceTest {
             .updateHearingRequest(2000000000L, updateHearingRequest));
         assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
     }
+
+    @Test
+    void deleteHearingShouldIncrementVersionNumber() {
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(
+            TestingUtil.deleteHearingRequest().getVersionNumber());
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        // TODO: retrieve request, prove value has been increment and remove logging from service method
+        hearingManagementService.deleteHearingRequest(
+            2000000000L, TestingUtil.deleteHearingRequest());
+    }
+
+    @Test
+    void updateHearingShouldIncrementVersionNumber() {
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(
+            TestingUtil.updateHearingRequest().getRequestDetails().getVersionNumber());
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        // TODO: retrieve request, prove value has been increment and remove logging from service method
+        hearingManagementService.updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest());
+    }
+
 }

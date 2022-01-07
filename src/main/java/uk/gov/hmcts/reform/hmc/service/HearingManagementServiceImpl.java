@@ -95,6 +95,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateHearingRequest(hearingRequest);
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
+
+        // increment version number
+        log.debug("delete Hearing Request - with version number {}",
+                     hearingRequest.getRequestDetails().getVersionNumber());
+        hearingRequest.getRequestDetails().setVersionNumber(
+            hearingRequest.getRequestDetails().getVersionNumber() + 1);
+        log.debug("delete Hearing Request - version number incremnented to {}",
+                     hearingRequest.getRequestDetails().getVersionNumber());
     }
 
     /**
@@ -245,11 +253,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-
     @Override
     public void deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
+
+        // increment version number
+        log.debug("delete Hearing Request - with version number {}", deleteRequest.getVersionNumber());
+        deleteRequest.setVersionNumber(deleteRequest.getVersionNumber() + 1);
+        log.debug("delete Hearing Request - version number incremnented to {}", deleteRequest.getVersionNumber());
     }
 
     private void validateVersionNumber(Long hearingId, Integer versionNumber) {
