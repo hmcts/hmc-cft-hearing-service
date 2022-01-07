@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.config;
 
 import com.azure.core.amqp.AmqpRetryMode;
 import com.azure.core.amqp.AmqpRetryOptions;
-import com.azure.messaging.servicebus.ServiceBusClientBuilder;
 import com.azure.messaging.servicebus.ServiceBusReceiverClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -27,28 +26,30 @@ public class MessageReaderFromQueueConfiguration {
     @EventListener(ApplicationStartedEvent.class)
     @SuppressWarnings("squid:S2189")
     public void readMessageFromTopic() {
-//        log.info("Creating service bus receiver client");
-//
-//        ServiceBusReceiverClient client = new ServiceBusClientBuilder()
-//            .connectionString(applicationParams.getInternalConnectionString())
-//            .retryOptions(retryOptions())
-//            .receiver()
-//            .queueName(applicationParams.getInternalQueueName())
-//            .buildClient();
-//
-//        while (true) {
-//            receiveMessages(client);
-//        }
+        //log.info("Creating service bus receiver client");
+
+        /**ServiceBusReceiverClient client = new ServiceBusClientBuilder()
+            .connectionString(applicationParams.getInternalConnectionString())
+            .retryOptions(retryOptions())
+            .receiver()
+            .queueName(applicationParams.getInternalQueueName())
+            .buildClient();
+
+        while (true) {
+            receiveMessages(client);
+        } **/
     }
 
     // handles received messages
     public void receiveMessages(ServiceBusReceiverClient client) {
-//        client.receiveMessages(1)
-//            .forEach(
-//                message -> {
-//                    log.info("message received with Id " + message.getMessageId()
-//                                 + " and message body " + message.getBody());
-//                });
+       /**
+        client.receiveMessages(1)
+            .forEach(
+                message -> {
+                    log.info("message received with Id " + message.getMessageId()
+                                 + " and message body " + message.getBody());
+                });
+        **/
     }
 
     private AmqpRetryOptions retryOptions() {
