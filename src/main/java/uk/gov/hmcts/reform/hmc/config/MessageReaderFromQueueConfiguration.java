@@ -18,9 +18,11 @@ import java.time.Duration;
 public class MessageReaderFromQueueConfiguration {
 
     private final ApplicationParams applicationParams;
+    private final MessageProcessor messageProcessor;
 
-    public MessageReaderFromQueueConfiguration(ApplicationParams applicationParams) {
+    public MessageReaderFromQueueConfiguration(ApplicationParams applicationParams, MessageProcessor messageProcessor) {
         this.applicationParams = applicationParams;
+        this.messageProcessor = messageProcessor;
     }
 
     @Async
@@ -48,6 +50,7 @@ public class MessageReaderFromQueueConfiguration {
                 message -> {
                     log.info("message received with Id " + message.getMessageId()
                                  + " and message body " + message.getBody());
+                    messageProcessor.processMessage(client, message);
                 });
     }
 
