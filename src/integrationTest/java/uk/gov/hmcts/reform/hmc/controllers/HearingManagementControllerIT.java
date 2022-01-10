@@ -186,7 +186,6 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
-
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn201_WhenHearingRequestIsValid() throws Exception {
