@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import javax.validation.Valid;
@@ -122,7 +123,7 @@ public class HearingManagementController {
         hearingManagementService.sendRequestToHmi(hearingId, hearingRequest);
     }
 
-    /*
+
     @PostMapping(path = "/test", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public HmiSubmitHearingRequest test(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
@@ -140,5 +141,5 @@ public class HearingManagementController {
                                         @PathVariable("id") Long hearingId) {
         hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
         return hearingManagementService.test(hearingId, hearingRequest);
-    }*/
+    }
 }

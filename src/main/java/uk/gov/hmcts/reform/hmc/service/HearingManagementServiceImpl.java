@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 
@@ -108,10 +109,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         hmiSubmitHearingRequestMapper.mapRequest(hearingId, hearingRequest);
     }
 
-    /*@Override
+    @Override
     public HmiSubmitHearingRequest test(Long hearingId, HearingRequest hearingRequest) {
         return hmiSubmitHearingRequestMapper.mapRequest(hearingId, hearingRequest);
-    }*/
+    }
 
     /**
      * validate Get Hearing Request by caseRefId or caseRefId/caseStatus.
