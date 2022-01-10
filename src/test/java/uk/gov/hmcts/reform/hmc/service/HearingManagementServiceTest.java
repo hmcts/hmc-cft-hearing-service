@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.data.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
@@ -86,6 +87,9 @@ class HearingManagementServiceTest {
     @Mock
     CaseHearingRequestRepository caseHearingRequestRepository;
 
+    @Mock
+    CancellationReasonsRepository cancellationReasonsRepository;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -96,7 +100,8 @@ class HearingManagementServiceTest {
                 dataStoreRepository,
                 hearingRepository,
                 hearingMapper,
-                caseHearingRequestRepository
+                caseHearingRequestRepository,
+                cancellationReasonsRepository
             );
     }
 

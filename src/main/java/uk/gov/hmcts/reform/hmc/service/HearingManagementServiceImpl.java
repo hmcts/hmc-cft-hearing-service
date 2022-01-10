@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
+import uk.gov.hmcts.reform.hmc.data.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
@@ -55,6 +58,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final SecurityUtils securityUtils;
     private HearingRepository hearingRepository;
     private final HearingMapper hearingMapper;
+    private final CancellationReasonsRepository cancellationReasonsRepository;
 
     private CaseHearingRequestRepository caseHearingRequestRepository;
 
@@ -64,13 +68,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                             DataStoreRepository dataStoreRepository,
                                         HearingRepository hearingRepository,
                                         HearingMapper hearingMapper,
-                                        CaseHearingRequestRepository caseHearingRequestRepository) {
+                                        CaseHearingRequestRepository caseHearingRequestRepository,
+                                        CancellationReasonsRepository cancellationReasonsRepository) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
         this.hearingRepository = hearingRepository;
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
+        this.cancellationReasonsRepository = cancellationReasonsRepository;
     }
 
     @Override
@@ -245,11 +251,34 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-
     @Override
     public void deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
+        updateCancellationReasons(hearingId, deleteRequest.getCancellationReasonCode());
+        updateHearingStatus(hearingId);
+    }
+
+    private void updateHearingStatus(Long hearingId) {
+        Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
+        if (hearingResult.isPresent()) {
+            final HearingEntity hearingEntity = hearingResult.get();
+            hearingEntity.setStatus(CANCELLATION_REQUESTED);
+            hearingRepository.save(hearingEntity);
+        }
+    }
+
+    private void updateCancellationReasons(Long hearingId, String cancellationReasonCode) {
+        final CancellationReasonsEntity cancellationReasonsEntity = getCancellationReasonsEntity(
+            hearingId, cancellationReasonCode);
+        cancellationReasonsRepository.save(cancellationReasonsEntity);
+    }
+
+    private CancellationReasonsEntity getCancellationReasonsEntity(Long hearingId, String cancellationReasonCode) {
+        final CancellationReasonsEntity cancellationReasonsEntity = new CancellationReasonsEntity();
+        cancellationReasonsEntity.getCaseHearing().setCaseHearingID(hearingId);
+        cancellationReasonsEntity.setCancellationReasonType(cancellationReasonCode);
+        return cancellationReasonsEntity;
     }
 
     private void validateVersionNumber(Long hearingId, Integer versionNumber) {
