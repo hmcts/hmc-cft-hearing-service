@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
@@ -973,21 +974,51 @@ class HearingManagementServiceTest {
 
     @Test
     void deleteHearingShouldIncrementVersionNumber() {
-        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(
-            TestingUtil.deleteHearingRequest().getVersionNumber());
+        DeleteHearingRequest hearingRequest = TestingUtil.deleteHearingRequest();
+        final int versionNumber = hearingRequest.getVersionNumber();
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-        // TODO: retrieve request, prove value has been increment and remove logging from service method
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(versionNumber);
         hearingManagementService.deleteHearingRequest(
-            2000000000L, TestingUtil.deleteHearingRequest());
+            2000000000L, hearingRequest);
+        // Check that version number has been incremented
+        assertEquals((versionNumber + 1), hearingRequest.getVersionNumber());
+    }
+
+    @Test
+    void deleteHearingValidationFailureShouldNotIncrementVersionNumber() {
+        DeleteHearingRequest hearingRequest = TestingUtil.deleteHearingRequest();
+        final int versionNumber = hearingRequest.getVersionNumber();
+        // Expect validation error for null hearing Id!
+        assertThrows(BadRequestException.class, () -> hearingManagementService.deleteHearingRequest(
+            null, hearingRequest));
+        // Check that version number remains the same
+        assertEquals(versionNumber, hearingRequest.getVersionNumber());
     }
 
     @Test
     void updateHearingShouldIncrementVersionNumber() {
-        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(
-            TestingUtil.updateHearingRequest().getRequestDetails().getVersionNumber());
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-        // TODO: retrieve request, prove value has been increment and remove logging from service method
-        hearingManagementService.updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest());
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(versionNumber);
+
+        hearingManagementService.updateHearingRequest(2000000000L, hearingRequest);
+        // Check that version number has been incremented
+        assertEquals((versionNumber + 1), hearingRequest.getRequestDetails().getVersionNumber());
+    }
+
+    @Test
+    void updateHearingValidationFailureShouldNotIncrementVersionNumber() {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+        // Expect validation error for invalid hearing window
+        hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
+        hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
+        hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
+        assertThrows(BadRequestException.class, () -> hearingManagementService.updateHearingRequest(
+            2000000000L, hearingRequest));
+        // Check that version number remains the same
+        assertEquals(versionNumber, hearingRequest.getRequestDetails().getVersionNumber());
     }
 
 }
