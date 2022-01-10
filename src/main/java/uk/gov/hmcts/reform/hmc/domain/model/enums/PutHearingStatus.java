@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc.domain.model.enums;
 
+import java.util.Arrays;
+
 public enum PutHearingStatus {
     HEARING_REQUESTED,
     UPDATE_REQUESTED,
@@ -7,13 +9,8 @@ public enum PutHearingStatus {
     AWAITING_LISTING,
     LISTED;
 
-    public static boolean chekStatus(String status) {
-        for (PutHearingStatus enumStatus : values()) {
-            if (enumStatus.name().equals(status)) {
-                return true;
-            }
-        }
-        return false;
+    public static boolean isValid(String status) {
+        return Arrays.stream(values()).anyMatch(enumStatus -> enumStatus.name().equals(status));
     }
 }
 

@@ -104,7 +104,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private void validateHearingStatusForUpdate(Long hearingId) {
         String status = getStatus(hearingId);
-        if (!PutHearingStatus.chekStatus(status)) {
+        if (!PutHearingStatus.isValid(status)) {
             throw new BadRequestException(INVALID_PUT_HEARING_STATUS);
         }
     }
@@ -267,7 +267,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private void validateDeleteHearingStatus(Long hearingId) {
         String status = getStatus(hearingId);
-        if (!DeleteHearingStatus.chekStatus(status)) {
+        if (!DeleteHearingStatus.isValid(status)) {
             throw new BadRequestException(INVALID_DELETE_HEARING_STATUS);
         }
     }
