@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
@@ -158,6 +158,8 @@ class HearingManagementControllerIT extends BaseTest {
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
 
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
+
+    private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-caseHearings_request.sql";
 
     @Test
     @Sql(INSERT_DATA_SCRIPT)
@@ -477,6 +479,41 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(get("/hearings/9372710950276233")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndNoStatus() throws Exception {
+        mockMvc.perform(get("/hearings/9372710950276233")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.caseRef").value("9372710950276233"))
+            .andExpect(jsonPath("$.caseHearings", hasSize(3)))
+            .andExpect(jsonPath("$.caseHearings[0].hearingID").value("2000000010"))
+            .andExpect(jsonPath("$.caseHearings[1].hearingID").value("2000000009"))
+            .andExpect(jsonPath("$.caseHearings[2].hearingID").value("2000000000"))
+            .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("HEARING_UPDATED"))
+            .andExpect(jsonPath("$.caseHearings[1].hmcStatus").value("HEARING_REQUESTED"))
+            .andExpect(jsonPath("$.caseHearings[2].hmcStatus").value("HEARING_REQUESTED"))
+            .andExpect(jsonPath("$.hmctsServiceID").value("ABA1"))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndStatus() throws Exception {
+        mockMvc.perform(get("/hearings/9372710950276233")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("status", "HEARING_REQUESTED"))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.caseRef").value("9372710950276233"))
+            .andExpect(jsonPath("$.caseHearings", hasSize(2)))
+            .andExpect(jsonPath("$.caseHearings[0].hearingID").value("2000000009"))
+            .andExpect(jsonPath("$.caseHearings[1].hearingID").value("2000000000"))
+            .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("HEARING_REQUESTED"))
+            .andExpect(jsonPath("$.caseHearings[1].hmcStatus").value("HEARING_REQUESTED"))
+            .andExpect(jsonPath("$.hmctsServiceID").value("ABA1"))
             .andReturn();
     }
 
