@@ -15,12 +15,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.Assert;
-import org.springframework.util.Assert;
-import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
-import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
@@ -33,8 +30,6 @@ import java.nio.charset.Charset;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -122,13 +117,13 @@ class HearingManagementControllerTest {
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.getHearing(1234L, true);
         verify(hearingManagementService, times(1)).getHearingRequest(any(), anyBoolean());
-
     }
 
     @Test
     void shouldReturn200_whenDeleteRequestIdIsValid() {
-        doNothing().when(hearingManagementService).deleteHearingRequest(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
+        doReturn(TestingUtil.deleteHearingResponse()).when(hearingManagementService)
+            .deleteHearingRequest(Mockito.any(), Mockito.any());
         controller.deleteHearing(1234L, TestingUtil.deleteHearingRequest());
         verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());
     }
@@ -137,7 +132,6 @@ class HearingManagementControllerTest {
     void shouldReturn404_whenDeleteRequestIdIsInValid() {
         DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
         request.setCancellationReasonCode("");
-        doNothing().when(hearingManagementService).deleteHearingRequest(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.deleteHearing(1234L, request);
         verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());

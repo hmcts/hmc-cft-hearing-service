@@ -47,6 +47,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
@@ -745,9 +746,17 @@ class HearingManagementServiceTest {
     void deleteHearingRequestShouldPassWithValidDetails() {
         when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-        hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
+        when(caseHearingRequestRepository.getCaseHearingId(2000000000L)).thenReturn(1L);
+        when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(TestingUtil.deleteHearingEntity()));
+        HearingResponse response = hearingManagementService.deleteHearingRequest(
+            2000000000L, TestingUtil.deleteHearingRequest());
+        assertEquals(VERSION_NUMBER, response.getVersionNumber());
+        assertEquals(CANCELLATION_REQUESTED, response.getStatus());
+        assertNotNull(response.getHearingRequestId());
         verify(hearingRepository).existsById(2000000000L);
         verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
+        verify(hearingRepository).findById(2000000000L);
+        verify(caseHearingRequestRepository).getCaseHearingId(2000000000L);
     }
 
     @Test

@@ -75,9 +75,9 @@ public class HearingManagementController {
         @ApiResponse(code = 404, message = "Hearing id not found"),
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
-    public void deleteHearing(@PathVariable("id") Long hearingId,
+    public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
                               @RequestBody @Valid DeleteHearingRequest deleteRequest) {
-        hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
+        return hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
     }
 
     /**

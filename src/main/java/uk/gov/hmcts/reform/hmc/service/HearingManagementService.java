@@ -13,7 +13,7 @@ public interface HearingManagementService {
 
     void verifyAccess(String caseReference);
 
-    void deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest);
+    HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest);
 
     HearingRequest validateGetHearingsRequest(String caseRefId, String caseStatus);
 

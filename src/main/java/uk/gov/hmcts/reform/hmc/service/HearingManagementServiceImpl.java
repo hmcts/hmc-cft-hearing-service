@@ -252,20 +252,20 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public void deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
+    public HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
         updateCancellationReasons(hearingId, deleteRequest.getCancellationReasonCode());
-        updateHearingStatus(hearingId);
+        HearingEntity savedEntity = updateHearingStatus(hearingId);
+        return getSaveHearingResponseDetails(savedEntity);
     }
 
-    private void updateHearingStatus(Long hearingId) {
+    private HearingEntity updateHearingStatus(Long hearingId) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
-        if (hearingResult.isPresent()) {
-            final HearingEntity hearingEntity = hearingResult.get();
-            hearingEntity.setStatus(CANCELLATION_REQUESTED);
-            hearingRepository.save(hearingEntity);
-        }
+        final HearingEntity hearingEntity = hearingResult.get();
+        hearingEntity.setStatus(CANCELLATION_REQUESTED);
+        hearingRepository.save(hearingEntity);
+        return hearingEntity;
     }
 
     private void updateCancellationReasons(Long hearingId, String cancellationReasonCode) {
