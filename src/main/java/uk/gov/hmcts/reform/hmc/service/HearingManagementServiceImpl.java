@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsRepository;
@@ -269,14 +269,19 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void updateCancellationReasons(Long hearingId, String cancellationReasonCode) {
+        Long caseHearingId = getCaseHearingId(hearingId);
         final CancellationReasonsEntity cancellationReasonsEntity = getCancellationReasonsEntity(
-            hearingId, cancellationReasonCode);
+            cancellationReasonCode, caseHearingId);
         cancellationReasonsRepository.save(cancellationReasonsEntity);
     }
 
-    private CancellationReasonsEntity getCancellationReasonsEntity(Long hearingId, String cancellationReasonCode) {
+    private Long getCaseHearingId(Long hearingId) {
+        return caseHearingRequestRepository.getCaseHearingId(hearingId);
+    }
+
+    private CancellationReasonsEntity getCancellationReasonsEntity(String cancellationReasonCode, Long caseHearingId) {
         final CancellationReasonsEntity cancellationReasonsEntity = new CancellationReasonsEntity();
-        cancellationReasonsEntity.getCaseHearing().setCaseHearingID(hearingId);
+        cancellationReasonsEntity.setCaseHearingID(caseHearingId);
         cancellationReasonsEntity.setCancellationReasonType(cancellationReasonCode);
         return cancellationReasonsEntity;
     }
