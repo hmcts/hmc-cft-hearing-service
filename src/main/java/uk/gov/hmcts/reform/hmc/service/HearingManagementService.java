@@ -20,5 +20,4 @@ public interface HearingManagementService {
 
     GetHearingsResponse getHearings(String caseRefId, String caseStatus);
 
-
 }
