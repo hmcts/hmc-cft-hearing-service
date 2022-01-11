@@ -75,6 +75,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     @Override
     public void getHearingRequest(Long hearingId, boolean isValid) {
+        isValidFormat(hearingId.toString());
         if (isValid && !hearingRepository.existsById(hearingId)) {
             throw new HearingNotFoundException(hearingId);
         }
@@ -275,7 +276,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    private void isValidFormat(String hearingIdStr) {
+
+    public void isValidFormat(String hearingIdStr) {
         if (hearingIdStr.length() != HEARING_ID_MAX_LENGTH || !StringUtils.isNumeric(hearingIdStr)
             || hearingIdStr.charAt(0) != '2') {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);

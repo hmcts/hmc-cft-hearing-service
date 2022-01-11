@@ -154,23 +154,30 @@ class HearingManagementControllerIT extends BaseTest {
     public static final String HEARING_NOT_FOUND_EXCEPTION = "No hearing found for reference: %s";
 
     private static final String INSERT_DATA_SCRIPT = "classpath:sql/insert-hearing.sql";
-
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
-
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
+    //ToDo
     @Test
     @Sql(INSERT_DATA_SCRIPT)
     void shouldReturn204_WhenHearingExists() throws Exception {
-        mockMvc.perform(get(url + "/123" + "?isValid=true")
+        mockMvc.perform(get(url + "/2000000000" + "?isValid=true")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(204))
             .andReturn();
     }
 
     @Test
-    void shouldReturn404_WhenHearingIdIsInValid() throws Exception {
-        mockMvc.perform(get(url + "/12" + "?isValid=true")
+    void shouldReturn400_WhenHearingIdIsInValid() throws Exception {
+        mockMvc.perform(get(url + "/1000000000" + "?isValid=true")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andReturn();
+    }
+
+    @Test
+    void shouldReturn404_WhenHearingIdDoesNotExist() throws Exception {
+        mockMvc.perform(get(url + "/2000000001" + "?isValid=true")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andReturn();
@@ -178,7 +185,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     void shouldReturn204_WhenIsValidIsNotProvided() throws Exception {
-        mockMvc.perform(get(url + "/12")
+        mockMvc.perform(get(url + "/2000000001")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(204))
             .andReturn();
