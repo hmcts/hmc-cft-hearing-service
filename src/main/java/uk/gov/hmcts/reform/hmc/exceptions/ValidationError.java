@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.hmc.exceptions;
 
 public final class ValidationError {
+
+    private ValidationError() {
+    }
+
     private static final String CHARACTERS_LONG = "characters long";
     public static final String AUTO_LIST_FLAG_NULL_EMPTY = "Auto list flag can not be null or empty";
     public static final String HEARING_TYPE_NULL_EMPTY = "Hearing type can not be null or empty";
@@ -153,7 +157,12 @@ public final class ValidationError {
     public static final String VERSION_NUMBER_NULL_EMPTY = "Version number can not be null or empty";
     public static final String VERSION_NUMBER_MAX_LENGTH = "Version number must not be more than 60 "
         + CHARACTERS_LONG;
+    public static final String INVALID_CANCELLATION_REASON_CODE = "Cancellation Reason code details are not present";
+    public static final String CANCELLATION_REASON_CODE_MAX_LENGTH_MSG = "Non standard hearing duration "
+        + "reasons length cannot be greater than 100 characters";
+    public static final String INVALID_VERSION_NUMBER = "Invalid version number";
+    public static final String INVALID_HEARING_ID_DETAILS = "Invalid hearing Id";
+    public static final String CASE_NOT_FOUND = "Case could not be found";
+    public static final String VERSION_NUMBER_NULL_EMPTY = "Version number must be present";
 
-    private ValidationError() {
-    }
 }

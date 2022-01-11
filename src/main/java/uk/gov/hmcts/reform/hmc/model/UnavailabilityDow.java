@@ -10,11 +10,11 @@ import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 public class UnavailabilityDow {
 
     @JsonProperty("DOW")
-    @EnumPattern(enumClass = Dow.class, fieldName = "dow")
+    @EnumPattern(enumClass = DayOfWeekUnavailable.class, fieldName = "dow")
     private String dow;
 
     @JsonProperty("DOWUnavailabilityType")
-    @EnumPattern(enumClass = DowUnavailabilityType.class, fieldName = "dowUnavailabilityType")
+    @EnumPattern(enumClass = DayOfWeekUnAvailableType.class, fieldName = "dowUnavailabilityType")
     private String dowUnavailabilityType;
 
 }

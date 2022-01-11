@@ -12,7 +12,10 @@ import com.github.tomakehurst.wiremock.extension.ResponseDefinitionTransformer;
 import com.github.tomakehurst.wiremock.http.Request;
 import com.github.tomakehurst.wiremock.http.ResponseDefinition;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -20,8 +23,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class WiremockFixtures {
@@ -57,7 +62,7 @@ public class WiremockFixtures {
                     .withRequestBody(
                         equalToJson(
                             getJsonString(hearingRequest)))
-                    .willReturn(aResponse().withStatus(HTTP_ACCEPTED)));
+                    .willReturn(aResponse().withStatus(HTTP_CREATED)));
     }
 
     public static void stubReturn400WhileValidateHearingObject(HearingRequest hearingRequest) {
@@ -70,6 +75,31 @@ public class WiremockFixtures {
                     .willReturn(aResponse().withStatus(HTTP_BAD_REQUEST)));
     }
 
+    public static void stubReturn200RoleAssignments(String userId, RoleAssignmentResponse roleAssignment) {
+        stubFor(WireMock.get(urlEqualTo("/am/role-assignments/actors/" + userId))
+                    .willReturn(aResponse()
+                                    .withStatus(HTTP_OK)
+                                    .withBody(getJsonString(roleAssignment))
+                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)));
+    }
+
+    public static void stubReturn200CaseDetailsByCaseId(String caseReference, DataStoreCaseDetails caseDetails) {
+        stubFor(WireMock.get(urlEqualTo("/cases/" + caseReference))
+                    .willReturn(aResponse()
+                                    .withStatus(HTTP_OK)
+                                    .withBody(getJsonString(caseDetails))
+                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)));
+    }
+
+    public static void stubReturn404FromDataStore(String caseReference) {
+        stubFor(WireMock.get(urlEqualTo("/cases/" + caseReference))
+                    .willReturn(aResponse()
+                                    .withStatus(HTTP_NOT_FOUND)
+                                    .withBody(getJsonString("No case found"))
+                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)));
+
+    }
+
     @SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "squid:S112"})
     // Required as wiremock's Json.getObjectMapper().registerModule(..); not working
     // see https://github.com/tomakehurst/wiremock/issues/1127
@@ -80,4 +110,5 @@ public class WiremockFixtures {
             throw new RuntimeException(e);
         }
     }
+
 }
