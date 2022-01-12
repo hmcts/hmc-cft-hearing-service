@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
-import uk.gov.hmcts.reform.hmc.data.CancellationReasonsRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;

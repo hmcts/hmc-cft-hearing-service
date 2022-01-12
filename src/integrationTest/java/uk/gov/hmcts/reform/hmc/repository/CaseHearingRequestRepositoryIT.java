@@ -6,6 +6,7 @@ import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class CaseHearingRequestRepositoryIT extends BaseTest {
@@ -29,5 +30,19 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
     void testGetVersionNumber_HearingIdIsInValid() {
         Integer versionNumber = caseHearingRequestRepository.getVersionNumber(2020000001L);
         assertNull(versionNumber);
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void testGetCaseHearingId_HearingIdIsValid() {
+        Long caseHearingId = caseHearingRequestRepository.getCaseHearingId(2000000000L);
+        assertNotNull(caseHearingId);
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void testGetCaseHearingId_HearingIdNotInDb() {
+        Long caseHearingId = caseHearingRequestRepository.getCaseHearingId(2200000000L);
+        assertNull(caseHearingId);
     }
 }
