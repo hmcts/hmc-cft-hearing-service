@@ -9,12 +9,14 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsRepository;
+import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
@@ -28,6 +30,7 @@ import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +38,14 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
@@ -101,6 +107,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateHearingRequest(hearingRequest);
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
+        validateHearingStatusForUpdate(hearingId);
+    }
+
+    private void validateHearingStatusForUpdate(Long hearingId) {
+        String status = getStatus(hearingId);
+        if (!PutHearingStatus.isValid(status)) {
+            throw new BadRequestException(INVALID_PUT_HEARING_STATUS);
+        }
     }
 
     /**
@@ -255,6 +269,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     public HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
+        validateDeleteHearingStatus(hearingId);
         updateCancellationReasons(hearingId, deleteRequest.getCancellationReasonCode());
         HearingEntity savedEntity = updateHearingStatus(hearingId);
         return getSaveHearingResponseDetails(savedEntity);
@@ -284,6 +299,17 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         cancellationReasonsEntity.setCaseHearingID(caseHearingId);
         cancellationReasonsEntity.setCancellationReasonType(cancellationReasonCode);
         return cancellationReasonsEntity;
+    }
+
+    private void validateDeleteHearingStatus(Long hearingId) {
+        String status = getStatus(hearingId);
+        if (!DeleteHearingStatus.isValid(status)) {
+            throw new BadRequestException(INVALID_DELETE_HEARING_STATUS);
+        }
+    }
+
+    private String getStatus(Long hearingId) {
+        return hearingRepository.getStatus(hearingId);
     }
 
     private void validateVersionNumber(Long hearingId, Integer versionNumber) {
