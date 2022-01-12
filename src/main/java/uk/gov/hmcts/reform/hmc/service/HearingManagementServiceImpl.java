@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.transaction.Transactional;
 
@@ -275,10 +276,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private HearingEntity updateHearingStatus(Long hearingId) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
-        final HearingEntity hearingEntity = hearingResult.get();
-        hearingEntity.setStatus(CANCELLATION_REQUESTED);
-        hearingRepository.save(hearingEntity);
-        return hearingEntity;
+        if (hearingResult.isPresent()) {
+            final HearingEntity hearingEntity = hearingResult.get();
+            hearingEntity.setStatus(CANCELLATION_REQUESTED);
+            hearingRepository.save(hearingEntity);
+            return hearingEntity;
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
     private void updateCancellationReasons(Long hearingId, String cancellationReasonCode) {
