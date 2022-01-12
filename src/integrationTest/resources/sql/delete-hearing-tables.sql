@@ -13,5 +13,6 @@ DELETE FROM panel_requirements;
 DELETE FROM panel_authorisation_requirements;
 DELETE FROM panel_specialisms;
 DELETE FROM panel_user_requirements;
+DELETE FROM cancellation_reasons;
 DELETE FROM case_hearing_request;
 DELETE FROM hearing;

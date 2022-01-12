@@ -767,6 +767,7 @@ class HearingManagementServiceTest {
         when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_SUBMITTED");
+        when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(TestingUtil.deleteHearingEntity()));
         hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
         verify(hearingRepository).existsById(2000000000L);
         verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
