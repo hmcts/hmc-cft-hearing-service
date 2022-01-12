@@ -34,7 +34,7 @@ class CaseHearingRequestMapperTest {
         assertNull(entity.getLeadJudgeContractType());
         assertNull(entity.getFirstDateTimeOfHearingMustBe());
         assertEquals("ABA1", entity.getHmctsServiceID());
-        assertEquals("1111222233334444", entity.getCaseReference());
+        assertEquals(TestingUtil.CASE_REFERENCE, entity.getCaseReference());
         assertEquals(LocalDateTime.parse("2021-08-10T12:20:00"), entity.getHearingRequestReceivedDateTime());
         assertNull(entity.getExternalCaseReference());
         assertEquals("https://www.google.com", entity.getCaseUrlContextPath());

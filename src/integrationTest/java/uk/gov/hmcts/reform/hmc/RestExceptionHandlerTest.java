@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.HearingWindowDateRange;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementServiceImpl;
@@ -47,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc(addFilters = false)
 @ImportAutoConfiguration(TestIdamConfiguration.class)
-public class RestExceptionHandlerTest extends BaseTest {
+class RestExceptionHandlerTest extends BaseTest {
 
     public static String ERROR_PATH_ERROR = "$.errors";
     public static String ERROR_PATH_STATUS = "$.status";
@@ -70,10 +71,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
-        HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
-        hearingWindow.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
-        hearingDetails.setHearingWindow(hearingWindow);
+        hearingDetails.setHearingWindow(generateHearingWindowWithDateRange());
         hearingDetails.setDuration(0);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
@@ -213,5 +211,14 @@ public class RestExceptionHandlerTest extends BaseTest {
             .andExpect(status().is(expectedStatusCode))
             .andExpect(jsonPath(ERROR_PATH_STATUS).value(expectedStatus))
             .andExpect(jsonPath(ERROR_PATH_ERROR).value(expectedMessage));
+    }
+
+    private HearingWindow generateHearingWindowWithDateRange() {
+        HearingWindow hearingWindow = new HearingWindow();
+        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
+        hearingWindowDateRange.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindowDateRange.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
+        return hearingWindow;
     }
 }

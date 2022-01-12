@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.HearingWindowDateRange;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
@@ -836,7 +837,10 @@ class HearingManagementServiceTest {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
+        hearingWindowDateRange.setHearingWindowStartDateRange(LocalDate.now());
+        hearingWindowDateRange.setHearingWindowEndDateRange(LocalDate.now());
+        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
         hearingDetails.setHearingWindow(hearingWindow);
         PartyDetails partyDetails = new PartyDetails();
         List<PartyDetails> partyDetailsList = new ArrayList<>();
@@ -854,7 +858,10 @@ class HearingManagementServiceTest {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
+        hearingWindowDateRange.setHearingWindowStartDateRange(LocalDate.now());
+        hearingWindowDateRange.setHearingWindowEndDateRange(LocalDate.now());
+        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
         hearingDetails.setHearingWindow(hearingWindow);
         PartyDetails partyDetails = new PartyDetails();
         OrganisationDetails organisationDetails = new OrganisationDetails();
@@ -875,9 +882,7 @@ class HearingManagementServiceTest {
     void updateHearingRequestShouldThrowErrorWhenPartyUnavailabilityDowIsNotPresent() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
-        HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
-        hearingDetails.setHearingWindow(hearingWindow);
+        hearingDetails.setHearingWindow(generateHearingWindowWithDateRange());
         PartyDetails partyDetails = new PartyDetails();
         IndividualDetails individualDetails = new IndividualDetails();
         individualDetails.setHearingChannelEmail("email");
@@ -898,9 +903,7 @@ class HearingManagementServiceTest {
     void updateHearingRequestShouldThrowErrorWhenPartyUnavailabilityRangesIsNotPresent() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
-        HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
-        hearingDetails.setHearingWindow(hearingWindow);
+        hearingDetails.setHearingWindow(generateHearingWindowWithDateRange());
         PartyDetails partyDetails = new PartyDetails();
         IndividualDetails individualDetails = new IndividualDetails();
         individualDetails.setHearingChannelEmail("email");
@@ -921,9 +924,7 @@ class HearingManagementServiceTest {
     void updateHearingRequestShouldThrowErrorWhenRelatedPartyDetailsAreNotPresent() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
-        HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
-        hearingDetails.setHearingWindow(hearingWindow);
+        hearingDetails.setHearingWindow(generateHearingWindowWithDateRange());
         PartyDetails partyDetails = new PartyDetails();
         IndividualDetails individualDetails = new IndividualDetails();
         individualDetails.setHearingChannelEmail("email");
@@ -971,5 +972,14 @@ class HearingManagementServiceTest {
         Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
             .updateHearingRequest(2000000000L, updateHearingRequest));
         assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
+    }
+
+    private HearingWindow generateHearingWindowWithDateRange() {
+        HearingWindow hearingWindow = new HearingWindow();
+        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
+        hearingWindowDateRange.setHearingWindowStartDateRange(LocalDate.now());
+        hearingWindowDateRange.setHearingWindowEndDateRange(LocalDate.now());
+        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
+        return hearingWindow;
     }
 }

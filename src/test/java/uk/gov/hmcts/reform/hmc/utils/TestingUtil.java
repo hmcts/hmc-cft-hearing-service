@@ -55,8 +55,6 @@ public class TestingUtil {
             .setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
         HearingWindowFirstDate hearingWindowFirstDate = new HearingWindowFirstDate();
         hearingWindow.setHearingWindowFirstDate(hearingWindowFirstDate);
-        hearingWindow.getHearingWindowFirstDate()
-            .setFirstDateTimeMustBe(LocalDateTime.parse("2017-04-01T08:00:01"));
         hearingDetails.setHearingWindow(hearingWindow);
         hearingDetails.setDuration(0);
         hearingDetails.setNonStandardHearingDurationReasons(

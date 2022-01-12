@@ -37,7 +37,7 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setPrivateHearingRequiredFlag(hearingDetails.getPrivateHearingRequiredFlag());
         caseHearingRequestEntity.setLeadJudgeContractType(hearingDetails.getLeadJudgeContractType());
         caseHearingRequestEntity.setFirstDateTimeOfHearingMustBe(hearingDetails.getHearingWindow()
-                                                                     .getFirstDateTimeMustBe());
+                                         .getHearingWindowFirstDate().getFirstDateTimeMustBe());
         caseHearingRequestEntity.setHmctsServiceID(caseDetails.getHmctsServiceCode());
         caseHearingRequestEntity.setCaseReference(caseDetails.getCaseRef());
         caseHearingRequestEntity.setHearingRequestReceivedDateTime(caseDetails.getRequestTimeStamp());
@@ -55,9 +55,9 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setListingComments(hearingDetails.getListingComments());
         caseHearingRequestEntity.setRequester(hearingDetails.getHearingRequester());
         caseHearingRequestEntity.setHearingWindowStartDateRange(hearingDetails.getHearingWindow()
-                                                                    .getHearingWindowStartDateRange());
+                                    .getHearingWindowDateRange().getHearingWindowStartDateRange());
         caseHearingRequestEntity.setHearingWindowEndDateRange(hearingDetails.getHearingWindow()
-                                                                  .getHearingWindowEndDateRange());
+                                    .getHearingWindowDateRange().getHearingWindowEndDateRange());
         caseHearingRequestEntity.setRequestTimeStamp(hearingRequest.getRequestDetails().getRequestTimeStamp());
         caseHearingRequestEntity.setHearing(hearingEntity);
         return caseHearingRequestEntity;

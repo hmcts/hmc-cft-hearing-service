@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
-import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
@@ -64,13 +64,12 @@ public class HearingManagementController {
     @PostMapping(path = "/hearing", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
-    @ApiResponse(code = 202, message = MSG_202_CREATE_HEARING),
-    @ApiResponse(code = 400, message = MSG_400_CREATE_HEARING)
+        @ApiResponse(code = 202, message = MSG_202_CREATE_HEARING),
+        @ApiResponse(code = 400, message = MSG_400_CREATE_HEARING)
     })
     public HearingResponse saveHearing(@RequestBody @Valid HearingRequest hearingRequest) {
         hearingManagementService.verifyAccess(hearingRequest.getCaseDetails().getCaseRef());
-        HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(hearingRequest);
-        return hearingResponse;
+        return hearingManagementService.saveHearingRequest(hearingRequest);
     }
 
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
