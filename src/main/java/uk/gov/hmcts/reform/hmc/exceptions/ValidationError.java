@@ -159,6 +159,8 @@ public final class ValidationError {
     public static final String VERSION_NUMBER_NULL_EMPTY = "Version number must be present";
     public static final String VERSION_NUMBER_MAX_LENGTH = "Version number must not be more than 60 "
         + CHARACTERS_LONG;
+    public static final String INVALID_DELETE_HEARING_STATUS = "Invalid hearing state for DELETE";
+    public static final String INVALID_PUT_HEARING_STATUS = "Invalid hearing state for PUT";
 
     private ValidationError() {
     }
