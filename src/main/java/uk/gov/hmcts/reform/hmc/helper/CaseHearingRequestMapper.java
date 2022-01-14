@@ -7,8 +7,8 @@ import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 
 import java.util.List;
 
@@ -24,10 +24,11 @@ public class CaseHearingRequestMapper {
         this.caseCategoriesMapper = caseCategoriesMapper;
     }
 
-    public CaseHearingRequestEntity modelToEntity(HearingRequest hearingRequest, HearingEntity hearingEntity) {
+    public CaseHearingRequestEntity modelToEntity(CreateHearingRequest createHearingRequest,
+                                                  HearingEntity hearingEntity) {
         final CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
-        HearingDetails hearingDetails = hearingRequest.getHearingDetails();
-        CaseDetails caseDetails = hearingRequest.getCaseDetails();
+        HearingDetails hearingDetails = createHearingRequest.getHearingDetails();
+        CaseDetails caseDetails = createHearingRequest.getCaseDetails();
         caseHearingRequestEntity.setAutoListFlag(hearingDetails.getAutoListFlag());
         caseHearingRequestEntity.setHearingType(hearingDetails.getHearingType());
         caseHearingRequestEntity.setRequiredDurationInMinutes(hearingDetails.getDuration());
@@ -58,7 +59,7 @@ public class CaseHearingRequestMapper {
                                                                     .getHearingWindowStartDateRange());
         caseHearingRequestEntity.setHearingWindowEndDateRange(hearingDetails.getHearingWindow()
                                                                   .getHearingWindowEndDateRange());
-        caseHearingRequestEntity.setRequestTimeStamp(hearingRequest.getRequestDetails().getRequestTimeStamp());
+        caseHearingRequestEntity.setRequestTimeStamp(createHearingRequest.getRequestDetails().getRequestTimeStamp());
         caseHearingRequestEntity.setHearing(hearingEntity);
         return caseHearingRequestEntity;
     }
