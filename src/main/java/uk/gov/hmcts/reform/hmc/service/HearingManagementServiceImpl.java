@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
