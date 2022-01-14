@@ -113,9 +113,9 @@ class HearingManagementServiceTest {
                 hearingRepository,
                 hearingMapper,
                 caseHearingRequestRepository,
-                getHearingsResponseMapper,
-                hmiSubmitHearingRequestMapper
-            );
+                hmiSubmitHearingRequestMapper,
+                getHearingsResponseMapper
+                );
     }
 
     public static final String JURISDICTION = "Jurisdiction1";

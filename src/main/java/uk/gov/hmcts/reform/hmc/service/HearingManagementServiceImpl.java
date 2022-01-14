@@ -69,8 +69,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final CaseHearingRequestRepository caseHearingRequestRepository;
     private final HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
 
-    private CaseHearingRequestRepository caseHearingRequestRepository;
-
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
                                         @Qualifier("defaultDataStoreRepository")
@@ -78,8 +76,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HearingRepository hearingRepository,
                                         HearingMapper hearingMapper,
                                         CaseHearingRequestRepository caseHearingRequestRepository,
-                                        HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper) {
-                                        CaseHearingRequestRepository caseHearingRequestRepository,
+                                        HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper,
                                         GetHearingsResponseMapper getHearingsResponseMapper) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
