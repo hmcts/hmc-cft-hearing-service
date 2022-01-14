@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 
 class HearingManagementServiceIT extends BaseTest {
 
@@ -123,7 +126,6 @@ class HearingManagementServiceIT extends BaseTest {
     void testDeleteHearingRequest_WithAllMandatoryFields() {
         DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
         hearingManagementService.deleteHearingRequest(2000000000L, request);
-
     }
 
     @Test
@@ -154,6 +156,33 @@ class HearingManagementServiceIT extends BaseTest {
             hearingManagementService.deleteHearingRequest(300000000L, request);
         });
         assertEquals("Invalid hearing Id", exception.getMessage());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void testDeleteHearingRequest_WithInvalidHearingStatus() {
+        DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.deleteHearingRequest(2000000011L, request);
+        });
+        assertEquals(INVALID_DELETE_HEARING_STATUS, exception.getMessage());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void testUpdateHearingRequest_WithInvalidHearingStatus() {
+        UpdateHearingRequest request = TestingUtil.updateHearingRequest();
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.updateHearingRequest(2000000011L, request);
+        });
+        assertEquals(INVALID_PUT_HEARING_STATUS, exception.getMessage());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void testUpdateHearingRequest_WithValidData() {
+        UpdateHearingRequest request = TestingUtil.updateHearingRequest();
+        hearingManagementService.updateHearingRequest(2000000000L, request);
     }
 
     @Test
