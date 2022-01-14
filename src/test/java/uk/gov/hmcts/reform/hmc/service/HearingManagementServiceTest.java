@@ -9,7 +9,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
@@ -34,6 +33,7 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
@@ -51,10 +51,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
@@ -732,9 +734,31 @@ class HearingManagementServiceTest {
     void deleteHearingRequestShouldPassWithValidDetails() {
         when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_SUBMITTED");
         hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
         verify(hearingRepository).existsById(2000000000L);
         verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
+    }
+
+    @Test
+    void deleteHearingRequestShouldPassWithValidStatus() {
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_SUBMITTED");
+        hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
+        verify(hearingRepository).existsById(2000000000L);
+        verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
+    }
+
+    @Test
+    void deleteHearingRequestShouldFailWithInValidStatus() {
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_NOT_SUBMITTED");
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
+        });
+        assertEquals(INVALID_DELETE_HEARING_STATUS, exception.getMessage());
     }
 
     @Test
@@ -784,6 +808,7 @@ class HearingManagementServiceTest {
     void updateHearingRequestShouldPassWithValidDetails() {
         when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.getStatus(2000000000L)).thenReturn("HEARING_REQUESTED");
         hearingManagementService.updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest());
         verify(hearingRepository).existsById(2000000000L);
         verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
@@ -797,6 +822,27 @@ class HearingManagementServiceTest {
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .updateHearingRequest(2000000000L, updateHearingRequest));
         assertEquals(INVALID_VERSION_NUMBER, exception.getMessage());
+    }
+
+    @Test
+    void updateHearingRequestShouldThrowErrorWhenDbStatusDoesNotMatchWithExpectedState() {
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.getStatus(2000000000L)).thenReturn("HEARING_NOT_REQUESTED");
+        UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .updateHearingRequest(2000000000L, updateHearingRequest));
+        assertEquals(INVALID_PUT_HEARING_STATUS, exception.getMessage());
+    }
+
+    @Test
+    void updateHearingRequestShouldPassWhenDbStatusMatchWithExpectedState() {
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_REQUESTED");
+        hearingManagementService.updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest());
+        verify(hearingRepository).existsById(2000000000L);
+        verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
     }
 
     @Test
