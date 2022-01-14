@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
@@ -95,15 +96,15 @@ public class HearingManagementController {
         @ApiResponse(code = 200, message = "Success (with content)"),
         @ApiResponse(code = 400, message = "Invalid request")
     })
-    public HearingRequest getHearingsRequest(@PathVariable("ccdCaseRef")
+    public GetHearingsResponse getHearings(@PathVariable("ccdCaseRef")
                                              @Valid
                                              @NotEmpty(message = CASE_REF_EMPTY)
                                              @Size(min = 16, max = 16, message = CASE_REF_INVALID_LENGTH)
                                              @LuhnCheck(message = CASE_REF_INVALID, ignoreNonDigitCharacters = false)
                                                  String ccdCaseRef,
-                                             @RequestParam(required = false)
+                                                  @RequestParam(required = false)
                                                  String status) {
-        return hearingManagementService.validateGetHearingsRequest(ccdCaseRef, status);
+        return hearingManagementService.getHearings(ccdCaseRef, status);
     }
 
     @PutMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)

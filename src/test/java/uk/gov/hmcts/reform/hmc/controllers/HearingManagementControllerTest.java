@@ -14,15 +14,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.Assert;
-import org.springframework.util.Assert;
-import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
@@ -30,11 +27,10 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.nio.charset.Charset;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -65,7 +61,8 @@ class HearingManagementControllerTest {
     private static final MediaType JSON_CONTENT_TYPE = new MediaType(
         MediaType.APPLICATION_JSON.getType(),
         MediaType.APPLICATION_JSON.getSubtype(),
-        Charset.forName("utf8"));
+        Charset.forName("utf8")
+    );
 
     @Test
     void shouldReturn400_whenRequest_Details_Are_NotPresent() {
@@ -144,30 +141,26 @@ class HearingManagementControllerTest {
     }
 
     @Test
-    void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhn() throws Exception {
+    void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhn() {
         final String validCaseRef = "9372710950276233";
-        doReturn(createHearingRequest(validCaseRef)).when(hearingManagementService)
-            .validateGetHearingsRequest(Mockito.any(), Mockito.any());
+        doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef)).when(hearingManagementService)
+            .getHearings(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        HearingRequest hearingRequest = controller.getHearingsRequest(validCaseRef, null);
-        verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());
-        Assert.isTrue(hearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef));
+        GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, null);
+        verify(hearingManagementService, times(1)).getHearings(any(), any());
+        assertEquals(hearingRequest.getCaseRef(), validCaseRef);
     }
 
     @Test
-    void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhnAndStatus() throws Exception {
+    void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhnAndStatus() {
         final String validCaseRef = "9372710950276233";
         final String status = "UPDATED"; // for example
-        doReturn(createHearingRequest(validCaseRef, status)).when(hearingManagementService)
-            .validateGetHearingsRequest(Mockito.any(), Mockito.any());
+        doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef)).when(hearingManagementService)
+            .getHearings(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        HearingRequest hearingRequest = controller.getHearingsRequest(validCaseRef, status);
-        verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());
-        Assert.isTrue(hearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef));
-    }
-
-    private HearingRequest createHearingRequest(String caseRef) {
-        return createHearingRequest(caseRef, null);
+        GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, status);
+        verify(hearingManagementService, times(1)).getHearings(any(), any());
+        assertEquals(hearingRequest.getCaseRef(), validCaseRef);
     }
 
     private HearingRequest createHearingRequest(String caseRef, String status) {

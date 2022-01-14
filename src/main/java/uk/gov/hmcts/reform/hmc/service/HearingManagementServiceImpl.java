@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
@@ -18,8 +19,10 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
@@ -34,6 +37,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
@@ -59,8 +63,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final SecurityUtils securityUtils;
     private HearingRepository hearingRepository;
     private final HearingMapper hearingMapper;
-
-    private CaseHearingRequestRepository caseHearingRequestRepository;
+    private final GetHearingsResponseMapper getHearingsResponseMapper;
+    private final CaseHearingRequestRepository caseHearingRequestRepository;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -68,13 +72,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                             DataStoreRepository dataStoreRepository,
                                         HearingRepository hearingRepository,
                                         HearingMapper hearingMapper,
-                                        CaseHearingRequestRepository caseHearingRequestRepository) {
+                                        CaseHearingRequestRepository caseHearingRequestRepository,
+                                        GetHearingsResponseMapper getHearingsResponseMapper) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
         this.hearingRepository = hearingRepository;
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
+        this.getHearingsResponseMapper = getHearingsResponseMapper;
     }
 
     @Override
@@ -116,10 +122,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      * @return HearingRequest HearingRequest
      */
     @Override
-    public HearingRequest validateGetHearingsRequest(String caseRef, String status) {
+    public GetHearingsResponse getHearings(String caseRef, String status) {
         log.info("caseRef:{} ; status:{}", caseRef, status);
-        // TODO: select hearing request from given caseRefId and status (if any)
-        return new HearingRequest();
+        List<CaseHearingRequestEntity> entities;
+        if (!isBlank(status)) {
+            entities = caseHearingRequestRepository.getHearingDetailsWithStatus(caseRef, status);
+        } else {
+            entities = caseHearingRequestRepository.getHearingDetails(caseRef);
+        }
+        return getHearingsResponseMapper.toHearingsResponse(caseRef, entities);
     }
 
     private HearingResponse insertHearingRequest(HearingRequest hearingRequest) {
