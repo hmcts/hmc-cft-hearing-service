@@ -7,10 +7,20 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 
+import java.util.List;
+
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 @Repository
 public interface CaseHearingRequestRepository extends CrudRepository<CaseHearingRequestEntity, Long> {
 
     @Query("SELECT versionNumber from CaseHearingRequestEntity where hearing.id = :hearingId")
     Integer getVersionNumber(Long hearingId);
+
+    @Query("from CaseHearingRequestEntity chr WHERE chr.caseReference = :caseRef order by chr.hearing.id desc")
+    List<CaseHearingRequestEntity> getHearingDetails(String caseRef);
+
+    @Query("from CaseHearingRequestEntity chr WHERE chr.caseReference = :caseRef and chr.hearing.status = :status "
+        + "order by chr.hearing.id desc")
+    List<CaseHearingRequestEntity> getHearingDetailsWithStatus(String caseRef, String status);
+
 }
