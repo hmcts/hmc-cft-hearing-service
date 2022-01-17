@@ -85,7 +85,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper,
                                         GetHearingsResponseMapper getHearingsResponseMapper,
                                         MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
-                                        ObjectMapperService objectMapperServic) {
+                                        ObjectMapperService objectMapperService) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
