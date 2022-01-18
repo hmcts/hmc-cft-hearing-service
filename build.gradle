@@ -288,7 +288,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
-
+  compile 'net.minidev:json-smart:2.4.7'
 
   testImplementation group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.0.0'
 
@@ -300,10 +300,6 @@ dependencies {
   annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: versions.mapstruct
   implementation group: 'org.springframework.security', name: 'spring-security-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
-
-  compile 'net.minidev:json-smart:2.4.7'
-
-  integrationTestImplementation group: 'net.minidev', name: 'json-smart', version: '2.4.7'
 
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
   implementation group: 'org.springframework.security', name: 'spring-security-config'
@@ -349,6 +345,7 @@ dependencies {
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
+  integrationTestImplementation group: 'net.minidev', name: 'json-smart', version: '2.4.7'
 
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
 
