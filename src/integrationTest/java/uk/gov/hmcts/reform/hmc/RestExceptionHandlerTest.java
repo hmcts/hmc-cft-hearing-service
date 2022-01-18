@@ -24,9 +24,9 @@ import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.ServiceException;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
@@ -36,6 +36,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     public static String ERROR_PATH_ERROR = "$.errors";
     public static String ERROR_PATH_STATUS = "$.status";
     public static String testExceptionMessage = "test message";
-    HearingRequest validRequest;
+    CreateHearingRequest validRequest;
 
     @MockBean
     protected HearingManagementServiceImpl service;
@@ -66,7 +67,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        validRequest = new HearingRequest();
+        validRequest = new CreateHearingRequest();
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
@@ -78,9 +79,9 @@ public class RestExceptionHandlerTest extends BaseTest {
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         PanelRequirements panelRequirements = new PanelRequirements();
-        panelRequirements.setRoleType(Arrays.asList("RoleType1"));
-        panelRequirements.setAuthorisationTypes(Arrays.asList("AuthorisationType1"));
-        panelRequirements.setAuthorisationSubType(Arrays.asList("AuthorisationSubType2"));
+        panelRequirements.setRoleType(Collections.singletonList("RoleType1"));
+        panelRequirements.setAuthorisationTypes(Collections.singletonList("AuthorisationType1"));
+        panelRequirements.setAuthorisationSubType(Collections.singletonList("AuthorisationSubType2"));
         hearingDetails.setPanelRequirements(panelRequirements);
         HearingLocation location1 = new HearingLocation();
         location1.setLocationId("court");
@@ -133,7 +134,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
-            .saveHearingRequest(any(HearingRequest.class));
+            .saveHearingRequest(any(CreateHearingRequest.class));
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
