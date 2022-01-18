@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
-import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
@@ -42,8 +42,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.transaction.Transactional;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
@@ -67,14 +67,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final DataStoreRepository dataStoreRepository;
     private final RoleAssignmentService roleAssignmentService;
     private final SecurityUtils securityUtils;
-    private HearingRepository hearingRepository;
+    private final HearingRepository hearingRepository;
     private final HearingMapper hearingMapper;
     private final GetHearingsResponseMapper getHearingsResponseMapper;
     private final CaseHearingRequestRepository caseHearingRequestRepository;
     private final HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
     private final CancellationReasonsRepository cancellationReasonsRepository;
 
-    private CaseHearingRequestRepository caseHearingRequestRepository;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -84,8 +83,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HearingMapper hearingMapper,
                                         CaseHearingRequestRepository caseHearingRequestRepository,
                                         HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper,
-                                        GetHearingsResponseMapper getHearingsResponseMapper) {
-                                        CaseHearingRequestRepository caseHearingRequestRepository,
+                                        GetHearingsResponseMapper getHearingsResponseMapper,
                                         CancellationReasonsRepository cancellationReasonsRepository) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
@@ -93,9 +91,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.hearingRepository = hearingRepository;
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
-        this.cancellationReasonsRepository = cancellationReasonsRepository;
         this.hmiSubmitHearingRequestMapper = hmiSubmitHearingRequestMapper;
         this.getHearingsResponseMapper = getHearingsResponseMapper;
+        this.cancellationReasonsRepository = cancellationReasonsRepository;
     }
 
     @Override

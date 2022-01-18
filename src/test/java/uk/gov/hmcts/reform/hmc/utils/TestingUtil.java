@@ -339,6 +339,7 @@ public class TestingUtil {
         entity.setHearingDayPanel(Arrays.asList(hearingDayPanelEntities()));
         return entity;
     }
+
     public static HearingEntity deleteHearingEntity() {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(1L);
@@ -356,8 +357,6 @@ public class TestingUtil {
         response.setVersionNumber(1);
         return response;
     }
-
-}
 
     public static HearingDayPanelEntity hearingDayPanelEntities() {
         HearingDayPanelEntity entity = new HearingDayPanelEntity();
