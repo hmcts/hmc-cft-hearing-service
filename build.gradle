@@ -288,7 +288,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
-
+  compile 'net.minidev:json-smart:2.4.7'
 
   testImplementation group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.0.0'
 
@@ -345,6 +345,7 @@ dependencies {
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
+  integrationTestImplementation group: 'net.minidev', name: 'json-smart', version: '2.4.7'
 
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
 
