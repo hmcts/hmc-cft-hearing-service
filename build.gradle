@@ -303,7 +303,7 @@ dependencies {
 
   compile 'net.minidev:json-smart:2.4.7'
 
-  implementation group: 'net.minidev', name: 'accessors-smart', version: '2.4.7'
+  integrationTestImplementation group: 'net.minidev', name: 'json-smart', version: '2.4.7'
 
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
   implementation group: 'org.springframework.security', name: 'spring-security-config'
