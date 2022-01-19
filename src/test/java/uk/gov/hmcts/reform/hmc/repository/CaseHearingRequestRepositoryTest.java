@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -92,12 +93,11 @@ class CaseHearingRequestRepositoryTest {
 
     @Test
     void testGetCaseHearingId() {
-        Long expectedCaseHearingId = 1L;
-        doReturn(1L).when(caseHearingRequestRepository).getCaseHearingId(any());
-        Long caseHearingId = caseHearingRequestRepository.getCaseHearingId(any());
+        doReturn(TestingUtil.caseHearingRequestEntity()).when(caseHearingRequestRepository).getCaseHearing(any());
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository.getCaseHearing(any());
         assertAll(
-            () -> assertThat(caseHearingId, is(expectedCaseHearingId)),
-            () -> verify(caseHearingRequestRepository, times(1)).getCaseHearingId(any())
+            () -> assertNotNull(caseHearingRequestEntity),
+            () -> verify(caseHearingRequestRepository, times(1)).getCaseHearing(any())
         );
     }
 

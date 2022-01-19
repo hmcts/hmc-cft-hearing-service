@@ -309,19 +309,20 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void updateCancellationReasons(Long hearingId, String cancellationReasonCode) {
-        Long caseHearingId = getCaseHearingId(hearingId);
-        final CancellationReasonsEntity cancellationReasonsEntity = getCancellationReasonsEntity(
-            cancellationReasonCode, caseHearingId);
+        CaseHearingRequestEntity caseHearingRequestEntity = getCaseHearing(hearingId);
+        final CancellationReasonsEntity cancellationReasonsEntity = setCancellationReasonsEntity(
+            cancellationReasonCode, caseHearingRequestEntity);
         cancellationReasonsRepository.save(cancellationReasonsEntity);
     }
 
-    private Long getCaseHearingId(Long hearingId) {
-        return caseHearingRequestRepository.getCaseHearingId(hearingId);
+    private CaseHearingRequestEntity getCaseHearing(Long hearingId) {
+        return caseHearingRequestRepository.getCaseHearing(hearingId);
     }
 
-    private CancellationReasonsEntity getCancellationReasonsEntity(String cancellationReasonCode, Long caseHearingId) {
+    private CancellationReasonsEntity setCancellationReasonsEntity(String cancellationReasonCode,
+                                                                   CaseHearingRequestEntity caseHearingRequestEntity) {
         final CancellationReasonsEntity cancellationReasonsEntity = new CancellationReasonsEntity();
-        cancellationReasonsEntity.setCaseHearingID(caseHearingId);
+        cancellationReasonsEntity.setCaseHearing(caseHearingRequestEntity);
         cancellationReasonsEntity.setCancellationReasonType(cancellationReasonCode);
         return cancellationReasonsEntity;
     }
