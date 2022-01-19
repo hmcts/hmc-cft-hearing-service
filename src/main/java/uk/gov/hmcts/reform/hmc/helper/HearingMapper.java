@@ -31,6 +31,12 @@ public class HearingMapper {
         this.hearingDetailsMapper = hearingDetailsMapper;
     }
 
+    /**
+     * model to Entity for create Hearing Request.
+     *
+     * @param createHearingRequest create Hearing Request
+     * @return hearingEntity hearing Entity
+     */
     public HearingEntity modelToEntity(CreateHearingRequest createHearingRequest) {
         final HearingEntity hearingEntity = new HearingEntity();
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
