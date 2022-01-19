@@ -136,7 +136,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      */
     @Override
     public CreateHearingRequest validateGetHearingsRequest(String caseRef, String status) {
-        log.info("caseRef:{} ; status:{}", caseRef, status);
+        log.debug("caseRef:{} ; status:{}", caseRef, status);
         // TODO: select hearing request from given caseRefId and status (if any)
         return new CreateHearingRequest();
     }
@@ -162,12 +162,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private HearingResponse getSaveHearingResponseDetails(HearingEntity savedEntity) {
-        log.info("Hearing details saved successfully with id: {}", savedEntity.getId());
+        log.debug("Hearing details saved successfully with id: {}", savedEntity.getId());
         return getHearingResponseDetails(savedEntity);
     }
 
     private HearingResponse getDeleteHearingResponseDetails(HearingEntity deletedEntity) {
-        log.info("Hearing details deleted successfully with id: {}", deletedEntity.getId());
+        log.debug("Hearing details deleted successfully with id: {}", deletedEntity.getId());
         return getHearingResponseDetails(deletedEntity);
     }
 

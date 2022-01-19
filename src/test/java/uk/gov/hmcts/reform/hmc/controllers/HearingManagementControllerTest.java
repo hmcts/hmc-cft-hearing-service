@@ -17,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
@@ -33,6 +32,7 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
@@ -111,7 +111,7 @@ class HearingManagementControllerTest {
 
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         hearingResponse = controller.deleteHearing(hearingId, deleteHearingRequest);
-        logger.info("hearingResponse: {}", hearingResponse);
+        logger.debug("hearingResponse: {}", hearingResponse);
 
 
         verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());
@@ -128,10 +128,10 @@ class HearingManagementControllerTest {
 
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         hearingResponse = controller.deleteHearing(hearingId, deleteHearingRequest);
-        logger.info("hearingResponse: {}", hearingResponse);
+        logger.debug("hearingResponse: {}", hearingResponse);
         verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());
-        Assert.notNull(hearingResponse);
-        Assert.isTrue(hearingResponse.getHearingRequestId().equals(hearingId));
+        assertNotNull(hearingResponse);
+        assertEquals(hearingResponse.getHearingRequestId(),hearingId);
     }
 
     @Test
@@ -142,7 +142,7 @@ class HearingManagementControllerTest {
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         CreateHearingRequest createHearingRequest = controller.getHearingsRequest(validCaseRef, null);
         verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());
-        Assert.isTrue(createHearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef));
+        assertEquals(createHearingRequest.getCaseDetails().getCaseRef(),validCaseRef);
     }
 
     @Test
@@ -154,7 +154,7 @@ class HearingManagementControllerTest {
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         CreateHearingRequest createHearingRequest = controller.getHearingsRequest(validCaseRef, status);
         verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());
-        Assert.isTrue(createHearingRequest.getCaseDetails().getCaseRef().equals(validCaseRef));
+        assertEquals(createHearingRequest.getCaseDetails().getCaseRef(),validCaseRef);
     }
 
     private CreateHearingRequest createHearingRequest(String caseRef) {
