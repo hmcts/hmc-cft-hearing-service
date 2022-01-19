@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
@@ -30,12 +31,15 @@ import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
@@ -56,11 +60,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final DataStoreRepository dataStoreRepository;
     private final RoleAssignmentService roleAssignmentService;
     private final SecurityUtils securityUtils;
-    private HearingRepository hearingRepository;
+    private final HearingRepository hearingRepository;
     private final HearingMapper hearingMapper;
     private final HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
 
-    private CaseHearingRequestRepository caseHearingRequestRepository;
+    private final CaseHearingRequestRepository caseHearingRequestRepository;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -101,7 +105,17 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateHearingRequest(hearingRequest);
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
+    }
 
+    @Override
+    public HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteHearingRequest) {
+        if (deleteHearingRequest == null) {
+            throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
+        }
+// Switch off validation until actual data is retrieved/deleted
+//        validateHearingId(hearingId);
+//        validateVersionNumber(hearingId, deleteHearingRequest.getVersionNumber());
+        return removeHearingRequest(hearingId, deleteHearingRequest);
     }
 
     @Override
@@ -133,13 +147,32 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         return getSaveHearingResponseDetails(savedEntity);
     }
 
+    private HearingResponse removeHearingRequest(Long hearingId, DeleteHearingRequest deleteHearingRequest) {
+        HearingEntity deletedEntity = cancelHearingDetails(hearingId, deleteHearingRequest);
+        return getDeleteHearingResponseDetails(deletedEntity);
+    }
+
     private HearingEntity saveHearingDetails(CreateHearingRequest createHearingRequest) {
         HearingEntity hearingEntity = hearingMapper.modelToEntity(createHearingRequest);
         return hearingRepository.save(hearingEntity);
     }
 
+    private HearingEntity cancelHearingDetails(Long hearingId, DeleteHearingRequest deleteHearingRequest) {
+        HearingEntity hearingEntity = hearingEntity(hearingId);
+        return hearingEntity;
+    }
+
     private HearingResponse getSaveHearingResponseDetails(HearingEntity savedEntity) {
         log.info("Hearing details saved successfully with id: {}", savedEntity.getId());
+        return getHearingResponseDetails(savedEntity);
+    }
+
+    private HearingResponse getDeleteHearingResponseDetails(HearingEntity deletedEntity) {
+        log.info("Hearing details deleted successfully with id: {}", deletedEntity.getId());
+        return getHearingResponseDetails(deletedEntity);
+    }
+
+    private HearingResponse getHearingResponseDetails(HearingEntity savedEntity) {
         HearingResponse hearingResponse = new HearingResponse();
         hearingResponse.setHearingRequestId(savedEntity.getId());
         hearingResponse.setTimeStamp(savedEntity.getCaseHearingRequest().getHearingRequestReceivedDateTime());
@@ -263,13 +296,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-
-    @Override
-    public void deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
-        validateHearingId(hearingId);
-        validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
-    }
-
     private void validateVersionNumber(Long hearingId, Integer versionNumber) {
         Integer versionNumberFromDb = getVersionNumber(hearingId);
         if (!versionNumberFromDb.equals(versionNumber)) {
@@ -299,4 +325,34 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
         }
     }
+
+    private HearingEntity hearingEntity(Long hearingId) {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(hearingId);
+        hearingEntity.setStatus(HEARING_STATUS);
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
+        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
+        return hearingEntity;
+    }
+
+    private static CaseHearingRequestEntity caseHearingRequestEntity() {
+        CaseHearingRequestEntity entity = new CaseHearingRequestEntity();
+        entity.setAutoListFlag(false);
+        entity.setHearingType("Some hearing type");
+        entity.setRequiredDurationInMinutes(10);
+        entity.setHearingPriorityType("Priority type");
+        entity.setHmctsServiceID("ABA1");
+        entity.setCaseReference("1111222233334444");
+        entity.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
+        entity.setCaseUrlContextPath("https://www.google.com");
+        entity.setHmctsInternalCaseName("Internal case name");
+        entity.setOwningLocationId("CMLC123");
+        entity.setCaseRestrictedFlag(true);
+        entity.setCaseSlaStartDate(LocalDate.parse("2020-08-10"));
+        entity.setVersionNumber(1);
+        entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00"));
+        return entity;
+
+    }
+
 }

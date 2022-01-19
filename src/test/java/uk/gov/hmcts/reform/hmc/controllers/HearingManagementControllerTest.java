@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.nio.charset.Charset;
+import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -61,6 +64,8 @@ class HearingManagementControllerTest {
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(HearingManagementControllerTest.class);
 
     private static final MediaType JSON_CONTENT_TYPE = new MediaType(
         MediaType.APPLICATION_JSON.getType(),
@@ -98,20 +103,35 @@ class HearingManagementControllerTest {
 
     @Test
     void shouldReturn200_whenDeleteRequestIdIsValid() {
-        doNothing().when(hearingManagementService).deleteHearingRequest(Mockito.any(), Mockito.any());
+        final Long hearingId = 1234L;
+        HearingResponse hearingResponse = generateHearingResponse(hearingId);
+
+        DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
+        when(hearingManagementService.deleteHearingRequest(Mockito.any(), Mockito.any())).thenReturn(hearingResponse);
+
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        controller.deleteHearing(1234L, TestingUtil.deleteHearingRequest());
+        hearingResponse = controller.deleteHearing(hearingId, deleteHearingRequest);
+        logger.info("hearingResponse: {}", hearingResponse);
+
+
         verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());
     }
 
     @Test
     void shouldReturn404_whenDeleteRequestIdIsInValid() {
-        DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
-        request.setCancellationReasonCode("");
-        doNothing().when(hearingManagementService).deleteHearingRequest(Mockito.any(), Mockito.any());
+        final Long hearingId = 1234L;
+        HearingResponse hearingResponse = generateHearingResponse(hearingId);
+
+        DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
+        deleteHearingRequest.setCancellationReasonCode("");
+        when(hearingManagementService.deleteHearingRequest(Mockito.any(), Mockito.any())).thenReturn(hearingResponse);
+
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        controller.deleteHearing(1234L, request);
+        hearingResponse = controller.deleteHearing(hearingId, deleteHearingRequest);
+        logger.info("hearingResponse: {}", hearingResponse);
         verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());
+        Assert.notNull(hearingResponse);
+        Assert.isTrue(hearingResponse.getHearingRequestId().equals(hearingId));
     }
 
     @Test
@@ -162,5 +182,14 @@ class HearingManagementControllerTest {
         orderVerifier.verify(hearingManagementService).updateHearingRequest(1L, hearingRequest);
         orderVerifier.verify(hearingManagementService).sendRequestToHmi(1L, hearingRequest);
         verifyNoMoreInteractions(hearingManagementService);
+    }
+
+    HearingResponse generateHearingResponse(Long hearingId) {
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setHearingRequestId(hearingId);
+        hearingResponse.setTimeStamp(LocalDateTime.now());
+        hearingResponse.setStatus("TO BE DECIDED");
+        hearingResponse.setVersionNumber(99);
+        return hearingResponse;
     }
 }

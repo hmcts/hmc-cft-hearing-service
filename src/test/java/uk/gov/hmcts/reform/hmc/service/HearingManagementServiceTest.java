@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +38,7 @@ import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -730,11 +732,17 @@ class HearingManagementServiceTest {
 
     @Test
     void deleteHearingRequestShouldPassWithValidDetails() {
-        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
-        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-        hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
-        verify(hearingRepository).existsById(2000000000L);
-        verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
+        Long hearingId = 2000000000L;
+        when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(1);
+        when(hearingRepository.existsById(hearingId)).thenReturn(true);
+        HearingResponse expectedHearingResponse = generateHearingResponse(hearingId);
+
+        DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
+        HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
+            hearingId, deleteHearingRequest);
+        verify(hearingRepository).existsById(hearingId);
+        verify(caseHearingRequestRepository).getVersionNumber(hearingId);
+        Assert.assertEquals(hearingResponse.getHearingRequestId(), hearingId);
     }
 
     @Test
@@ -1082,5 +1090,14 @@ class HearingManagementServiceTest {
                                                                          .individualWithoutRelatedPartyDetails());
         hearingManagementService.sendRequestToHmi(1L, hearingRequest);
         verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+    }
+
+    HearingResponse generateHearingResponse(Long hearingId) {
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setHearingRequestId(hearingId);
+        hearingResponse.setTimeStamp(LocalDateTime.now());
+        hearingResponse.setStatus("TO BE DECIDED");
+        hearingResponse.setVersionNumber(99);
+        return hearingResponse;
     }
 }

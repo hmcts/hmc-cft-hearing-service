@@ -43,7 +43,6 @@ public class HearingManagementController {
         this.hearingManagementService = hearingManagementService;
     }
 
-
     @GetMapping(path = "/hearing/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiResponses(value = {
@@ -77,9 +76,10 @@ public class HearingManagementController {
         @ApiResponse(code = 404, message = "Hearing id not found"),
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
-    public void deleteHearing(@PathVariable("id") Long hearingId,
+    public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
                               @RequestBody @Valid DeleteHearingRequest deleteRequest) {
-        hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
+        HearingResponse hearingResponse =  hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
+        return hearingResponse;
     }
 
     /**
