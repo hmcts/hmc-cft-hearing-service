@@ -112,9 +112,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (deleteHearingRequest == null) {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
-// Switch off validation until actual data is retrieved/deleted
-//        validateHearingId(hearingId);
-//        validateVersionNumber(hearingId, deleteHearingRequest.getVersionNumber());
+        validateHearingId(hearingId);
+        validateVersionNumber(hearingId, deleteHearingRequest.getVersionNumber());
         return removeHearingRequest(hearingId, deleteHearingRequest);
     }
 
