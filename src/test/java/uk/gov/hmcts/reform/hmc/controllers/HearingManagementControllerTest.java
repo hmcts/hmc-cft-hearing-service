@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
@@ -32,7 +33,8 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
@@ -70,7 +72,8 @@ class HearingManagementControllerTest {
     private static final MediaType JSON_CONTENT_TYPE = new MediaType(
         MediaType.APPLICATION_JSON.getType(),
         MediaType.APPLICATION_JSON.getSubtype(),
-        Charset.forName("utf8"));
+        Charset.forName("utf8")
+    );
 
     @Test
     void shouldCallSaveHearingMethods() {
@@ -135,10 +138,10 @@ class HearingManagementControllerTest {
     }
 
     @Test
-    void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhn() throws Exception {
+    void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhn() {
         final String validCaseRef = "9372710950276233";
-        doReturn(createHearingRequest(validCaseRef)).when(hearingManagementService)
-            .validateGetHearingsRequest(Mockito.any(), Mockito.any());
+        doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef)).when(hearingManagementService)
+            .getHearings(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         CreateHearingRequest createHearingRequest = controller.getHearingsRequest(validCaseRef, null);
         verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());
@@ -146,11 +149,11 @@ class HearingManagementControllerTest {
     }
 
     @Test
-    void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhnAndStatus() throws Exception {
+    void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhnAndStatus() {
         final String validCaseRef = "9372710950276233";
         final String status = "UPDATED"; // for example
-        doReturn(createHearingRequest(validCaseRef, status)).when(hearingManagementService)
-            .validateGetHearingsRequest(Mockito.any(), Mockito.any());
+        doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef)).when(hearingManagementService)
+            .getHearings(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         CreateHearingRequest createHearingRequest = controller.getHearingsRequest(validCaseRef, status);
         verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());

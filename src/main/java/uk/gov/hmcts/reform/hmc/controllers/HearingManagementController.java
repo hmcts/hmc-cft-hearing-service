@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import javax.validation.Valid;
@@ -84,9 +84,8 @@ public class HearingManagementController {
 
     /**
      * get Case either by caseRefId OR CaseRefId/caseStatus.
-     *
      * @param ccdCaseRef case Ref
-     * @param status     optional Status
+     * @param status optional Status
      * @return Hearing
      */
     @Transactional
@@ -98,15 +97,15 @@ public class HearingManagementController {
         @ApiResponse(code = 200, message = "Success (with content)"),
         @ApiResponse(code = 400, message = "Invalid request")
     })
-    public CreateHearingRequest getHearingsRequest(@PathVariable("ccdCaseRef")
+    public GetHearingsResponse getHearings(@PathVariable("ccdCaseRef")
                                              @Valid
                                              @NotEmpty(message = CASE_REF_EMPTY)
                                              @Size(min = 16, max = 16, message = CASE_REF_INVALID_LENGTH)
                                              @LuhnCheck(message = CASE_REF_INVALID, ignoreNonDigitCharacters = false)
                                                  String ccdCaseRef,
-                                                   @RequestParam(required = false)
+                                                  @RequestParam(required = false)
                                                  String status) {
-        return hearingManagementService.validateGetHearingsRequest(ccdCaseRef, status);
+        return hearingManagementService.getHearings(ccdCaseRef, status);
     }
 
     @PutMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -121,25 +120,5 @@ public class HearingManagementController {
                               @PathVariable("id") Long hearingId) {
         hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
         hearingManagementService.sendRequestToHmi(hearingId, hearingRequest);
-    }
-
-
-    @PostMapping(path = "/test", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public HmiSubmitHearingRequest test(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
-        hearingManagementService.verifyAccess(createHearingRequest.getCaseDetails().getCaseRef());
-        HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
-        return hearingManagementService.test(
-            hearingResponse.getHearingRequestId(),
-            createHearingRequest
-        );
-    }
-
-    @PutMapping(path = "/test/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public HmiSubmitHearingRequest test(@RequestBody @Valid UpdateHearingRequest hearingRequest,
-                                        @PathVariable("id") Long hearingId) {
-        hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
-        return hearingManagementService.test(hearingId, hearingRequest);
     }
 }
