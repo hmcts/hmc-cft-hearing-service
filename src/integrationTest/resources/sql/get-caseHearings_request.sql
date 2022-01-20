@@ -28,10 +28,10 @@ values (3, 2, '2020-01-10 11:20:00', '2020-08-10 11:20:00', 'session1-2', 'venue
 insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
 values (4, 3, '2020-01-10 11:20:00', '2020-08-10 11:20:00', 'session1-2', 'venue3-1', 'room3-1');
 
-insert into hearing_day_panel(id, hearing_day_id, panel_user_id) values (1, 1, 'panel1-1');
-insert into hearing_day_panel(id, hearing_day_id, panel_user_id) values (2, 1, 'panel1-2');
-insert into hearing_day_panel(id, hearing_day_id, panel_user_id) values (3, 3, 'panel2-1');
-insert into hearing_day_panel(id, hearing_day_id, panel_user_id) values (4, 4, 'panel3-1');
+insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (1, 1, 'panel1-1','true');
+insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (2, 1, 'panel1-2','false');
+insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (3, 3, 'panel2-1','true');
+insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (4, 4, 'panel3-1','true');
 
 insert into hearing_attendee_details(id, hearing_day_id, party_id, party_sub_channel_type) values (1, 1, 'party1-1','subChannel1-1');
 insert into hearing_attendee_details(id, hearing_day_id, party_id, party_sub_channel_type) values (2, 1, 'party1-2','subChannel1-2');
