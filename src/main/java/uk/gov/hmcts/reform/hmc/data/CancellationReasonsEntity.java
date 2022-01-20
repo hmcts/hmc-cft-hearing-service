@@ -28,7 +28,7 @@ public class CancellationReasonsEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "cancellation_reason_Type")
+    @Column(name = "cancellation_reason_type")
     private String cancellationReasonType;
 
     @OneToOne(fetch = FetchType.LAZY)
