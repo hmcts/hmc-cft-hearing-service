@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +14,8 @@ import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
@@ -41,7 +42,6 @@ import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -746,14 +746,14 @@ class HearingManagementServiceTest {
         Long hearingId = 2000000000L;
         when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(1);
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
-        HearingResponse expectedHearingResponse = generateHearingResponse(hearingId);
+        when(hearingRepository.getStatus(hearingId)).thenReturn(DeleteHearingStatus.UPDATE_SUBMITTED.name());
 
         DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
             hearingId, deleteHearingRequest);
         verify(hearingRepository).existsById(hearingId);
         verify(caseHearingRequestRepository).getVersionNumber(hearingId);
-        Assert.assertEquals(hearingResponse.getHearingRequestId(), hearingId);
+        assertEquals(hearingResponse.getHearingRequestId(), hearingId);
     }
 
     @Test
@@ -761,25 +761,25 @@ class HearingManagementServiceTest {
         Long hearingId = 2000000000L;
         when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(1);
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
-        when(hearingRepository.getStatus(hearingId)).thenReturn("UPDATE_SUBMITTED");
+        when(hearingRepository.getStatus(hearingId)).thenReturn(DeleteHearingStatus.UPDATE_SUBMITTED.name());
 
         DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
             hearingId, deleteHearingRequest);
-      
-        HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
-          hearingId, deleteHearingRequest);
         verify(hearingRepository).existsById(hearingId);
         verify(caseHearingRequestRepository).getVersionNumber(hearingId);
     }
 
     @Test
-    void deleteHearingRequestShouldFailWithInValidStatus() {
-        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
-        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-        when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_NOT_SUBMITTED");
+    void deleteHearingRequestShouldFailWithInvalidStatus() {
+        Long hearingId = 2000000000L;
+        when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(1);
+        when(hearingRepository.existsById(hearingId)).thenReturn(true);
+        when(hearingRepository.getStatus(hearingId)).thenReturn("UPDATE_NOT_SUBMITTED");
+
+        DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
+            hearingManagementService.deleteHearingRequest(hearingId, deleteHearingRequest);
         });
         assertEquals(INVALID_DELETE_HEARING_STATUS, exception.getMessage());
     }
@@ -831,7 +831,7 @@ class HearingManagementServiceTest {
     void updateHearingRequestShouldPassWithValidDetails() {
         when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-        when(hearingRepository.getStatus(2000000000L)).thenReturn("HEARING_REQUESTED");
+        when(hearingRepository.getStatus(2000000000L)).thenReturn(PutHearingStatus.UPDATE_SUBMITTED.name());
         hearingManagementService.updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest());
         verify(hearingRepository).existsById(2000000000L);
         verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
@@ -862,7 +862,7 @@ class HearingManagementServiceTest {
     void updateHearingRequestShouldPassWhenDbStatusMatchWithExpectedState() {
         when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-        when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_REQUESTED");
+        when(hearingRepository.getStatus(2000000000L)).thenReturn(PutHearingStatus.UPDATE_REQUESTED.name());
         hearingManagementService.updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest());
         verify(hearingRepository).existsById(2000000000L);
         verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
@@ -1197,12 +1197,4 @@ class HearingManagementServiceTest {
         verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
     }
 
-    HearingResponse generateHearingResponse(Long hearingId) {
-        HearingResponse hearingResponse = new HearingResponse();
-        hearingResponse.setHearingRequestId(hearingId);
-        hearingResponse.setTimeStamp(LocalDateTime.now());
-        hearingResponse.setStatus("TO BE DECIDED");
-        hearingResponse.setVersionNumber(99);
-        return hearingResponse;
-    }
 }

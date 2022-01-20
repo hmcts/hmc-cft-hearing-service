@@ -143,9 +143,8 @@ class HearingManagementControllerTest {
         doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef)).when(hearingManagementService)
             .getHearings(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        CreateHearingRequest createHearingRequest = controller.getHearingsRequest(validCaseRef, null);
-        verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());
-        assertEquals(createHearingRequest.getCaseDetails().getCaseRef(),validCaseRef);
+        GetHearingsResponse getHearingsResponse = controller.getHearings(validCaseRef, null);
+        assertEquals(getHearingsResponse.getCaseRef(),validCaseRef);
     }
 
     @Test
@@ -155,21 +154,8 @@ class HearingManagementControllerTest {
         doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef)).when(hearingManagementService)
             .getHearings(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        CreateHearingRequest createHearingRequest = controller.getHearingsRequest(validCaseRef, status);
-        verify(hearingManagementService, times(1)).validateGetHearingsRequest(any(), any());
-        assertEquals(createHearingRequest.getCaseDetails().getCaseRef(),validCaseRef);
-    }
-
-    private CreateHearingRequest createHearingRequest(String caseRef) {
-        return createHearingRequest(caseRef, null);
-    }
-
-    private CreateHearingRequest createHearingRequest(String caseRef, String status) {
-        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
-        CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setCaseRef(caseRef);
-        createHearingRequest.setCaseDetails(caseDetails);
-        return createHearingRequest;
+        GetHearingsResponse getHearingsResponse = controller.getHearings(validCaseRef, status);
+        assertEquals(getHearingsResponse.getCaseRef(),validCaseRef);
     }
 
     @Test

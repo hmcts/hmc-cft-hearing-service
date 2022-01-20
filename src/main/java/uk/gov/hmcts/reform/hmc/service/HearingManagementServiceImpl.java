@@ -72,8 +72,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final CaseHearingRequestRepository caseHearingRequestRepository;
     private final HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
 
-    private final CaseHearingRequestRepository caseHearingRequestRepository;
-
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
                                         @Qualifier("defaultDataStoreRepository")
@@ -115,16 +113,17 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateHearingRequest(hearingRequest);
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
+        validateHearingStatusForUpdate(hearingId);
     }
 
     @Override
     public HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteHearingRequest) {
         if (deleteHearingRequest == null) {
-            throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
+            throw new BadRequestException(INVALID_DELETE_HEARING_STATUS);
         }
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, deleteHearingRequest.getVersionNumber());
-        validateHearingStatusForUpdate(hearingId);
+        validateDeleteHearingStatus(hearingId);
         return removeHearingRequest(hearingId, deleteHearingRequest);
     }
 
@@ -138,19 +137,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (!PutHearingStatus.isValid(status)) {
             throw new BadRequestException(INVALID_PUT_HEARING_STATUS);
         }
-    }
-
-    /**
-     * validate Get Hearing Request by caseRefId or caseRefId/caseStatus.
-     * @param caseRef case Ref
-     * @param status status
-     * @return HearingRequest HearingRequest
-     */
-    @Override
-    public CreateHearingRequest validateGetHearingsRequest(String caseRef, String status) {
-        log.debug("caseRef:{} ; status:{}", caseRef, status);
-        // TODO: select hearing request from given caseRefId and status (if any)
-        return new CreateHearingRequest();
     }
 
     public GetHearingsResponse getHearings(String caseRef, String status) {
