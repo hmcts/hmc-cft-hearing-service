@@ -8,8 +8,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingRepository;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
@@ -18,10 +18,13 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
@@ -33,26 +36,32 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
@@ -87,6 +96,12 @@ class HearingManagementServiceTest {
     @Mock
     CaseHearingRequestRepository caseHearingRequestRepository;
 
+    @Mock
+    private GetHearingsResponseMapper getHearingsResponseMapper;
+
+    @Mock
+    HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -97,8 +112,10 @@ class HearingManagementServiceTest {
                 dataStoreRepository,
                 hearingRepository,
                 hearingMapper,
-                caseHearingRequestRepository
-            );
+                caseHearingRequestRepository,
+                hmiSubmitHearingRequestMapper,
+                getHearingsResponseMapper
+                );
     }
 
     public static final String JURISDICTION = "Jurisdiction1";
@@ -114,9 +131,8 @@ class HearingManagementServiceTest {
         hearing.setStatus("RESPONDED");
         hearing.setId(1L);
 
-        Exception exception = assertThrows(HearingNotFoundException.class, () -> {
-            hearingManagementService.getHearingRequest(1L, true);
-        });
+        Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
+            .getHearingRequest(1L, true));
         assertEquals("No hearing found for reference: 1", exception.getMessage());
     }
 
@@ -132,40 +148,37 @@ class HearingManagementServiceTest {
 
     @Test
     void shouldFailAsHearingWindowDetailsNotPresent() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
-        hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
-        hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
-        HearingEntity hearingEntity = new HearingEntity();
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.saveHearingRequest(hearingRequest);
-        });
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
+        createHearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
+        createHearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .saveHearingRequest(createHearingRequest));
         assertEquals("Hearing window details are required", exception.getMessage());
     }
 
     @Test
     void shouldFailAsDetailsNotPresent() {
-        HearingRequest hearingRequest = new HearingRequest();
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.saveHearingRequest(hearingRequest);
-        });
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .saveHearingRequest(createHearingRequest));
         assertEquals("Invalid details", exception.getMessage());
     }
 
     @Test
     void shouldPassWithHearing_Case_Request_Details_Valid() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        given(hearingMapper.modelToEntity(createHearingRequest)).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-        HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
+        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
         assertEquals(VERSION_NUMBER, response.getVersionNumber());
         assertEquals(HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -173,17 +186,17 @@ class HearingManagementServiceTest {
 
     @Test
     void shouldPassWithHearing_Case_Request_Party_Details_Valid() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-        hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
-        hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        given(hearingMapper.modelToEntity(createHearingRequest)).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-        HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
+        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
         assertEquals(VERSION_NUMBER, response.getVersionNumber());
         assertEquals(HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -192,18 +205,18 @@ class HearingManagementServiceTest {
 
     @Test
     void shouldPassWithRelatedParty_Details_Present() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-        hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
-        hearingRequest.getPartyDetails().get(1).setIndividualDetails(
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getPartyDetails().get(1).setIndividualDetails(
             TestingUtil.individualWithoutRelatedPartyDetails());
-        given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
+        given(hearingMapper.modelToEntity(createHearingRequest)).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-        HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
+        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
         assertEquals(VERSION_NUMBER, response.getVersionNumber());
         assertEquals(HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -212,71 +225,67 @@ class HearingManagementServiceTest {
 
     @Test
     void shouldPassWithRelatedParty_Details_Not_Present() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-        hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
-        hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        given(hearingMapper.modelToEntity(hearingRequest)).willReturn(TestingUtil.hearingEntity());
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        given(hearingMapper.modelToEntity(createHearingRequest)).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-        HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
+        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
         assertEquals(VERSION_NUMBER, response.getVersionNumber());
         assertEquals(HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
-
     }
 
     @Test
     void shouldFailWithParty_Details_InValid_Org_Individual_details_Present() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         List<PartyDetails> partyDetails = TestingUtil.partyDetails();
         partyDetails.get(0).setIndividualDetails(TestingUtil.individualDetails());
         partyDetails.get(0).setOrganisationDetails(TestingUtil.organisationDetails());
-        hearingRequest.setPartyDetails(partyDetails);
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.saveHearingRequest(hearingRequest);
-        });
+        createHearingRequest.setPartyDetails(partyDetails);
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .saveHearingRequest(createHearingRequest));
         assertEquals("Either Individual or Organisation details should be present", exception.getMessage());
     }
 
     @Test
     void shouldFailWithParty_Details_InValid_Dow_details_Present() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         List<PartyDetails> partyDetails = TestingUtil.partyDetails();
         partyDetails.get(0).setIndividualDetails(TestingUtil.individualDetails());
         partyDetails.get(0).setUnavailabilityDow(new ArrayList<>());
-        hearingRequest.setPartyDetails(partyDetails);
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.saveHearingRequest(hearingRequest);
-        });
+        createHearingRequest.setPartyDetails(partyDetails);
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .saveHearingRequest(createHearingRequest));
         assertEquals("Unavailability DOW details should be present", exception.getMessage());
     }
 
     @Test
     void shouldFailWithParty_Details_InValid_UnavailabilityRange_details_Present() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         List<PartyDetails> partyDetails = TestingUtil.partyDetails();
         partyDetails.get(0).setIndividualDetails(TestingUtil.individualDetails());
         partyDetails.get(0).setUnavailabilityRanges(new ArrayList<>());
-        hearingRequest.setPartyDetails(partyDetails);
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.saveHearingRequest(hearingRequest);
-        });
+        createHearingRequest.setPartyDetails(partyDetails);
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .saveHearingRequest(createHearingRequest));
         assertEquals("Unavailability range details should be present", exception.getMessage());
 
     }
@@ -569,9 +578,8 @@ class HearingManagementServiceTest {
             .build();
         doReturn(roleAssignments).when(roleAssignmentService).getRoleAssignments(USER_ID);
         doReturn(USER_ID).when(securityUtils).getUserId();
-        Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
-            hearingManagementService.verifyAccess(CASE_REFERENCE);
-        });
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> hearingManagementService
+            .verifyAccess(CASE_REFERENCE));
         assertEquals(String.format(ROLE_ASSIGNMENTS_NOT_FOUND, USER_ID), exception.getMessage());
     }
 
@@ -588,9 +596,8 @@ class HearingManagementServiceTest {
             .build();
         doReturn(roleAssignments).when(roleAssignmentService).getRoleAssignments(USER_ID);
         doReturn(USER_ID).when(securityUtils).getUserId();
-        Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> {
-            hearingManagementService.verifyAccess(CASE_REFERENCE);
-        });
+        Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> hearingManagementService
+            .verifyAccess(CASE_REFERENCE));
         assertEquals(ROLE_ASSIGNMENT_INVALID_ROLE, exception.getMessage());
     }
 
@@ -617,9 +624,8 @@ class HearingManagementServiceTest {
             .caseTypeId("Different CaseTypeId")
             .build();
         doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-        Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> {
-            hearingManagementService.verifyAccess(CASE_REFERENCE);
-        });
+        Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> hearingManagementService
+            .verifyAccess(CASE_REFERENCE));
         assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
     }
 
@@ -645,9 +651,8 @@ class HearingManagementServiceTest {
             .caseTypeId("Different CaseTypeId")
             .build();
         doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-        Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> {
-            hearingManagementService.verifyAccess(CASE_REFERENCE);
-        });
+        Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> hearingManagementService
+            .verifyAccess(CASE_REFERENCE));
         assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
     }
 
@@ -674,9 +679,8 @@ class HearingManagementServiceTest {
             .caseTypeId("Different CaseTypeId")
             .build();
         doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-        Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> {
-            hearingManagementService.verifyAccess(CASE_REFERENCE);
-        });
+        Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> hearingManagementService
+            .verifyAccess(CASE_REFERENCE));
         assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
     }
 
@@ -702,9 +706,8 @@ class HearingManagementServiceTest {
             .caseTypeId("Different CaseTypeId")
             .build();
         doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-        Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> {
-            hearingManagementService.verifyAccess(CASE_REFERENCE);
-        });
+        Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> hearingManagementService
+            .verifyAccess(CASE_REFERENCE));
         assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
     }
 
@@ -731,9 +734,8 @@ class HearingManagementServiceTest {
             .caseTypeId("Different CaseTypeId")
             .build();
         doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-        Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> {
-            hearingManagementService.verifyAccess(CASE_REFERENCE);
-        });
+        Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> hearingManagementService
+            .verifyAccess(CASE_REFERENCE));
         assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
     }
 
@@ -741,51 +743,73 @@ class HearingManagementServiceTest {
     void deleteHearingRequestShouldPassWithValidDetails() {
         when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_SUBMITTED");
         hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
         verify(hearingRepository).existsById(2000000000L);
         verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
     }
 
     @Test
-    void testExpectedException_DeleteHearing_VersionNumber_Not_Equal_To_DB_VersionNumber() {
-        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(2);
+    void deleteHearingRequestShouldPassWithValidStatus() {
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_SUBMITTED");
+        hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
+        verify(hearingRepository).existsById(2000000000L);
+        verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
+    }
+
+    @Test
+    void deleteHearingRequestShouldFailWithInValidStatus() {
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_NOT_SUBMITTED");
         Exception exception = assertThrows(BadRequestException.class, () -> {
             hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
         });
+        assertEquals(INVALID_DELETE_HEARING_STATUS, exception.getMessage());
+    }
+
+    @Test
+    void testExpectedException_DeleteHearing_VersionNumber_Not_Equal_To_DB_VersionNumber() {
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(2);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .deleteHearingRequest(2000000000L, deleteHearingRequest));
         assertEquals(INVALID_VERSION_NUMBER, exception.getMessage());
     }
 
     @Test
     void testExpectedException_DeleteHearing_HearingId_NotPresent_inDB() {
         when(hearingRepository.existsById(2000000000L)).thenReturn(false);
-        Exception exception = assertThrows(HearingNotFoundException.class, () -> {
-            hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
-        });
+        DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
+        Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
+            .deleteHearingRequest(2000000000L, deleteHearingRequest));
         assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
     }
 
     @Test
     void testExpectedException_DeleteHearing_HearingId_Null() {
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.deleteHearingRequest(null, TestingUtil.deleteHearingRequest());
-        });
+        DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .deleteHearingRequest(null, deleteHearingRequest));
         assertEquals("Invalid hearing Id", exception.getMessage());
     }
 
     @Test
     void testExpectedException_DeleteHearing_HearingId_Exceeds_MaxLength() {
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.deleteHearingRequest(20000000001111L, TestingUtil.deleteHearingRequest());
-        });
+        DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .deleteHearingRequest(20000000001111L, deleteHearingRequest));
         assertEquals("Invalid hearing Id", exception.getMessage());
     }
 
     @Test
     void testExpectedException_DeleteHearing_HearingId_First_Char_Is_Not_2() {
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.deleteHearingRequest(1000000100L, TestingUtil.deleteHearingRequest());
-        });
+        DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .deleteHearingRequest(1000000100L, deleteHearingRequest));
         assertEquals("Invalid hearing Id", exception.getMessage());
     }
 
@@ -794,6 +818,7 @@ class HearingManagementServiceTest {
         when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(
             TestingUtil.updateHearingRequest().getRequestDetails().getVersionNumber());
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.getStatus(2000000000L)).thenReturn("HEARING_REQUESTED");
         hearingManagementService.updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest());
         verify(hearingRepository).existsById(2000000000L);
         verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
@@ -807,6 +832,27 @@ class HearingManagementServiceTest {
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .updateHearingRequest(2000000000L, updateHearingRequest));
         assertEquals(INVALID_VERSION_NUMBER, exception.getMessage());
+    }
+
+    @Test
+    void updateHearingRequestShouldThrowErrorWhenDbStatusDoesNotMatchWithExpectedState() {
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.getStatus(2000000000L)).thenReturn("HEARING_NOT_REQUESTED");
+        UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+            .updateHearingRequest(2000000000L, updateHearingRequest));
+        assertEquals(INVALID_PUT_HEARING_STATUS, exception.getMessage());
+    }
+
+    @Test
+    void updateHearingRequestShouldPassWhenDbStatusMatchWithExpectedState() {
+        when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_REQUESTED");
+        hearingManagementService.updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest());
+        verify(hearingRepository).existsById(2000000000L);
+        verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
     }
 
     @Test
@@ -1021,4 +1067,168 @@ class HearingManagementServiceTest {
         assertEquals(versionNumber, hearingRequest.getRequestDetails().getVersionNumber());
     }
 
+    void getHearings_shouldReturnDataWithValidDetails() {
+        List<CaseHearingRequestEntity> entities = Arrays.asList(TestingUtil.getCaseHearingsEntities());
+        when(caseHearingRequestRepository.getHearingDetailsWithStatus("12345", "HEARING_REQUESTED"))
+            .thenReturn(entities);
+        given(getHearingsResponseMapper.toHearingsResponse("12345", entities))
+            .willReturn(TestingUtil.getHearingsResponseWhenDataIsPresent("12345"));
+        GetHearingsResponse response = hearingManagementService.getHearings("12345", "HEARING_REQUESTED");
+        assertEquals("12345", response.getCaseRef());
+        assertEquals("AB1A", response.getHmctsServiceId());
+        assertEquals(1, response.getCaseHearings().size());
+        assertEquals(2000000000L, response.getCaseHearings().get(0).getHearingId());
+        assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
+        assertEquals("venue", response.getCaseHearings().get(0)
+            .getHearingDaySchedule().get(0).getHearingVenueId());
+        assertEquals("subChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
+            .getAttendees().get(0).getHearingSubChannel());
+        assertEquals(1, response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
+            .getHearingJudgeId().size());
+    }
+
+    @Test
+    void getHearings_shouldReturnNoDataWithStatus_Null() {
+        when(caseHearingRequestRepository.getHearingDetails("12345")).thenReturn(null);
+        given(getHearingsResponseMapper.toHearingsResponse("12345", null))
+            .willReturn(TestingUtil.getHearingsResponseWhenNoData("12345"));
+        GetHearingsResponse response = hearingManagementService.getHearings("12345", null);
+        assertEquals("12345", response.getCaseRef());
+        assertNull(response.getHmctsServiceId());
+        assertEquals(0, response.getCaseHearings().size());
+    }
+
+    @Test
+    void getHearings_shouldReturnNoDataWithInValidStatus() {
+        when(caseHearingRequestRepository.getHearingDetailsWithStatus("12345","InvalidStatus"))
+            .thenReturn(null);
+        given(getHearingsResponseMapper.toHearingsResponse("12345", null))
+            .willReturn(TestingUtil.getHearingsResponseWhenNoData("12345"));
+        GetHearingsResponse response = hearingManagementService.getHearings("12345", "InvalidStatus");
+        assertEquals("12345", response.getCaseRef());
+        assertNull(response.getHmctsServiceId());
+        assertEquals(0, response.getCaseHearings().size());
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenCreateRequestHasPartyDetails() {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
+                                                                   createHearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenCreateRequestHasOnlyMandatoryFields() {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
+                                                                   createHearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenCreateRequestHasNoOrgsDetailsPresent() {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
+                                                                   createHearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenCreateRequestHasNoIndividualDetailsPresent() {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
+                                                                   createHearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenCreateRequestHasNoRelatedPartyDetailsPresent() {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil
+                                                                               .individualWithoutRelatedPartyDetails());
+        createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
+                                                                   createHearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenUpdateRequestHasPartyDetails() {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenUpdateRequestHasOnlyMandatoryFields() {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenUpdateRequestHasNoOrgsDetailsPresent() {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenUpdateRequestHasNoIndividualDetailsPresent() {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+    }
+
+    @Test
+    void shouldSuccessfullyMapToHmiFormatWhenUpdateRequestHasNoRelatedPartyDetailsPresent() {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil
+                                                                         .individualWithoutRelatedPartyDetails());
+        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+    }
 }
