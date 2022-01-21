@@ -245,7 +245,7 @@ public class TestingUtil {
         schedule.setListAssistSessionId("jvjyVv8aecmpBgo3RnGb");
         schedule.setHearingVenueId("venue");
         schedule.setHearingRoomId("room1");
-        schedule.setHearingJudgeId(Arrays.asList("judge1"));
+        schedule.setHearingJudgeId("judge1");
         Attendee attendee = new Attendee();
         attendee.setPartyId("partyId1");
         attendee.setHearingSubChannel("subChannel1");

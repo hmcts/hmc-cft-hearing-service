@@ -36,6 +36,6 @@ public class HearingDayPanelEntity {
     private HearingDayDetailsEntity hearingDayDetails;
 
     @Column(name = "is_presiding")
-    private boolean isPresiding;
+    private Boolean isPresiding;
 
 }

@@ -31,8 +31,7 @@ class GetHearingsResponseMapperTest {
         assertEquals("SubChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getAttendees().get(0).getHearingSubChannel());
         assertEquals(1, response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
-            .getHearingJudgeId().size());
-
+            .getPanelMemberIds().size());
     }
 
     @Test
