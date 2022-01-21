@@ -101,7 +101,6 @@ class HearingManagementControllerTest {
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.getHearing(1234L, true);
         verify(hearingManagementService, times(1)).getHearingRequest(any(), anyBoolean());
-
     }
 
     @Test
@@ -113,10 +112,10 @@ class HearingManagementControllerTest {
         when(hearingManagementService.deleteHearingRequest(Mockito.any(), Mockito.any())).thenReturn(hearingResponse);
 
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
+        doReturn(hearingResponse).when(hearingManagementService)
+            .deleteHearingRequest(Mockito.any(), Mockito.any());
         hearingResponse = controller.deleteHearing(hearingId, deleteHearingRequest);
         logger.debug("hearingResponse: {}", hearingResponse);
-
-
         verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());
     }
 

@@ -78,8 +78,7 @@ public class HearingManagementController {
     })
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
                               @RequestBody @Valid DeleteHearingRequest deleteRequest) {
-        HearingResponse hearingResponse =  hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
-        return hearingResponse;
+        return hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
     }
 
     /**

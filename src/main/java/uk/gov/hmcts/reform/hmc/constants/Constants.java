@@ -12,4 +12,5 @@ public final class Constants {
     public static final String UNAVAILABILITY_RANGE_TYPE =  "Range";
     public static final String UNAVAILABILITY_DOW_TYPE = "DOW";
     public static final Integer HEARING_ID_MAX_LENGTH = 10;
+    public static final String CANCELLATION_REQUESTED = "CANCELLATION_REQUESTED";
 }
