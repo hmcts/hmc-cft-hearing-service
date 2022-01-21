@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class CaseHearingRequestRepositoryIT extends BaseTest {
@@ -95,5 +96,20 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
         List<CaseHearingRequestEntity> entities = caseHearingRequestRepository
             .getHearingDetails("9372710950276234");
         assertEquals(0, entities.size());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void testGetCaseHearingId_HearingIdIsValid() {
+        CaseHearingRequestEntity caseHearing = caseHearingRequestRepository.getCaseHearing(2000000000L);
+        assertNotNull(caseHearing);
+        assertNotNull(caseHearing.getCaseHearingID());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void testGetCaseHearingId_HearingIdNotInDb() {
+        CaseHearingRequestEntity caseHearing = caseHearingRequestRepository.getCaseHearing(2200000000L);
+        assertNull(caseHearing);
     }
 }

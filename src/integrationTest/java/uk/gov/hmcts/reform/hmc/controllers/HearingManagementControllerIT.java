@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -48,6 +49,7 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignme
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidateHearingObject;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404FromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyValidateHearingObject;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AUTHORISATION_TYPE_MAX_LENGTH_MSG;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AUTO_LIST_FLAG_NULL_EMPTY;
@@ -462,6 +464,11 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.deleteHearingRequest())))
             .andExpect(status().is(200))
+            .andExpect(jsonPath("$.hearingRequestID").value("2000000000"))
+            .andExpect(jsonPath("$.status").value(CANCELLATION_REQUESTED))
+            .andExpect(jsonPath("$.versionNumber").value(
+                TestingUtil.deleteHearingRequest().getVersionNumber()))
+            .andExpect(jsonPath("$.timeStamp").value(IsNull.notNullValue()))
             .andReturn();
     }
 
@@ -594,8 +601,10 @@ class HearingManagementControllerIT extends BaseTest {
                             .content(objectMapper.writeValueAsString(TestingUtil.updateHearingRequest())))
             .andExpect(status().is(404))
             .andExpect(jsonPath("$.errors", hasSize(1)))
-            .andExpect(jsonPath("$.errors", hasItem(String.format(HEARING_NOT_FOUND_EXCEPTION,
-                                                                  "2000000001"))))
+            .andExpect(jsonPath("$.errors", hasItem(String.format(
+                HEARING_NOT_FOUND_EXCEPTION,
+                "2000000001"
+            ))))
             .andReturn();
     }
 
@@ -654,7 +663,8 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.errors", hasSize(3)))
             .andExpect(jsonPath("$.errors", hasItems(INVALID_REQUEST_DETAILS, INVALID_HEARING_DETAILS,
-                                                     INVALID_CASE_DETAILS)))
+                                                     INVALID_CASE_DETAILS
+            )))
             .andReturn();
     }
 
@@ -687,7 +697,8 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.errors", hasItems(AUTO_LIST_FLAG_NULL_EMPTY, HEARING_TYPE_NULL_EMPTY,
                                                      HEARING_WINDOW_NULL, DURATION_EMPTY, HEARING_PRIORITY_TYPE,
                                                      HEARING_LOCATION_EMPTY, INVALID_HEARING_LOCATION,
-                                                     INVALID_PANEL_REQUIREMENTS)))
+                                                     INVALID_PANEL_REQUIREMENTS
+            )))
             .andReturn();
     }
 
@@ -703,7 +714,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().setNumberOfPhysicalAttendees(-1);
         HearingLocation hearingLocation = new HearingLocation();
         hearingLocation.setLocationId("invalid enum");
-        List<HearingLocation> hearingLocationList =  Collections.singletonList(hearingLocation);
+        List<HearingLocation> hearingLocationList = Collections.singletonList(hearingLocation);
         hearingRequest.getHearingDetails().setHearingLocations(hearingLocationList);
         List<String> facilitiesRequiredList = Collections.singletonList("a".repeat(71));
         hearingRequest.getHearingDetails().setFacilitiesRequired(facilitiesRequiredList);
@@ -740,7 +751,8 @@ class HearingManagementControllerIT extends BaseTest {
                                                      AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG,
                                                      PANEL_SPECIALISMS_MAX_LENGTH_MSG, MEMBER_ID_EMPTY,
                                                      MEMBER_ID_MAX_LENGTH, MEMBER_TYPE_MAX_LENGTH,
-                                                     "Unsupported type for requirementType")))
+                                                     "Unsupported type for requirementType"
+            )))
             .andReturn();
     }
 
@@ -759,7 +771,8 @@ class HearingManagementControllerIT extends BaseTest {
                                                      HMCTS_INTERNAL_CASE_NAME_EMPTY, PUBLIC_CASE_NAME_EMPTY,
                                                      CASE_CATEGORY_EMPTY, INVALID_CASE_CATEGORIES,
                                                      CASE_MANAGEMENT_LOCATION_CODE_EMPTY,
-                                                     CASE_RESTRICTED_FLAG_NULL_EMPTY, CASE_SLA_START_DATE_EMPTY)))
+                                                     CASE_RESTRICTED_FLAG_NULL_EMPTY, CASE_SLA_START_DATE_EMPTY
+            )))
             .andReturn();
     }
 
@@ -788,7 +801,8 @@ class HearingManagementControllerIT extends BaseTest {
                                                      CASE_DEEP_LINK_INVALID, HMCTS_INTERNAL_CASE_NAME_MAX_LENGTH,
                                                      PUBLIC_CASE_NAME_MAX_LENGTH,
                                                      CASE_MANAGEMENT_LOCATION_CODE_MAX_LENGTH, CATEGORY_VALUE,
-                                                     "Unsupported type for categoryType")))
+                                                     "Unsupported type for categoryType"
+            )))
             .andReturn();
     }
 
@@ -820,7 +834,8 @@ class HearingManagementControllerIT extends BaseTest {
                                                      "Unsupported type for dowUnavailabilityType", NAME_NULL_EMPTY,
                                                      ORGANISATION_TYPE_NULL_EMPTY, CFT_ORG_ID_NULL_EMPTY, TITLE_EMPTY,
                                                      FIRST_NAME_EMPTY, LAST_NAME_EMPTY, RELATED_PARTY_EMPTY,
-                                                     RELATIONSHIP_TYPE_EMPTY)))
+                                                     RELATIONSHIP_TYPE_EMPTY
+            )))
             .andReturn();
     }
 
@@ -866,7 +881,8 @@ class HearingManagementControllerIT extends BaseTest {
                                                      HEARING_CHANNEL_PHONE_MAX_LENGTH, HEARING_CHANNEL_PHONE_INVALID,
                                                      RELATED_PARTY_MAX_LENGTH, RELATIONSHIP_TYPE_MAX_LENGTH,
                                                      NAME_MAX_LENGTH, ORGANISATION_TYPE_MAX_LENGTH,
-                                                     CFT_ORG_ID_MAX_LENGTH, HEARING_CHANNEL_EMAIL_INVALID)))
+                                                     CFT_ORG_ID_MAX_LENGTH, HEARING_CHANNEL_EMAIL_INVALID
+            )))
             .andReturn();
     }
 

@@ -17,5 +17,6 @@ DELETE FROM hearing_day_panel;
 DELETE FROM hearing_attendee_details;
 DELETE FROM hearing_day_details;
 DELETE FROM hearing_response;
+DELETE FROM cancellation_reasons;
 DELETE FROM case_hearing_request;
 DELETE FROM hearing;

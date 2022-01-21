@@ -95,13 +95,13 @@ class HearingManagementControllerTest {
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.getHearing(1234L, true);
         verify(hearingManagementService, times(1)).getHearingRequest(any(), anyBoolean());
-
     }
 
     @Test
     void shouldReturn200_whenDeleteRequestIdIsValid() {
-        doNothing().when(hearingManagementService).deleteHearingRequest(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
+        doReturn(TestingUtil.deleteHearingResponse()).when(hearingManagementService)
+            .deleteHearingRequest(Mockito.any(), Mockito.any());
         controller.deleteHearing(1234L, TestingUtil.deleteHearingRequest());
         verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());
     }
@@ -110,7 +110,6 @@ class HearingManagementControllerTest {
     void shouldReturn404_whenDeleteRequestIdIsInValid() {
         DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
         request.setCancellationReasonCode("");
-        doNothing().when(hearingManagementService).deleteHearingRequest(Mockito.any(), Mockito.any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.deleteHearing(1234L, request);
         verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());

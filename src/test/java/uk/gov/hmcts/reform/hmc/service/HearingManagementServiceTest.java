@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -54,6 +55,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
@@ -102,6 +104,9 @@ class HearingManagementServiceTest {
     @Mock
     HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
 
+    @Mock
+    CancellationReasonsRepository cancellationReasonsRepository;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -114,7 +119,8 @@ class HearingManagementServiceTest {
                 hearingMapper,
                 caseHearingRequestRepository,
                 hmiSubmitHearingRequestMapper,
-                getHearingsResponseMapper
+                getHearingsResponseMapper,
+                cancellationReasonsRepository
                 );
     }
 
@@ -744,9 +750,19 @@ class HearingManagementServiceTest {
         when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_SUBMITTED");
-        hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
+        CaseHearingRequestEntity entity = TestingUtil.caseHearingRequestEntity();
+        entity.setCaseHearingID(1L);
+        when(caseHearingRequestRepository.getCaseHearing(2000000000L)).thenReturn(entity);
+        when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(TestingUtil.deleteHearingEntity()));
+        HearingResponse response = hearingManagementService.deleteHearingRequest(
+            2000000000L, TestingUtil.deleteHearingRequest());
+        assertEquals(VERSION_NUMBER, response.getVersionNumber());
+        assertEquals(CANCELLATION_REQUESTED, response.getStatus());
+        assertNotNull(response.getHearingRequestId());
         verify(hearingRepository).existsById(2000000000L);
         verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
+        verify(hearingRepository).findById(2000000000L);
+        verify(caseHearingRequestRepository).getCaseHearing(2000000000L);
     }
 
     @Test
@@ -754,6 +770,7 @@ class HearingManagementServiceTest {
         when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_SUBMITTED");
+        when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(TestingUtil.deleteHearingEntity()));
         hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
         verify(hearingRepository).existsById(2000000000L);
         verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
