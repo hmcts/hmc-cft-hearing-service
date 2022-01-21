@@ -48,19 +48,12 @@ public class GetHearingsResponseMapper {
             List<HearingDayDetailsEntity> hearingDayDetailEntities = hearingResponseEntity.getHearingDayDetails();
             for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
                 HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
-                // setHearingJudgeId(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
-                setPanelMemberIds(detailEntity.getHearingDayPanel(), hearingDaySchedule);
+                setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel(), hearingDaySchedule);
                 setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
                 scheduleList.add(hearingDaySchedule);
             }
             caseHearing.setHearingDaySchedule(scheduleList);
             caseHearingList.add(caseHearing);
-        }
-    }
-
-    private void setHearingJudgeId(HearingDayPanelEntity hearingDayPanel, HearingDaySchedule hearingDaySchedule) {
-        if (null != hearingDayPanel.getIsPresiding() && hearingDayPanel.getIsPresiding()) {
-            hearingDaySchedule.setHearingJudgeId(hearingDayPanel.getPanelUserId());
         }
     }
 
@@ -111,7 +104,7 @@ public class GetHearingsResponseMapper {
         hearingDaySchedule.setAttendees(attendeeList);
     }
 
-    private void setPanelMemberIds(List<HearingDayPanelEntity> hearingDayPanelEntities,
+    private void setHearingJudgeAndPanelMemberIds(List<HearingDayPanelEntity> hearingDayPanelEntities,
                                    HearingDaySchedule hearingDaySchedule) {
         List<String> panelMemberIdsList = new ArrayList<>();
         List<String> hearingJudgeIdsList = new ArrayList<>();
