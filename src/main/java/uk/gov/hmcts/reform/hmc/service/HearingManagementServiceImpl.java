@@ -73,7 +73,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final GetHearingsResponseMapper getHearingsResponseMapper;
     private final CaseHearingRequestRepository caseHearingRequestRepository;
     private final HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
-    private final CancellationReasonsRepository cancellationReasonsRepository;
 
 
     @Autowired
@@ -85,8 +84,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         CaseHearingRequestRepository caseHearingRequestRepository,
                                         CancellationReasonsRepository cancellationReasonsRepository,
                                         HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper,
-                                        GetHearingsResponseMapper getHearingsResponseMapper,
-                                        CancellationReasonsRepository cancellationReasonsRepository) {
+                                        GetHearingsResponseMapper getHearingsResponseMapper) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -96,7 +94,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.cancellationReasonsRepository = cancellationReasonsRepository;
         this.hmiSubmitHearingRequestMapper = hmiSubmitHearingRequestMapper;
         this.getHearingsResponseMapper = getHearingsResponseMapper;
-        this.cancellationReasonsRepository = cancellationReasonsRepository;
     }
 
     @Override
