@@ -48,7 +48,7 @@ public class GetHearingsResponseMapper {
             List<HearingDayDetailsEntity> hearingDayDetailEntities = hearingResponseEntity.getHearingDayDetails();
             for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
                 HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
-                setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel(), hearingDaySchedule);
+                setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
                 setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
                 scheduleList.add(hearingDaySchedule);
             }
@@ -104,20 +104,12 @@ public class GetHearingsResponseMapper {
         hearingDaySchedule.setAttendees(attendeeList);
     }
 
-    private void setHearingJudgeAndPanelMemberIds(List<HearingDayPanelEntity> hearingDayPanelEntities,
-                                   HearingDaySchedule hearingDaySchedule) {
-        List<String> panelMemberIdsList = new ArrayList<>();
-        List<String> hearingJudgeIdsList = new ArrayList<>();
-        for (HearingDayPanelEntity dayPanelEntity : hearingDayPanelEntities) {
-            if (null == dayPanelEntity.getIsPresiding() || !dayPanelEntity.getIsPresiding()) {
-                panelMemberIdsList.add(dayPanelEntity.getPanelUserId());
-            } else {
-                hearingJudgeIdsList.add(dayPanelEntity.getPanelUserId());
-            }
-        }
-        hearingDaySchedule.setPanelMemberIds(panelMemberIdsList);
-        if (!hearingJudgeIdsList.isEmpty()) {
-            hearingDaySchedule.setHearingJudgeId(hearingJudgeIdsList.get(0));
+    private void setHearingJudgeAndPanelMemberIds(HearingDayPanelEntity hearingDayPanelEntity,
+                                                  HearingDaySchedule hearingDaySchedule) {
+        if (null == hearingDayPanelEntity.getIsPresiding() || !hearingDayPanelEntity.getIsPresiding()) {
+            hearingDaySchedule.setPanelMemberId(hearingDayPanelEntity.getPanelUserId());
+        } else {
+            hearingDaySchedule.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
         }
     }
 }
