@@ -111,6 +111,9 @@ class HearingManagementServiceTest {
     @Mock
     HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
 
+    @Mock
+    CancellationReasonsRepository cancellationReasonsRepository;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -124,7 +127,8 @@ class HearingManagementServiceTest {
                 caseHearingRequestRepository,
                 cancellationReasonsRepository,
                 hmiSubmitHearingRequestMapper,
-                getHearingsResponseMapper
+                getHearingsResponseMapper,
+                cancellationReasonsRepository
                 );
     }
 
@@ -753,14 +757,21 @@ class HearingManagementServiceTest {
     void deleteHearingRequestShouldPassWithValidDetails() {
         final long hearingId = 2000000000L;
         HearingEntity hearingEntity = generateHearingEntity(hearingId, DeleteHearingStatus.UPDATE_REQUESTED.name());
+        CaseHearingRequestEntity entity = TestingUtil.caseHearingRequestEntity();
+        entity.setCaseHearingID(1L);
         when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(1);
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(hearingRepository.getStatus(hearingId)).thenReturn("UPDATE_SUBMITTED");
         when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
         when(hearingRepository.save(hearingEntity)).thenReturn(hearingEntity);
+        when(caseHearingRequestRepository.getCaseHearing(hearingId)).thenReturn(entity);
+        when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(entity));
 
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
                 hearingId, TestingUtil.deleteHearingRequest());
+        assertEquals(VERSION_NUMBER, response.getVersionNumber());
+        assertEquals(CANCELLATION_REQUESTED, response.getStatus());
+        assertNotNull(response.getHearingRequestId());
         verify(hearingRepository).existsById(hearingId);
         verify(caseHearingRequestRepository).getVersionNumber(hearingId);
     }
@@ -793,6 +804,13 @@ class HearingManagementServiceTest {
 
         Exception exception = assertThrows(BadRequestException.class, () ->
             hearingManagementService.deleteHearingRequest(hearingId, deleteHearingRequest));
+        when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(1);
+        when(hearingRepository.existsById(hearingId)).thenReturn(true);
+        when(hearingRepository.getStatus(hearingId)).thenReturn("UPDATE_SUBMITTED");
+        when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(TestingUtil.deleteHearingEntity()));
+        hearingManagementService.deleteHearingRequest(hearingId, TestingUtil.deleteHearingRequest());
+        verify(hearingRepository).existsById(hearingId);
+        verify(caseHearingRequestRepository).getVersionNumber(hearingId);
         assertEquals(INVALID_DELETE_HEARING_STATUS, exception.getMessage());
     }
 

@@ -26,4 +26,6 @@ public interface CaseHearingRequestRepository extends CrudRepository<CaseHearing
         + "order by chr.hearing.id desc")
     List<CaseHearingRequestEntity> getHearingDetailsWithStatus(String caseRef, String status);
 
+    @Query("from CaseHearingRequestEntity where hearing.id = :hearingId")
+    CaseHearingRequestEntity getCaseHearing(Long hearingId);
 }

@@ -73,6 +73,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final GetHearingsResponseMapper getHearingsResponseMapper;
     private final CaseHearingRequestRepository caseHearingRequestRepository;
     private final HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
+    private final CancellationReasonsRepository cancellationReasonsRepository;
+
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -83,7 +85,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         CaseHearingRequestRepository caseHearingRequestRepository,
                                         CancellationReasonsRepository cancellationReasonsRepository,
                                         HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper,
-                                        GetHearingsResponseMapper getHearingsResponseMapper) {
+                                        GetHearingsResponseMapper getHearingsResponseMapper,
+                                        CancellationReasonsRepository cancellationReasonsRepository) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -93,6 +96,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.cancellationReasonsRepository = cancellationReasonsRepository;
         this.hmiSubmitHearingRequestMapper = hmiSubmitHearingRequestMapper;
         this.getHearingsResponseMapper = getHearingsResponseMapper;
+        this.cancellationReasonsRepository = cancellationReasonsRepository;
     }
 
     @Override
@@ -328,19 +332,20 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void updateCancellationReasons(Long hearingId, String cancellationReasonCode) {
-        Long caseHearingId = getCaseHearingId(hearingId);
-        final CancellationReasonsEntity cancellationReasonsEntity = getCancellationReasonsEntity(
-            cancellationReasonCode, caseHearingId);
+        CaseHearingRequestEntity caseHearingRequestEntity = getCaseHearing(hearingId);
+        final CancellationReasonsEntity cancellationReasonsEntity = setCancellationReasonsEntity(
+            cancellationReasonCode, caseHearingRequestEntity);
         cancellationReasonsRepository.save(cancellationReasonsEntity);
     }
 
-    private Long getCaseHearingId(Long hearingId) {
-        return caseHearingRequestRepository.getCaseHearingId(hearingId);
+    private CaseHearingRequestEntity getCaseHearing(Long hearingId) {
+        return caseHearingRequestRepository.getCaseHearing(hearingId);
     }
 
-    private CancellationReasonsEntity getCancellationReasonsEntity(String cancellationReasonCode, Long caseHearingId) {
+    private CancellationReasonsEntity setCancellationReasonsEntity(String cancellationReasonCode,
+                                                                   CaseHearingRequestEntity caseHearingRequestEntity) {
         final CancellationReasonsEntity cancellationReasonsEntity = new CancellationReasonsEntity();
-        cancellationReasonsEntity.setCaseHearingID(caseHearingId);
+        cancellationReasonsEntity.setCaseHearing(caseHearingRequestEntity);
         cancellationReasonsEntity.setCancellationReasonType(cancellationReasonCode);
         return cancellationReasonsEntity;
     }

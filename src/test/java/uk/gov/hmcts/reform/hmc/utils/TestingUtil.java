@@ -357,6 +357,24 @@ public class TestingUtil {
         return entity;
     }
 
+    public static HearingEntity deleteHearingEntity() {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(1L);
+        hearingEntity.setStatus(CANCELLATION_REQUESTED);
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
+        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
+        return hearingEntity;
+    }
+
+    public static HearingResponse deleteHearingResponse() {
+        HearingResponse response = new HearingResponse();
+        response.setHearingRequestId(1L);
+        response.setTimeStamp(LocalDateTime.now());
+        response.setStatus(CANCELLATION_REQUESTED);
+        response.setVersionNumber(1);
+        return response;
+    }
+
     public static HearingDayPanelEntity hearingDayPanelEntities() {
         HearingDayPanelEntity entity = new HearingDayPanelEntity();
         entity.setPanelUserId("PanelUser1");
