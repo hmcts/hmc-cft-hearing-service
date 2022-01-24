@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
+import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 
 public class TestingUtil {
@@ -226,6 +228,23 @@ public class TestingUtil {
         return request;
     }
 
+    public static HearingEntity deleteHearingEntity() {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(1L);
+        hearingEntity.setStatus(CANCELLATION_REQUESTED);
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
+        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
+        return hearingEntity;
+    }
+
+    public static HearingResponse deleteHearingResponse() {
+        HearingResponse response = new HearingResponse();
+        response.setHearingRequestId(1L);
+        response.setTimeStamp(LocalDateTime.now());
+        response.setStatus(CANCELLATION_REQUESTED);
+        response.setVersionNumber(1);
+        return response;
+    }
 
     public static GetHearingsResponse getHearingsResponseWhenDataIsPresent(String caseRef) {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();

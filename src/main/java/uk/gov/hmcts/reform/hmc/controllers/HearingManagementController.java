@@ -63,10 +63,21 @@ public class HearingManagementController {
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
     public HearingResponse saveHearing(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
-        hearingManagementService.verifyAccess(createHearingRequest.getCaseDetails().getCaseRef());
+        hearingManagementService.verifyAccess(getCaseRef(createHearingRequest));
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
         hearingManagementService.sendRequestToHmi(hearingResponse.getHearingRequestId(), createHearingRequest);
         return hearingResponse;
+    }
+
+    private String getCaseRef(CreateHearingRequest hearingRequest) {
+        if (null == hearingRequest) {
+            return null;
+        }
+        if (null == hearingRequest.getCaseDetails()) {
+            return null;
+        }
+        return hearingRequest.getCaseDetails().getCaseRef();
+
     }
 
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -77,9 +88,9 @@ public class HearingManagementController {
         @ApiResponse(code = 404, message = "Hearing id not found"),
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
-    public void deleteHearing(@PathVariable("id") Long hearingId,
+    public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
                               @RequestBody @Valid DeleteHearingRequest deleteRequest) {
-        hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
+        return hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
     }
 
     /**
@@ -116,9 +127,10 @@ public class HearingManagementController {
         @ApiResponse(code = 404, message = "Hearing id not found"),
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
-    public void updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
+    public HearingResponse updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
                               @PathVariable("id") Long hearingId) {
-        hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
+        HearingResponse hearingResponse =  hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
         hearingManagementService.sendRequestToHmi(hearingId, hearingRequest);
+        return hearingResponse;
     }
 }
