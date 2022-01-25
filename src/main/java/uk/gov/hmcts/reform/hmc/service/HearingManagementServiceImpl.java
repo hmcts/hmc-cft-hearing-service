@@ -337,16 +337,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         if (hearingResult.isPresent()) {
             final HearingEntity hearingEntity = hearingResult.get();
-            if (null != newStatus) {
-                log.info("CHANGING: Hearing status {}", hearingEntity.getStatus());
-            }
-            log.info("CHANGING: version number : {}", hearingEntity.getCaseHearingRequest().getVersionNumber());
             if (null != hearingEntity.getCaseHearingRequest()) {
+                log.info("CHANGING: version number : {}", hearingEntity.getCaseHearingRequest().getVersionNumber());
                 hearingEntity.getCaseHearingRequest().setVersionNumber(
                         hearingEntity.getCaseHearingRequest().getVersionNumber() + 1);
                 log.info("TO: version number : {}",
                         hearingEntity.getCaseHearingRequest().getVersionNumber());
                 if (null != newStatus) {
+                    log.info("CHANGING: Hearing status {}", hearingEntity.getStatus());
                     hearingEntity.setStatus(newStatus);
                     log.info("TO: Hearing status {}", hearingEntity.getStatus());
                 }
