@@ -7,6 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -50,7 +52,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -79,6 +80,8 @@ import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
 
 @ExtendWith(MockitoExtension.class)
 class HearingManagementServiceTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(HearingManagementServiceTest.class);
 
     @InjectMocks
     private HearingManagementServiceImpl hearingManagementService;
@@ -758,7 +761,7 @@ class HearingManagementServiceTest {
         when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(versionNumber);
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(hearingRepository.getStatus(hearingId)).thenReturn("UPDATE_SUBMITTED");
-        HearingEntity hearingEntity = generateHearingEntity(hearingId, DeleteHearingStatus.UPDATE_REQUESTED.name());
+        HearingEntity hearingEntity = generateHearingEntity(hearingId, DeleteHearingStatus.UPDATE_REQUESTED.name(), 1);
         when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
         when(hearingRepository.save(hearingEntity)).thenReturn(hearingEntity);
         when(caseHearingRequestRepository.getCaseHearing(hearingId)).thenReturn(entity);
@@ -775,7 +778,7 @@ class HearingManagementServiceTest {
     @Test
     void deleteHearingRequestShouldPassWithValidStatus() {
         final long hearingId = 2000000000L;
-        HearingEntity hearingEntity = generateHearingEntity(hearingId, DeleteHearingStatus.UPDATE_REQUESTED.name());
+        HearingEntity hearingEntity = generateHearingEntity(hearingId, DeleteHearingStatus.UPDATE_REQUESTED.name(), 1);
         when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(1);
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(hearingRepository.getStatus(hearingId)).thenReturn("UPDATE_SUBMITTED");
@@ -857,7 +860,8 @@ class HearingManagementServiceTest {
         when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(versionNumber);
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(hearingRepository.getStatus(hearingId)).thenReturn(PutHearingStatus.UPDATE_REQUESTED.name());
-        HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.UPDATE_REQUESTED.name());
+        HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.UPDATE_REQUESTED.name(),
+                versionNumber);
         when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
         when(hearingRepository.save(hearingEntity)).thenReturn(hearingEntity);
 
@@ -899,7 +903,8 @@ class HearingManagementServiceTest {
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(hearingRepository.getStatus(hearingId)).thenReturn(PutHearingStatus.UPDATE_REQUESTED.name());
 
-        HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.UPDATE_REQUESTED.name());
+        HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.UPDATE_REQUESTED.name(),
+                hearingRequest.getRequestDetails().getVersionNumber());
         when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
         when(hearingRepository.save(hearingEntity)).thenReturn(hearingEntity);
 
@@ -1080,7 +1085,7 @@ class HearingManagementServiceTest {
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(versionNumber);
         when(hearingRepository.getStatus(hearingId)).thenReturn(DeleteHearingStatus.UPDATE_REQUESTED.name());
-        HearingEntity hearingEntity = generateHearingEntity(hearingId, DeleteHearingStatus.HEARING_REQUESTED.name());
+        HearingEntity hearingEntity = generateHearingEntity(hearingId, DeleteHearingStatus.HEARING_REQUESTED.name(), 1);
         when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
         when(hearingRepository.save(hearingEntity)).thenReturn(hearingEntity);
 
@@ -1094,25 +1099,27 @@ class HearingManagementServiceTest {
     void deleteHearingValidationFailureShouldNotIncrementVersionNumber() {
         DeleteHearingRequest hearingRequest = TestingUtil.deleteHearingRequest();
         final int versionNumber = hearingRequest.getVersionNumber();
-        // Expect validation error for null hearing Id!
+        // Expect validation error for null hearing id
         assertThrows(BadRequestException.class, () -> hearingManagementService.deleteHearingRequest(
             null, hearingRequest));
         // Check that version number remains the same
-        // TODO: FIX THIS ??????????????
-        // assertEquals(versionNumber, hearingRequest.getVersionNumber());
+        assertEquals(versionNumber, hearingRequest.getVersionNumber());
     }
 
     void updateHearingShouldIncrementVersionNumber(Long hearingId, UpdateHearingRequest hearingRequest) {
         final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+        logger.info("x version number {}", hearingRequest.getRequestDetails().getVersionNumber());
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(versionNumber);
         when(hearingRepository.getStatus(hearingId)).thenReturn(PutHearingStatus.HEARING_REQUESTED.name());
 
-        HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.HEARING_REQUESTED.name());
+        HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.HEARING_REQUESTED.name(),
+                versionNumber);
         when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
         when(hearingRepository.save(hearingEntity)).thenReturn(hearingEntity);
 
         HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
+        logger.info("y version number {}", hearingRequest.getRequestDetails().getVersionNumber());
         // Check that version number has been incremented
         assertEquals((versionNumber + 1), hearingResponse.getVersionNumber());
     }
@@ -1125,16 +1132,18 @@ class HearingManagementServiceTest {
     }
 
     @Test
-    void updateHearingFailsByIncrementingVersionNumberByMoreThan1() {
+    void updateHearingShouldIncrementVersionNumberByMoreThan1() {
         final long hearingId = 2000000000L;
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
 
         updateHearingShouldIncrementVersionNumber(hearingId, hearingRequest);
+        logger.info("version number {}", hearingRequest.getRequestDetails().getVersionNumber());
         updateHearingShouldIncrementVersionNumber(hearingId, hearingRequest);
+        logger.info("version number {}", hearingRequest.getRequestDetails().getVersionNumber());
 
         // Check that version number has NOT been incremented by 1
-        assertNotEquals((versionNumber + 1), hearingRequest.getRequestDetails().getVersionNumber());
+        assertEquals((versionNumber + 2), hearingRequest.getRequestDetails().getVersionNumber());
     }
 
     @Test
@@ -1148,7 +1157,7 @@ class HearingManagementServiceTest {
         assertThrows(BadRequestException.class, () -> hearingManagementService.updateHearingRequest(
             2000000000L, hearingRequest));
         // Check that version number remains the same
-        // assertEquals(versionNumber, hearingRequest.getRequestDetails().getVersionNumber());
+        assertEquals(versionNumber, hearingRequest.getRequestDetails().getVersionNumber());
     }
 
     @Test
@@ -1323,14 +1332,14 @@ class HearingManagementServiceTest {
      * @param status status
      * @return hearingEntity Hearing Entity
      */
-    private HearingEntity generateHearingEntity(Long hearingId, String status) {
+    private HearingEntity generateHearingEntity(Long hearingId, String status, Integer versionNumber) {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(hearingId);
         hearingEntity.setStatus(status);
 
         CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         caseHearingRequestEntity.setHearingRequestReceivedDateTime(LocalDateTime.now());
-        caseHearingRequestEntity.setVersionNumber(1);
+        caseHearingRequestEntity.setVersionNumber(versionNumber);
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
         return hearingEntity;
     }
