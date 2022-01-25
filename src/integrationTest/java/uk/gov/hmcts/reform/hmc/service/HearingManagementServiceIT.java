@@ -310,9 +310,14 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     void testGetHearings_WithValidCaseRefAndStatus_assertPart2(GetHearingsResponse response) {
-        assertEquals("9372710950276234", response.getCaseRef());
-        assertNull(response.getHmctsServiceId());
-        assertEquals(0, response.getCaseHearings().size());
+        assertEquals("party3-1", response.getCaseHearings().get(0)
+                .getHearingDaySchedule().get(0).getAttendees().get(0).getPartyId());
+        assertEquals("party1-1", response.getCaseHearings().get(1)
+                .getHearingDaySchedule().get(0).getAttendees().get(0).getPartyId());
+        assertEquals("subChannel3-1", response.getCaseHearings().get(0)
+                .getHearingDaySchedule().get(0).getAttendees().get(0).getHearingSubChannel());
+        assertEquals("subChannel1-2", response.getCaseHearings().get(1)
+                .getHearingDaySchedule().get(0).getAttendees().get(1).getHearingSubChannel());
     }
 
     @Test
