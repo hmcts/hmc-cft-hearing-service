@@ -579,6 +579,8 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.updateHearingRequest())))
             .andExpect(status().is(201))
+            .andExpect(jsonPath("$.hearingRequestID").value("2000000000"))
+            .andExpect(jsonPath("$.timeStamp").value(IsNull.notNullValue()))
             .andReturn();
     }
 

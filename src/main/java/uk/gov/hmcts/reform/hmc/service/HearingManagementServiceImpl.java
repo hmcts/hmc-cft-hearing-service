@@ -121,7 +121,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateHearingStatusForUpdate(hearingId);
 
         // TODO: What's the next Status?!
-        HearingEntity savedEntity = updateHearingStatusAndVersionNumber(hearingId, null, hearingRequest);
+        HearingEntity savedEntity = updateHearingStatusAndVersionNumber(hearingId, null);
         return getSaveHearingResponseDetails(savedEntity);
     }
 
@@ -297,38 +297,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateDeleteHearingStatus(hearingId);
         updateCancellationReasons(hearingId, deleteRequest.getCancellationReasonCode());
         HearingEntity savedEntity = updateHearingStatusAndVersionNumber(
-                hearingId, CANCELLATION_REQUESTED, deleteRequest);
+                hearingId, CANCELLATION_REQUESTED);
         return getSaveHearingResponseDetails(savedEntity);
-    }
-
-    /**
-     * updateHearingStatusAndVersionNumber for UpdateHearingRequest.
-     * @param hearingId hearing Id
-     * @param newStatus new Status
-     * @param hearingRequest UpdateHearingRequest
-     * @return hearingEntity HearingEntity
-     */
-    private HearingEntity updateHearingStatusAndVersionNumber(Long hearingId, String newStatus,
-                                                              UpdateHearingRequest hearingRequest) {
-        HearingEntity hearingEntity = updateHearingStatusAndVersionNumber(hearingId, newStatus);
-        // Synchronise version number in request with update/not
-        hearingRequest.getRequestDetails().setVersionNumber(hearingEntity.getCaseHearingRequest().getVersionNumber());
-        return hearingEntity;
-    }
-
-    /**
-     * updateHearingStatusAndVersionNumber for DeleteHearingRequest.
-     * @param hearingId hearing Id
-     * @param newStatus new Status
-     * @param hearingRequest DeleteHearingRequest
-     * @return hearingEntity HearingEntity
-     */
-    private HearingEntity updateHearingStatusAndVersionNumber(Long hearingId, String newStatus,
-                                                              DeleteHearingRequest hearingRequest) {
-        HearingEntity hearingEntity = updateHearingStatusAndVersionNumber(hearingId, newStatus);
-        // Synchronise version number in request with update/not
-        hearingRequest.setVersionNumber(hearingEntity.getCaseHearingRequest().getVersionNumber());
-        return hearingEntity;
     }
 
     private HearingEntity updateHearingStatusAndVersionNumber(Long hearingId, String newStatus) {

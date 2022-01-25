@@ -779,6 +779,7 @@ class HearingManagementServiceTest {
     void deleteHearingRequestShouldPassWithValidStatus() {
         final long hearingId = 2000000000L;
         HearingEntity hearingEntity = generateHearingEntity(hearingId, DeleteHearingStatus.UPDATE_REQUESTED.name(), 1);
+        final int versionNumber = hearingEntity.getCaseHearingRequest().getVersionNumber();
         when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(1);
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(hearingRepository.getStatus(hearingId)).thenReturn("UPDATE_SUBMITTED");
@@ -787,6 +788,7 @@ class HearingManagementServiceTest {
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
                 hearingId, TestingUtil.deleteHearingRequest());
         assertEquals(CANCELLATION_REQUESTED, hearingResponse.getStatus());
+        assertEquals(versionNumber + 1, hearingResponse.getVersionNumber());
         verify(hearingRepository).existsById(hearingId);
         verify(caseHearingRequestRepository).getVersionNumber(hearingId);
     }
@@ -803,6 +805,7 @@ class HearingManagementServiceTest {
         Exception exception = assertThrows(BadRequestException.class, () ->
             hearingManagementService.deleteHearingRequest(hearingId, deleteHearingRequest));
         assertEquals(INVALID_DELETE_HEARING_STATUS, exception.getMessage());
+//        assertEquals(versionNumber, hearingResponse.getVersionNumber());
         verify(hearingRepository).existsById(hearingId);
         verify(caseHearingRequestRepository).getVersionNumber(hearingId);
     }
@@ -1095,17 +1098,6 @@ class HearingManagementServiceTest {
         assertEquals((versionNumber + 1), hearingResponse.getVersionNumber());
     }
 
-    @Test
-    void deleteHearingValidationFailureShouldNotIncrementVersionNumber() {
-        DeleteHearingRequest hearingRequest = TestingUtil.deleteHearingRequest();
-        final int versionNumber = hearingRequest.getVersionNumber();
-        // Expect validation error for null hearing id
-        assertThrows(BadRequestException.class, () -> hearingManagementService.deleteHearingRequest(
-            null, hearingRequest));
-        // Check that version number remains the same
-        assertEquals(versionNumber, hearingRequest.getVersionNumber());
-    }
-
     void updateHearingShouldIncrementVersionNumber(Long hearingId, UpdateHearingRequest hearingRequest) {
         final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
         logger.info("x version number {}", hearingRequest.getRequestDetails().getVersionNumber());
@@ -1144,20 +1136,6 @@ class HearingManagementServiceTest {
 
         // Check that version number has NOT been incremented by 1
         assertEquals((versionNumber + 2), hearingRequest.getRequestDetails().getVersionNumber());
-    }
-
-    @Test
-    void updateHearingValidationFailureShouldNotIncrementVersionNumber() {
-        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
-        final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
-        // Expect validation error for invalid hearing window
-        hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
-        hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
-        hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
-        assertThrows(BadRequestException.class, () -> hearingManagementService.updateHearingRequest(
-            2000000000L, hearingRequest));
-        // Check that version number remains the same
-        assertEquals(versionNumber, hearingRequest.getRequestDetails().getVersionNumber());
     }
 
     @Test
