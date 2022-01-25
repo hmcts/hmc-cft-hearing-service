@@ -46,11 +46,13 @@ public class GetHearingsResponseMapper {
 
         for (HearingResponseEntity hearingResponseEntity : hearingResponses) {
             List<HearingDayDetailsEntity> hearingDayDetailEntities = hearingResponseEntity.getHearingDayDetails();
-            for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
-                HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
-                setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
-                setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
-                scheduleList.add(hearingDaySchedule);
+            if (!hearingDayDetailEntities.isEmpty()) {
+                for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
+                    HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
+                    setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
+                    setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
+                    scheduleList.add(hearingDaySchedule);
+                }
             }
             caseHearing.setHearingDaySchedule(scheduleList);
             caseHearingList.add(caseHearing);

@@ -341,6 +341,7 @@ public class TestingUtil {
     public static HearingDayPanelEntity hearingDayPanelEntities() {
         HearingDayPanelEntity entity = new HearingDayPanelEntity();
         entity.setPanelUserId("PanelUser1");
+        entity.setIsPresiding(false);
         return entity;
     }
 
