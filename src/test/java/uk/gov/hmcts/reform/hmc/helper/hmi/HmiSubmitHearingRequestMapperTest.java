@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiCaseDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 
@@ -109,9 +108,8 @@ class HmiSubmitHearingRequestMapperTest {
         assertEquals(expectedHmiSubmitHearingRequest, actualHmiSubmitHearingRequest);
     }
 
-
     @Test
-    void shouldReturnSubmitDeleteHearingRequestForDeleteHearingRequest() {
+    void shouldReturnHmiDeleteHearingRequestForDeleteHearingRequest() {
         DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
         deleteHearingRequest.setCancellationReasonCode("AMADEUPONE");
         deleteHearingRequest.setVersionNumber(23);
@@ -119,18 +117,14 @@ class HmiSubmitHearingRequestMapperTest {
         CancellationReason cancellationReason = new CancellationReason();
         cancellationReason.setCancellationReasonCode(deleteHearingRequest.getCancellationReasonCode());
 
-        HmiDeleteHearingRequest hmiDeleteHearingRequest = HmiDeleteHearingRequest.builder()
+        HmiDeleteHearingRequest expectedHmiDeleteHearingRequest = HmiDeleteHearingRequest.builder()
                 .cancellationReason(cancellationReason)
                 .build();
 
-        HmiSubmitDeleteHearingRequest expectedHmiSubmitDeleteHearingRequest =
-                HmiSubmitDeleteHearingRequest.builder()
-                .hearingRequest(hmiDeleteHearingRequest)
-                .build();
-        HmiSubmitDeleteHearingRequest actualHmiSubmitDeleteHearingRequest =
+        HmiDeleteHearingRequest actualHmiSubmitDeleteHearingRequest =
                 hmiSubmitHearingRequestMapper
                 .mapRequest(deleteHearingRequest);
-        assertEquals(expectedHmiSubmitDeleteHearingRequest, actualHmiSubmitDeleteHearingRequest);
+        assertEquals(expectedHmiDeleteHearingRequest, actualHmiSubmitDeleteHearingRequest);
     }
 
 }

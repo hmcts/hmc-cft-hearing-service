@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitDeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
@@ -377,7 +377,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
 
     @Override
-    public HmiSubmitDeleteHearingRequest test(DeleteHearingRequest hearingRequest) {
+    public HmiDeleteHearingRequest test(DeleteHearingRequest hearingRequest) {
         return hmiSubmitHearingRequestMapper.mapRequest(hearingRequest);
     }
 }

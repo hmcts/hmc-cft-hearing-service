@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.CancellationReason;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 
 @Component
@@ -49,16 +48,12 @@ public class HmiSubmitHearingRequestMapper {
     /**
      * map Delete hearing Request to HMI Submit Delete Hearing Request.
      * @param hearingRequest delete hearing request
-     * @return hmiSubmitDeleteHearingRequest HMI Submit Delete Hearing request object
+     * @return hmiDeleteHearingRequest HMI Delete Hearing request object
      */
-    public HmiSubmitDeleteHearingRequest mapRequest(DeleteHearingRequest hearingRequest) {
+    public HmiDeleteHearingRequest mapRequest(DeleteHearingRequest hearingRequest) {
 
-        HmiDeleteHearingRequest hmiDeleteHearingRequest = HmiDeleteHearingRequest.builder()
+        return HmiDeleteHearingRequest.builder()
                 .cancellationReason(new CancellationReason(hearingRequest.getCancellationReasonCode()))
-                .build();
-
-        return HmiSubmitDeleteHearingRequest.builder()
-                .hearingRequest(hmiDeleteHearingRequest)
                 .build();
     }
 

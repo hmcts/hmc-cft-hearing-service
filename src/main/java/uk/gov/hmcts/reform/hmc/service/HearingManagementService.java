@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitDeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
 
 public interface HearingManagementService {
 
@@ -26,5 +26,5 @@ public interface HearingManagementService {
 
     void sendRequestToHmi(DeleteHearingRequest hearingRequest);
 
-    HmiSubmitDeleteHearingRequest test(DeleteHearingRequest hearingRequest);
+    HmiDeleteHearingRequest test(DeleteHearingRequest hearingRequest);
 }
