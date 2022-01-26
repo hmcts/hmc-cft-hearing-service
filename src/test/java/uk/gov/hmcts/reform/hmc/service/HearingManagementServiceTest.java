@@ -173,11 +173,19 @@ class HearingManagementServiceTest {
     }
 
     @Test
+    void shouldFailIfNullCreateHearingRequest() {
+        CreateHearingRequest createHearingRequest = null;
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .saveHearingRequest(createHearingRequest));
+        assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
+    }
+
+    @Test
     void shouldFailAsDetailsNotPresent() {
         CreateHearingRequest createHearingRequest = new CreateHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .saveHearingRequest(createHearingRequest));
-        assertEquals("Invalid details", exception.getMessage());
+        assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
     }
 
     @Test
@@ -269,7 +277,7 @@ class HearingManagementServiceTest {
     }
 
     @Test
-    void shouldFailWithParty_Details_InValid_Dow_details_Present() {
+    void shouldFailWithParty_Details_Invalid_Dow_details_Present() {
         CreateHearingRequest createHearingRequest = new CreateHearingRequest();
         createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
@@ -285,7 +293,7 @@ class HearingManagementServiceTest {
     }
 
     @Test
-    void shouldFailWithParty_Details_InValid_UnavailabilityRange_details_Present() {
+    void shouldFailWithParty_Details_Invalid_UnavailabilityRange_details_Present() {
         CreateHearingRequest createHearingRequest = new CreateHearingRequest();
         createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
@@ -301,6 +309,23 @@ class HearingManagementServiceTest {
 
     }
 
+    @Test
+    void shouldFailWithParty_Details_Invalid_UnavailabilityDow_details_Present() {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        List<PartyDetails> partyDetails = TestingUtil.partyDetails();
+        partyDetails.get(0).setIndividualDetails(TestingUtil.individualDetails());
+        List<UnavailabilityDow> lstUnavailabilityDow = new ArrayList<>();
+        partyDetails.get(0).setUnavailabilityDow(lstUnavailabilityDow);
+        createHearingRequest.setPartyDetails(partyDetails);
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .saveHearingRequest(createHearingRequest));
+        assertEquals(INVALID_UNAVAILABILITY_DOW_DETAILS, exception.getMessage());
+
+    }
     @Test
     void shouldVerifyAccessWhenRoleAssignmentValidAndMatchesCaseJurisdictionAndCaseTypeId() {
         RoleAssignmentAttributes roleAssignmentAttributes = RoleAssignmentAttributes.builder()
