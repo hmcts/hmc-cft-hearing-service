@@ -324,8 +324,8 @@ class HearingManagementServiceTest {
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(createHearingRequest));
         assertEquals(INVALID_UNAVAILABILITY_DOW_DETAILS, exception.getMessage());
-
     }
+
     @Test
     void shouldVerifyAccessWhenRoleAssignmentValidAndMatchesCaseJurisdictionAndCaseTypeId() {
         RoleAssignmentAttributes roleAssignmentAttributes = RoleAssignmentAttributes.builder()
