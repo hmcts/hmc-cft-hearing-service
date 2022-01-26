@@ -805,7 +805,6 @@ class HearingManagementServiceTest {
         Exception exception = assertThrows(BadRequestException.class, () ->
             hearingManagementService.deleteHearingRequest(hearingId, deleteHearingRequest));
         assertEquals(INVALID_DELETE_HEARING_STATUS, exception.getMessage());
-//        assertEquals(versionNumber, hearingResponse.getVersionNumber());
         verify(hearingRepository).existsById(hearingId);
         verify(caseHearingRequestRepository).getVersionNumber(hearingId);
     }
