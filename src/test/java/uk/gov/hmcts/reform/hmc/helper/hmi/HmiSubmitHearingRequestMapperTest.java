@@ -7,14 +7,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.CancellationReason;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiCaseDetails;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
@@ -106,25 +103,6 @@ class HmiSubmitHearingRequestMapperTest {
         HmiSubmitHearingRequest actualHmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
             .mapRequest(HEARING_ID, updateHearingRequest);
         assertEquals(expectedHmiSubmitHearingRequest, actualHmiSubmitHearingRequest);
-    }
-
-    @Test
-    void shouldReturnHmiDeleteHearingRequestForDeleteHearingRequest() {
-        DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
-        deleteHearingRequest.setCancellationReasonCode("AMADEUPONE");
-        deleteHearingRequest.setVersionNumber(23);
-
-        CancellationReason cancellationReason = new CancellationReason();
-        cancellationReason.setCancellationReasonCode(deleteHearingRequest.getCancellationReasonCode());
-
-        HmiDeleteHearingRequest expectedHmiDeleteHearingRequest = HmiDeleteHearingRequest.builder()
-                .cancellationReason(cancellationReason)
-                .build();
-
-        HmiDeleteHearingRequest actualHmiSubmitDeleteHearingRequest =
-                hmiSubmitHearingRequestMapper
-                .mapRequest(deleteHearingRequest);
-        assertEquals(expectedHmiDeleteHearingRequest, actualHmiSubmitDeleteHearingRequest);
     }
 
 }

@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
@@ -105,6 +106,9 @@ class HearingManagementServiceTest {
     HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
 
     @Mock
+    HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
+
+    @Mock
     CancellationReasonsRepository cancellationReasonsRepository;
 
     @BeforeEach
@@ -119,6 +123,7 @@ class HearingManagementServiceTest {
                 hearingMapper,
                 caseHearingRequestRepository,
                 hmiSubmitHearingRequestMapper,
+                hmiDeleteHearingRequestMapper,
                 getHearingsResponseMapper,
                 cancellationReasonsRepository
                 );
@@ -781,8 +786,9 @@ class HearingManagementServiceTest {
         when(caseHearingRequestRepository.getVersionNumber(2000000000L)).thenReturn(1);
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         when(hearingRepository.getStatus(2000000000L)).thenReturn("UPDATE_NOT_SUBMITTED");
+        DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.deleteHearingRequest(2000000000L, TestingUtil.deleteHearingRequest());
+            hearingManagementService.deleteHearingRequest(2000000000L, deleteHearingRequest);
         });
         assertEquals(INVALID_DELETE_HEARING_STATUS, exception.getMessage());
     }

@@ -2,10 +2,7 @@ package uk.gov.hmcts.reform.hmc.helper.hmi;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.CancellationReason;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 
@@ -43,18 +40,6 @@ public class HmiSubmitHearingRequestMapper {
         return HmiSubmitHearingRequest.builder()
             .hearingRequest(hmiHearingRequest)
             .build();
-    }
-
-    /**
-     * map Delete hearing Request to HMI Submit Delete Hearing Request.
-     * @param hearingRequest delete hearing request
-     * @return hmiDeleteHearingRequest HMI Delete Hearing request object
-     */
-    public HmiDeleteHearingRequest mapRequest(DeleteHearingRequest hearingRequest) {
-
-        return HmiDeleteHearingRequest.builder()
-                .cancellationReason(new CancellationReason(hearingRequest.getCancellationReasonCode()))
-                .build();
     }
 
 }
