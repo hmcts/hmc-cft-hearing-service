@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
@@ -124,6 +125,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     public void sendRequestToHmi(Long hearingId, HearingRequest hearingRequest) {
         hmiSubmitHearingRequestMapper.mapRequest(hearingId, hearingRequest);
+    }
+
+    @Override
+    public void sendRequestToHmi(DeleteHearingRequest hearingRequest) {
+        hmiSubmitHearingRequestMapper.mapRequest(hearingRequest);
     }
 
     private void validateHearingStatusForUpdate(Long hearingId) {
@@ -366,5 +372,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             || hearingIdStr.charAt(0) != '2') {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
         }
+    }
+
+
+
+    @Override
+    public HmiSubmitDeleteHearingRequest test(DeleteHearingRequest hearingRequest) {
+        return hmiSubmitHearingRequestMapper.mapRequest(hearingRequest);
     }
 }
