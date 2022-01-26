@@ -21,12 +21,6 @@ public class HmiSubmitHearingRequestMapper {
         this.listingMapper = listingMapper;
     }
 
-    /**
-     * map hearing Request to HMI Submit Hearing Request.
-     * @param hearingId haring id
-     * @param hearingRequest hearing request
-     * @return hmiSubmitHearingRequest HMI Submit Hearing request object
-     */
     public HmiSubmitHearingRequest mapRequest(Long hearingId, HearingRequest hearingRequest) {
         EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest.getPartyDetails());
 
