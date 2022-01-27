@@ -24,13 +24,11 @@ import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.UpdateRequestDetails;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
-import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -215,25 +213,6 @@ class HearingManagementControllerTest {
         orderVerifier.verify(hearingManagementService).updateHearingRequest(hearingId, hearingRequest);
         orderVerifier.verify(hearingManagementService).sendRequestToHmi(hearingId, hearingRequest);
         verifyNoMoreInteractions(hearingManagementService);
-    }
-
-    @Test
-    void shouldReturn200_whenTestisRun() {
-        final long hearingId = 2000000000L;
-        HearingResponse response = new HearingResponse();
-        response.setVersionNumber(1);
-        response.setTimeStamp(LocalDateTime.now());
-        response.setStatus("AMADEUPSTATUS");
-        response.setHearingRequestId(hearingId);
-
-        DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
-        request.setVersionNumber(2);
-        request.setCancellationReasonCode("XCODE");
-        when(hearingManagementService.deleteHearingRequest(hearingId, request)).thenReturn(response);
-
-        HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        HmiDeleteHearingRequest hmiDeleteHearingRequest = controller.test(request, hearingId);
-        verify(hearingManagementService, times(1)).test(any());
     }
 
     /**
