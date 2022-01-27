@@ -148,4 +148,7 @@ public class CaseHearingRequestEntity {
     @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<PanelUserRequirementsEntity> panelUserRequirements;
 
+    @OneToOne(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private CancellationReasonsEntity cancellationReason;
+
 }

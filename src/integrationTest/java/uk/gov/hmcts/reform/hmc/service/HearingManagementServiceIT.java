@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
@@ -134,7 +135,11 @@ class HearingManagementServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testDeleteHearingRequest_WithAllMandatoryFields() {
         DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
-        hearingManagementService.deleteHearingRequest(2000000000L, request);
+        HearingResponse response = hearingManagementService.deleteHearingRequest(2000000000L, request);
+        assertEquals(VERSION_NUMBER,response.getVersionNumber());
+        assertEquals(CANCELLATION_REQUESTED, response.getStatus());
+        assertNotNull(response.getHearingRequestId());
+        assertNotNull(response.getTimeStamp());
     }
 
     @Test
