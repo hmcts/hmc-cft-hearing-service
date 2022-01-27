@@ -172,7 +172,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validateHearingRequest(CreateHearingRequest createHearingRequest) {
-        validateHearingRequestDetails(createHearingRequest);
         validateHearingDetails(createHearingRequest.getHearingDetails());
         if (createHearingRequest.getPartyDetails() != null) {
             validatePartyDetails(createHearingRequest.getPartyDetails());
@@ -180,7 +179,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validateHearingRequest(UpdateHearingRequest hearingRequest) {
-        validateHearingRequestDetails(hearingRequest);
         validateHearingDetails(hearingRequest.getHearingDetails());
         if (hearingRequest.getPartyDetails() != null) {
             validatePartyDetails(hearingRequest.getPartyDetails());
@@ -204,22 +202,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                 && partyDetail.getIndividualDetails().getRelatedParties().isEmpty())) {
                 throw new BadRequestException(INVALID_RELATED_PARTY_DETAILS);
             }
-        }
-    }
-
-    private void validateHearingRequestDetails(CreateHearingRequest createHearingRequest) {
-        if (createHearingRequest.getRequestDetails() == null
-            && createHearingRequest.getHearingDetails() == null
-            && createHearingRequest.getCaseDetails() == null) {
-            throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
-        }
-    }
-
-    private void validateHearingRequestDetails(UpdateHearingRequest hearingRequest) {
-        if (hearingRequest.getRequestDetails() == null
-            && hearingRequest.getHearingDetails() == null
-            && hearingRequest.getCaseDetails() == null) {
-            throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
     }
 

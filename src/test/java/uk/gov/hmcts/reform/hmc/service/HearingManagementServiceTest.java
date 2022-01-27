@@ -60,7 +60,6 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
@@ -165,14 +164,6 @@ class HearingManagementServiceTest {
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .saveHearingRequest(createHearingRequest));
         assertEquals("Hearing window details are required", exception.getMessage());
-    }
-
-    @Test
-    void shouldFailAsDetailsNotPresent() {
-        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
-        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-            .saveHearingRequest(createHearingRequest));
-        assertEquals("Invalid details", exception.getMessage());
     }
 
     @Test
@@ -869,14 +860,6 @@ class HearingManagementServiceTest {
         hearingManagementService.updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest());
         verify(hearingRepository).existsById(2000000000L);
         verify(caseHearingRequestRepository).getVersionNumber(2000000000L);
-    }
-
-    @Test
-    void updateHearingRequestShouldThrowErrorWhenHearingRequestDetailsNull() {
-        UpdateHearingRequest request = new UpdateHearingRequest();
-        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-            .updateHearingRequest(2000000000L, request));
-        assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
     }
 
     @Test
