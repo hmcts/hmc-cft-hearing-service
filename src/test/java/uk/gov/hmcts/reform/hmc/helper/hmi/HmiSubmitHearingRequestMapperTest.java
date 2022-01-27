@@ -104,4 +104,5 @@ class HmiSubmitHearingRequestMapperTest {
             .mapRequest(HEARING_ID, updateHearingRequest);
         assertEquals(expectedHmiSubmitHearingRequest, actualHmiSubmitHearingRequest);
     }
+
 }
