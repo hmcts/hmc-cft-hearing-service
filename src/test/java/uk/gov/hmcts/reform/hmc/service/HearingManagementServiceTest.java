@@ -1097,9 +1097,11 @@ class HearingManagementServiceTest {
         assertEquals((versionNumber + 1), hearingResponse.getVersionNumber());
     }
 
-    void updateHearingShouldIncrementVersionNumber(Long hearingId, UpdateHearingRequest hearingRequest) {
+    @Test
+    void updateHearingShouldIncrementVersionNumberBy1() {
+        final long hearingId = 2000000000L;
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
-        logger.info("x version number {}", hearingRequest.getRequestDetails().getVersionNumber());
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(versionNumber);
         when(hearingRepository.getStatus(hearingId)).thenReturn(PutHearingStatus.HEARING_REQUESTED.name());
@@ -1110,31 +1112,8 @@ class HearingManagementServiceTest {
         when(hearingRepository.save(hearingEntity)).thenReturn(hearingEntity);
 
         HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
-        logger.info("y version number {}", hearingRequest.getRequestDetails().getVersionNumber());
         // Check that version number has been incremented
         assertEquals((versionNumber + 1), hearingResponse.getVersionNumber());
-    }
-
-    @Test
-    void updateHearingShouldIncrementVersionNumberBy1() {
-        final long hearingId = 2000000000L;
-        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
-        updateHearingShouldIncrementVersionNumber(hearingId, hearingRequest);
-    }
-
-    @Test
-    void updateHearingShouldIncrementVersionNumberByMoreThan1() {
-        final long hearingId = 2000000000L;
-        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
-        final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
-
-        updateHearingShouldIncrementVersionNumber(hearingId, hearingRequest);
-        logger.info("version number {}", hearingRequest.getRequestDetails().getVersionNumber());
-        updateHearingShouldIncrementVersionNumber(hearingId, hearingRequest);
-        logger.info("version number {}", hearingRequest.getRequestDetails().getVersionNumber());
-
-        // Check that version number has NOT been incremented by 1
-        assertEquals((versionNumber + 2), hearingRequest.getRequestDetails().getVersionNumber());
     }
 
     @Test
