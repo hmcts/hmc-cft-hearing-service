@@ -228,6 +228,22 @@ public class TestingUtil {
         return request;
     }
 
+    public static HearingEntity deleteHearingEntity() {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(1L);
+        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity());
+        hearingEntity.setStatus(CANCELLATION_REQUESTED);
+        return hearingEntity;
+    }
+
+    public static HearingResponse deleteHearingResponse() {
+        HearingResponse response = new HearingResponse();
+        response.setHearingRequestId(1L);
+        response.setTimeStamp(LocalDateTime.now());
+        response.setStatus(CANCELLATION_REQUESTED);
+        response.setVersionNumber(1);
+        return response;
+    }
 
     public static GetHearingsResponse getHearingsResponseWhenDataIsPresent(String caseRef) {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
@@ -338,24 +354,6 @@ public class TestingUtil {
         entity.setHearingAttendeeDetails(Arrays.asList(hearingAttendeeDetailsEntity()));
         entity.setHearingDayPanel(Arrays.asList(hearingDayPanelEntities()));
         return entity;
-    }
-
-    public static HearingEntity deleteHearingEntity() {
-        HearingEntity hearingEntity = new HearingEntity();
-        hearingEntity.setId(1L);
-        hearingEntity.setStatus(CANCELLATION_REQUESTED);
-        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
-        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
-        return hearingEntity;
-    }
-
-    public static HearingResponse deleteHearingResponse() {
-        HearingResponse response = new HearingResponse();
-        response.setHearingRequestId(1L);
-        response.setTimeStamp(LocalDateTime.now());
-        response.setStatus(CANCELLATION_REQUESTED);
-        response.setVersionNumber(1);
-        return response;
     }
 
     public static HearingDayPanelEntity hearingDayPanelEntities() {

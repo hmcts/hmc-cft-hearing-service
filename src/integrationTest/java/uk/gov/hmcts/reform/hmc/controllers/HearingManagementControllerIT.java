@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
@@ -148,7 +149,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private String url = "/hearing";
+    private static final String url = "/hearing";
     public static final String USER_ID = "e8275d41-7f22-4ee7-8ed3-14644d6db096";
     public static final String JURISDICTION = "Jurisdiction1";
     public static final String CASE_TYPE = "CaseType1";
@@ -460,14 +461,15 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn200_WhenDeleteHearingIdIsInValid() throws Exception {
+        DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
         mockMvc.perform(delete(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(TestingUtil.deleteHearingRequest())))
+                            .content(objectMapper.writeValueAsString(deleteHearingRequest)))
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.hearingRequestID").value("2000000000"))
             .andExpect(jsonPath("$.status").value(CANCELLATION_REQUESTED))
             .andExpect(jsonPath("$.versionNumber").value(
-                TestingUtil.deleteHearingRequest().getVersionNumber()))
+                deleteHearingRequest.getVersionNumber() + 1))
             .andExpect(jsonPath("$.timeStamp").value(IsNull.notNullValue()))
             .andReturn();
     }
@@ -577,6 +579,8 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.updateHearingRequest())))
             .andExpect(status().is(201))
+            .andExpect(jsonPath("$.hearingRequestID").value("2000000000"))
+            .andExpect(jsonPath("$.timeStamp").value(IsNull.notNullValue()))
             .andReturn();
     }
 

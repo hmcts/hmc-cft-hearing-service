@@ -24,4 +24,5 @@ public abstract class HearingRequest {
 
     @Valid
     private List<PartyDetails> partyDetails;
+
 }
