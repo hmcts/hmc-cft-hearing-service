@@ -1170,7 +1170,7 @@ class HearingManagementServiceTest {
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
         createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(1L, createHearingRequest);
         verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
                                                                    createHearingRequest);
     }
@@ -1182,7 +1182,7 @@ class HearingManagementServiceTest {
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(1L, createHearingRequest);
         verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
                                                                    createHearingRequest);
     }
@@ -1197,7 +1197,7 @@ class HearingManagementServiceTest {
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(1L, createHearingRequest);
         verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
                                                                    createHearingRequest);
     }
@@ -1212,7 +1212,7 @@ class HearingManagementServiceTest {
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
         createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
-        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(1L, createHearingRequest);
         verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
                                                                    createHearingRequest);
     }
@@ -1228,7 +1228,7 @@ class HearingManagementServiceTest {
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil
                                                                                .individualWithoutRelatedPartyDetails());
         createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
-        hearingManagementService.sendRequestToHmi(1L, createHearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(1L, createHearingRequest);
         verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,
                                                                    createHearingRequest);
     }
@@ -1239,7 +1239,7 @@ class HearingManagementServiceTest {
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(1L, hearingRequest);
         verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
     }
 
@@ -1247,7 +1247,7 @@ class HearingManagementServiceTest {
     void shouldSuccessfullyMapToHmiFormatWhenUpdateRequestHasOnlyMandatoryFields() {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(1L, hearingRequest);
         verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
     }
 
@@ -1257,7 +1257,7 @@ class HearingManagementServiceTest {
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(1L, hearingRequest);
         verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
     }
 
@@ -1267,7 +1267,7 @@ class HearingManagementServiceTest {
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
-        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(1L, hearingRequest);
         verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
     }
 
@@ -1278,7 +1278,7 @@ class HearingManagementServiceTest {
         hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil
                                                                          .individualWithoutRelatedPartyDetails());
-        hearingManagementService.sendRequestToHmi(1L, hearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(1L, hearingRequest);
         verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
     }
 

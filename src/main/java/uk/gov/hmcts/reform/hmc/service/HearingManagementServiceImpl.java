@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
@@ -126,8 +127,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public void sendRequestToHmi(Long hearingId, HearingRequest hearingRequest) {
-        hmiSubmitHearingRequestMapper.mapRequest(hearingId, hearingRequest);
+    public void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest) {
+        HmiSubmitHearingRequest hmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
+            .mapRequest(hearingId, hearingRequest);
+
+        sendRequestToQueue(hmiSubmitHearingRequest);
+    }
+
+    private void sendRequestToQueue(HmiSubmitHearingRequest hmiSubmitHearingRequest) {
     }
 
     private void validateHearingStatusForUpdate(Long hearingId) {
