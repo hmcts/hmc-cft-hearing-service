@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiResponses;
 import org.hibernate.validator.constraints.LuhnCheck;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
@@ -43,17 +45,15 @@ public class HearingManagementController {
         this.hearingManagementService = hearingManagementService;
     }
 
-
     @GetMapping(path = "/hearing/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiResponses(value = {
         @ApiResponse(code = 204, message = "Hearing id is valid"),
         @ApiResponse(code = 404, message = "Invalid hearing id")
     })
-    public void getHearing(@PathVariable("id") Long hearingId,
-                           @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {
-
-        hearingManagementService.getHearingRequest(hearingId, isValid);
+    public ResponseEntity getHearing(@PathVariable("id") Long hearingId,
+                                         @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {
+        return hearingManagementService.getHearingRequest(hearingId, isValid);
     }
 
     @PostMapping(path = "/hearing", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -63,7 +63,7 @@ public class HearingManagementController {
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
     public HearingResponse saveHearing(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
-        hearingManagementService.verifyAccess(createHearingRequest.getCaseDetails().getCaseRef());
+      //  hearingManagementService.verifyAccess(createHearingRequest.getCaseDetails().getCaseRef());
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
         hearingManagementService.sendRequestToHmi(hearingResponse.getHearingRequestId(), createHearingRequest);
         return hearingResponse;

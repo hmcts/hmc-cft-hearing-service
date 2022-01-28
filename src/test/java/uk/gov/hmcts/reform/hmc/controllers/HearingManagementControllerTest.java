@@ -90,12 +90,18 @@ class HearingManagementControllerTest {
     }
 
     @Test
-    void shouldReturn200_whenRequestIdIsValid() {
+    void shouldReturn204_whenRequestIdIsValid() {
         doNothing().when(hearingManagementService).getHearingRequest(Mockito.any(), anyBoolean());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);
         controller.getHearing(1234L, true);
         verify(hearingManagementService, times(1)).getHearingRequest(any(), anyBoolean());
+    }
 
+    @Test
+    void shouldReturn200_whenRequestIdIsValid() {
+        HearingManagementController controller = new HearingManagementController(hearingManagementService);
+        controller.getHearing(1234L, false);
+        verify(hearingManagementService, times(1)).getHearingRequest(any(), anyBoolean());
     }
 
     @Test

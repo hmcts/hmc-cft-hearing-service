@@ -171,6 +171,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
+
     @Test
     void shouldReturn404_WhenHearingIdIsInValid() throws Exception {
         mockMvc.perform(get(url + "/12" + "?isValid=true")
@@ -178,6 +179,33 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(status().is(404))
             .andReturn();
     }
+
+    @Test
+    @Sql(GET_HEARINGS_DATA_SCRIPT)
+    void shouldReturn200_WhenHearingExistsInDb() throws Exception {
+        mockMvc.perform(get(url + "/2000000000")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
+            .andReturn();
+    }
+
+
+    @Test
+    void shouldReturn404_WhenHearingIdIsInValidInDbAndParamIsFalse() throws Exception {
+        mockMvc.perform(get(url + "/12" + "?isValid=false")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(404))
+            .andReturn();
+    }
+
+    @Test
+    void shouldReturn404_WhenHearingIdIsInValidInDb() throws Exception {
+        mockMvc.perform(get(url + "/12")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(404))
+            .andReturn();
+    }
+
 
     @Test
     void shouldReturn204_WhenIsValidIsNotProvided() throws Exception {

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
@@ -100,6 +101,9 @@ class HearingManagementServiceTest {
     private GetHearingsResponseMapper getHearingsResponseMapper;
 
     @Mock
+    private GetHearingResponseMapper getHearingResponseMapper;
+
+    @Mock
     HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
 
     @BeforeEach
@@ -114,7 +118,8 @@ class HearingManagementServiceTest {
                 hearingMapper,
                 caseHearingRequestRepository,
                 hmiSubmitHearingRequestMapper,
-                getHearingsResponseMapper
+                getHearingsResponseMapper,
+                getHearingResponseMapper
                 );
     }
 
@@ -144,6 +149,28 @@ class HearingManagementServiceTest {
         when(hearingRepository.existsById(1L)).thenReturn(true);
         hearingManagementService.getHearingRequest(1L, true);
         verify(hearingRepository).existsById(1L);
+    }
+
+    @Test
+    void shouldPassWithValidHearingIdInDb() {
+        HearingEntity hearing = new HearingEntity();
+        hearing.setStatus("RESPONDED");
+        hearing.setId(1L);
+        when(hearingRepository.existsById(1L)).thenReturn(true);
+        when(hearingRepository.findById(1L)).thenReturn(Optional.of(hearing));
+        hearingManagementService.getHearingRequest(1L, false);
+        verify(hearingRepository).existsById(1L);
+    }
+
+    @Test
+    void shouldFailWithInvalidHearingIdForGetHearing() {
+        HearingEntity hearing = new HearingEntity();
+        hearing.setStatus("RESPONDED");
+        hearing.setId(1L);
+
+        Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
+            .getHearingRequest(1L, false));
+        assertEquals("No hearing found for reference: 1", exception.getMessage());
     }
 
     @Test
