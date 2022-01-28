@@ -11,13 +11,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class RequestDetails {
 
-    @NotNull(message = ValidationError.REQUEST_TIMESTAMP_NULL_EMPTY)
     private LocalDateTime requestTimeStamp;
 
-    @NotNull
     private String status;
 
-    @NotNull
     private int versionNumber;
 
     private LocalDateTime partiesNotified;

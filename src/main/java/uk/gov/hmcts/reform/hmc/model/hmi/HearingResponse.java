@@ -13,22 +13,18 @@ import java.time.LocalDateTime;
 public class HearingResponse {
 
     @JsonProperty("listAssistTransactionID")
-    @NotNull
     private Long listAssistTransactionID;
 
     @JsonProperty("laCaseStatus")
-    @NotNull
     private String laCaseStatus;
 
     @JsonProperty("listingStatus")
     private String listingStatus;
 
     @JsonProperty("receivedDateTime")
-    @NotNull
     private LocalDateTime receivedDateTime;
 
     @JsonProperty("responseVersion")
-    @NotNull
     private Long responseVersion;
 
     @JsonProperty("hearingCancellationReason")

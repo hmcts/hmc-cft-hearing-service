@@ -90,12 +90,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     @SuppressWarnings("unchecked")
     public ResponseEntity<Object> getHearingRequest(Long hearingId, boolean isValid) {
-        if (!hearingRepository.existsById(hearingId)) {
+        boolean hearingExists = hearingRepository.existsById(hearingId);
+        if (!hearingExists) {
             throw new HearingNotFoundException(hearingId);
-        } else if (!isValid && hearingRepository.existsById(hearingId)) {
+        } else if (!isValid && hearingExists) {
             return ResponseEntity.ok(getHearingResponseMapper
                                          .toHearingResponse(hearingRepository.findById(hearingId).get()));
-        } else if (isValid && hearingRepository.existsById(hearingId)) {
+        } else if (isValid && hearingExists) {
             return ResponseEntity.noContent().header("Content-Length", "0").build();
         }
         return null;

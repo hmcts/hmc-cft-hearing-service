@@ -6,6 +6,8 @@ import uk.gov.hmcts.reform.hmc.model.*;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 
+import java.util.ArrayList;
+
 @Component
 public class GetHearingResponseMapper {
 
@@ -29,7 +31,6 @@ public class GetHearingResponseMapper {
         hearingResponse.setListingStatus(hearingEntity.getHearingResponses().get(0).getListingStatus());
         //doesn't exist?
        // hearingResponse.setHearingCancellationReason(hearingEntity.getHearingResponses().get(0).getCancellationReasonType);
-
         return hearingResponse;
     }
 
@@ -58,18 +59,27 @@ public class GetHearingResponseMapper {
         return caseDetails;
     }
 
+    @SuppressWarnings("unchecked")
     private HearingDetails setHearingDetails(HearingEntity hearingEntity) {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(hearingEntity.getCaseHearingRequest().getAutoListFlag());
         hearingDetails.setHearingType(hearingEntity.getCaseHearingRequest().getHearingType());
         hearingDetails.setDuration(hearingEntity.getCaseHearingRequest().getRequiredDurationInMinutes());
-        //required list?
-       // hearingDetails.setNonStandardHearingDurationReasons(hearingEntity.getCaseHearingRequest().getNonStandardDurations().get(0).getNonStandardHearingDurationReasonType());
+        ArrayList hearingPriorityType = new ArrayList();
+        for (NonStandardDurationsEntity nonStandardDurationsEntity
+            : hearingEntity.getCaseHearingRequest().getNonStandardDurations()) {
+            hearingPriorityType.add(nonStandardDurationsEntity.getNonStandardHearingDurationReasonType());
+        }
+        hearingDetails.setNonStandardHearingDurationReasons(hearingPriorityType);
         hearingDetails.setHearingPriorityType(hearingEntity.getCaseHearingRequest().getHearingPriorityType());
         hearingDetails.setNumberOfPhysicalAttendees(hearingEntity.getCaseHearingRequest().getNumberOfPhysicalAttendees());
         hearingDetails.setHearingInWelshFlag(hearingEntity.getCaseHearingRequest().getHearingInWelshFlag());
-        //required list?
-        //hearingDetails.setFacilitiesRequired(hearingEntity.getCaseHearingRequest().getRequiredFacilities().get(0).getFacilityType());
+        ArrayList facilityType = new ArrayList();
+        for (RequiredFacilitiesEntity requiredFacilitiesEntity
+            : hearingEntity.getCaseHearingRequest().getRequiredFacilities()) {
+            facilityType.add(requiredFacilitiesEntity.getFacilityType());
+        }
+        hearingDetails.setFacilitiesRequired(facilityType);
         hearingDetails.setListingComments(hearingEntity.getCaseHearingRequest().getListingComments());
         hearingDetails.setHearingRequester(hearingEntity.getCaseHearingRequest().getRequester());
         hearingDetails.setPrivateHearingRequiredFlag(hearingEntity.getCaseHearingRequest().getPrivateHearingRequiredFlag());
