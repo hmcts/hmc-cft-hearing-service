@@ -28,6 +28,9 @@ public class ApplicationParams {
     @Value("${role.assignment.api.host}")
     private String roleAssignmentServiceHost;
 
+    @Value("${jms.servicebus.hmi-queue-name}")
+    private String queueName;
+
     public static String encode(final String stringToEncode) {
         try {
             return URLEncoder.encode(stringToEncode, "UTF-8");

@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
@@ -42,6 +43,7 @@ import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
@@ -114,6 +116,12 @@ class HearingManagementServiceTest {
     @Mock
     HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
 
+    @Mock
+    ObjectMapperService objectMapperService;
+
+    @Mock
+    MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -127,7 +135,9 @@ class HearingManagementServiceTest {
                 caseHearingRequestRepository,
                 cancellationReasonsRepository,
                 hmiSubmitHearingRequestMapper,
-                getHearingsResponseMapper
+                getHearingsResponseMapper,
+                messageSenderToQueueConfiguration,
+                objectMapperService
                 );
     }
 
