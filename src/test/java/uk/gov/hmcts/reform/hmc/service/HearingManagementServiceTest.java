@@ -155,9 +155,9 @@ class HearingManagementServiceTest {
         hearing.setStatus("RESPONDED");
         hearing.setId(1L);
 
-        Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .getHearingRequest(1L, true));
-        assertEquals("No hearing found for reference: 1", exception.getMessage());
+        assertEquals("Invalid hearing Id", exception.getMessage());
     }
 
     @Test
