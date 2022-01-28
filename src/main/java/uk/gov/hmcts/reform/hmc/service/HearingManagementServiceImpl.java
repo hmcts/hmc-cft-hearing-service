@@ -71,13 +71,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final SecurityUtils securityUtils;
     private final HearingRepository hearingRepository;
     private final HearingMapper hearingMapper;
+    private final CancellationReasonsRepository cancellationReasonsRepository;
     private final GetHearingsResponseMapper getHearingsResponseMapper;
     private final CaseHearingRequestRepository caseHearingRequestRepository;
     private final HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
     private final MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
     private final ObjectMapperService objectMapperService;
-    private final CancellationReasonsRepository cancellationReasonsRepository;
-
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -86,22 +85,22 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HearingRepository hearingRepository,
                                         HearingMapper hearingMapper,
                                         CaseHearingRequestRepository caseHearingRequestRepository,
+                                        CancellationReasonsRepository cancellationReasonsRepository,
                                         HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper,
                                         GetHearingsResponseMapper getHearingsResponseMapper,
                                         MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
-                                        ObjectMapperService objectMapperService,
-                                        CancellationReasonsRepository cancellationReasonsRepository) {
+                                        ObjectMapperService objectMapperService) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
         this.hearingRepository = hearingRepository;
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
+        this.cancellationReasonsRepository = cancellationReasonsRepository;
         this.hmiSubmitHearingRequestMapper = hmiSubmitHearingRequestMapper;
         this.getHearingsResponseMapper = getHearingsResponseMapper;
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
-        this.cancellationReasonsRepository = cancellationReasonsRepository;
     }
 
     @Override
@@ -122,11 +121,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public void updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
+    public HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
         validateHearingRequest(hearingRequest);
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
         validateHearingStatusForUpdate(hearingId);
+
+        // TODO: What's the next Status?!
+        HearingEntity savedEntity = updateHearingStatusAndVersionNumber(hearingId, null);
+        return getSaveHearingResponseDetails(savedEntity);
     }
 
     @Override
@@ -300,20 +303,37 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
         validateDeleteHearingStatus(hearingId);
         updateCancellationReasons(hearingId, deleteRequest.getCancellationReasonCode());
-        HearingEntity savedEntity = updateHearingStatus(hearingId);
+        HearingEntity savedEntity = updateHearingStatusAndVersionNumber(
+                hearingId, CANCELLATION_REQUESTED);
         return getSaveHearingResponseDetails(savedEntity);
     }
 
-    private HearingEntity updateHearingStatus(Long hearingId) {
+    private HearingEntity updateHearingStatusAndVersionNumber(Long hearingId, String newStatus) {
+
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
+
         if (hearingResult.isPresent()) {
             final HearingEntity hearingEntity = hearingResult.get();
-            hearingEntity.setStatus(CANCELLATION_REQUESTED);
+            if (null != hearingEntity.getCaseHearingRequest()) {
+                log.info("CHANGING: version number : {}", hearingEntity.getCaseHearingRequest().getVersionNumber());
+                hearingEntity.getCaseHearingRequest().setVersionNumber(
+                        hearingEntity.getCaseHearingRequest().getVersionNumber() + 1);
+                log.info("TO: version number : {}",
+                        hearingEntity.getCaseHearingRequest().getVersionNumber());
+                if (null != newStatus) {
+                    log.info("CHANGING: Hearing status {}", hearingEntity.getStatus());
+                    hearingEntity.setStatus(newStatus);
+                    log.info("TO: Hearing status {}", hearingEntity.getStatus());
+                }
+            } else {
+                log.info("Unable to set status & version number - due to NULL caseHearingRequest!!!");
+            }
             hearingRepository.save(hearingEntity);
             return hearingEntity;
         } else {
             throw new NoSuchElementException();
         }
+
     }
 
     private void updateCancellationReasons(Long hearingId, String cancellationReasonCode) {
