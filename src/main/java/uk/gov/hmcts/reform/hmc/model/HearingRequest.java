@@ -12,11 +12,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class HearingRequest {
-
-    @Valid
-    @NotNull(message = ValidationError.INVALID_REQUEST_DETAILS)
-    private RequestDetails requestDetails;
+public abstract class HearingRequest {
 
     @Valid
     @NotNull(message = ValidationError.INVALID_HEARING_DETAILS)

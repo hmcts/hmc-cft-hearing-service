@@ -10,8 +10,12 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 @Data
 @NoArgsConstructor
@@ -51,5 +55,7 @@ public class CaseHearing {
     @Size(max = 60, message = ValidationError.LIST_ASSIST_CASE_STATUS_MAX_LENGTH)
     private String listAssistCaseStatus;
 
-    private HearingDaySchedule hearingDaySchedule;
+    @NotNull
+    private List<HearingDaySchedule> hearingDaySchedule;
+
 }

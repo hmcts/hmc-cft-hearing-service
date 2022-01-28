@@ -12,6 +12,8 @@ plugins {
   id 'au.com.dius.pact' version '4.1.7'
 }
 
+ext['diuspactproviderVersion'] = '4.2.14'
+
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
@@ -294,6 +296,7 @@ task runProviderPactVerification(type:Test) {
   systemProperty 'pact.verifier.publishResults', System.getProperty('pact.verifier.publishResults')
   systemProperty 'pact.provider.version', project.pactVersion
   include "uk/gov/hmcts/reform/hmc/provider/**"
+  include "uk/gov/hmcts/reform/hmc/controllers/**"
 }
 
 runProviderPactVerification.finalizedBy pactVerify
@@ -347,6 +350,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
+  compile 'net.minidev:json-smart:2.4.7'
 
   testImplementation group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.0.0'
 
@@ -413,10 +417,15 @@ dependencies {
 
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.0.2'
 
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: diuspactproviderVersion
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: diuspactproviderVersion
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: diuspactproviderVersion
+
   integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
+  integrationTestImplementation group: 'net.minidev', name: 'json-smart', version: '2.4.7'
 
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
 

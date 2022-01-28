@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -10,7 +11,10 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -41,7 +45,10 @@ public class HearingDaySchedule {
 
     @NotEmpty(message = ValidationError.HEARING_JUDGE_ID_NULL_EMPTY)
     @Size(max = 60, message = ValidationError.HEARING_JUDGE_ID_MAX_LENGTH)
-    private String hearingJudgeId;
+    private List<String> hearingJudgeId;
 
-    private Attendees attendees;
+    @Valid 
+    @NotNull
+    private List<Attendee> attendees;
+
 }

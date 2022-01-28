@@ -30,10 +30,9 @@
     <cve>CVE-2021-22096</cve>
     <cve>CVE-2021-29425</cve>
   </suppress>
-  <suppress until="2022-01-25">
+  <suppress until="2022-02-25">
     <notes><![CDATA[Temporary suppressions pending investigation]]></notes>
     <cve>CVE-2021-29425</cve>
-    <cve>CVE-2021-27568</cve>
     <cve>CVE-2021-28170</cve>
     <cve>CVE-2021-28163</cve>
     <cve>CVE-2021-28164</cve>
