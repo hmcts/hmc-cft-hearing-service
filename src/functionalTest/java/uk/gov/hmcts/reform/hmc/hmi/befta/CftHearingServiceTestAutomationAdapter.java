@@ -1,14 +1,13 @@
 package uk.gov.hmcts.reform.hmc.hmi.befta;
 
 import uk.gov.hmcts.befta.BeftaTestDataLoader;
-import uk.gov.hmcts.befta.DefaultBeftaTestDataLoader;
-import uk.gov.hmcts.befta.DefaultTestAutomationAdapter;
+import uk.gov.hmcts.befta.TestAutomationAdapter;
 import uk.gov.hmcts.befta.data.UserData;
 import uk.gov.hmcts.befta.player.BackEndFunctionalTestScenarioContext;
 
 import java.util.concurrent.ExecutionException;
 
-public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomationAdapter {
+public class CftHearingServiceTestAutomationAdapter implements TestAutomationAdapter {
 
 
     @Override
@@ -33,9 +32,9 @@ public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomatio
 
     @Override
     public BeftaTestDataLoader getDataLoader() {
-        return new DefaultBeftaTestDataLoader() {
+        return new BeftaTestDataLoader() {
             @Override
-            public void doLoadTestData() {
+            public void loadTestDataIfNecessary() {
 
             }
 
