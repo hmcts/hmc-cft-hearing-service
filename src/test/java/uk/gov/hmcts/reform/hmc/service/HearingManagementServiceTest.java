@@ -66,10 +66,10 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_NULL;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
@@ -169,9 +169,12 @@ class HearingManagementServiceTest {
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        createHearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
-        createHearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
-        createHearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
+        createHearingRequest.getHearingDetails().getHearingWindow().getHearingWindowDateRange()
+                .setHearingWindowStartDateRange(null);
+        createHearingRequest.getHearingDetails().getHearingWindow().getHearingWindowDateRange()
+                .setHearingWindowEndDateRange(null);
+        createHearingRequest.getHearingDetails().getHearingWindow().getHearingWindowFirstDate()
+                .setFirstDateTimeMustBe(null);
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .saveHearingRequest(createHearingRequest));
         assertEquals("Hearing window details are required", exception.getMessage());
@@ -183,7 +186,6 @@ class HearingManagementServiceTest {
             hearingManagementService.saveHearingRequest(null);
         });
         assertEquals("Invalid details", exception.getMessage());
-
     }
 
     @Test
@@ -958,7 +960,7 @@ class HearingManagementServiceTest {
 
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .updateHearingRequest(2000000000L, request));
-        assertEquals(HEARING_WINDOW_NULL, exception.getMessage());
+        assertEquals(INVALID_HEARING_WINDOW, exception.getMessage());
     }
 
     @Test
@@ -1159,7 +1161,7 @@ class HearingManagementServiceTest {
 
     @Test
     void validateHearingRequestDetailsShouldThrowErrorWhenHearingRequestDetailsAreNotPresent() {
-        HearingRequest hearingRequest = new HearingRequest();
+        CreateHearingRequest hearingRequest = new CreateHearingRequest();
         hearingRequest.setRequestDetails(null);
         hearingRequest.setHearingDetails(null);
         hearingRequest.setCaseDetails(null);
@@ -1328,7 +1330,7 @@ class HearingManagementServiceTest {
         assertEquals("12345", response.getCaseRef());
         assertEquals("AB1A", response.getHmctsServiceId());
         assertEquals(1, response.getCaseHearings().size());
-        assertEquals(2000000000L, response.getCaseHearings().get(0).getHearingId());
+        assertEquals("2000000000", response.getCaseHearings().get(0).getHearingId());
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
         assertEquals("venue", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getHearingVenueId());

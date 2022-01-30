@@ -8,6 +8,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.HearingWindowDateRange;
+import uk.gov.hmcts.reform.hmc.model.HearingWindowFirstDate;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
@@ -44,10 +46,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingWithBothHearingWindowFieldsAndRoleType() {
         LocalDateTime localDateTime = LocalDateTime.now();
-        HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setFirstDateTimeMustBe(localDateTime);
-        hearingWindow.setHearingWindowStartDateRange(localDateTime.minusDays(1).toLocalDate());
-        hearingWindow.setHearingWindowEndDateRange(localDateTime.plusDays(1).toLocalDate());
+        HearingWindow hearingWindow = generateHearingWindow(localDateTime);
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingPriorityType(HEARING_PRIORITY_TYPE);
@@ -93,13 +92,24 @@ class ListingMapperTest {
         assertEquals(ROLE_TYPE, listing.getListingJohTiers().get(0));
     }
 
+    private HearingWindow generateHearingWindow(LocalDateTime localDateTime) {
+        HearingWindow hearingWindow = new HearingWindow();
+        HearingWindowFirstDate hearingWindowFirstDate = new HearingWindowFirstDate();
+        hearingWindowFirstDate.setFirstDateTimeMustBe(localDateTime);
+        hearingWindow.setHearingWindowFirstDate(hearingWindowFirstDate);
+        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
+        hearingWindowDateRange.setHearingWindowStartDateRange(localDateTime.minusDays(1).toLocalDate());
+        hearingWindowDateRange.setHearingWindowEndDateRange(localDateTime.plusDays(1).toLocalDate());
+        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
+        return hearingWindow;
+    }
+
     @Test
     void shouldReturnListingWithHearingWindowFieldsAndRoleTypeNull() {
         LocalDateTime localDateTime = LocalDateTime.now();
-        HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setFirstDateTimeMustBe(localDateTime);
-        hearingWindow.setHearingWindowStartDateRange(null);
-        hearingWindow.setHearingWindowEndDateRange(null);
+        HearingWindow hearingWindow = generateHearingWindow(localDateTime);
+        hearingWindow.getHearingWindowDateRange().setHearingWindowStartDateRange(null);
+        hearingWindow.getHearingWindowDateRange().setHearingWindowEndDateRange(null);
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingPriorityType(HEARING_PRIORITY_TYPE);
@@ -147,10 +157,9 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingWithNoRoleTypeWhenEmpty() {
         LocalDateTime localDateTime = LocalDateTime.now();
-        HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setFirstDateTimeMustBe(localDateTime);
-        hearingWindow.setHearingWindowStartDateRange(null);
-        hearingWindow.setHearingWindowEndDateRange(null);
+        HearingWindow hearingWindow = generateHearingWindow(localDateTime);
+        hearingWindow.getHearingWindowDateRange().setHearingWindowStartDateRange(null);
+        hearingWindow.getHearingWindowDateRange().setHearingWindowEndDateRange(null);
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingPriorityType(HEARING_PRIORITY_TYPE);

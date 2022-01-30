@@ -35,11 +35,11 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
     private static final String TEST_HEARIMG_ID = "2000000001";
 
     // Test data 1 - valid HearingRequest
-    HearingRequest validHearingRequest = generateHearingRequest(VALID_CASE_REF);
+    HearingRequest validHearingRequest = generateCreateHearingRequest(VALID_CASE_REF);
     String jsonValidHearingRequest = jsonCreatedHearingResponse(validHearingRequest);
 
     // Test data 2 - invalid HearingRequest
-    HearingRequest invalidHearingRequest = generateInvalidHearingRequest();
+    HearingRequest invalidHearingRequest = generateInvalidCreateHearingRequest();
     String jsonInvalidHearingRequest = jsonCreatedHearingResponse(invalidHearingRequest);
 
     static Map<String, String> headers = Map.of(

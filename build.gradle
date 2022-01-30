@@ -296,7 +296,6 @@ task runProviderPactVerification(type:Test) {
   systemProperty 'pact.verifier.publishResults', System.getProperty('pact.verifier.publishResults')
   systemProperty 'pact.provider.version', project.pactVersion
   include "uk/gov/hmcts/reform/hmc/provider/**"
-  include "uk/gov/hmcts/reform/hmc/controllers/**"
 }
 
 runProviderPactVerification.finalizedBy pactVerify
@@ -416,10 +415,6 @@ dependencies {
   contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.0.2'
-
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: diuspactproviderVersion
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: diuspactproviderVersion
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: diuspactproviderVersion
 
   integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers

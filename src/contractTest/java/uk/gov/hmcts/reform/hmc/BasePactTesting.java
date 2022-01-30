@@ -8,16 +8,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.CaseHearing;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.HearingWindowDateRange;
 import uk.gov.hmcts.reform.hmc.model.HearingWindowFirstDate;
-import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
@@ -27,6 +25,8 @@ import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
+import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.UpdateRequestDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,7 +35,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class BasePactTesting {
 
@@ -61,12 +60,12 @@ public class BasePactTesting {
     private final Random random = new Random();
 
     /**
-     * generate Hearing Request.
+     * generate CreateHearing Request.
      *
-     * @return HearingRequest hearing request
+     * @return CreateHearingRequest hearing request
      */
-    protected HearingRequest generateHearingRequest(String caseRef) {
-        HearingRequest request = new HearingRequest();
+    protected CreateHearingRequest generateCreateHearingRequest(String caseRef) {
+        CreateHearingRequest request = new CreateHearingRequest();
         request.setHearingDetails(hearingDetails());
         request.setCaseDetails(caseDetails(caseRef));
         request.setPartyDetails(partyDetails1());
@@ -75,29 +74,30 @@ public class BasePactTesting {
     }
 
     /**
-     * generate Invalid Hearing Request - omit caseDetails.
+     * generate CreateHearing Request.
      *
-     * @return HearingRequest hearing request
+     * @return CreateHearingRequest hearing request
      */
-    protected HearingRequest generateInvalidHearingRequest() {
-        HearingRequest request = new HearingRequest();
+    protected UpdateHearingRequest generateUpdateHearingRequest(String caseRef) {
+        UpdateHearingRequest request = new UpdateHearingRequest();
         request.setHearingDetails(hearingDetails());
-        request.setPartyDetails(partyDetails2());
-        request.setRequestDetails(requestDetails());
+        request.setCaseDetails(caseDetails(caseRef));
+        request.setPartyDetails(partyDetails1());
+        request.setRequestDetails(updateRequestDetails());
         return request;
     }
 
     /**
-     * generate Hearings Response from Hearing Request.
+     * generate Invalid CreateHearing Request - omit caseDetails.
      *
-     * @return HearingsGetResponse hearings Get Ressponse
+     * @return CreateHearingRequest hearing request
      */
-    protected HearingsGetResponse generateHearingsGetResponse(HearingRequest hearingRequest) {
-        HearingsGetResponse hearingsGetResponse = new HearingsGetResponse();
-        hearingsGetResponse.setCaseRef(hearingRequest.getCaseDetails().getCaseRef());
-        hearingsGetResponse.setHmctsServiceCode(hearingRequest.getCaseDetails().getHmctsServiceCode());
-        hearingsGetResponse.setCaseHearings(createCaseHearings());
-        return hearingsGetResponse;
+    protected CreateHearingRequest generateInvalidCreateHearingRequest() {
+        CreateHearingRequest request = new CreateHearingRequest();
+        request.setHearingDetails(hearingDetails());
+        request.setPartyDetails(partyDetails2());
+        request.setRequestDetails(requestDetails());
+        return request;
     }
 
     /**
@@ -167,6 +167,18 @@ public class BasePactTesting {
     protected RequestDetails requestDetails() {
         RequestDetails requestDetails = new RequestDetails();
         requestDetails.setRequestTimeStamp(LocalDateTime.now());
+        return requestDetails;
+    }
+
+    /**
+     * Create UpdateRequest Details test data.
+     *
+     * @return requestDetails Update Request Details
+     */
+    protected UpdateRequestDetails updateRequestDetails() {
+        UpdateRequestDetails requestDetails = new UpdateRequestDetails();
+        requestDetails.setRequestTimeStamp(LocalDateTime.now());
+        requestDetails.setVersionNumber(1);
         return requestDetails;
     }
 
@@ -452,36 +464,5 @@ public class BasePactTesting {
         listUnavailabilityRanges.add(unavailabilityRanges1);
         listUnavailabilityRanges.add(unavailabilityRanges2);
         return listUnavailabilityRanges;
-    }
-
-    private List<CaseHearing> createCaseHearings() {
-        List<CaseHearing> caseHearings = new ArrayList<>();
-        IntStream.range(1, 4).forEach(i ->
-            caseHearings.add(createCaseHearing(i))
-        );
-        return caseHearings;
-    }
-
-    private CaseHearing createCaseHearing(Integer id) {
-        CaseHearing caseHearing = new CaseHearing();
-        caseHearing.setHearingID("hearing" + id);
-        caseHearing.setHearingRequestDateTime(LocalDateTime.now());
-        caseHearing.setHearingType("hearingType" + id);
-        caseHearing.setHmcStatus("hmcStatus" + id);
-        caseHearing.setLastResponseReceivedDateTime(LocalDateTime.now());
-        caseHearing.setResponseVersion("00" + id);
-        caseHearing.setHearingListingStatus("liststat" + id);
-        caseHearing.setListAssistCaseStatus("status" + id);
-        caseHearing.setHearingDaySchedule(createHearingDaySchedule(id));
-        return caseHearing;
-    }
-
-    private HearingDaySchedule createHearingDaySchedule(Integer id) {
-        HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
-        hearingDaySchedule.setHearingRoomId("room" + id);
-        hearingDaySchedule.setHearingJudgeId("judge" + id);
-        hearingDaySchedule.setHearingStartDateTime(LocalDateTime.now());
-        hearingDaySchedule.setHearingEndDateTime(LocalDateTime.now());
-        return hearingDaySchedule;
     }
 }

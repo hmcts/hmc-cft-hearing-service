@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -40,7 +38,6 @@ import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -50,10 +47,10 @@ import javax.transaction.Transactional;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_NULL;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
@@ -78,9 +75,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final GetHearingsResponseMapper getHearingsResponseMapper;
     private final CaseHearingRequestRepository caseHearingRequestRepository;
     private final HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
-
-
-    private static final Logger logger = LoggerFactory.getLogger(HearingManagementServiceImpl.class);
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -199,6 +193,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
+    public void validateHearingRequest(DeleteHearingRequest hearingRequest) {
+        // TODO: ad validation for Delete hearing Request
+    }
+
     /**
      * validate Get Hearing Request by caseRefId or caseRefId/caseStatus.
      * @param caseRef case Ref
@@ -247,8 +245,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     protected void validateHearingRequestDetails(UpdateHearingRequest hearingRequest) {
         if (hearingRequest.getRequestDetails() == null
-            && hearingRequest.getHearingDetails() == null
-            && hearingRequest.getCaseDetails() == null
+            || hearingRequest.getHearingDetails() == null
+            || hearingRequest.getCaseDetails() == null
         ) {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
@@ -272,12 +270,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (null == hearingWindow
             || (null == hearingWindow.getHearingWindowFirstDate()
             && null == hearingWindow.getHearingWindowDateRange())
-            || (null == hearingWindow.getHearingWindowFirstDate()
-            && null != hearingWindow.getHearingWindowDateRange()
-            && null == hearingWindow.getHearingWindowDateRange().getHearingWindowStartDateRange()
-            && null == hearingWindow.getHearingWindowDateRange().getHearingWindowEndDateRange())
+            || ((null == hearingWindow.getHearingWindowFirstDate()
+                || null == hearingWindow.getHearingWindowFirstDate().getFirstDateTimeMustBe())
+            && (null == hearingWindow.getHearingWindowDateRange()
+            || null == hearingWindow.getHearingWindowDateRange().getHearingWindowStartDateRange()
+            && null == hearingWindow.getHearingWindowDateRange().getHearingWindowEndDateRange()))
         ) {
-            throw new BadRequestException(HEARING_WINDOW_NULL);
+            throw new BadRequestException(INVALID_HEARING_WINDOW);
         }
     }
 

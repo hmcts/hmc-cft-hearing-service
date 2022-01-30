@@ -33,7 +33,6 @@ import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
-import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -222,24 +221,6 @@ class HearingManagementControllerTest {
 
     @Test
     void shouldCallUpdateHearingRequest() {
-        doNothing().when(hearingManagementService).updateHearingRequest(Mockito.any(), Mockito.any());
-        HearingManagementController controller = new HearingManagementController(hearingManagementService);
-        controller.updateHearing(null, 1234L);
-        verify(hearingManagementService, times(1)).updateHearingRequest(any(), any());
-    }
-
-    private HearingResponse generateHearingResponse() {
-        HearingResponse hearingResponse = new HearingResponse();
-        hearingResponse.setVersionNumber(3);
-        hearingResponse.setHearingRequestId(200000000111L);
-        hearingResponse.setStatus("LISTED");
-        hearingResponse.setTimeStamp(LocalDateTime.now());
-        return hearingResponse;
-
-    }
-
-    @Test
-    void shouldCallUpdateHearingRequest() {
         final long hearingId = 2000000000L;
         UpdateHearingRequest hearingRequest = generateUpdateHearingRequest();
         HearingResponse hearingResponse = generateHearingResponse();
@@ -277,7 +258,7 @@ class HearingManagementControllerTest {
 
     private CaseHearing createCaseHearing(Integer id) {
         CaseHearing caseHearing = new CaseHearing();
-        caseHearing.setHearingID("hearing" + id);
+        caseHearing.setHearingId("hearing" + id);
         caseHearing.setHearingRequestDateTime(LocalDateTime.now());
         caseHearing.setHearingType("hearingType" + id);
         caseHearing.setHmcStatus("hmcStatus" + id);
@@ -285,14 +266,18 @@ class HearingManagementControllerTest {
         caseHearing.setResponseVersion("00" + id);
         caseHearing.setHearingListingStatus("liststat" + id);
         caseHearing.setListAssistCaseStatus("status" + id);
-        caseHearing.setHearingDaySchedule(createHearingDaySchedule(id));
+        List<HearingDaySchedule> daySchedules = new ArrayList<>();
+        daySchedules.add(createHearingDaySchedule(id));
+        caseHearing.setHearingDaySchedule(daySchedules);
         return caseHearing;
     }
 
     private HearingDaySchedule createHearingDaySchedule(Integer id) {
         HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
         hearingDaySchedule.setHearingRoomId("room" + id);
-        hearingDaySchedule.setHearingJudgeId("judge" + id);
+        List<String> judges = new ArrayList<>();
+        judges.add("judge" + id);
+        hearingDaySchedule.setHearingJudgeId(judges);
         hearingDaySchedule.setHearingStartDateTime(LocalDateTime.now());
         hearingDaySchedule.setHearingEndDateTime(LocalDateTime.now());
         return hearingDaySchedule;

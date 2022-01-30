@@ -20,7 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.Assert;
 import uk.gov.hmcts.reform.hmc.BasePactTesting;
 import uk.gov.hmcts.reform.hmc.controllers.HearingManagementController;
-import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
+import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -72,13 +72,13 @@ public class HearingManagementGetHearingsProviderTest extends BasePactTesting {
     @State("hmc cftHearingService successfully returns hearing for valid case ref")
     public void getHearings() {
         final String validCaseRef = "9372710950276233";
-        doReturn(generateHearingRequest(validCaseRef)).when(mockService)
+        doReturn(generateCreateHearingRequest(validCaseRef)).when(mockService)
             .validateGetHearingsRequest(any(), any());
         HearingManagementController controller = new HearingManagementController(mockService);
-        HearingsGetResponse hearingsGetResponse = controller.getHearingsRequest(validCaseRef, null);
+        GetHearingsResponse getHearingsResponse = controller.getHearings(validCaseRef, null);
         verify(mockService, times(1))
             .validateGetHearingsRequest(any(), any());
-        Assert.isTrue(hearingsGetResponse.getCaseRef().equals(validCaseRef),
+        Assert.isTrue(getHearingsResponse.getCaseRef().equals(validCaseRef),
                       "Case ref value is not as expected.");
     }
 
@@ -86,10 +86,10 @@ public class HearingManagementGetHearingsProviderTest extends BasePactTesting {
     public void validationErrorForGetHearings() {
         final String validCaseRef = "9372710950276233";
         final String status = "UPDATED"; // for example
-        doReturn(generateHearingRequest(validCaseRef)).when(mockService)
+        doReturn(generateCreateHearingRequest(validCaseRef)).when(mockService)
             .validateGetHearingsRequest(any(), any());
         HearingManagementController controller = new HearingManagementController(mockService);
-        HearingsGetResponse hearingsGetResponse = controller.getHearingsRequest(validCaseRef, status);
+        GetHearingsResponse hearingsGetResponse = controller.getHearings(validCaseRef, status);
         verify(mockService, times(1))
             .validateGetHearingsRequest(any(), any());
         Assert.isTrue(hearingsGetResponse.getCaseRef().equals(validCaseRef),

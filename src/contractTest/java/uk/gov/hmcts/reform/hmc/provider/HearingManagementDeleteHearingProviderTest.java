@@ -19,7 +19,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.hmc.BasePactTesting;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -69,14 +69,13 @@ public class HearingManagementDeleteHearingProviderTest {
 
     @State("hmcCftHearingService successfully acknowledges delete hearing")
     public void deleteHearing() {
-        doNothing().when(mockService).validateHearingRequest(any(HearingRequest.class));
+        doNothing().when(mockService).validateHearingRequest(any(DeleteHearingRequest.class));
     }
 
     @State("hmcCftHearingService throws validation error while trying to delete hearing")
-    public void validationErrorForCreatingHearing() {
-        HearingRequest hearingRequest = new HearingRequest();
+    public void validationErrorForDeleteHearing() {
         doThrow(new Exception(ValidationError.INVALID_HEARING_REQUEST_DETAILS))
-            .when(mockService).validateHearingRequest(any(HearingRequest.class));
+            .when(mockService).validateHearingRequest(any(DeleteHearingRequest.class));
     }
 
 }

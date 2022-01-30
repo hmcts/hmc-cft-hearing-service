@@ -200,23 +200,23 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("9372710950276233", response.getCaseRef());
         assertEquals("ABA1", response.getHmctsServiceId());
         assertEquals(3, response.getCaseHearings().size());
-        assertEquals(2000000010L, response.getCaseHearings().get(0).getHearingId());
-        assertEquals(2000000009L, response.getCaseHearings().get(1).getHearingId());
-        assertEquals(2000000000L, response.getCaseHearings().get(2).getHearingId());
+        assertEquals("2000000010", response.getCaseHearings().get(0).getHearingId());
+        assertEquals("2000000009", response.getCaseHearings().get(1).getHearingId());
+        assertEquals("2000000000", response.getCaseHearings().get(2).getHearingId());
         assertEquals("hearingType2", response.getCaseHearings().get(0).getHearingType());
         assertEquals("hearingType3", response.getCaseHearings().get(1).getHearingType());
         assertEquals("hearingType1", response.getCaseHearings().get(2).getHearingType());
         assertEquals("HEARING_REQUESTED", response.getCaseHearings().get(2).getHmcStatus());
         assertEquals("HEARING_REQUESTED", response.getCaseHearings().get(1).getHmcStatus());
         assertEquals("HEARING_UPDATED", response.getCaseHearings().get(0).getHmcStatus());
-        assertEquals(2, response.getCaseHearings().get(0).getResponseVersion());
-        assertEquals(3, response.getCaseHearings().get(1).getResponseVersion());
-        assertEquals(1, response.getCaseHearings().get(2).getResponseVersion());
+        assertEquals("2", response.getCaseHearings().get(0).getResponseVersion());
+        assertEquals("3", response.getCaseHearings().get(1).getResponseVersion());
+        assertEquals("1", response.getCaseHearings().get(2).getResponseVersion());
         assertEquals("listingStatus3-1", response.getCaseHearings().get(1).getHearingListingStatus());
         assertEquals("caselistingStatus3-1", response.getCaseHearings().get(1).getListAssistCaseStatus());
         assertEquals(1, response.getCaseHearings().get(1).getHearingDaySchedule().size());
         assertEquals("session1-2", response.getCaseHearings().get(1)
-                .getHearingDaySchedule().get(0).getListAssistSessionId());
+                .getHearingDaySchedule().get(0).getListAssistSessionID());
         assertEquals("venue3-1", response.getCaseHearings().get(1)
                 .getHearingDaySchedule().get(0).getHearingVenueId());
         assertEquals("venue2-1", response.getCaseHearings().get(0)
@@ -271,22 +271,23 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     void testGetHearings_WithValidCaseRefAndStatus_assertPart1(GetHearingsResponse response) {
+        final String hearingId = "2000000000";
         assertEquals("9372710950276233", response.getCaseRef());
         assertEquals("ABA1", response.getHmctsServiceId());
         assertEquals(2, response.getCaseHearings().size());
-        assertEquals(2000000009L, response.getCaseHearings().get(0).getHearingId());
-        assertEquals(2000000000L, response.getCaseHearings().get(1).getHearingId());
+        assertEquals(hearingId, response.getCaseHearings().get(0).getHearingId());
+        assertEquals(hearingId, response.getCaseHearings().get(1).getHearingId());
         assertEquals("hearingType3", response.getCaseHearings().get(0).getHearingType());
         assertEquals("hearingType1", response.getCaseHearings().get(1).getHearingType());
         assertEquals("HEARING_REQUESTED", response.getCaseHearings().get(1).getHmcStatus());
         assertEquals("HEARING_REQUESTED", response.getCaseHearings().get(0).getHmcStatus());
-        assertEquals(3, response.getCaseHearings().get(0).getResponseVersion());
-        assertEquals(1, response.getCaseHearings().get(1).getResponseVersion());
+        assertEquals("3", response.getCaseHearings().get(0).getResponseVersion());
+        assertEquals("1", response.getCaseHearings().get(1).getResponseVersion());
         assertEquals("listingStatus3-1", response.getCaseHearings().get(0).getHearingListingStatus());
         assertEquals("caselistingStatus3-1", response.getCaseHearings().get(0).getListAssistCaseStatus());
         assertEquals(2, response.getCaseHearings().get(1).getHearingDaySchedule().size());
         assertEquals("session1-1", response.getCaseHearings().get(1)
-                .getHearingDaySchedule().get(0).getListAssistSessionId());
+                .getHearingDaySchedule().get(0).getListAssistSessionID());
         assertEquals("venue1-1", response.getCaseHearings().get(1)
                 .getHearingDaySchedule().get(0).getHearingVenueId());
         assertEquals("venue3-1", response.getCaseHearings().get(0)

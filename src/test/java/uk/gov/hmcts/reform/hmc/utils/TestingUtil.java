@@ -258,7 +258,7 @@ public class TestingUtil {
         getHearingsResponse.setCaseRef(caseRef);
         getHearingsResponse.setHmctsServiceId("AB1A");
         CaseHearing caseHearing = new CaseHearing();
-        caseHearing.setHearingId(2000000000L);
+        caseHearing.setHearingId("2000000000");
         caseHearing.setHearingRequestDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         caseHearing.setHearingType("45YAO6VflHAmYy7N85fv");
         caseHearing.setHmcStatus("HEARING_REQUESTED");
@@ -268,7 +268,7 @@ public class TestingUtil {
         HearingDaySchedule schedule = new HearingDaySchedule();
         schedule.setHearingStartDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         schedule.setHearingEndDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
-        schedule.setListAssistSessionId("jvjyVv8aecmpBgo3RnGb");
+        schedule.setListAssistSessionID("jvjyVv8aecmpBgo3RnGb");
         schedule.setHearingVenueId("venue");
         schedule.setHearingRoomId("room1");
         schedule.setHearingJudgeId(Arrays.asList("judge1"));

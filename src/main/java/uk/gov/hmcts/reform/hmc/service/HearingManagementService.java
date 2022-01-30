@@ -14,9 +14,11 @@ public interface HearingManagementService {
 
     HearingResponse saveHearingRequest(CreateHearingRequest createHearingRequest);
 
-    void validateHearingRequest(HearingRequest hearingRequest);
+    void validateHearingRequest(CreateHearingRequest hearingRequest);
 
     void validateHearingRequest(UpdateHearingRequest hearingRequest);
+
+    void validateHearingRequest(DeleteHearingRequest hearingRequest);
 
     HearingsGetResponse validateGetHearingsRequest(String caseRefId, String caseStatus);
 

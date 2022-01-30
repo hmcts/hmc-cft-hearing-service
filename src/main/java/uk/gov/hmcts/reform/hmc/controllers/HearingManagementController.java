@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
-import uk.gov.hmcts.reform.hmc.model.HearingsGetResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
@@ -72,7 +71,7 @@ public class HearingManagementController {
     /**
      * Save given hearing.
      *
-     * @param hearingRequest hearing Request
+     * @param createHearingRequest hearing Request
      * @return HearingResponse hearing response
      */
     @PostMapping(path = "/hearing", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -81,23 +80,11 @@ public class HearingManagementController {
         @ApiResponse(code = 201, message = "Hearing Id is created"),
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
-
     public HearingResponse saveHearing(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
         hearingManagementService.verifyAccess(getCaseRef(createHearingRequest));
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
         hearingManagementService.sendRequestToHmi(hearingResponse.getHearingRequestId(), createHearingRequest);
         return hearingResponse;
-    }
-
-    private String getCaseRef(CreateHearingRequest hearingRequest) {
-        if (null == hearingRequest) {
-            return null;
-        }
-        if (null == hearingRequest.getCaseDetails()) {
-            return null;
-        }
-        return hearingRequest.getCaseDetails().getCaseRef();
-
     }
 
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -148,32 +135,15 @@ public class HearingManagementController {
         return hearingResponse;
     }
 
-    /**
-     * get Hearings for given caseRefId OR (caseRefId & caseStatus).
-     *
-     * @param ccdCaseRef case Ref
-     * @param status optional Status
-     * @return HearingsGetResponse response
-     */
-    @Transactional
-    @GetMapping(value = {"/hearings/{ccdCaseRef}"},
-        produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Get hearings")
-    @ApiResponses({
-        @ApiResponse(code = 200, message = MSG_200_GET_HEARINGS),
-        @ApiResponse(code = 400, message = MSG_400_GET_HEARINGS)
-    })
-    public HearingsGetResponse getHearingsRequest(@PathVariable("ccdCaseRef")
-                                                  @Valid
-                                                  @NotEmpty(message = CASE_REF_EMPTY)
-                                                  @Size(min = 16, max = 16, message = CASE_REF_INVALID_LENGTH)
-                                                  @LuhnCheck(message = CASE_REF_INVALID,
-                                                      ignoreNonDigitCharacters = false)
-                                                      String ccdCaseRef,
-                                                  @RequestParam(required = false)
-                                                      String status) {
-        return hearingManagementService.validateGetHearingsRequest(ccdCaseRef, status);
+    private String getCaseRef(CreateHearingRequest hearingRequest) {
+        if (null == hearingRequest) {
+            return null;
+        }
+        if (null == hearingRequest.getCaseDetails()) {
+            return null;
+        }
+        return hearingRequest.getCaseDetails().getCaseRef();
+
     }
 
 }

@@ -19,7 +19,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.hmc.BasePactTesting;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.reset;
     port = "${PACT_BROKER_PORT:}",
     consumerVersionSelectors = {@VersionSelector(tag = "master")})
 @IgnoreNoPactsToVerify
-public class HearingManagementCreateHearingProviderTest {
+public class HearingManagementCreateHearingProviderTest extends BasePactTesting {
 
     @LocalServerPort
     private int port;
@@ -69,15 +69,13 @@ public class HearingManagementCreateHearingProviderTest {
 
     @State("hmc cftHearingService successfully returns created hearing")
     public void createHearing() {
-        doNothing().when(mockService).validateHearingRequest(any(HearingRequest.class));
+        doNothing().when(mockService).validateHearingRequest(any(CreateHearingRequest.class));
     }
 
     @State("hmc cftHearingService throws validation error while trying to create hearing")
     public void validationErrorForCreatingHearing() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setCaseDetails(null);
         doThrow(new Exception(ValidationError.INVALID_HEARING_REQUEST_DETAILS))
-            .when(mockService).validateHearingRequest(any(HearingRequest.class));
+            .when(mockService).validateHearingRequest(any(CreateHearingRequest.class));
     }
 
 }
