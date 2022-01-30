@@ -173,7 +173,7 @@ class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleFeignException() throws Exception {
         Request request = Request.create(Request.HttpMethod.GET, "url",
                                          new HashMap<>(), null, new RequestTemplate());
-        Mockito.doThrow(new FeignException.NotFound(testExceptionMessage, request, null))
+        Mockito.doThrow(new FeignException.NotFound(testExceptionMessage, request, null,null))
             .when(service).verifyAccess(anyString());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")

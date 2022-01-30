@@ -8,7 +8,7 @@ public class TestDataLoaderMain {
     }
 
     public static void main(String[] args) {
-        new CftHearingServiceTestAutomationAdapter().getDataLoader().loadTestDataIfNecessary();
+        new CftHearingServiceTestAutomationAdapter().getDataLoader().loadDataIfNotLoadedVeryRecently();
     }
 
 }
