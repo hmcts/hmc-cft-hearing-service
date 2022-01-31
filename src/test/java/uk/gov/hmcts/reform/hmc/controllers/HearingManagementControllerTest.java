@@ -185,7 +185,6 @@ class HearingManagementControllerTest {
     @Test
     void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhn() {
         final String validCaseRef = "9372710950276233";
-
         doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef)).when(hearingManagementService)
             .getHearings(any(), any());
         HearingManagementController controller = new HearingManagementController(hearingManagementService);

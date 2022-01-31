@@ -225,7 +225,8 @@ def versions = [
   springCloud     : '2020.0.1',
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.2',
-  netty           : '4.1.68.Final'
+  netty           : '4.1.68.Final',
+  serviceAuthVersion: '4.0.3'
 ]
 
 ext['spring-framework.version'] = '5.3.12'
@@ -296,6 +297,7 @@ task runProviderPactVerification(type:Test) {
   systemProperty 'pact.verifier.publishResults', System.getProperty('pact.verifier.publishResults')
   systemProperty 'pact.provider.version', project.pactVersion
   include "uk/gov/hmcts/reform/hmc/provider/**"
+  include "uk/gov/hmcts/reform/hmc/controllers/**"
 }
 
 runProviderPactVerification.finalizedBy pactVerify
@@ -337,21 +339,23 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
 
-  implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
-  implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
-
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
 
   compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
   compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.1'
   compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jsr310
 
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
-  compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
+  compile group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceAuthVersion
+  compile group: 'com.github.hmcts', name: 'idam-java-client', version: '2.0.1'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
   compile 'net.minidev:json-smart:2.4.7'
 
-  testImplementation group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.0.0'
+  testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.9.1') {
+    exclude group: 'com.github.hmcts.befta-fw', module: 'befta-fw'
+  }
+  testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '8.7.1'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
 
@@ -393,13 +397,13 @@ dependencies {
   implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: versions.netty
   implementation group: 'io.netty', name: 'netty-transport-native-kqueue', version: versions.netty
   implementation group: 'io.netty', name: 'netty-transport-native-unix-common', version: versions.netty
-  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.0.2'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.1.0'
 
   contractTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
   contractTestCompile group: 'io.rest-assured', name: 'json-path', version: versions.restAssured
@@ -426,7 +430,7 @@ dependencies {
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
-  functionalTestImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '6.14.2'
+  functionalTestImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '8.7.1'
   functionalTestImplementation libraries.junit5
 
   runtime group: 'org.postgresql', name: 'postgresql', version: '42.2.19'

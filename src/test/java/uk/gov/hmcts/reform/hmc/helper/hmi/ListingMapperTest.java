@@ -92,18 +92,6 @@ class ListingMapperTest {
         assertEquals(ROLE_TYPE, listing.getListingJohTiers().get(0));
     }
 
-    private HearingWindow generateHearingWindow(LocalDateTime localDateTime) {
-        HearingWindow hearingWindow = new HearingWindow();
-        HearingWindowFirstDate hearingWindowFirstDate = new HearingWindowFirstDate();
-        hearingWindowFirstDate.setFirstDateTimeMustBe(localDateTime);
-        hearingWindow.setHearingWindowFirstDate(hearingWindowFirstDate);
-        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
-        hearingWindowDateRange.setHearingWindowStartDateRange(localDateTime.minusDays(1).toLocalDate());
-        hearingWindowDateRange.setHearingWindowEndDateRange(localDateTime.plusDays(1).toLocalDate());
-        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
-        return hearingWindow;
-    }
-
     @Test
     void shouldReturnListingWithHearingWindowFieldsAndRoleTypeNull() {
         LocalDateTime localDateTime = LocalDateTime.now();
@@ -203,4 +191,17 @@ class ListingMapperTest {
         assertNull(listing.getListingEndDate());
         assertNull(listing.getListingJohTiers());
     }
+
+    private HearingWindow generateHearingWindow(LocalDateTime localDateTime) {
+        HearingWindow hearingWindow = new HearingWindow();
+        HearingWindowFirstDate hearingWindowFirstDate = new HearingWindowFirstDate();
+        hearingWindowFirstDate.setFirstDateTimeMustBe(localDateTime);
+        hearingWindow.setHearingWindowFirstDate(hearingWindowFirstDate);
+        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
+        hearingWindowDateRange.setHearingWindowStartDateRange(localDateTime.minusDays(1).toLocalDate());
+        hearingWindowDateRange.setHearingWindowEndDateRange(localDateTime.plusDays(1).toLocalDate());
+        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
+        return hearingWindow;
+    }
+
 }

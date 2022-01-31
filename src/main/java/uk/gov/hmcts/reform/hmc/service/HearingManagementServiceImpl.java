@@ -194,7 +194,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     public void validateHearingRequest(DeleteHearingRequest hearingRequest) {
-        // TODO: ad validation for Delete hearing Request
+        // TODO: add validation for Delete hearing Request
     }
 
     /**
@@ -340,7 +340,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateHearingId(hearingId);
         validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
         validateDeleteHearingStatus(hearingId);
-
         updateCancellationReasons(hearingId, deleteRequest.getCancellationReasonCode());
         HearingEntity savedEntity = updateHearingStatusAndVersionNumber(
                 hearingId, CANCELLATION_REQUESTED);

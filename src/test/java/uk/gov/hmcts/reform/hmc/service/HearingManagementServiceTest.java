@@ -1248,40 +1248,6 @@ class HearingManagementServiceTest {
         assertEquals(INVALID_RELATED_PARTY_DETAILS, exception.getMessage());
     }
 
-    private HearingWindow generateHearingWindow() {
-        HearingWindow hearingWindow = new HearingWindow();
-        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
-        hearingWindowDateRange.setHearingWindowStartDateRange(LocalDate.now());
-        hearingWindowDateRange.setHearingWindowEndDateRange(LocalDate.now());
-        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
-        HearingWindowFirstDate hearingWindowFirstDate = new HearingWindowFirstDate();
-        hearingWindow.setHearingWindowFirstDate(hearingWindowFirstDate);
-        return hearingWindow;
-    }
-
-    private UpdateHearingRequest generateValidUpdateHearingRequest() {
-        HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(true);
-        hearingDetails.setHearingWindow(generateHearingWindow());
-
-        PartyDetails partyDetails = new PartyDetails();
-        IndividualDetails individualDetails = new IndividualDetails();
-        individualDetails.setHearingChannelEmail("email");
-
-        List<RelatedParty> relatedParties = new ArrayList<>();
-        individualDetails.setRelatedParties(relatedParties);
-        partyDetails.setIndividualDetails(individualDetails);
-
-        List<PartyDetails> partyDetailsList = new ArrayList<>();
-        partyDetailsList.add(partyDetails);
-
-        UpdateHearingRequest request = new UpdateHearingRequest();
-        request.setHearingDetails(hearingDetails);
-        request.setPartyDetails(partyDetailsList);
-
-        return request;
-    }  
-
     @Test
     void deleteHearingShouldIncrementVersionNumber() {
         final long hearingId = 2000000000L;
@@ -1502,4 +1468,39 @@ class HearingManagementServiceTest {
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
         return hearingEntity;
     }
+
+    private HearingWindow generateHearingWindow() {
+        HearingWindow hearingWindow = new HearingWindow();
+        HearingWindowDateRange hearingWindowDateRange = new HearingWindowDateRange();
+        hearingWindowDateRange.setHearingWindowStartDateRange(LocalDate.now());
+        hearingWindowDateRange.setHearingWindowEndDateRange(LocalDate.now());
+        hearingWindow.setHearingWindowDateRange(hearingWindowDateRange);
+        HearingWindowFirstDate hearingWindowFirstDate = new HearingWindowFirstDate();
+        hearingWindow.setHearingWindowFirstDate(hearingWindowFirstDate);
+        return hearingWindow;
+    }
+
+    private UpdateHearingRequest generateValidUpdateHearingRequest() {
+        HearingDetails hearingDetails = new HearingDetails();
+        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setHearingWindow(generateHearingWindow());
+
+        PartyDetails partyDetails = new PartyDetails();
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setHearingChannelEmail("email");
+
+        List<RelatedParty> relatedParties = new ArrayList<>();
+        individualDetails.setRelatedParties(relatedParties);
+        partyDetails.setIndividualDetails(individualDetails);
+
+        List<PartyDetails> partyDetailsList = new ArrayList<>();
+        partyDetailsList.add(partyDetails);
+
+        UpdateHearingRequest request = new UpdateHearingRequest();
+        request.setHearingDetails(hearingDetails);
+        request.setPartyDetails(partyDetailsList);
+
+        return request;
+    }
+
 }
