@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -35,6 +36,7 @@ import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +75,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final GetHearingsResponseMapper getHearingsResponseMapper;
     private final CaseHearingRequestRepository caseHearingRequestRepository;
     private final HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
-
+    private final MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
+    private final ObjectMapperService objectMapperService;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -84,7 +87,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         CaseHearingRequestRepository caseHearingRequestRepository,
                                         CancellationReasonsRepository cancellationReasonsRepository,
                                         HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper,
-                                        GetHearingsResponseMapper getHearingsResponseMapper) {
+                                        GetHearingsResponseMapper getHearingsResponseMapper,
+                                        MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
+                                        ObjectMapperService objectMapperService) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -94,6 +99,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.cancellationReasonsRepository = cancellationReasonsRepository;
         this.hmiSubmitHearingRequestMapper = hmiSubmitHearingRequestMapper;
         this.getHearingsResponseMapper = getHearingsResponseMapper;
+        this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
+        this.objectMapperService = objectMapperService;
     }
 
     @Override
@@ -387,5 +394,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             || hearingIdStr.charAt(0) != '2') {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
         }
+    }
+
+    @Override
+    public void sendResponse(String json) {
+        sendRspToTopic(json);
+    }
+
+    private void sendRspToTopic(Object response) {
+        var jsonNode  = objectMapperService.convertObjectToJsonNode(response);
+        messageSenderToTopicConfiguration.sendMessage(jsonNode.toString());
     }
 }

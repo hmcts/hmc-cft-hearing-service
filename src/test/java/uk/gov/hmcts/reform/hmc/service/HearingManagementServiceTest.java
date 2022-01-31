@@ -1,15 +1,20 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
@@ -42,6 +47,7 @@ import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
@@ -55,7 +61,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -95,7 +103,6 @@ class HearingManagementServiceTest {
     @Mock
     private SecurityUtils securityUtils;
 
-
     @Mock
     private HearingMapper hearingMapper;
 
@@ -106,13 +113,19 @@ class HearingManagementServiceTest {
     CaseHearingRequestRepository caseHearingRequestRepository;
 
     @Mock
-    CancellationReasonsRepository cancellationReasonsRepository;
+    private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
+
+    @Mock
+    private ObjectMapperService objectMapperService;
 
     @Mock
     private GetHearingsResponseMapper getHearingsResponseMapper;
 
     @Mock
     HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
+
+    @Mock
+    CancellationReasonsRepository cancellationReasonsRepository;
 
     @BeforeEach
     public void setUp() {
@@ -127,7 +140,9 @@ class HearingManagementServiceTest {
                 caseHearingRequestRepository,
                 cancellationReasonsRepository,
                 hmiSubmitHearingRequestMapper,
-                getHearingsResponseMapper
+                getHearingsResponseMapper,
+                messageSenderToTopicConfiguration,
+                objectMapperService
                 );
     }
 
@@ -137,6 +152,16 @@ class HearingManagementServiceTest {
     public static final String ROLE_NAME = "Hearing Manage";
     public static final String ROLE_TYPE = "ORGANISATION";
 
+    @Test
+    void shouldVerifySubsequentCalls() throws JsonProcessingException {
+        String json = "{\"query\": {\"match\": \"blah blah\"}}";
+        JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+        when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode);
+        doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any());
+        hearingManagementService.sendResponse(json);
+        verify(objectMapperService, times(1)).convertObjectToJsonNode(any());
+        verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any());
+    }
 
     @Test
     void shouldFailWithInvalidHearingId() {
