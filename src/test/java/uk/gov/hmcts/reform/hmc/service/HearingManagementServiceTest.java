@@ -1158,8 +1158,8 @@ class HearingManagementServiceTest {
             .getHearingDaySchedule().get(0).getHearingVenueId());
         assertEquals("subChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getAttendees().get(0).getHearingSubChannel());
-        assertEquals(1, response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
-            .getHearingJudgeId().size());
+        assertEquals("judge1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
+            .getHearingJudgeId());
     }
 
     @Test
