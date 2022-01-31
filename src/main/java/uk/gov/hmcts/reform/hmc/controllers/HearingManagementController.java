@@ -133,15 +133,4 @@ public class HearingManagementController {
         hearingManagementService.sendRequestToHmi(hearingId, hearingRequest);
         return hearingResponse;
     }
-
-    @PostMapping(path = "/hearing-test", produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiResponses(value = {
-        @ApiResponse(code = 204, message = "Hearing id is valid"),
-        @ApiResponse(code = 404, message = "Invalid hearing id")
-    })
-    public void getHearingTest(@RequestBody String json) {
-
-        hearingManagementService.sendResponse(json);
-    }
 }
