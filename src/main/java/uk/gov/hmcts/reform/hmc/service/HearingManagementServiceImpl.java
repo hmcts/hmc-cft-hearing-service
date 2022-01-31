@@ -66,7 +66,6 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 @Component
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
-
     private final DataStoreRepository dataStoreRepository;
     private final RoleAssignmentService roleAssignmentService;
     private final SecurityUtils securityUtils;
