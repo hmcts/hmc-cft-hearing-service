@@ -22,11 +22,11 @@ public class MessageSenderToQueueConfiguration {
             ServiceBusSenderClient senderClient = new ServiceBusClientBuilder()
                 .connectionString(applicationParams.getConnectionString())
                 .sender()
-                .queueName(applicationParams.getQueueName())
+                .queueName(applicationParams.getHmiQueueName())
                 .buildClient();
-            log.debug("Connected to Queue {}", applicationParams.getQueueName());
+            log.debug("Connected to Queue {}", applicationParams.getHmiQueueName());
             senderClient.sendMessage(new ServiceBusMessage(message));
-            log.debug("Message has been sent to the Queue {}", applicationParams.getQueueName());
+            log.debug("Message has been sent to the Queue {}", applicationParams.getHmiQueueName());
         } catch (Exception e) {
             log.error("Error while sending the message to queue:{}", e.getMessage());
         }

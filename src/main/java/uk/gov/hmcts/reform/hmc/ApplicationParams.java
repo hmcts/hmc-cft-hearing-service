@@ -29,7 +29,7 @@ public class ApplicationParams {
     private String roleAssignmentServiceHost;
 
     @Value("${jms.servicebus.hmi-queue-name}")
-    private String queueName;
+    private String hmiQueueName;
 
     public static String encode(final String stringToEncode) {
         try {

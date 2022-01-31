@@ -50,4 +50,11 @@ class ApplicationParamsTest {
         assertEquals(baseUrl, applicationParams.amGetRoleAssignmentsUrl());
 
     }
+
+    @Test
+    void shouldGetHmiQueueName() {
+        ReflectionTestUtils.setField(applicationParams, "hmiQueueName", VALUE);
+        assertEquals(VALUE,
+                     applicationParams.getHmiQueueName());
+    }
 }
