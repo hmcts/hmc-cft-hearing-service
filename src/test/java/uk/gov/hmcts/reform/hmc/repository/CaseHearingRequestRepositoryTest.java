@@ -53,6 +53,7 @@ class CaseHearingRequestRepositoryTest {
         );
     }
 
+
     @Test
     void testGetHearingDetailsWhenStatusPresent() {
         List<CaseHearingRequestEntity> expectedDetails = TestingUtil.getCaseHearingsEntitiesWithStatus();
@@ -93,6 +94,17 @@ class CaseHearingRequestRepositoryTest {
 
     @Test
     void testGetCaseHearingId() {
+        Long expectedCaseHearingId = 1L;
+        doReturn(expectedCaseHearingId).when(caseHearingRequestRepository).getCaseHearingId(any());
+        Long caseHearingId = caseHearingRequestRepository.getCaseHearingId(any());
+        assertAll(
+                () -> assertThat(caseHearingId, is(expectedCaseHearingId)),
+                () -> verify(caseHearingRequestRepository, times(1)).getCaseHearingId(any())
+        );
+    }
+
+    @Test
+    void testGetCaseHearing() {
         doReturn(TestingUtil.caseHearingRequestEntity()).when(caseHearingRequestRepository).getCaseHearing(any());
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository.getCaseHearing(any());
         assertAll(
