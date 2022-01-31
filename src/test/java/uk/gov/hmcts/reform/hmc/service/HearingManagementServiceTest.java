@@ -115,9 +115,6 @@ class HearingManagementServiceTest {
     @Mock
     HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
 
-    @Mock
-    CancellationReasonsRepository cancellationReasonsRepository;
-
     HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
 
     @BeforeEach

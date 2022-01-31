@@ -76,7 +76,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final CaseHearingRequestRepository caseHearingRequestRepository;
     private final HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
     private final HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
-    private final CancellationReasonsRepository cancellationReasonsRepository;
 
 
     @Autowired
