@@ -6,8 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
-import uk.gov.hmcts.reform.hmc.config.MessageReaderFromTopicConfiguration;
+import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,7 +24,10 @@ class GetWelcomeTest extends BaseTest {
     private HearingManagementService hearingManagementService;
 
     @MockBean
-    private MessageReaderFromTopicConfiguration messageReaderFromTopicConfiguration;
+    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
+
+    @MockBean
+    private ApplicationParams applicationParams;
 
     @DisplayName("Should welcome upon root request with 200 response code")
     @Test
