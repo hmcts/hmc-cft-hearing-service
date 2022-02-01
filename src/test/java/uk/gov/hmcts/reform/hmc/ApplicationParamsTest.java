@@ -8,24 +8,37 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ApplicationParamsTest {
 
     private static final String VALUE = "test-value";
+    private static final int INT_VALUE = 1;
     private final ApplicationParams applicationParams = new ApplicationParams();
 
     @Test
-    void shouldGetTopicName() {
-        ReflectionTestUtils.setField(applicationParams, "topicName", VALUE);
-        assertEquals(VALUE, applicationParams.getTopicName());
+    void shouldGetExponentialMultiplier() {
+        ReflectionTestUtils.setField(applicationParams, "exponentialMultiplier", VALUE);
+        assertEquals(VALUE, applicationParams.getExponentialMultiplier());
     }
 
     @Test
-    void shouldGetConnectionString() {
-        ReflectionTestUtils.setField(applicationParams, "connectionString", VALUE);
-        assertEquals(VALUE, applicationParams.getConnectionString());
+    void shouldGetInternalConnectionString() {
+        ReflectionTestUtils.setField(applicationParams, "internalConnectionString", VALUE);
+        assertEquals(VALUE, applicationParams.getInternalConnectionString());
     }
 
     @Test
-    void shouldGetSubscriptionName() {
-        ReflectionTestUtils.setField(applicationParams, "subscriptionName", VALUE);
-        assertEquals(VALUE, applicationParams.getSubscriptionName());
+    void shouldGetMaxRetryAttempts() {
+        ReflectionTestUtils.setField(applicationParams, "maxRetryAttempts", INT_VALUE);
+        assertEquals(INT_VALUE, applicationParams.getMaxRetryAttempts());
+    }
+
+    @Test
+    void shouldGetExternalTopicName() {
+        ReflectionTestUtils.setField(applicationParams, "externalTopicName", VALUE);
+        assertEquals(VALUE, applicationParams.getExternalTopicName());
+    }
+
+    @Test
+    void shouldGetExternalConnectionString() {
+        ReflectionTestUtils.setField(applicationParams, "externalConnectionString", VALUE);
+        assertEquals(VALUE, applicationParams.getExternalConnectionString());
     }
 
     @Test
