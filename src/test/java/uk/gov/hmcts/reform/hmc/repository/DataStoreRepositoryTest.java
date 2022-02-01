@@ -91,7 +91,7 @@ class DataStoreRepositoryTest {
         )).willThrow(new FeignException.NotFound("404",
                                                  Request.create(Request.HttpMethod.GET, "someUrl", Map.of(),
                                                                 null, Charset.defaultCharset(),
-                                                                null), null
+                                                                null), null,null
         ));
 
         // ACT & ASSERT

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -66,6 +68,7 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 @Component
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
+
     private final DataStoreRepository dataStoreRepository;
     private final RoleAssignmentService roleAssignmentService;
     private final SecurityUtils securityUtils;
@@ -75,8 +78,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final GetHearingsResponseMapper getHearingsResponseMapper;
     private final CaseHearingRequestRepository caseHearingRequestRepository;
     private final HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
-    private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
+    private final MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
     private final ObjectMapperService objectMapperService;
+    private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -88,8 +92,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         CancellationReasonsRepository cancellationReasonsRepository,
                                         HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper,
                                         GetHearingsResponseMapper getHearingsResponseMapper,
-                                        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration,
-                                        ObjectMapperService objectMapperService) {
+                                        MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
+                                        ObjectMapperService objectMapperService,
+                                        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -99,8 +104,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.cancellationReasonsRepository = cancellationReasonsRepository;
         this.hmiSubmitHearingRequestMapper = hmiSubmitHearingRequestMapper;
         this.getHearingsResponseMapper = getHearingsResponseMapper;
-        this.messageSenderToQueueConfiguration = messageSenderToQueueConfiguration;
+        this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
+        this.messageSenderToQueueConfiguration = messageSenderToQueueConfiguration;
     }
 
     @Override
@@ -136,7 +142,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     public void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest) {
         HmiSubmitHearingRequest hmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
             .mapRequest(hearingId, hearingRequest);
-
         sendRequestToQueue(hmiSubmitHearingRequest);
     }
 
@@ -402,5 +407,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             || hearingIdStr.charAt(0) != '2') {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
         }
+    }
+
+    @Override
+    public void sendResponse(String json) {
+        sendRspToTopic(json);
+    }
+
+    private void sendRspToTopic(Object response) {
+        var jsonNode  = objectMapperService.convertObjectToJsonNode(response);
+        messageSenderToTopicConfiguration.sendMessage(jsonNode.toString());
     }
 }

@@ -35,4 +35,7 @@ public class HearingDayPanelEntity {
     @JoinColumn(name = "hearing_day_id")
     private HearingDayDetailsEntity hearingDayDetails;
 
+    @Column(name = "is_presiding")
+    private Boolean isPresiding;
+
 }

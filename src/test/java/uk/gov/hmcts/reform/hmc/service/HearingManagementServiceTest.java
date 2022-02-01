@@ -1,16 +1,21 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -107,7 +112,6 @@ class HearingManagementServiceTest {
     @Mock
     private SecurityUtils securityUtils;
 
-
     @Mock
     private HearingMapper hearingMapper;
 
@@ -118,7 +122,10 @@ class HearingManagementServiceTest {
     CaseHearingRequestRepository caseHearingRequestRepository;
 
     @Mock
-    CancellationReasonsRepository cancellationReasonsRepository;
+    private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
+
+    @Mock
+    private ObjectMapperService objectMapperService;
 
     @Mock
     private GetHearingsResponseMapper getHearingsResponseMapper;
@@ -127,7 +134,7 @@ class HearingManagementServiceTest {
     HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
 
     @Mock
-    ObjectMapperService objectMapperService;
+    CancellationReasonsRepository cancellationReasonsRepository;
 
     @Mock
     MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
@@ -148,9 +155,10 @@ class HearingManagementServiceTest {
                 cancellationReasonsRepository,
                 hmiSubmitHearingRequestMapper,
                 getHearingsResponseMapper,
-                messageSenderToQueueConfiguration,
-                objectMapperService
-            );
+                messageSenderToTopicConfiguration,
+                objectMapperService,
+                messageSenderToQueueConfiguration
+                );
     }
 
     public static final String JURISDICTION = "Jurisdiction1";
@@ -159,6 +167,16 @@ class HearingManagementServiceTest {
     public static final String ROLE_NAME = "Hearing Manage";
     public static final String ROLE_TYPE = "ORGANISATION";
 
+    @Test
+    void shouldVerifySubsequentCalls() throws JsonProcessingException {
+        String json = "{\"query\": {\"match\": \"blah blah\"}}";
+        JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+        when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode);
+        doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any());
+        hearingManagementService.sendResponse(json);
+        verify(objectMapperService, times(1)).convertObjectToJsonNode(any());
+        verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any());
+    }
 
     @Test
     void shouldFailWithInvalidHearingId() {
@@ -789,7 +807,7 @@ class HearingManagementServiceTest {
         when(caseHearingRequestRepository.getCaseHearing(hearingId)).thenReturn(entity);
 
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
-            hearingId, TestingUtil.deleteHearingRequest());
+                hearingId, TestingUtil.deleteHearingRequest());
         assertEquals(versionNumber + 1, hearingResponse.getVersionNumber());
         assertEquals(CANCELLATION_REQUESTED, hearingResponse.getStatus());
         assertNotNull(hearingResponse.getHearingRequestId());
@@ -808,7 +826,7 @@ class HearingManagementServiceTest {
         when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
         when(hearingRepository.save(hearingEntity)).thenReturn(hearingEntity);
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
-            hearingId, TestingUtil.deleteHearingRequest());
+                hearingId, TestingUtil.deleteHearingRequest());
         assertEquals(CANCELLATION_REQUESTED, hearingResponse.getStatus());
         assertEquals(versionNumber + 1, hearingResponse.getVersionNumber());
         verify(hearingRepository).existsById(hearingId);
@@ -885,8 +903,7 @@ class HearingManagementServiceTest {
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(hearingRepository.getStatus(hearingId)).thenReturn(PutHearingStatus.UPDATE_REQUESTED.name());
         HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.UPDATE_REQUESTED.name(),
-                                                            versionNumber
-        );
+                versionNumber);
         when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
         when(hearingRepository.save(hearingEntity)).thenReturn(hearingEntity);
 
@@ -924,13 +941,12 @@ class HearingManagementServiceTest {
         final long hearingId = 2000000000L;
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(
-            hearingRequest.getRequestDetails().getVersionNumber());
+                hearingRequest.getRequestDetails().getVersionNumber());
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(hearingRepository.getStatus(hearingId)).thenReturn(PutHearingStatus.UPDATE_REQUESTED.name());
 
         HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.UPDATE_REQUESTED.name(),
-                                                            hearingRequest.getRequestDetails().getVersionNumber()
-        );
+                hearingRequest.getRequestDetails().getVersionNumber());
         when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
         when(hearingRepository.save(hearingEntity)).thenReturn(hearingEntity);
 
@@ -1116,7 +1132,7 @@ class HearingManagementServiceTest {
         when(hearingRepository.save(hearingEntity)).thenReturn(hearingEntity);
 
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
-            hearingId, hearingRequest);
+                hearingId, hearingRequest);
         // Check that version number has been incremented
         assertEquals((versionNumber + 1), hearingResponse.getVersionNumber());
     }
@@ -1131,8 +1147,7 @@ class HearingManagementServiceTest {
         when(hearingRepository.getStatus(hearingId)).thenReturn(PutHearingStatus.HEARING_REQUESTED.name());
 
         HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.HEARING_REQUESTED.name(),
-                                                            versionNumber
-        );
+                versionNumber);
         when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
         when(hearingRepository.save(hearingEntity)).thenReturn(hearingEntity);
 
@@ -1158,8 +1173,8 @@ class HearingManagementServiceTest {
             .getHearingDaySchedule().get(0).getHearingVenueId());
         assertEquals("subChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getAttendees().get(0).getHearingSubChannel());
-        assertEquals(1, response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
-            .getHearingJudgeId().size());
+        assertEquals("judge1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
+            .getHearingJudgeId());
     }
 
     @Test
@@ -1175,7 +1190,7 @@ class HearingManagementServiceTest {
 
     @Test
     void getHearings_shouldReturnNoDataWithInValidStatus() {
-        when(caseHearingRequestRepository.getHearingDetailsWithStatus("12345", "InvalidStatus"))
+        when(caseHearingRequestRepository.getHearingDetailsWithStatus("12345","InvalidStatus"))
             .thenReturn(null);
         given(getHearingsResponseMapper.toHearingsResponse("12345", null))
             .willReturn(TestingUtil.getHearingsResponseWhenNoData("12345"));
@@ -1200,8 +1215,7 @@ class HearingManagementServiceTest {
         when(objectMapperService.convertObjectToJsonNode(hmiSubmitHearingRequest)).thenReturn(jsonNode);
         doNothing().when(messageSenderToQueueConfiguration).sendMessageToQueue(any());
         hearingManagementService.sendRequestToHmiAndQueue(1L, createHearingRequest);
-        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(
-            1L,createHearingRequest);
+        verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L,createHearingRequest);
     }
 
     @Test

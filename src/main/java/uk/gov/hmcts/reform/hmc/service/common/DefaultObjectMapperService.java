@@ -17,4 +17,5 @@ public class DefaultObjectMapperService implements ObjectMapperService {
     public JsonNode convertObjectToJsonNode(Object object) {
         return objectMapper.valueToTree(object);
     }
+
 }

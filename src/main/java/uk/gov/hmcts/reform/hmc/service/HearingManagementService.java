@@ -21,5 +21,7 @@ public interface HearingManagementService {
 
     GetHearingsResponse getHearings(String caseRefId, String caseStatus);
 
+    void sendResponse(String json);
+
     void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest);
 }
