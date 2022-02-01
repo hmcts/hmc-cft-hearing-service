@@ -22,7 +22,7 @@ class CaseCreateHearingRequestMapperTest {
         expectedEntity.setHearingPriorityType("Priority type");
         expectedEntity.setPrivateHearingRequiredFlag(true);
         expectedEntity.setHmctsServiceID("ABA1");
-        expectedEntity.setCaseReference("1111222233334444");
+        expectedEntity.setCaseReference(TestingUtil.CASE_REFERENCE);
         expectedEntity.setHearingRequestReceivedDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         expectedEntity.setCaseUrlContextPath("https://www.google.com");
         expectedEntity.setHmctsInternalCaseName("Internal case name");

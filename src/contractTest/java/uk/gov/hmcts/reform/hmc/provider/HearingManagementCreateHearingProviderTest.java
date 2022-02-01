@@ -18,7 +18,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -68,15 +68,15 @@ public class HearingManagementCreateHearingProviderTest {
 
     @State("hmc cftHearingService successfully returns created hearing")
     public void createHearing() {
-        doNothing().when(mockService).validateHearingRequest(any(HearingRequest.class));
+        doNothing().when(mockService).saveHearingRequest(any(CreateHearingRequest.class));
     }
 
     @State("hmc cftHearingService throws validation error while trying to create hearing")
     public void validationErrorForCreatingHearing() {
-        HearingRequest hearingRequest = new HearingRequest();
+        CreateHearingRequest hearingRequest = new CreateHearingRequest();
         hearingRequest.setCaseDetails(null);
         doThrow(new Exception(ValidationError.INVALID_HEARING_REQUEST_DETAILS))
-            .when(mockService).validateHearingRequest(any(HearingRequest.class));
+            .when(mockService).saveHearingRequest(any(CreateHearingRequest.class));
     }
 
 }

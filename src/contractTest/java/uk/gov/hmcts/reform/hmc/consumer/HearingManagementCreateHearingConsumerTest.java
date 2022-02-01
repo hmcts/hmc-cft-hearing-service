@@ -16,7 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.hmc.BasePactTesting;
 import uk.gov.hmcts.reform.hmc.controllers.HearingManagementController;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.utility.HearingResponsePactUtil;
 
 import java.util.Map;
@@ -35,11 +35,11 @@ public class HearingManagementCreateHearingConsumerTest extends BasePactTesting 
     private static final String TEST_HEARIMG_ID = "2000000001";
 
     // Test data 1 - valid HearingRequest
-    HearingRequest validHearingRequest = generateHearingRequest(VALID_CASE_REF);
+    CreateHearingRequest validHearingRequest = generateHearingRequest(VALID_CASE_REF);
     String jsonValidHearingRequest = jsonCreatedHearingResponse(validHearingRequest);
 
     // Test data 2 - invalid HearingRequest
-    HearingRequest invalidHearingRequest = generateInvalidHearingRequest();
+    CreateHearingRequest invalidHearingRequest = generateInvalidHearingRequest();
     String jsonInvalidHearingRequest = jsonCreatedHearingResponse(invalidHearingRequest);
 
     static Map<String, String> headers = Map.of(

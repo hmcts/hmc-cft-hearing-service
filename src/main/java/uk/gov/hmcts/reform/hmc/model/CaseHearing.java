@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -57,5 +56,5 @@ public class CaseHearing {
     private String listAssistCaseStatus;
 
     @NotNull
-    private <List>HearingDaySchedule hearingDaySchedule;
+    private List<HearingDaySchedule> hearingDaySchedule;
 }

@@ -59,7 +59,7 @@ public class CaseHearingRequestMapper {
                                     .getHearingWindowDateRange().getHearingWindowStartDateRange());
         caseHearingRequestEntity.setHearingWindowEndDateRange(hearingDetails.getHearingWindow()
                                     .getHearingWindowDateRange().getHearingWindowEndDateRange());
-        caseHearingRequestEntity.setRequestTimeStamp(hearingRequest.getRequestDetails().getRequestTimeStamp());
+        caseHearingRequestEntity.setRequestTimeStamp(createHearingRequest.getRequestDetails().getRequestTimeStamp());
         caseHearingRequestEntity.setHearing(hearingEntity);
         return caseHearingRequestEntity;
     }

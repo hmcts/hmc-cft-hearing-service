@@ -24,7 +24,7 @@ class GetHearingsResponseMapperTest {
         assertEquals(validCaseRef, response.getCaseRef());
         assertEquals("ABA1", response.getHmctsServiceId());
         assertEquals(1, response.getCaseHearings().size());
-        assertEquals(2000000000L, response.getCaseHearings().get(0).getHearingId());
+        assertEquals("2000000000", response.getCaseHearings().get(0).getHearingId());
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
         assertEquals("venue1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getHearingVenueId());
@@ -45,7 +45,7 @@ class GetHearingsResponseMapperTest {
         assertEquals(validCaseRef, response.getCaseRef());
         assertEquals("ABA1", response.getHmctsServiceId());
         assertEquals(1, response.getCaseHearings().size());
-        assertEquals(2000000000L, response.getCaseHearings().get(0).getHearingId());
+        assertEquals("2000000000", response.getCaseHearings().get(0).getHearingId());
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
         assertEquals("venue1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getHearingVenueId());
@@ -66,7 +66,7 @@ class GetHearingsResponseMapperTest {
         assertEquals(validCaseRef, response.getCaseRef());
         assertEquals("ABA1", response.getHmctsServiceId());
         assertEquals(1, response.getCaseHearings().size());
-        assertEquals(2000000000L, response.getCaseHearings().get(0).getHearingId());
+        assertEquals("2000000000", response.getCaseHearings().get(0).getHearingId());
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
         assertEquals("venue1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getHearingVenueId());
@@ -87,7 +87,7 @@ class GetHearingsResponseMapperTest {
         assertEquals(validCaseRef, response.getCaseRef());
         assertEquals("ABA1", response.getHmctsServiceId());
         assertEquals(1, response.getCaseHearings().size());
-        assertEquals(2000000000L, response.getCaseHearings().get(0).getHearingId());
+        assertEquals("2000000000", response.getCaseHearings().get(0).getHearingId());
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
         assertEquals("venue1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getHearingVenueId());

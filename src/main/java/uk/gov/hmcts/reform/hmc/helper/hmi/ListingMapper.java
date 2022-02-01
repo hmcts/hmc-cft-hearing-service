@@ -27,7 +27,8 @@ public class ListingMapper {
             .listingPriority(hearingDetails.getHearingPriorityType())
             .listingType(hearingDetails.getHearingType())
             .listingDuration(hearingDetails.getDuration())
-            .listingDate(hearingDetails.getHearingWindow().getFirstDateTimeMustBe())
+            .listingDate(hearingDetails.getHearingWindow().getHearingWindowFirstDate()
+                    .getFirstDateTimeMustBe())
             .listingNumberAttendees(hearingDetails.getNumberOfPhysicalAttendees())
             .listingComments(hearingDetails.getListingComments())
             .listingRequestedBy(hearingDetails.getHearingRequester())
@@ -36,11 +37,15 @@ public class ListingMapper {
             .listingHearingChannels(preferredHearingChannels)
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
             .build();
-        if (hearingDetails.getHearingWindow().getHearingWindowStartDateRange() != null) {
-            listing.setListingStartDate(hearingDetails.getHearingWindow().getHearingWindowStartDateRange());
+        if (hearingDetails.getHearingWindow().getHearingWindowDateRange()
+                .getHearingWindowStartDateRange() != null) {
+            listing.setListingStartDate(hearingDetails.getHearingWindow()
+                    .getHearingWindowDateRange().getHearingWindowStartDateRange());
         }
-        if (hearingDetails.getHearingWindow().getHearingWindowEndDateRange() != null) {
-            listing.setListingEndDate(hearingDetails.getHearingWindow().getHearingWindowEndDateRange());
+        if (hearingDetails.getHearingWindow().getHearingWindowDateRange()
+                .getHearingWindowEndDateRange() != null) {
+            listing.setListingEndDate(hearingDetails.getHearingWindow()
+                    .getHearingWindowDateRange().getHearingWindowEndDateRange());
         }
         if (hearingDetails.getPanelRequirements().getRoleType() != null && !hearingDetails
             .getPanelRequirements().getRoleType().isEmpty()) {

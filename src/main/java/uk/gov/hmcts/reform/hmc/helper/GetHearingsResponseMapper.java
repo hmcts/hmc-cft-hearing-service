@@ -68,7 +68,7 @@ public class GetHearingsResponseMapper {
 
     private CaseHearing getCaseHearing(CaseHearingRequestEntity entity) {
         CaseHearing caseHearing = new CaseHearing();
-        caseHearing.setHearingId(entity.getHearing().getId());
+        caseHearing.setHearingId(entity.getHearing().getId().toString());
         caseHearing.setHearingRequestDateTime(entity.getHearingRequestReceivedDateTime());
         caseHearing.setHearingType(entity.getHearingType());
         caseHearing.setHmcStatus(entity.getHearing().getStatus());
@@ -78,7 +78,7 @@ public class GetHearingsResponseMapper {
     private void setHearingResponseDetails(CaseHearing caseHearing, List<HearingResponseEntity> entities) {
         for (HearingResponseEntity hearingResponseEntity : entities) {
             caseHearing.setLastResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
-            caseHearing.setResponseVersion(hearingResponseEntity.getHearingResponseId());
+            caseHearing.setResponseVersion(hearingResponseEntity.getHearingResponseId().toString());
             caseHearing.setHearingListingStatus(hearingResponseEntity.getListingStatus());
             caseHearing.setListAssistCaseStatus(hearingResponseEntity.getListingCaseStatus());
         }
