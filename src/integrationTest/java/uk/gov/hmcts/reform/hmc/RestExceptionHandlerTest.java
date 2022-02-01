@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.CaseCouldNotBeFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
@@ -24,9 +25,9 @@ import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.ServiceException;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.HearingWindowDateRange;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
@@ -37,6 +38,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -53,7 +55,7 @@ class RestExceptionHandlerTest extends BaseTest {
     public static String ERROR_PATH_ERROR = "$.errors";
     public static String ERROR_PATH_STATUS = "$.status";
     public static String testExceptionMessage = "test message";
-    HearingRequest validRequest;
+    CreateHearingRequest validRequest;
 
     @MockBean
     protected HearingManagementServiceImpl service;
@@ -64,10 +66,16 @@ class RestExceptionHandlerTest extends BaseTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    @MockBean
+    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
+
+    @MockBean
+    private ApplicationParams applicationParams;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        validRequest = new HearingRequest();
+        validRequest = new CreateHearingRequest();
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
@@ -76,9 +84,9 @@ class RestExceptionHandlerTest extends BaseTest {
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         PanelRequirements panelRequirements = new PanelRequirements();
-        panelRequirements.setRoleType(Arrays.asList("RoleType1"));
-        panelRequirements.setAuthorisationTypes(Arrays.asList("AuthorisationType1"));
-        panelRequirements.setAuthorisationSubType(Arrays.asList("AuthorisationSubType2"));
+        panelRequirements.setRoleType(Collections.singletonList("RoleType1"));
+        panelRequirements.setAuthorisationTypes(Collections.singletonList("AuthorisationType1"));
+        panelRequirements.setAuthorisationSubType(Collections.singletonList("AuthorisationSubType2"));
         hearingDetails.setPanelRequirements(panelRequirements);
         HearingLocation location1 = new HearingLocation();
         location1.setLocationId("court");
@@ -131,7 +139,7 @@ class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
-            .saveHearingRequest(any(HearingRequest.class));
+            .saveHearingRequest(any(CreateHearingRequest.class));
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -161,7 +169,7 @@ class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleFeignException() throws Exception {
         Request request = Request.create(Request.HttpMethod.GET, "url",
                                          new HashMap<>(), null, new RequestTemplate());
-        Mockito.doThrow(new FeignException.NotFound(testExceptionMessage, request, null))
+        Mockito.doThrow(new FeignException.NotFound(testExceptionMessage, request, null,null))
             .when(service).verifyAccess(anyString());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")

@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
@@ -16,7 +16,7 @@ class CaseHearingRequestMapperTest {
 
     @Test
     void modelToEntity() {
-        HearingRequest hearingRequest = new HearingRequest();
+        CreateHearingRequest hearingRequest = new CreateHearingRequest();
         hearingRequest.setRequestDetails(TestingUtil.requestDetails());
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());

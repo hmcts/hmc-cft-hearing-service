@@ -1,25 +1,30 @@
 package uk.gov.hmcts.reform.hmc.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
 public class CaseHearing {
 
+    @JsonProperty("hearingID")
     @NotEmpty(message = ValidationError.HEARING_ID_NULL_EMPTY)
     @Size(max = 60, message = ValidationError.HEARING_ID_MAX_LENGTH)
-    private String hearingID;
+    private String hearingId;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -51,5 +56,6 @@ public class CaseHearing {
     @Size(max = 60, message = ValidationError.LIST_ASSIST_CASE_STATUS_MAX_LENGTH)
     private String listAssistCaseStatus;
 
-    private HearingDaySchedule hearingDaySchedule;
+    @NotNull
+    private <List>HearingDaySchedule hearingDaySchedule;
 }
