@@ -209,9 +209,9 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("9372710950276233", response.getCaseRef());
         assertEquals("ABA1", response.getHmctsServiceId());
         assertEquals(3, response.getCaseHearings().size());
-        assertEquals(2000000010L, response.getCaseHearings().get(0).getHearingId());
-        assertEquals(2000000009L, response.getCaseHearings().get(1).getHearingId());
-        assertEquals(2000000000L, response.getCaseHearings().get(2).getHearingId());
+        assertEquals("2000000010", response.getCaseHearings().get(0).getHearingId());
+        assertEquals("2000000009", response.getCaseHearings().get(1).getHearingId());
+        assertEquals("2000000000", response.getCaseHearings().get(2).getHearingId());
         assertEquals("hearingType2", response.getCaseHearings().get(0).getHearingType());
         assertEquals("hearingType3", response.getCaseHearings().get(1).getHearingType());
         assertEquals("hearingType1", response.getCaseHearings().get(2).getHearingType());
@@ -285,8 +285,8 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("9372710950276233", response.getCaseRef());
         assertEquals("ABA1", response.getHmctsServiceId());
         assertEquals(2, response.getCaseHearings().size());
-        assertEquals(2000000009L, response.getCaseHearings().get(0).getHearingId());
-        assertEquals(2000000000L, response.getCaseHearings().get(1).getHearingId());
+        assertEquals("2000000009", response.getCaseHearings().get(0).getHearingId());
+        assertEquals("2000000000", response.getCaseHearings().get(1).getHearingId());
         assertEquals("hearingType3", response.getCaseHearings().get(0).getHearingType());
         assertEquals("hearingType1", response.getCaseHearings().get(1).getHearingType());
         assertEquals("HEARING_REQUESTED", response.getCaseHearings().get(1).getHmcStatus());
