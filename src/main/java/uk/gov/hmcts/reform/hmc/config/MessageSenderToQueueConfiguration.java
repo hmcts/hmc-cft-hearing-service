@@ -20,13 +20,12 @@ public class MessageSenderToQueueConfiguration {
     public void sendMessageToQueue(String message) {
         try {
             ServiceBusSenderClient senderClient = new ServiceBusClientBuilder()
-                .connectionString(applicationParams.getConnectionString())
+                .connectionString(applicationParams.getInternalConnectionString())
                 .sender()
-                .queueName(applicationParams.getHmiQueueName())
+                .queueName(applicationParams.getInternalQueueName())
                 .buildClient();
-            log.debug("Connected to Queue {}", applicationParams.getHmiQueueName());
             senderClient.sendMessage(new ServiceBusMessage(message));
-            log.debug("Message has been sent to the Queue {}", applicationParams.getHmiQueueName());
+            log.info("Message has been sent to queue successfully : {}", message);
         } catch (Exception e) {
             log.error("Error while sending the message to queue:{}", e.getMessage());
         }

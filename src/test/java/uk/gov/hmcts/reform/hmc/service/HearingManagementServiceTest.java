@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
-import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
