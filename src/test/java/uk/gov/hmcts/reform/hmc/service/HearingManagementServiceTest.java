@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
@@ -130,6 +131,9 @@ class HearingManagementServiceTest {
     private GetHearingsResponseMapper getHearingsResponseMapper;
 
     @Mock
+    HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
+
+    @Mock
     HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
 
     @Mock
@@ -156,6 +160,7 @@ class HearingManagementServiceTest {
                 getHearingsResponseMapper,
                 messageSenderToTopicConfiguration,
                 objectMapperService,
+                hmiDeleteHearingRequestMapper,
                 messageSenderToQueueConfiguration
                 );
     }
@@ -181,21 +186,33 @@ class HearingManagementServiceTest {
     void shouldFailWithInvalidHearingId() {
         HearingEntity hearing = new HearingEntity();
         hearing.setStatus("RESPONDED");
+        hearing.setId(2000000000L);
+
+        Exception exception = assertThrows(HearingNotFoundException.class, () -> {
+            hearingManagementService.getHearingRequest(2000000000L, true);
+        });
+        assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
+    }
+
+    @Test
+    void shouldFailWithInvalidHearingIdFormat() {
+        HearingEntity hearing = new HearingEntity();
+        hearing.setStatus("RESPONDED");
         hearing.setId(1L);
 
-        Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .getHearingRequest(1L, true));
-        assertEquals("No hearing found for reference: 1", exception.getMessage());
+        assertEquals("Invalid hearing Id", exception.getMessage());
     }
 
     @Test
     void shouldPassWithValidHearingId() {
         HearingEntity hearing = new HearingEntity();
         hearing.setStatus("RESPONDED");
-        hearing.setId(1L);
-        when(hearingRepository.existsById(1L)).thenReturn(true);
-        hearingManagementService.getHearingRequest(1L, true);
-        verify(hearingRepository).existsById(1L);
+        hearing.setId(2000000000L);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        hearingManagementService.getHearingRequest(2000000000L, true);
+        verify(hearingRepository).existsById(2000000000L);
     }
 
     @Test
@@ -214,11 +231,19 @@ class HearingManagementServiceTest {
     }
 
     @Test
+    void shouldFailIfNullCreateHearingRequest() {
+        CreateHearingRequest createHearingRequest = null;
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .saveHearingRequest(createHearingRequest));
+        assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
+    }
+
+    @Test
     void shouldFailAsDetailsNotPresent() {
         CreateHearingRequest createHearingRequest = new CreateHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .saveHearingRequest(createHearingRequest));
-        assertEquals("Invalid details", exception.getMessage());
+        assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
     }
 
     @Test
@@ -310,7 +335,7 @@ class HearingManagementServiceTest {
     }
 
     @Test
-    void shouldFailWithParty_Details_InValid_Dow_details_Present() {
+    void shouldFailWithParty_Details_Invalid_Dow_details_Present() {
         CreateHearingRequest createHearingRequest = new CreateHearingRequest();
         createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
@@ -326,7 +351,7 @@ class HearingManagementServiceTest {
     }
 
     @Test
-    void shouldFailWithParty_Details_InValid_UnavailabilityRange_details_Present() {
+    void shouldFailWithParty_Details_Invalid_UnavailabilityRange_details_Present() {
         CreateHearingRequest createHearingRequest = new CreateHearingRequest();
         createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
@@ -340,6 +365,23 @@ class HearingManagementServiceTest {
             .saveHearingRequest(createHearingRequest));
         assertEquals("Unavailability range details should be present", exception.getMessage());
 
+    }
+
+    @Test
+    void shouldFailWithParty_Details_Invalid_UnavailabilityDow_details_Present() {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        List<PartyDetails> partyDetails = TestingUtil.partyDetails();
+        partyDetails.get(0).setIndividualDetails(TestingUtil.individualDetails());
+        List<UnavailabilityDow> lstUnavailabilityDow = new ArrayList<>();
+        partyDetails.get(0).setUnavailabilityDow(lstUnavailabilityDow);
+        createHearingRequest.setPartyDetails(partyDetails);
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .saveHearingRequest(createHearingRequest));
+        assertEquals(INVALID_UNAVAILABILITY_DOW_DETAILS, exception.getMessage());
     }
 
     @Test
