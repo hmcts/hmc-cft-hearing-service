@@ -1,23 +1,22 @@
 package uk.gov.hmcts.reform.hmc.config;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.hmc.BaseTest;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-public class MessageSenderToQueueConfigurationIT extends BaseTest {
+class MessageSenderToQueueConfigurationIT  {
 
     @MockBean
     private MessageSenderToQueueConfiguration messageSenderConfiguration;
+
+    @Autowired
+    private ApplicationParams applicationParams;
 
     @Test
     void shouldSuccessfullyProcessRequest() {
         MessageSenderToQueueConfiguration messageSenderToQueueConfiguration =
             new MessageSenderToQueueConfiguration(applicationParams);
-        messageSenderConfiguration.sendMessageToQueue("Test Message");
-        verify(messageSenderConfiguration, times(1)).sendMessageToQueue(any());
+        messageSenderToQueueConfiguration.sendMessageToQueue("Test Message");
     }
 }

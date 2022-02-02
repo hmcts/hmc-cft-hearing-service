@@ -52,7 +52,6 @@ class ApplicationParamsTest {
 
     }
 
-
     @Test
     void shouldGetAmGetRoleAssignmentsUrl() {
         final var roleAssignmentServiceHost = "test-value";
