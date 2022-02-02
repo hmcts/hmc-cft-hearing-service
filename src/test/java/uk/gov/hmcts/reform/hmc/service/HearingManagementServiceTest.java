@@ -209,11 +209,11 @@ class HearingManagementServiceTest {
     void shouldPassWithValidHearingIdInDb() {
         HearingEntity hearing = new HearingEntity();
         hearing.setStatus("RESPONDED");
-        hearing.setId(1L);
-        when(hearingRepository.existsById(1L)).thenReturn(true);
-        when(hearingRepository.findById(1L)).thenReturn(Optional.of(hearing));
-        hearingManagementService.getHearingRequest(1L, false);
-        verify(hearingRepository).existsById(1L);
+        hearing.setId(2000000000L);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearing));
+        hearingManagementService.getHearingRequest(2000000000L, false);
+        verify(hearingRepository).existsById(2000000000L);
     }
 
     @Test
