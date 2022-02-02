@@ -161,8 +161,7 @@ class HearingManagementServiceTest {
                 messageSenderToTopicConfiguration,
                 objectMapperService,
                 hmiDeleteHearingRequestMapper,
-                messageSenderToQueueConfiguration
-                );
+                messageSenderToQueueConfiguration);
     }
 
     public static final String JURISDICTION = "Jurisdiction1";
