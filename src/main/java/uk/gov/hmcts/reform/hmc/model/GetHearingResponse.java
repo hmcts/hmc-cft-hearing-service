@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.hmc.model;
 
-import lombok.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 

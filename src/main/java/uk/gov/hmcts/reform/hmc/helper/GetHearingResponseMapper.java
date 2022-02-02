@@ -1,10 +1,15 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.data.*;
-import uk.gov.hmcts.reform.hmc.model.*;
-import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
+import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
+import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 
 import java.util.ArrayList;
 
@@ -24,21 +29,30 @@ public class GetHearingResponseMapper {
 
     private HearingResponse setHearingResponse(HearingEntity hearingEntity) {
         HearingResponse hearingResponse = new HearingResponse();
-        hearingResponse.setListAssistTransactionID(hearingEntity.getHearingResponses().get(0).getHearingResponseId());
-        hearingResponse.setReceivedDateTime(hearingEntity.getHearingResponses().get(0).getRequestTimeStamp());
-        hearingResponse.setResponseVersion(hearingEntity.getHearingResponses().get(0).getHearingResponseId());
-        hearingResponse.setLaCaseStatus(hearingEntity.getHearingResponses().get(0).getListingCaseStatus());
-        hearingResponse.setListingStatus(hearingEntity.getHearingResponses().get(0).getListingStatus());
-        //doesn't exist?
-       // hearingResponse.setHearingCancellationReason(hearingEntity.getHearingResponses().get(0).getCancellationReasonType);
+        if (hearingEntity.getHearingResponses().size() > 0) {
+            hearingResponse.setListAssistTransactionID(
+                hearingEntity.getHearingResponses().get(0).getHearingResponseId());
+            hearingResponse.setReceivedDateTime(hearingEntity.getHearingResponses().get(0).getRequestTimeStamp());
+            hearingResponse.setResponseVersion(hearingEntity.getHearingResponses().get(0).getHearingResponseId());
+            hearingResponse.setLaCaseStatus(hearingEntity.getHearingResponses().get(0).getListingCaseStatus());
+            hearingResponse.setListingStatus(hearingEntity.getHearingResponses().get(0).getListingStatus());
+            //doesn't exist?
+            //hearingResponse.setHearingCancellationReason(
+            // hearingEntity.getHearingResponses().get(0).getCancellationReasonType);
+        }
         return hearingResponse;
     }
 
     private PartyDetails setPartyDetails(HearingEntity hearingEntity) {
         PartyDetails partyDetails = new PartyDetails();
-        partyDetails.setPartyID(hearingEntity.getCaseHearingRequest().getHearingParties().get(0).getPartyReference());
-        partyDetails.setPartyType(hearingEntity.getCaseHearingRequest().getHearingParties().get(0).getPartyType().getLabel());
-        partyDetails.setPartyRole(hearingEntity.getCaseHearingRequest().getHearingParties().get(0).getPartyRoleType());
+        if (hearingEntity.getCaseHearingRequest().getHearingParties().size() > 0) {
+            partyDetails.setPartyID(
+                hearingEntity.getCaseHearingRequest().getHearingParties().get(0).getPartyReference());
+            partyDetails.setPartyType(
+                hearingEntity.getCaseHearingRequest().getHearingParties().get(0).getPartyType().getLabel());
+            partyDetails.setPartyRole(
+                hearingEntity.getCaseHearingRequest().getHearingParties().get(0).getPartyRoleType());
+        }
         return partyDetails;
     }
 
@@ -51,8 +65,10 @@ public class GetHearingResponseMapper {
         caseDetails.setCaseDeepLink(hearingEntity.getCaseHearingRequest().getCaseUrlContextPath());
         caseDetails.setHmctsInternalCaseName(hearingEntity.getCaseHearingRequest().getHmctsInternalCaseName());
         caseDetails.setPublicCaseName(hearingEntity.getCaseHearingRequest().getPublicCaseName());
-        caseDetails.setCaseAdditionalSecurityFlag(hearingEntity.getCaseHearingRequest().getAdditionalSecurityRequiredFlag());
-        caseDetails.setCaseInterpreterRequiredFlag(hearingEntity.getCaseHearingRequest().getInterpreterBookingRequiredFlag());
+        caseDetails.setCaseAdditionalSecurityFlag(
+            hearingEntity.getCaseHearingRequest().getAdditionalSecurityRequiredFlag());
+        caseDetails.setCaseInterpreterRequiredFlag(
+            hearingEntity.getCaseHearingRequest().getInterpreterBookingRequiredFlag());
         caseDetails.setCaseManagementLocationCode(hearingEntity.getCaseHearingRequest().getOwningLocationId());
         caseDetails.setCaseRestrictedFlag(hearingEntity.getCaseHearingRequest().getCaseRestrictedFlag());
         caseDetails.setCaseSlaStartDate(hearingEntity.getCaseHearingRequest().getCaseSlaStartDate());
@@ -72,7 +88,8 @@ public class GetHearingResponseMapper {
         }
         hearingDetails.setNonStandardHearingDurationReasons(hearingPriorityType);
         hearingDetails.setHearingPriorityType(hearingEntity.getCaseHearingRequest().getHearingPriorityType());
-        hearingDetails.setNumberOfPhysicalAttendees(hearingEntity.getCaseHearingRequest().getNumberOfPhysicalAttendees());
+        hearingDetails.setNumberOfPhysicalAttendees(
+            hearingEntity.getCaseHearingRequest().getNumberOfPhysicalAttendees());
         hearingDetails.setHearingInWelshFlag(hearingEntity.getCaseHearingRequest().getHearingInWelshFlag());
         ArrayList facilityType = new ArrayList();
         for (RequiredFacilitiesEntity requiredFacilitiesEntity
@@ -82,7 +99,8 @@ public class GetHearingResponseMapper {
         hearingDetails.setFacilitiesRequired(facilityType);
         hearingDetails.setListingComments(hearingEntity.getCaseHearingRequest().getListingComments());
         hearingDetails.setHearingRequester(hearingEntity.getCaseHearingRequest().getRequester());
-        hearingDetails.setPrivateHearingRequiredFlag(hearingEntity.getCaseHearingRequest().getPrivateHearingRequiredFlag());
+        hearingDetails.setPrivateHearingRequiredFlag(
+            hearingEntity.getCaseHearingRequest().getPrivateHearingRequiredFlag());
         hearingDetails.setLeadJudgeContractType(hearingEntity.getCaseHearingRequest().getLeadJudgeContractType());
         hearingDetails.setHearingIsLinkedFlag(hearingEntity.getCaseHearingRequest().getIsLinkedFlag());
         return hearingDetails;
@@ -94,7 +112,7 @@ public class GetHearingResponseMapper {
         requestDetails.setRequestTimeStamp(hearingEntity.getCaseHearingRequest().getHearingRequestReceivedDateTime());
         requestDetails.setVersionNumber(hearingEntity.getCaseHearingRequest().getVersionNumber());
         //doesn't exist?
-      //  requestDetails.setPartiesNotified(hearingEntity.getHearingResponses().get(0).getPartiesNotifiedDateTime());
+        //requestDetails.setPartiesNotified(hearingEntity.getHearingResponses().get(0).getPartiesNotifiedDateTime());
         return requestDetails;
     }
 
