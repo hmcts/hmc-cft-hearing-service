@@ -220,11 +220,11 @@ class HearingManagementServiceTest {
     void shouldFailWithInvalidHearingIdForGetHearing() {
         HearingEntity hearing = new HearingEntity();
         hearing.setStatus("RESPONDED");
-        hearing.setId(1L);
+        hearing.setId(2000000010L);
 
         Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
-            .getHearingRequest(1L, false));
-        assertEquals("No hearing found for reference: 1", exception.getMessage());
+            .getHearingRequest(2000000010L, false));
+        assertEquals("No hearing found for reference: 2000000010", exception.getMessage());
     }
 
     @Test
