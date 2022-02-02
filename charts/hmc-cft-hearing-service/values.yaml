@@ -23,7 +23,7 @@ java:
         - name: hmc-queue-connection-string
           alias: HMC_QUEUE_CONNECTION_STRING
         - name: hmc-outbound-queue-connection-string
-           alias: HMC_OUTBOUND_QUEUE_CONNECTION_STRING
+          alias: HMC_OUTBOUND_QUEUE_CONNECTION_STRING
   environment:
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified&gssEncMode=disable"
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft-{{ .Values.global.environment }}
