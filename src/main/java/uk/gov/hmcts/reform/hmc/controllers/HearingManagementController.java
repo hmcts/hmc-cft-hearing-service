@@ -48,7 +48,8 @@ public class HearingManagementController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiResponses(value = {
         @ApiResponse(code = 204, message = "Hearing id is valid"),
-        @ApiResponse(code = 404, message = "Invalid hearing id")
+        @ApiResponse(code = 404, message = "Hearing id not found"),
+        @ApiResponse(code = 400, message = "Invalid hearing id")
     })
     public ResponseEntity getHearing(@PathVariable("id") Long hearingId,
                                          @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {
@@ -89,7 +90,11 @@ public class HearingManagementController {
     })
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
                               @RequestBody @Valid DeleteHearingRequest deleteRequest) {
-        return hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
+        HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
+                hearingId, deleteRequest);
+        hearingManagementService.sendRequestToHmi(deleteRequest);
+
+        return hearingResponse;
     }
 
     /**
@@ -132,4 +137,5 @@ public class HearingManagementController {
         hearingManagementService.sendRequestToHmi(hearingId, hearingRequest);
         return hearingResponse;
     }
+
 }
