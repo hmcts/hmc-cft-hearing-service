@@ -90,7 +90,11 @@ public class HearingManagementController {
     })
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
                               @RequestBody @Valid DeleteHearingRequest deleteRequest) {
-        return hearingManagementService.deleteHearingRequest(hearingId, deleteRequest);
+        HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
+                hearingId, deleteRequest);
+        hearingManagementService.sendRequestToHmi(deleteRequest);
+
+        return hearingResponse;
     }
 
     /**
@@ -133,4 +137,5 @@ public class HearingManagementController {
         hearingManagementService.sendRequestToHmi(hearingId, hearingRequest);
         return hearingResponse;
     }
+
 }

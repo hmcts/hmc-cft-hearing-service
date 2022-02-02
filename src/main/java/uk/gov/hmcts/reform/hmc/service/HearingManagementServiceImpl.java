@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
@@ -77,6 +78,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
     private final MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
     private final ObjectMapperService objectMapperService;
+    private final HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
+
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -89,7 +92,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper,
                                         GetHearingsResponseMapper getHearingsResponseMapper,
                                         MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
-                                        ObjectMapperService objectMapperService) {
+                                        ObjectMapperService objectMapperService,
+                                        HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -98,6 +102,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.cancellationReasonsRepository = cancellationReasonsRepository;
         this.hmiSubmitHearingRequestMapper = hmiSubmitHearingRequestMapper;
+        this.hmiDeleteHearingRequestMapper = hmiDeleteHearingRequestMapper;
         this.getHearingsResponseMapper = getHearingsResponseMapper;
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
@@ -135,6 +140,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     public void sendRequestToHmi(Long hearingId, HearingRequest hearingRequest) {
         hmiSubmitHearingRequestMapper.mapRequest(hearingId, hearingRequest);
+    }
+
+    @Override
+    public void sendRequestToHmi(DeleteHearingRequest hearingRequest) {
+        hmiDeleteHearingRequestMapper.mapRequest(hearingRequest);
     }
 
     private void validateHearingStatusForUpdate(Long hearingId) {
@@ -405,4 +415,5 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         var jsonNode  = objectMapperService.convertObjectToJsonNode(response);
         messageSenderToTopicConfiguration.sendMessage(jsonNode.toString());
     }
+
 }
