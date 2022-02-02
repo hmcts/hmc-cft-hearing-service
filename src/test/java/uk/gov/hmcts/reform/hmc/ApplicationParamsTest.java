@@ -13,20 +13,20 @@ class ApplicationParamsTest {
 
     @Test
     void shouldGetExponentialMultiplier() {
-        ReflectionTestUtils.setField(applicationParams, "exponentialMultiplier", VALUE);
-        assertEquals(VALUE, applicationParams.getExponentialMultiplier());
+        ReflectionTestUtils.setField(applicationParams, "inboundExponentialMultiplier", VALUE);
+        assertEquals(VALUE, applicationParams.getInboundExponentialMultiplier());
     }
 
     @Test
     void shouldGetInternalConnectionString() {
-        ReflectionTestUtils.setField(applicationParams, "internalConnectionString", VALUE);
-        assertEquals(VALUE, applicationParams.getInternalConnectionString());
+        ReflectionTestUtils.setField(applicationParams, "internalInboundConnectionString", VALUE);
+        assertEquals(VALUE, applicationParams.getInternalInboundConnectionString());
     }
 
     @Test
     void shouldGetMaxRetryAttempts() {
-        ReflectionTestUtils.setField(applicationParams, "maxRetryAttempts", INT_VALUE);
-        assertEquals(INT_VALUE, applicationParams.getMaxRetryAttempts());
+        ReflectionTestUtils.setField(applicationParams, "inboundMaxRetryAttempts", INT_VALUE);
+        assertEquals(INT_VALUE, applicationParams.getInboundMaxRetryAttempts());
     }
 
     @Test
@@ -62,5 +62,17 @@ class ApplicationParamsTest {
 
         assertEquals(baseUrl, applicationParams.amGetRoleAssignmentsUrl());
 
+    }
+
+    @Test
+    void shouldGetInternalOutboundConnectionString() {
+        ReflectionTestUtils.setField(applicationParams, "internalOutboundConnectionString", VALUE);
+        assertEquals(VALUE, applicationParams.getInternalOutboundConnectionString());
+    }
+
+    @Test
+    void shouldGetInternalOutboundQueueName() {
+        ReflectionTestUtils.setField(applicationParams, "internalOutboundQueueName", VALUE);
+        assertEquals(VALUE, applicationParams.getInternalOutboundQueueName());
     }
 }

@@ -20,9 +20,9 @@ public class MessageSenderToQueueConfiguration {
     public void sendMessageToQueue(String message) {
         try {
             ServiceBusSenderClient senderClient = new ServiceBusClientBuilder()
-                .connectionString(applicationParams.getInternalConnectionString())
+                .connectionString(applicationParams.getInternalOutboundConnectionString())
                 .sender()
-                .queueName(applicationParams.getInternalQueueName())
+                .queueName(applicationParams.getInternalOutboundQueueName())
                 .buildClient();
             senderClient.sendMessage(new ServiceBusMessage(message));
             log.info("Message has been sent to queue successfully : {}", message);

@@ -32,10 +32,10 @@ public class MessageReaderFromQueueConfiguration {
         log.info("Creating service bus receiver client");
 
         ServiceBusReceiverClient client = new ServiceBusClientBuilder()
-            .connectionString(applicationParams.getInternalConnectionString())
+            .connectionString(applicationParams.getInternalInboundConnectionString())
             .retryOptions(retryOptions())
             .receiver()
-            .queueName(applicationParams.getInternalQueueName())
+            .queueName(applicationParams.getInternalInboundQueueName())
             .buildClient();
 
         while (true) {
@@ -57,7 +57,7 @@ public class MessageReaderFromQueueConfiguration {
     private AmqpRetryOptions retryOptions() {
         AmqpRetryOptions retryOptions = new AmqpRetryOptions();
         retryOptions.setMode(AmqpRetryMode.EXPONENTIAL)
-            .setDelay(Duration.ofSeconds(Long.valueOf(applicationParams.getExponentialMultiplier())));
+            .setDelay(Duration.ofSeconds(Long.valueOf(applicationParams.getInboundExponentialMultiplier())));
         return retryOptions;
     }
 }
