@@ -2,19 +2,29 @@ package uk.gov.hmcts.reform.hmc.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.jdbc.Sql;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
+import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class CaseHearingRequestRepositoryIT extends BaseTest {
 
     @Autowired
     CaseHearingRequestRepository caseHearingRequestRepository;
+
+    @MockBean
+    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
+
+    @Autowired
+    private ApplicationParams applicationParams;
 
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
 
@@ -95,5 +105,20 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
         List<CaseHearingRequestEntity> entities = caseHearingRequestRepository
             .getHearingDetails("9372710950276234");
         assertEquals(0, entities.size());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void testGetCaseHearingId_HearingIdIsValid() {
+        CaseHearingRequestEntity caseHearing = caseHearingRequestRepository.getCaseHearing(2000000000L);
+        assertNotNull(caseHearing);
+        assertNotNull(caseHearing.getCaseHearingID());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void testGetCaseHearingId_HearingIdNotInDb() {
+        CaseHearingRequestEntity caseHearing = caseHearingRequestRepository.getCaseHearing(2200000000L);
+        assertNull(caseHearing);
     }
 }

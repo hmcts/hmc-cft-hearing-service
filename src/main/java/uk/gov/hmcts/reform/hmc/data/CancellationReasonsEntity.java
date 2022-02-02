@@ -9,33 +9,30 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
-@Table(name = "hearing_day_panel")
+@Table(name = "cancellation_reasons")
 @Entity
 @Data
-@SecondaryTable(name = "HEARING_DAY_DETAILS",
+@SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
-        @PrimaryKeyJoinColumn(name = "hearing_day_id")})
-public class HearingDayPanelEntity {
+        @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
+public class CancellationReasonsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "hearing_day_panel_seq")
+        generator = "cancellation_reasons_id_seq")
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "panel_user_id", nullable = false)
-    private String panelUserId;
+    @Column(name = "cancellation_reason_type")
+    private String cancellationReasonType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hearing_day_id")
-    private HearingDayDetailsEntity hearingDayDetails;
-
-    @Column(name = "is_presiding")
-    private Boolean isPresiding;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_hearing_id")
+    private CaseHearingRequestEntity caseHearing;
 
 }

@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.hmc.config;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 
 import java.io.OutputStream;
@@ -20,6 +22,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @ContextConfiguration(classes = SwaggerConfiguration.class)
 class SwaggerPublisherTest extends BaseTest {
+
+    @MockBean
+    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
+
+    @MockBean
+    private ApplicationParams applicationParams;
 
     @Autowired
     private MockMvc mvc;

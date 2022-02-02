@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -52,6 +53,7 @@ class CaseHearingRequestRepositoryTest {
         );
     }
 
+
     @Test
     void testGetHearingDetailsWhenStatusPresent() {
         List<CaseHearingRequestEntity> expectedDetails = TestingUtil.getCaseHearingsEntitiesWithStatus();
@@ -87,6 +89,27 @@ class CaseHearingRequestRepositoryTest {
             () -> assertEquals(2000000000L, entities.get(0).getHearing().getId()),
             () -> assertEquals(1, entities.get(0).getHearing().getHearingResponses().size()),
             () -> verify(caseHearingRequestRepository, times(1)).getHearingDetails(any())
+        );
+    }
+
+    @Test
+    void testGetCaseHearingId() {
+        Long expectedCaseHearingId = 1L;
+        doReturn(expectedCaseHearingId).when(caseHearingRequestRepository).getCaseHearingId(any());
+        Long caseHearingId = caseHearingRequestRepository.getCaseHearingId(any());
+        assertAll(
+                () -> assertThat(caseHearingId, is(expectedCaseHearingId)),
+                () -> verify(caseHearingRequestRepository, times(1)).getCaseHearingId(any())
+        );
+    }
+
+    @Test
+    void testGetCaseHearing() {
+        doReturn(TestingUtil.caseHearingRequestEntity()).when(caseHearingRequestRepository).getCaseHearing(any());
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository.getCaseHearing(any());
+        assertAll(
+            () -> assertNotNull(caseHearingRequestEntity),
+            () -> verify(caseHearingRequestRepository, times(1)).getCaseHearing(any())
         );
     }
 
