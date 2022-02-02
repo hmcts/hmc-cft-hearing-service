@@ -217,7 +217,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     void shouldReturn404_WhenHearingIdIsInValidInDb() throws Exception {
-        mockMvc.perform(get(url + "/12")
+        mockMvc.perform(get(url + "/2000000010")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andReturn();
@@ -225,10 +225,11 @@ class HearingManagementControllerIT extends BaseTest {
 
 
     @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn204_WhenIsValidIsNotProvided() throws Exception {
-        mockMvc.perform(get(url + "/2000000001")
+        mockMvc.perform(get(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().is(204))
+            .andExpect(status().is(200))
             .andReturn();
     }
 
