@@ -110,6 +110,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     @Override
     public void getHearingRequest(Long hearingId, boolean isValid) {
+        isValidFormat(hearingId.toString());
         if (isValid && !hearingRepository.existsById(hearingId)) {
             throw new HearingNotFoundException(hearingId);
         }

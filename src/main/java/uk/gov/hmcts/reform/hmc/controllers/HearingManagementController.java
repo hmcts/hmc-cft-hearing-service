@@ -48,7 +48,8 @@ public class HearingManagementController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiResponses(value = {
         @ApiResponse(code = 204, message = "Hearing id is valid"),
-        @ApiResponse(code = 404, message = "Invalid hearing id")
+        @ApiResponse(code = 404, message = "Hearing id not found"),
+        @ApiResponse(code = 400, message = "Invalid hearing id")
     })
     public void getHearing(@PathVariable("id") Long hearingId,
                            @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {

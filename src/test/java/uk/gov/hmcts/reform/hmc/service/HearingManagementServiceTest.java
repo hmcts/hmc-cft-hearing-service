@@ -171,21 +171,33 @@ class HearingManagementServiceTest {
     void shouldFailWithInvalidHearingId() {
         HearingEntity hearing = new HearingEntity();
         hearing.setStatus("RESPONDED");
+        hearing.setId(2000000000L);
+
+        Exception exception = assertThrows(HearingNotFoundException.class, () -> {
+            hearingManagementService.getHearingRequest(2000000000L, true);
+        });
+        assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
+    }
+
+    @Test
+    void shouldFailWithInvalidHearingIdFormat() {
+        HearingEntity hearing = new HearingEntity();
+        hearing.setStatus("RESPONDED");
         hearing.setId(1L);
 
-        Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .getHearingRequest(1L, true));
-        assertEquals("No hearing found for reference: 1", exception.getMessage());
+        assertEquals("Invalid hearing Id", exception.getMessage());
     }
 
     @Test
     void shouldPassWithValidHearingId() {
         HearingEntity hearing = new HearingEntity();
         hearing.setStatus("RESPONDED");
-        hearing.setId(1L);
-        when(hearingRepository.existsById(1L)).thenReturn(true);
-        hearingManagementService.getHearingRequest(1L, true);
-        verify(hearingRepository).existsById(1L);
+        hearing.setId(2000000000L);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        hearingManagementService.getHearingRequest(2000000000L, true);
+        verify(hearingRepository).existsById(2000000000L);
     }
 
     @Test
