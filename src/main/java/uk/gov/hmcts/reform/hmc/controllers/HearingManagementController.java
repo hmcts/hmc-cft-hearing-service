@@ -93,7 +93,7 @@ public class HearingManagementController {
                               @RequestBody @Valid DeleteHearingRequest deleteRequest) {
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
                 hearingId, deleteRequest);
-        hearingManagementService.sendRequestToHmi(deleteRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(deleteRequest);
 
         return hearingResponse;
     }

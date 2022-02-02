@@ -15,6 +15,8 @@ public class MessageSenderToQueueConfigurationIT extends BaseTest {
 
     @Test
     void shouldSuccessfullyProcessRequest() {
+        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration =
+            new MessageSenderToQueueConfiguration(applicationParams);
         messageSenderConfiguration.sendMessageToQueue("Test Message");
         verify(messageSenderConfiguration, times(1)).sendMessageToQueue(any());
     }

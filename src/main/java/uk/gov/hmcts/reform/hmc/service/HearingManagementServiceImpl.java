@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
@@ -149,14 +150,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         sendRequestToQueue(hmiSubmitHearingRequest);
     }
 
-    private void sendRequestToQueue(HmiSubmitHearingRequest hmiSubmitHearingRequest) {
-        var jsonNode  = objectMapperService.convertObjectToJsonNode(hmiSubmitHearingRequest);
-        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString());
-    }
-
     @Override
-    public void sendRequestToHmi(DeleteHearingRequest hearingRequest) {
-        hmiDeleteHearingRequestMapper.mapRequest(hearingRequest);
+    public void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest) {
+        HmiDeleteHearingRequest hmiDeleteHearingRequest = hmiDeleteHearingRequestMapper.mapRequest(hearingRequest);
+        sendRequestToQueue(hmiDeleteHearingRequest);
     }
 
     private void validateHearingStatusForUpdate(Long hearingId) {
@@ -426,5 +423,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private void sendRspToTopic(Object response) {
         var jsonNode  = objectMapperService.convertObjectToJsonNode(response);
         messageSenderToTopicConfiguration.sendMessage(jsonNode.toString());
+    }
+
+    private void sendRequestToQueue(HmiSubmitHearingRequest hmiSubmitHearingRequest) {
+        var jsonNode  = objectMapperService.convertObjectToJsonNode(hmiSubmitHearingRequest);
+        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString());
+    }
+
+    private void sendRequestToQueue(HmiDeleteHearingRequest hmiDeleteHearingRequest) {
+        var jsonNode  = objectMapperService.convertObjectToJsonNode(hmiDeleteHearingRequest);
+        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString());
     }
 }
