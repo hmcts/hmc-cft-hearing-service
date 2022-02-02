@@ -1,15 +1,20 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
@@ -24,6 +29,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
@@ -42,6 +48,7 @@ import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
@@ -55,7 +62,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -95,7 +104,6 @@ class HearingManagementServiceTest {
     @Mock
     private SecurityUtils securityUtils;
 
-
     @Mock
     private HearingMapper hearingMapper;
 
@@ -106,13 +114,22 @@ class HearingManagementServiceTest {
     CaseHearingRequestRepository caseHearingRequestRepository;
 
     @Mock
-    CancellationReasonsRepository cancellationReasonsRepository;
+    private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
+
+    @Mock
+    private ObjectMapperService objectMapperService;
 
     @Mock
     private GetHearingsResponseMapper getHearingsResponseMapper;
 
     @Mock
+    HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
+
+    @Mock
     HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
+
+    @Mock
+    CancellationReasonsRepository cancellationReasonsRepository;
 
     @BeforeEach
     public void setUp() {
@@ -127,8 +144,10 @@ class HearingManagementServiceTest {
                 caseHearingRequestRepository,
                 cancellationReasonsRepository,
                 hmiSubmitHearingRequestMapper,
-                getHearingsResponseMapper
-                );
+                getHearingsResponseMapper,
+                messageSenderToTopicConfiguration,
+                objectMapperService,
+                hmiDeleteHearingRequestMapper);
     }
 
     public static final String JURISDICTION = "Jurisdiction1";
@@ -136,6 +155,17 @@ class HearingManagementServiceTest {
     public static final String USER_ID = "UserId";
     public static final String ROLE_NAME = "Hearing Manage";
     public static final String ROLE_TYPE = "ORGANISATION";
+
+    @Test
+    void shouldVerifySubsequentCalls() throws JsonProcessingException {
+        String json = "{\"query\": {\"match\": \"blah blah\"}}";
+        JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+        when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode);
+        doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any());
+        hearingManagementService.sendResponse(json);
+        verify(objectMapperService, times(1)).convertObjectToJsonNode(any());
+        verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any());
+    }
 
     @Test
     void shouldFailWithInvalidHearingId() {
@@ -186,11 +216,19 @@ class HearingManagementServiceTest {
     }
 
     @Test
+    void shouldFailIfNullCreateHearingRequest() {
+        CreateHearingRequest createHearingRequest = null;
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .saveHearingRequest(createHearingRequest));
+        assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
+    }
+
+    @Test
     void shouldFailAsDetailsNotPresent() {
         CreateHearingRequest createHearingRequest = new CreateHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .saveHearingRequest(createHearingRequest));
-        assertEquals("Invalid details", exception.getMessage());
+        assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
     }
 
     @Test
@@ -282,7 +320,7 @@ class HearingManagementServiceTest {
     }
 
     @Test
-    void shouldFailWithParty_Details_InValid_Dow_details_Present() {
+    void shouldFailWithParty_Details_Invalid_Dow_details_Present() {
         CreateHearingRequest createHearingRequest = new CreateHearingRequest();
         createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
@@ -298,7 +336,7 @@ class HearingManagementServiceTest {
     }
 
     @Test
-    void shouldFailWithParty_Details_InValid_UnavailabilityRange_details_Present() {
+    void shouldFailWithParty_Details_Invalid_UnavailabilityRange_details_Present() {
         CreateHearingRequest createHearingRequest = new CreateHearingRequest();
         createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
@@ -312,6 +350,23 @@ class HearingManagementServiceTest {
             .saveHearingRequest(createHearingRequest));
         assertEquals("Unavailability range details should be present", exception.getMessage());
 
+    }
+
+    @Test
+    void shouldFailWithParty_Details_Invalid_UnavailabilityDow_details_Present() {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        List<PartyDetails> partyDetails = TestingUtil.partyDetails();
+        partyDetails.get(0).setIndividualDetails(TestingUtil.individualDetails());
+        List<UnavailabilityDow> lstUnavailabilityDow = new ArrayList<>();
+        partyDetails.get(0).setUnavailabilityDow(lstUnavailabilityDow);
+        createHearingRequest.setPartyDetails(partyDetails);
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .saveHearingRequest(createHearingRequest));
+        assertEquals(INVALID_UNAVAILABILITY_DOW_DETAILS, exception.getMessage());
     }
 
     @Test
@@ -1144,8 +1199,8 @@ class HearingManagementServiceTest {
             .getHearingDaySchedule().get(0).getHearingVenueId());
         assertEquals("subChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getAttendees().get(0).getHearingSubChannel());
-        assertEquals(1, response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
-            .getHearingJudgeId().size());
+        assertEquals("judge1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
+            .getHearingJudgeId());
     }
 
     @Test

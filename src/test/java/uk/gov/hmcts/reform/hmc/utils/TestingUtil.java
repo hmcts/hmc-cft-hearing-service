@@ -263,7 +263,7 @@ public class TestingUtil {
         schedule.setListAssistSessionId("jvjyVv8aecmpBgo3RnGb");
         schedule.setHearingVenueId("venue");
         schedule.setHearingRoomId("room1");
-        schedule.setHearingJudgeId(Arrays.asList("judge1"));
+        schedule.setHearingJudgeId("judge1");
         Attendee attendee = new Attendee();
         attendee.setPartyId("partyId1");
         attendee.setHearingSubChannel("subChannel1");
@@ -359,6 +359,7 @@ public class TestingUtil {
     public static HearingDayPanelEntity hearingDayPanelEntities() {
         HearingDayPanelEntity entity = new HearingDayPanelEntity();
         entity.setPanelUserId("PanelUser1");
+        entity.setIsPresiding(false);
         return entity;
     }
 
