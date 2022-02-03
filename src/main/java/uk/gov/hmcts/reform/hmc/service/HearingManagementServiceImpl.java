@@ -121,8 +121,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (!hearingExists) {
             throw new HearingNotFoundException(hearingId);
         } else if (!isValid) {
-            return ResponseEntity.ok(getHearingResponseMapper
-                                         .toHearingResponse(hearingRepository.findById(hearingId).get()));
+            Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
+            if (hearingEntity.isPresent()) {
+                return ResponseEntity.ok(getHearingResponseMapper
+                                             .toHearingResponse(hearingEntity.get()));
+            } else {
+                throw new HearingNotFoundException(hearingId);
+            }
         } else  {
             return ResponseEntity.noContent().header("Content-Length", "0").build();
         }
