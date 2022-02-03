@@ -1,7 +1,13 @@
 package uk.gov.hmcts.reform.hmc.service;
 
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.hmc.model.*;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
+import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 
 public interface HearingManagementService {
 
