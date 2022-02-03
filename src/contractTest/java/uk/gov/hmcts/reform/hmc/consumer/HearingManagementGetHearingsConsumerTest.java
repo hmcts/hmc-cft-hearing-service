@@ -15,7 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.hmc.BasePactTesting;
-import uk.gov.hmcts.reform.hmc.controllers.HearingManagementController;
 import uk.gov.hmcts.reform.hmc.utility.HearingResponsePactUtil;
 
 import java.util.Map;
@@ -55,8 +54,7 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
                 .headers(headers)
                 .willRespondWith()
                 .status(HttpStatus.OK.value())
-                .body(HearingResponsePactUtil.generateGetHearingsJsonBody(
-                    HearingManagementController.MSG_200_GET_HEARINGS))
+                .body(HearingResponsePactUtil.generateGetHearingsJsonBody(MSG_200_GET_HEARINGS))
             .toPact();
     }
 
@@ -78,7 +76,7 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
             .willRespondWith()
             .status(HttpStatus.BAD_REQUEST.value())
             .body(new PactDslJsonBody()
-                      .stringType("message", HearingManagementController.MSG_400_GET_HEARINGS)
+                      .stringType("message", MSG_400_GET_HEARINGS)
                       .stringValue(FIELD_STATUS, BAD_REQUEST)
                       .eachLike("errors", 1)
                       .closeArray())
@@ -110,7 +108,7 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
         assertThat(response.getString("caseHearings"))
             .isNotEmpty();
         assertThat(response.getString("status_message"))
-            .isEqualTo(HearingManagementController.MSG_200_GET_HEARINGS);
+            .isEqualTo(MSG_200_GET_HEARINGS);
     }
 
     /**

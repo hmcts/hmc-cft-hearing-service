@@ -37,9 +37,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALI
 @Validated
 public class HearingManagementController {
 
-    public static final String MSG_200_GET_HEARINGS = "Success (with content)";
-    public static final String MSG_400_GET_HEARINGS = "Invalid request";
-
     private final HearingManagementService hearingManagementService;
 
     public HearingManagementController(HearingManagementService hearingManagementService) {

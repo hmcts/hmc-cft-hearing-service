@@ -37,6 +37,9 @@ public class BasePactTesting {
     public static final String PROVIDER_NAME = "hmcHearingServiceProvider";
     public static final String CONSUMER_NAME = "hmcHearingServiceConsumer";
 
+    public static final String MSG_200_GET_HEARINGS = "Success (with content)";
+    public static final String MSG_400_GET_HEARINGS = "Invalid request";
+
     protected static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
     protected static final String IDAM_OAUTH2_TOKEN = "pact-test-idam-token";
     protected static final String SERVICE_AUTHORIZATION_TOKEN = "pact-test-s2s-token";
