@@ -37,6 +37,9 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALI
 @Validated
 public class HearingManagementController {
 
+    public static final String MSG_200_GET_HEARINGS = "Success (with content)";
+    public static final String MSG_400_GET_HEARINGS = "Invalid request";
+
     private final HearingManagementService hearingManagementService;
 
     public HearingManagementController(HearingManagementService hearingManagementService) {
@@ -68,17 +71,6 @@ public class HearingManagementController {
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
         hearingManagementService.sendRequestToHmi(hearingResponse.getHearingRequestId(), createHearingRequest);
         return hearingResponse;
-    }
-
-    private String getCaseRef(CreateHearingRequest hearingRequest) {
-        if (null == hearingRequest) {
-            return null;
-        }
-        if (null == hearingRequest.getCaseDetails()) {
-            return null;
-        }
-        return hearingRequest.getCaseDetails().getCaseRef();
-
     }
 
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -137,6 +129,14 @@ public class HearingManagementController {
         HearingResponse hearingResponse =  hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
         hearingManagementService.sendRequestToHmi(hearingId, hearingRequest);
         return hearingResponse;
+    }
+
+    private String getCaseRef(CreateHearingRequest hearingRequest) {
+        if (null == hearingRequest || null == hearingRequest.getCaseDetails()) {
+            return null;
+        }
+        return hearingRequest.getCaseDetails().getCaseRef();
+
     }
 
 }

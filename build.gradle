@@ -9,7 +9,7 @@ plugins {
   id 'org.sonarqube' version '3.3'
   id 'uk.gov.hmcts.java' version '0.12.2'
   id 'com.github.spacialcircumstances.gradle-cucumber-reporting' version '0.1.23'
-  id 'au.com.dius.pact' version '4.1.0'
+  id 'au.com.dius.pact' version '4.1.7'
 }
 
 ext['diuspactproviderVersion'] = '4.2.14'
@@ -215,10 +215,13 @@ sonarqube {
 def versions = [
   junit           : '5.7.2',
   junitPlatform   : '1.7.2',
+  jsr310          : '2.12.4',
+  log4j           : '2.14.1',
   lombok          : '1.18.16',
   mapstruct       : '1.4.2.Final',
   pact            : '4.1.7',
   reformLogging   : '5.1.7',
+  restAssured     : '4.2.1',
   springBoot      : springBoot.class.package.implementationVersion,
   springCloud     : '2020.0.1',
   springfoxSwagger: '3.0.0',
@@ -274,6 +277,19 @@ def static getCheckedOutGitCommitHash() {
   'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
+task contract(type: Test, description: 'Runs contract tests.', group: 'Verification') {
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+}
+
+task runAndPublishConsumerPactTests(type: Test) {
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+  include "uk/gov/hmcts/reform/hmc/consumer/**"
+}
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
 task runProviderPactVerification(type:Test) {
   logger.lifecycle("Runs provider pact Tests")
   useJUnitPlatform()
@@ -281,6 +297,7 @@ task runProviderPactVerification(type:Test) {
   classpath = sourceSets.contractTest.runtimeClasspath
   systemProperty 'pact.verifier.publishResults', System.getProperty('pact.verifier.publishResults')
   systemProperty 'pact.provider.version', project.pactVersion
+  include "uk/gov/hmcts/reform/hmc/provider/**"
   include "uk/gov/hmcts/reform/hmc/controllers/**"
 }
 
@@ -324,6 +341,9 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
 
+  compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
+  compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
+  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jsr310
   compile group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceAuthVersion
   compile group: 'com.github.hmcts', name: 'idam-java-client', version: '2.0.1'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
@@ -381,11 +401,21 @@ dependencies {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
-  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.1.0'
 
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: diuspactproviderVersion
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: diuspactproviderVersion
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: diuspactproviderVersion
+  contractTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
+  contractTestCompile group: 'io.rest-assured', name: 'json-path', version: versions.restAssured
+  contractTestCompile group: 'io.rest-assured', name: 'xml-path', version: versions.restAssured
+
+  contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact
+  contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact
+
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact
+
+  contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.1.0'
 
   integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
@@ -418,4 +448,13 @@ bootJar {
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
+}
+
+pact {
+  publish {
+    pactDirectory = 'build/pacts'
+    pactBrokerUrl = System.getProperty("pact.broker.url") ?: 'http://localhost:80'
+    tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+    version = '0.0.1'
+  }
 }
