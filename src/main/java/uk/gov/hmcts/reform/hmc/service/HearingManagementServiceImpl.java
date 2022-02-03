@@ -27,14 +27,7 @@ import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
-import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
-import uk.gov.hmcts.reform.hmc.model.HearingDetails;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
-import uk.gov.hmcts.reform.hmc.model.HearingResponse;
-import uk.gov.hmcts.reform.hmc.model.PartyDetails;
-import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.*;
 import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
@@ -114,19 +107,17 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public ResponseEntity<Object> getHearingRequest(Long hearingId, boolean isValid) {
+    public ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid) {
         isValidFormat(hearingId.toString());
         boolean hearingExists = hearingRepository.existsById(hearingId);
         if (!hearingExists) {
             throw new HearingNotFoundException(hearingId);
-        } else if (!isValid && hearingExists) {
+        } else if (!isValid) {
             return ResponseEntity.ok(getHearingResponseMapper
                                          .toHearingResponse(hearingRepository.findById(hearingId).get()));
-        } else if (isValid && hearingExists) {
+        } else  {
             return ResponseEntity.noContent().header("Content-Length", "0").build();
         }
-        return null;
     }
 
     @Override

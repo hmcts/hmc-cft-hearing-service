@@ -18,11 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
-import uk.gov.hmcts.reform.hmc.model.HearingResponse;
-import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.*;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import javax.validation.Valid;
@@ -51,8 +47,8 @@ public class HearingManagementController {
         @ApiResponse(code = 404, message = "Hearing id not found"),
         @ApiResponse(code = 400, message = "Invalid hearing id")
     })
-    public ResponseEntity getHearing(@PathVariable("id") Long hearingId,
-                                         @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {
+    public ResponseEntity<GetHearingResponse> getHearing(@PathVariable("id") Long hearingId,
+                                                         @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {
         return hearingManagementService.getHearingRequest(hearingId, isValid);
     }
 

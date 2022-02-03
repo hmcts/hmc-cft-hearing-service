@@ -36,9 +36,6 @@ public class GetHearingResponseMapper {
             hearingResponse.setResponseVersion(hearingEntity.getHearingResponses().get(0).getHearingResponseId());
             hearingResponse.setLaCaseStatus(hearingEntity.getHearingResponses().get(0).getListingCaseStatus());
             hearingResponse.setListingStatus(hearingEntity.getHearingResponses().get(0).getListingStatus());
-            //doesn't exist?
-            //hearingResponse.setHearingCancellationReason(
-            // hearingEntity.getHearingResponses().get(0).getCancellationReasonType);
         }
         return hearingResponse;
     }
@@ -75,13 +72,12 @@ public class GetHearingResponseMapper {
         return caseDetails;
     }
 
-    @SuppressWarnings("unchecked")
     private HearingDetails setHearingDetails(HearingEntity hearingEntity) {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(hearingEntity.getCaseHearingRequest().getAutoListFlag());
         hearingDetails.setHearingType(hearingEntity.getCaseHearingRequest().getHearingType());
         hearingDetails.setDuration(hearingEntity.getCaseHearingRequest().getRequiredDurationInMinutes());
-        ArrayList<String> hearingPriorityType = new ArrayList();
+        ArrayList<String> hearingPriorityType = new ArrayList<String>();
         for (NonStandardDurationsEntity nonStandardDurationsEntity
             : hearingEntity.getCaseHearingRequest().getNonStandardDurations()) {
             hearingPriorityType.add(nonStandardDurationsEntity.getNonStandardHearingDurationReasonType());
@@ -91,7 +87,7 @@ public class GetHearingResponseMapper {
         hearingDetails.setNumberOfPhysicalAttendees(
             hearingEntity.getCaseHearingRequest().getNumberOfPhysicalAttendees());
         hearingDetails.setHearingInWelshFlag(hearingEntity.getCaseHearingRequest().getHearingInWelshFlag());
-        ArrayList<String> facilityType = new ArrayList();
+        ArrayList<String> facilityType = new ArrayList<String>();
         for (RequiredFacilitiesEntity requiredFacilitiesEntity
             : hearingEntity.getCaseHearingRequest().getRequiredFacilities()) {
             facilityType.add(requiredFacilitiesEntity.getFacilityType());
@@ -111,8 +107,6 @@ public class GetHearingResponseMapper {
         requestDetails.setStatus(hearingEntity.getStatus());
         requestDetails.setRequestTimeStamp(hearingEntity.getCaseHearingRequest().getHearingRequestReceivedDateTime());
         requestDetails.setVersionNumber(hearingEntity.getCaseHearingRequest().getVersionNumber());
-        //doesn't exist?
-        //requestDetails.setPartiesNotified(hearingEntity.getHearingResponses().get(0).getPartiesNotifiedDateTime());
         return requestDetails;
     }
 
