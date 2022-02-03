@@ -24,8 +24,9 @@ public class MessageSenderToQueueConfiguration {
                 .sender()
                 .queueName(applicationParams.getInternalOutboundQueueName())
                 .buildClient();
+            log.debug("Connected to queue {}", applicationParams.getInternalOutboundQueueName());
             senderClient.sendMessage(new ServiceBusMessage(message));
-            log.info("Message has been sent to queue successfully : {}", message);
+            log.debug("Message has been sent to the queue {}", applicationParams.getInternalOutboundQueueName());
         } catch (Exception e) {
             log.error("Error while sending the message to queue:{}", e.getMessage());
         }
