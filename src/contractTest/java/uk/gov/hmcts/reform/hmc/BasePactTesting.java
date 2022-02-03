@@ -8,10 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
@@ -435,12 +433,4 @@ public class BasePactTesting {
         return listUnavailabilityRanges;
     }
 
-    private HearingDaySchedule createHearingDaySchedule(Integer id) {
-        HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
-        hearingDaySchedule.setHearingRoomId("room" + id);
-        hearingDaySchedule.setHearingJudgeId("judge" + id);
-        hearingDaySchedule.setHearingStartDateTime(LocalDateTime.now());
-        hearingDaySchedule.setHearingEndDateTime(LocalDateTime.now());
-        return hearingDaySchedule;
-    }
 }
