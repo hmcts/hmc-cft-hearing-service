@@ -46,6 +46,11 @@ public class BasePactTesting {
     protected static final String VALID_CASE_REF = "9372710950276233";
     protected static final String VALID_CASE_STATUS = "UPDATED";
 
+    public static final String MSG_200_GET_HEARINGS = "Success (with content)";
+    public static final String MSG_400_GET_HEARINGS = "Invalid request";
+    public static final String MSG_200_DELETE_HEARING = "Success (with content)";
+    public static final String MSG_400_DELETE_HEARING = "Invalid request";
+
 
     protected static final Map<String, String> headers = Map.of(
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,

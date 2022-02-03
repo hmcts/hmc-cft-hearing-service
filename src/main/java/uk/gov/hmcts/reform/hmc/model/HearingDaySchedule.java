@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -30,8 +31,8 @@ public class HearingDaySchedule {
     private LocalDateTime hearingEndDateTime;
 
     @JsonProperty("listAssistSessionID")
-    @NotEmpty(message = ValidationError.LIST_ASSIST_SESSION_ID_NULL_EMPTY)
-    @Size(max = 60, message = ValidationError.LIST_ASSIST_SESSION_ID_MAX_LENGTH)
+    @Size(max = 60)
+    @NotNull
     private String listAssistSessionId;
 
     @NotEmpty(message = ValidationError.HEARING_VENUE_ID_NULL_EMPTY)

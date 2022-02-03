@@ -15,7 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.hmc.BasePactTesting;
-import uk.gov.hmcts.reform.hmc.controllers.HearingManagementController;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.utility.HearingResponsePactUtil;
 
@@ -64,8 +63,7 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.ACCEPTED.value())
-            .body(HearingResponsePactUtil.generateDeleteHearingJsonBody(
-                HearingManagementController.MSG_200_DELETE_HEARING))
+            .body(HearingResponsePactUtil.generateDeleteHearingJsonBody(MSG_200_DELETE_HEARING))
             .toPact();
     }
 
@@ -88,7 +86,7 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
             .willRespondWith()
             .status(HttpStatus.BAD_REQUEST.value())
             .body(new PactDslJsonBody()
-                      .stringType(FIELD_MESSAGE, HearingManagementController.MSG_400_DELETE_HEARING)
+                      .stringType(FIELD_MESSAGE, MSG_400_DELETE_HEARING)
                       .stringValue(FIELD_STATUS, BAD_REQUEST)
                       .eachLike(FIELD_ERRORS, 1)
                       .closeArray()

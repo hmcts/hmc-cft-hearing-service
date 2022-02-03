@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/hmcts/hmc-cft-hearing-service.svg?branch=master)](https://travis-ci.org/hmcts/hmc-cft-hearing-service)
 
 ## Getting Started
-Please note that this microservice is also available within [ccd-docker](https://github.com/hmcts/ccd-docker).
+Please note that this microservice is also available within [hmc-docker](https://github.com/hmcts/hmc-docker).
 
 ### Prerequisites
 
