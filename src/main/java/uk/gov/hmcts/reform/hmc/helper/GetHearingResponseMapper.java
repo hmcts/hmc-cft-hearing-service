@@ -29,7 +29,7 @@ public class GetHearingResponseMapper {
 
     private HearingResponse setHearingResponse(HearingEntity hearingEntity) {
         HearingResponse hearingResponse = new HearingResponse();
-        if (hearingEntity.getHearingResponses().size() > 0) {
+        if (!hearingEntity.getHearingResponses().isEmpty()) {
             hearingResponse.setListAssistTransactionID(
                 hearingEntity.getHearingResponses().get(0).getHearingResponseId());
             hearingResponse.setReceivedDateTime(hearingEntity.getHearingResponses().get(0).getRequestTimeStamp());
@@ -45,7 +45,7 @@ public class GetHearingResponseMapper {
 
     private PartyDetails setPartyDetails(HearingEntity hearingEntity) {
         PartyDetails partyDetails = new PartyDetails();
-        if (hearingEntity.getCaseHearingRequest().getHearingParties().size() > 0) {
+        if (!hearingEntity.getCaseHearingRequest().getHearingParties().isEmpty()) {
             partyDetails.setPartyID(
                 hearingEntity.getCaseHearingRequest().getHearingParties().get(0).getPartyReference());
             partyDetails.setPartyType(
@@ -81,7 +81,7 @@ public class GetHearingResponseMapper {
         hearingDetails.setAutoListFlag(hearingEntity.getCaseHearingRequest().getAutoListFlag());
         hearingDetails.setHearingType(hearingEntity.getCaseHearingRequest().getHearingType());
         hearingDetails.setDuration(hearingEntity.getCaseHearingRequest().getRequiredDurationInMinutes());
-        ArrayList hearingPriorityType = new ArrayList();
+        ArrayList<String> hearingPriorityType = new ArrayList();
         for (NonStandardDurationsEntity nonStandardDurationsEntity
             : hearingEntity.getCaseHearingRequest().getNonStandardDurations()) {
             hearingPriorityType.add(nonStandardDurationsEntity.getNonStandardHearingDurationReasonType());
@@ -91,7 +91,7 @@ public class GetHearingResponseMapper {
         hearingDetails.setNumberOfPhysicalAttendees(
             hearingEntity.getCaseHearingRequest().getNumberOfPhysicalAttendees());
         hearingDetails.setHearingInWelshFlag(hearingEntity.getCaseHearingRequest().getHearingInWelshFlag());
-        ArrayList facilityType = new ArrayList();
+        ArrayList<String> facilityType = new ArrayList();
         for (RequiredFacilitiesEntity requiredFacilitiesEntity
             : hearingEntity.getCaseHearingRequest().getRequiredFacilities()) {
             facilityType.add(requiredFacilitiesEntity.getFacilityType());
