@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
-import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
+import uk.gov.hmcts.reform.hmc.data.*;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
@@ -27,30 +25,31 @@ public class GetHearingResponseMapper {
 
     }
 
-    private HearingResponse setHearingResponse(HearingEntity hearingEntity) {
-        HearingResponse hearingResponse = new HearingResponse();
-        if (!hearingEntity.getHearingResponses().isEmpty()) {
+    private ArrayList<HearingResponse> setHearingResponse(HearingEntity hearingEntity) {
+        ArrayList<HearingResponse> hearingResponses = new ArrayList<>();
+        for (HearingResponseEntity hearingResponseEntity : hearingEntity.getHearingResponses()) {
+            HearingResponse hearingResponse = new HearingResponse();
             hearingResponse.setListAssistTransactionID(
-                hearingEntity.getHearingResponses().get(0).getHearingResponseId());
-            hearingResponse.setReceivedDateTime(hearingEntity.getHearingResponses().get(0).getRequestTimeStamp());
-            hearingResponse.setResponseVersion(hearingEntity.getHearingResponses().get(0).getHearingResponseId());
-            hearingResponse.setLaCaseStatus(hearingEntity.getHearingResponses().get(0).getListingCaseStatus());
-            hearingResponse.setListingStatus(hearingEntity.getHearingResponses().get(0).getListingStatus());
+                hearingResponseEntity.getHearingResponseId());
+            hearingResponse.setReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
+            hearingResponse.setResponseVersion(hearingResponseEntity.getHearingResponseId());
+            hearingResponse.setLaCaseStatus(hearingResponseEntity.getListingCaseStatus());
+            hearingResponse.setListingStatus(hearingResponseEntity.getListingStatus());
+            hearingResponses.add(hearingResponse);
         }
-        return hearingResponse;
+        return hearingResponses;
     }
 
-    private PartyDetails setPartyDetails(HearingEntity hearingEntity) {
-        PartyDetails partyDetails = new PartyDetails();
-        if (!hearingEntity.getCaseHearingRequest().getHearingParties().isEmpty()) {
-            partyDetails.setPartyID(
-                hearingEntity.getCaseHearingRequest().getHearingParties().get(0).getPartyReference());
-            partyDetails.setPartyType(
-                hearingEntity.getCaseHearingRequest().getHearingParties().get(0).getPartyType().getLabel());
-            partyDetails.setPartyRole(
-                hearingEntity.getCaseHearingRequest().getHearingParties().get(0).getPartyRoleType());
+    private ArrayList<PartyDetails> setPartyDetails(HearingEntity hearingEntity) {
+        ArrayList<PartyDetails> partyDetailsList = new ArrayList<>();
+        for (HearingPartyEntity hearingPartyEntity : hearingEntity.getCaseHearingRequest().getHearingParties()) {
+            PartyDetails partyDetails = new PartyDetails();
+            partyDetails.setPartyID(hearingPartyEntity.getPartyReference());
+            partyDetails.setPartyType(hearingPartyEntity.getPartyType().getLabel());
+            partyDetails.setPartyRole(hearingPartyEntity.getPartyRoleType());
+            partyDetailsList.add(partyDetails);
         }
-        return partyDetails;
+        return partyDetailsList;
     }
 
 

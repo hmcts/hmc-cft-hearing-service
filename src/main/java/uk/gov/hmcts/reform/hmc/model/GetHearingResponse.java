@@ -7,6 +7,8 @@ import lombok.Setter;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 
+import java.util.ArrayList;
+
 @Data
 @NoArgsConstructor
 @Setter
@@ -16,7 +18,7 @@ public class GetHearingResponse {
     RequestDetails requestDetails;
     HearingDetails hearingDetails;
     CaseDetails caseDetails;
-    PartyDetails partyDetails;
-    HearingResponse hearingResponse;
+    ArrayList<PartyDetails> partyDetails;
+    ArrayList<HearingResponse> hearingResponse;
 
 }
