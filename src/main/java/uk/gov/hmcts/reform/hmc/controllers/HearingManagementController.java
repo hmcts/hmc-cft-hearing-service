@@ -66,7 +66,7 @@ public class HearingManagementController {
     public HearingResponse saveHearing(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
         hearingManagementService.verifyAccess(getCaseRef(createHearingRequest));
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
-        hearingManagementService.sendRequestToHmi(hearingResponse.getHearingRequestId(), createHearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest);
         return hearingResponse;
     }
 
@@ -93,7 +93,7 @@ public class HearingManagementController {
                               @RequestBody @Valid DeleteHearingRequest deleteRequest) {
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
                 hearingId, deleteRequest);
-        hearingManagementService.sendRequestToHmi(deleteRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(deleteRequest);
 
         return hearingResponse;
     }
@@ -135,7 +135,7 @@ public class HearingManagementController {
     public HearingResponse updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
                               @PathVariable("id") Long hearingId) {
         HearingResponse hearingResponse =  hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
-        hearingManagementService.sendRequestToHmi(hearingId, hearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(hearingId, hearingRequest);
         return hearingResponse;
     }
 
