@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.hmc.model.hmi;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -27,5 +29,7 @@ public class HearingResponse {
 
     @JsonProperty("hearingCancellationReason")
     private String hearingCancellationReason;
+
+    private List<HearingDaySchedule> hearingDaySchedule;
 
 }
