@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
+
 class MessageSenderToQueueConfigurationIT  {
 
     @MockBean
@@ -17,6 +19,6 @@ class MessageSenderToQueueConfigurationIT  {
     void shouldSuccessfullyProcessRequest() {
         MessageSenderToQueueConfiguration messageSenderToQueueConfiguration =
             new MessageSenderToQueueConfiguration(applicationParams);
-        messageSenderToQueueConfiguration.sendMessageToQueue("Test Message");
+        messageSenderToQueueConfiguration.sendMessageToQueue("Test Message",1L,AMEND_HEARING);
     }
 }
