@@ -1,8 +1,34 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.data.*;
-import uk.gov.hmcts.reform.hmc.model.*;
+import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.IndividualDetailEntity;
+import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
+import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
+import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
+import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
+import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
+import uk.gov.hmcts.reform.hmc.model.Attendee;
+import uk.gov.hmcts.reform.hmc.model.CaseCategory;
+import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
+import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.HearingLocation;
+import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
+import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
+import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
+import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.model.RelatedParty;
+import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
+import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 
@@ -85,7 +111,8 @@ public class GetHearingResponseMapper {
             for (UnavailabilityEntity unavailabilityEntity : hearingPartyEntity.getUnavailabilityEntity()) {
                 UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
                 UnavailabilityRanges unavailabilityRanges = new UnavailabilityRanges();
-                unavailabilityDow.setDowUnavailabilityType(retrieveLabel(unavailabilityEntity.getDayOfWeekUnavailableType().getLabel()));
+                unavailabilityDow.setDowUnavailabilityType(
+                    retrieveLabel(unavailabilityEntity.getDayOfWeekUnavailableType().getLabel()));
                 unavailabilityDow.setDow(retrieveLabel(unavailabilityEntity.getDayOfWeekUnavailable().getLabel()));
                 unavailabilityRanges.setUnavailableToDate(unavailabilityEntity.getEndDate());
                 unavailabilityRanges.setUnavailableFromDate(unavailabilityEntity.getStartDate());
@@ -102,8 +129,10 @@ public class GetHearingResponseMapper {
         OrganisationDetails organisationDetails = new OrganisationDetails();
         if (hearingPartyEntity.getOrganisationDetailEntity() != null) {
             organisationDetails.setName(hearingPartyEntity.getOrganisationDetailEntity().getOrganisationName());
-            organisationDetails.setOrganisationType(hearingPartyEntity.getOrganisationDetailEntity().getOrganisationTypeCode());
-            organisationDetails.setCftOrganisationID(hearingPartyEntity.getOrganisationDetailEntity().getHmctsOrganisationReference());
+            organisationDetails.setOrganisationType(
+                hearingPartyEntity.getOrganisationDetailEntity().getOrganisationTypeCode());
+            organisationDetails.setCftOrganisationID(
+                hearingPartyEntity.getOrganisationDetailEntity().getHmctsOrganisationReference());
         }
         return organisationDetails;
     }
@@ -118,16 +147,19 @@ public class GetHearingResponseMapper {
             individualDetails.setPreferredHearingChannel(individualDetailEntity.getChannelType());
             individualDetails.setInterpreterLanguage(individualDetailEntity.getInterpreterLanguage());
             if (!hearingPartyEntity.getReasonableAdjustmentsEntity().isEmpty()) {
-                individualDetails.setReasonableAdjustments(List.of(hearingPartyEntity.getReasonableAdjustmentsEntity().get(
-                    0).getReasonableAdjustmentCode()));
+                individualDetails.setReasonableAdjustments(
+                    List.of(hearingPartyEntity.getReasonableAdjustmentsEntity().get(
+                        0).getReasonableAdjustmentCode()));
             }
             individualDetails.setVulnerableFlag(individualDetailEntity.getVulnerableFlag());
             individualDetails.setVulnerabilityDetails(individualDetailEntity.getVulnerabilityDetails());
             if (!hearingPartyEntity.getContactDetails().isEmpty()) {
                 if (hearingPartyEntity.getContactDetails().get(0).getContactDetails().contains("@")) {
-                    individualDetails.setHearingChannelEmail(hearingPartyEntity.getContactDetails().get(0).getContactDetails());
+                    individualDetails.setHearingChannelEmail(
+                        hearingPartyEntity.getContactDetails().get(0).getContactDetails());
                 } else {
-                    individualDetails.setHearingChannelPhone(hearingPartyEntity.getContactDetails().get(0).getContactDetails());
+                    individualDetails.setHearingChannelPhone(
+                        hearingPartyEntity.getContactDetails().get(0).getContactDetails());
                 }
             }
             RelatedParty relatedParty = new RelatedParty();
@@ -222,8 +254,10 @@ public class GetHearingResponseMapper {
 
     private HearingWindow setHearingWindow(HearingEntity hearingEntity) {
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowStartDateRange(hearingEntity.getCaseHearingRequest().getHearingWindowStartDateRange());
-        hearingWindow.setHearingWindowEndDateRange(hearingEntity.getCaseHearingRequest().getHearingWindowEndDateRange());
+        hearingWindow.setHearingWindowStartDateRange(
+            hearingEntity.getCaseHearingRequest().getHearingWindowStartDateRange());
+        hearingWindow.setHearingWindowEndDateRange(
+            hearingEntity.getCaseHearingRequest().getHearingWindowEndDateRange());
         hearingWindow.setFirstDateTimeMustBe(hearingEntity.getCaseHearingRequest().getFirstDateTimeOfHearingMustBe());
         return hearingWindow;
     }
