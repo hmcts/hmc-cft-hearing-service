@@ -30,7 +30,7 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
     private static final String FIELD_STATUS = "status";
     private static final String FIELD_ERRORS = "errors";
     private static final String BAD_REQUEST = "BAD_REQUEST";
-    private static final String TEST_HEARIMG_ID = "2000000001";
+    private static final String TEST_HEARING_ID = "2000000001";
 
     // Test data 1 - valid DeleteHearingRequest
     DeleteHearingRequest validRequest = generateDeleteHearingRequest();
@@ -57,13 +57,13 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
             .given(PROVIDER_NAME + " successfully deletes hearing")
             .uponReceiving("Request to DELETE hearing with valid hearing id")
             .path(PATH_HEARING)
-            .query(FIELD_HEARING_ID + "=" + TEST_HEARIMG_ID)
+            .query(FIELD_HEARING_ID + "=" + TEST_HEARING_ID)
             .method(HttpMethod.DELETE.toString())
             .body(jsonValidRequest, ContentType.APPLICATION_JSON)
             .headers(headers)
             .willRespondWith()
-            .status(HttpStatus.ACCEPTED.value())
-            .body(HearingResponsePactUtil.generateDeleteHearingJsonBody(MSG_200_DELETE_HEARING))
+            .status(HttpStatus.OK.value())
+            .body(HearingResponsePactUtil.generateDeleteHearingJsonBody(MSG_200_DELETE_HEARING, TEST_HEARING_ID))
             .toPact();
     }
 
@@ -79,7 +79,7 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
             .given(PROVIDER_NAME + " throws validation error while trying to delete hearing")
             .uponReceiving("Request to DELETE hearing for invalid hearing request")
             .path(PATH_HEARING)
-            .query(FIELD_HEARING_ID + "=" + TEST_HEARIMG_ID)
+            .query(FIELD_HEARING_ID + "=" + TEST_HEARING_ID)
             .method(HttpMethod.DELETE.toString())
             .body(jsonInvalidRequest, ContentType.APPLICATION_JSON)
             .headers(headers)
@@ -101,17 +101,17 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
      */
     @Test
     @PactTestFor(pactMethod = "deleteHearing")
-    public void shouldReturn202DeletedHearing(MockServer mockServer) {
+    public void shouldReturn200DeletedHearing(MockServer mockServer) {
         RestAssured
             .given()
             .headers(headers)
             .contentType(io.restassured.http.ContentType.JSON)
-            .queryParam(FIELD_HEARING_ID, TEST_HEARIMG_ID)
+            .queryParam(FIELD_HEARING_ID, TEST_HEARING_ID)
             .body(jsonValidRequest)
             .when()
             .delete(mockServer.getUrl() + PATH_HEARING)
             .then()
-            .statusCode(HttpStatus.ACCEPTED.value())
+            .statusCode(HttpStatus.OK.value())
             .and()
             .extract()
             .body()
@@ -130,7 +130,7 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
             .given()
             .headers(headers)
             .contentType(io.restassured.http.ContentType.JSON)
-            .queryParam(FIELD_HEARING_ID, TEST_HEARIMG_ID)
+            .queryParam(FIELD_HEARING_ID, TEST_HEARING_ID)
             .body(jsonInvalidRequest)
             .when()
             .delete(mockServer.getUrl() + PATH_HEARING)

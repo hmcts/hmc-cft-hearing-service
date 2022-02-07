@@ -3,8 +3,13 @@ package uk.gov.hmcts.reform.hmc.utility;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 
 public class HearingResponsePactUtil {
 
@@ -12,8 +17,8 @@ public class HearingResponsePactUtil {
 
     private static final String FORMATYYYYMMDDHHMMSSSSSSZ = "yyyy-MM-dd'T'HH:mm:SSSSSS";
     private static final String FORMATYYYYMMDDHHMMSSZ = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-    private static final String STATUS_OPTIONS_STRING = "HEARING REQUESTED|UPDATE REQUESTED|"
-        + "UPDATE SUBMITTED|AWAITING LISTING|LISTED|CANCELLATION REQUESTED|"
+    private static final String STATUS_OPTIONS_STRING = "HEARING_REQUESTED|UPDATE_REQUESTED|"
+        + "UPDATE_SUBMITTED|AWAITING_LISTING|LISTED|CANCELLATION_REQUESTED|"
         + "EXCEPTION";
 
     private HearingResponsePactUtil() {
@@ -36,6 +41,28 @@ public class HearingResponsePactUtil {
             .stringMatcher("status", STATUS_OPTIONS_STRING)
             .timestamp("timeStamp", FORMATYYYYMMDDHHMMSSSSSSZ, Instant.parse("2021-10-29T01:23:34.123456Z"))
             .asBody();
+
+        return pactDslJsonBody;
+    }
+
+    /**
+     * generate Pact JSON body.
+     *
+     * @return PactDslJsonBody Pact Dsl JSON body
+     */
+    public static PactDslJsonBody genericCreateHearingJsonBody(String statusMessage, String hearingRequestID,
+                                                               String status, LocalDateTime timeStamp) {
+        // Build structural parts of the JSON body
+        PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
+
+        // Starting with the status message
+        addStatusMessage(pactDslJsonBody, statusMessage);
+
+        pactDslJsonBody
+                .stringMatcher("hearingRequestID", "^[a-zA-Z0-9]{1,30}$", hearingRequestID)
+                .stringMatcher("status", STATUS_OPTIONS_STRING, status)
+                .timestamp("timeStamp", FORMATYYYYMMDDHHMMSSSSSSZ, timeStamp.atZone(ZoneId.systemDefault()).toInstant())
+                .asBody();
 
         return pactDslJsonBody;
     }
@@ -75,12 +102,15 @@ public class HearingResponsePactUtil {
      * generate Pact JSON body.
      * @return PactDslJsonBody Pact Dsl JSON body
      */
-    public static PactDslJsonBody generateDeleteHearingJsonBody(String statusMessage) {
+    public static PactDslJsonBody generateDeleteHearingJsonBody(String statusMessage, String hearingRequestId) {
+        DeleteHearingRequest deleteHearingRequest = generateDeleteHearingRequest();
+
         // Build structural parts of the JSON body
-        PactDslJsonBody pactDslJsonBody = genericCreateHearingJsonBody(statusMessage);
+        PactDslJsonBody pactDslJsonBody = genericCreateHearingJsonBody(statusMessage, hearingRequestId,
+                CANCELLATION_REQUESTED, LocalDateTime.now());
 
         pactDslJsonBody
-            .integerType("versionNumber")
+            .integerType("versionNumber", deleteHearingRequest.getVersionNumber() + 1)
             .asBody();
 
         // return constructed body
@@ -165,4 +195,10 @@ public class HearingResponsePactUtil {
           .closeArray().asBody();
     }
 
+    private static DeleteHearingRequest generateDeleteHearingRequest() {
+        DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
+        deleteHearingRequest.setCancellationReasonCode("REASONCODE25");
+        deleteHearingRequest.setVersionNumber(2);
+        return  deleteHearingRequest;
+    }
 }
