@@ -43,7 +43,6 @@ public class HearingManagementController {
         this.hearingManagementService = hearingManagementService;
     }
 
-
     @GetMapping(path = "/hearing/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiResponses(value = {
@@ -68,17 +67,6 @@ public class HearingManagementController {
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
         hearingManagementService.sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest);
         return hearingResponse;
-    }
-
-    private String getCaseRef(CreateHearingRequest hearingRequest) {
-        if (null == hearingRequest) {
-            return null;
-        }
-        if (null == hearingRequest.getCaseDetails()) {
-            return null;
-        }
-        return hearingRequest.getCaseDetails().getCaseRef();
-
     }
 
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -137,6 +125,14 @@ public class HearingManagementController {
         HearingResponse hearingResponse =  hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
         hearingManagementService.sendRequestToHmiAndQueue(hearingId, hearingRequest);
         return hearingResponse;
+    }
+
+    private String getCaseRef(CreateHearingRequest hearingRequest) {
+        if (null == hearingRequest || null == hearingRequest.getCaseDetails()) {
+            return null;
+        }
+        return hearingRequest.getCaseDetails().getCaseRef();
+
     }
 
 }
