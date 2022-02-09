@@ -200,107 +200,107 @@ class GetHearingResponseMapperTest {
 
     private void assertRequestDetails(RequestDetails requestDetails) {
         assertAll(
-            () -> assertEquals(requestDetails.getStatus(), "HEARING_REQUESTED"),
-            () -> assertEquals(requestDetails.getVersionNumber(), 1)
+            () -> assertEquals("HEARING_REQUESTED", requestDetails.getStatus()),
+            () -> assertEquals(1, requestDetails.getVersionNumber())
         );
     }
 
     private void assertCaseDetails(CaseDetails caseDetails) {
         assertAll(
-            () -> assertEquals(caseDetails.getHmctsServiceCode(), "ABA1"),
-            () -> assertEquals(caseDetails.getCaseRef(), "12345")
+            () -> assertEquals("ABA1", caseDetails.getHmctsServiceCode()),
+            () -> assertEquals("12345", caseDetails.getCaseRef())
         );
     }
 
     private void assertHearingDetails(HearingDetails hearingDetails) {
         assertAll(
-            () -> assertEquals(hearingDetails.getHearingType(), "Some hearing type")
+            () -> assertEquals("Some hearing type", hearingDetails.getHearingType())
         );
     }
 
     private void assertPartyDetails(PartyDetails partyDetails, String partyType) {
         assertAll(
-            () -> assertEquals(partyDetails.getPartyID(), "reference"),
-            () -> assertEquals(partyDetails.getPartyType(), partyType),
-            () -> assertEquals(partyDetails.getPartyRole(), "role")
+            () -> assertEquals("reference", partyDetails.getPartyID()),
+            () -> assertEquals(partyType, partyDetails.getPartyType()),
+            () -> assertEquals("role", partyDetails.getPartyRole())
         );
     }
 
     private void assertHearingResponse(HearingResponse hearingResponse) {
         assertAll(
-            () -> assertEquals(hearingResponse.getLaCaseStatus(), "Case_listingStatus"),
-            () -> assertEquals(hearingResponse.getListingStatus(), "listingStatus"),
-            () -> assertEquals(hearingResponse.getResponseVersion(), 2)
+            () -> assertEquals("Case_listingStatus", hearingResponse.getLaCaseStatus()),
+            () -> assertEquals("listingStatus", hearingResponse.getListingStatus()),
+            () -> assertEquals(2, hearingResponse.getResponseVersion())
         );
     }
 
     private void assertHearingDaySchedule(HearingDaySchedule hearingDaySchedule) {
         assertAll(
-            () -> assertEquals(hearingDaySchedule.getListAssistSessionId(), "session1"),
-            () -> assertEquals(hearingDaySchedule.getHearingVenueId(), "venue1"),
-            () -> assertEquals(hearingDaySchedule.getHearingRoomId(), "room1"),
-            () -> assertEquals(hearingDaySchedule.getPanelMemberId(), "PanelUser1")
+            () -> assertEquals("session1", hearingDaySchedule.getListAssistSessionId()),
+            () -> assertEquals("venue1", hearingDaySchedule.getHearingVenueId()),
+            () -> assertEquals("room1", hearingDaySchedule.getHearingRoomId()),
+            () -> assertEquals("PanelUser1", hearingDaySchedule.getPanelMemberId())
         );
     }
 
     private void assertAttendees(Attendee attendee) {
         assertAll(
-            () -> assertEquals(attendee.getPartyId(), "Party1"),
-            () -> assertEquals(attendee.getHearingSubChannel(), "SubChannel1")
+            () -> assertEquals("Party1", attendee.getPartyId()),
+            () -> assertEquals("SubChannel1", attendee.getHearingSubChannel())
         );
     }
 
     private void assertNonStandardDuration(List<String> hearingPriorityType) {
         assertAll(
-            () -> assertEquals(hearingPriorityType.get(0), "Reason")
+            () -> assertEquals("Reason", hearingPriorityType.get(0))
         );
     }
 
     private void assertCaseCategory(CaseCategory caseCategory) {
         assertAll(
-            () -> assertEquals(caseCategory.getCategoryType(), "caseType"),
-            () -> assertEquals(caseCategory.getCategoryValue(), "PROBATE")
+            () -> assertEquals("caseType", caseCategory.getCategoryType()),
+            () -> assertEquals("PROBATE", caseCategory.getCategoryValue())
         );
     }
 
     private void assertUnavailability(UnavailabilityRanges unavailabilityRanges, UnavailabilityDow unavailabilityDow) {
         assertAll(
             () -> assertEquals(
-                unavailabilityRanges.getUnavailableToDate(),
-                LocalDate.of(2020, 12, 20)
+                LocalDate.of(2020, 12, 20),
+                unavailabilityRanges.getUnavailableToDate()
             ),
             () -> assertEquals(
-                unavailabilityRanges.getUnavailableFromDate(),
-                LocalDate.of(2020, 12, 20)
+                LocalDate.of(2020, 12, 20),
+                unavailabilityRanges.getUnavailableFromDate()
             ),
-            () -> assertEquals(unavailabilityDow.getDowUnavailabilityType(), "ALL"),
-            () -> assertEquals(unavailabilityDow.getDow(), "Friday")
+            () -> assertEquals("ALL", unavailabilityDow.getDowUnavailabilityType()),
+            () -> assertEquals("Friday", unavailabilityDow.getDow())
         );
     }
 
     private void assertOrgDetails(OrganisationDetails organisationDetails) {
         assertAll(
-            () -> assertEquals(organisationDetails.getOrganisationType(), "code"),
-            () -> assertEquals(organisationDetails.getCftOrganisationID(), "reference"),
-            () -> assertEquals(organisationDetails.getName(), "name")
+            () -> assertEquals("code", organisationDetails.getOrganisationType()),
+            () -> assertEquals("reference", organisationDetails.getCftOrganisationID()),
+            () -> assertEquals("name", organisationDetails.getName())
         );
     }
 
     private void assertIndividualDetails(IndividualDetails individualDetails) {
         assertAll(
-            () -> assertEquals(individualDetails.getTitle(), "mr"),
-            () -> assertEquals(individualDetails.getFirstName(), "joe"),
-            () -> assertEquals(individualDetails.getLastName(), "bloggs"),
-            () -> assertEquals(individualDetails.getPreferredHearingChannel(), "channelType"),
-            () -> assertEquals(individualDetails.getInterpreterLanguage(), "english"),
-            () -> assertEquals(individualDetails.getVulnerableFlag(), true),
-            () -> assertEquals(individualDetails.getVulnerabilityDetails(), "details")
+            () -> assertEquals("mr", individualDetails.getTitle()),
+            () -> assertEquals("joe", individualDetails.getFirstName()),
+            () -> assertEquals("bloggs", individualDetails.getLastName()),
+            () -> assertEquals("channelType", individualDetails.getPreferredHearingChannel()),
+            () -> assertEquals("english", individualDetails.getInterpreterLanguage()),
+            () -> assertEquals(true, individualDetails.getVulnerableFlag()),
+            () -> assertEquals("details", individualDetails.getVulnerabilityDetails())
         );
     }
 
     private void assertPanelRequirements(PanelRequirements panelRequirements) {
         assertAll(
-            () -> assertEquals(panelRequirements.getRoleType(), Arrays.asList("RoleType1"))
+            () -> assertEquals(Arrays.asList("RoleType1"), panelRequirements.getRoleType())
         );
     }
 
@@ -313,7 +313,7 @@ class GetHearingResponseMapperTest {
     private void assertHearingLocation(HearingLocation hearingLocation) {
         assertAll(
             () -> assertNull(hearingLocation.getLocationType()),
-            () -> assertEquals(hearingLocation.getLocationId(), "cluster")
+            () -> assertEquals("cluster", hearingLocation.getLocationId())
         );
     }
 
