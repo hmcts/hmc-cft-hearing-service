@@ -128,7 +128,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
         validateHearingRequest(createHearingRequest);
-        return insertHearingRequest(createHearingRequest);
+       HearingRequest hearingRequest = new CreateHearingRequest(createHearingRequest.getHearingDetails(),
+                                                                 createHearingRequest.getCaseDetails(),
+                                                                 createHearingRequest.getPartyDetails(),
+                                                                 createHearingRequest.getRequestDetails());
+        // how to get access HearingRequest.requestDetails
+        HearingEntity savedEntity = saveHearingDetails(hearingRequest, REQUEST_HEARING);
+        return getSaveHearingResponseDetails(savedEntity);
     }
 
     @Override
@@ -181,13 +187,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         return getHearingsResponseMapper.toHearingsResponse(caseRef, entities);
     }
 
-    private HearingResponse insertHearingRequest(CreateHearingRequest createHearingRequest) {
-        HearingEntity savedEntity = saveHearingDetails(createHearingRequest);
-        return getSaveHearingResponseDetails(savedEntity);
-    }
-
-    private HearingEntity saveHearingDetails(CreateHearingRequest createHearingRequest) {
-        HearingEntity hearingEntity = hearingMapper.modelToEntity(createHearingRequest);
+    private HearingEntity saveHearingDetails(HearingRequest hearingRequest) {
+        HearingEntity hearingEntity = hearingMapper.modelToEntity(hearingRequest);
         return hearingRepository.save(hearingEntity);
     }
 

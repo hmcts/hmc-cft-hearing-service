@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 
 import java.util.List;
 
@@ -24,11 +25,11 @@ public class CaseHearingRequestMapper {
         this.caseCategoriesMapper = caseCategoriesMapper;
     }
 
-    public CaseHearingRequestEntity modelToEntity(CreateHearingRequest createHearingRequest,
+    public CaseHearingRequestEntity modelToEntity(HearingRequest hearingRequest,
                                                   HearingEntity hearingEntity) {
         final CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
-        HearingDetails hearingDetails = createHearingRequest.getHearingDetails();
-        CaseDetails caseDetails = createHearingRequest.getCaseDetails();
+        HearingDetails hearingDetails = hearingRequest.getHearingDetails();
+        CaseDetails caseDetails = hearingRequest.getCaseDetails();
         caseHearingRequestEntity.setAutoListFlag(hearingDetails.getAutoListFlag());
         caseHearingRequestEntity.setHearingType(hearingDetails.getHearingType());
         caseHearingRequestEntity.setRequiredDurationInMinutes(hearingDetails.getDuration());
@@ -59,7 +60,7 @@ public class CaseHearingRequestMapper {
                                                                     .getHearingWindowStartDateRange());
         caseHearingRequestEntity.setHearingWindowEndDateRange(hearingDetails.getHearingWindow()
                                                                   .getHearingWindowEndDateRange());
-        caseHearingRequestEntity.setRequestTimeStamp(createHearingRequest.getRequestDetails().getRequestTimeStamp());
+       // caseHearingRequestEntity.setRequestTimeStamp(createHearingRequest.getRequestDetails().getRequestTimeStamp());
         caseHearingRequestEntity.setHearing(hearingEntity);
         return caseHearingRequestEntity;
     }
