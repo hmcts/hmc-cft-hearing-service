@@ -117,8 +117,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     public ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid) {
         isValidFormat(hearingId.toString());
-        boolean hearingExists = hearingRepository.existsById(hearingId);
-        if (!hearingExists) {
+        if (!hearingRepository.existsById(hearingId)) {
             throw new HearingNotFoundException(hearingId);
         } else if (!isValid) {
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
@@ -128,7 +127,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             } else {
                 throw new HearingNotFoundException(hearingId);
             }
-        } else  {
+        } else {
             return ResponseEntity.noContent().header("Content-Length", "0").build();
         }
     }
