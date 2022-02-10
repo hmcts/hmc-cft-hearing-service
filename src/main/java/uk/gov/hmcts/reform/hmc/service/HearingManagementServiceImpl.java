@@ -144,16 +144,16 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest) {
+    public void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest, String messageType) {
         HmiSubmitHearingRequest hmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
             .mapRequest(hearingId, hearingRequest);
-        sendRequestToQueue(hmiSubmitHearingRequest);
+        sendRequestToQueue(hmiSubmitHearingRequest, hearingId, messageType);
     }
 
     @Override
-    public void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest) {
+    public void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest, Long hearingId, String messageType) {
         HmiDeleteHearingRequest hmiDeleteHearingRequest = hmiDeleteHearingRequestMapper.mapRequest(hearingRequest);
-        sendRequestToQueue(hmiDeleteHearingRequest);
+        sendRequestToQueue(hmiDeleteHearingRequest, hearingId, messageType);
     }
 
     private void validateHearingStatusForUpdate(Long hearingId) {
@@ -323,7 +323,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateDeleteHearingStatus(hearingId);
         updateCancellationReasons(hearingId, deleteRequest.getCancellationReasonCode());
         HearingEntity savedEntity = updateHearingStatusAndVersionNumber(
-                hearingId, CANCELLATION_REQUESTED);
+            hearingId, CANCELLATION_REQUESTED);
         return getSaveHearingResponseDetails(savedEntity);
     }
 
@@ -336,9 +336,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             if (null != hearingEntity.getCaseHearingRequest()) {
                 log.info("CHANGING: version number : {}", hearingEntity.getCaseHearingRequest().getVersionNumber());
                 hearingEntity.getCaseHearingRequest().setVersionNumber(
-                        hearingEntity.getCaseHearingRequest().getVersionNumber() + 1);
-                log.info("TO: version number : {}",
-                        hearingEntity.getCaseHearingRequest().getVersionNumber());
+                    hearingEntity.getCaseHearingRequest().getVersionNumber() + 1);
+                log.info(
+                    "TO: version number : {}",
+                    hearingEntity.getCaseHearingRequest().getVersionNumber()
+                );
                 if (null != newStatus) {
                     log.info("CHANGING: Hearing status {}", hearingEntity.getStatus());
                     hearingEntity.setStatus(newStatus);
@@ -421,17 +423,19 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void sendRspToTopic(Object response) {
-        var jsonNode  = objectMapperService.convertObjectToJsonNode(response);
+        var jsonNode = objectMapperService.convertObjectToJsonNode(response);
         messageSenderToTopicConfiguration.sendMessage(jsonNode.toString());
     }
 
-    private void sendRequestToQueue(HmiSubmitHearingRequest hmiSubmitHearingRequest) {
-        var jsonNode  = objectMapperService.convertObjectToJsonNode(hmiSubmitHearingRequest);
-        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString());
+    private void sendRequestToQueue(HmiSubmitHearingRequest hmiSubmitHearingRequest, Long hearingId,
+                                    String messageType) {
+        var jsonNode = objectMapperService.convertObjectToJsonNode(hmiSubmitHearingRequest);
+        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType);
     }
 
-    private void sendRequestToQueue(HmiDeleteHearingRequest hmiDeleteHearingRequest) {
-        var jsonNode  = objectMapperService.convertObjectToJsonNode(hmiDeleteHearingRequest);
-        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString());
+    private void sendRequestToQueue(HmiDeleteHearingRequest hmiDeleteHearingRequest, Long hearingId,
+                                    String messageType) {
+        var jsonNode = objectMapperService.convertObjectToJsonNode(hmiDeleteHearingRequest);
+        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType);
     }
 }
