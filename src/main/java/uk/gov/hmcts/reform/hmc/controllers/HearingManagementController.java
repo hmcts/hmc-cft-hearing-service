@@ -29,6 +29,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALID_LENGTH;
@@ -42,7 +45,6 @@ public class HearingManagementController {
     public HearingManagementController(HearingManagementService hearingManagementService) {
         this.hearingManagementService = hearingManagementService;
     }
-
 
     @GetMapping(path = "/hearing/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -66,19 +68,10 @@ public class HearingManagementController {
     public HearingResponse saveHearing(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
         //hearingManagementService.verifyAccess(getCaseRef(createHearingRequest));
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
-        hearingManagementService.sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest,
+                                                          REQUEST_HEARING
+        );
         return hearingResponse;
-    }
-
-    private String getCaseRef(CreateHearingRequest hearingRequest) {
-        if (null == hearingRequest) {
-            return null;
-        }
-        if (null == hearingRequest.getCaseDetails()) {
-            return null;
-        }
-        return hearingRequest.getCaseDetails().getCaseRef();
-
     }
 
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -90,10 +83,10 @@ public class HearingManagementController {
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
-                              @RequestBody @Valid DeleteHearingRequest deleteRequest) {
+                                         @RequestBody @Valid DeleteHearingRequest deleteRequest) {
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
-                hearingId, deleteRequest);
-        hearingManagementService.sendRequestToHmiAndQueue(deleteRequest);
+            hearingId, deleteRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(deleteRequest, hearingId, DELETE_HEARING);
 
         return hearingResponse;
     }
@@ -114,13 +107,13 @@ public class HearingManagementController {
         @ApiResponse(code = 400, message = "Invalid request")
     })
     public GetHearingsResponse getHearings(@PathVariable("ccdCaseRef")
-                                             @Valid
-                                             @NotEmpty(message = CASE_REF_EMPTY)
-                                             @Size(min = 16, max = 16, message = CASE_REF_INVALID_LENGTH)
-                                             @LuhnCheck(message = CASE_REF_INVALID, ignoreNonDigitCharacters = false)
-                                                 String ccdCaseRef,
-                                                  @RequestParam(required = false)
-                                                 String status) {
+                                           @Valid
+                                           @NotEmpty(message = CASE_REF_EMPTY)
+                                           @Size(min = 16, max = 16, message = CASE_REF_INVALID_LENGTH)
+                                           @LuhnCheck(message = CASE_REF_INVALID, ignoreNonDigitCharacters = false)
+                                               String ccdCaseRef,
+                                           @RequestParam(required = false)
+                                               String status) {
         return hearingManagementService.getHearings(ccdCaseRef, status);
     }
 
@@ -133,10 +126,18 @@ public class HearingManagementController {
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
     public HearingResponse updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
-                              @PathVariable("id") Long hearingId) {
-        HearingResponse hearingResponse =  hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
-        hearingManagementService.sendRequestToHmiAndQueue(hearingId, hearingRequest);
+                                         @PathVariable("id") Long hearingId) {
+        HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
+        hearingManagementService.sendRequestToHmiAndQueue(hearingId, hearingRequest, AMEND_HEARING);
         return hearingResponse;
+    }
+
+    private String getCaseRef(CreateHearingRequest hearingRequest) {
+        if (null == hearingRequest || null == hearingRequest.getCaseDetails()) {
+            return null;
+        }
+        return hearingRequest.getCaseDetails().getCaseRef();
+
     }
 
 }

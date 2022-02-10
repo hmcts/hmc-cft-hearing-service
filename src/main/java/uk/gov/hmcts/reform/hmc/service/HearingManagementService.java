@@ -23,8 +23,8 @@ public interface HearingManagementService {
 
     void sendResponse(String json);
 
-    void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest);
+    void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest, String messageType);
 
-    void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest);
+    void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest,Long hearingId, String messageType);
 
 }
