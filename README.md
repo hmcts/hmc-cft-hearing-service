@@ -104,7 +104,30 @@ To run all integration tests execute the following command:
 ```bash
   ./gradlew integration
 ```
+### Running contract or pact tests:
 
+You can run and publish your pact tests locally by first running the pact docker-compose:
+
+```
+docker-compose -f docker-pactbroker-compose.yml up
+```
+
+And then using gradle task:
+
+```
+./gradlew runAndPublishConsumerPactTests
+```
+Run below command for the provider pact verification:
+
+```
+./gradlew clean runProviderPactVerification
+```
+
+Alternatively you can run single command for both consumer tests and provider verifications
+
+```
+./gradlew clean contract
+```
 ### Code quality checks
 We use [Checkstyle](http://checkstyle.sourceforge.net/).
 To run all local checks execute the following command:

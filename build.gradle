@@ -208,7 +208,8 @@ sonarqube {
     property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/hmc/Application.java," +
       "**/config/SecurityConfiguration.java," +
       "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageReaderFromQueueConfiguration.java," +
-      "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageSenderToTopicConfiguration.java,"
+      "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageSenderToTopicConfiguration.java," +
+      "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageSenderToQueueConfiguration.java"
   }
 }
 
@@ -396,6 +397,8 @@ dependencies {
   implementation group: 'io.netty', name: 'netty-transport-native-kqueue', version: versions.netty
   implementation group: 'io.netty', name: 'netty-transport-native-unix-common', version: versions.netty
 
+  // CVE-2021-29425
+  implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'

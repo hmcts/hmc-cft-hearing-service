@@ -16,17 +16,17 @@ import javax.inject.Singleton;
 @Singleton
 public class ApplicationParams {
 
-    @Value("${jms.servicebus.internal.connection-string}")
-    private String internalConnectionString;
+    @Value("${jms.servicebus.internal.queues.inbound.connection-string}")
+    private String internalInboundConnectionString;
 
-    @Value("${jms.servicebus.internal.queue-name}")
-    private String internalQueueName;
+    @Value("${jms.servicebus.internal.queues.inbound.queue-name}")
+    private String internalInboundQueueName;
 
-    @Value("${jms.servicebus.internal.exponential-multiplier}")
-    private String exponentialMultiplier;
+    @Value("${jms.servicebus.internal.queues.inbound.exponential-multiplier}")
+    private String inboundExponentialMultiplier;
 
-    @Value("${jms.servicebus.internal.max-retry-attempts}")
-    private int maxRetryAttempts;
+    @Value("${jms.servicebus.internal.queues.inbound.max-retry-attempts}")
+    private int inboundMaxRetryAttempts;
 
     @Value("${jms.servicebus.external.connection-string}")
     private String externalConnectionString;
@@ -36,6 +36,12 @@ public class ApplicationParams {
 
     @Value("${role.assignment.api.host}")
     private String roleAssignmentServiceHost;
+
+    @Value("${jms.servicebus.internal.queues.outbound.connection-string}")
+    private String internalOutboundConnectionString;
+
+    @Value("${jms.servicebus.internal.queues.outbound.queue-name}")
+    private String internalOutboundQueueName;
 
     public static String encode(final String stringToEncode) {
         try {

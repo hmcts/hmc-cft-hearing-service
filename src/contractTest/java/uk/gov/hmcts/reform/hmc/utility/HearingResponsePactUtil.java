@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 
@@ -15,6 +16,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 
 public class HearingResponsePactUtil {
 
@@ -127,6 +130,22 @@ public class HearingResponsePactUtil {
 
         // return constructed body
         logger.debug("pactDslJsonBody: {}", pactDslJsonBody);
+        return pactDslJsonBody;
+    }
+
+    public static PactDslJsonBody generateDeleteHearingJsonBody(String statusMessage, String hearingRequestId) {
+        DeleteHearingRequest deleteHearingRequest = generateDeleteHearingRequest();
+
+        // Build structural parts of the JSON body
+        PactDslJsonBody pactDslJsonBody = genericCreateHearingJsonBody(statusMessage, hearingRequestId,
+                CANCELLATION_REQUESTED, LocalDateTime.now());
+
+        pactDslJsonBody
+            .integerType("versionNumber", deleteHearingRequest.getVersionNumber() + 1)
+            .asBody();
+
+        // return constructed body
+        logger.info("pactDslJsonBody (DeleteHearing): {}", pactDslJsonBody);
         return pactDslJsonBody;
     }
 
@@ -444,6 +463,13 @@ public class HearingResponsePactUtil {
         mbrIds.add("memberId7");
         mbrIds.add("memberId8");
         return mbrIds;
+    }
+
+    private static DeleteHearingRequest generateDeleteHearingRequest() {
+        DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
+        deleteHearingRequest.setCancellationReasonCode("REASONCODE25");
+        deleteHearingRequest.setVersionNumber(2);
+        return  deleteHearingRequest;
     }
 
 }

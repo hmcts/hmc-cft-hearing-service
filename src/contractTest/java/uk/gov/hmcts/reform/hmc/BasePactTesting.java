@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
@@ -37,15 +38,18 @@ public class BasePactTesting {
     public static final String PROVIDER_NAME = "hmcHearingServiceProvider";
     public static final String CONSUMER_NAME = "hmcHearingServiceConsumer";
 
-    public static final String MSG_200_GET_HEARINGS = "Success (with content)";
-    public static final String MSG_400_GET_HEARINGS = "Invalid request";
-
     protected static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
     protected static final String IDAM_OAUTH2_TOKEN = "pact-test-idam-token";
     protected static final String SERVICE_AUTHORIZATION_TOKEN = "pact-test-s2s-token";
 
     protected static final String VALID_CASE_REF = "9372710950276233";
     protected static final String VALID_CASE_STATUS = "UPDATED";
+
+    public static final String MSG_200_GET_HEARINGS = "Success (with content)";
+    public static final String MSG_400_GET_HEARINGS = "Invalid request";
+    public static final String MSG_200_DELETE_HEARING = "Success (with content)";
+    public static final String MSG_400_DELETE_HEARING = "Invalid request";
+
 
     protected static final Map<String, String> headers = Map.of(
         HttpHeaders.AUTHORIZATION, IDAM_OAUTH2_TOKEN,
@@ -79,6 +83,29 @@ public class BasePactTesting {
         request.setPartyDetails(partyDetails2());
         request.setRequestDetails(requestDetails());
         return request;
+    }
+
+    /**
+     * generate Delete Hearing Request.
+     *
+     * @return DeleteHearingRequest delete hearing request
+     */
+    protected DeleteHearingRequest generateDeleteHearingRequest() {
+        DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
+        deleteHearingRequest.setCancellationReasonCode("1XXX1");
+        deleteHearingRequest.setVersionNumber(2);
+        return deleteHearingRequest;
+    }
+
+    /**
+     * generate invalid Delete Hearing Request.
+     *
+     * @return DeleteHearingRequest delete hearing request
+     */
+    protected DeleteHearingRequest generateInvalidDeleteHearingRequest() {
+        DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
+        deleteHearingRequest.setCancellationReasonCode("1XXX1");
+        return deleteHearingRequest;
     }
 
     /**
