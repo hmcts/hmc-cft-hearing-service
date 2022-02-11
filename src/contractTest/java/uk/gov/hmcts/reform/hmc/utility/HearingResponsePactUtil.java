@@ -220,8 +220,7 @@ public class HearingResponsePactUtil {
                     .stringMatcher("hmcStatus",STATUS_OPTIONS_STRING, caseHearing.getHmcStatus())
                     .datetime("lastResponseReceivedDateTime", FORMATYYYYMMDDHHMMSSZ,
                             Instant.from(caseHearing.getLastResponseReceivedDateTime().atZone(ZoneOffset.UTC)))
-                    .stringMatcher("responseVersion", REGEX_60_CHARS,
-                            caseHearing.getResponseVersion().toString())
+                    .integerType("responseVersion", caseHearing.getResponseVersion())
                     .stringMatcher("hearingListingStatus",STATUS_OPTIONS_STRING,
                             caseHearing.getHearingListingStatus())
                     .stringMatcher("listAssistCaseStatus", STATUS_OPTIONS_STRING,
