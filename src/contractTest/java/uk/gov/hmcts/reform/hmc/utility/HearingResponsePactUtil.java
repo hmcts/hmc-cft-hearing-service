@@ -133,22 +133,6 @@ public class HearingResponsePactUtil {
         return pactDslJsonBody;
     }
 
-    public static PactDslJsonBody generateDeleteHearingJsonBody(String statusMessage, String hearingRequestId) {
-        DeleteHearingRequest deleteHearingRequest = generateDeleteHearingRequest();
-
-        // Build structural parts of the JSON body
-        PactDslJsonBody pactDslJsonBody = genericCreateHearingJsonBody(statusMessage, hearingRequestId,
-                CANCELLATION_REQUESTED, LocalDateTime.now());
-
-        pactDslJsonBody
-            .integerType("versionNumber", deleteHearingRequest.getVersionNumber() + 1)
-            .asBody();
-
-        // return constructed body
-        logger.info("pactDslJsonBody (DeleteHearing): {}", pactDslJsonBody);
-        return pactDslJsonBody;
-    }
-
     /**
      * generate Pact JSON body for Get Hearings response.
      *
@@ -170,6 +154,22 @@ public class HearingResponsePactUtil {
 
         // return constructed body
         logger.debug("pactDslJsonBody: {}", pactDslJsonBody);
+        return pactDslJsonBody;
+    }
+
+    public static PactDslJsonBody generateDeleteHearingJsonBody(String statusMessage, String hearingRequestId) {
+        DeleteHearingRequest deleteHearingRequest = generateDeleteHearingRequest();
+
+        // Build structural parts of the JSON body
+        PactDslJsonBody pactDslJsonBody = genericCreateHearingJsonBody(statusMessage, hearingRequestId,
+                CANCELLATION_REQUESTED, LocalDateTime.now());
+
+        pactDslJsonBody
+                .integerType("versionNumber", deleteHearingRequest.getVersionNumber() + 1)
+                .asBody();
+
+        // return constructed body
+        logger.info("pactDslJsonBody (DeleteHearing): {}", pactDslJsonBody);
         return pactDslJsonBody;
     }
 
@@ -345,7 +345,7 @@ public class HearingResponsePactUtil {
     }
 
     /**
-     * generate a list of case hearing
+     * generate a list of case hearing.
      *
      * @return caseHearings List
      */
@@ -392,7 +392,7 @@ public class HearingResponsePactUtil {
     }
 
     /**
-     * generate case hearing for given case status
+     * generate case hearing for given case status.
      *
      * @param caseStatus status
      * @return caseHearing case Hearing
