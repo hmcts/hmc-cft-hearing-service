@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
@@ -54,6 +54,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
@@ -140,12 +141,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         HearingEntity hearingEntity = new HearingEntity();
         CaseHearingRequestEntity caseHearingRequestEntity = getCaseHearingEntity(hearingRequest, REQUEST_HEARING,
-                                                                                 hearingEntity
-        );
+                                                                                 hearingEntity);
         caseHearingRequestEntity.setRequestTimeStamp(createHearingRequest.getRequestDetails().getRequestTimeStamp());
+        caseHearingRequestEntity.setVersionNumber(VERSION_NUMBER);
         hearingEntity = saveHearingDetails(hearingRequest, caseHearingRequestEntity, REQUEST_HEARING,
-                                           hearingEntity
-        );
+                                           hearingEntity);
         return getSaveHearingResponseDetails(hearingEntity);
     }
 
@@ -172,11 +172,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                                                                      hearingEntity);
             caseHearingRequestEntity.setRequestTimeStamp(
                 updateHearingRequest.getRequestDetails().getRequestTimeStamp());
-            caseHearingRequestEntity.setVersionNumber(hearingEntity.getCaseHearingRequest().getVersionNumber());
-            hearingEntity = saveHearingDetails(hearingRequest, caseHearingRequestEntity, AMEND_HEARING, hearingEntity);
+            caseHearingRequestEntity.setVersionNumber(hearingEntity.getCaseHearingRequest().getVersionNumber()+ 1);
+
             String statusToUpdate = setHearingStatus(hearingEntity.getStatus());
-            hearingEntity = updateHearingStatusAndVersionNumber(hearingId, statusToUpdate);
-            return getSaveHearingResponseDetails(hearingEntity);
+            hearingEntity.setStatus(statusToUpdate);
+            HearingEntity savedHearingEntity = saveHearingDetails(hearingRequest, caseHearingRequestEntity,
+                                                                  AMEND_HEARING, hearingEntity);
+            //hearingEntity = updateHearingStatusAndVersionNumber(hearingId, statusToUpdate);
+            return getSaveHearingResponseDetails(savedHearingEntity);
         } else {
             throw new NoSuchElementException();
         }

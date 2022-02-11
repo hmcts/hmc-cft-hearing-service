@@ -52,9 +52,9 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setCaseRestrictedFlag(caseDetails.getCaseRestrictedFlag());
         caseHearingRequestEntity.setCaseSlaStartDate(caseDetails.getCaseSlaStartDate());
         // set version number for POST Hearing
-        if (REQUEST_HEARING.equals(hearingType)) {
+       /* if (REQUEST_HEARING.equals(hearingType)) {
             caseHearingRequestEntity.setVersionNumber(VERSION_NUMBER);
-        }
+        }*/
         caseHearingRequestEntity.setInterpreterBookingRequiredFlag(caseDetails.getCaseInterpreterRequiredFlag());
         caseHearingRequestEntity.setIsLinkedFlag(hearingDetails.getHearingIsLinkedFlag());
         caseHearingRequestEntity.setListingComments(hearingDetails.getListingComments());
