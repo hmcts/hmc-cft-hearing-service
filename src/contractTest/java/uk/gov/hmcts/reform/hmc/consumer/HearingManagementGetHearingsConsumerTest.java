@@ -38,7 +38,7 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
     );
 
     /**
-     * get Hearings For Valid Case Ref.
+     * get Hearings For Valid Case Ref only.
      *
      * @param builder Builder object
      * @return response Response object
@@ -47,19 +47,40 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
     public RequestResponsePact getHearingsForValidCaseRef(PactDslWithProvider builder) {
         return builder
             .given("hmc cftHearingService successfully returns case hearings")
-            .uponReceiving("Request to GET hearings for given valid case ref and (optionally) case status")
+            .uponReceiving("Request to GET hearings for given valid case ref only")
+                .path(PATH_HEARINGS + "/" + VALID_CASE_REF)
+                .method(HttpMethod.GET.toString())
+                .headers(headers)
+                .willRespondWith()
+                .status(HttpStatus.OK.value())
+                .body(HearingResponsePactUtil.generateGetHearingsJsonBody(MSG_200_GET_HEARINGS, VALID_CASE_REF))
+            .toPact();
+    }
+
+    /**
+     * get Hearings For Valid Case Ref and Status.
+     *
+     * @param builder Builder object
+     * @return response Response object
+     */
+    @Pact(provider = PROVIDER_NAME, consumer = CONSUMER_NAME)
+    public RequestResponsePact getHearingsForValidCaseRefAndStatus(PactDslWithProvider builder) {
+        return builder
+                .given("hmc cftHearingService successfully returns case hearings")
+                .uponReceiving("Request to GET hearings for given valid case ref and case status")
                 .path(PATH_HEARINGS + "/" + VALID_CASE_REF)
                 .method(HttpMethod.GET.toString())
                 .query(FIELD_STATUS + "=" + VALID_CASE_STATUS)
                 .headers(headers)
                 .willRespondWith()
                 .status(HttpStatus.OK.value())
-                .body(HearingResponsePactUtil.generateGetHearingsJsonBody(MSG_200_GET_HEARINGS))
-            .toPact();
+                .body(HearingResponsePactUtil.generateGetHearingsJsonBody(MSG_200_GET_HEARINGS, VALID_CASE_REF,
+                        VALID_CASE_STATUS))
+                .toPact();
     }
 
     /**
-     * get Hearings For Invalid Case Ref.
+     * get Hearings For Invalid Case Ref only.
      *
      * @param builder Builder object
      * @return response Response object
@@ -71,7 +92,6 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
             .uponReceiving("Request to GET hearings for given invalid case ref")
             .path("/hearings/" + INVALID_CASE_REF)
             .method(HttpMethod.GET.toString())
-            .query(FIELD_STATUS + "=" + VALID_CASE_STATUS)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.BAD_REQUEST.value())
@@ -84,17 +104,41 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
     }
 
     /**
-     * test expects to return the found hearings.
+     * get Hearings For Invalid Case Ref and Status.
+     *
+     * @param builder Builder object
+     * @return response Response object
+     */
+    @Pact(provider = PROVIDER_NAME, consumer = CONSUMER_NAME)
+    public RequestResponsePact getHearingsForInvalidCaseRefAndStatus(PactDslWithProvider builder) {
+        return builder
+                .given("hmc cftHearingService throws validation error while trying to return case hearings")
+                .uponReceiving("Request to GET hearings for given invalid case ref and status")
+                .path("/hearings/" + INVALID_CASE_REF)
+                .method(HttpMethod.GET.toString())
+                .query(FIELD_STATUS + "=" + VALID_CASE_STATUS)
+                .headers(headers)
+                .willRespondWith()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .body(new PactDslJsonBody()
+                        .stringType("message", MSG_400_GET_HEARINGS)
+                        .stringValue(FIELD_STATUS, BAD_REQUEST)
+                        .eachLike("errors", 1)
+                        .closeArray())
+                .toPact();
+    }
+
+    /**
+     * test expects to return the found hearings for valid case ref.
      *
      * @param mockServer MockServer
      */
     @Test
     @PactTestFor(pactMethod = "getHearingsForValidCaseRef")
-    public void shouldSuccessfullyGetHearings(MockServer mockServer) {
+    public void shouldSuccessfullyGetHearingsForCaseRefOnly(MockServer mockServer) {
         JsonPath response = RestAssured
             .given()
             .headers(headers)
-            .queryParam(FIELD_STATUS, VALID_CASE_STATUS)
             .when()
             .get(mockServer.getUrl() + PATH_HEARINGS + "/" + VALID_CASE_REF)
             .then()
@@ -104,15 +148,41 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
             .body()
             .jsonPath();
 
-
-        assertThat(response.getString("caseHearings"))
-            .isNotEmpty();
-        assertThat(response.getString("status_message"))
-            .isEqualTo(MSG_200_GET_HEARINGS);
+        assertThat(response.getString("caseHearings")).isNotEmpty();
+        assertThat(response.getString("caseRef")).isNotEmpty();
+        assertThat(response.getString("hmctsServiceCode")).isNotEmpty();
+        assertThat(response.getString("status_message")).isEqualTo(MSG_200_GET_HEARINGS);
     }
 
     /**
-     * test expects to fail to get hearings.
+     * test expects to return the found hearings for valid case ref and status.
+     *
+     * @param mockServer MockServer
+     */
+    @Test
+    @PactTestFor(pactMethod = "getHearingsForValidCaseRefAndStatus")
+    public void shouldSuccessfullyGetHearingsForCaseRefAndStatus(MockServer mockServer) {
+        JsonPath response = RestAssured
+                .given()
+                .headers(headers)
+                .queryParam(FIELD_STATUS, VALID_CASE_STATUS)
+                .when()
+                .get(mockServer.getUrl() + PATH_HEARINGS + "/" + VALID_CASE_REF)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .extract()
+                .body()
+                .jsonPath();
+
+        assertThat(response.getString("caseHearings")).isNotEmpty();
+        assertThat(response.getString("caseRef")).isNotEmpty();
+        assertThat(response.getString("hmctsServiceCode")).isNotEmpty();
+        assertThat(response.getString("status_message")).isEqualTo(MSG_200_GET_HEARINGS);
+    }
+
+    /**
+     * test expects to fail to get hearings for Invalid Case ref.
      *
      * @param mockServer MockServer
      */
@@ -122,7 +192,6 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
         RestAssured
             .given()
             .headers(headers)
-            .queryParam(FIELD_STATUS, VALID_CASE_STATUS)
             .when()
             .get(mockServer.getUrl() + PATH_HEARINGS + "/" + INVALID_CASE_REF)
             .then()
@@ -131,6 +200,28 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
             .extract()
             .body()
             .jsonPath();
+    }
+
+    /**
+     * test expects to fail to get hearings.
+     *
+     * @param mockServer MockServer
+     */
+    @Test
+    @PactTestFor(pactMethod = "getHearingsForInvalidCaseRefAndStatus")
+    public void shouldFailToGetHearingsForInvalidCaseRefWithStatus(MockServer mockServer) {
+        RestAssured
+                .given()
+                .headers(headers)
+                .queryParam(FIELD_STATUS, VALID_CASE_STATUS)
+                .when()
+                .get(mockServer.getUrl() + PATH_HEARINGS + "/" + INVALID_CASE_REF)
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .and()
+                .extract()
+                .body()
+                .jsonPath();
     }
 
 }
