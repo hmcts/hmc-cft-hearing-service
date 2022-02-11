@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.CaseHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
@@ -51,6 +52,7 @@ import javax.transaction.Transactional;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
@@ -83,6 +85,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final ObjectMapperService objectMapperService;
     private final HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
     private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
+    private final CaseHearingRequestMapper caseHearingRequestMapper;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -97,7 +100,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
                                         ObjectMapperService objectMapperService,
                                         HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper,
-                                        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration) {
+                                        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration,
+                                        CaseHearingRequestMapper caseHearingRequestMapper) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -111,6 +115,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
         this.messageSenderToQueueConfiguration = messageSenderToQueueConfiguration;
+        this.caseHearingRequestMapper = caseHearingRequestMapper;
     }
 
     @Override
@@ -128,13 +133,22 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
         validateHearingRequest(createHearingRequest);
-       HearingRequest hearingRequest = new CreateHearingRequest(createHearingRequest.getHearingDetails(),
-                                                                 createHearingRequest.getCaseDetails(),
-                                                                 createHearingRequest.getPartyDetails(),
-                                                                 createHearingRequest.getRequestDetails());
-        // how to get access HearingRequest.requestDetails
-        HearingEntity savedEntity = saveHearingDetails(hearingRequest, REQUEST_HEARING);
+        HearingRequest hearingRequest = new CreateHearingRequest(
+            createHearingRequest.getHearingDetails(),createHearingRequest.getCaseDetails(),
+            createHearingRequest.getPartyDetails(),createHearingRequest.getRequestDetails());
+
+        final HearingEntity hearingEntity = new HearingEntity();
+        CaseHearingRequestEntity caseHearingRequestEntity = getCaseHearingEntity(hearingRequest, REQUEST_HEARING,
+                                                                                  hearingEntity);
+        caseHearingRequestEntity.setRequestTimeStamp(createHearingRequest.getRequestDetails().getRequestTimeStamp());
+        HearingEntity savedEntity = saveHearingDetails(hearingRequest,caseHearingRequestEntity, REQUEST_HEARING,
+                                                       hearingEntity);
         return getSaveHearingResponseDetails(savedEntity);
+    }
+
+    private CaseHearingRequestEntity getCaseHearingEntity(HearingRequest hearingRequest, String hearingType,
+                                                           HearingEntity hearingEntity) {
+        return caseHearingRequestMapper.modelToEntity(hearingRequest, hearingType, hearingEntity);
     }
 
     @Override
@@ -187,9 +201,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         return getHearingsResponseMapper.toHearingsResponse(caseRef, entities);
     }
 
-    private HearingEntity saveHearingDetails(HearingRequest hearingRequest) {
-        HearingEntity hearingEntity = hearingMapper.modelToEntity(hearingRequest);
-        return hearingRepository.save(hearingEntity);
+
+    private HearingEntity saveHearingDetails(HearingRequest hearingRequest,
+                                             CaseHearingRequestEntity caseHearingRequestEntity, String hearingType,
+                                             HearingEntity hearingEntity) {
+        HearingEntity savedHearingEntity = hearingMapper.modelToEntity(hearingRequest,caseHearingRequestEntity,
+                                                                       hearingType, hearingEntity);
+        return hearingRepository.save(savedHearingEntity);
     }
 
     private HearingResponse getSaveHearingResponseDetails(HearingEntity savedEntity) {

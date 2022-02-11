@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.CaseHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
@@ -146,6 +147,9 @@ class HearingManagementServiceTest {
     @Mock
     MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
 
+    @Mock
+    CaseHearingRequestMapper caseHearingRequestMapper;
+
     JsonNode jsonNode = mock(JsonNode.class);
 
     @BeforeEach
@@ -165,7 +169,8 @@ class HearingManagementServiceTest {
                 messageSenderToTopicConfiguration,
                 objectMapperService,
                 hmiDeleteHearingRequestMapper,
-                messageSenderToQueueConfiguration);
+                messageSenderToQueueConfiguration,
+                caseHearingRequestMapper);
     }
 
     public static final String JURISDICTION = "Jurisdiction1";
@@ -256,7 +261,9 @@ class HearingManagementServiceTest {
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        given(hearingMapper.modelToEntity(createHearingRequest)).willReturn(TestingUtil.hearingEntity());
+        given(caseHearingRequestMapper.modelToEntity(any(),anyString(),any()))
+            .willReturn(TestingUtil.caseHearingRequestEntity());
+        given(hearingMapper.modelToEntity(any(),any(),anyString(),any())).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
         HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
         assertEquals(VERSION_NUMBER, response.getVersionNumber());
@@ -274,7 +281,9 @@ class HearingManagementServiceTest {
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
         createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        given(hearingMapper.modelToEntity(createHearingRequest)).willReturn(TestingUtil.hearingEntity());
+        given(caseHearingRequestMapper.modelToEntity(any(),anyString(),any()))
+            .willReturn(TestingUtil.caseHearingRequestEntity());
+        given(hearingMapper.modelToEntity(any(),any(),anyString(),any())).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
         HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
         assertEquals(VERSION_NUMBER, response.getVersionNumber());
@@ -294,7 +303,9 @@ class HearingManagementServiceTest {
         createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         createHearingRequest.getPartyDetails().get(1).setIndividualDetails(
             TestingUtil.individualWithoutRelatedPartyDetails());
-        given(hearingMapper.modelToEntity(createHearingRequest)).willReturn(TestingUtil.hearingEntity());
+        given(caseHearingRequestMapper.modelToEntity(any(),anyString(),any()))
+            .willReturn(TestingUtil.caseHearingRequestEntity());
+        given(hearingMapper.modelToEntity(any(),any(),anyString(),any())).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
         HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
         assertEquals(VERSION_NUMBER, response.getVersionNumber());
@@ -313,7 +324,9 @@ class HearingManagementServiceTest {
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
         createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        given(hearingMapper.modelToEntity(createHearingRequest)).willReturn(TestingUtil.hearingEntity());
+        given(caseHearingRequestMapper.modelToEntity(any(),anyString(),any()))
+            .willReturn(TestingUtil.caseHearingRequestEntity());
+        given(hearingMapper.modelToEntity(any(),any(),anyString(),any())).willReturn(TestingUtil.hearingEntity());
         given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
         HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
         assertEquals(VERSION_NUMBER, response.getVersionNumber());

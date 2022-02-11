@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 
 class CaseHearingRequestMapperTest {
 
@@ -23,7 +24,8 @@ class CaseHearingRequestMapperTest {
         HearingEntity hearingEntity = new HearingEntity();
         CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
         CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper);
-        CaseHearingRequestEntity entity = caseHearingRequestMapper.modelToEntity(hearingRequest, hearingEntity);
+        CaseHearingRequestEntity entity = caseHearingRequestMapper
+            .modelToEntity(hearingRequest,REQUEST_HEARING, hearingEntity);
         assertEquals(Boolean.TRUE, entity.getAutoListFlag());
         assertEquals("Some hearing type", entity.getHearingType());
         assertEquals(0, entity.getRequiredDurationInMinutes());

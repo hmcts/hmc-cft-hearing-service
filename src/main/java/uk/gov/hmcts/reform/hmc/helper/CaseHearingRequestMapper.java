@@ -7,12 +7,12 @@ import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 
 import java.util.List;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
 
 @Component
@@ -25,7 +25,7 @@ public class CaseHearingRequestMapper {
         this.caseCategoriesMapper = caseCategoriesMapper;
     }
 
-    public CaseHearingRequestEntity modelToEntity(HearingRequest hearingRequest,
+    public CaseHearingRequestEntity modelToEntity(HearingRequest hearingRequest, String hearingType,
                                                   HearingEntity hearingEntity) {
         final CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         HearingDetails hearingDetails = hearingRequest.getHearingDetails();
@@ -51,7 +51,10 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setOwningLocationId(caseDetails.getCaseManagementLocationCode());
         caseHearingRequestEntity.setCaseRestrictedFlag(caseDetails.getCaseRestrictedFlag());
         caseHearingRequestEntity.setCaseSlaStartDate(caseDetails.getCaseSlaStartDate());
-        caseHearingRequestEntity.setVersionNumber(VERSION_NUMBER);
+        // set version number for POST Hearing
+        if (REQUEST_HEARING.equals(hearingType)) {
+            caseHearingRequestEntity.setVersionNumber(VERSION_NUMBER);
+        }
         caseHearingRequestEntity.setInterpreterBookingRequiredFlag(caseDetails.getCaseInterpreterRequiredFlag());
         caseHearingRequestEntity.setIsLinkedFlag(hearingDetails.getHearingIsLinkedFlag());
         caseHearingRequestEntity.setListingComments(hearingDetails.getListingComments());
@@ -60,7 +63,6 @@ public class CaseHearingRequestMapper {
                                                                     .getHearingWindowStartDateRange());
         caseHearingRequestEntity.setHearingWindowEndDateRange(hearingDetails.getHearingWindow()
                                                                   .getHearingWindowEndDateRange());
-       // caseHearingRequestEntity.setRequestTimeStamp(createHearingRequest.getRequestDetails().getRequestTimeStamp());
         caseHearingRequestEntity.setHearing(hearingEntity);
         return caseHearingRequestEntity;
     }

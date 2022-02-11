@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 
 @Component
 public class HearingMapper {
@@ -31,15 +32,14 @@ public class HearingMapper {
         this.hearingDetailsMapper = hearingDetailsMapper;
     }
 
-    public HearingEntity modelToEntity(HearingRequest hearingRequest) {
-        final HearingEntity hearingEntity = new HearingEntity();
-        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
-            hearingRequest, hearingEntity);
-        //set request details version number
+    public HearingEntity modelToEntity(HearingRequest hearingRequest,CaseHearingRequestEntity caseHearingRequestEntity,
+                                       String hearingType,HearingEntity hearingEntity) {
         setHearingDetails(hearingRequest.getHearingDetails(), caseHearingRequestEntity);
         setCaseDetails(hearingRequest.getCaseDetails(), caseHearingRequestEntity);
         setPartyDetails(hearingRequest.getPartyDetails(), caseHearingRequestEntity);
-        hearingEntity.setStatus(HEARING_STATUS);
+        if (REQUEST_HEARING.equals(hearingType)) {
+            hearingEntity.setStatus(HEARING_STATUS);
+        }
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
         return hearingEntity;
     }

@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 
 class CaseCreateHearingRequestMapperTest {
 
@@ -45,11 +46,8 @@ class CaseCreateHearingRequestMapperTest {
         CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
         CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper);
         CaseHearingRequestEntity actualEntity = caseHearingRequestMapper.modelToEntity(
-            createHearingRequest,
-            hearingEntity
-        );
+            createHearingRequest,REQUEST_HEARING, hearingEntity);
         expectedEntity.setHearing(hearingEntity);
-        expectedEntity.setRequestTimeStamp(time);
         assertEquals(expectedEntity, actualEntity);
     }
 }
