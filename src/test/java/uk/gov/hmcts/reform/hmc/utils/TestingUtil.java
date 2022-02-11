@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 
 public class TestingUtil {
 
@@ -163,7 +163,7 @@ public class TestingUtil {
     public static HearingEntity hearingEntity() {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(1L);
-        hearingEntity.setStatus(HEARING_STATUS);
+        hearingEntity.setStatus(POST_HEARING_STATUS);
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
         return hearingEntity;

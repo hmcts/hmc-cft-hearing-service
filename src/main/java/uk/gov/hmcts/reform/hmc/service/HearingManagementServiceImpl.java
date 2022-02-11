@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
@@ -50,6 +50,7 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
@@ -134,33 +135,59 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
         validateHearingRequest(createHearingRequest);
         HearingRequest hearingRequest = new CreateHearingRequest(
-            createHearingRequest.getHearingDetails(),createHearingRequest.getCaseDetails(),
-            createHearingRequest.getPartyDetails(),createHearingRequest.getRequestDetails());
+            createHearingRequest.getHearingDetails(), createHearingRequest.getCaseDetails(),
+            createHearingRequest.getPartyDetails(), createHearingRequest.getRequestDetails());
 
-        final HearingEntity hearingEntity = new HearingEntity();
+        HearingEntity hearingEntity = new HearingEntity();
         CaseHearingRequestEntity caseHearingRequestEntity = getCaseHearingEntity(hearingRequest, REQUEST_HEARING,
-                                                                                  hearingEntity);
+                                                                                 hearingEntity
+        );
         caseHearingRequestEntity.setRequestTimeStamp(createHearingRequest.getRequestDetails().getRequestTimeStamp());
-        HearingEntity savedEntity = saveHearingDetails(hearingRequest,caseHearingRequestEntity, REQUEST_HEARING,
-                                                       hearingEntity);
-        return getSaveHearingResponseDetails(savedEntity);
+        hearingEntity = saveHearingDetails(hearingRequest, caseHearingRequestEntity, REQUEST_HEARING,
+                                           hearingEntity
+        );
+        return getSaveHearingResponseDetails(hearingEntity);
     }
 
     private CaseHearingRequestEntity getCaseHearingEntity(HearingRequest hearingRequest, String hearingType,
-                                                           HearingEntity hearingEntity) {
+                                                          HearingEntity hearingEntity) {
         return caseHearingRequestMapper.modelToEntity(hearingRequest, hearingType, hearingEntity);
     }
 
     @Override
-    public HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
-        validateHearingRequest(hearingRequest);
+    public HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest updateHearingRequest) {
+        validateHearingRequest(updateHearingRequest);
         validateHearingId(hearingId);
-        validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
+        validateVersionNumber(hearingId, updateHearingRequest.getRequestDetails().getVersionNumber());
         validateHearingStatusForUpdate(hearingId);
 
-        // TODO: What's the next Status?!
-        HearingEntity savedEntity = updateHearingStatusAndVersionNumber(hearingId, null);
-        return getSaveHearingResponseDetails(savedEntity);
+        HearingRequest hearingRequest = new UpdateHearingRequest(
+            updateHearingRequest.getHearingDetails(), updateHearingRequest.getCaseDetails(),
+            updateHearingRequest.getPartyDetails(), updateHearingRequest.getRequestDetails());
+
+        Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
+        if (hearingResult.isPresent()) {
+            HearingEntity hearingEntity = hearingResult.get();
+            CaseHearingRequestEntity caseHearingRequestEntity = getCaseHearingEntity(hearingRequest, AMEND_HEARING,
+                                                                                     hearingEntity);
+            caseHearingRequestEntity.setRequestTimeStamp(
+                updateHearingRequest.getRequestDetails().getRequestTimeStamp());
+            caseHearingRequestEntity.setVersionNumber(hearingEntity.getCaseHearingRequest().getVersionNumber());
+            hearingEntity = saveHearingDetails(hearingRequest, caseHearingRequestEntity, AMEND_HEARING, hearingEntity);
+            String statusToUpdate = setHearingStatus(hearingEntity.getStatus());
+            hearingEntity = updateHearingStatusAndVersionNumber(hearingId, statusToUpdate);
+            return getSaveHearingResponseDetails(hearingEntity);
+        } else {
+            throw new NoSuchElementException();
+        }
+    }
+
+    private String setHearingStatus(String status) {
+        if (PutHearingStatus.HEARING_REQUESTED.equals(status)) {
+            return PutHearingStatus.HEARING_REQUESTED.toString();
+        } else {
+            return PutHearingStatus.UPDATE_REQUESTED.toString();
+        }
     }
 
     @Override
