@@ -6,6 +6,8 @@ import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,7 +33,7 @@ public class CaseCategoriesEntity {
     private Long id;
 
     @Column(name = "case_category_type", nullable = false)
-    @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
+    @Enumerated(EnumType.STRING)
     private CaseCategoryType categoryType;
 
     @Column(name = "case_category_value")
