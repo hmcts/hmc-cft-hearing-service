@@ -33,6 +33,7 @@ public class CaseCategoriesEntity {
     private Long id;
 
     @Column(name = "case_category_type", nullable = false)
+    @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
     @Enumerated(EnumType.STRING)
     private CaseCategoryType categoryType;
 
