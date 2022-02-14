@@ -6,6 +6,7 @@ java:
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft
     HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft
     HMC_SERVICE_BUS_QUEUE: hmc-from-hmi
+    HMC_OUTBOUND_SERVICE_BUS_QUEUE: hmc-to-hmi
     CFT_HEARING_SERVICE_DB_HOST: "{{ .Release.Name }}-postgresql"
     CFT_HEARING_SERVICE_DB_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
     CFT_HEARING_SERVICE_DB_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
@@ -20,6 +21,9 @@ java:
       key: connectionString
     HMC_QUEUE_CONNECTION_STRING:
       secretRef: servicebus-secret-queue-{{ .Release.Name }}-servicebus-hmc-from-hmi
+      key: connectionString
+    HMC_OUTBOUND_QUEUE_CONNECTION_STRING:
+      secretRef: servicebus-secret-queue-{{ .Release.Name }}-servicebus-hmc-to-hmi
       key: connectionString
   keyVaults:
     hmc:
@@ -39,3 +43,4 @@ servicebus:
       - name: hmc-subs-to-cft
     queues:
       - name: hmc-from-hmi
+      - name: hmc-to-hmi
