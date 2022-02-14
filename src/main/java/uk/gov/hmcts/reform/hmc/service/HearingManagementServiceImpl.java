@@ -155,6 +155,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
+    @Transactional
     public HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest updateHearingRequest) {
         validateHearingRequest(updateHearingRequest);
         validateHearingId(hearingId);

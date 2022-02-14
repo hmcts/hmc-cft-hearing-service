@@ -121,34 +121,33 @@ public class CaseHearingRequestEntity {
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NonStandardDurationsEntity> nonStandardDurations;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RequiredLocationsEntity> requiredLocations;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RequiredFacilitiesEntity> requiredFacilities;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CaseCategoriesEntity> caseCategories;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HearingPartyEntity> hearingParties;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PanelRequirementsEntity> panelRequirements;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PanelAuthorisationRequirementsEntity> panelAuthorisationRequirements;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PanelSpecialismsEntity> panelSpecialisms;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PanelUserRequirementsEntity> panelUserRequirements;
 
     @OneToOne(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private CancellationReasonsEntity cancellationReason;
-
 }
