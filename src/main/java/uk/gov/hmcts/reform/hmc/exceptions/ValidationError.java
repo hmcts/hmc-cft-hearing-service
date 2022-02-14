@@ -127,4 +127,9 @@ public final class ValidationError {
     public static final String INVALID_DELETE_HEARING_STATUS = "Invalid hearing state for DELETE";
     public static final String INVALID_PUT_HEARING_STATUS = "Invalid hearing state for PUT";
 
+    public static final String CATEGORY_TYPE_EMPTY = "Category type must be present";
+    public static final String CATEGORY_VALUE_EMPTY = "Category value must be present";
+    public static final String PARTY_TYPE_EMPTY = "Party type must be present";
+    public static final String PARTY_ROLE_EMPTY = "Party role must be present";
+
 }

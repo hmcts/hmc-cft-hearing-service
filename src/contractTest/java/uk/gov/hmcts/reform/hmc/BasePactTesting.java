@@ -42,7 +42,6 @@ public class BasePactTesting {
     protected static final String IDAM_OAUTH2_TOKEN = "pact-test-idam-token";
     protected static final String SERVICE_AUTHORIZATION_TOKEN = "pact-test-s2s-token";
 
-
     protected static final String VALID_CASE_REF = "9372710950276233";
     protected static final String VALID_CASE_STATUS = "UPDATED";
 
