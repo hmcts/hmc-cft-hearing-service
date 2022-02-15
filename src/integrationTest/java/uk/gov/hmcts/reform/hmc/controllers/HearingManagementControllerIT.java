@@ -205,10 +205,38 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    void shouldReturn204_WhenIsValidIsNotProvided() throws Exception {
-        mockMvc.perform(get(url + "/2000000001")
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenHearingExistsInDb() throws Exception {
+        mockMvc.perform(get(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().is(204))
+            .andExpect(status().is(200))
+            .andReturn();
+    }
+
+
+    @Test
+    void shouldReturn404_WhenHearingIdIsInValidInDbAndParamIsFalse() throws Exception {
+        mockMvc.perform(get(url + "/2000000010" + "?isValid=false")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(404))
+            .andReturn();
+    }
+
+    @Test
+    void shouldReturn404_WhenHearingIdIsInValidInDb() throws Exception {
+        mockMvc.perform(get(url + "/2000000010")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(404))
+            .andReturn();
+    }
+
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenIsValidIsNotProvided() throws Exception {
+        mockMvc.perform(get(url + "/2000000000")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
             .andReturn();
     }
 

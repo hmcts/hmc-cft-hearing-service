@@ -4,6 +4,7 @@ import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.S
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
@@ -22,12 +23,14 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
@@ -77,6 +80,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final HearingMapper hearingMapper;
     private final CancellationReasonsRepository cancellationReasonsRepository;
     private final GetHearingsResponseMapper getHearingsResponseMapper;
+    private final GetHearingResponseMapper getHearingResponseMapper;
     private final CaseHearingRequestRepository caseHearingRequestRepository;
     private final HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper;
     private final MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
@@ -94,6 +98,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         CancellationReasonsRepository cancellationReasonsRepository,
                                         HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper,
                                         GetHearingsResponseMapper getHearingsResponseMapper,
+                                        GetHearingResponseMapper getHearingResponseMapper,
                                         MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
                                         ObjectMapperService objectMapperService,
                                         HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper,
@@ -108,16 +113,27 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.hmiSubmitHearingRequestMapper = hmiSubmitHearingRequestMapper;
         this.hmiDeleteHearingRequestMapper = hmiDeleteHearingRequestMapper;
         this.getHearingsResponseMapper = getHearingsResponseMapper;
+        this.getHearingResponseMapper = getHearingResponseMapper;
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
         this.messageSenderToQueueConfiguration = messageSenderToQueueConfiguration;
     }
 
     @Override
-    public void getHearingRequest(Long hearingId, boolean isValid) {
+    public ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid) {
         isValidFormat(hearingId.toString());
-        if (isValid && !hearingRepository.existsById(hearingId)) {
+        if (!hearingRepository.existsById(hearingId)) {
             throw new HearingNotFoundException(hearingId);
+        } else if (!isValid) {
+            Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
+            if (hearingEntity.isPresent()) {
+                return ResponseEntity.ok(getHearingResponseMapper
+                                             .toHearingResponse(hearingEntity.get()));
+            } else {
+                throw new HearingNotFoundException(hearingId);
+            }
+        } else {
+            return ResponseEntity.noContent().header("Content-Length", "0").build();
         }
     }
 
