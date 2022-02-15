@@ -58,10 +58,7 @@ public class HearingDetailsMapper {
             setRequiredFacilities(hearingDetails.getFacilitiesRequired(), caseHearingRequestEntity);
         }
         if (hearingDetails.getNonStandardHearingDurationReasons() != null) {
-            setNonStandardDurations(
-                hearingDetails.getNonStandardHearingDurationReasons(),
-                caseHearingRequestEntity
-            );
+            setNonStandardDurations(hearingDetails.getNonStandardHearingDurationReasons(), caseHearingRequestEntity);
         }
     }
 

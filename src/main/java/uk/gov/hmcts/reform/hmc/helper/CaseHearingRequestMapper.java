@@ -12,8 +12,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 
 import java.util.List;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 
 @Component
 public class CaseHearingRequestMapper {
@@ -27,7 +26,12 @@ public class CaseHearingRequestMapper {
 
     public CaseHearingRequestEntity modelToEntity(HearingRequest hearingRequest, String hearingType,
                                                   HearingEntity hearingEntity) {
-        final CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
+        CaseHearingRequestEntity caseHearingRequestEntity;
+        if (AMEND_HEARING.equals(hearingType)) {
+            caseHearingRequestEntity = hearingEntity.getCaseHearingRequest();
+        } else {
+            caseHearingRequestEntity = new CaseHearingRequestEntity();
+        }
         HearingDetails hearingDetails = hearingRequest.getHearingDetails();
         CaseDetails caseDetails = hearingRequest.getCaseDetails();
         caseHearingRequestEntity.setAutoListFlag(hearingDetails.getAutoListFlag());
@@ -51,10 +55,6 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setOwningLocationId(caseDetails.getCaseManagementLocationCode());
         caseHearingRequestEntity.setCaseRestrictedFlag(caseDetails.getCaseRestrictedFlag());
         caseHearingRequestEntity.setCaseSlaStartDate(caseDetails.getCaseSlaStartDate());
-        // set version number for POST Hearing
-       /* if (REQUEST_HEARING.equals(hearingType)) {
-            caseHearingRequestEntity.setVersionNumber(VERSION_NUMBER);
-        }*/
         caseHearingRequestEntity.setInterpreterBookingRequiredFlag(caseDetails.getCaseInterpreterRequiredFlag());
         caseHearingRequestEntity.setIsLinkedFlag(hearingDetails.getHearingIsLinkedFlag());
         caseHearingRequestEntity.setListingComments(hearingDetails.getListingComments());

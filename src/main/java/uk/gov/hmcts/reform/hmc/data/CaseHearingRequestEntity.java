@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -122,32 +123,32 @@ public class CaseHearingRequestEntity {
     private HearingEntity hearing;
 
     @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NonStandardDurationsEntity> nonStandardDurations;
+    private List<NonStandardDurationsEntity> nonStandardDurations = new ArrayList<>();;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL)
     private List<RequiredLocationsEntity> requiredLocations;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL)
     private List<RequiredFacilitiesEntity> requiredFacilities;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL)
     private List<CaseCategoriesEntity> caseCategories;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL)
     private List<HearingPartyEntity> hearingParties;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL)
     private List<PanelRequirementsEntity> panelRequirements;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL)
     private List<PanelAuthorisationRequirementsEntity> panelAuthorisationRequirements;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL)
     private List<PanelSpecialismsEntity> panelSpecialisms;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL)
     private List<PanelUserRequirementsEntity> panelUserRequirements;
 
-    @OneToOne(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToOne(mappedBy = "caseHearing", cascade = CascadeType.PERSIST)
     private CancellationReasonsEntity cancellationReason;
 }

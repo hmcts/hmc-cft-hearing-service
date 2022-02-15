@@ -55,6 +55,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_UPDATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
@@ -144,8 +145,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                                                                  hearingEntity);
         caseHearingRequestEntity.setRequestTimeStamp(createHearingRequest.getRequestDetails().getRequestTimeStamp());
         caseHearingRequestEntity.setVersionNumber(VERSION_NUMBER);
-        hearingEntity = saveHearingDetails(hearingRequest, caseHearingRequestEntity, REQUEST_HEARING,
-                                           hearingEntity);
+        hearingEntity = saveHearingDetails(hearingRequest, caseHearingRequestEntity, REQUEST_HEARING, hearingEntity);
         return getSaveHearingResponseDetails(hearingEntity);
     }
 
@@ -173,13 +173,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                                                                      hearingEntity);
             caseHearingRequestEntity.setRequestTimeStamp(
                 updateHearingRequest.getRequestDetails().getRequestTimeStamp());
-            caseHearingRequestEntity.setVersionNumber(hearingEntity.getCaseHearingRequest().getVersionNumber()+ 1);
+            caseHearingRequestEntity.setVersionNumber(hearingEntity.getCaseHearingRequest().getVersionNumber()
+                                                          + VERSION_NUMBER_TO_UPDATE);
 
             String statusToUpdate = setHearingStatus(hearingEntity.getStatus());
             hearingEntity.setStatus(statusToUpdate);
             HearingEntity savedHearingEntity = saveHearingDetails(hearingRequest, caseHearingRequestEntity,
                                                                   AMEND_HEARING, hearingEntity);
-            //hearingEntity = updateHearingStatusAndVersionNumber(hearingId, statusToUpdate);
             return getSaveHearingResponseDetails(savedHearingEntity);
         } else {
             throw new NoSuchElementException();
@@ -236,7 +236,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private HearingEntity saveHearingDetails(HearingRequest hearingRequest,
                                              CaseHearingRequestEntity caseHearingRequestEntity, String hearingType,
                                              HearingEntity hearingEntity) {
-        HearingEntity savedHearingEntity = hearingMapper.modelToEntity(hearingRequest,caseHearingRequestEntity,
+        HearingEntity savedHearingEntity = hearingMapper.modelToEntity(hearingRequest, caseHearingRequestEntity,
                                                                        hearingType, hearingEntity);
         return hearingRepository.save(savedHearingEntity);
     }
@@ -386,16 +386,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             if (null != hearingEntity.getCaseHearingRequest()) {
                 log.info("CHANGING: version number : {}", hearingEntity.getCaseHearingRequest().getVersionNumber());
                 hearingEntity.getCaseHearingRequest().setVersionNumber(
-                    hearingEntity.getCaseHearingRequest().getVersionNumber() + 1);
+                    hearingEntity.getCaseHearingRequest().getVersionNumber() + VERSION_NUMBER_TO_UPDATE);
                 log.info(
                     "TO: version number : {}",
                     hearingEntity.getCaseHearingRequest().getVersionNumber()
                 );
-                if (null != newStatus) {
-                    log.info("CHANGING: Hearing status {}", hearingEntity.getStatus());
-                    hearingEntity.setStatus(newStatus);
-                    log.info("TO: Hearing status {}", hearingEntity.getStatus());
-                }
+                log.info("CHANGING: Hearing status {}", hearingEntity.getStatus());
+                hearingEntity.setStatus(newStatus);
+                log.info("TO: Hearing status {}", hearingEntity.getStatus());
+
             } else {
                 log.info("Unable to set status & version number - due to NULL caseHearingRequest!!!");
             }
