@@ -122,7 +122,7 @@ public class CaseHearingRequestEntity {
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
 
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL)
     private List<NonStandardDurationsEntity> nonStandardDurations = new ArrayList<>();;
 
     @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL)
