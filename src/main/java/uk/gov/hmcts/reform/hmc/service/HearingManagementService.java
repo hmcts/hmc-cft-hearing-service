@@ -7,6 +7,9 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 public interface HearingManagementService {
 
     void getHearingRequest(Long hearingId, boolean isValid);
@@ -26,5 +29,7 @@ public interface HearingManagementService {
     void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest, String messageType);
 
     void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest,Long hearingId, String messageType);
+
+    List<LocalDateTime> getPartiesNotified(Long hearingId);
 
 }

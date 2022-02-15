@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -40,8 +42,10 @@ import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -70,10 +74,13 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
 
+    protected static final Logger logger = LoggerFactory.getLogger(HearingManagementServiceImpl.class);
+
     private final DataStoreRepository dataStoreRepository;
     private final RoleAssignmentService roleAssignmentService;
     private final SecurityUtils securityUtils;
     private final HearingRepository hearingRepository;
+    private final HearingResponseRepository hearingResponseRepository;
     private final HearingMapper hearingMapper;
     private final CancellationReasonsRepository cancellationReasonsRepository;
     private final GetHearingsResponseMapper getHearingsResponseMapper;
@@ -89,6 +96,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         @Qualifier("defaultDataStoreRepository")
                                             DataStoreRepository dataStoreRepository,
                                         HearingRepository hearingRepository,
+                                        HearingResponseRepository hearingResponseRepository,
                                         HearingMapper hearingMapper,
                                         CaseHearingRequestRepository caseHearingRequestRepository,
                                         CancellationReasonsRepository cancellationReasonsRepository,
@@ -102,6 +110,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
         this.hearingRepository = hearingRepository;
+        this.hearingResponseRepository = hearingResponseRepository;
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.cancellationReasonsRepository = cancellationReasonsRepository;
@@ -179,6 +188,27 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             entities = caseHearingRequestRepository.getHearingDetails(caseRef);
         }
         return getHearingsResponseMapper.toHearingsResponse(caseRef, entities);
+    }
+
+    /**
+     * get parties notified.
+     * @param hearingId hearing id
+     * @return  list dateTimes
+     */
+    @Override
+    public List<LocalDateTime> getPartiesNotified(Long hearingId) {
+        isValidFormat(hearingId.toString());
+        if (!hearingRepository.existsById(hearingId)) {
+            throw new HearingNotFoundException(hearingId);
+        }
+        List<LocalDateTime> partiesNotifiedDateTimeList = hearingResponseRepository.getHearingResponses(hearingId);
+        if (partiesNotifiedDateTimeList.isEmpty()) {
+            logger.info("No partiesNotifiedDateTimes found for hearingId {}", hearingId);
+        } else {
+            logger.info("hearingId {}, partiesNotifiedDateTime {}",  hearingId,
+                    partiesNotifiedDateTimeList.get(0));
+        }
+        return partiesNotifiedDateTimeList;
     }
 
     private HearingResponse insertHearingRequest(CreateHearingRequest createHearingRequest) {

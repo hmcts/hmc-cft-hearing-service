@@ -54,6 +54,7 @@ import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -123,6 +124,9 @@ class HearingManagementServiceTest {
     HearingRepository hearingRepository;
 
     @Mock
+    HearingResponseRepository hearingResponseRepository;
+
+    @Mock
     CaseHearingRequestRepository caseHearingRequestRepository;
 
     @Mock
@@ -157,6 +161,7 @@ class HearingManagementServiceTest {
                 securityUtils,
                 dataStoreRepository,
                 hearingRepository,
+                hearingResponseRepository,
                 hearingMapper,
                 caseHearingRequestRepository,
                 cancellationReasonsRepository,
