@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class RequestDetails {
 
-    private LocalDateTime requestTimeStamp;
+    private LocalDateTime timestamp;
 
     private String status;
 

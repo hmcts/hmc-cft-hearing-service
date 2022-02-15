@@ -52,7 +52,7 @@ public class GetHearingResponseMapper {
     private RequestDetails setRequestDetails(HearingEntity hearingEntity) {
         RequestDetails requestDetails = new RequestDetails();
         requestDetails.setStatus(hearingEntity.getStatus());
-        requestDetails.setRequestTimeStamp(hearingEntity.getCaseHearingRequest().getHearingRequestReceivedDateTime());
+        requestDetails.setTimestamp(hearingEntity.getCaseHearingRequest().getHearingRequestReceivedDateTime());
         requestDetails.setVersionNumber(hearingEntity.getCaseHearingRequest().getVersionNumber());
         return requestDetails;
     }
