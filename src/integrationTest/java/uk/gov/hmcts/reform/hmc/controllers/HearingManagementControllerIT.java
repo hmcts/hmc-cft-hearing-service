@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.hmc.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -68,6 +70,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_RESTRICTED_FLAG_NULL_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_SLA_START_DATE_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_TYPE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_VALUE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CFT_ORG_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CFT_ORG_ID_NULL_EMPTY;
@@ -121,7 +124,9 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.ORGANISATION_TY
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PANEL_SPECIALISMS_MAX_LENGTH_MSG;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_DETAILS_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_DETAILS_NULL_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_ROLE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_ROLE_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_TYPE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PREFERRED_HEARING_CHANNEL_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PUBLIC_CASE_NAME_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PUBLIC_CASE_NAME_MAX_LENGTH;
@@ -145,6 +150,8 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
 
 class HearingManagementControllerIT extends BaseTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(HearingManagementControllerIT.class);
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -838,24 +845,24 @@ class HearingManagementControllerIT extends BaseTest {
         category.setCategoryValue("a".repeat(71));
         List<CaseCategory> caseCategoryList = Collections.singletonList(category);
         hearingRequest.getCaseDetails().setCaseCategories(caseCategoryList);
+        logger.info("request body: {}", objectMapper.writeValueAsString(hearingRequest));
         mockMvc.perform(put(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(10)))
+            .andExpect(jsonPath("$.errors", hasSize(11)))
             .andExpect(jsonPath("$.errors", hasItems(HMCTS_SERVICE_CODE_EMPTY_INVALID, CASE_REF_INVALID,
                                                      EXTERNAL_CASE_REFERENCE_MAX_LENGTH, CASE_DEEP_LINK_MAX_LENGTH,
                                                      CASE_DEEP_LINK_INVALID, HMCTS_INTERNAL_CASE_NAME_MAX_LENGTH,
                                                      PUBLIC_CASE_NAME_MAX_LENGTH,
                                                      CASE_MANAGEMENT_LOCATION_CODE_MAX_LENGTH, CATEGORY_VALUE,
-                                                     "Unsupported type for categoryType"
+                                                     "Unsupported type for categoryType", CATEGORY_TYPE_EMPTY
             )))
             .andReturn();
     }
 
     @Test
     void shouldReturn400WhenPartyDetailsNull() throws Exception {
-        PartyDetails partyDetails = new PartyDetails();
         IndividualDetails individualDetails = new IndividualDetails();
         RelatedParty relatedParty = new RelatedParty();
         individualDetails.setRelatedParties(Collections.singletonList(relatedParty));
@@ -864,24 +871,28 @@ class HearingManagementControllerIT extends BaseTest {
         List<UnavailabilityDow> unavailabilityDowList = Collections.singletonList(unavailabilityDow);
         UnavailabilityRanges unavailabilityRanges = new UnavailabilityRanges();
         List<UnavailabilityRanges> unavailabilityRangesList = Collections.singletonList(unavailabilityRanges);
+        PartyDetails partyDetails = new PartyDetails();
         partyDetails.setIndividualDetails(individualDetails);
         partyDetails.setOrganisationDetails(organisationDetails);
         partyDetails.setUnavailabilityRanges(unavailabilityRangesList);
         partyDetails.setUnavailabilityDow(unavailabilityDowList);
+        List<PartyDetails> listPartyDetails = new ArrayList<>();
+        listPartyDetails.add(partyDetails);
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
-        hearingRequest.setPartyDetails(Collections.singletonList(partyDetails));
+        hearingRequest.setPartyDetails(listPartyDetails);
+        logger.info("request body: {}", objectMapper.writeValueAsString(hearingRequest));
         mockMvc.perform(put(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(14)))
+            .andExpect(jsonPath("$.errors", hasSize(16)))
             .andExpect(jsonPath("$.errors", hasItems(PARTY_DETAILS_NULL_EMPTY,
                                                      "Unsupported type for partyType", UNAVAILABLE_FROM_DATE_EMPTY,
                                                      UNAVAILABLE_TO_DATE_EMPTY, "Unsupported type for dow",
                                                      "Unsupported type for dowUnavailabilityType", NAME_NULL_EMPTY,
                                                      ORGANISATION_TYPE_NULL_EMPTY, CFT_ORG_ID_NULL_EMPTY, TITLE_EMPTY,
                                                      FIRST_NAME_EMPTY, LAST_NAME_EMPTY, RELATED_PARTY_EMPTY,
-                                                     RELATIONSHIP_TYPE_EMPTY
+                                                     RELATIONSHIP_TYPE_EMPTY, PARTY_ROLE_EMPTY, PARTY_TYPE_EMPTY
             )))
             .andReturn();
     }
@@ -914,6 +925,7 @@ class HearingManagementControllerIT extends BaseTest {
         partyDetails.setOrganisationDetails(organisationDetails);
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         hearingRequest.setPartyDetails(Collections.singletonList(partyDetails));
+        logger.info("request body: {}", objectMapper.writeValueAsString(hearingRequest));
         mockMvc.perform(put(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
