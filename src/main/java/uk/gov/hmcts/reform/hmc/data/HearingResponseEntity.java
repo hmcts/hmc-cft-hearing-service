@@ -42,12 +42,6 @@ public class HearingResponseEntity {
     @Column(name = "listing_case_status", nullable = false)
     private String listingCaseStatus;
 
-    @Column(name = "response_version", nullable = false)
-    private Long responseVersion;
-
-    @Column(name = "request_version", nullable = false)
-    private Long requestVersion;
-
     @Column(name = "parties_notified_datetime")
     private LocalDateTime partiesNotifiedDateTime;
 
