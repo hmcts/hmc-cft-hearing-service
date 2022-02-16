@@ -49,4 +49,16 @@ public class HearingResponseEntity {
     @OneToMany(mappedBy = "hearingResponse")
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingDayDetailsEntity> hearingDayDetails;
+
+    @Column(name = "response_version", nullable = false)
+    private String responseVersion;
+
+    @Column(name = "request_version", nullable = false)
+    private String requestVersion;
+
+    @Column(name = "parties_notified_datetime")
+    private LocalDateTime partiesNotifiedDateTime;
+
+    @Column(name = "service_data")
+    private Object serviceData;
 }

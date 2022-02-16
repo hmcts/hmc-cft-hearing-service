@@ -127,4 +127,6 @@ public final class ValidationError {
     public static final String INVALID_DELETE_HEARING_STATUS = "Invalid hearing state for DELETE";
     public static final String INVALID_PUT_HEARING_STATUS = "Invalid hearing state for PUT";
 
+    public static final String HEARING_ID_MAX_LENGTH = "Hearing id must not be more than 60 " + CHARACTERS_LONG;
+
 }
