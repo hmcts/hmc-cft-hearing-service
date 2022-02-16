@@ -34,7 +34,7 @@ public class PanelUserRequirementsEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")
-    private CaseHearingRequestEntity caseHearing;
+    private CaseHearingRequestEntity caseHearing = null;
 
     @Column(name = "judicial_user_id", nullable = false)
     private String judicialUserId;

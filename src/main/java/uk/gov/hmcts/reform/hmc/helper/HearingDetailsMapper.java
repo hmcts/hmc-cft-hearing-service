@@ -66,15 +66,13 @@ public class HearingDetailsMapper {
         if (hearingDetails.getPanelRequirements().getRoleType() != null) {
             setPanelRequirements(hearingDetails.getPanelRequirements().getRoleType(), caseHearingRequestEntity);
         }
-        setPanelAutorisationRequirements(hearingDetails.getPanelRequirements(), caseHearingRequestEntity);
+        setPanelAuthorisationRequirements(hearingDetails.getPanelRequirements(), caseHearingRequestEntity);
         if (hearingDetails.getPanelRequirements().getPanelSpecialisms() != null) {
             setPanelSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms(), caseHearingRequestEntity);
         }
         if (hearingDetails.getPanelRequirements().getPanelPreferences() != null) {
             setPanelUserRequirements(
-                hearingDetails.getPanelRequirements().getPanelPreferences(),
-                caseHearingRequestEntity
-            );
+                hearingDetails.getPanelRequirements().getPanelPreferences(), caseHearingRequestEntity);
         }
     }
 
@@ -82,45 +80,80 @@ public class HearingDetailsMapper {
                                           CaseHearingRequestEntity caseHearingRequestEntity) {
         final List<PanelUserRequirementsEntity> panelUserRequirementsEntities =
             panelUserRequirementsMapper.modelToEntity(panelPreferences, caseHearingRequestEntity);
-        caseHearingRequestEntity.setPanelUserRequirements(panelUserRequirementsEntities);
+        if (caseHearingRequestEntity.getCaseHearingID() != null) {
+            caseHearingRequestEntity.getPanelUserRequirements().clear();
+            caseHearingRequestEntity.getPanelUserRequirements().addAll(panelUserRequirementsEntities);
+        } else {
+            caseHearingRequestEntity.setPanelUserRequirements(panelUserRequirementsEntities);
+        }
     }
 
     private void setPanelSpecialisms(List<String> panelSpecialisms, CaseHearingRequestEntity caseHearingRequestEntity) {
         final List<PanelSpecialismsEntity> panelSpecialismsEntities =
             panelSpecialismsMapper.modelToEntity(panelSpecialisms, caseHearingRequestEntity);
-        caseHearingRequestEntity.setPanelSpecialisms(panelSpecialismsEntities);
+        if (caseHearingRequestEntity.getCaseHearingID() != null) {
+            caseHearingRequestEntity.getPanelSpecialisms().clear();
+            caseHearingRequestEntity.getPanelSpecialisms().addAll(panelSpecialismsEntities);
+        } else {
+            caseHearingRequestEntity.setPanelSpecialisms(panelSpecialismsEntities);
+        }
     }
 
-    private void setPanelAutorisationRequirements(PanelRequirements panelRequirements,
-                                                  CaseHearingRequestEntity caseHearingRequestEntity) {
+    private void setPanelAuthorisationRequirements(PanelRequirements panelRequirements,
+                                                   CaseHearingRequestEntity caseHearingRequestEntity) {
         final List<PanelAuthorisationRequirementsEntity> panelRequirementsEntities =
             panelAuthorisationRequirementsMapper.modelToEntity(panelRequirements, caseHearingRequestEntity);
-        caseHearingRequestEntity.setPanelAuthorisationRequirements(panelRequirementsEntities);
+        if (caseHearingRequestEntity.getCaseHearingID() != null) {
+            caseHearingRequestEntity.getPanelAuthorisationRequirements().clear();
+            caseHearingRequestEntity.getPanelAuthorisationRequirements().addAll(panelRequirementsEntities);
+        } else {
+            caseHearingRequestEntity.setPanelAuthorisationRequirements(panelRequirementsEntities);
+        }
     }
 
     private void setPanelRequirements(List<String> roleTypes, CaseHearingRequestEntity caseHearingRequestEntity) {
         final List<PanelRequirementsEntity> panelRequirementsEntities =
             panelRequirementsMapper.modelToEntity(roleTypes, caseHearingRequestEntity);
-        caseHearingRequestEntity.setPanelRequirements(panelRequirementsEntities);
+        if (caseHearingRequestEntity.getCaseHearingID() != null) {
+            caseHearingRequestEntity.getPanelRequirements().clear();
+            caseHearingRequestEntity.getPanelRequirements().addAll(panelRequirementsEntities);
+        } else {
+            caseHearingRequestEntity.setPanelRequirements(panelRequirementsEntities);
+        }
     }
 
     private void setRequiredFacilities(List<String> facilities,
                                        CaseHearingRequestEntity caseHearingRequestEntity) {
         final List<RequiredFacilitiesEntity> requiredFacilitiesEntities =
             requiredFacilitiesMapper.modelToEntity(facilities, caseHearingRequestEntity);
-        caseHearingRequestEntity.setRequiredFacilities(requiredFacilitiesEntities);
+        if (caseHearingRequestEntity.getCaseHearingID() != null) {
+            caseHearingRequestEntity.getRequiredFacilities().clear();
+            caseHearingRequestEntity.getRequiredFacilities().addAll(requiredFacilitiesEntities);
+        } else {
+            caseHearingRequestEntity.setRequiredFacilities(requiredFacilitiesEntities);
+        }
     }
 
     private void setNonStandardDurations(List<String> durations, CaseHearingRequestEntity caseHearingRequestEntity) {
         final List<NonStandardDurationsEntity> nonStandardDurationsEntities =
             nonStandardDurationsMapper.modelToEntity(durations, caseHearingRequestEntity);
-        caseHearingRequestEntity.setNonStandardDurations(nonStandardDurationsEntities);
+        if (caseHearingRequestEntity.getCaseHearingID() != null) {
+            caseHearingRequestEntity.getNonStandardDurations().clear();
+            caseHearingRequestEntity.getNonStandardDurations().addAll(nonStandardDurationsEntities);
+        } else {
+            caseHearingRequestEntity.setNonStandardDurations(nonStandardDurationsEntities);
+        }
     }
 
     private void setRequiredLocations(List<HearingLocation> hearingLocations,
                                       CaseHearingRequestEntity caseHearingRequestEntity) {
         final List<RequiredLocationsEntity> requiredLocationsEntities =
             requiredLocationsMapper.modelToEntity(hearingLocations, caseHearingRequestEntity);
-        caseHearingRequestEntity.setRequiredLocations(requiredLocationsEntities);
+        if (caseHearingRequestEntity.getCaseHearingID() != null) {
+            caseHearingRequestEntity.getRequiredLocations().clear();
+            caseHearingRequestEntity.getRequiredLocations().addAll(requiredLocationsEntities);
+        } else {
+            caseHearingRequestEntity.setRequiredLocations(requiredLocationsEntities);
+        }
     }
 }

@@ -42,6 +42,6 @@ public class CaseCategoriesEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")
-    private CaseHearingRequestEntity caseHearing;
+    private CaseHearingRequestEntity caseHearing = null;
 
 }

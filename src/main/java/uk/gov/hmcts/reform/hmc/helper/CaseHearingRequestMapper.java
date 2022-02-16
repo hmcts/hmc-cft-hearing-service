@@ -71,7 +71,12 @@ public class CaseHearingRequestMapper {
                                   CaseHearingRequestEntity caseHearingRequestEntity) {
         final List<CaseCategoriesEntity> caseCategoriesEntities =
             caseCategoriesMapper.modelToEntity(caseCategories, caseHearingRequestEntity);
-        caseHearingRequestEntity.setCaseCategories(caseCategoriesEntities);
+        if (caseHearingRequestEntity.getCaseHearingID() != null) {
+            caseHearingRequestEntity.getCaseCategories().clear();
+            caseHearingRequestEntity.getCaseCategories().addAll(caseCategoriesEntities);
+        } else {
+            caseHearingRequestEntity.setCaseCategories(caseCategoriesEntities);
+        }
     }
 
 }

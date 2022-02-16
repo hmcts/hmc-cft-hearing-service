@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
-import lombok.Data;
 import org.hibernate.annotations.Type;
+import lombok.Data;
 import uk.gov.hmcts.reform.hmc.model.LocationId;
 
 import javax.persistence.Column;
@@ -42,6 +42,6 @@ public class RequiredLocationsEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")
-    private CaseHearingRequestEntity caseHearing;
+    private CaseHearingRequestEntity caseHearing = null;
 
 }

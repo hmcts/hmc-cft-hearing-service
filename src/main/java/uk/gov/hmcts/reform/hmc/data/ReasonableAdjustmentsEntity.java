@@ -33,6 +33,6 @@ public class ReasonableAdjustmentsEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tech_party_id")
-    private HearingPartyEntity hearingParty;
+    private HearingPartyEntity hearingParty = null;
 
 }

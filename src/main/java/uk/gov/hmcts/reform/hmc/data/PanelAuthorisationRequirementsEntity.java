@@ -30,7 +30,7 @@ public class PanelAuthorisationRequirementsEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")
-    private CaseHearingRequestEntity caseHearing;
+    private CaseHearingRequestEntity caseHearing = null;
 
     @Column(name = "authorisation_type")
     private String authorisationType;

@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
-import uk.gov.hmcts.reform.hmc.repository.NonStandardDurationsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NonStandardDurationsMapperTest {
 
-    @Mock
-    NonStandardDurationsRepository nonStandardDurationsRepository;
-
     @Test
     void modelToEntityTest() {
-        NonStandardDurationsMapper mapper = new NonStandardDurationsMapper(nonStandardDurationsRepository);
+        NonStandardDurationsMapper mapper = new NonStandardDurationsMapper();
         List<String> durations = getDurations();
         CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         List<NonStandardDurationsEntity> entities = mapper.modelToEntity(durations, caseHearingRequestEntity);

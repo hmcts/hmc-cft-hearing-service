@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
-import lombok.Data;
 import org.hibernate.annotations.Type;
+import lombok.Data;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class HearingPartyEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")
-    private CaseHearingRequestEntity caseHearing;
+    private CaseHearingRequestEntity caseHearing = null;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -50,22 +50,22 @@ public class HearingPartyEntity {
     @Column(name = "party_role_type")
     private String partyRoleType;
 
-    @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<IndividualDetailEntity> individualDetailEntity;
+    @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IndividualDetailEntity> individualDetailEntity = null;
 
-    @OneToOne(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private OrganisationDetailEntity organisationDetailEntity;
+    @OneToOne(mappedBy = "hearingParty", cascade = CascadeType.ALL, orphanRemoval = true)
+    private OrganisationDetailEntity organisationDetailEntity = null;
 
-    @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<UnavailabilityEntity> unavailabilityEntity;
+    @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UnavailabilityEntity> unavailabilityEntity = null;
 
-    @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<ContactDetailsEntity> contactDetailsEntity;
+    @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContactDetailsEntity> contactDetailsEntity = null;
 
-    @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<ReasonableAdjustmentsEntity> reasonableAdjustmentsEntity;
+    @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReasonableAdjustmentsEntity> reasonableAdjustmentsEntity = null;
 
-    @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<ContactDetailsEntity> contactDetails;
+    @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContactDetailsEntity> contactDetails = null;
 
 }

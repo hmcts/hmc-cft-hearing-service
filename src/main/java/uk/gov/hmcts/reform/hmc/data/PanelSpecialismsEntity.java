@@ -30,7 +30,7 @@ public class PanelSpecialismsEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")
-    private CaseHearingRequestEntity caseHearing;
+    private CaseHearingRequestEntity caseHearing = null;
 
     @Column(name = "specialism_type")
     private String specialismType;

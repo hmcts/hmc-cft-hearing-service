@@ -57,7 +57,12 @@ public class PartyDetailMapper {
                 setUnavailabilityDetails(partyDetail, hearingPartyEntity);
                 hearingPartyEntities.add(hearingPartyEntity);
             }
-            caseHearingRequestEntity.setHearingParties(hearingPartyEntities);
+            if (caseHearingRequestEntity.getCaseHearingID() != null) {
+                caseHearingRequestEntity.getHearingParties().clear();
+                caseHearingRequestEntity.getHearingParties().addAll(hearingPartyEntities);
+            } else {
+                caseHearingRequestEntity.setHearingParties(hearingPartyEntities);
+            }
         }
     }
 
@@ -88,28 +93,48 @@ public class PartyDetailMapper {
         if (partyDetail.getUnavailabilityDow() != null || partyDetail.getUnavailabilityRanges() != null) {
             final List<UnavailabilityEntity> unavailabilityEntities =
                 unAvailabilityDetailMapper.modelToEntity(partyDetail, hearingPartyEntity);
-            hearingPartyEntity.setUnavailabilityEntity(unavailabilityEntities);
+            if (hearingPartyEntity.getTechPartyId() != null) {
+                hearingPartyEntity.getUnavailabilityEntity().clear();
+                hearingPartyEntity.getUnavailabilityEntity().addAll(unavailabilityEntities);
+            } else {
+                hearingPartyEntity.setUnavailabilityEntity(unavailabilityEntities);
+            }
         }
     }
 
     private void setIndividualDetails(IndividualDetails individualDetails, HearingPartyEntity hearingPartyEntity) {
         final List<IndividualDetailEntity> individualDetailEntity =
             individualDetailMapper.modelToEntity(individualDetails, hearingPartyEntity);
-        hearingPartyEntity.setIndividualDetailEntity(individualDetailEntity);
+        if (hearingPartyEntity.getTechPartyId() != null) {
+            hearingPartyEntity.getIndividualDetailEntity().clear();
+            hearingPartyEntity.getIndividualDetailEntity().addAll(individualDetailEntity);
+        } else {
+            hearingPartyEntity.setIndividualDetailEntity(individualDetailEntity);
+        }
     }
 
     private void setReasonableAdjustments(List<String> reasonableAdjustments, HearingPartyEntity hearingPartyEntity) {
         if (reasonableAdjustments != null) {
             final List<ReasonableAdjustmentsEntity> reasonableAdjustmentsEntities =
                 reasonableAdjustmentMapper.modelToEntity(reasonableAdjustments, hearingPartyEntity);
-            hearingPartyEntity.setReasonableAdjustmentsEntity(reasonableAdjustmentsEntities);
+            if (hearingPartyEntity.getTechPartyId() != null) {
+                hearingPartyEntity.getReasonableAdjustmentsEntity().clear();
+                hearingPartyEntity.getReasonableAdjustmentsEntity().addAll(reasonableAdjustmentsEntities);
+            } else {
+                hearingPartyEntity.setReasonableAdjustmentsEntity(reasonableAdjustmentsEntities);
+            }
         }
     }
 
     private void setContactDetails(IndividualDetails individualDetails, HearingPartyEntity hearingPartyEntity) {
         final List<ContactDetailsEntity> contactDetailsEntity =
             contactDetailMapper.modelToEntity(individualDetails, hearingPartyEntity);
-        hearingPartyEntity.setContactDetails(contactDetailsEntity);
+        if (hearingPartyEntity.getTechPartyId() != null) {
+            hearingPartyEntity.getContactDetails().clear();
+            hearingPartyEntity.getContactDetails().addAll(contactDetailsEntity);
+        } else {
+            hearingPartyEntity.setContactDetails(contactDetailsEntity);
+        }
 
     }
 }
