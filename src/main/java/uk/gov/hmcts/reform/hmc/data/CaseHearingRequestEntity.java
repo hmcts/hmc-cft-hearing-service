@@ -93,7 +93,7 @@ public class CaseHearingRequestEntity {
     @Column(name = "case_sla_start_date", nullable = false)
     private LocalDate caseSlaStartDate;
 
-    @Column(name = "version_number", nullable = false)
+    @Column(name = "hearing_request_version", nullable = false)
     private Integer versionNumber;
 
     @Column(name = "interpreter_booking_required_flag")
