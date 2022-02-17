@@ -11,8 +11,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
@@ -102,8 +100,6 @@ import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
 
 @ExtendWith(MockitoExtension.class)
 class HearingManagementServiceTest {
-
-    private static final Logger logger = LoggerFactory.getLogger(HearingManagementServiceTest.class);
 
     @InjectMocks
     private HearingManagementServiceImpl hearingManagementService;
@@ -196,9 +192,9 @@ class HearingManagementServiceTest {
         hearing.setStatus("RESPONDED");
         hearing.setId(2000000000L);
 
-        Exception exception = assertThrows(HearingNotFoundException.class, () -> {
-            hearingManagementService.getHearingRequest(2000000000L, true);
-        });
+        Exception exception = assertThrows(HearingNotFoundException.class, () ->
+            hearingManagementService.getHearingRequest(2000000000L, true)
+        );
         assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
     }
 
@@ -249,8 +245,8 @@ class HearingManagementServiceTest {
     @Test
     void shouldFailAsDetailsNotPresent() {
         CreateHearingRequest createHearingRequest = new CreateHearingRequest();
-        Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-            .saveHearingRequest(createHearingRequest));
+        Exception exception = assertThrows(BadRequestException.class, () ->
+                hearingManagementService.saveHearingRequest(createHearingRequest));
         assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
     }
 

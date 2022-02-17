@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -73,8 +71,6 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 @Component
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
-
-    protected static final Logger logger = LoggerFactory.getLogger(HearingManagementServiceImpl.class);
 
     private final DataStoreRepository dataStoreRepository;
     private final RoleAssignmentService roleAssignmentService;
@@ -197,15 +193,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      */
     @Override
     public List<LocalDateTime> getPartiesNotified(Long hearingId) {
-        isValidFormat(hearingId.toString());
-        if (!hearingRepository.existsById(hearingId)) {
-            throw new HearingNotFoundException(hearingId);
-        }
+        validateHearingId(hearingId);
         List<LocalDateTime> partiesNotifiedDateTimeList = hearingResponseRepository.getHearingResponses(hearingId);
         if (partiesNotifiedDateTimeList.isEmpty()) {
-            logger.info("No partiesNotifiedDateTimes found for hearingId {}", hearingId);
+            log.info("No partiesNotifiedDateTimes found for hearingId {}", hearingId);
         } else {
-            logger.info("hearingId {}, partiesNotifiedDateTime {}",  hearingId,
+            log.info("hearingId {}, partiesNotifiedDateTime {}",  hearingId,
                     partiesNotifiedDateTimeList.get(0));
         }
         return partiesNotifiedDateTimeList;

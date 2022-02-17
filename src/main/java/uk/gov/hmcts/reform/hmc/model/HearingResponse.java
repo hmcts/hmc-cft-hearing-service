@@ -30,7 +30,7 @@ public class HearingResponse {
     @NotNull
     private Integer versionNumber;
 
-    @JsonProperty("partiesNotifiedDateTime")
+    @JsonProperty("partiesNotified")
     private LocalDateTime partiesNotifiedDateTime;
 
 }
