@@ -130,10 +130,10 @@ public class PartyDetailMapper {
         final List<ContactDetailsEntity> contactDetailsEntity =
             contactDetailMapper.modelToEntity(individualDetails, hearingPartyEntity);
         if (hearingPartyEntity.getTechPartyId() != null) {
-            hearingPartyEntity.getContactDetails().clear();
-            hearingPartyEntity.getContactDetails().addAll(contactDetailsEntity);
+            hearingPartyEntity.getContactDetailsEntity().clear();
+            hearingPartyEntity.getContactDetailsEntity().addAll(contactDetailsEntity);
         } else {
-            hearingPartyEntity.setContactDetails(contactDetailsEntity);
+            hearingPartyEntity.setContactDetailsEntity(contactDetailsEntity);
         }
 
     }

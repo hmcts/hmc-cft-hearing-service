@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
-import org.hibernate.annotations.Type;
 import lombok.Data;
+import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 
 import java.util.List;
@@ -64,8 +64,5 @@ public class HearingPartyEntity {
 
     @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReasonableAdjustmentsEntity> reasonableAdjustmentsEntity = null;
-
-    @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ContactDetailsEntity> contactDetails = null;
 
 }
