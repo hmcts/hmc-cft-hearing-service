@@ -7,12 +7,13 @@ import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 
 import java.util.List;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 
 @Component
 public class CaseHearingRequestMapper {
@@ -24,13 +25,13 @@ public class CaseHearingRequestMapper {
         this.caseCategoriesMapper = caseCategoriesMapper;
     }
 
-    public CaseHearingRequestEntity modelToEntity(HearingRequest hearingRequest, String hearingType,
-                                                  HearingEntity hearingEntity) {
+    public CaseHearingRequestEntity modelToEntity(HearingRequest hearingRequest, HearingEntity hearingEntity) {
         CaseHearingRequestEntity caseHearingRequestEntity;
-        if (AMEND_HEARING.equals(hearingType)) {
-            caseHearingRequestEntity = hearingEntity.getCaseHearingRequest();
-        } else {
+        if (hearingRequest instanceof CreateHearingRequest) {
             caseHearingRequestEntity = new CaseHearingRequestEntity();
+            hearingEntity.setStatus(POST_HEARING_STATUS);
+        } else {
+            caseHearingRequestEntity = hearingEntity.getCaseHearingRequest();
         }
         HearingDetails hearingDetails = hearingRequest.getHearingDetails();
         CaseDetails caseDetails = hearingRequest.getCaseDetails();

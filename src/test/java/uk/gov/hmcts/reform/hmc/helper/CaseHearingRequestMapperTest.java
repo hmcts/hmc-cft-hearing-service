@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 
 class CaseHearingRequestMapperTest {
 
@@ -25,7 +24,7 @@ class CaseHearingRequestMapperTest {
         CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
         CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper);
         CaseHearingRequestEntity entity = caseHearingRequestMapper
-            .modelToEntity(hearingRequest,REQUEST_HEARING, hearingEntity);
+            .modelToEntity(hearingRequest, hearingEntity);
         assertEquals(Boolean.TRUE, entity.getAutoListFlag());
         assertEquals("Some hearing type", entity.getHearingType());
         assertEquals(0, entity.getRequiredDurationInMinutes());
@@ -46,7 +45,6 @@ class CaseHearingRequestMapperTest {
         assertEquals("CMLC123", entity.getOwningLocationId());
         assertEquals(Boolean.FALSE, entity.getCaseRestrictedFlag());
         assertEquals(Boolean.FALSE, entity.getCaseRestrictedFlag());
-        assertEquals(1, entity.getVersionNumber());
         assertNull(entity.getInterpreterBookingRequiredFlag());
         assertEquals(Boolean.FALSE, entity.getIsLinkedFlag());
         assertNull(entity.getListingComments());

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
@@ -12,7 +13,6 @@ import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 
 @Component
 public class HearingMapper {
@@ -32,12 +32,12 @@ public class HearingMapper {
         this.hearingDetailsMapper = hearingDetailsMapper;
     }
 
-    public HearingEntity modelToEntity(HearingRequest hearingRequest,CaseHearingRequestEntity caseHearingRequestEntity,
-                                       String hearingType,HearingEntity hearingEntity) {
+    public HearingEntity modelToEntity(HearingRequest hearingRequest, CaseHearingRequestEntity caseHearingRequestEntity,
+                                       HearingEntity hearingEntity) {
         setHearingDetails(hearingRequest.getHearingDetails(), caseHearingRequestEntity);
         setCaseDetails(hearingRequest.getCaseDetails(), caseHearingRequestEntity);
         setPartyDetails(hearingRequest.getPartyDetails(), caseHearingRequestEntity);
-        if (REQUEST_HEARING.equals(hearingType)) {
+        if (hearingRequest instanceof CreateHearingRequest) {
             hearingEntity.setStatus(POST_HEARING_STATUS);
         }
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);

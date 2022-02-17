@@ -50,10 +50,8 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_UPDATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
@@ -141,17 +139,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             createHearingRequest.getPartyDetails(), createHearingRequest.getRequestDetails());
 
         HearingEntity hearingEntity = new HearingEntity();
-        CaseHearingRequestEntity caseHearingRequestEntity = getCaseHearingEntity(hearingRequest, REQUEST_HEARING,
-                                                                                 hearingEntity);
+        CaseHearingRequestEntity caseHearingRequestEntity = getCaseHearingEntity(hearingRequest, hearingEntity);
         caseHearingRequestEntity.setRequestTimeStamp(createHearingRequest.getRequestDetails().getRequestTimeStamp());
         caseHearingRequestEntity.setVersionNumber(VERSION_NUMBER);
-        hearingEntity = saveHearingDetails(hearingRequest, caseHearingRequestEntity, REQUEST_HEARING, hearingEntity);
+        hearingEntity = saveHearingDetails(hearingRequest, caseHearingRequestEntity, hearingEntity);
         return getSaveHearingResponseDetails(hearingEntity);
     }
 
-    private CaseHearingRequestEntity getCaseHearingEntity(HearingRequest hearingRequest, String hearingType,
-                                                          HearingEntity hearingEntity) {
-        return caseHearingRequestMapper.modelToEntity(hearingRequest, hearingType, hearingEntity);
+    private CaseHearingRequestEntity getCaseHearingEntity(HearingRequest hearingRequest,  HearingEntity hearingEntity) {
+        return caseHearingRequestMapper.modelToEntity(hearingRequest, hearingEntity);
     }
 
     @Override
@@ -169,8 +165,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingEntity = hearingResult.get();
-            CaseHearingRequestEntity caseHearingRequestEntity = getCaseHearingEntity(hearingRequest, AMEND_HEARING,
-                                                                                     hearingEntity);
+            CaseHearingRequestEntity caseHearingRequestEntity = getCaseHearingEntity(hearingRequest, hearingEntity);
             caseHearingRequestEntity.setRequestTimeStamp(
                 updateHearingRequest.getRequestDetails().getRequestTimeStamp());
             caseHearingRequestEntity.setVersionNumber(hearingEntity.getCaseHearingRequest().getVersionNumber()
@@ -179,7 +174,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             String statusToUpdate = setHearingStatus(hearingEntity.getStatus());
             hearingEntity.setStatus(statusToUpdate);
             HearingEntity savedHearingEntity = saveHearingDetails(hearingRequest, caseHearingRequestEntity,
-                                                                  AMEND_HEARING, hearingEntity);
+                                                                  hearingEntity);
             return getSaveHearingResponseDetails(savedHearingEntity);
         } else {
             throw new NoSuchElementException();
@@ -187,10 +182,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private String setHearingStatus(String status) {
-        if (PutHearingStatus.HEARING_REQUESTED.equals(status)) {
-            return PutHearingStatus.HEARING_REQUESTED.toString();
+        if (PutHearingStatus.HEARING_REQUESTED.name().equals(status)) {
+            return PutHearingStatus.HEARING_REQUESTED.name();
         } else {
-            return PutHearingStatus.UPDATE_REQUESTED.toString();
+            return PutHearingStatus.UPDATE_REQUESTED.name();
         }
     }
 
@@ -234,10 +229,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
 
     private HearingEntity saveHearingDetails(HearingRequest hearingRequest,
-                                             CaseHearingRequestEntity caseHearingRequestEntity, String hearingType,
+                                             CaseHearingRequestEntity caseHearingRequestEntity,
                                              HearingEntity hearingEntity) {
         HearingEntity savedHearingEntity = hearingMapper.modelToEntity(hearingRequest, caseHearingRequestEntity,
-                                                                       hearingType, hearingEntity);
+                                                                       hearingEntity);
         return hearingRepository.save(savedHearingEntity);
     }
 

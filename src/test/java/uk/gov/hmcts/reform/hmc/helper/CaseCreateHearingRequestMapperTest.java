@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 
 class CaseCreateHearingRequestMapperTest {
 
@@ -31,7 +30,6 @@ class CaseCreateHearingRequestMapperTest {
         expectedEntity.setAdditionalSecurityRequiredFlag(false);
         expectedEntity.setOwningLocationId("CMLC123");
         expectedEntity.setCaseRestrictedFlag(false);
-        expectedEntity.setVersionNumber(1);
         expectedEntity.setIsLinkedFlag(false);
         expectedEntity.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
         expectedEntity.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
@@ -46,7 +44,7 @@ class CaseCreateHearingRequestMapperTest {
         CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
         CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper);
         CaseHearingRequestEntity actualEntity = caseHearingRequestMapper.modelToEntity(
-            createHearingRequest,REQUEST_HEARING, hearingEntity);
+            createHearingRequest, hearingEntity);
         expectedEntity.setHearing(hearingEntity);
         assertEquals(expectedEntity, actualEntity);
     }

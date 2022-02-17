@@ -7,6 +7,7 @@ import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
@@ -194,7 +195,33 @@ class HearingManagementServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testUpdateHearingRequest_WithValidData() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequest();
-        hearingManagementService.updateHearingRequest(2000000000L, request);
+        HearingResponse response = hearingManagementService.updateHearingRequest(2000000000L, request);
+        assertEquals(response.getHearingRequestId(), 2000000000L);
+        assertEquals(PutHearingStatus.HEARING_REQUESTED.name(), response.getStatus());
+        assertNotNull(response.getVersionNumber());
+        assertNotNull(response.getTimeStamp());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void testUpdateHearingRequest_WhenStatus_Update_Requested() {
+        UpdateHearingRequest request = TestingUtil.updateHearingRequest();
+        HearingResponse response = hearingManagementService.updateHearingRequest(2000000012L, request);
+        assertEquals(response.getHearingRequestId(), 2000000012L);
+        assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
+        assertNotNull(response.getVersionNumber());
+        assertNotNull(response.getTimeStamp());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void testUpdateHearingRequest_WhenStatus_Awaiting_Listing() {
+        UpdateHearingRequest request = TestingUtil.updateHearingRequest();
+        HearingResponse response = hearingManagementService.updateHearingRequest(2000000013L, request);
+        assertEquals(response.getHearingRequestId(), 2000000013L);
+        assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
+        assertNotNull(response.getVersionNumber());
+        assertNotNull(response.getTimeStamp());
     }
 
     @Test
