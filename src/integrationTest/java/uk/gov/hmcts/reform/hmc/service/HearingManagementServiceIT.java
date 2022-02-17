@@ -196,7 +196,7 @@ class HearingManagementServiceIT extends BaseTest {
     void testUpdateHearingRequest_WithValidData() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequest();
         HearingResponse response = hearingManagementService.updateHearingRequest(2000000000L, request);
-        assertEquals(response.getHearingRequestId(), 2000000000L);
+        assertEquals(2000000000L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.HEARING_REQUESTED.name(), response.getStatus());
         assertNotNull(response.getVersionNumber());
         assertNotNull(response.getTimeStamp());
@@ -207,8 +207,8 @@ class HearingManagementServiceIT extends BaseTest {
     void testUpdateHearingRequest_WhenStatus_Update_Requested() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequest();
         HearingResponse response = hearingManagementService.updateHearingRequest(2000000012L, request);
-        assertEquals(response.getHearingRequestId(), 2000000012L);
-        assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
+        assertEquals(2000000012L, response.getHearingRequestId());
+        assertEquals(response.getStatus(), PutHearingStatus.UPDATE_REQUESTED.name());
         assertNotNull(response.getVersionNumber());
         assertNotNull(response.getTimeStamp());
     }
@@ -218,7 +218,7 @@ class HearingManagementServiceIT extends BaseTest {
     void testUpdateHearingRequest_WhenStatus_Awaiting_Listing() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequest();
         HearingResponse response = hearingManagementService.updateHearingRequest(2000000013L, request);
-        assertEquals(response.getHearingRequestId(), 2000000013L);
+        assertEquals(2000000013L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
         assertNotNull(response.getVersionNumber());
         assertNotNull(response.getTimeStamp());
