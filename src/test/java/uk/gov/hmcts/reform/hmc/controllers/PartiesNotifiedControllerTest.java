@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,10 +53,11 @@ class PartiesNotifiedControllerTest {
     }
 
     @Test
-    void shouldReturn200_whenRequestDetailsArePresent() {
+    void shouldReturn200_whenRequestDetailsArePresent() throws JsonProcessingException {
+        JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
         PartiesNotified partiesNotified = new PartiesNotified();
         partiesNotified.setRequestVersion(1);
-        partiesNotified.setServiceData(new Object());
+        partiesNotified.setServiceData(jsonNode);
 
         doNothing().when(partiesNotifiedService).getPartiesNotified(anyLong(), anyInt(), any(PartiesNotified.class));
 

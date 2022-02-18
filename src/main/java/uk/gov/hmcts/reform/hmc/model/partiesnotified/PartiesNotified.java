@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.model.partiesnotified;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -10,5 +11,5 @@ public class PartiesNotified {
     @NotNull
     private int requestVersion;
 
-    private Object serviceData;
+    private JsonNode serviceData;
 }

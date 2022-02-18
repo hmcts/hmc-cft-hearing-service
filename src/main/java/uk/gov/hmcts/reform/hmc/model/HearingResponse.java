@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -38,10 +39,10 @@ public class HearingResponse {
     @NotNull
     private Integer requestVersion;
 
-    @JsonProperty("partiesNotifiedDateTime")
+    @JsonProperty("partiesNotified")
     private LocalDateTime partiesNotifiedDateTime;
 
     @JsonProperty("serviceData")
-    private Object serviceData;
+    private Map<String, Object> serviceData;
 
 }

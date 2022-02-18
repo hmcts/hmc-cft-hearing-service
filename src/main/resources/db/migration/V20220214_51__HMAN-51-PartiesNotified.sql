@@ -8,4 +8,4 @@ ALTER TABLE ONLY public.hearing_response
     ADD COLUMN IF NOT EXISTS parties_notified_datetime timestamp without time zone;
 
 ALTER TABLE ONLY public.hearing_response
-    ADD COLUMN IF NOT EXISTS service_data blob;
+    ADD COLUMN IF NOT EXISTS service_data jsonb;
