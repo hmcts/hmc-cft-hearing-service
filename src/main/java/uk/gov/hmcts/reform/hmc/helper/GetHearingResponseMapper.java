@@ -163,14 +163,14 @@ public class GetHearingResponseMapper {
                 }
                 individualDetails.setVulnerableFlag(individualDetailEntity.getVulnerableFlag());
                 individualDetails.setVulnerabilityDetails(individualDetailEntity.getVulnerabilityDetails());
-                if (hearingPartyEntity.getContactDetails() != null) {
-                    if (!hearingPartyEntity.getContactDetails().isEmpty()) {
-                        if (hearingPartyEntity.getContactDetails().get(0).getContactDetails().contains("@")) {
+                if (hearingPartyEntity.getContactDetailsEntity() != null) {
+                    if (!hearingPartyEntity.getContactDetailsEntity().isEmpty()) {
+                        if (hearingPartyEntity.getContactDetailsEntity().get(0).getContactDetails().contains("@")) {
                             individualDetails.setHearingChannelEmail(
-                                hearingPartyEntity.getContactDetails().get(0).getContactDetails());
+                                hearingPartyEntity.getContactDetailsEntity().get(0).getContactDetails());
                         } else {
                             individualDetails.setHearingChannelPhone(
-                                hearingPartyEntity.getContactDetails().get(0).getContactDetails());
+                                hearingPartyEntity.getContactDetailsEntity().get(0).getContactDetails());
                         }
                     }
                 }
