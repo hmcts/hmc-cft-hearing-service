@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
@@ -28,10 +30,15 @@ import javax.validation.ValidatorFactory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_TYPE_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_ROLE_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_TYPE_EMPTY;
 
 class EnumPatternValidatorTest {
 
     static Validator validator;
+
+    private static final Logger logger = LoggerFactory.getLogger(EnumPatternValidatorTest.class);
 
     @Mock
     private ConstraintValidatorContext constraintValidatorContext;
@@ -103,10 +110,14 @@ class EnumPatternValidatorTest {
         category.setCategoryType(null);
         Set<ConstraintViolation<CaseCategory>> violations = validator.validate(category);
         assertFalse(violations.isEmpty());
-        assertEquals(1, violations.size());
         List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for categoryType", validationErrors.get(0));
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertEquals(2, violations.size());
+        assertTrue(validationErrors.contains("Unsupported type for categoryType"));
+        assertTrue(validationErrors.contains(CATEGORY_TYPE_EMPTY));
     }
 
     @Test
@@ -115,10 +126,11 @@ class EnumPatternValidatorTest {
         category.setCategoryType("");
         Set<ConstraintViolation<CaseCategory>> violations = validator.validate(category);
         assertFalse(violations.isEmpty());
-        assertEquals(1, violations.size());
+        assertEquals(2, violations.size());
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for categoryType", validationErrors.get(0));
+        assertTrue(validationErrors.contains("Unsupported type for categoryType"));
+        assertTrue(validationErrors.contains(CATEGORY_TYPE_EMPTY));
     }
 
     private CaseCategory getCaseCategory() {
@@ -212,10 +224,15 @@ class EnumPatternValidatorTest {
         partyDetails.setPartyType("");
         Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
         assertFalse(violations.isEmpty());
-        assertEquals(1, violations.size());
+        assertEquals(3, violations.size());
         List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for partyType", validationErrors.get(0));
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertTrue(validationErrors.contains("Unsupported type for partyType"));
+        assertTrue(validationErrors.contains(PARTY_ROLE_EMPTY));
+        assertTrue(validationErrors.contains(PARTY_TYPE_EMPTY));
     }
 
     private PartyDetails getPartyDetails() {
@@ -231,10 +248,12 @@ class EnumPatternValidatorTest {
         partyDetails.setPartyType(null);
         Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
         assertFalse(violations.isEmpty());
-        assertEquals(1, violations.size());
+        assertEquals(3, violations.size());
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for partyType", validationErrors.get(0));
+        assertTrue(validationErrors.contains("Unsupported type for partyType"));
+        assertTrue(validationErrors.contains(PARTY_TYPE_EMPTY));
+        assertTrue(validationErrors.contains(PARTY_ROLE_EMPTY));
     }
 
     @Test
@@ -242,12 +261,16 @@ class EnumPatternValidatorTest {
         PartyDetails partyDetails = new PartyDetails();
         partyDetails.setPartyID("id");
         partyDetails.setPartyType("IND1");
+        partyDetails.setPartyRole("role1");
         Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
         List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for partyType", validationErrors.get(0));
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertTrue(validationErrors.contains("Unsupported type for partyType"));
     }
 
     @Test
@@ -255,6 +278,7 @@ class EnumPatternValidatorTest {
         PartyDetails partyDetails = new PartyDetails();
         partyDetails.setPartyID("id");
         partyDetails.setPartyType(PartyType.IND.toString());
+        partyDetails.setPartyRole("role1");
         Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
         assertTrue(violations.isEmpty());
     }
