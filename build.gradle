@@ -217,7 +217,6 @@ def versions = [
   junit           : '5.7.2',
   junitPlatform   : '1.7.2',
   jsr310          : '2.12.4',
-  log4j           : '2.14.1',
   lombok          : '1.18.16',
   mapstruct       : '1.4.2.Final',
   pact            : '4.1.7',
@@ -231,8 +230,8 @@ def versions = [
   serviceAuthVersion: '4.0.3'
 ]
 
-ext['spring-framework.version'] = '5.3.12'
-ext['log4j2.version'] = '2.17.0'
+ext['spring-framework.version'] = '5.3.15'
+ext['log4j2.version'] = '2.17.1'
 
 // before committing a change, make sure task still works
 dependencyUpdates {
@@ -262,7 +261,7 @@ dependencyManagement {
       entry 'json-path'
       entry 'xml-path'
     }
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.54') {
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.58') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
       entry 'tomcat-embed-websocket'
@@ -335,6 +334,12 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+
+  // CVE-2021-28170
+  implementation group: 'org.glassfish.web', name: 'el-impl', version: '2.2.1-b05'
+  implementation group: 'org.glassfish', name: 'jakarta.el', version: '4.0.1'
+  implementation 'javax.el:javax.el-api:3.0.1-b06'
+
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
@@ -342,10 +347,9 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
 
-  compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
-  compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.1'
+  compile group: 'org.apache.logging.log4j', name: 'log4j-api'
+  compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j'
   compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jsr310
-
   compile group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceAuthVersion
   compile group: 'com.github.hmcts', name: 'idam-java-client', version: '2.0.1'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
@@ -370,6 +374,9 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-config'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
 
+  // CVE-2021-22119
+  implementation group: 'org.springframework.security', name:'spring-security-core', version: '5.6.1'
+
   implementation 'org.mapstruct:mapstruct-jdk8:1.3.1.Final'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
@@ -379,7 +386,9 @@ dependencies {
 
   implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.0.2'
   implementation group: 'com.azure', name: 'azure-core', version: '1.13.0'
-
+  // CVE-2021-42550
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.10'
   // Explicitly set versions of io.netty components to resolve CVE-2021-37136 and CVE-2021-37137
   implementation group: 'io.netty', name: 'netty-buffer', version: versions.netty
   implementation group: 'io.netty', name: 'netty-codec', version: versions.netty
