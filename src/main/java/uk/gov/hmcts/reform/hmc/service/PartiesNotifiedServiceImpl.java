@@ -50,7 +50,7 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
     }
 
     /**
-     * TODO: refactor this validation method to a parent service class.
+     * validate Hearing id
      * @param hearingId hearing id
      */
     private void validateHearingId(Long hearingId) {
@@ -66,7 +66,7 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
     }
 
     /**
-     * TODO: refactor this validation method to a parent service class.
+     * validate Hearing id format
      * @param hearingIdStr hearing id string
      */
     private void isValidFormat(String hearingIdStr) {
