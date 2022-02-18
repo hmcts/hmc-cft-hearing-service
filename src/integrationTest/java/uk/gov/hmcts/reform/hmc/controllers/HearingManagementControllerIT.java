@@ -641,7 +641,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(url + "/2000000012")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(201))
