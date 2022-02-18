@@ -61,6 +61,7 @@ class PartiesNotifiedServiceTest {
                 Optional.of(generateHearingEntity(1L, "HearingRequested",
                                                   2, "1", null
                 ));
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(hearingEntity);
 
             partiesNotifiedService.getPartiesNotified(2000000000L, 1, partiesNotified);
@@ -88,6 +89,7 @@ class PartiesNotifiedServiceTest {
                 Optional.of(generateHearingEntity(1L, "HearingRequested",
                                                   2, "12", LocalDateTime.now()
                 ));
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(hearingEntity);
 
             Exception exception = assertThrows(PartiesNotifiedNotFoundException.class, () ->
@@ -115,6 +117,7 @@ class PartiesNotifiedServiceTest {
                 Optional.of(generateHearingEntity(1L, "HearingRequested",
                                                   2, "1", LocalDateTime.now()
                 ));
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(hearingEntity);
 
             Exception exception = assertThrows(PartiesNotifiedBadRequestException.class, () ->

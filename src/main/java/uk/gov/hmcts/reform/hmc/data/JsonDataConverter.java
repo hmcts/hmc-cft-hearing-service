@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.io.IOException;
+
 
 @Converter(autoApply = true)
 public class JsonDataConverter implements AttributeConverter<JsonNode, String> {
