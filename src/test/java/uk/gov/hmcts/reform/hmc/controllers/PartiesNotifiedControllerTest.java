@@ -16,7 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
-import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
+import uk.gov.hmcts.reform.hmc.service.PartiesNotifiedService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ class PartiesNotifiedControllerTest {
     WebApplicationContext webApplicationContext;
 
     @MockBean
-    private HearingManagementService hearingManagementService;
+    private PartiesNotifiedService partiesNotifiedService;
 
     @BeforeEach
     public void setUp() {
@@ -56,51 +56,51 @@ class PartiesNotifiedControllerTest {
     void shouldReturn200_whenNo_PartiesNotifiedDateTimes() {
         final Long hearingId = 2000000099L;
         List<LocalDateTime> partiesNotifiedDateTimeExpected = new ArrayList<>();
-        when(hearingManagementService.getPartiesNotified(hearingId)).thenReturn(partiesNotifiedDateTimeExpected);
+        when(partiesNotifiedService.getPartiesNotified(hearingId)).thenReturn(partiesNotifiedDateTimeExpected);
 
-        PartiesNotifiedController controller = new PartiesNotifiedController(hearingManagementService);
+        PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
         List<LocalDateTime> partiesNotifiedDateTimes = controller.getPartiesNotified(hearingId);
         assertTrue(partiesNotifiedDateTimes.isEmpty());
-        verify(hearingManagementService, times(1)).getPartiesNotified(any());
+        verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
     }
 
     @Test
     void shouldReturn200_whenSome_PartiesNotifiedDateTimes() {
         final Long hearingId = 2000000099L;
         List<LocalDateTime> partiesNotifiedDateTimeExpected = generatePartiesNotifiedDateTimes();
-        when(hearingManagementService.getPartiesNotified(hearingId)).thenReturn(partiesNotifiedDateTimeExpected);
+        when(partiesNotifiedService.getPartiesNotified(hearingId)).thenReturn(partiesNotifiedDateTimeExpected);
 
-        PartiesNotifiedController controller = new PartiesNotifiedController(hearingManagementService);
+        PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
         List<LocalDateTime> partiesNotifiedDateTimes = controller.getPartiesNotified(hearingId);
         assertFalse(partiesNotifiedDateTimes.isEmpty());
-        verify(hearingManagementService, times(1)).getPartiesNotified(any());
+        verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
     }
 
     @Test
     void shouldReturn400_when_null_hearingId() {
         final Long hearingId = null;
-        PartiesNotifiedController controller = new PartiesNotifiedController(hearingManagementService);
+        PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
         List<LocalDateTime> partiesNotifiedDateTimes = controller.getPartiesNotified(hearingId);
         assertTrue(partiesNotifiedDateTimes.isEmpty());
-        verify(hearingManagementService, times(1)).getPartiesNotified(any());
+        verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
     }
 
     @Test
     void shouldReturn400_when_invalid_hearingId() {
         final Long hearingId = 1000000099L;
-        PartiesNotifiedController controller = new PartiesNotifiedController(hearingManagementService);
+        PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
         List<LocalDateTime> partiesNotifiedDateTimes = controller.getPartiesNotified(hearingId);
         assertTrue(partiesNotifiedDateTimes.isEmpty());
-        verify(hearingManagementService, times(1)).getPartiesNotified(any());
+        verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
     }
 
     @Test
     void shouldReturn404_when_hearingIdNotFound() {
         final Long hearingId = 2000000099L;
-        PartiesNotifiedController controller = new PartiesNotifiedController(hearingManagementService);
+        PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
         List<LocalDateTime> partiesNotifiedDateTimes = controller.getPartiesNotified(hearingId);
         assertTrue(partiesNotifiedDateTimes.isEmpty());
-        verify(hearingManagementService, times(1)).getPartiesNotified(any());
+        verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
     }
 
     private List<LocalDateTime> generatePartiesNotifiedDateTimes() {

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
+import uk.gov.hmcts.reform.hmc.service.PartiesNotifiedService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,10 +19,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Validated
 public class PartiesNotifiedController {
 
-    private final HearingManagementService hearingManagementService;
+    private final PartiesNotifiedService partiesNotifiedService;
 
-    public PartiesNotifiedController(HearingManagementService hearingManagementService) {
-        this.hearingManagementService = hearingManagementService;
+    public PartiesNotifiedController(PartiesNotifiedService partiesNotifiedService) {
+        this.partiesNotifiedService = partiesNotifiedService;
     }
 
     @GetMapping(path = "/partiesNotified/{id}", produces = APPLICATION_JSON_VALUE)
@@ -33,7 +33,7 @@ public class PartiesNotifiedController {
             @ApiResponse(code = 404, message = "Hearing id not found")
     })
     public List<LocalDateTime> getPartiesNotified(@PathVariable("id") Long hearingId) {
-        return hearingManagementService.getPartiesNotified(hearingId);
+        return partiesNotifiedService.getPartiesNotified(hearingId);
     }
 
 }
