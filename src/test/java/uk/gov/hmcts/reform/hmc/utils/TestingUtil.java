@@ -82,6 +82,7 @@ public class TestingUtil {
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
+        hearingDetails.setFacilitiesRequired(Arrays.asList("facility1", "facility2"));
         return hearingDetails;
     }
 
@@ -551,5 +552,6 @@ public class TestingUtil {
 
         return entity1;
     }
+
 }
 
