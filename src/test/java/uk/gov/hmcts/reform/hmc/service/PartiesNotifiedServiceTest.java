@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -71,7 +70,6 @@ class PartiesNotifiedServiceTest {
 
 
         @Test
-        @Disabled
         void shouldFailWithInvalidHearingId() throws JsonProcessingException {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = generatePartiesNotified(1, jsonNode);
@@ -98,7 +96,6 @@ class PartiesNotifiedServiceTest {
         }
 
         @Test
-        @Disabled
         void shouldFailWithNoSuchId() throws JsonProcessingException {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = generatePartiesNotified(1, jsonNode);
