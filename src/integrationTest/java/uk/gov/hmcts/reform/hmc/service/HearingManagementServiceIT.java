@@ -44,6 +44,8 @@ class HearingManagementServiceIT extends BaseTest {
 
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-caseHearings_request.sql";
 
+    private static final String UPDATE_HEARINGS_DATA_SCRIPT = "classpath:sql/update-case-hearing-request.sql";
+
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void testValidateHearingRequest_WithAllMandatoryFields() {
@@ -214,11 +216,11 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
     void testUpdateHearingRequest_WhenStatus_Awaiting_Listing() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequest();
-        HearingResponse response = hearingManagementService.updateHearingRequest(2000000013L, request);
-        assertEquals(2000000013L, response.getHearingRequestId());
+        HearingResponse response = hearingManagementService.updateHearingRequest(2000000024L, request);
+        assertEquals(2000000024L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
         assertNotNull(response.getVersionNumber());
         assertNotNull(response.getTimeStamp());
