@@ -5,12 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.data.PartiesNotifiedEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponse;
+import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
@@ -34,24 +37,37 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
     /**
      * get parties notified.
      * @param hearingId hearing id
-     * @return  list dateTimes
+     * @return  list partiesNotified
      */
     @Override
-    public List<LocalDateTime> getPartiesNotified(Long hearingId) {
+    public PartiesNotifiedResponses getPartiesNotified(Long hearingId) {
         validateHearingId(hearingId);
-        List<LocalDateTime> partiesNotifiedDateTimeList = hearingResponseRepository.getHearingResponses(hearingId);
-        if (partiesNotifiedDateTimeList.isEmpty()) {
-            log.info("No partiesNotifiedDateTimes found for hearingId {}", hearingId);
+        List<PartiesNotifiedEntity> entities = hearingResponseRepository.getPartiesNotified(hearingId);
+        if (entities.isEmpty()) {
+            log.info("No partiesNotified found for hearingId {}", hearingId);
         } else {
-            log.info("hearingId {}, partiesNotifiedDateTime {}",  hearingId,
-                    partiesNotifiedDateTimeList.get(0));
+            PartiesNotifiedEntity entity = entities.get(0);
+            log.info("hearingId {}, partiesNotified {}",  hearingId,
+                    entity.getHearingResponseId());
         }
-        return partiesNotifiedDateTimeList;
+        List<PartiesNotifiedResponse> partiesNotified = new ArrayList<>();
+        entities.forEach(e -> {
+            PartiesNotifiedResponse response = new PartiesNotifiedResponse();
+            response.setResponseVersion(e.getResponseVersion());
+            response.setResponseReceivedDateTime(e.getRequestTimeStamp());
+            response.setRequestVersion(e.getRequestVersion());
+            response.setPartiesNotified(e.getPartiesNotifiedDateTime());
+            partiesNotified.add(response);
+        });
+        PartiesNotifiedResponses responses = new PartiesNotifiedResponses();
+        responses.setResponse(partiesNotified);
+        responses.setHearingID(hearingId);
+        return responses;
     }
 
     /**
-     * validate Hearing id
-     * @param hearingId hearing id
+     * validate Hearing id.
+     * @param hearingId hearing id.
      */
     private void validateHearingId(Long hearingId) {
         if (hearingId == null) {
@@ -66,7 +82,7 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
     }
 
     /**
-     * validate Hearing id format
+     * validate Hearing id format.
      * @param hearingIdStr hearing id string
      */
     private void isValidFormat(String hearingIdStr) {

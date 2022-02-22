@@ -7,12 +7,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.PartiesNotifiedCommonGeneration;
+import uk.gov.hmcts.reform.hmc.data.PartiesNotifiedEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class PartiesNotifiedServiceTest {
+class PartiesNotifiedResponsesServiceTest extends PartiesNotifiedCommonGeneration {
 
     @InjectMocks
     PartiesNotifiedServiceImpl partiesNotifiedService;
@@ -46,27 +48,25 @@ class PartiesNotifiedServiceTest {
     @Test
     void shouldFindPartiesNotifiedForValidHearingId() {
         final Long hearingId = 2000000001L;
-        List<LocalDateTime> partiesNotifiedDateTimesAnswer = new ArrayList<>();
-        partiesNotifiedDateTimesAnswer.add(LocalDateTime.now().minusDays(6));
-        partiesNotifiedDateTimesAnswer.add(LocalDateTime.now().minusDays(4));
+        List<PartiesNotifiedEntity> partiesNotifiedAnswer = generateEntities(hearingId);
 
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
-        when(hearingResponseRepository.getHearingResponses(any())).thenReturn(partiesNotifiedDateTimesAnswer);
+        when(hearingResponseRepository.getPartiesNotified(any())).thenReturn(partiesNotifiedAnswer);
 
-        List<LocalDateTime> partiesNotifiedDateTimes =
+        PartiesNotifiedResponses partiesNotifiedResponses =
                 partiesNotifiedService.getPartiesNotified(hearingId);
-        assertFalse(partiesNotifiedDateTimes.isEmpty());
-        assertEquals(2, partiesNotifiedDateTimes.size());
+        assertFalse(partiesNotifiedResponses.getResponse().isEmpty());
+        assertEquals(3, partiesNotifiedResponses.getResponse().size());
     }
 
     @Test
     void shouldNotFindPartiesNotifiedForValidHearingId() {
         final Long hearingId = 2000000001L;
-        List<LocalDateTime> partiesNotifiedDateTimesAnswer = new ArrayList<>();
+        List<PartiesNotifiedEntity> partiesNotifiedDateTimesAnswer = new ArrayList<>();
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
-        when(hearingResponseRepository.getHearingResponses(hearingId)).thenReturn(partiesNotifiedDateTimesAnswer);
-        List<LocalDateTime> partiesNotifiedDateTimes = partiesNotifiedService.getPartiesNotified(hearingId);
-        assertTrue(partiesNotifiedDateTimes.isEmpty());
+        when(hearingResponseRepository.getPartiesNotified(hearingId)).thenReturn(partiesNotifiedDateTimesAnswer);
+        PartiesNotifiedResponses partiesNotifiedDateTimes = partiesNotifiedService.getPartiesNotified(hearingId);
+        assertTrue(partiesNotifiedDateTimes.getResponse().isEmpty());
     }
 
     @Test

@@ -1,10 +1,9 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponses;
 
 public interface PartiesNotifiedService {
 
-    List<LocalDateTime> getPartiesNotified(Long hearingId);
+    PartiesNotifiedResponses getPartiesNotified(Long hearingId);
 
 }

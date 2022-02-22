@@ -6,16 +6,16 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.PartiesNotifiedEntity;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 @Repository
 public interface HearingResponseRepository extends CrudRepository<HearingResponseEntity, Long> {
 
-    @Query("select hre.partiesNotifiedDateTime from HearingResponseEntity hre WHERE hre.hearing.id = :hearingId "
+    @Query("FROM PartiesNotifiedEntity hre WHERE hre.hearing.id = :hearingId "
             + "AND hre.partiesNotifiedDateTime is NOT NULL")
-    List<LocalDateTime> getHearingResponses(Long hearingId);
+    List<PartiesNotifiedEntity> getPartiesNotified(Long hearingId);
 
 }
