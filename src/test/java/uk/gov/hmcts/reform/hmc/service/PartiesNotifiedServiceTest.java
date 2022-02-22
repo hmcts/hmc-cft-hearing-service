@@ -139,7 +139,7 @@ class PartiesNotifiedServiceTest {
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
 
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
-        hearingResponseEntity.setResponseVersion(responseVersion);
+        hearingResponseEntity.setResponseVersion(Integer.valueOf(responseVersion));
         hearingResponseEntity.setPartiesNotifiedDateTime(dateTime);
         hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity));
         return hearingEntity;

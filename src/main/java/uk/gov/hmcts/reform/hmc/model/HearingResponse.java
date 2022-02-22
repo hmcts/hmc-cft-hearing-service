@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.hmc.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -43,6 +43,6 @@ public class HearingResponse {
     private LocalDateTime partiesNotifiedDateTime;
 
     @JsonProperty("serviceData")
-    private Map<String, Object> serviceData;
+    private JsonNode serviceData;
 
 }

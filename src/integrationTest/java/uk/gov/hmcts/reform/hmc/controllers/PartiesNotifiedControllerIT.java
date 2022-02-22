@@ -46,7 +46,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             partiesNotified.setRequestVersion(1);
             partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/2000000000" + "&version=1")
+            mockMvc.perform(put(url + "/2000000000" + "?version=1")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(200))
@@ -60,7 +60,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             partiesNotified.setRequestVersion(1);
             partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/1000000000" + "&version=1")
+            mockMvc.perform(put(url + "/1000000000" + "?version=1")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(400))
@@ -75,7 +75,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             partiesNotified.setRequestVersion(1);
             partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/2000000001" + "&version=1")
+            mockMvc.perform(put(url + "/2000000001" + "?version=1")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(404))
@@ -91,7 +91,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             partiesNotified.setRequestVersion(1);
             partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/2000000000" + "&version=1")
+            mockMvc.perform(put(url + "/2000000000" + "?version=25")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(404))
@@ -107,7 +107,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             partiesNotified.setRequestVersion(1);
             partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/2000000001" + "&version=1")
+            mockMvc.perform(put(url + "/2000000010" + "?version=1")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(400))

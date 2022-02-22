@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
@@ -27,7 +28,7 @@ public class PartiesNotifiedController {
     }
 
     @PutMapping(path = "/partiesNotified/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success"),
         @ApiResponse(code = 400, message = "Bad Request"),
@@ -37,7 +38,7 @@ public class PartiesNotifiedController {
     })
     public void putPartiesNotified(@RequestBody @Valid PartiesNotified partiesNotified,
                                    @PathVariable("id") Long hearingId,
-                                   @PathVariable("version") int responseVersion) {
+                                   @RequestParam("version") int responseVersion) {
         partiesNotifiedService.getPartiesNotified(hearingId, responseVersion, partiesNotified);
     }
 }

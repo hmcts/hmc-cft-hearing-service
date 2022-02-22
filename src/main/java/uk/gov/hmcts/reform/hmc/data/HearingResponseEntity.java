@@ -53,10 +53,10 @@ public class HearingResponseEntity {
     private List<HearingDayDetailsEntity> hearingDayDetails;
 
     @Column(name = "response_version", nullable = false)
-    private String responseVersion;
+    private int responseVersion;
 
     @Column(name = "request_version", nullable = false)
-    private String requestVersion;
+    private int requestVersion;
 
     @Column(name = "parties_notified_datetime")
     private LocalDateTime partiesNotifiedDateTime;

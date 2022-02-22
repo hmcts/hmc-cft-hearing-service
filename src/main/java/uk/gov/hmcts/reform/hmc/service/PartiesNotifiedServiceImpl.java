@@ -39,8 +39,8 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
             if (hearingEntity.isPresent()) {
                 HearingEntity hearingEntityToSave = hearingEntity.get();
-                if (!Integer.valueOf(hearingEntityToSave.getHearingResponses().get(0).getResponseVersion())
-                    .equals(partiesNotified.getRequestVersion())) {
+                if (hearingEntityToSave.getHearingResponses().get(0).getResponseVersion()
+                    != responseVersion) {
                     throw new PartiesNotifiedNotFoundException("002 No such response version", null);
                 } else if (Integer.valueOf(hearingEntityToSave.getHearingResponses()
                                                .get(0).getResponseVersion()).equals(responseVersion)
@@ -48,10 +48,10 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
                     throw new PartiesNotifiedBadRequestException("003 Already set", null);
                 } else {
                     hearingEntityToSave.getHearingResponses().get(0).setPartiesNotifiedDateTime(LocalDateTime.now());
-                    hearingEntityToSave.getHearingResponses().get(0).setRequestVersion(
-                        String.valueOf(partiesNotified.getRequestVersion()));
+                    hearingEntityToSave.getHearingResponses()
+                        .get(0).setRequestVersion(partiesNotified.getRequestVersion());
                     hearingEntityToSave.getHearingResponses().get(0).setServiceData(partiesNotified.getServiceData());
-                    hearingRepository.save(hearingEntityToSave);
+                    //hearingRepository.save(hearingEntityToSave);
                 }
             }
 

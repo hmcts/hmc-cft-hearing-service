@@ -14,8 +14,8 @@ values ( 't'	,'hearingType3',	63,	'Priority type3',	6,'t','t','AB123',null,'ABA1
 
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version)
 values (1, '2000000000', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '1', '1');
-insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version)
-values (2, '2000000010', '2021-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '1', '1');
+insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version, parties_notified_datetime)
+values (2, '2000000010', '2021-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '1', '1', '2020-08-10 11:20:00');
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version)
 values (3, '2000000009', '2021-08-10 11:20:00', 'listingStatus3-1', 'caselistingStatus3-1', '1', '1');
 
