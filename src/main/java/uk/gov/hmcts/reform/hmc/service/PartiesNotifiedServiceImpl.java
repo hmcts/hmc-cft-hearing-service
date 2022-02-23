@@ -5,15 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedBadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
@@ -24,10 +24,13 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
 
     private final HearingRepository hearingRepository;
+    private final HearingResponseRepository hearingResponseRepository;
 
     @Autowired
-    public PartiesNotifiedServiceImpl(HearingRepository hearingRepository) {
+    public PartiesNotifiedServiceImpl(HearingRepository hearingRepository,
+                                      HearingResponseRepository hearingResponseRepository) {
         this.hearingRepository = hearingRepository;
+        this.hearingResponseRepository = hearingResponseRepository;
     }
 
     @Override
@@ -36,26 +39,19 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
         if (!hearingRepository.existsById(hearingId)) {
             throw new PartiesNotifiedNotFoundException("001 No such id: %s", hearingId);
         } else {
-            Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
-            if (hearingEntity.isPresent()) {
-                HearingEntity hearingEntityToSave = hearingEntity.get();
-                if (hearingEntityToSave.getHearingResponses().get(0).getResponseVersion()
-                    != responseVersion) {
-                    throw new PartiesNotifiedNotFoundException("002 No such response version", null);
-                } else if (Integer.valueOf(hearingEntityToSave.getHearingResponses()
-                                               .get(0).getResponseVersion()).equals(responseVersion)
-                    && hearingEntityToSave.getHearingResponses().get(0).getPartiesNotifiedDateTime() != null) {
-                    throw new PartiesNotifiedBadRequestException("003 Already set", null);
-                } else {
-                    hearingEntityToSave.getHearingResponses().get(0).setPartiesNotifiedDateTime(LocalDateTime.now());
-                    hearingEntityToSave.getHearingResponses()
-                        .get(0).setRequestVersion(partiesNotified.getRequestVersion());
-                    hearingEntityToSave.getHearingResponses().get(0).setServiceData(partiesNotified.getServiceData());
-                    //hearingRepository.save(hearingEntityToSave);
-                }
+            HearingResponseEntity hearingResponseEntity = hearingResponseRepository.getHearingResponse(hearingId);
+            if (hearingResponseEntity.getResponseVersion() != responseVersion) {
+                throw new PartiesNotifiedNotFoundException("002 No such response version", null);
+            } else if (Integer.valueOf(hearingResponseEntity.getResponseVersion()).equals(responseVersion)
+                && hearingResponseEntity.getPartiesNotifiedDateTime() != null) {
+                throw new PartiesNotifiedBadRequestException("003 Already set", null);
+            } else {
+                hearingResponseEntity.setPartiesNotifiedDateTime(LocalDateTime.now());
+                hearingResponseEntity.setServiceData(partiesNotified.getServiceData());
+                hearingResponseRepository.save(hearingResponseEntity);
             }
-
         }
+
 
     }
 

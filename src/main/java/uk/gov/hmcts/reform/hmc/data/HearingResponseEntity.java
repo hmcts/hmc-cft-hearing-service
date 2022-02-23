@@ -61,7 +61,7 @@ public class HearingResponseEntity {
     @Column(name = "parties_notified_datetime")
     private LocalDateTime partiesNotifiedDateTime;
 
-    @Column(name = "service_data")
+    @Column(name = "service_data", columnDefinition = "jsonb")
     @Convert(converter = JsonDataConverter.class)
     private JsonNode serviceData;
 }

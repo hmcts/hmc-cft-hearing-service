@@ -12,18 +12,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedBadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,12 +38,14 @@ class PartiesNotifiedServiceTest {
     @Mock
     HearingRepository hearingRepository;
 
+    @Mock
+    HearingResponseRepository hearingResponseRepository;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         partiesNotifiedService =
-            new PartiesNotifiedServiceImpl(
-                hearingRepository);
+            new PartiesNotifiedServiceImpl(hearingRepository, hearingResponseRepository);
     }
 
     @Nested
@@ -56,15 +55,17 @@ class PartiesNotifiedServiceTest {
         void shouldVerifySubsequentCalls() throws JsonProcessingException {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = generatePartiesNotified(1, jsonNode);
-            Optional<HearingEntity> hearingEntity =
-                Optional.of(generateHearingEntity(1L, "HearingRequested",
-                                                  2, "1", null
-                ));
+
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(hearingEntity);
+            when(hearingResponseRepository.getHearingResponse(2000000000L))
+                .thenReturn(generateHearingResponseEntity(2000000000L, 2,
+                                                          "1", null
+                ));
 
             partiesNotifiedService.getPartiesNotified(2000000000L, 1, partiesNotified);
-            verify(hearingRepository, times(1)).findById(2000000000L);
+            verify(hearingRepository, times(1)).existsById(2000000000L);
+            verify(hearingResponseRepository, times(1))
+                .getHearingResponse(2000000000L);
 
         }
 
@@ -83,12 +84,11 @@ class PartiesNotifiedServiceTest {
         void shouldFailWithNoResponseVersion() throws JsonProcessingException {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = generatePartiesNotified(1, jsonNode);
-            Optional<HearingEntity> hearingEntity =
-                Optional.of(generateHearingEntity(1L, "HearingRequested",
-                                                  2, "12", LocalDateTime.now()
-                ));
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(hearingEntity);
+            when(hearingResponseRepository.getHearingResponse(2000000000L))
+                .thenReturn(generateHearingResponseEntity(2000000000L, 2,
+                                                          "14", null
+                ));
 
             Exception exception = assertThrows(PartiesNotifiedNotFoundException.class, () ->
                 partiesNotifiedService.getPartiesNotified(2000000000L, 1, partiesNotified));
@@ -110,12 +110,11 @@ class PartiesNotifiedServiceTest {
         void shouldFailWithAlreadySet() throws JsonProcessingException {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = generatePartiesNotified(1, jsonNode);
-            Optional<HearingEntity> hearingEntity =
-                Optional.of(generateHearingEntity(1L, "HearingRequested",
-                                                  2, "1", LocalDateTime.now()
-                ));
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(hearingEntity);
+            when(hearingResponseRepository.getHearingResponse(2000000000L))
+                .thenReturn(generateHearingResponseEntity(2000000000L, 2,
+                                                          "1", LocalDateTime.now()
+                ));
 
             Exception exception = assertThrows(PartiesNotifiedBadRequestException.class, () ->
                 partiesNotifiedService.getPartiesNotified(2000000000L, 1, partiesNotified));
@@ -124,25 +123,16 @@ class PartiesNotifiedServiceTest {
 
     }
 
-    private HearingEntity generateHearingEntity(Long hearingId,
-                                                String status,
-                                                Integer versionNumber,
-                                                String responseVersion,
-                                                LocalDateTime dateTime) {
-        HearingEntity hearingEntity = new HearingEntity();
-        hearingEntity.setId(hearingId);
-        hearingEntity.setStatus(status);
-
-        CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
-        caseHearingRequestEntity.setHearingRequestReceivedDateTime(LocalDateTime.now());
-        caseHearingRequestEntity.setVersionNumber(versionNumber);
-        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
-
+    private HearingResponseEntity generateHearingResponseEntity(Long hearingId,
+                                                                Integer versionNumber,
+                                                                String responseVersion,
+                                                                LocalDateTime dateTime) {
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingResponseEntity.setResponseVersion(Integer.valueOf(responseVersion));
         hearingResponseEntity.setPartiesNotifiedDateTime(dateTime);
-        hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity));
-        return hearingEntity;
+        hearingResponseEntity.setHearingResponseId(hearingId);
+        hearingResponseEntity.setRequestVersion(versionNumber);
+        return hearingResponseEntity;
     }
 
     private PartiesNotified generatePartiesNotified(int requestVersion, JsonNode serviceData) {
