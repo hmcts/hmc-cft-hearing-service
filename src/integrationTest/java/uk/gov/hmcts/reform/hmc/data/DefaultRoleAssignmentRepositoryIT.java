@@ -4,7 +4,11 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
+import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ActorIdType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.Classification;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.GrantType;
@@ -31,6 +35,12 @@ import static org.springframework.http.HttpHeaders.IF_NONE_MATCH;
 
 @DisplayName("DefaultRoleAssignmentRepository")
 class DefaultRoleAssignmentRepositoryIT extends BaseTest {
+
+    @MockBean
+    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
+
+    @Autowired
+    private ApplicationParams applicationParams;
 
     private static final String ID = "4d96923f-891a-4cb1-863e-9bec44d1689d";
     private static final String ID1 = "4d96923f-891a-4cb1-863e-9bec44d1612d";

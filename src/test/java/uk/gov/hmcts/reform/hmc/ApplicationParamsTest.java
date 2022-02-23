@@ -8,24 +8,37 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ApplicationParamsTest {
 
     private static final String VALUE = "test-value";
+    private static final int INT_VALUE = 1;
     private final ApplicationParams applicationParams = new ApplicationParams();
 
     @Test
-    void shouldGetTopicName() {
-        ReflectionTestUtils.setField(applicationParams, "topicName", VALUE);
-        assertEquals(VALUE, applicationParams.getTopicName());
+    void shouldGetExponentialMultiplier() {
+        ReflectionTestUtils.setField(applicationParams, "inboundExponentialMultiplier", VALUE);
+        assertEquals(VALUE, applicationParams.getInboundExponentialMultiplier());
     }
 
     @Test
-    void shouldGetConnectionString() {
-        ReflectionTestUtils.setField(applicationParams, "connectionString", VALUE);
-        assertEquals(VALUE, applicationParams.getConnectionString());
+    void shouldGetInternalConnectionString() {
+        ReflectionTestUtils.setField(applicationParams, "internalInboundConnectionString", VALUE);
+        assertEquals(VALUE, applicationParams.getInternalInboundConnectionString());
     }
 
     @Test
-    void shouldGetSubscriptionName() {
-        ReflectionTestUtils.setField(applicationParams, "subscriptionName", VALUE);
-        assertEquals(VALUE, applicationParams.getSubscriptionName());
+    void shouldGetMaxRetryAttempts() {
+        ReflectionTestUtils.setField(applicationParams, "inboundMaxRetryAttempts", INT_VALUE);
+        assertEquals(INT_VALUE, applicationParams.getInboundMaxRetryAttempts());
+    }
+
+    @Test
+    void shouldGetExternalTopicName() {
+        ReflectionTestUtils.setField(applicationParams, "externalTopicName", VALUE);
+        assertEquals(VALUE, applicationParams.getExternalTopicName());
+    }
+
+    @Test
+    void shouldGetExternalConnectionString() {
+        ReflectionTestUtils.setField(applicationParams, "externalConnectionString", VALUE);
+        assertEquals(VALUE, applicationParams.getExternalConnectionString());
     }
 
     @Test
@@ -39,7 +52,6 @@ class ApplicationParamsTest {
 
     }
 
-
     @Test
     void shouldGetAmGetRoleAssignmentsUrl() {
         final var roleAssignmentServiceHost = "test-value";
@@ -49,5 +61,17 @@ class ApplicationParamsTest {
 
         assertEquals(baseUrl, applicationParams.amGetRoleAssignmentsUrl());
 
+    }
+
+    @Test
+    void shouldGetInternalOutboundConnectionString() {
+        ReflectionTestUtils.setField(applicationParams, "internalOutboundConnectionString", VALUE);
+        assertEquals(VALUE, applicationParams.getInternalOutboundConnectionString());
+    }
+
+    @Test
+    void shouldGetInternalOutboundQueueName() {
+        ReflectionTestUtils.setField(applicationParams, "internalOutboundQueueName", VALUE);
+        assertEquals(VALUE, applicationParams.getInternalOutboundQueueName());
     }
 }

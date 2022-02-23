@@ -93,7 +93,7 @@ public class CaseHearingRequestEntity {
     @Column(name = "case_sla_start_date", nullable = false)
     private LocalDate caseSlaStartDate;
 
-    @Column(name = "version_number", nullable = false)
+    @Column(name = "hearing_request_version", nullable = false)
     private Integer versionNumber;
 
     @Column(name = "interpreter_booking_required_flag")
@@ -117,7 +117,7 @@ public class CaseHearingRequestEntity {
     @Column(name = "request_timestamp", nullable = false)
     private LocalDateTime requestTimeStamp;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
 
@@ -147,5 +147,8 @@ public class CaseHearingRequestEntity {
 
     @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<PanelUserRequirementsEntity> panelUserRequirements;
+
+    @OneToOne(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private CancellationReasonsEntity cancellationReason;
 
 }

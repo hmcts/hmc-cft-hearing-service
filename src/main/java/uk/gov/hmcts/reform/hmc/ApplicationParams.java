@@ -16,17 +16,32 @@ import javax.inject.Singleton;
 @Singleton
 public class ApplicationParams {
 
-    @Value("${jms.servicebus.connection-string}")
-    private String connectionString;
+    @Value("${jms.servicebus.internal.queues.inbound.connection-string}")
+    private String internalInboundConnectionString;
 
-    @Value("${jms.servicebus.topic-name}")
-    private String topicName;
+    @Value("${jms.servicebus.internal.queues.inbound.queue-name}")
+    private String internalInboundQueueName;
 
-    @Value("${jms.servicebus.subscription-name}")
-    private String subscriptionName;
+    @Value("${jms.servicebus.internal.queues.inbound.exponential-multiplier}")
+    private String inboundExponentialMultiplier;
+
+    @Value("${jms.servicebus.internal.queues.inbound.max-retry-attempts}")
+    private int inboundMaxRetryAttempts;
+
+    @Value("${jms.servicebus.external.connection-string}")
+    private String externalConnectionString;
+
+    @Value("${jms.servicebus.external.topic-name}")
+    private String externalTopicName;
 
     @Value("${role.assignment.api.host}")
     private String roleAssignmentServiceHost;
+
+    @Value("${jms.servicebus.internal.queues.outbound.connection-string}")
+    private String internalOutboundConnectionString;
+
+    @Value("${jms.servicebus.internal.queues.outbound.queue-name}")
+    private String internalOutboundQueueName;
 
     public static String encode(final String stringToEncode) {
         try {

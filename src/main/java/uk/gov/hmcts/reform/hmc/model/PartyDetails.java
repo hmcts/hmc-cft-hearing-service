@@ -19,9 +19,11 @@ public class PartyDetails {
     @Size(max = 40, message = ValidationError.PARTY_DETAILS_MAX_LENGTH)
     private String partyID;
 
+    @NotEmpty(message = ValidationError.PARTY_TYPE_EMPTY)
     @EnumPattern(enumClass = PartyType.class, fieldName = "partyType")
     private String partyType;
 
+    @NotEmpty(message = ValidationError.PARTY_ROLE_EMPTY)
     @Size(max = 6, message = ValidationError.PARTY_ROLE_MAX_LENGTH)
     private String partyRole;
 

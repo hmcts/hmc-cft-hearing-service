@@ -1,8 +1,19 @@
 jms:
   servicebus:
-    connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING:Endpoint=sb://destination1.servicebus.windows.net;SharedAccessKeyName=[KEYNAME];SharedAccessKey=[KEY]}
-    topic-name: ${HMC_SERVICE_BUS_TOPIC:hmc-to-cft}
-    subscription-name: ${HMC_SERVICE_BUS_SUBSCRIPTION:hmc-subs-to-cft}
+    internal:
+      queues:
+        inbound:
+          connection-string: ${HMC_QUEUE_CONNECTION_STRING:Endpoint=sb://destination1.servicebus.windows.net;SharedAccessKeyName=[KEYNAME];SharedAccessKey=[KEY]}
+          # should be an integer that is interpreted as seconds
+          exponential-multiplier: ${HMC_QUEUE_EXPONENTIAL_MULTIPLIER:2}
+          queue-name: ${HMC_SERVICE_BUS_QUEUE:hmc-to-hmi}
+          max-retry-attempts: ${HMC_QUEUE_MAX_RETRIES:5}
+        outbound:
+          connection-string: ${HMC_OUTBOUND_QUEUE_CONNECTION_STRING::Endpoint=sb://destination1.servicebus.windows.net;SharedAccessKeyName=[KEYNAME];SharedAccessKey=[KEY]}
+          queue-name: ${HMC_OUTBOUND_SERVICE_BUS_QUEUE:hmc-to-hmi}
+    external:
+      connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING:Endpoint=sb://destination1.servicebus.windows.net;SharedAccessKeyName=[KEYNAME];SharedAccessKey=[KEY]}
+      topic-name: ${HMC_SERVICE_BUS_TOPIC:hmc-to-cft}
 
 spring:
   datasource:

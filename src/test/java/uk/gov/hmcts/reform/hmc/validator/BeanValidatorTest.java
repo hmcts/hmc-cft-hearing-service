@@ -2,12 +2,17 @@ package uk.gov.hmcts.reform.hmc.validator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
+import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -23,9 +28,17 @@ import javax.validation.ValidatorFactory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_TYPE_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_VALUE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_LOCATION_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_DETAILS_NULL_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_ROLE_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_TYPE_EMPTY;
+
 
 class BeanValidatorTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(BeanValidatorTest.class);
 
     private static ValidatorFactory validatorFactory;
     private static Validator validator;
@@ -220,11 +233,11 @@ class BeanValidatorTest {
 
     @Test
     void shouldFailAsRequestDetailsNotPresent() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        Set<ConstraintViolation<HearingRequest>> violations = validator.validate(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        Set<ConstraintViolation<CreateHearingRequest>> violations = validator.validate(createHearingRequest);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
@@ -234,10 +247,10 @@ class BeanValidatorTest {
 
     @Test
     void shouldFailAsHearingDetailsNotPresent() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        Set<ConstraintViolation<HearingRequest>> violations = validator.validate(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        Set<ConstraintViolation<CreateHearingRequest>> violations = validator.validate(createHearingRequest);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
@@ -247,13 +260,13 @@ class BeanValidatorTest {
 
     @Test
     void shouldFailAsCaseDetailsCaseCategoriesNotPresent() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingRequest.getCaseDetails().setCaseCategories(new ArrayList<>());
-        Set<ConstraintViolation<HearingRequest>> violations = validator.validate(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.getCaseDetails().setCaseCategories(new ArrayList<>());
+        Set<ConstraintViolation<CreateHearingRequest>> violations = validator.validate(createHearingRequest);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
@@ -263,11 +276,11 @@ class BeanValidatorTest {
 
     @Test
     void shouldFailAsPanelRequirementsNotPresent() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        Set<ConstraintViolation<HearingRequest>> violations = validator.validate(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        Set<ConstraintViolation<CreateHearingRequest>> violations = validator.validate(createHearingRequest);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
@@ -277,11 +290,11 @@ class BeanValidatorTest {
 
     @Test
     void shouldFailAsCaseDetailsNotPresent() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        Set<ConstraintViolation<HearingRequest>> violations = validator.validate(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        Set<ConstraintViolation<CreateHearingRequest>> violations = validator.validate(createHearingRequest);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
@@ -292,19 +305,189 @@ class BeanValidatorTest {
 
     @Test
     void shouldFailAsHearingLocationsNotPresent() {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingRequest.getHearingDetails().setHearingLocations(new ArrayList<>());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        Set<ConstraintViolation<HearingRequest>> violations = validator.validate(hearingRequest);
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.getHearingDetails().setHearingLocations(new ArrayList<>());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        Set<ConstraintViolation<CreateHearingRequest>> violations = validator.validate(createHearingRequest);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
         assertTrue(validationErrors.contains(ValidationError.INVALID_HEARING_LOCATION));
 
+    }
+
+    @Test
+    void whenInvalidCaseCategoryTypeIsNull() {
+        CaseCategory category = new CaseCategory();
+        category.setCategoryValue("XXX");
+        category.setCategoryType(null);
+        Set<ConstraintViolation<CaseCategory>> violations = validator.validate(category);
+        assertFalse(violations.isEmpty());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertEquals(2, violations.size());
+        assertTrue(validationErrors.contains("Unsupported type for categoryType"));
+        assertTrue(validationErrors.contains(CATEGORY_TYPE_EMPTY));
+    }
+
+    @Test
+    void whenInvalidCaseCategoryTypeIsEmpty() {
+        CaseCategory category = new CaseCategory();
+        category.setCategoryValue("XXXX");
+        category.setCategoryType("");
+        Set<ConstraintViolation<CaseCategory>> violations = validator.validate(category);
+        assertFalse(violations.isEmpty());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertEquals(2, violations.size());
+        assertTrue(validationErrors.contains("Unsupported type for categoryType"));
+        assertTrue(validationErrors.contains(CATEGORY_TYPE_EMPTY));
+    }
+
+    @Test
+    void whenInvalidCaseCategoryValueIsNull() {
+        CaseCategory category = new CaseCategory();
+        category.setCategoryValue(null);
+        category.setCategoryType(CaseCategoryType.CASETYPE.getLabel());
+        Set<ConstraintViolation<CaseCategory>> violations = validator.validate(category);
+        assertFalse(violations.isEmpty());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertEquals(1, violations.size());
+        assertTrue(validationErrors.contains(CATEGORY_VALUE_EMPTY));
+    }
+
+    @Test
+    void whenInvalidCaseCategoryValueIsEmpty() {
+        CaseCategory category = new CaseCategory();
+        category.setCategoryValue("");
+        category.setCategoryType(CaseCategoryType.CASETYPE.getLabel());
+        Set<ConstraintViolation<CaseCategory>> violations = validator.validate(category);
+        assertFalse(violations.isEmpty());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertEquals(1, violations.size());
+        assertTrue(validationErrors.contains(CATEGORY_VALUE_EMPTY));
+    }
+
+    @Test
+    void whenInvalidPartyIdIsNull() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID(null);
+        partyDetails.setPartyType(PartyType.IND.getLabel());
+        partyDetails.setPartyRole("role1");
+        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
+        assertFalse(violations.isEmpty());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertEquals(1, violations.size());
+        assertTrue(validationErrors.contains(PARTY_DETAILS_NULL_EMPTY));
+    }
+
+    @Test
+    void whenInvalidPartyIdIsEmpty() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID("");
+        partyDetails.setPartyType(PartyType.IND.getLabel());
+        partyDetails.setPartyRole("role1");
+        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
+        assertFalse(violations.isEmpty());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertEquals(1, violations.size());
+        assertTrue(validationErrors.contains(PARTY_DETAILS_NULL_EMPTY));
+    }
+
+    @Test
+    void whenInvalidPartyTypeIsNull() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID("XXX1");
+        partyDetails.setPartyType(null);
+        partyDetails.setPartyRole("role1");
+        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
+        assertFalse(violations.isEmpty());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertEquals(2, violations.size());
+        assertTrue(validationErrors.contains("Unsupported type for partyType"));
+        assertTrue(validationErrors.contains(PARTY_TYPE_EMPTY));
+    }
+
+    @Test
+    void whenInvalidPartyTypeIsEmpty() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID("XXX1");
+        partyDetails.setPartyType("");
+        partyDetails.setPartyRole("role1");
+        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
+        assertFalse(violations.isEmpty());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertEquals(2, violations.size());
+        assertTrue(validationErrors.contains("Unsupported type for partyType"));
+        assertTrue(validationErrors.contains(PARTY_TYPE_EMPTY));
+    }
+
+    @Test
+    void whenInvalidPartyRoleIsNull() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID("XXX1");
+        partyDetails.setPartyType(PartyType.IND.getLabel());
+        partyDetails.setPartyRole(null);
+        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
+        assertFalse(violations.isEmpty());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertEquals(1, violations.size());
+        assertTrue(validationErrors.contains(PARTY_ROLE_EMPTY));
+    }
+
+    @Test
+    void whenInvalidPartyRoleIsEmpty() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID("XXX1");
+        partyDetails.setPartyType(PartyType.IND.getLabel());
+        partyDetails.setPartyRole("");
+        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
+        assertFalse(violations.isEmpty());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertEquals(1, violations.size());
+        assertTrue(validationErrors.contains(PARTY_ROLE_EMPTY));
     }
 
 }
