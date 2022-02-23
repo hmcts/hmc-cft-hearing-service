@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponse;
 import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 @Service
 @Component
 @Slf4j
-public class PartiesNotifiedServiceImpl extends HearingValidation implements PartiesNotifiedService {
+public class PartiesNotifiedServiceImpl extends HearingIdValidator implements PartiesNotifiedService {
 
     private final HearingResponseRepository hearingResponseRepository;
 

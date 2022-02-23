@@ -43,6 +43,7 @@ import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +69,7 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 @Service
 @Component
 @Slf4j
-public class HearingManagementServiceImpl extends HearingValidation implements HearingManagementService {
+public class HearingManagementServiceImpl extends HearingIdValidator implements HearingManagementService {
 
     private final DataStoreRepository dataStoreRepository;
     private final RoleAssignmentService roleAssignmentService;

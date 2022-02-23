@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.hmc.service;
+package uk.gov.hmcts.reform.hmc.validator;
 
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -8,11 +8,11 @@ import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 
-public class HearingValidation {
+public class HearingIdValidator {
 
     protected final HearingRepository hearingRepository;
 
-    public HearingValidation(HearingRepository hearingRepository) {
+    public HearingIdValidator(HearingRepository hearingRepository) {
         this.hearingRepository = hearingRepository;
     }
 
