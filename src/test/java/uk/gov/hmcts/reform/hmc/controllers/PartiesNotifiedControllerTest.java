@@ -56,7 +56,6 @@ class PartiesNotifiedControllerTest {
     void shouldReturn200_whenRequestDetailsArePresent() throws JsonProcessingException {
         JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
         PartiesNotified partiesNotified = new PartiesNotified();
-        partiesNotified.setRequestVersion(1);
         partiesNotified.setServiceData(jsonNode);
 
         doNothing().when(partiesNotifiedService).getPartiesNotified(anyLong(), anyInt(), any(PartiesNotified.class));

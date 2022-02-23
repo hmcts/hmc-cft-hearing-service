@@ -43,7 +43,6 @@ class PartiesNotifiedControllerIT extends BaseTest {
         void shouldReturn200_WhenPartiesNotifiedIsSuccess() throws Exception {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = new PartiesNotified();
-            partiesNotified.setRequestVersion(1);
             partiesNotified.setServiceData(jsonNode);
 
             mockMvc.perform(put(url + "/2000000000" + "?version=1")
@@ -57,7 +56,6 @@ class PartiesNotifiedControllerIT extends BaseTest {
         void shouldReturn400_WhenHearingIdIsInValid() throws Exception {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = new PartiesNotified();
-            partiesNotified.setRequestVersion(1);
             partiesNotified.setServiceData(jsonNode);
 
             mockMvc.perform(put(url + "/1000000000" + "?version=1")
@@ -72,7 +70,6 @@ class PartiesNotifiedControllerIT extends BaseTest {
         void shouldReturn404_WhenHearingIdDoesNotExist() throws Exception {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = new PartiesNotified();
-            partiesNotified.setRequestVersion(1);
             partiesNotified.setServiceData(jsonNode);
 
             mockMvc.perform(put(url + "/2000000001" + "?version=1")
@@ -88,7 +85,6 @@ class PartiesNotifiedControllerIT extends BaseTest {
         void shouldReturn404_WhenResponseVersionDoesNotMatch() throws Exception {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = new PartiesNotified();
-            partiesNotified.setRequestVersion(1);
             partiesNotified.setServiceData(jsonNode);
 
             mockMvc.perform(put(url + "/2000000000" + "?version=25")
@@ -104,7 +100,6 @@ class PartiesNotifiedControllerIT extends BaseTest {
         void shouldReturn400_WhenPartiesNotifiedIsAlreadySet() throws Exception {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = new PartiesNotified();
-            partiesNotified.setRequestVersion(1);
             partiesNotified.setServiceData(jsonNode);
 
             mockMvc.perform(put(url + "/2000000010" + "?version=1")
