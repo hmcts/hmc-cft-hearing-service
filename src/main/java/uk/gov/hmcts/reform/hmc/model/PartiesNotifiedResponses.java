@@ -11,6 +11,6 @@ public class PartiesNotifiedResponses {
 
     private Long hearingID;
 
-    private List<PartiesNotifiedResponse> response;
+    private List<PartiesNotifiedResponse> responses;
 
 }

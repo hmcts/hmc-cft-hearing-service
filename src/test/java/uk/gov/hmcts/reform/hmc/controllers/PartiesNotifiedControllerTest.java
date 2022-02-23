@@ -60,12 +60,12 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
         final Long hearingId = 2000000099L;
         PartiesNotifiedResponses responsesExpected = new PartiesNotifiedResponses();
         responsesExpected.setHearingID(hearingId);
-        responsesExpected.setResponse(new ArrayList<>());
+        responsesExpected.setResponses(new ArrayList<>());
         when(partiesNotifiedService.getPartiesNotified(hearingId)).thenReturn(responsesExpected);
 
         PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
         PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
-        assertTrue(responses.getResponse().isEmpty());
+        assertTrue(responses.getResponses().isEmpty());
         verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
     }
 
@@ -75,12 +75,12 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
         PartiesNotifiedResponses responsesExpected = new PartiesNotifiedResponses();
         responsesExpected.setHearingID(hearingId);
         List<PartiesNotifiedResponse> partiesNotifiedExpectedList = generateResponses();
-        responsesExpected.setResponse(partiesNotifiedExpectedList);
+        responsesExpected.setResponses(partiesNotifiedExpectedList);
         when(partiesNotifiedService.getPartiesNotified(hearingId)).thenReturn(responsesExpected);
 
         PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
         PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
-        assertFalse(responses.getResponse().isEmpty());
+        assertFalse(responses.getResponses().isEmpty());
         verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
     }
 

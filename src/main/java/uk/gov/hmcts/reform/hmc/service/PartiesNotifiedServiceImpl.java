@@ -57,10 +57,11 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
             response.setResponseReceivedDateTime(e.getRequestTimeStamp());
             response.setRequestVersion(e.getRequestVersion());
             response.setPartiesNotified(e.getPartiesNotifiedDateTime());
+            response.setServiceData(e.getServiceData());
             partiesNotified.add(response);
         });
         PartiesNotifiedResponses responses = new PartiesNotifiedResponses();
-        responses.setResponse(partiesNotified);
+        responses.setResponses(partiesNotified);
         responses.setHearingID(hearingId);
         return responses;
     }

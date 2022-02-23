@@ -55,8 +55,8 @@ class PartiesNotifiedResponsesServiceTest extends PartiesNotifiedCommonGeneratio
 
         PartiesNotifiedResponses partiesNotifiedResponses =
                 partiesNotifiedService.getPartiesNotified(hearingId);
-        assertFalse(partiesNotifiedResponses.getResponse().isEmpty());
-        assertEquals(3, partiesNotifiedResponses.getResponse().size());
+        assertFalse(partiesNotifiedResponses.getResponses().isEmpty());
+        assertEquals(3, partiesNotifiedResponses.getResponses().size());
     }
 
     @Test
@@ -66,7 +66,7 @@ class PartiesNotifiedResponsesServiceTest extends PartiesNotifiedCommonGeneratio
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(hearingResponseRepository.getPartiesNotified(hearingId)).thenReturn(partiesNotifiedDateTimesAnswer);
         PartiesNotifiedResponses partiesNotifiedDateTimes = partiesNotifiedService.getPartiesNotified(hearingId);
-        assertTrue(partiesNotifiedDateTimes.getResponse().isEmpty());
+        assertTrue(partiesNotifiedDateTimes.getResponses().isEmpty());
     }
 
     @Test
