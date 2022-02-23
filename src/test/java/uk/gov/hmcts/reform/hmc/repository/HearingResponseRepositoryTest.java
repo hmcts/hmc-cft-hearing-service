@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,7 +48,7 @@ class HearingResponseRepositoryTest {
         doReturn(partiesNotifiedDateTimes).when(hearingResponseRepository).getHearingResponses(any());
         List<LocalDateTime> dateTimes = hearingResponseRepository.getHearingResponses(any());
         assertFalse(dateTimes.isEmpty());
-        assertTrue(dateTimes.size() == 2);
+        assertEquals(2, dateTimes.size());
     }
 
     private List<LocalDateTime> getPartiesNotifiedDateTimes(List<HearingResponseEntity> hearingResponseEntities) {
