@@ -46,7 +46,7 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
     @Pact(provider = PROVIDER_NAME, consumer = CONSUMER_NAME)
     public RequestResponsePact getHearingsForValidCaseRef(PactDslWithProvider builder) {
         return builder
-            .given("hmc cftHearingService successfully returns case hearings")
+            .given(PROVIDER_NAME + " successfully returns case hearings")
             .uponReceiving("Request to GET hearings for given valid case ref only")
                 .path(PATH_HEARINGS + "/" + VALID_CASE_REF)
                 .method(HttpMethod.GET.toString())
@@ -66,7 +66,7 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
     @Pact(provider = PROVIDER_NAME, consumer = CONSUMER_NAME)
     public RequestResponsePact getHearingsForValidCaseRefAndStatus(PactDslWithProvider builder) {
         return builder
-                .given("hmc cftHearingService successfully returns case hearings")
+                .given(PROVIDER_NAME + " successfully returns case hearings")
                 .uponReceiving("Request to GET hearings for given valid case ref and case status")
                 .path(PATH_HEARINGS + "/" + VALID_CASE_REF)
                 .method(HttpMethod.GET.toString())
@@ -88,7 +88,7 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
     @Pact(provider = PROVIDER_NAME, consumer = CONSUMER_NAME)
     public RequestResponsePact getHearingsForInvalidCaseRef(PactDslWithProvider builder) {
         return builder
-            .given("hmc cftHearingService throws validation error while trying to return case hearings")
+            .given(PROVIDER_NAME + " throws validation error while trying to return case hearings")
             .uponReceiving("Request to GET hearings for given invalid case ref")
             .path("/hearings/" + INVALID_CASE_REF)
             .method(HttpMethod.GET.toString())
@@ -112,7 +112,7 @@ public class HearingManagementGetHearingsConsumerTest extends BasePactTesting {
     @Pact(provider = PROVIDER_NAME, consumer = CONSUMER_NAME)
     public RequestResponsePact getHearingsForInvalidCaseRefAndStatus(PactDslWithProvider builder) {
         return builder
-                .given("hmc cftHearingService throws validation error while trying to return case hearings")
+                .given(PROVIDER_NAME + " throws validation error while trying to return case hearings")
                 .uponReceiving("Request to GET hearings for given invalid case ref and status")
                 .path("/hearings/" + INVALID_CASE_REF)
                 .method(HttpMethod.GET.toString())

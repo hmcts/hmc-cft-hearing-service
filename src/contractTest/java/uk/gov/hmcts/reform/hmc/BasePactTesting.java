@@ -22,6 +22,8 @@ import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
+import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.UpdateRequestDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,6 +47,10 @@ public class BasePactTesting {
     protected static final String VALID_CASE_REF = "9372710950276233";
     protected static final String VALID_CASE_STATUS = "UPDATED";
 
+    public static final String MSG_200_CREATE_HEARING = "Success (with content)";
+    public static final String MSG_400_CREATE_HEARING = "Invalid request";
+    public static final String MSG_200_UPDATE_HEARING = "Success (with content)";
+    public static final String MSG_400_UPDATE_HEARING = "Invalid request";
     public static final String MSG_200_GET_HEARINGS = "Success (with content)";
     public static final String MSG_400_GET_HEARINGS = "Invalid request";
     public static final String MSG_200_DELETE_HEARING = "Success (with content)";
@@ -69,6 +75,20 @@ public class BasePactTesting {
         request.setCaseDetails(caseDetails(caseRef));
         request.setPartyDetails(partyDetails1());
         request.setRequestDetails(requestDetails());
+        return request;
+    }
+
+    /**
+     * generate Hearing Request.
+     *
+     * @return HearingRequest hearing request
+     */
+    protected UpdateHearingRequest generateUpdateHearingRequest(String caseRef) {
+        UpdateHearingRequest request = new UpdateHearingRequest();
+        request.setHearingDetails(hearingDetails());
+        request.setCaseDetails(caseDetails(caseRef));
+        request.setPartyDetails(partyDetails1());
+        request.setRequestDetails(updateRequestDetails());
         return request;
     }
 
@@ -142,6 +162,18 @@ public class BasePactTesting {
         }
         logger.info("toJsonString: {}", jsonString);
         return jsonString;
+    }
+
+    /**
+     * Create Request Details test data.
+     *
+     * @return requestDetails Request Details
+     */
+    protected UpdateRequestDetails updateRequestDetails() {
+        UpdateRequestDetails requestDetails = new UpdateRequestDetails();
+        requestDetails.setRequestTimeStamp(LocalDateTime.now());
+        requestDetails.setVersionNumber(45);
+        return requestDetails;
     }
 
     /**
