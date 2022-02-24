@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
-import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponse;
+import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

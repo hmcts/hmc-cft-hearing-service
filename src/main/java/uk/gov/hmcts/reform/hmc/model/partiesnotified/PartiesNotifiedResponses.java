@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.hmc.model;
+package uk.gov.hmcts.reform.hmc.model.partiesnotified;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

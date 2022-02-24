@@ -18,8 +18,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.HEARING_NOT_FOUND_EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND;
 
 class PartiesNotifiedControllerIT extends BaseTest {
 
@@ -47,7 +47,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/2000000000" + "?version=1")
+            mockMvc.perform(put(url + "/2000000000" + "?version=2")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(200))
@@ -60,7 +60,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/1000000000" + "?version=1")
+            mockMvc.perform(put(url + "/1000000000" + "?version=2")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(400))
@@ -74,7 +74,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/2000000001" + "?version=1")
+            mockMvc.perform(put(url + "/2000000001" + "?version=2")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(404))
@@ -104,7 +104,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/2000000010" + "?version=1")
+            mockMvc.perform(put(url + "/2000000010" + "?version=2")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(400))
@@ -136,7 +136,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
         void shouldReturn404_WhenHearingIdDoesNotExist() throws Exception {
             mockMvc.perform(get(url + "/2000000001"))
                 .andExpect(status().is(404))
-                .andExpect(jsonPath("$.errors", hasItem(HEARING_NOT_FOUND_EXCEPTION.replace("%s", "2000000001"))))
+                .andExpect(jsonPath("$.errors", hasItem(PARTIES_NOTIFIED_ID_NOT_FOUND.replace("%s", "2000000001"))))
                 .andReturn();
         }
 

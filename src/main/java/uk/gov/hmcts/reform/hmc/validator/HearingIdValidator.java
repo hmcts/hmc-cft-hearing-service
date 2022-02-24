@@ -18,16 +18,17 @@ public class HearingIdValidator {
 
     /**
      * validate Hearing id.
+     *
      * @param hearingId hearing id
      */
-    protected void validateHearingId(Long hearingId) {
+    protected void validateHearingId(Long hearingId, String errorMessage) {
         if (hearingId == null) {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
         } else {
             String hearingIdStr = String.valueOf(hearingId);
             isValidFormat(hearingIdStr);
             if (!hearingRepository.existsById(hearingId)) {
-                throw new HearingNotFoundException(hearingId);
+                throw new HearingNotFoundException(hearingId, errorMessage);
             }
         }
     }

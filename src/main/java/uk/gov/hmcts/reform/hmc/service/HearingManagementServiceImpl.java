@@ -53,6 +53,7 @@ import javax.transaction.Transactional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
@@ -120,14 +121,14 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     public ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid) {
         isValidFormat(hearingId.toString());
         if (!hearingRepository.existsById(hearingId)) {
-            throw new HearingNotFoundException(hearingId);
+            throw new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND);
         } else if (!isValid) {
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
             if (hearingEntity.isPresent()) {
                 return ResponseEntity.ok(getHearingResponseMapper
                                              .toHearingResponse(hearingEntity.get()));
             } else {
-                throw new HearingNotFoundException(hearingId);
+                throw new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND);
             }
         } else {
             return ResponseEntity.noContent().header("Content-Length", "0").build();
@@ -147,7 +148,7 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     @Override
     public HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
         validateHearingRequest(hearingRequest);
-        validateHearingId(hearingId);
+        validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
         validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
         validateHearingStatusForUpdate(hearingId);
 
@@ -331,7 +332,7 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
 
     @Override
     public HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
-        validateHearingId(hearingId);
+        validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
         validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
         validateDeleteHearingStatus(hearingId);
         updateCancellationReasons(hearingId, deleteRequest.getCancellationReasonCode());

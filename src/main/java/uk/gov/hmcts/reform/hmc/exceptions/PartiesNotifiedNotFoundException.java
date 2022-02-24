@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class PartiesNotifiedNotFoundException extends RuntimeException {
 
-    public PartiesNotifiedNotFoundException(String errorMessage, Long hearingId) {
-        super(String.format(errorMessage, hearingId));
+    public PartiesNotifiedNotFoundException(String errorMessage) {
+        super(String.format(errorMessage));
     }
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +21,8 @@ import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.PartiesNotifiedCommonGeneration;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
-import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponse;
-import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponses;
+import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponse;
+import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.PartiesNotifiedService;
@@ -62,75 +64,86 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
-    @Test
-    void shouldReturn200_whenRequestDetailsArePresent() throws JsonProcessingException {
-        JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
-        PartiesNotified partiesNotified = new PartiesNotified();
-        partiesNotified.setServiceData(jsonNode);
+    @Nested
+    @DisplayName("PutPartiesNotified")
+    class PutPartiesNotified {
+        @Test
+        void shouldReturn200_whenRequestDetailsArePresent() throws JsonProcessingException {
+            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+            PartiesNotified partiesNotified = new PartiesNotified();
+            partiesNotified.setServiceData(jsonNode);
 
-        doNothing().when(partiesNotifiedService).getPartiesNotified(anyLong(), anyInt(), any(PartiesNotified.class));
+            doNothing().when(partiesNotifiedService).getPartiesNotified(
+                anyLong(),
+                anyInt(),
+                any(PartiesNotified.class)
+            );
 
-        PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
-        controller.putPartiesNotified(partiesNotified, 1L, 10);
-        verify(partiesNotifiedService, times(1))
-            .getPartiesNotified(anyLong(), anyInt(), any(PartiesNotified.class));
+            PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
+            controller.putPartiesNotified(partiesNotified, 1L, 10);
+            verify(partiesNotifiedService, times(1))
+                .getPartiesNotified(anyLong(), anyInt(), any(PartiesNotified.class));
+        }
     }
 
-    @Test
-    void shouldReturn200_whenNo_PartiesNotifiedDateTimes() {
-        final Long hearingId = 2000000099L;
-        PartiesNotifiedResponses responsesExpected = new PartiesNotifiedResponses();
-        responsesExpected.setHearingID(hearingId);
-        responsesExpected.setResponses(new ArrayList<>());
-        when(partiesNotifiedService.getPartiesNotified(hearingId)).thenReturn(responsesExpected);
+    @Nested
+    @DisplayName("GetPartiesNotified")
+    class GetPartiesNotified {
+        @Test
+        void shouldReturn200_whenNo_PartiesNotifiedDateTimes() {
+            final Long hearingId = 2000000099L;
+            PartiesNotifiedResponses responsesExpected = new PartiesNotifiedResponses();
+            responsesExpected.setHearingID(hearingId);
+            responsesExpected.setResponses(new ArrayList<>());
+            when(partiesNotifiedService.getPartiesNotified(hearingId)).thenReturn(responsesExpected);
 
-        PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
-        PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
-        assertTrue(responses.getResponses().isEmpty());
-        verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
+            PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
+            PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
+            assertTrue(responses.getResponses().isEmpty());
+            verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
+        }
+
+        @Test
+        void shouldReturn200_whenSome_PartiesNotifiedDateTimes() {
+            final Long hearingId = 2000000099L;
+            PartiesNotifiedResponses responsesExpected = new PartiesNotifiedResponses();
+            responsesExpected.setHearingID(hearingId);
+            List<PartiesNotifiedResponse> partiesNotifiedExpectedList = generateResponses();
+            responsesExpected.setResponses(partiesNotifiedExpectedList);
+            when(partiesNotifiedService.getPartiesNotified(hearingId)).thenReturn(responsesExpected);
+
+            PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
+            PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
+            assertFalse(responses.getResponses().isEmpty());
+            verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
+        }
+
+        @Test
+        void shouldReturn400_when_null_hearingId() {
+            final Long hearingId = null;
+            PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
+            PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
+            assertNull(responses);
+            verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
+        }
+
+        @Test
+        void shouldReturn400_when_invalid_hearingId() {
+            final Long hearingId = 1000000099L;
+            PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
+            PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
+
+            assertNull(responses);
+            verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
+        }
+
+        @Test
+        void shouldReturn404_when_hearingIdNotFound() {
+            final Long hearingId = 2000000099L;
+            PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
+            PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
+            assertNull(responses);
+            verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
+        }
     }
-
-    @Test
-    void shouldReturn200_whenSome_PartiesNotifiedDateTimes() {
-        final Long hearingId = 2000000099L;
-        PartiesNotifiedResponses responsesExpected = new PartiesNotifiedResponses();
-        responsesExpected.setHearingID(hearingId);
-        List<PartiesNotifiedResponse> partiesNotifiedExpectedList = generateResponses();
-        responsesExpected.setResponses(partiesNotifiedExpectedList);
-        when(partiesNotifiedService.getPartiesNotified(hearingId)).thenReturn(responsesExpected);
-
-        PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
-        PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
-        assertFalse(responses.getResponses().isEmpty());
-        verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
-    }
-
-    @Test
-    void shouldReturn400_when_null_hearingId() {
-        final Long hearingId = null;
-        PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
-        PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
-        assertNull(responses);
-        verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
-    }
-
-    @Test
-    void shouldReturn400_when_invalid_hearingId() {
-        final Long hearingId = 1000000099L;
-        PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
-        PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
-
-        assertNull(responses);
-        verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
-    }
-
-    @Test
-    void shouldReturn404_when_hearingIdNotFound() {
-        final Long hearingId = 2000000099L;
-        PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
-        PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
-        assertNull(responses);
-        verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
-    }
-
 }

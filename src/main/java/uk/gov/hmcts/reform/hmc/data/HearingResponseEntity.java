@@ -44,19 +44,6 @@ public class HearingResponseEntity {
     @Column(name = "listing_case_status", nullable = false)
     private String listingCaseStatus;
 
-    @Column(name = "response_version", nullable = false)
-    private String responseVersion;
-
-    @Column(name = "request_version", nullable = false)
-    private String requestVersion;
-
-    @Column(name = "parties_notified_datetime")
-    private LocalDateTime partiesNotifiedDateTime;
-
-    @Column(name = "service_data")
-    @Convert(converter = JsonDataConverter.class)
-    private JsonNode serviceData;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
@@ -65,8 +52,11 @@ public class HearingResponseEntity {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingDayDetailsEntity> hearingDayDetails;
 
+    @Column(name = "request_version", nullable = false)
+    private String requestVersion;
+
     @Column(name = "response_version", nullable = false)
-    private int responseVersion;
+    private String responseVersion;
 
     @Column(name = "parties_notified_datetime")
     private LocalDateTime partiesNotifiedDateTime;
