@@ -22,13 +22,14 @@ class PartiesNotifiedControllerIT extends BaseTest {
 
     private static final String url = "/partiesNotified";
 
+    private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-caseHearings_request.sql";
 
     @Nested
     @DisplayName("GetPartiesNotified")
     class GetPartiesNotified {
         @Test
-        @Sql(scripts = {GET_HEARINGS_DATA_SCRIPT})
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn200_WhenPartiesNotifiedIsSuccess() throws Exception {
             mockMvc.perform(get(url + "/2000000000"))
                     .andExpect(status().is(200))
