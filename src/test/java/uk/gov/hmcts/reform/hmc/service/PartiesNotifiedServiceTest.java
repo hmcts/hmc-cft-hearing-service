@@ -18,8 +18,8 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedBadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedNotFoundException;
-import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
+import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 

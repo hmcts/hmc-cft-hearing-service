@@ -21,9 +21,9 @@ import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.PartiesNotifiedCommonGeneration;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
+import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponse;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
-import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.PartiesNotifiedService;
 
