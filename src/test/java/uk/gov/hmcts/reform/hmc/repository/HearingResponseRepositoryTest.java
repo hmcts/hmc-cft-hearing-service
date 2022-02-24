@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.PartiesNotifiedCommonGeneration;
-import uk.gov.hmcts.reform.hmc.data.PartiesNotifiedEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,18 +28,18 @@ class HearingResponseRepositoryTest extends PartiesNotifiedCommonGeneration {
 
     @Test
     void getHearingResponsesIsEmpty() {
-        List<PartiesNotifiedEntity> responsesDefault = new ArrayList<>();
+        List<HearingResponseEntity> responsesDefault = new ArrayList<>();
         doReturn(responsesDefault).when(hearingResponseRepository).getPartiesNotified(any());
-        List<PartiesNotifiedEntity> responseEntities = hearingResponseRepository.getPartiesNotified(any());
+        List<HearingResponseEntity> responseEntities = hearingResponseRepository.getPartiesNotified(any());
         assertTrue(responseEntities.isEmpty());
     }
 
     @Test
     void getHearingResponsesIsNotEmpty() {
         Long hearingId = 2000000099L;
-        List<PartiesNotifiedEntity> partiesNotifiedDefault = generateEntities(hearingId);
+        List<HearingResponseEntity> partiesNotifiedDefault = generateEntities(hearingId);
         doReturn(partiesNotifiedDefault).when(hearingResponseRepository).getPartiesNotified(any());
-        List<PartiesNotifiedEntity> partiesNotified = hearingResponseRepository.getPartiesNotified(any());
+        List<HearingResponseEntity> partiesNotified = hearingResponseRepository.getPartiesNotified(any());
         assertFalse(partiesNotified.isEmpty());
         assertEquals(3, partiesNotified.size());
     }

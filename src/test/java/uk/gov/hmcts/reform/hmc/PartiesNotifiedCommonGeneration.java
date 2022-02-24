@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.hmc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.PartiesNotifiedEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponse;
 
 import java.time.LocalDateTime;
@@ -40,34 +40,34 @@ public class PartiesNotifiedCommonGeneration {
         return response;
     }
 
-    protected List<PartiesNotifiedEntity> generateEntities(Long hearingId) {
-        PartiesNotifiedEntity entity1 = generateResponseEntity(1L);
+    protected List<HearingResponseEntity> generateEntities(Long hearingId) {
+        HearingResponseEntity entity1 = generateResponseEntity(1L);
         entity1.setPartiesNotifiedDateTime(LocalDateTime.now().minusDays(6));
-        PartiesNotifiedEntity entity2 = generateResponseEntity(1L);
+        HearingResponseEntity entity2 = generateResponseEntity(1L);
         entity2.setPartiesNotifiedDateTime(LocalDateTime.now().minusDays(4));
-        PartiesNotifiedEntity entity3 = generateResponseEntity(1L);
+        HearingResponseEntity entity3 = generateResponseEntity(1L);
 
         HearingEntity hearingEntity = generateHearingEntity(hearingId);
         entity1.setHearing(hearingEntity);
         entity2.setHearing(hearingEntity);
         entity3.setHearing(hearingEntity);
 
-        List<PartiesNotifiedEntity> entities = new ArrayList<>();
+        List<HearingResponseEntity> entities = new ArrayList<>();
         entities.add(entity1);
         entities.add(entity2);
         entities.add(entity3);
 
-        logger.info("List<PartiesNotifiedEntity>: {}", entities);
+        logger.info("List<HearingResponseEntity>: {}", entities);
         return entities;
     }
 
-    protected PartiesNotifiedEntity generateResponseEntity(Long hearingResponseId) {
-        PartiesNotifiedEntity entity = new PartiesNotifiedEntity();
+    protected HearingResponseEntity generateResponseEntity(Long hearingResponseId) {
+        HearingResponseEntity entity = new HearingResponseEntity();
         entity.setHearingResponseId(hearingResponseId);
         entity.setResponseVersion("2");
         entity.setRequestTimeStamp(LocalDateTime.now().minusDays(hearingResponseId));
         entity.setRequestVersion("1");
-        logger.info("partiesNotifiedEntity: {}", entity);
+        logger.info("hearingResponseEntity: {}", entity);
         return entity;
     }
 

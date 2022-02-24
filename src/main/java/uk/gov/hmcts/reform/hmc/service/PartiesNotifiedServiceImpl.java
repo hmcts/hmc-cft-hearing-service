@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.hmc.data.PartiesNotifiedEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponse;
 import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -36,11 +36,11 @@ public class PartiesNotifiedServiceImpl extends HearingIdValidator implements Pa
     @Override
     public PartiesNotifiedResponses getPartiesNotified(Long hearingId) {
         validateHearingId(hearingId);
-        List<PartiesNotifiedEntity> entities = hearingResponseRepository.getPartiesNotified(hearingId);
+        List<HearingResponseEntity> entities = hearingResponseRepository.getPartiesNotified(hearingId);
         if (entities.isEmpty()) {
             log.info("No partiesNotified found for hearingId {}", hearingId);
         } else {
-            PartiesNotifiedEntity entity = entities.get(0);
+            HearingResponseEntity entity = entities.get(0);
             log.info("hearingId {}, partiesNotified {}",  hearingId,
                     entity.getHearingResponseId());
         }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -7,6 +8,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -50,6 +52,10 @@ public class HearingResponseEntity {
 
     @Column(name = "parties_notified_datetime")
     private LocalDateTime partiesNotifiedDateTime;
+
+    @Column(name = "service_data")
+    @Convert(converter = JsonDataConverter.class)
+    private JsonNode serviceData;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hearing_id")

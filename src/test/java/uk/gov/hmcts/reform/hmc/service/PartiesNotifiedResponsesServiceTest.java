@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.PartiesNotifiedCommonGeneration;
-import uk.gov.hmcts.reform.hmc.data.PartiesNotifiedEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponses;
@@ -48,7 +48,7 @@ class PartiesNotifiedResponsesServiceTest extends PartiesNotifiedCommonGeneratio
     @Test
     void shouldFindPartiesNotifiedForValidHearingId() {
         final Long hearingId = 2000000001L;
-        List<PartiesNotifiedEntity> partiesNotifiedAnswer = generateEntities(hearingId);
+        List<HearingResponseEntity> partiesNotifiedAnswer = generateEntities(hearingId);
 
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(hearingResponseRepository.getPartiesNotified(any())).thenReturn(partiesNotifiedAnswer);
@@ -62,7 +62,7 @@ class PartiesNotifiedResponsesServiceTest extends PartiesNotifiedCommonGeneratio
     @Test
     void shouldNotFindPartiesNotifiedForValidHearingId() {
         final Long hearingId = 2000000001L;
-        List<PartiesNotifiedEntity> partiesNotifiedDateTimesAnswer = new ArrayList<>();
+        List<HearingResponseEntity> partiesNotifiedDateTimesAnswer = new ArrayList<>();
         when(hearingRepository.existsById(hearingId)).thenReturn(true);
         when(hearingResponseRepository.getPartiesNotified(hearingId)).thenReturn(partiesNotifiedDateTimesAnswer);
         PartiesNotifiedResponses partiesNotifiedDateTimes = partiesNotifiedService.getPartiesNotified(hearingId);
