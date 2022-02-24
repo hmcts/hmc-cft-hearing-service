@@ -9,10 +9,15 @@ import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedBadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedNotFoundException;
+import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponse;
+import uk.gov.hmcts.reform.hmc.model.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDateTime;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
@@ -21,21 +26,20 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 @Service
 @Component
 @Slf4j
-public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
+public class PartiesNotifiedServiceImpl  extends HearingIdValidator  implements PartiesNotifiedService {
 
-    private final HearingRepository hearingRepository;
     private final HearingResponseRepository hearingResponseRepository;
 
     @Autowired
     public PartiesNotifiedServiceImpl(HearingRepository hearingRepository,
                                       HearingResponseRepository hearingResponseRepository) {
-        this.hearingRepository = hearingRepository;
+        super(hearingRepository);
         this.hearingResponseRepository = hearingResponseRepository;
     }
 
     @Override
     public void getPartiesNotified(Long hearingId, int responseVersion, PartiesNotified partiesNotified) {
-        isValidFormat(hearingId.toString());
+        validateHearingId(hearingId);
         if (!hearingRepository.existsById(hearingId)) {
             throw new PartiesNotifiedNotFoundException("001 No such id: %s", hearingId);
         } else {
@@ -55,11 +59,36 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
 
     }
 
-    private void isValidFormat(String hearingIdStr) {
-        if (hearingIdStr.length() != HEARING_ID_MAX_LENGTH || !StringUtils.isNumeric(hearingIdStr)
-            || hearingIdStr.charAt(0) != '2') {
-            throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
+    /**
+     * get parties notified.
+     * @param hearingId hearing id
+     * @return  list partiesNotified
+     */
+    @Override
+    public PartiesNotifiedResponses getPartiesNotified(Long hearingId) {
+        validateHearingId(hearingId);
+        List<HearingResponseEntity> entities = hearingResponseRepository.getPartiesNotified(hearingId);
+        if (entities.isEmpty()) {
+            log.info("No partiesNotified found for hearingId {}", hearingId);
+        } else {
+            HearingResponseEntity entity = entities.get(0);
+            log.info("hearingId {}, partiesNotified {}",  hearingId,
+                     entity.getHearingResponseId());
         }
+        List<PartiesNotifiedResponse> partiesNotified = new ArrayList<>();
+        entities.forEach(e -> {
+            PartiesNotifiedResponse response = new PartiesNotifiedResponse();
+            response.setResponseVersion(e.getResponseVersion());
+            response.setResponseReceivedDateTime(e.getRequestTimeStamp());
+            response.setRequestVersion(e.getRequestVersion());
+            response.setPartiesNotified(e.getPartiesNotifiedDateTime());
+            response.setServiceData(e.getServiceData());
+            partiesNotified.add(response);
+        });
+        PartiesNotifiedResponses responses = new PartiesNotifiedResponses();
+        responses.setResponses(partiesNotified);
+        responses.setHearingID(hearingId);
+        return responses;
     }
 
 
