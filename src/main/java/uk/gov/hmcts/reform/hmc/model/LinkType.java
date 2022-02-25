@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public enum LinkType {
 
-    IND("Ordered"),
-    ORG("Same Slot");
+    ORDERED("Ordered"),
+    SAME_SLOT("Same Slot");
 
     public final String linkType;
 

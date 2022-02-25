@@ -22,7 +22,7 @@ CREATE TABLE public.linked_group_details (
                                                  request_date_time timestamp without time zone default now() not null,
                                                  link_type public.link_type_enum not null,
                                                  reason_for_link varchar(255) not null,
-                                                 status varchar(40) not null default 'awaiting listing',
+                                                 status varchar(40) not null default 'Awaiting listing',
                                                  linked_comments varchar(4000)
 );
 
