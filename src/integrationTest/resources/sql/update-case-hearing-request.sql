@@ -22,18 +22,21 @@ INSERT INTO required_facilities(case_hearing_id, facility_type, id) VALUES (100,
 
 INSERT INTO required_locations(case_hearing_id, location_level_type, location_id, id) VALUES (100, 'LOC1', 'CLUSTER', 1);
 
-INSERT INTO hearing_party(case_hearing_id, tech_party_id, party_reference, party_type, party_role_type) VALUES (100, 1, 'p1', 'IND', 'DEF');
+INSERT INTO hearing_party(case_hearing_id, tech_party_id, party_reference, party_type, party_role_type) VALUES (100, 1, 'p1_1', 'IND', 'DEF');
+INSERT INTO hearing_party(case_hearing_id, tech_party_id, party_reference, party_type, party_role_type) VALUES (100, 2, 'p2', 'IND', 'DEF');
 
-INSERT INTO contact_details(tech_party_id, contact_type, contact_details, id) VALUES (1, 'email', 'abc@gmail.com', 1);
+INSERT INTO contact_details(tech_party_id, contact_type, contact_details, id) VALUES (1, 'email', 'abc@gmail.com', 100);
 
 INSERT INTO reasonable_adjustments(tech_party_id, reasonable_adjustment_code, id) VALUES (1, 'Adjust1', 1);
 
 INSERT INTO unavailability(tech_party_id, day_of_week_unavailable, day_of_week_unavailable_type, start_date, end_date, id, unavailability_type)
-VALUES (1, 'TUESDAY', 'AM', null, null, 1, 'DOW');
+VALUES (1, 'TUESDAY', 'AM', null, null, 100, 'DOW');
 INSERT INTO unavailability(tech_party_id, day_of_week_unavailable, day_of_week_unavailable_type, start_date, end_date, id, unavailability_type)
-VALUES (1, null, null, '2022-10-20 00:00:00', '2022-10-22 00:00:00', 2, 'Range');
+VALUES (1, null, null, '2022-10-20 00:00:00', '2022-10-22 00:00:00', 101, 'Range');
 
 INSERT INTO individual_detail(tech_party_id, related_party_relationship_type, related_party_id, vulnerability_details, vulnerable_flag, interpreter_language, channel_type, last_name, first_name, title, id)
-VALUES (1, 'sibling', 'Party1', 'vulnerable', 'true', 'French', 'channel1', 'Bloggs', 'Joe', 'Mrs', 1);
+VALUES (1, 'sibling', 'P1', 'vulnerable', 'true', 'French', 'channel1', 'Bloggs', 'Joe', 'Mrs', 1);
+INSERT INTO individual_detail(tech_party_id, related_party_relationship_type, related_party_id, vulnerability_details, vulnerable_flag, interpreter_language, channel_type, last_name, first_name, title, id)
+VALUES (2, 'sibling', 'P2', null, 'false', null, null, 'Bloggs', 'Josh', 'Mr', 2);
 
-INSERT INTO  organisation_detail(tech_party_id, organisation_name, organisation_type_code, hmcts_organisation_reference, id) VALUES (1, 'Org1', 'Orgcode', 'orgref', 1);
+
