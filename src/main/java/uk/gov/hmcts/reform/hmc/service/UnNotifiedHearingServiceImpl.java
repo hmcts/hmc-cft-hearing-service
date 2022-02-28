@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.UnNotifiedHearingsResponse;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
-import uk.gov.hmcts.reform.hmc.repository.HearingDayDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
 import java.util.List;
 
@@ -19,14 +19,14 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HMCTS_S
 public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
 
     private final CaseHearingRequestRepository caseHearingRequestRepository;
-    private final HearingDayDetailsRepository hearingDayDetailsRepository;
+    private final HearingRepository hearingRepository;
 
 
     @Autowired
     public UnNotifiedHearingServiceImpl(CaseHearingRequestRepository caseHearingRequestRepository,
-                                        HearingDayDetailsRepository hearingDayDetailsRepository) {
+                                        HearingRepository hearingRepository) {
         this.caseHearingRequestRepository = caseHearingRequestRepository;
-        this.hearingDayDetailsRepository = hearingDayDetailsRepository;
+        this.hearingRepository = hearingRepository;
     }
 
     @Override
@@ -46,9 +46,8 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
 
     private List<String> getUnNotifiedHearingResults(String hmctsServiceCode, String hearingStartDateFrom,
                                                      String hearingStartDateTo) {
-        return hearingDayDetailsRepository.getUnNotifiedHearings(hmctsServiceCode, hearingStartDateFrom,
-                                                                 hearingStartDateTo
-        );
+        return hearingRepository.getUnNotifiedHearings(hmctsServiceCode, hearingStartDateFrom,
+                                                                 hearingStartDateTo);
     }
 
     private void isValidHmctsServiceCode(String hmctsServiceCode) {
