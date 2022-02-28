@@ -123,14 +123,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     public ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid) {
         isValidFormat(hearingId.toString());
         if (!hearingRepository.existsById(hearingId)) {
-            throw new HearingNotFoundException(hearingId);
+            throw new HearingNotFoundException(hearingId, "No hearing found for reference: %s");
         } else if (!isValid) {
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
             if (hearingEntity.isPresent()) {
                 return ResponseEntity.ok(getHearingResponseMapper
                                              .toHearingResponse(hearingEntity.get()));
             } else {
-                throw new HearingNotFoundException(hearingId);
+                throw new HearingNotFoundException(hearingId, "No hearing found for reference: %s");
             }
         } else {
             return ResponseEntity.noContent().header("Content-Length", "0").build();
@@ -421,7 +421,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             String hearingIdStr = String.valueOf(hearingId);
             isValidFormat(hearingIdStr);
             if (!hearingRepository.existsById(hearingId)) {
-                throw new HearingNotFoundException(hearingId);
+                throw new HearingNotFoundException(hearingId, "No hearing found for reference: %s");
             }
         }
     }
