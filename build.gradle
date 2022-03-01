@@ -356,7 +356,7 @@ dependencies {
   compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
   compile 'net.minidev:json-smart:2.4.7'
 
-  testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.9.1') {
+  testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.13.0') {
     exclude group: 'com.github.hmcts.befta-fw', module: 'befta-fw'
   }
   testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '8.7.1'
