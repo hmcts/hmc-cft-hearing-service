@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
@@ -14,7 +12,6 @@ import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
-import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
@@ -37,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class GetHearingResponseMapper {
+public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
 
     public GetHearingResponse toHearingResponse(HearingEntity hearingEntity) {
         GetHearingResponse getHearingResponse = new GetHearingResponse();
@@ -115,36 +112,43 @@ public class GetHearingResponseMapper {
         if (null != hearingPartyEntity.getUnavailabilityEntity()
                 && !hearingPartyEntity.getUnavailabilityEntity().isEmpty()) {
             for (UnavailabilityEntity unavailabilityEntity : hearingPartyEntity.getUnavailabilityEntity()) {
-                // if Dow
-                if (null != unavailabilityEntity.getDayOfWeekUnavailableType()
-                        || null != unavailabilityEntity.getDayOfWeekUnavailable()) {
-                    UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-                    if (null != unavailabilityEntity.getDayOfWeekUnavailableType()) {
-                        unavailabilityDow.setDowUnavailabilityType(
-                                unavailabilityEntity.getDayOfWeekUnavailableType().getLabel());
-                    }
-                    if (null != unavailabilityEntity.getDayOfWeekUnavailable()) {
-                        unavailabilityDow.setDow(
-                                unavailabilityEntity.getDayOfWeekUnavailable().getLabel());
-                    }
-                    unavailabilityDowArrayList.add(unavailabilityDow);
-                }
-
-                // if Range
-                if (null != unavailabilityEntity.getStartDate() || null != unavailabilityEntity.getEndDate()) {
-                    UnavailabilityRanges unavailabilityRanges = new UnavailabilityRanges();
-                    if (null != unavailabilityEntity.getEndDate()) {
-                        unavailabilityRanges.setUnavailableToDate(unavailabilityEntity.getEndDate());
-                    }
-                    if (null != unavailabilityEntity.getStartDate()) {
-                        unavailabilityRanges.setUnavailableFromDate(unavailabilityEntity.getStartDate());
-                    }
-                    unavailabilityRangesArrayList.add(unavailabilityRanges);
-                }
+                addUnavailabilityDow(unavailabilityEntity, unavailabilityDowArrayList);
+                addUnavailabilityRange(unavailabilityEntity, unavailabilityRangesArrayList);
             }
         }
         partyDetails.setUnavailabilityDow(unavailabilityDowArrayList);
         partyDetails.setUnavailabilityRanges(unavailabilityRangesArrayList);
+    }
+
+    private void addUnavailabilityDow(UnavailabilityEntity unavailabilityEntity,
+                                      ArrayList<UnavailabilityDow> unavailabilityDowArrayList) {
+        if (null != unavailabilityEntity.getDayOfWeekUnavailableType()
+                || null != unavailabilityEntity.getDayOfWeekUnavailable()) {
+            UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
+            if (null != unavailabilityEntity.getDayOfWeekUnavailableType()) {
+                unavailabilityDow.setDowUnavailabilityType(
+                        unavailabilityEntity.getDayOfWeekUnavailableType().getLabel());
+            }
+            if (null != unavailabilityEntity.getDayOfWeekUnavailable()) {
+                unavailabilityDow.setDow(
+                        unavailabilityEntity.getDayOfWeekUnavailable().getLabel());
+            }
+            unavailabilityDowArrayList.add(unavailabilityDow);
+        }
+    }
+
+    private void addUnavailabilityRange(UnavailabilityEntity unavailabilityEntity,
+                                        ArrayList<UnavailabilityRanges> unavailabilityRangesArrayList) {
+        if (null != unavailabilityEntity.getStartDate() || null != unavailabilityEntity.getEndDate()) {
+            UnavailabilityRanges unavailabilityRanges = new UnavailabilityRanges();
+            if (null != unavailabilityEntity.getEndDate()) {
+                unavailabilityRanges.setUnavailableToDate(unavailabilityEntity.getEndDate());
+            }
+            if (null != unavailabilityEntity.getStartDate()) {
+                unavailabilityRanges.setUnavailableFromDate(unavailabilityEntity.getStartDate());
+            }
+            unavailabilityRangesArrayList.add(unavailabilityRanges);
+        }
     }
 
     private OrganisationDetails setOrganisationDetails(HearingPartyEntity hearingPartyEntity) {
@@ -315,37 +319,6 @@ public class GetHearingResponseMapper {
                 }
             }
             caseHearing.setHearingDaySchedule(scheduleList);
-        }
-    }
-
-    private HearingDaySchedule setHearingDayScheduleDetails(HearingDayDetailsEntity detailEntity) {
-        HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
-        hearingDaySchedule.setHearingStartDateTime(detailEntity.getStartDateTime());
-        hearingDaySchedule.setHearingEndDateTime(detailEntity.getEndDateTime());
-        hearingDaySchedule.setListAssistSessionId(detailEntity.getListAssistSessionId());
-        hearingDaySchedule.setHearingVenueId(detailEntity.getVenueId());
-        hearingDaySchedule.setHearingRoomId(detailEntity.getRoomId());
-        return hearingDaySchedule;
-    }
-
-    private void setAttendeeDetails(List<HearingAttendeeDetailsEntity> attendeeDetailsEntities,
-                                    HearingDaySchedule hearingDaySchedule) {
-        List<Attendee> attendeeList = new ArrayList<>();
-        for (HearingAttendeeDetailsEntity attendeeDetailEntity : attendeeDetailsEntities) {
-            Attendee attendee = new Attendee();
-            attendee.setPartyId(attendeeDetailEntity.getPartyId());
-            attendee.setHearingSubChannel(attendeeDetailEntity.getPartySubChannelType());
-            attendeeList.add(attendee);
-        }
-        hearingDaySchedule.setAttendees(attendeeList);
-    }
-
-    private void setHearingJudgeAndPanelMemberIds(HearingDayPanelEntity hearingDayPanelEntity,
-                                                  HearingDaySchedule hearingDaySchedule) {
-        if (null == hearingDayPanelEntity.getIsPresiding() || !hearingDayPanelEntity.getIsPresiding()) {
-            hearingDaySchedule.setPanelMemberId(hearingDayPanelEntity.getPanelUserId());
-        } else {
-            hearingDaySchedule.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
         }
     }
 
