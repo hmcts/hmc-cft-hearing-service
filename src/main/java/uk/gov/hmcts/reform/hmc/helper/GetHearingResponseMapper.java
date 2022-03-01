@@ -82,7 +82,7 @@ public class GetHearingResponseMapper {
         && !hearingEntity.getCaseHearingRequest().getCaseCategories().isEmpty()) {
             for (CaseCategoriesEntity caseCategoriesEntity : hearingEntity.getCaseHearingRequest().getCaseCategories()) {
                 CaseCategory caseCategory = new CaseCategory();
-                caseCategory.setCategoryType(retrieveLabel(caseCategoriesEntity.getCategoryType().getLabel()));
+                caseCategory.setCategoryType(caseCategoriesEntity.getCategoryType().getLabel());
                 caseCategory.setCategoryValue(caseCategoriesEntity.getCaseCategoryValue());
                 caseCategories.add(caseCategory);
             }
@@ -95,7 +95,7 @@ public class GetHearingResponseMapper {
         for (HearingPartyEntity hearingPartyEntity : hearingEntity.getCaseHearingRequest().getHearingParties()) {
             PartyDetails partyDetails = new PartyDetails();
             partyDetails.setPartyID(hearingPartyEntity.getPartyReference());
-            partyDetails.setPartyType(retrieveLabel(hearingPartyEntity.getPartyType().getLabel()));
+            partyDetails.setPartyType(hearingPartyEntity.getPartyType().getLabel());
             partyDetails.setPartyRole(hearingPartyEntity.getPartyRoleType());
             if (PartyType.IND.getLabel().equals(hearingPartyEntity.getPartyType().getLabel())) {
                 partyDetails.setIndividualDetails(setIndividualDetails(hearingPartyEntity).get(0));
@@ -121,11 +121,11 @@ public class GetHearingResponseMapper {
                     UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
                     if (null != unavailabilityEntity.getDayOfWeekUnavailableType()) {
                         unavailabilityDow.setDowUnavailabilityType(
-                                retrieveLabel(unavailabilityEntity.getDayOfWeekUnavailableType().getLabel()));
+                                unavailabilityEntity.getDayOfWeekUnavailableType().getLabel());
                     }
                     if (null != unavailabilityEntity.getDayOfWeekUnavailable()) {
                         unavailabilityDow.setDow(
-                                retrieveLabel(unavailabilityEntity.getDayOfWeekUnavailable().getLabel()));
+                                unavailabilityEntity.getDayOfWeekUnavailable().getLabel());
                     }
                     unavailabilityDowArrayList.add(unavailabilityDow);
                 }
@@ -282,7 +282,7 @@ public class GetHearingResponseMapper {
             for (RequiredLocationsEntity requiredLocationsEntity
                     : hearingEntity.getCaseHearingRequest().getRequiredLocations()) {
                 HearingLocation hearingLocation = new HearingLocation();
-                hearingLocation.setLocationId(retrieveLabel(requiredLocationsEntity.getLocationId().getLabel()));
+                hearingLocation.setLocationId(requiredLocationsEntity.getLocationId().getLabel());
                 hearingLocation.setLocationType(requiredLocationsEntity.getLocationLevelType());
                 hearingLocations.add(hearingLocation);
             }
@@ -349,8 +349,4 @@ public class GetHearingResponseMapper {
         }
     }
 
-    private String retrieveLabel(String label) {
-        return label;
-
-    }
 }
