@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NON_STANDARD_HE
 
 @Data
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class HearingDetails {
 
     @JsonProperty("autolistFlag")

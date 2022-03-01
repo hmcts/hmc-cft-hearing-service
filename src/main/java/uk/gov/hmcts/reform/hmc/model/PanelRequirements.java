@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +14,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.ROLE_TYPE_MAX_L
 
 @Data
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PanelRequirements {
 
     private List<@Size(max = 70, message = ROLE_TYPE_MAX_LENGTH_MSG) String> roleType;
