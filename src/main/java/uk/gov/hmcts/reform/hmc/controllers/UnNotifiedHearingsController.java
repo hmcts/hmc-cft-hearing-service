@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import uk.gov.hmcts.reform.hmc.model.UnNotifiedHearingsResponse;
-import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.service.UnNotifiedHearingService;
 
+import java.time.LocalDate;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 
@@ -32,7 +32,7 @@ public class UnNotifiedHearingsController {
     }
 
     @GetMapping(path = "/unNotifiedHearings/{hmctsServiceCode}", produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success"),
         @ApiResponse(code = 400, message = "Bad Request"),
@@ -43,15 +43,16 @@ public class UnNotifiedHearingsController {
                                                             @Valid
                                                             @NotEmpty(message = HMCTS_SERVICE_CODE_EMPTY)
                                                                 String hmctsServiceCode,
-                                                            @NotEmpty(message = HEARING_START_DATE_FROM)
+                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                                                             @RequestParam(name = "hearing_start_date_from")
-                                                            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                                String hearingStartDateFrom,
+                                                                LocalDate hearingStartDateFrom,
+                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                                                             @RequestParam(name = "hearing_start_date_to",
                                                                 required = false)
-                                                            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                                String hearingStartDateTo) {
+                                                                LocalDate hearingStartDateTo) {
         return unNotifiedHearingService.getUnNotifiedHearings(hmctsServiceCode, hearingStartDateFrom,
-                                                              hearingStartDateTo);
+                                                              hearingStartDateTo
+        );
     }
 }
+

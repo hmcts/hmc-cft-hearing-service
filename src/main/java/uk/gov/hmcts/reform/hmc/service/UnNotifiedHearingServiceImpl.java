@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.hmc.model.UnNotifiedHearingsResponse;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HMCTS_SERVICE_CODE;
@@ -30,8 +32,8 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
     }
 
     @Override
-    public UnNotifiedHearingsResponse getUnNotifiedHearings(String hmctsServiceCode, String hearingStartDateFrom,
-                                                            String hearingStartDateTo) {
+    public UnNotifiedHearingsResponse getUnNotifiedHearings(String hmctsServiceCode, LocalDate hearingStartDateFrom,
+                                                            LocalDate hearingStartDateTo) {
         isValidHmctsServiceCode(hmctsServiceCode);
         List<String> hearingIds = getUnNotifiedHearingResults(
             hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo);
@@ -44,10 +46,9 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
         return response;
     }
 
-    private List<String> getUnNotifiedHearingResults(String hmctsServiceCode, String hearingStartDateFrom,
-                                                     String hearingStartDateTo) {
-        return hearingRepository.getUnNotifiedHearings(hmctsServiceCode, hearingStartDateFrom,
-                                                                 hearingStartDateTo);
+    private List<String> getUnNotifiedHearingResults(String hmctsServiceCode, LocalDate hearingStartDateFrom,
+                                                     LocalDate hearingStartDateTo) {
+        return hearingRepository.getUnNotifiedHearings(hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo);
     }
 
     private void isValidHmctsServiceCode(String hmctsServiceCode) {
