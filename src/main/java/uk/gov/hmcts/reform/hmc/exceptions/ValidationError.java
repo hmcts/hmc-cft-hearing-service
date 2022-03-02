@@ -142,6 +142,8 @@ public final class ValidationError {
     public static final String GROUP_DETAILS = "Group details are required";
     public static final String HEARINGS_IN_GROUP = "Linked hearing details are required";
     public static final String HEARINGS_IN_GROUP_SIZE = "001 Insufficient requestIds";
+
+    public static final String HEARING_ID_NOT_FOUND = "No hearing found for reference: %s";
     public static final String INVALID_LINKED_GROUP_REQUEST_ID_DETAILS = "Invalid linked group id";
     public static final String LINKED_GROUP_ID_EMPTY = "Linked group id cannot be null or empty";
 }
