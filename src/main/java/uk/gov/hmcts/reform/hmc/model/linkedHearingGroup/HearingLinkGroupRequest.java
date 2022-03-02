@@ -12,7 +12,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class HearingLinkGroupRequest extends HearingRequest {
+public class HearingLinkGroupRequest {
 
     @Valid
     @NotEmpty(message = ValidationError.GROUP_DETAILS)
