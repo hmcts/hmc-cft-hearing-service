@@ -16,9 +16,12 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 
 @Service
 @Component
@@ -38,18 +41,22 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
 
     @Override
     public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
-        //hman-55 step 3 / hman-56 step 5
-        List<LinkHearingDetails> listDistinct = hearingLinkGroupRequest.getHearingsInGroup().stream()
-            .distinct().collect(Collectors.toList());
-        if (listDistinct.size() != hearingLinkGroupRequest.getHearingsInGroup().size()) {
-            throw new BadRequestException("001 Insufficient requestIds");
-        }
+        validateHearingLinkGroupRequest(hearingLinkGroupRequest);
+    }
 
+    private void validateHearingLinkGroupRequest(HearingLinkGroupRequest hearingLinkGroupRequest) {
         //hman -55 step 4 / hman-56 step 6
-        hearingLinkGroupRequest.getHearingsInGroup().forEach(linkHearingDetails -> {
-            validateHearingId(Long.valueOf(linkHearingDetails.getHearingId()), "No hearing found for reference: %s");
+        hearingLinkGroupRequest.getHearingsInGroup().forEach(details -> {
+            //hman-55 step 3 / hman-56 step 5
+            int occurrences = getOccurrences(hearingLinkGroupRequest.getHearingsInGroup(), details.getHearingId());
+            if (occurrences > 1) {
+                throw new BadRequestException("001 Insufficient requestIds");
+            }
+
+            validateHearingId(Long.valueOf(details.getHearingId()), HEARING_ID_NOT_FOUND);
             Optional<HearingEntity> hearingEntity = hearingRepository
-                .findById(Long.valueOf(linkHearingDetails.getHearingId()));
+                .findById(Long.valueOf(details.getHearingId()));
+
             if (hearingEntity.isPresent()) {
                 //hman-55 step 4.1 / hman-56 step 6.1
                 if (!hearingEntity.get().getCaseHearingRequest().getIsLinkedFlag().booleanValue()) {
@@ -57,22 +64,40 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
                 }
             }
 
-            //hearing id  in linkedHearingDetails check if its in a group
+            //hearing id  in linkedHearingDetails check if it's in a group
             //hman-55 step 4.2 / hman-56 step 6.2
-            List<LinkedHearingDetails> lhd = linkedHearingDetailsRepository.getLinkedHearingDetailsById(Long.valueOf(
-                linkHearingDetails.getHearingId()));
+            LinkedHearingDetails linkedHearingDetails =
+                linkedHearingDetailsRepository.getLinkedHearingDetailsById(Long.valueOf(details.getHearingId()));
+            if (linkedHearingDetails.getLinkedGroup().getLinkedGroupId() != null) {
+                throw new BadRequestException("003 hearing request already in a group");
+            }
 
             //hman-55 step 4.3 / hamn-56 step 6.3
-            if (!PutHearingStatus.isValid(lhd.get(0).getLinkedGroup().getStatus())
-                && LocalDate.now().isBefore(lhd.get(0).getLinkedGroup().getRequestDateTime().toLocalDate())) {
-                throw new BadRequestException("004 Invalid state for hearing request <hearingId>");
+            if (!PutHearingStatus.isValid(linkedHearingDetails.getLinkedGroup().getStatus())
+                && LocalDate.now().isBefore(linkedHearingDetails.getLinkedGroup().getRequestDateTime().toLocalDate())) {
+                throw new BadRequestException("004 Invalid state for hearing request "
+                                                  + details.getHearingId());
             }
 
             //hman-55 step 4.4 / hman-56 step 6.4
-            if (LinkType.isValid(lhd.get(0).getLinkedGroup().getLinkType())) {
-                //check link order is unique
-                Long linkedOrder = lhd.get(0).getLinkedOrder();
+            if (LinkType.ORDERED.equals(linkedHearingDetails.getLinkedGroup().getLinkType())) {
+                int counter = getOccurrences(
+                    hearingLinkGroupRequest.getHearingsInGroup(),
+                    String.valueOf(linkedHearingDetails.getLinkedOrder())
+                );
+                if (counter > 1) {
+                    throw new BadRequestException("005 Hearing Order is not unique");
+                }
             }
         });
+    }
+
+    private int getOccurrences(List<LinkHearingDetails> hearingDetails, String value) {
+        List<Integer> list = null;
+        hearingDetails.forEach(lo -> {
+            list.add(lo.getHearingOrder());
+        });
+        int occurrences = Collections.frequency(list, value);
+        return occurrences;
     }
 }
