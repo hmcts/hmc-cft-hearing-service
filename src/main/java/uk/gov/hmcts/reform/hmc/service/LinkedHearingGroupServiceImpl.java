@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -61,38 +62,40 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
                 if (!hearingEntity.get().getCaseHearingRequest().getIsLinkedFlag().booleanValue()) {
                     throw new BadRequestException("002 hearing request isLinked is False");
                 }
-            }
 
-            //hearing id  in linkedHearingDetails check if it's in a group
-            //hman-55 step 4.2 / hman-56 step 6.2
-            LinkedHearingDetails linkedHearingDetails =
-                linkedHearingDetailsRepository.getLinkedHearingDetailsById(Long.valueOf(details.getHearingId()));
-            if (linkedHearingDetails.getLinkedGroup().getLinkedGroupId() != null) {
-                throw new BadRequestException("003 hearing request already in a group");
-            }
 
-            //hman-55 step 4.3 / hamn-56 step 6.3
-            if (!PutHearingStatus.isValid(linkedHearingDetails.getLinkedGroup().getStatus())
-                && LocalDate.now().isBefore(linkedHearingDetails.getLinkedGroup().getRequestDateTime().toLocalDate())) {
-                throw new BadRequestException("004 Invalid state for hearing request "
-                                                  + details.getHearingId());
-            }
+                //hearing id  in linkedHearingDetails check if it's in a group
+                //hman-55 step 4.2 / hman-56 step 6.2
+                LinkedHearingDetails linkedHearingDetails =
+                    linkedHearingDetailsRepository.getLinkedHearingDetailsById(Long.valueOf(details.getHearingId()));
+                if (linkedHearingDetails.getLinkedGroup() != null) {
+                    throw new BadRequestException("003 hearing request already in a group");
+                }
 
-            //hman-55 step 4.4 / hman-56 step 6.4
-            if (LinkType.ORDERED.equals(linkedHearingDetails.getLinkedGroup().getLinkType())) {
-                int counter = getOrderOccurrences(
-                    hearingLinkGroupRequest.getHearingsInGroup(),
-                    String.valueOf(linkedHearingDetails.getLinkedOrder())
-                );
-                if (counter > 1) {
-                    throw new BadRequestException("005 Hearing Order is not unique");
+                //hman-55 step 4.3 / hamn-56 step 6.3
+                if (!PutHearingStatus.isValid(hearingEntity.get().getStatus())
+                    || hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()
+                    .isBefore(LocalDate.now())) {
+                    throw new BadRequestException("004 Invalid state for hearing request "
+                                                      + details.getHearingId());
+                }
+
+                //hman-55 step 4.4 / hman-56 step 6.4
+                if (LinkType.ORDERED.equals(hearingLinkGroupRequest.getGroupDetails().getGroupLinkType())) {
+                    int counter = getOrderOccurrences(
+                        hearingLinkGroupRequest.getHearingsInGroup(),
+                        details.getHearingOrder()
+                    );
+                    if (counter > 1) {
+                        throw new BadRequestException("005 Hearing Order is not unique");
+                    }
                 }
             }
         });
     }
 
-    private int getOrderOccurrences(List<LinkHearingDetails> hearingDetails, String value) {
-        List<Integer> list = null;
+    private int getOrderOccurrences(List<LinkHearingDetails> hearingDetails, int value) {
+        List<Integer> list = new ArrayList<>();
         hearingDetails.forEach(lo -> {
             list.add(lo.getHearingOrder());
         });
@@ -101,7 +104,7 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
     }
 
     private int getIdOccurrences(List<LinkHearingDetails> hearingDetails, String value) {
-        List<String> list = null;
+        List<String> list = new ArrayList<>();
         hearingDetails.forEach(lo -> {
             list.add(lo.getHearingId());
         });
