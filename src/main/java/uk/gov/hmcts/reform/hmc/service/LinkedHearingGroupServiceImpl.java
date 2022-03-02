@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 
@@ -48,7 +47,7 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
         //hman -55 step 4 / hman-56 step 6
         hearingLinkGroupRequest.getHearingsInGroup().forEach(details -> {
             //hman-55 step 3 / hman-56 step 5
-            int occurrences = getOccurrences(hearingLinkGroupRequest.getHearingsInGroup(), details.getHearingId());
+            int occurrences = getIdOccurrences(hearingLinkGroupRequest.getHearingsInGroup(), details.getHearingId());
             if (occurrences > 1) {
                 throw new BadRequestException("001 Insufficient requestIds");
             }
@@ -81,7 +80,7 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
 
             //hman-55 step 4.4 / hman-56 step 6.4
             if (LinkType.ORDERED.equals(linkedHearingDetails.getLinkedGroup().getLinkType())) {
-                int counter = getOccurrences(
+                int counter = getOrderOccurrences(
                     hearingLinkGroupRequest.getHearingsInGroup(),
                     String.valueOf(linkedHearingDetails.getLinkedOrder())
                 );
@@ -92,10 +91,19 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
         });
     }
 
-    private int getOccurrences(List<LinkHearingDetails> hearingDetails, String value) {
+    private int getOrderOccurrences(List<LinkHearingDetails> hearingDetails, String value) {
         List<Integer> list = null;
         hearingDetails.forEach(lo -> {
             list.add(lo.getHearingOrder());
+        });
+        int occurrences = Collections.frequency(list, value);
+        return occurrences;
+    }
+
+    private int getIdOccurrences(List<LinkHearingDetails> hearingDetails, String value) {
+        List<String> list = null;
+        hearingDetails.forEach(lo -> {
+            list.add(lo.getHearingId());
         });
         int occurrences = Collections.frequency(list, value);
         return occurrences;
