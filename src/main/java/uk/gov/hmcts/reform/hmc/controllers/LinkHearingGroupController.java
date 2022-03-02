@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.model.linkedHearingGroup.GroupDetails;
+import uk.gov.hmcts.reform.hmc.model.linkedHearingGroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
 
 import javax.validation.Valid;
@@ -34,10 +35,11 @@ public class LinkHearingGroupController {
         @ApiResponse(code = 400, message = "001 insufficient request ids"),
         @ApiResponse(code = 400, message = "002 hearing request is linked is false"),
         @ApiResponse(code = 400, message = "003 hearing request already in a group"),
-        @ApiResponse(code = 400, message = "004 invalid state of hearing for request")
+        @ApiResponse(code = 400, message = "004 invalid state of hearing for request"),
+        @ApiResponse(code = 400, message = "005 Hearing Order is not unique")
     })
-    public void saveHearing(@RequestBody @Valid GroupDetails groupDetails) {
-
+    public void validateLinkHearing(@RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
+        linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
     }
 
 }
