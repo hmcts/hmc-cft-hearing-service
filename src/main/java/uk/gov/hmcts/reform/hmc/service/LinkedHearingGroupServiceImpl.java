@@ -8,34 +8,32 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetails;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
-import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.LinkType;
-import uk.gov.hmcts.reform.hmc.model.linkedHearingGroup.HearingLinkGroupRequest;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
-import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
+import uk.gov.hmcts.reform.hmc.validator.LinkedHearingGroupValidator;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
-
 @Service
 @Component
 @Slf4j
-public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements LinkedHearingGroupService {
+public class LinkedHearingGroupServiceImpl extends LinkedHearingGroupValidator implements LinkedHearingGroupService {
 
     private final LinkedHearingDetailsRepository linkedHearingDetailsRepository;
 
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
+                                         LinkedGroupDetailsRepository linkedGroupDetailsRepository,
                                          LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
-        super(hearingRepository);
+        super(hearingRepository, linkedGroupDetailsRepository);
         this.linkedHearingDetailsRepository = linkedHearingDetailsRepository;
 
     }
-
 
     @Override
     public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
@@ -48,7 +46,7 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
                     throw new BadRequestException("002 hearing request isLinked is False");
                 }
             }
-            //hearing id  in linkedHearingDetails check if its in a group
+            //hearing id  in linkedHearingDetails check if it's in a group
             List<LinkedHearingDetails> lhd = linkedHearingDetailsRepository.getLinkedHearingDetailsById(Long.valueOf(
                 linkHearingDetails.getHearingId()));
 
@@ -64,7 +62,7 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
                 //  throw new BadRequestException();
             }
             if (LinkType.ORDERED.equals(lhd.get(0).getLinkedGroup().getLinkType())) {
-                //check link order is unqiue
+                //check link order is unique
                 Long linkedOrder = lhd.get(0).getLinkedOrder();
             }
         });

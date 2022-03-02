@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.hmc.model.linkedHearingGroup;
+package uk.gov.hmcts.reform.hmc.model.linkedhearinggroup;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
