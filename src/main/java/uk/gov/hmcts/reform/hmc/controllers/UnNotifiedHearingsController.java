@@ -14,11 +14,11 @@ import uk.gov.hmcts.reform.hmc.model.UnNotifiedHearingsResponse;
 import uk.gov.hmcts.reform.hmc.service.UnNotifiedHearingService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_START_DATE_FROM;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_SERVICE_CODE_EMPTY;
 
 @RestController
@@ -43,13 +43,13 @@ public class UnNotifiedHearingsController {
                                                             @Valid
                                                             @NotEmpty(message = HMCTS_SERVICE_CODE_EMPTY)
                                                                 String hmctsServiceCode,
-                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                                                             @RequestParam(name = "hearing_start_date_from")
-                                                                LocalDate hearingStartDateFrom,
-                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                                    LocalDateTime hearingStartDateFrom,
                                                             @RequestParam(name = "hearing_start_date_to",
                                                                 required = false)
-                                                                LocalDate hearingStartDateTo) {
+                                                            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                                    LocalDateTime hearingStartDateTo) {
         return unNotifiedHearingService.getUnNotifiedHearings(hmctsServiceCode, hearingStartDateFrom,
                                                               hearingStartDateTo
         );

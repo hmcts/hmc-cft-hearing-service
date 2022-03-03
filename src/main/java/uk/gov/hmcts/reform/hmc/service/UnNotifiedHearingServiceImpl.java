@@ -9,7 +9,10 @@ import uk.gov.hmcts.reform.hmc.model.UnNotifiedHearingsResponse;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -32,8 +35,8 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
     }
 
     @Override
-    public UnNotifiedHearingsResponse getUnNotifiedHearings(String hmctsServiceCode, LocalDate hearingStartDateFrom,
-                                                            LocalDate hearingStartDateTo) {
+    public UnNotifiedHearingsResponse getUnNotifiedHearings(String hmctsServiceCode, LocalDateTime hearingStartDateFrom,
+                                                            LocalDateTime hearingStartDateTo) {
         isValidHmctsServiceCode(hmctsServiceCode);
         List<String> hearingIds = getUnNotifiedHearingResults(
             hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo);
@@ -46,9 +49,14 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
         return response;
     }
 
-    private List<String> getUnNotifiedHearingResults(String hmctsServiceCode, LocalDate hearingStartDateFrom,
-                                                     LocalDate hearingStartDateTo) {
-        return hearingRepository.getUnNotifiedHearings(hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo);
+    private List<String> getUnNotifiedHearingResults(String hmctsServiceCode, LocalDateTime hearingStartDateFrom,
+                                                     LocalDateTime hearingStartDateTo) {
+        if(null != hearingStartDateTo) {
+            return hearingRepository.getUnNotifiedHearingsWithStartDateTo(hmctsServiceCode, hearingStartDateFrom,
+                                                                          hearingStartDateTo);
+        } else {
+            return hearingRepository.getUnNotifiedHearings(hmctsServiceCode, hearingStartDateFrom);
+        }
     }
 
     private void isValidHmctsServiceCode(String hmctsServiceCode) {
