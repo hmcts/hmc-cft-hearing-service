@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -8,12 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import uk.gov.hmcts.reform.hmc.model.UnNotifiedHearingsResponse;
 import uk.gov.hmcts.reform.hmc.service.UnNotifiedHearingService;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
