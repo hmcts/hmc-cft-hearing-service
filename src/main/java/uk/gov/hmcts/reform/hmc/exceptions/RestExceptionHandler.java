@@ -75,12 +75,23 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return toResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
+    @ExceptionHandler(PartiesNotifiedNotFoundException.class)
+    protected ResponseEntity<Object> handlePartiesNotifyHearingNotFoundException(PartiesNotifiedNotFoundException ex) {
+        log.debug("PartiesNotifiedNotFoundException:{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(PartiesNotifiedBadRequestException.class)
+    protected ResponseEntity<Object> handlePartiesNotifiedBadRequestException(PartiesNotifiedBadRequestException ex) {
+        log.debug("PartiesNotifiedBadRequestException:{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<Object> handleConstraintViolationException(Exception ex) {
         log.debug("BadRequestException:{}", ex.getLocalizedMessage());
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
-
 
 
     private ResponseEntity<Object> toResponseEntity(HttpStatus status, String... errors) {
