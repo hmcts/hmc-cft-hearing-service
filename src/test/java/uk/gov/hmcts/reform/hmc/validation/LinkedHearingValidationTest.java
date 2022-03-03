@@ -22,7 +22,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LINKED_GROUP_ID_EMPTY;
 
@@ -154,12 +157,13 @@ class LinkedHearingValidationTest {
         existingInDataList.add(generateLinkedHearingDetails(9L, hearing9,
                 existingInDataList.get(0).getLinkedGroup(), 9L));
 
-        when(linkedHearingDetailsRepository.getLinkedHearingDetailsByRequestId(requestId)).thenReturn(existingInDataList);
+        when(linkedHearingDetailsRepository.getLinkedHearingDetailsByRequestId(requestId))
+                .thenReturn(existingInDataList);
 
         Exception exception = assertThrows(LinkedHearingNotValidForUnlinkingException.class, () ->
                 linkedHearingValidation.validateLinkedHearingsForUpdate(requestId, payloadList));
-        final String expectedErrorMessage = "[" +
-                "008 Invalid state for unlinking hearing request 2, "
+        final String expectedErrorMessage = "["
+                + "008 Invalid state for unlinking hearing request 2, "
                 + "008 Invalid state for unlinking hearing request 4, "
                 + "008 Invalid state for unlinking hearing request 5, "
                 + "008 Invalid state for unlinking hearing request 6"
@@ -239,7 +243,8 @@ class LinkedHearingValidationTest {
 
 
 
-    private List<LinkedHearingDetails> generateLinkedHearingDetailsList(String requestId, String requestName, Long groupId) {
+    private List<LinkedHearingDetails> generateLinkedHearingDetailsList(String requestId,
+                                                                        String requestName, Long groupId) {
         HearingEntity hearing = generateHearing(1L, PutHearingStatus.HEARING_REQUESTED.name());
         LinkedGroupDetails groupDetails = generateLinkedGroupDetails(
                 groupId, PutHearingStatus.HEARING_REQUESTED.name(), requestId, requestName);
@@ -248,7 +253,8 @@ class LinkedHearingValidationTest {
         return linkedHearingDetailsList;
     }
 
-    private LinkedGroupDetails generateLinkedGroupDetails(Long id, String status, String requestId, String requestName) {
+    private LinkedGroupDetails generateLinkedGroupDetails(Long id, String status,
+                                                          String requestId, String requestName) {
         LinkedGroupDetails groupDetails = new LinkedGroupDetails();
         groupDetails.setLinkedGroupId(id);
         groupDetails.setLinkType("link type");
