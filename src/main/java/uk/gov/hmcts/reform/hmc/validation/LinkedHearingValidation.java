@@ -4,6 +4,7 @@ import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetails;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingNotValidForUnlinkingException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
@@ -54,23 +55,25 @@ public class LinkedHearingValidation extends HearingIdValidation {
 
         // get obsolete linkedHearingDetails
         List<LinkedHearingDetails> linkedHearingDetailsListObsolete =
-                getObsoleteLinkedHearings(linkedHearingDetailsListPayload, linkedHearingDetailsListExisting);
+                extractObsoleteLinkedHearings(linkedHearingDetailsListPayload, linkedHearingDetailsListExisting);
 
         // validate and get errors, if any, for obsolete linkedHearingDetails
         List<String> errors = validateObsoleteLinkedHearings(linkedHearingDetailsListObsolete);
 
         // if errors then throw BadRequest with error list
-        // TODO:
+        if (!errors.isEmpty()) {
+            throw new LinkedHearingNotValidForUnlinkingException(errors);
+        }
 
     }
 
     /**
-     * get the obsolete LinkedHearingDetails.
+     * extract the obsolete LinkedHearingDetails.
      * @param hearingDetailsListPayload  payload LinkedHearingDetails
      * @param hearingDetailsListExisting existing in db LinkedHearingDetails
      * @return obsoleteLinkedHearingDetails the obsolete LinkedHearingDetails
      */
-    protected final List<LinkedHearingDetails> getObsoleteLinkedHearings(
+    protected final List<LinkedHearingDetails> extractObsoleteLinkedHearings(
             List<LinkedHearingDetails> hearingDetailsListPayload,
             List<LinkedHearingDetails> hearingDetailsListExisting) {
         // build list of hearing ids
