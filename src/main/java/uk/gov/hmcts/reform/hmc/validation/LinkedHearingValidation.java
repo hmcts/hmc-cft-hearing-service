@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.hmc.validator;
+package uk.gov.hmcts.reform.hmc.validation;
 
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetails;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
@@ -13,14 +13,14 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LINKED_GROUP_ID_EMPTY;
 
-public class LinkedHearingValidator extends HearingIdValidator {
+public class LinkedHearingValidation extends HearingIdValidation {
 
     protected final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
     protected final LinkedHearingDetailsRepository linkedHearingDetailsRepository;
 
-    public LinkedHearingValidator(HearingRepository hearingRepository,
-                                  LinkedGroupDetailsRepository linkedGroupDetailsRepository,
-                                  LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
+    public LinkedHearingValidation(HearingRepository hearingRepository,
+                                   LinkedGroupDetailsRepository linkedGroupDetailsRepository,
+                                   LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
         super(hearingRepository);
         this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
         this.linkedHearingDetailsRepository = linkedHearingDetailsRepository;

@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
-import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
+import uk.gov.hmcts.reform.hmc.validation.LinkedHearingValidation;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_
 @Service
 @Component
 @Slf4j
-public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implements LinkedHearingGroupService {
+public class LinkedHearingGroupServiceImpl extends LinkedHearingValidation implements LinkedHearingGroupService {
 
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
