@@ -15,6 +15,6 @@ import java.util.List;
 @Repository
 public interface LinkedHearingDetailsRepository extends CrudRepository<LinkedHearingDetails, Long> {
 
-    @Query("from LinkedHearingDetails lhd WHERE lhd.hearingId = :hearingId ")
+    @Query("from LinkedHearingDetails lhd WHERE lhd.hearing.id = :hearingId ")
     LinkedHearingDetails getLinkedHearingDetailsById(long hearingId);
 }
