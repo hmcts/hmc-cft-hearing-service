@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.UnNotifiedHearingsResponse;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
-import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingDayDetailsRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,14 +24,14 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HMCTS_S
 public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
 
     private final CaseHearingRequestRepository caseHearingRequestRepository;
-    private final HearingRepository hearingRepository;
+    private final HearingDayDetailsRepository hearingDayDetailsRepository;
 
 
     @Autowired
     public UnNotifiedHearingServiceImpl(CaseHearingRequestRepository caseHearingRequestRepository,
-                                        HearingRepository hearingRepository) {
+                                        HearingDayDetailsRepository hearingDayDetailsRepository) {
         this.caseHearingRequestRepository = caseHearingRequestRepository;
-        this.hearingRepository = hearingRepository;
+        this.hearingDayDetailsRepository = hearingDayDetailsRepository;
     }
 
     @Override
@@ -41,21 +41,17 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
         List<String> hearingIds = getUnNotifiedHearingResults(
             hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo);
         Long totalCount = getUnNotifiedHearingsTotalCount(hmctsServiceCode, hearingStartDateFrom,
-                                                            hearingStartDateTo
-        );
+                                                          hearingStartDateTo);
         return getUnNotifiedHearingsResponse(hearingIds, totalCount);
     }
 
     private Long getUnNotifiedHearingsTotalCount(String hmctsServiceCode, LocalDateTime hearingStartDateFrom,
-                                                   LocalDateTime hearingStartDateTo) {
+                                                 LocalDateTime hearingStartDateTo) {
         if (null != hearingStartDateTo) {
-            return hearingRepository.getUnNotifiedHearingsTotalCountWithStartDateTo(
-                hmctsServiceCode,
-                hearingStartDateFrom,
-                hearingStartDateTo
-            );
+            return hearingDayDetailsRepository.getUnNotifiedHearingsTotalCountWithStartDateTo(
+                hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo);
         } else {
-            return hearingRepository.getUnNotifiedHearingsTotalCount(hmctsServiceCode, hearingStartDateFrom);
+            return hearingDayDetailsRepository.getUnNotifiedHearingsTotalCount(hmctsServiceCode, hearingStartDateFrom);
         }
     }
 
@@ -70,12 +66,15 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
                                                      LocalDateTime hearingStartDateTo) {
         Pageable limitUnNotifiedHearingsTo = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
         if (null != hearingStartDateTo) {
-            return hearingRepository.getUnNotifiedHearingsWithStartDateTo(hmctsServiceCode, hearingStartDateFrom,
-                                                                          hearingStartDateTo,
-                                                                          limitUnNotifiedHearingsTo);
+            return hearingDayDetailsRepository.getUnNotifiedHearingsWithStartDateTo(
+                hmctsServiceCode,
+                hearingStartDateFrom,
+                hearingStartDateTo,
+                limitUnNotifiedHearingsTo
+            );
         } else {
-            return hearingRepository.getUnNotifiedHearings(hmctsServiceCode, hearingStartDateFrom,
-                                                           limitUnNotifiedHearingsTo);
+            return hearingDayDetailsRepository.getUnNotifiedHearings(hmctsServiceCode, hearingStartDateFrom,
+                                                                     limitUnNotifiedHearingsTo);
         }
     }
 
