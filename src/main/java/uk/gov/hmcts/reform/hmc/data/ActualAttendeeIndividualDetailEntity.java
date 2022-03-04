@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
