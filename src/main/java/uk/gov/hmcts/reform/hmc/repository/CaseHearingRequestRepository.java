@@ -30,5 +30,5 @@ public interface CaseHearingRequestRepository extends CrudRepository<CaseHearing
     CaseHearingRequestEntity getCaseHearing(Long hearingId);
 
     @Query("select count(hmctsServiceID) from CaseHearingRequestEntity where hmctsServiceID = :hmctsServiceCode")
-    Long getHmctsServiceCode(String hmctsServiceCode);
+    Long getHmctsServiceCodeCount(String hmctsServiceCode);
 }

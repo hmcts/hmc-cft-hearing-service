@@ -41,7 +41,8 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
         List<String> hearingIds = getUnNotifiedHearingResults(
             hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo);
         Long totalCount = getUnNotifiedHearingsTotalCount(hmctsServiceCode, hearingStartDateFrom,
-                                                          hearingStartDateTo);
+                                                          hearingStartDateTo
+        );
         return getUnNotifiedHearingsResponse(hearingIds, totalCount);
     }
 
@@ -51,7 +52,10 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
             return hearingDayDetailsRepository.getUnNotifiedHearingsTotalCountWithStartDateTo(
                 hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo);
         } else {
-            return hearingDayDetailsRepository.getUnNotifiedHearingsTotalCount(hmctsServiceCode, hearingStartDateFrom);
+            return hearingDayDetailsRepository.getUnNotifiedHearingsTotalCountWithOutStartDateTo(
+                hmctsServiceCode,
+                hearingStartDateFrom
+            );
         }
     }
 
@@ -73,13 +77,16 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
                 limitUnNotifiedHearingsTo
             );
         } else {
-            return hearingDayDetailsRepository.getUnNotifiedHearings(hmctsServiceCode, hearingStartDateFrom,
-                                                                     limitUnNotifiedHearingsTo);
+            return hearingDayDetailsRepository.getUnNotifiedHearingsWithOutStartDateTo(
+                hmctsServiceCode,
+                hearingStartDateFrom,
+                limitUnNotifiedHearingsTo
+            );
         }
     }
 
     private void isValidHmctsServiceCode(String hmctsServiceCode) {
-        Long results = caseHearingRequestRepository.getHmctsServiceCode(hmctsServiceCode);
+        Long results = caseHearingRequestRepository.getHmctsServiceCodeCount(hmctsServiceCode);
         if (results == 0) {
             throw new BadRequestException(INVALID_HMCTS_SERVICE_CODE);
         }

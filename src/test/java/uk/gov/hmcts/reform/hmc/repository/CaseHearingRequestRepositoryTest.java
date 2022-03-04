@@ -98,8 +98,8 @@ class CaseHearingRequestRepositoryTest {
         doReturn(expectedCaseHearingId).when(caseHearingRequestRepository).getCaseHearingId(any());
         Long caseHearingId = caseHearingRequestRepository.getCaseHearingId(any());
         assertAll(
-                () -> assertThat(caseHearingId, is(expectedCaseHearingId)),
-                () -> verify(caseHearingRequestRepository, times(1)).getCaseHearingId(any())
+            () -> assertThat(caseHearingId, is(expectedCaseHearingId)),
+            () -> verify(caseHearingRequestRepository, times(1)).getCaseHearingId(any())
         );
     }
 
@@ -110,6 +110,28 @@ class CaseHearingRequestRepositoryTest {
         assertAll(
             () -> assertNotNull(caseHearingRequestEntity),
             () -> verify(caseHearingRequestRepository, times(1)).getCaseHearing(any())
+        );
+    }
+
+    @Test
+    void testGetHmctsServiceCodeisValid() {
+        Long expectedCount = 1L;
+        doReturn(1L).when(caseHearingRequestRepository).getHmctsServiceCodeCount(any());
+        Long count = caseHearingRequestRepository.getHmctsServiceCodeCount(any());
+        assertAll(
+            () -> assertThat(count, is(expectedCount)),
+            () -> verify(caseHearingRequestRepository, times(1)).getHmctsServiceCodeCount(any())
+        );
+    }
+
+    @Test
+    void testGetHmctsServiceCodeisInvalid() {
+        Long expectedCount = 0L;
+        doReturn(0L).when(caseHearingRequestRepository).getHmctsServiceCodeCount(any());
+        Long count = caseHearingRequestRepository.getHmctsServiceCodeCount(any());
+        assertAll(
+            () -> assertThat(count, is(expectedCount)),
+            () -> verify(caseHearingRequestRepository, times(1)).getHmctsServiceCodeCount(any())
         );
     }
 
