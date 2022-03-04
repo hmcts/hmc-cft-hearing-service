@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
@@ -142,4 +143,14 @@ public class HearingManagementController {
 
     }
 
+    @GetMapping(path = "/hearingActuals/{id}", produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiResponses(value = {
+        @ApiResponse(code = 204, message = "Hearing id is valid"),
+        @ApiResponse(code = 404, message = "Hearing id not found"),
+        @ApiResponse(code = 400, message = "Invalid hearing id")
+    })
+    public ResponseEntity<HearingActualResponse> getHearingActuals(@PathVariable("id") Long hearingId) {
+        return hearingManagementService.getHearingActuals(hearingId);
+    }
 }

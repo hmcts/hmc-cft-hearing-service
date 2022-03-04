@@ -1,15 +1,19 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import lombok.val;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
+import uk.gov.hmcts.reform.hmc.model.HearingPlanned;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,5 +117,29 @@ public class GetHearingsResponseMapper {
         } else {
             hearingDaySchedule.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
         }
+    }
+
+    public HearingActualResponse toHearingActualResponse(HearingEntity hearingEntity) {
+        val hearingResponseEntity = hearingEntity.getHearingResponses();
+        val response = new HearingActualResponse();
+        response.setHmcStatus(hearingEntity.getStatus());
+        setHearingPlanned(hearingEntity, response);
+        return response;
+    }
+
+    private void setHearingPlanned(HearingEntity hearingEntity, HearingActualResponse response) {
+        val caseHearingRequestEntity = hearingEntity.getCaseHearingRequest();
+        val hearingPlanned = new HearingPlanned();
+        hearingPlanned.setPlannedHearingType(caseHearingRequestEntity.getHearingType());
+        response.setHearingPlanned(hearingPlanned);
+    }
+
+
+    private void setHearingActuals(HearingEntity hearingEntity, HearingActualResponse response) {
+        val hearingResponses = hearingEntity.getHearingResponses();
+
+        hearingResponses.stream().map(hearingResponse -> {
+            return hearingResponse.getHearingResponseId();
+        });
     }
 }

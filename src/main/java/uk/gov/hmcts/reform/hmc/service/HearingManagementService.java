@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
@@ -12,6 +13,8 @@ import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 public interface HearingManagementService {
 
     ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid);
+
+    ResponseEntity<HearingActualResponse> getHearingActuals(Long hearingId);
 
     HearingResponse saveHearingRequest(CreateHearingRequest createHearingRequest);
 
