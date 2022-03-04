@@ -1,25 +1,18 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
-import lombok.val;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
-import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
-import uk.gov.hmcts.reform.hmc.model.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
-import uk.gov.hmcts.reform.hmc.model.HearingPlanned;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class GetHearingsResponseMapper {
+public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
 
     public GetHearingsResponse toHearingsResponse(String caseRef, List<CaseHearingRequestEntity> entities) {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();

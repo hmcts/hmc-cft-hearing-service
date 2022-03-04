@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -7,6 +8,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -22,7 +24,7 @@ import javax.persistence.Table;
 @Table(name = "hearing_response")
 @Entity
 @Data
-@SecondaryTable(name = "HEARING",
+@SecondaryTable(name = "hearing",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "hearing_id")})
 public class HearingResponseEntity {
@@ -49,4 +51,17 @@ public class HearingResponseEntity {
     @OneToMany(mappedBy = "hearingResponse")
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingDayDetailsEntity> hearingDayDetails;
+
+    @Column(name = "request_version", nullable = false)
+    private String requestVersion;
+
+    @Column(name = "response_version", nullable = false)
+    private String responseVersion;
+
+    @Column(name = "parties_notified_datetime")
+    private LocalDateTime partiesNotifiedDateTime;
+
+    @Column(name = "service_data", columnDefinition = "jsonb")
+    @Convert(converter = JsonDataConverter.class)
+    private JsonNode serviceData;
 }
