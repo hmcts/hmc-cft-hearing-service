@@ -22,8 +22,8 @@ class UnNotifiedHearingsControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn200_WhenDetailsAreValid() throws Exception {
-        mockMvc.perform(get(url + "/ABA1?hearing_start_date_from=2020-02-20 11:20:00&"
-                                + "hearing_start_date_to=2022-09-20 11:20:00")
+        mockMvc.perform(get(url + "/ABA1?hearing_start_date_from=2020-02-20 11:20:00"
+                                + "&hearing_start_date_to=2020-02-20 11:20:00")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();

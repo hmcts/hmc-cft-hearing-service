@@ -19,19 +19,21 @@ public interface HearingDayDetailsRepository extends JpaRepository<HearingDayDet
         + "JOIN hdd.hearingResponse hr "
         + "INNER JOIN CaseHearingRequestEntity csr on hr.id = csr.caseHearingID "
         + "where csr.hmctsServiceID = :hmctsServiceCode "
-        + "GROUP BY hr.hearing.id, hr.hearingRequestVersion "
+        + "GROUP BY hr.hearing.id, hr.requestVersion, hr.partiesNotifiedDateTime "
         + "having MIN(hdd.startDateTime) >= :hearingStartDateFrom and "
-        + "MAX(csr.versionNumber)= hr.hearingRequestVersion")
+        + "MAX(csr.versionNumber)= hr.requestVersion and "
+        + "hr.partiesNotifiedDateTime is NULL")
     List<String> getUnNotifiedHearings(String hmctsServiceCode, LocalDateTime hearingStartDateFrom, Pageable pageable);
 
     @Query("select hr.hearing.id from HearingDayDetailsEntity hdd "
         + "JOIN hdd.hearingResponse hr "
         + "INNER JOIN CaseHearingRequestEntity csr on hr.id = csr.caseHearingID "
         + "where csr.hmctsServiceID = :hmctsServiceCode "
-        + "GROUP BY hr.hearing.id , hr.hearingRequestVersion "
+        + "GROUP BY hr.hearing.id , hr.requestVersion, hr.partiesNotifiedDateTime "
         + "having MIN(hdd.startDateTime) >= :hearingStartDateFrom and "
         + "MAX(hdd.endDateTime) <= :hearingStartDateTo and "
-        + "MAX(csr.versionNumber)=hr.hearingRequestVersion")
+        + "MAX(csr.versionNumber)=hr.requestVersion and "
+        + "hr.partiesNotifiedDateTime is NULL")
     List<String> getUnNotifiedHearingsWithStartDateTo(String hmctsServiceCode, LocalDateTime hearingStartDateFrom,
                                                       LocalDateTime hearingStartDateTo, Pageable pageable);
 
@@ -39,10 +41,11 @@ public interface HearingDayDetailsRepository extends JpaRepository<HearingDayDet
         + "JOIN hdd.hearingResponse hr "
         + "INNER JOIN CaseHearingRequestEntity csr on hr.id = csr.caseHearingID "
         + "where csr.hmctsServiceID = :hmctsServiceCode "
-        + "GROUP BY hr.hearing.id , hr.hearingRequestVersion "
+        + "GROUP BY hr.hearing.id , hr.requestVersion, hr.partiesNotifiedDateTime "
         + "having MIN(hdd.startDateTime) >= :hearingStartDateFrom and "
         + "MAX(hdd.endDateTime) <= :hearingStartDateTo and "
-        + "MAX(csr.versionNumber)=hr.hearingRequestVersion")
+        + "MAX(csr.versionNumber)=hr.requestVersion and "
+        + "hr.partiesNotifiedDateTime is NULL")
     Long getUnNotifiedHearingsTotalCountWithStartDateTo(String hmctsServiceCode, LocalDateTime hearingStartDateFrom,
                                                         LocalDateTime hearingStartDateTo);
 
@@ -50,8 +53,9 @@ public interface HearingDayDetailsRepository extends JpaRepository<HearingDayDet
         + "JOIN hdd.hearingResponse hr "
         + "INNER JOIN CaseHearingRequestEntity csr on hr.id = csr.caseHearingID "
         + "where csr.hmctsServiceID = :hmctsServiceCode "
-        + "GROUP BY hr.hearing.id , hr.hearingRequestVersion "
+        + "GROUP BY hr.hearing.id , hr.requestVersion, hr.partiesNotifiedDateTime "
         + "having MIN(hdd.startDateTime) >= :hearingStartDateFrom and "
-        + "MAX(csr.versionNumber)=hr.hearingRequestVersion")
+        + "MAX(csr.versionNumber)=hr.requestVersion and "
+        + "hr.partiesNotifiedDateTime is NULL")
     Long getUnNotifiedHearingsTotalCount(String hmctsServiceCode, LocalDateTime hearingStartDateFrom);
 }

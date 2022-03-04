@@ -44,9 +44,6 @@ public class HearingResponseEntity {
     @Column(name = "listing_case_status", nullable = false)
     private String listingCaseStatus;
 
-    @Column(name = "hearing_request_version", nullable = false)
-    private Integer hearingRequestVersion;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
@@ -56,10 +53,10 @@ public class HearingResponseEntity {
     private List<HearingDayDetailsEntity> hearingDayDetails;
 
     @Column(name = "request_version", nullable = false)
-    private String requestVersion;
+    private Integer requestVersion;
 
     @Column(name = "response_version", nullable = false)
-    private String responseVersion;
+    private Integer responseVersion;
 
     @Column(name = "parties_notified_datetime")
     private LocalDateTime partiesNotifiedDateTime;
