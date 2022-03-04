@@ -32,7 +32,7 @@ class UnNotifiedHearingServiceIT extends BaseTest {
             .getUnNotifiedHearings("ABA1",startFrom, null);
         assertEquals(1, response.getHearingIds().size());
         assertEquals(2000000000L, response.getHearingIds().get(0));
-        assertEquals(3, response.getTotalFound());
+        assertEquals(1, response.getTotalFound());
     }
 
     @Test
@@ -44,6 +44,6 @@ class UnNotifiedHearingServiceIT extends BaseTest {
             .getUnNotifiedHearings("ABA1",startFrom, startTo);
         assertEquals(1, response.getHearingIds().size());
         assertEquals(2000000000L, response.getHearingIds().get(0));
-        assertEquals(3, response.getTotalFound());
+        assertEquals(1, response.getTotalFound());
     }
 }
