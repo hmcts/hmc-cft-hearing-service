@@ -1,12 +1,16 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import lombok.val;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
+import uk.gov.hmcts.reform.hmc.model.HearingPlanned;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,37 +82,6 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
             caseHearing.setResponseVersion(hearingResponseEntity.getHearingResponseId());
             caseHearing.setHearingListingStatus(hearingResponseEntity.getListingStatus());
             caseHearing.setListAssistCaseStatus(hearingResponseEntity.getListingCaseStatus());
-        }
-    }
-
-    private HearingDaySchedule setHearingDayScheduleDetails(HearingDayDetailsEntity detailEntity) {
-        HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
-        hearingDaySchedule.setHearingStartDateTime(detailEntity.getStartDateTime());
-        hearingDaySchedule.setHearingEndDateTime(detailEntity.getEndDateTime());
-        hearingDaySchedule.setListAssistSessionId(detailEntity.getListAssistSessionId());
-        hearingDaySchedule.setHearingVenueId(detailEntity.getVenueId());
-        hearingDaySchedule.setHearingRoomId(detailEntity.getRoomId());
-        return hearingDaySchedule;
-    }
-
-    private void setAttendeeDetails(List<HearingAttendeeDetailsEntity> attendeeDetailsEntities,
-                                    HearingDaySchedule hearingDaySchedule) {
-        List<Attendee> attendeeList = new ArrayList<>();
-        for (HearingAttendeeDetailsEntity attendeeDetailEntity : attendeeDetailsEntities) {
-            Attendee attendee = new Attendee();
-            attendee.setPartyId(attendeeDetailEntity.getPartyId());
-            attendee.setHearingSubChannel(attendeeDetailEntity.getPartySubChannelType());
-            attendeeList.add(attendee);
-        }
-        hearingDaySchedule.setAttendees(attendeeList);
-    }
-
-    private void setHearingJudgeAndPanelMemberIds(HearingDayPanelEntity hearingDayPanelEntity,
-                                                  HearingDaySchedule hearingDaySchedule) {
-        if (null == hearingDayPanelEntity.getIsPresiding() || !hearingDayPanelEntity.getIsPresiding()) {
-            hearingDaySchedule.setPanelMemberId(hearingDayPanelEntity.getPanelUserId());
-        } else {
-            hearingDaySchedule.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
         }
     }
 

@@ -139,12 +139,12 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
 
     @Override
     public ResponseEntity<HearingActualResponse> getHearingActuals(Long hearingId) {
-        validateHearingId(hearingId);
+        validateHearingId(hearingId,HEARING_ID_NOT_FOUND);
         val hearingEntity = hearingRepository.findById(hearingId);
         if (hearingEntity.isPresent()) {
             return ResponseEntity.ok(getHearingsResponseMapper.toHearingActualResponse(hearingEntity.get()));
         } else {
-            throw new HearingNotFoundException(hearingId);
+            throw new HearingNotFoundException(hearingId,HEARING_ID_NOT_FOUND);
         }
     }
 
