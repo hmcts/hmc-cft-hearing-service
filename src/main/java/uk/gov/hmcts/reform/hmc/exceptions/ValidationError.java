@@ -132,6 +132,11 @@ public final class ValidationError {
     public static final String PARTY_TYPE_EMPTY = "Party type must be present";
     public static final String PARTY_ROLE_EMPTY = "Party role must be present";
 
+    public static final String HEARING_ID_NOT_FOUND = "No hearing found for reference: %s";
+    public static final String PARTIES_NOTIFIED_ID_NOT_FOUND = "001 No such id: %s";
+    public static final String PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH = "002 No such response version";
+    public static final String PARTIES_NOTIFIED_ALREADY_SET = "003 Already set";
+
     public static final String HEARING_ID_LENGTH = "Hearing id cannot be greater than 30 " + CHARACTERS_LONG;
     public static final String HEARING_ID_EMPTY = "Hearing id can not be null or empty";
     public static final String GROUP_REASON_LENGTH = "Group reason cannot be greater than 8 " + CHARACTERS_LONG;
@@ -142,7 +147,5 @@ public final class ValidationError {
     public static final String GROUP_DETAILS = "Group details are required";
     public static final String HEARINGS_IN_GROUP = "Linked hearing details are required";
     public static final String HEARINGS_IN_GROUP_SIZE = "001 Insufficient requestIds";
-
-    public static final String HEARING_ID_NOT_FOUND = "No hearing found for reference: %s";
 
 }

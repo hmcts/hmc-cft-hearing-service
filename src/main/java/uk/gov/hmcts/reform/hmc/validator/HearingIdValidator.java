@@ -35,12 +35,11 @@ public class HearingIdValidator {
 
     /**
      * validate Hearing id format.
-     *
      * @param hearingIdStr hearing id string
      */
     protected void isValidFormat(String hearingIdStr) {
         if (hearingIdStr.length() != HEARING_ID_MAX_LENGTH || !StringUtils.isNumeric(hearingIdStr)
-            || hearingIdStr.charAt(0) != '2') {
+                || hearingIdStr.charAt(0) != '2') {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
         }
     }
