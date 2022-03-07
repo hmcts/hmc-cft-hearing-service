@@ -4,13 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetails;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
-import uk.gov.hmcts.reform.hmc.model.linkedHearingGroup.HearingLinkGroupRequest;
-import uk.gov.hmcts.reform.hmc.model.linkedHearingGroup.LinkHearingDetails;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
@@ -18,8 +20,10 @@ import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 
@@ -63,7 +67,6 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
                     throw new BadRequestException("002 hearing request isLinked is False");
                 }
 
-
                 //hearing id  in linkedHearingDetails check if it's in a group
                 //hman-55 step 4.2 / hman-56 step 6.2
                 LinkedHearingDetails linkedHearingDetails =
@@ -74,8 +77,7 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
 
                 //hman-55 step 4.3 / hamn-56 step 6.3
                 if (!PutHearingStatus.isValid(hearingEntity.get().getStatus())
-                    || hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()
-                    .isBefore(LocalDate.now())) {
+                    || filterHearingResponses(hearingEntity.get()).isBefore(LocalDate.now())) {
                     throw new BadRequestException("004 Invalid state for hearing request "
                                                       + details.getHearingId());
                 }
@@ -96,19 +98,34 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
 
     private int getOrderOccurrences(List<LinkHearingDetails> hearingDetails, int value) {
         List<Integer> list = new ArrayList<>();
-        hearingDetails.forEach(lo -> {
-            list.add(lo.getHearingOrder());
-        });
+        hearingDetails.forEach(lo -> list.add(lo.getHearingOrder()));
         int occurrences = Collections.frequency(list, value);
         return occurrences;
     }
 
     private int getIdOccurrences(List<LinkHearingDetails> hearingDetails, String value) {
         List<String> list = new ArrayList<>();
-        hearingDetails.forEach(lo -> {
-            list.add(lo.getHearingId());
-        });
+        hearingDetails.forEach(lo -> list.add(lo.getHearingId()));
         int occurrences = Collections.frequency(list, value);
         return occurrences;
+    }
+
+    private LocalDate filterHearingResponses(HearingEntity hearingEntity) {
+        String version = hearingEntity.getCaseHearingRequest().getVersionNumber().toString();
+        Optional<HearingResponseEntity> hearingResponse = hearingEntity
+            .getHearingResponses().stream().filter(hearingResponseEntity ->
+                                                       hearingResponseEntity.getResponseVersion().equals(version))
+            .collect(Collectors.toList()).stream()
+            .max(Comparator.comparing(hearingResponseEntity -> hearingResponseEntity.getRequestTimeStamp()));
+
+        return getLowestDate(hearingResponse.orElseThrow(() -> new BadRequestException("bad request")));
+    }
+
+    private LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
+        Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getHearingDayDetails()
+            .stream().min(Comparator.comparing(hearingDayDetailsEntity -> hearingDayDetailsEntity.getStartDateTime()));
+
+        return hearingDayDetails
+            .orElseThrow(() -> new BadRequestException("bad request")).getStartDateTime().toLocalDate();
     }
 }

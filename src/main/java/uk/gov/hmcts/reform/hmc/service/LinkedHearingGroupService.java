@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import uk.gov.hmcts.reform.hmc.model.linkedHearingGroup.HearingLinkGroupRequest;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 
 public interface LinkedHearingGroupService {
 

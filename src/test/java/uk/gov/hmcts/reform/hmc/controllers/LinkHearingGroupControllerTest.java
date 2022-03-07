@@ -5,8 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,40 +18,18 @@ import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
-import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
-import uk.gov.hmcts.reform.hmc.model.HearingResponse;
-import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.UpdateRequestDetails;
-import uk.gov.hmcts.reform.hmc.model.linkedHearingGroup.GroupDetails;
-import uk.gov.hmcts.reform.hmc.model.linkedHearingGroup.HearingLinkGroupRequest;
-import uk.gov.hmcts.reform.hmc.model.linkedHearingGroup.LinkHearingDetails;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
-import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
-import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = LinkHearingGroupController.class,
@@ -79,7 +55,7 @@ class LinkHearingGroupControllerTest {
 
     @Nested
     @DisplayName("validateHearingLink")
-    class validateHearingLink {
+    class ValidateHearingLink {
         @Test
         void shouldReturn200_whenRequest_Details_Are_Present() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",

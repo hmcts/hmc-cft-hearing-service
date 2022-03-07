@@ -1,14 +1,13 @@
-package uk.gov.hmcts.reform.hmc.model.linkedHearingGroup;
+package uk.gov.hmcts.reform.hmc.model.linkedhearinggroup;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
-import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
