@@ -171,7 +171,7 @@ class LinkHearingGroupServiceTest {
             );
 
             LinkedGroupDetails groupDetails1 = generateLinkGroupDetails(
-                200l,
+                200L,
                 "requestId",
                 "requestname",
                 "linkTYpe",
@@ -183,7 +183,7 @@ class LinkHearingGroupServiceTest {
             LinkedHearingDetails linkedHearingDetails = generateLinkHearingDetails(
                 2000000000L,
                 hearingEntity,
-                23l,
+                23L,
                 groupDetails1
             );
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
@@ -224,7 +224,7 @@ class LinkHearingGroupServiceTest {
             LinkedHearingDetails linkedHearingDetails = generateLinkHearingDetails(
                 2000000000L,
                 hearingEntity,
-                23l,
+                23L,
                 null
             );
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
@@ -264,7 +264,7 @@ class LinkHearingGroupServiceTest {
             LinkedHearingDetails linkedHearingDetails = generateLinkHearingDetails(
                 2000000000L,
                 hearingEntity,
-                23l,
+                23L,
                 null
             );
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
@@ -304,7 +304,7 @@ class LinkHearingGroupServiceTest {
             LinkedHearingDetails linkedHearingDetails = generateLinkHearingDetails(
                 2000000000L,
                 hearingEntity,
-                23l,
+                23L,
                 null
             );
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
@@ -326,13 +326,6 @@ class LinkHearingGroupServiceTest {
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
-            HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
-                groupDetails,
-                Arrays.asList(
-                    hearingDetails1,
-                    hearingDetails2
-                )
-            );
 
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
@@ -345,7 +338,7 @@ class LinkHearingGroupServiceTest {
             LinkedHearingDetails linkedHearingDetails = generateLinkHearingDetails(
                 2000000000L,
                 hearingEntity,
-                23l,
+                23L,
                 null
             );
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
@@ -358,6 +351,13 @@ class LinkHearingGroupServiceTest {
             when(linkedHearingDetailsRepository.getLinkedHearingDetailsById(2000000002L)).thenReturn(
                 linkedHearingDetails);
 
+            HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
+                    groupDetails,
+                    Arrays.asList(
+                            hearingDetails1,
+                            hearingDetails2
+                    )
+            );
             linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
             verify(hearingRepository).findById(2000000000L);
