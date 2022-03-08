@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 
 @Service
 @Component
@@ -39,6 +40,19 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidation imple
     @Override
     public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
         validateHearingLinkGroupRequest(hearingLinkGroupRequest);
+    }
+
+    @Override
+    public void updateLinkHearing(Long requestId, HearingLinkGroupRequest hearingLinkGroupRequest) {
+        validateHearingLinkGroupRequestForUpdate(requestId, hearingLinkGroupRequest);
+    }
+
+    private void validateHearingLinkGroupRequestForUpdate(Long requestId,
+                                                         HearingLinkGroupRequest hearingLinkGroupRequest) {
+        validateRequestId(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
+        validateHearingLinkGroupRequest(hearingLinkGroupRequest);
+        List<LinkHearingDetails> linkedHearingDetailsListPayload = hearingLinkGroupRequest.getHearingsInGroup();
+        validateLinkedHearingsForUpdate(requestId,linkedHearingDetailsListPayload);
     }
 
     private void validateHearingLinkGroupRequest(HearingLinkGroupRequest hearingLinkGroupRequest) {

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingNotValidForUnlinkingException;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
@@ -125,18 +126,24 @@ class LinkedHearingValidationTest {
         List<LinkedHearingDetails> existingInDataList =
                 generateValidLinkedHearingDetailsList(Long.toString(requestId), requestName, 7L);
 
-        List<LinkedHearingDetails> payloadList = new ArrayList<>();
-        payloadList.add(existingInDataList.get(1));
-        payloadList.add(existingInDataList.get(3));
-        payloadList.add(existingInDataList.get(5));
+        List<LinkHearingDetails> payloadList = new ArrayList<>();
+        payloadList.add(new LinkHearingDetails(
+                "1",
+                existingInDataList.get(1).getLinkedOrder().intValue()));
+        payloadList.add(new LinkHearingDetails(
+                "3",
+                existingInDataList.get(3).getLinkedOrder().intValue()));
+        payloadList.add(new LinkHearingDetails(
+                "5",
+                existingInDataList.get(5).getLinkedOrder().intValue()));
 
         List<LinkedHearingDetails> listObsoleteDetails =
             linkedHearingValidation.extractObsoleteLinkedHearings(payloadList, existingInDataList);
         assertFalse(listObsoleteDetails.isEmpty());
         assertEquals(3, listObsoleteDetails.size());
-        assertTrue(listObsoleteDetails.contains(existingInDataList.get(0)));
-        assertTrue(listObsoleteDetails.contains(existingInDataList.get(2)));
-        assertTrue(listObsoleteDetails.contains(existingInDataList.get(4)));
+        assertTrue(listObsoleteDetails.contains(existingInDataList.get(1)));
+        assertTrue(listObsoleteDetails.contains(existingInDataList.get(3)));
+        assertTrue(listObsoleteDetails.contains(existingInDataList.get(5)));
     }
 
     @Test
@@ -146,13 +153,13 @@ class LinkedHearingValidationTest {
         List<LinkedHearingDetails> existingInDataList =
                 generateLinkedHearingDetailsListWithBadStatus(Long.toString(requestId), requestName, 8L);
 
-        List<LinkedHearingDetails> payloadList = new ArrayList<>();
-        HearingEntity hearing7 = generateHearing(7L, PutHearingStatus.AWAITING_LISTING.name());
-        payloadList.add(generateLinkedHearingDetails(7L, hearing7,
-                existingInDataList.get(0).getLinkedGroup(), 7L));
-        HearingEntity hearing8 = generateHearing(8L, PutHearingStatus.UPDATE_REQUESTED.name());
-        payloadList.add(generateLinkedHearingDetails(8L, hearing8,
-                existingInDataList.get(0).getLinkedGroup(), 8L));
+        List<LinkHearingDetails> payloadList = new ArrayList<>();
+        payloadList.add(new LinkHearingDetails(
+                "7",
+                existingInDataList.get(0).getLinkedOrder().intValue()));
+        payloadList.add(new LinkHearingDetails(
+                "8",
+                existingInDataList.get(0).getLinkedOrder().intValue()));
         HearingEntity hearing9 = generateHearing(9L, PutHearingStatus.LISTED.name());
         existingInDataList.add(generateLinkedHearingDetails(9L, hearing9,
                 existingInDataList.get(0).getLinkedGroup(), 9L));
@@ -179,13 +186,13 @@ class LinkedHearingValidationTest {
         List<LinkedHearingDetails> existingInDataList =
                 generateValidLinkedHearingDetailsList(Long.toString(requestId), requestName, 9L);
 
-        List<LinkedHearingDetails> payloadList = new ArrayList<>();
-        HearingEntity hearing7 = generateHearing(7L, PutHearingStatus.AWAITING_LISTING.name());
-        payloadList.add(generateLinkedHearingDetails(7L, hearing7,
-                existingInDataList.get(0).getLinkedGroup(), 2L));
-        HearingEntity hearing8 = generateHearing(8L, PutHearingStatus.UPDATE_REQUESTED.name());
-        payloadList.add(generateLinkedHearingDetails(8L, hearing8,
-                existingInDataList.get(0).getLinkedGroup(), 8L));
+        List<LinkHearingDetails> payloadList = new ArrayList<>();
+        payloadList.add(new LinkHearingDetails(
+                "7",
+                existingInDataList.get(0).getLinkedOrder().intValue()));
+        payloadList.add(new LinkHearingDetails(
+                "8",
+                existingInDataList.get(0).getLinkedOrder().intValue()));
         HearingEntity hearing9 = generateHearing(9L, PutHearingStatus.LISTED.name());
         existingInDataList.add(generateLinkedHearingDetails(9L, hearing9,
                 existingInDataList.get(0).getLinkedGroup(), 9L));
@@ -249,7 +256,7 @@ class LinkedHearingValidationTest {
         LinkedGroupDetails groupDetails = generateLinkedGroupDetails(
                 groupId, PutHearingStatus.HEARING_REQUESTED.name(), requestId, requestName);
         List<LinkedHearingDetails> linkedHearingDetailsList = new ArrayList<>();
-        linkedHearingDetailsList.add(generateLinkedHearingDetails(1L, hearing, groupDetails, 2L));
+        linkedHearingDetailsList.add(generateLinkedHearingDetails(1L, hearing, groupDetails, 1L));
         return linkedHearingDetailsList;
     }
 

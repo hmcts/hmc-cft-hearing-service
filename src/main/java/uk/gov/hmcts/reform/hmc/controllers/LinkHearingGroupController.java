@@ -42,18 +42,20 @@ public class LinkHearingGroupController {
         linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
     }
 
-    @PutMapping(path = "/linkedHearingGroup", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/linkedHearingGroup/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Success"),
+            @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 400, message = "Bad Request"),
             @ApiResponse(code = 400, message = "001 insufficient request ids"),
             @ApiResponse(code = 400, message = "002 hearing request is linked is false"),
             @ApiResponse(code = 400, message = "003 hearing request already in a group"),
-            @ApiResponse(code = 400, message = "004 invalid state of hearing for request")
+            @ApiResponse(code = 400, message = "004 invalid state of hearing for request"),
+            @ApiResponse(code = 400, message = "007 group is in a <state> state"),
+            @ApiResponse(code = 400, message = "008 invalid state for unlinking hearing request <hearingid>")
     })
-    public void updateHearing(@RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest,
-                              @PathVariable("id") Long groupRequestId) {
-
+    public void updateHearing(@PathVariable("id") Long groupRequestId,
+                              @RequestBody HearingLinkGroupRequest hearingLinkGroupRequest) {
+        linkedHearingGroupService.updateLinkHearing(groupRequestId, hearingLinkGroupRequest);
     }
 }

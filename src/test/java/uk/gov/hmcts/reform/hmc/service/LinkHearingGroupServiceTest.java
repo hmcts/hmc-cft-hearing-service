@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -93,7 +96,7 @@ class LinkHearingGroupServiceTest {
         }
 
         @Test
-        void shouldFailWithInsufficientRequestIds() {
+        void shouldFailWithInsufficientRequestIds() throws JsonProcessingException {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
                                                              LinkType.ORDERED, "reason"
             );
@@ -107,6 +110,9 @@ class LinkHearingGroupServiceTest {
                 )
             );
 
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String json = ow.writeValueAsString(hearingLinkGroupRequest);
+            logger.info(json);
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
             });
