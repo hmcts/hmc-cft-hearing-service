@@ -7,12 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.UnNotifiedHearingsResponse;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
-import uk.gov.hmcts.reform.hmc.repository.HearingDayDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,13 +37,13 @@ public class UnNotifiedHearingServiceTest {
     CaseHearingRequestRepository caseHearingRequestRepository;
 
     @Mock
-    HearingDayDetailsRepository hearingDayDetailsRepository;
+    HearingResponseRepository hearingResponseRepository;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         unNotifiedHearingService =
-            new UnNotifiedHearingServiceImpl(caseHearingRequestRepository, hearingDayDetailsRepository);
+            new UnNotifiedHearingServiceImpl(caseHearingRequestRepository, hearingResponseRepository);
     }
 
     @Nested
@@ -77,14 +79,13 @@ public class UnNotifiedHearingServiceTest {
         @Test
         void shouldPassWithAllMandatoryDetails() {
             LocalDateTime dateTime = LocalDateTime.now();
-            Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
-            List<String> hearingIds = Arrays.asList("2000000207", "2000000206", "2000000205");
             given(caseHearingRequestRepository.getHmctsServiceCodeCount("ABA1")).willReturn(1L);
-            given(hearingDayDetailsRepository.getUnNotifiedHearingsWithStartDateTo("ABA1", dateTime,
+            PageRequest limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
+            List<Long> hearingIds = Arrays.asList(2000000207L, 2000000206L, 2000000205L);
+            Page<Long> unNotifiedHearingsData = new PageImpl<>(hearingIds, limit, hearingIds.size());
+            given(hearingResponseRepository.getUnNotifiedHearingsWithStartDateTo("ABA1", dateTime,
                                                                                    dateTime, limit
-            )).willReturn(hearingIds);
-            given(hearingDayDetailsRepository.getUnNotifiedHearingsTotalCountWithStartDateTo(
-                "ABA1", dateTime, dateTime)).willReturn(3L);
+            )).willReturn(unNotifiedHearingsData);
             UnNotifiedHearingsResponse response = unNotifiedHearingService
                 .getUnNotifiedHearings("ABA1", dateTime, dateTime);
             assertEquals(3, response.getHearingIds().size());
@@ -95,13 +96,12 @@ public class UnNotifiedHearingServiceTest {
         void shouldPassWithOnlyStartDateFrom() {
             LocalDateTime dateTime = LocalDateTime.now();
             Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
-            List<String> hearingIds = Arrays.asList("2000000207", "2000000206", "2000000205");
+            List<Long> hearingIds = Arrays.asList(2000000207L, 2000000206L, 2000000205L);
+            Page<Long> unNotifiedHearingsData = new PageImpl<>(hearingIds, limit, hearingIds.size());
             given(caseHearingRequestRepository.getHmctsServiceCodeCount("ABA1")).willReturn(1L);
-            given(hearingDayDetailsRepository.getUnNotifiedHearingsWithOutStartDateTo("ABA1", dateTime,
-                                                                                      limit
-            )).willReturn(hearingIds);
-            given(hearingDayDetailsRepository.getUnNotifiedHearingsTotalCountWithOutStartDateTo(
-                "ABA1", dateTime)).willReturn(3L);
+            given(hearingResponseRepository.getUnNotifiedHearingsWithOutStartDateTo("ABA1", dateTime,
+                                                                                   limit
+            )).willReturn(unNotifiedHearingsData);
             UnNotifiedHearingsResponse response = unNotifiedHearingService
                 .getUnNotifiedHearings("ABA1", dateTime, null);
             assertEquals(3, response.getHearingIds().size());
@@ -112,12 +112,12 @@ public class UnNotifiedHearingServiceTest {
         void testWhenCriteriaDoesNotHaveDataForStartDateFrom() {
             LocalDateTime dateTime = LocalDateTime.now();
             Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
+            List<Long> hearingIds = new ArrayList<>();
+            Page<Long> unNotifiedHearingsData = new PageImpl<>(hearingIds, limit, hearingIds.size());
             given(caseHearingRequestRepository.getHmctsServiceCodeCount("ABA1")).willReturn(1L);
-            given(hearingDayDetailsRepository.getUnNotifiedHearingsWithOutStartDateTo("ABA1", dateTime,
-                                                                                      limit
-            )).willReturn(new ArrayList<>());
-            given(hearingDayDetailsRepository.getUnNotifiedHearingsTotalCountWithOutStartDateTo(
-                "ABA1", dateTime)).willReturn(0L);
+            given(hearingResponseRepository.getUnNotifiedHearingsWithOutStartDateTo("ABA1", dateTime,
+                                                                                    limit
+            )).willReturn(unNotifiedHearingsData);
             UnNotifiedHearingsResponse response = unNotifiedHearingService
                 .getUnNotifiedHearings("ABA1", dateTime, null);
             assertEquals(0, response.getHearingIds().size());
@@ -129,12 +129,12 @@ public class UnNotifiedHearingServiceTest {
         void testWhenCriteriaDoesNotHaveDataForStartDateTo() {
             LocalDateTime dateTime = LocalDateTime.now();
             Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
+            List<Long> hearingIds = new ArrayList<>();
+            Page<Long> unNotifiedHearingsData = new PageImpl<>(hearingIds, limit, hearingIds.size());
             given(caseHearingRequestRepository.getHmctsServiceCodeCount("ABA1")).willReturn(1L);
-            given(hearingDayDetailsRepository.getUnNotifiedHearingsWithStartDateTo("ABA1", dateTime,
+            given(hearingResponseRepository.getUnNotifiedHearingsWithStartDateTo("ABA1", dateTime,
                                                                                    dateTime, limit
-            )).willReturn(new ArrayList<>());
-            given(hearingDayDetailsRepository.getUnNotifiedHearingsTotalCountWithStartDateTo(
-                "ABA1", dateTime, dateTime)).willReturn(0L);
+            )).willReturn(unNotifiedHearingsData);
             UnNotifiedHearingsResponse response = unNotifiedHearingService
                 .getUnNotifiedHearings("ABA1", dateTime, dateTime);
             assertEquals(0, response.getHearingIds().size());

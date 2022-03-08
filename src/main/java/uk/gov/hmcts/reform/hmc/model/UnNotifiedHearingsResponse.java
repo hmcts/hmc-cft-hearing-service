@@ -14,7 +14,6 @@ import javax.validation.constraints.NotNull;
 @Getter
 public class UnNotifiedHearingsResponse {
 
-    @NotNull
     private List<String> hearingIds;
 
     @NotNull

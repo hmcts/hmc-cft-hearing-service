@@ -16,22 +16,31 @@ class UnNotifiedHearingsControllerIT extends BaseTest {
     private MockMvc mockMvc;
 
     private static final String url = "/unNotifiedHearings";
-    private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
+    private static final String UN_NOTIFIED_HEARINGS_DATA_SCRIPT = "classpath:sql/unNotified-hearings-request.sql";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
-    void shouldReturn200_WhenDetailsAreValid() throws Exception {
-        mockMvc.perform(get(url + "/ABA1?hearing_start_date_from=2020-02-20 11:20:00"
-                                + "&hearing_start_date_to=2020-02-20 11:20:00")
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenDetailsWithOutStartDateTo() throws Exception {
+        mockMvc.perform(get(url + "/ABA1?hearing_start_date_from=2019-01-01 11:00:00")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
-    void shouldReturn400_WhenHmctsServiceIdIsInValid() throws Exception {
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenDetailsWithStartDateTo() throws Exception {
+        mockMvc.perform(get(url + "/ABA1?hearing_start_date_from=2019-01-01 11:00:00"
+                                + "&hearing_start_date_to=2022-01-01 11:00:00")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
+    void shouldReturn400_WhenHmctsServiceIdIsNotInDB() throws Exception {
         mockMvc.perform(get(url + "/1111?hearing_start_date_from=2020-02-20 11:20:00")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
@@ -39,7 +48,7 @@ class UnNotifiedHearingsControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void shouldReturn400_WhenHearingStartDateFromIsInValid() throws Exception {
         mockMvc.perform(get(url + "/ABA1?hearing_start_date_from=aa")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -48,7 +57,7 @@ class UnNotifiedHearingsControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenHearingStartDateToIsInValid() throws Exception {
         mockMvc.perform(get(url + "/ABA1?hearing_start_date_from=2020-02-20 11:20:00"
                                 + "&hearing_start_date_to=aa")
@@ -58,9 +67,39 @@ class UnNotifiedHearingsControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void shouldReturn400_WhenHearingStartDateFromIsNotPresent() throws Exception {
         mockMvc.perform(get(url + "/ABA1?hearing_start_date_to=2020-02-20 11:20:00")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
+    void shouldReturn400_WhenStartDateToFormatIsInvalid() throws Exception {
+        mockMvc.perform(get(url + "/ABA1?hearing_start_date_from=2019-01-01 11:00:00"
+                                + "&hearing_start_date_to=2022-01-01")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
+    void shouldReturn400_WhenStartDateFromFormatIsInvalid() throws Exception {
+        mockMvc.perform(get(url + "/ABA1?hearing_start_date_from=2019-01-01"
+                                + "&hearing_start_date_to=2022-01-01 11:00:00")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
+    void shouldReturn400_WhenDateFormatIsInvalid() throws Exception {
+        mockMvc.perform(get(url + "/ABA1?hearing_start_date_from=2019-01-01"
+                                + "&hearing_start_date_to=2022-01-01")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
             .andReturn();

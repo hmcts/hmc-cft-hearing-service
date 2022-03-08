@@ -44,11 +44,11 @@ public class UnNotifiedHearingsController {
                                                                 String hmctsServiceCode,
                                                             @RequestParam(name = "hearing_start_date_from")
                                                             @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                                    LocalDateTime hearingStartDateFrom,
+                                                                LocalDateTime hearingStartDateFrom,
                                                             @RequestParam(name = "hearing_start_date_to",
                                                                 required = false)
                                                             @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                                    LocalDateTime hearingStartDateTo) {
+                                                                LocalDateTime hearingStartDateTo) {
         return unNotifiedHearingService.getUnNotifiedHearings(hmctsServiceCode, hearingStartDateFrom,
                                                               hearingStartDateTo
         );

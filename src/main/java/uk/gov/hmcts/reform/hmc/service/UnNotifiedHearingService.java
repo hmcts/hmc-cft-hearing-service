@@ -7,5 +7,5 @@ import java.time.LocalDateTime;
 public interface UnNotifiedHearingService {
 
     UnNotifiedHearingsResponse getUnNotifiedHearings(String hmctsServiceCode, LocalDateTime hearingStartDateFrom,
-                                                     LocalDateTime hearingStartDateTo);
+                                                                      LocalDateTime hearingStartDateTo);
 }
