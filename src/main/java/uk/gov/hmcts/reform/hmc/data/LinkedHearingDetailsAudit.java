@@ -12,20 +12,23 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-@Table(name = "linked_hearing_details")
+@Table(name = "linked_hearing_details_audit")
 @Entity
 @Data
-public class LinkedHearingDetails {
+public class LinkedHearingDetailsAudit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "linked_hearing_details_id_seq")
+        generator = "linked_hearing_details_audit_id_seq")
     @Column(name = "linked_hearing_id")
-    private Long linkedHearingId;
+    private Long linkedHearingDetailsAuditId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "linked_group_id")
     private LinkedGroupDetails linkedGroup;
+
+    @Column(name = "linked_group_version", nullable = false)
+    private Long linkedGroupVersion;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hearing_id")
