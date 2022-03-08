@@ -8,7 +8,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,11 +29,17 @@ class HearingResponseRepositoryIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testGetUnNotifiedHearingsWithOutStartDateTo() {
-        LocalDateTime startFrom = LocalDateTime.of(2019, 12, 10, 11, 00, 00);
+        String dateStr = "2019-12-10 11:00:00";
+        LocalDateTime startFrom = convertDateTime(dateStr);
         Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
         Page<Long> expected = hearingResponseRepository.
             getUnNotifiedHearingsWithOutStartDateTo("ABA1",startFrom, limit);
         assertNotNull( expected.getContent());
         assertEquals(2,expected.getTotalElements());
+    }
+
+    private LocalDateTime convertDateTime(String dateStr){
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.parse(dateStr,format);
     }
 }
