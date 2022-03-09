@@ -136,7 +136,7 @@ task smoke(type: Test) {
   dependsOn functionalTestClasses
 
   steps {
-    echo sh(script: 'env|sort', returnStdout: true)
+    echo "OAUTH2_CLIENT_ID ${env.OAUTH2_CLIENT_ID} CCD_API_GATEWAY_OAUTH2_CLIENT_ID ${env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID}"
   }
 
   new File("$buildDir/test-results/test").mkdirs()
