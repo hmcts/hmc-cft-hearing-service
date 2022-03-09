@@ -135,11 +135,9 @@ task smoke(type: Test) {
   description = 'Executes smoke tests against an the HMC CFT Hearing Service API instance just deployed'
   dependsOn functionalTestClasses
 
-  exec {
+  steps {
     echo sh(script: 'env|sort', returnStdout: true)
   }
-
-
 
   new File("$buildDir/test-results/test").mkdirs()
   copy {
