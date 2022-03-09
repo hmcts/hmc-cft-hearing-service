@@ -135,6 +135,9 @@ task smoke(type: Test) {
   description = 'Executes smoke tests against an the HMC CFT Hearing Service API instance just deployed'
   dependsOn functionalTestClasses
 
+  echo sh(script: 'env|sort', returnStdout: true)
+
+
   new File("$buildDir/test-results/test").mkdirs()
   copy {
     from "src/functional/resources/DummyTest.xml"
@@ -144,7 +147,6 @@ task smoke(type: Test) {
   doLast {
     generateCucumberReports.enabled = true
     javaexec {
-      environment "OAUTH2_CLIENT_SECRET", "DUMMY"
       main = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
       classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
       args = [
