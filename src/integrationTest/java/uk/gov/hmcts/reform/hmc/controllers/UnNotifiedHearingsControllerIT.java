@@ -22,7 +22,7 @@ class UnNotifiedHearingsControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenDetailsWithOutStartDateTo() throws Exception {
-        mockMvc.perform(get(url + "/ABA1?hearing_start_date_from=2019-01-01 11:00:00")
+        mockMvc.perform(get(url + "/ACA2?hearing_start_date_from=2019-01-01 11:00:00")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
@@ -31,7 +31,7 @@ class UnNotifiedHearingsControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenDetailsWithStartDateTo() throws Exception {
-        mockMvc.perform(get(url + "/ABA1?hearing_start_date_from=2019-01-01 11:00:00"
+        mockMvc.perform(get(url + "/ACA2?hearing_start_date_from=2019-01-01 11:00:00"
                                 + "&hearing_start_date_to=2022-01-01 11:00:00")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))

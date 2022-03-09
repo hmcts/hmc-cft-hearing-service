@@ -32,25 +32,28 @@ class HearingResponseRepositoryIT extends BaseTest {
         LocalDateTime startFrom = convertDateTime(dateStr);
         Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
         Page<Long> expected = hearingResponseRepository.
-            getUnNotifiedHearingsWithOutStartDateTo("ABA1",startFrom, limit);
-        assertNotNull( expected.getContent());
-        assertEquals(2,expected.getTotalElements());
+            getUnNotifiedHearingsWithOutStartDateTo("ACA2", startFrom, limit);
+        assertNotNull(expected.getContent());
+        assertEquals(2, expected.getTotalElements());
     }
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
-    void testGetUnNotifiedHearingsWithOutStartDateTo1() {
-        String dateStr = "2019-12-10 11:00:00";
-        LocalDateTime startFrom = convertDateTime(dateStr);
+    void testGetUnNotifiedHearingsWithStartDateTo() {
+        String dateStrFrom = "2019-12-10 11:00:00";
+        String dateStrTo = "2021-01-01 11:00:00";
+        LocalDateTime startFrom = convertDateTime(dateStrFrom);
+        LocalDateTime startTo = convertDateTime(dateStrTo);
         Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
         Page<Long> expected = hearingResponseRepository.
-            getUnNotifiedHearingsWithOutStartDateTo("ABA1",startFrom, limit);
-        assertNotNull( expected.getContent());
-        assertEquals(2,expected.getTotalElements());
+            getUnNotifiedHearingsWithStartDateTo("ACA2", startFrom, startTo, limit);
+        assertNotNull(expected.getContent());
+        //assertEquals(1, expected.getTotalElements());
+        assertEquals(0, expected.getTotalElements());
     }
 
-    private LocalDateTime convertDateTime(String dateStr){
+    private LocalDateTime convertDateTime(String dateStr) {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        return LocalDateTime.parse(dateStr,format);
+        return LocalDateTime.parse(dateStr, format);
     }
 }

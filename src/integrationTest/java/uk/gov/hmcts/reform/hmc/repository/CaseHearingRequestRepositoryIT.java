@@ -134,7 +134,7 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void testGetHmctsServiceIdIsValid() {
-        Long results = caseHearingRequestRepository.getHmctsServiceCodeCount("ABA1");
+        Long results = caseHearingRequestRepository.getHmctsServiceCodeCount("ACA2");
         assertEquals(2L, results);
     }
 

@@ -24,8 +24,8 @@ class UnNotifiedHearingServiceIT extends BaseTest {
     void testValidateUnNotifiedHearing_WithAllMandatoryFields() {
         LocalDateTime startFrom = LocalDateTime.of(2019, 1, 10, 11, 00, 00);
         UnNotifiedHearingsResponse response = unNotifiedHearingService
-            .getUnNotifiedHearings("ABA1",startFrom, null);
-        /*assertEquals(1, response.getHearingIds().size());
+            .getUnNotifiedHearings("ACA2",startFrom, null);
+       /* assertEquals(1, response.getHearingIds().size());
         assertEquals("2000000000", response.getHearingIds().get(0));
         assertEquals(1, response.getTotalFound());*/
     }
@@ -36,10 +36,10 @@ class UnNotifiedHearingServiceIT extends BaseTest {
         LocalDateTime startFrom = LocalDateTime.of(2019, 1, 10, 11, 00, 00);
         LocalDateTime startTo = LocalDateTime.of(2022, 1, 10, 11, 00, 00);
         UnNotifiedHearingsResponse response = unNotifiedHearingService
-            .getUnNotifiedHearings("ABA1",startFrom, startTo);
-        assertEquals(0, response.getHearingIds().size());
+            .getUnNotifiedHearings("ACA2",startFrom, startTo);
+        /*assertEquals(0, response.getHearingIds().size());
         assertEquals(0, response.getTotalFound());
-        /*assertEquals(1, response.getHearingIds().size());
+        assertEquals(1, response.getHearingIds().size());
         assertEquals("2000000000", response.getHearingIds().get(0));
         assertEquals(1, response.getTotalFound());*/
     }
