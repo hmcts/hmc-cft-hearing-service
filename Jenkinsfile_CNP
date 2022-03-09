@@ -24,6 +24,29 @@ def definitionStoreDevelopPr = "PR-575"  // This doesn't change frequently, but 
 
 GradleBuilder builder = new GradleBuilder(this, product)
 
+def secrets = [
+  'ccd-${env}': [
+    secret('ccd-api-gateway-oauth2-client-secret', 'OAUTH2_CLIENT_SECRET'),
+    secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
+    secret('definition-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
+    secret('ccd-caseworker-autotest-password', 'CCD_CASEWORKER_AUTOTEST_PASSWORD')
+  ],
+  'hmc-${env}': [
+    secret('hmc-servicebus-connection-string', 'HMC_SERVICE_BUS_CONNECTION_STRING'),
+    secret('hmc-queue-connection-string', 'HMC_QUEUE_CONNECTION_STRING'),
+    secret('hmc-outbound-queue-connection-string', 'HMC_OUTBOUND_QUEUE_CONNECTION_STRING'),
+    secret('hmc-fta-password', 'HMC_FTA_PASSWORD')
+
+  ],
+  's2s-${env}': [
+    secret('microservicekey-ccd-data', 'BEFTA_S2S_CLIENT_SECRET_OF_CCD_DATA'),
+    secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_KEY'),
+    secret('microservicekey-ccd-gw', 'BEFTA_S2S_CLIENT_SECRET'),
+    secret('microservicekey-aac-manage-case-assignment', 'BEFTA_S2S_CLIENT_SECRET_OF_AAC_MANAGE_CASE_ASSIGNMENT'),
+    secret('microservicekey-xui-webapp', 'BEFTA_S2S_CLIENT_SECRET_OF_XUI_WEBAPP')
+  ]
+]
+
 // env variables needed for BEFTA.
 //env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
 env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
@@ -35,6 +58,11 @@ env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 env.OAUTH2_CLIENT_ID = "ccd_gateway"
 env.OAUTH2_REDIRECT_URI = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
 env.DEFINITION_STORE_URL_BASE = "http://ccd-definition-store-api-${definitionStoreDevelopPr}.service.core-compute-preview.internal".toLowerCase()
+
+env.HMC_SERVICE_BUS_TOPIC = "hmc-to-cft"
+env.HMC_SERVICE_BUS_SUBSCRIPTION = "hmc-subs-to-cft"
+env.HMC_SERVICE_BUS_QUEUE = "hmc-from-hmi"
+env.HMC_OUTBOUND_SERVICE_BUS_QUEUE = "hmc-to-hmi"
 
 withPipeline(type, product, component) {
   syncBranchesWithMaster(branchesToSync)

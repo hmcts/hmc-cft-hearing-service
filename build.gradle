@@ -95,7 +95,6 @@ task functional(type: Test) {
     generateCucumberReports.enabled = true
 
     javaexec {
-      environment "OAUTH2_CLIENT_SECRET", "DUMMY"
       main = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
       classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
       args = [
@@ -103,7 +102,7 @@ task functional(type: Test) {
         '--threads', '10',
         '--plugin', "json:${rootDir}/target/cucumber.json",
         '--plugin', "junit:${buildDir}/test-results/functional/cucumber.xml",
-        '--tags', 'not @Ignore',
+        '--tags', '@S-001.1',
         '--glue', 'uk.gov.hmcts.befta.player', 'src/functionalTest/resources/features'
       ]
       // '--add-opens=...' added to suppress 'WARNING: An illegal reflective access operation has occurred' in uk.gov.hmcts.befta.util.CucumberStepAnnotationUtils
@@ -355,11 +354,10 @@ dependencies {
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
   compile 'net.minidev:json-smart:2.4.7'
-
-  testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.13.0') {
+  testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.14.0') {
     exclude group: 'com.github.hmcts.befta-fw', module: 'befta-fw'
   }
-  testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '8.7.1'
+  testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '8.7.2-Categories'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
 
