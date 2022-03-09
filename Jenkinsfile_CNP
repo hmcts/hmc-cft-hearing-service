@@ -103,6 +103,7 @@ env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-data-store-api-${dataStoreApiDevel
 
 withPipeline(type, product, component) {
   syncBranchesWithMaster(branchesToSync)
+  loadVaultSecrets(secrets)
   enableAksStagingDeployment()
   disableLegacyDeployment()
 
