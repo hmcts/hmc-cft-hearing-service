@@ -135,10 +135,8 @@ task smoke(type: Test) {
   description = 'Executes smoke tests against an the HMC CFT Hearing Service API instance just deployed'
   dependsOn functionalTestClasses
 
-  exec {
-    echo "OAUTH2_CLIENT_ID ${env.OAUTH2_CLIENT_ID} CCD_API_GATEWAY_OAUTH2_CLIENT_ID ${env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID}"
-    
-  }
+  println "*** ENVIRONMENT VARIABLE DUMP ***"
+  environment.each { k, v -> println "${k}:${v}" }
 
   new File("$buildDir/test-results/test").mkdirs()
   copy {
