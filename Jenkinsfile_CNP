@@ -57,7 +57,6 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
    envVariable: envVar
   ]
 }
-
 // env variables needed for BEFTA.
 //env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
 env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
@@ -67,7 +66,6 @@ env.BEFTA_S2S_CLIENT_ID = "ccd_gw"
 env.BEFTA_RESPONSE_HEADER_CHECK_POLICY="JUST_WARN"
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
-env.OAUTH2_REDIRECT_URI = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
 env.DEFINITION_STORE_URL_BASE = "http://ccd-definition-store-api-${definitionStoreDevelopPr}.service.core-compute-preview.internal".toLowerCase()
 
 env.HMC_SERVICE_BUS_TOPIC = "hmc-to-cft"
