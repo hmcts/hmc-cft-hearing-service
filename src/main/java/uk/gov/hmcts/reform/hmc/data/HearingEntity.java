@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -33,6 +34,7 @@ public class HearingEntity {
     @Column(name = "status", nullable = false)
     private String status;
 
+    @ToString.Exclude
     @OneToOne(mappedBy = "hearing", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private CaseHearingRequestEntity caseHearingRequest;
 

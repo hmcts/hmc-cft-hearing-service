@@ -39,7 +39,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidation imple
 
     @Override
     public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
-        validateHearingLinkGroupRequest(hearingLinkGroupRequest);
+        validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
     }
 
     @Override
@@ -50,12 +50,12 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidation imple
     private void validateHearingLinkGroupRequestForUpdate(Long requestId,
                                                          HearingLinkGroupRequest hearingLinkGroupRequest) {
         validateRequestId(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
-        validateHearingLinkGroupRequest(hearingLinkGroupRequest);
+        validateHearingLinkGroupRequest(hearingLinkGroupRequest, requestId);
         List<LinkHearingDetails> linkedHearingDetailsListPayload = hearingLinkGroupRequest.getHearingsInGroup();
         validateLinkedHearingsForUpdate(requestId,linkedHearingDetailsListPayload);
     }
 
-    private void validateHearingLinkGroupRequest(HearingLinkGroupRequest hearingLinkGroupRequest) {
+    private void validateHearingLinkGroupRequest(HearingLinkGroupRequest hearingLinkGroupRequest, Long requestId) {
         //hman -55 step 4 / hman-56 step 6
         hearingLinkGroupRequest.getHearingsInGroup().forEach(details -> {
             //hman-55 step 3 / hman-56 step 5
@@ -70,16 +70,17 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidation imple
 
             if (hearingEntity.isPresent()) {
                 //hman-55 step 4.1 / hman-56 step 6.1
-                if (!hearingEntity.get().getCaseHearingRequest().getIsLinkedFlag().booleanValue()) {
+                if (Boolean.FALSE.equals(hearingEntity.get().getCaseHearingRequest().getIsLinkedFlag())) {
                     throw new BadRequestException("002 hearing request isLinked is False");
                 }
-
 
                 //hearing id  in linkedHearingDetails check if it's in a group
                 //hman-55 step 4.2 / hman-56 step 6.2
                 LinkedHearingDetails linkedHearingDetails =
-                    linkedHearingDetailsRepository.getLinkedHearingDetailsById(Long.valueOf(details.getHearingId()));
-                if (linkedHearingDetails.getLinkedGroup() != null) {
+                    linkedHearingDetailsRepository.getLinkedHearingDetailsById(Long.parseLong(details.getHearingId()));
+                if ((null == requestId && linkedHearingDetails.getLinkedGroup() != null)
+                    || (null != requestId && !linkedHearingDetails.getLinkedGroup()
+                        .equals(linkedGroupDetailsRepository.getLinkedGroupDetailsById(requestId)))) {
                     throw new BadRequestException("003 hearing request already in a group");
                 }
 
@@ -107,19 +108,13 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidation imple
 
     private int getOrderOccurrences(List<LinkHearingDetails> hearingDetails, int value) {
         List<Integer> list = new ArrayList<>();
-        hearingDetails.forEach(lo -> {
-            list.add(lo.getHearingOrder());
-        });
-        int occurrences = Collections.frequency(list, value);
-        return occurrences;
+        hearingDetails.forEach(lo -> list.add(lo.getHearingOrder()));
+        return Collections.frequency(list, value);
     }
 
     private int getIdOccurrences(List<LinkHearingDetails> hearingDetails, String value) {
         List<String> list = new ArrayList<>();
-        hearingDetails.forEach(lo -> {
-            list.add(lo.getHearingId());
-        });
-        int occurrences = Collections.frequency(list, value);
-        return occurrences;
+        hearingDetails.forEach(lo -> list.add(lo.getHearingId()));
+        return Collections.frequency(list, value);
     }
 }

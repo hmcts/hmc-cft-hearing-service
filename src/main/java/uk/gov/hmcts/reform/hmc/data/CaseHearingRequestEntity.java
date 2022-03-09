@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -117,6 +118,7 @@ public class CaseHearingRequestEntity {
     @Column(name = "request_timestamp", nullable = false)
     private LocalDateTime requestTimeStamp;
 
+    @ToString.Exclude
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;

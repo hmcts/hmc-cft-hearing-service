@@ -14,31 +14,30 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.validation.ConstraintViolationException;
-import javax.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 @Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+    static final String BAD_REQUEST_EXCEPTION = "BadRequestException";
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
         MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         String[] errors = ex.getBindingResult().getFieldErrors().stream()
-            .map(e -> e.getDefaultMessage())
-            .toArray(String[]::new);
-        log.debug("MethodArgumentNotValidException:{}", ex.getLocalizedMessage());
+            .map(e -> e.getDefaultMessage()).toArray(String[]::new);
+        log.debug("MethodArgumentNotValidException: {}", ex.getLocalizedMessage());
         return toResponseEntity(status, errors);
     }
 
     @ExceptionHandler(BadRequestException.class)
     protected ResponseEntity<Object> handleBadRequestException(BadRequestException ex) {
-        log.debug("BadRequestException:{}", ex.getLocalizedMessage());
+        log.debug(BAD_REQUEST_EXCEPTION + ": {}", ex.getLocalizedMessage());
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(InvalidRoleAssignmentException.class)
     protected ResponseEntity<Object> handleBadRequestException(InvalidRoleAssignmentException ex) {
-        log.debug("InvalidRoleAssignmentException:{}", ex.getLocalizedMessage());
+        log.debug("InvalidRoleAssignmentException: {}", ex.getLocalizedMessage());
         return toResponseEntity(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
@@ -56,7 +55,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ServiceException.class)
     protected ResponseEntity<Object> handleServiceException(ServiceException ex) {
-        log.debug("BadRequestException:{}", ex.getLocalizedMessage());
+        log.debug(BAD_REQUEST_EXCEPTION + ": {}", ex.getLocalizedMessage());
         return toResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
@@ -75,13 +74,23 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return toResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity<Object> handleConstraintViolationException(Exception ex) {
-        log.debug("BadRequestException:{}", ex.getLocalizedMessage());
+    @ExceptionHandler(PartiesNotifiedNotFoundException.class)
+    protected ResponseEntity<Object> handlePartiesNotifyHearingNotFoundException(PartiesNotifiedNotFoundException ex) {
+        log.debug("PartiesNotifiedNotFoundException:{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(PartiesNotifiedBadRequestException.class)
+    protected ResponseEntity<Object> handlePartiesNotifiedBadRequestException(PartiesNotifiedBadRequestException ex) {
+        log.debug("PartiesNotifiedBadRequestException:{}", ex.getLocalizedMessage());
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<Object> handleConstraintViolationException(Exception ex) {
+        log.debug(BAD_REQUEST_EXCEPTION + ":{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
 
     private ResponseEntity<Object> toResponseEntity(HttpStatus status, String... errors) {
         var apiError = new ApiError(status, errors == null ? null : List.of(errors));
