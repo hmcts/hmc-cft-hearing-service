@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -14,7 +15,7 @@ import javax.validation.constraints.Size;
 public class HearingLinkGroupRequest {
 
     @Valid
-    @NotEmpty(message = ValidationError.GROUP_DETAILS)
+    @NotNull(message = ValidationError.GROUP_DETAILS)
     private GroupDetails groupDetails;
 
     @Valid
