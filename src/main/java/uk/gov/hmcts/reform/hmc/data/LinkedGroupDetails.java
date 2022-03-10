@@ -46,4 +46,7 @@ public class LinkedGroupDetails {
 
     @Column(name = "linked_comments")
     private String linkedComments;
+
+    @Column(name = "linked_group_latest_version")
+    private String linkedGroupLatestVersion;
 }
