@@ -20,7 +20,7 @@ public class LinkedHearingDetailsAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "linked_hearing_details_audit_id_seq")
-    @Column(name = "linked_hearing_id")
+    @Column(name = "linked_hearing_details_audit_id")
     private Long linkedHearingDetailsAuditId;
 
     @OneToOne(fetch = FetchType.LAZY)
