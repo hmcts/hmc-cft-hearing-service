@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
-import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetails;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDate;
@@ -32,13 +32,13 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_
 @Slf4j
 public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements LinkedHearingGroupService {
 
-    private final LinkedHearingDetailsRepository linkedHearingDetailsRepository;
+    private final LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
 
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
-                                         LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
+                                         LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository) {
         super(hearingRepository);
-        this.linkedHearingDetailsRepository = linkedHearingDetailsRepository;
+        this.linkedHearingDetailsAuditRepository = linkedHearingDetailsAuditRepository;
 
     }
 
@@ -63,14 +63,14 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
 
             if (hearingEntity.isPresent()) {
                 //hman-55 step 4.1 / hman-56 step 6.1
-                if (!hearingEntity.get().getCaseHearingRequest().getIsLinkedFlag().booleanValue()) {
+                if (!hearingEntity.get().getIsLinkedFlag().booleanValue()) {
                     throw new BadRequestException("002 hearing request isLinked is False");
                 }
 
                 //hearing id  in linkedHearingDetails check if it's in a group
                 //hman-55 step 4.2 / hman-56 step 6.2
-                LinkedHearingDetails linkedHearingDetails =
-                    linkedHearingDetailsRepository.getLinkedHearingDetailsById(Long.valueOf(details.getHearingId()));
+                LinkedHearingDetailsAudit linkedHearingDetails = linkedHearingDetailsAuditRepository
+                    .getLinkedHearingDetailsById(Long.valueOf(details.getHearingId()));
                 if (linkedHearingDetails.getLinkedGroup() != null) {
                     throw new BadRequestException("003 hearing request already in a group");
                 }
