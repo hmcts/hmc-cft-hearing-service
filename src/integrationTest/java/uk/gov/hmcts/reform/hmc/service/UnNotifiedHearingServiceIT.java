@@ -8,8 +8,6 @@ import uk.gov.hmcts.reform.hmc.model.UnNotifiedHearingsResponse;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 class UnNotifiedHearingServiceIT extends BaseTest {
 
     @Autowired
@@ -25,9 +23,7 @@ class UnNotifiedHearingServiceIT extends BaseTest {
         LocalDateTime startFrom = LocalDateTime.of(2019, 1, 10, 11, 00, 00);
         UnNotifiedHearingsResponse response = unNotifiedHearingService
             .getUnNotifiedHearings("ACA2",startFrom, null);
-       /* assertEquals(1, response.getHearingIds().size());
-        assertEquals("2000000000", response.getHearingIds().get(0));
-        assertEquals(1, response.getTotalFound());*/
+        //TODO Add asserts to compare with exact results
     }
 
     @Test
@@ -37,10 +33,6 @@ class UnNotifiedHearingServiceIT extends BaseTest {
         LocalDateTime startTo = LocalDateTime.of(2022, 1, 10, 11, 00, 00);
         UnNotifiedHearingsResponse response = unNotifiedHearingService
             .getUnNotifiedHearings("ACA2",startFrom, startTo);
-        /*assertEquals(0, response.getHearingIds().size());
-        assertEquals(0, response.getTotalFound());
-        assertEquals(1, response.getHearingIds().size());
-        assertEquals("2000000000", response.getHearingIds().get(0));
-        assertEquals(1, response.getTotalFound());*/
+        //TODO Add asserts to compare with exact results
     }
 }

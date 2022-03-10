@@ -23,28 +23,32 @@ public interface HearingResponseRepository extends JpaRepository<HearingResponse
         + "AND hre.partiesNotifiedDateTime is NOT NULL")
     List<HearingResponseEntity> getPartiesNotified(Long hearingId);
 
-    @Query("select distinct(hr.hearing.id) from HearingResponseEntity hr "
-        + "INNER JOIN HearingDayDetailsEntity hdd on hdd.hearingResponse.hearingResponseId = hr.hearingResponseId "
-        + "INNER JOIN CaseHearingRequestEntity csr on hr.id = csr.caseHearingID "
-        + "where csr.hmctsServiceID = :hmctsServiceCode "
-        + "and hr.partiesNotifiedDateTime is NULL "
-        + "and hr.requestVersion = (select MAX(versionNumber) from CaseHearingRequestEntity csr "
-        + "where hr.hearing.id = csr.hearing.id) "
-        + "GROUP BY hr.hearing.id "
-        + "having MIN(hdd.startDateTime) >= :hearingStartDateFrom")
+    @Query("select hr.hearing.id from HearingResponseEntity hr where hr.hearingResponseId in "
+        + "(select hdd.hearingResponse.hearingResponseId from HearingDayDetailsEntity hdd "
+        + "where hdd.hearingResponse.hearingResponseId in "
+        + "(select hr.hearingResponseId from CaseHearingRequestEntity csr "
+        + "inner join HearingResponseEntity hr on csr.hearing.id=  hr.hearing.id "
+        + "where csr.hmctsServiceID=:hmctsServiceCode "
+        + "and hr.requestVersion=(select max(csr.versionNumber) "
+        + "from CaseHearingRequestEntity csr  where hr.hearing.id = csr.hearing.id "
+        + "group by csr.hearing.id) and (hr.partiesNotifiedDateTime is NULL)) "
+        + "group by hdd.hearingResponse.hearingResponseId "
+        + "having min(hdd.startDateTime)>=:hearingStartDateFrom)")
     Page<Long> getUnNotifiedHearingsWithOutStartDateTo(String hmctsServiceCode, LocalDateTime hearingStartDateFrom,
                                                        Pageable pageable);
 
-    @Query("select distinct(hr.hearing.id) from HearingResponseEntity hr "
-        + "INNER JOIN HearingDayDetailsEntity hdd on hdd.hearingResponse.hearingResponseId = hr.hearingResponseId "
-        + "INNER JOIN CaseHearingRequestEntity csr on hr.id = csr.caseHearingID "
-        + "where csr.hmctsServiceID = :hmctsServiceCode "
-        + "and hr.partiesNotifiedDateTime is NULL "
-        + "and hr.requestVersion = (select MAX(versionNumber) from CaseHearingRequestEntity csr "
-        + "where hr.hearing.id = csr.hearing.id) "
-        + "GROUP BY hr.hearing.id "
-        + "having MIN(hdd.startDateTime) >= :hearingStartDateFrom "
-        + "and MAX(hdd.endDateTime) <= :hearingStartDateTo")
+    @Query("select hr.hearing.id from HearingResponseEntity hr where hr.hearingResponseId in "
+        + "(select hdd.hearingResponse.hearingResponseId from HearingDayDetailsEntity hdd "
+        + "where hdd.hearingResponse.hearingResponseId in "
+        + "(select hr.hearingResponseId from CaseHearingRequestEntity csr "
+        + "inner join HearingResponseEntity hr on csr.hearing.id=  hr.hearing.id "
+        + "where csr.hmctsServiceID=:hmctsServiceCode "
+        + "and hr.requestVersion=(select max(csr.versionNumber) "
+        + "from CaseHearingRequestEntity csr  where hr.hearing.id = csr.hearing.id "
+        + "group by csr.hearing.id) and (hr.partiesNotifiedDateTime is NULL)) "
+        + "group by hdd.hearingResponse.hearingResponseId "
+        + "having min(hdd.startDateTime)>=:hearingStartDateFrom "
+        + "and max(hdd.endDateTime)<=:hearingStartDateTo)")
     Page<Long> getUnNotifiedHearingsWithStartDateTo(String hmctsServiceCode, LocalDateTime hearingStartDateFrom,
                                                     LocalDateTime hearingStartDateTo, Pageable pageable);
 
