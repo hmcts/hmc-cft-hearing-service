@@ -40,7 +40,7 @@ public class LinkedGroupDetailsAudit {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "link_type", nullable = false)
-    @Type(type = "uk.gov.hmcts.reform.hmc.model.LinkType")
+    @Type(type = "uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType")
     private String linkType;
 
     @Column(name = "request_id", nullable = false)
