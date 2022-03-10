@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @Table(name = "linked_hearing_details")
 @Entity
 @Data
-public class LinkedHearingDetails {
+public class LinkedHearingDetailsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -25,7 +25,7 @@ public class LinkedHearingDetails {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "linked_group_id")
-    private LinkedGroupDetails linkedGroup;
+    private LinkedGroupDetailsEntity linkedGroup;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hearing_id")

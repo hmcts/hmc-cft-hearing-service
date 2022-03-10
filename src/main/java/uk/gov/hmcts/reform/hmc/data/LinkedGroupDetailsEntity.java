@@ -16,8 +16,7 @@ import javax.persistence.Table;
 @Table(name = "linked_group_details")
 @Entity
 @Data
-
-public class LinkedGroupDetails {
+public class LinkedGroupDetailsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
