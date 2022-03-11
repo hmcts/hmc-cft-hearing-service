@@ -110,5 +110,6 @@ public class LinkedHearingGroupService {
 
     private void deleteFromLinkedGroupDetails(Long hearingGroupId) {
         linkedHearingDetailsRepository.deleteHearingGroup(hearingGroupId);
+        // TODO: call ListAssist - https://tools.hmcts.net/jira/browse/HMAN-97
     }
 }

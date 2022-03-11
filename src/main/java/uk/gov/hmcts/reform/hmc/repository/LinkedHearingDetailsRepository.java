@@ -17,6 +17,6 @@ public interface LinkedHearingDetailsRepository extends CrudRepository<LinkedHea
     List<LinkedHearingDetailsEntity> getLinkedHearingDetails(Long linkedGroupId);
 
     default void deleteHearingGroup(Long hearingGroupId) {
-        // TODO: implement
+        // TODO: implement DB query - https://tools.hmcts.net/jira/browse/HMAN-96
     }
 }
