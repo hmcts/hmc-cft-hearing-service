@@ -43,6 +43,7 @@ import uk.gov.hmcts.reform.hmc.model.UpdateRequestDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -550,6 +551,11 @@ public class TestingUtil {
         entity1.setHearingParties(Arrays.asList(hearingPartyEntityInd()));
 
         return entity1;
+    }
+
+    public static LocalDateTime convertDateTime(String dateStr) {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.parse(dateStr, format);
     }
 }
 
