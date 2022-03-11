@@ -15,7 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetails;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
@@ -37,6 +39,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.HEARING_REQUESTED;
@@ -140,7 +143,9 @@ class LinkHearingGroupServiceTest {
                 DeleteHearingStatus.UPDATE_REQUESTED.name(),
                 1,
                 false,
-                LocalDate.now()
+                LocalDateTime.now(),
+                Arrays.asList(generateHearingDetailsEntity(2000000002L, LocalDateTime.now())),
+                null
             );
 
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
@@ -155,17 +160,25 @@ class LinkHearingGroupServiceTest {
 
         @Test
         void shouldFailWithHearingRequestAlreadyInGroup() {
-            GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.ORDERED, "reason"
+            LinkedGroupDetails groupDetails1 = generateLinkGroupDetails(
+                200L,
+                "requestId",
+                "request name 1",
+                "linkType",
+                "status",
+                "reason",
+                "comments",
+                LocalDateTime.of(2022, 03, 02, 10, 11)
             );
-            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
-            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
-            HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
-                groupDetails,
-                Arrays.asList(
-                    hearingDetails1,
-                    hearingDetails2
-                )
+            LinkedGroupDetails groupDetailsAlternate = generateLinkGroupDetails(
+                    202L,
+                    "requestId2",
+                    "request name2",
+                    "linkTYpe",
+                    "status",
+                    "reason",
+                    "comments",
+                    LocalDateTime.of(2022, 03, 02, 10, 11)
             );
 
             HearingEntity hearingEntity = generateHearingEntity(
@@ -173,29 +186,34 @@ class LinkHearingGroupServiceTest {
                 DeleteHearingStatus.UPDATE_REQUESTED.name(),
                 1,
                 true,
-                LocalDate.now()
-            );
-
-            LinkedGroupDetails groupDetails1 = generateLinkGroupDetails(
-                200L,
-                "requestId",
-                "requestname",
-                "linkTYpe",
-                "status",
-                "resaon",
-                "comments",
-                LocalDateTime.of(2022, 03, 02, 10, 11)
-            );
-            LinkedHearingDetails linkedHearingDetails = generateLinkHearingDetails(
-                2000000000L,
-                hearingEntity,
-                23L,
+                LocalDateTime.now(),
+                Arrays.asList(generateHearingDetailsEntity(2000000002L, LocalDateTime.now())),
                 groupDetails1
             );
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
-            when(linkedHearingDetailsRepository.getLinkedHearingDetailsById(2000000000L)).thenReturn(
-                linkedHearingDetails);
+
+            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
+            LinkedHearingDetails hearingDetails1Data = new LinkedHearingDetails();
+            hearingDetails1Data.setHearing(hearingEntity);
+            hearingDetails1Data.setLinkedHearingId(Long.parseLong(hearingDetails1.getHearingId()));
+            hearingDetails1Data.setLinkedGroup(groupDetailsAlternate);
+
+            when(hearingRepository.existsById(any())).thenReturn(true);
+            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(linkedHearingDetailsRepository.getLinkedHearingDetailsByHearingId(any()))
+                    .thenReturn(hearingDetails1Data);
+
+            GroupDetails groupDetails = generateGroupDetails("comment", "name",
+                    LinkType.ORDERED, "reason"
+            );
+
+            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
+            HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
+                    groupDetails,
+                    Arrays.asList(
+                            hearingDetails1,
+                            hearingDetails2
+                    )
+            );
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
@@ -224,19 +242,13 @@ class LinkHearingGroupServiceTest {
                 "status",
                 1,
                 true,
-                LocalDate.now()
-            );
-
-            LinkedHearingDetails linkedHearingDetails = generateLinkHearingDetails(
-                2000000000L,
-                hearingEntity,
-                23L,
+                LocalDateTime.now(),
+                Arrays.asList(generateHearingDetailsEntity(2000000002L, LocalDateTime.now())),
                 null
             );
+
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
-            when(linkedHearingDetailsRepository.getLinkedHearingDetailsById(2000000000L)).thenReturn(
-                linkedHearingDetails);
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
@@ -259,24 +271,37 @@ class LinkHearingGroupServiceTest {
                 )
             );
 
+            HearingDayDetailsEntity hearingDayDetailsEntity =
+                generateHearingDetailsEntity(
+                    2000000002L,
+                    LocalDateTime.of(2020, 11, 11, 12, 1)
+                );
+            HearingDayDetailsEntity hearingDayDetailsEntity1 =
+                generateHearingDetailsEntity(
+                    2000000002L,
+                    LocalDateTime.of(2021, 11, 11, 12, 1)
+                );
+            HearingDayDetailsEntity hearingDayDetailsEntity2 =
+                generateHearingDetailsEntity(
+                    2000000000L,
+                    LocalDateTime.of(2022, 11, 11, 12, 1)
+                );
+
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
                 HEARING_REQUESTED.name(),
                 1,
                 true,
-                LocalDate.now().minusDays(1)
-            );
-
-            LinkedHearingDetails linkedHearingDetails = generateLinkHearingDetails(
-                2000000000L,
-                hearingEntity,
-                23L,
+                LocalDateTime.now().minusDays(1),
+                Arrays.asList(hearingDayDetailsEntity, hearingDayDetailsEntity1, hearingDayDetailsEntity2),
                 null
             );
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
-            when(linkedHearingDetailsRepository.getLinkedHearingDetailsById(2000000000L)).thenReturn(
-                linkedHearingDetails);
+            // set the hearing window to prior to current date - invalid
+            hearingEntity.getCaseHearingRequest().setHearingWindowStartDateRange(LocalDate.now().minusDays(2));
+            hearingEntity.getCaseHearingRequest().setHearingWindowEndDateRange(LocalDate.now().plusDays(1));
+
+            when(hearingRepository.existsById(any())).thenReturn(true);
+            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
@@ -304,19 +329,13 @@ class LinkHearingGroupServiceTest {
                 HEARING_REQUESTED.name(),
                 1,
                 true,
-                LocalDate.now().plusDays(1)
-            );
-
-            LinkedHearingDetails linkedHearingDetails = generateLinkHearingDetails(
-                2000000000L,
-                hearingEntity,
-                23L,
+                LocalDateTime.now().plusDays(1),
+                Arrays.asList(generateHearingDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
                 null
             );
+
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
-            when(linkedHearingDetailsRepository.getLinkedHearingDetailsById(2000000000L)).thenReturn(
-                linkedHearingDetails);
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
@@ -332,45 +351,33 @@ class LinkHearingGroupServiceTest {
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
-
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
                 HEARING_REQUESTED.name(),
                 1,
                 true,
-                LocalDate.now().plusDays(1)
-            );
-
-            LinkedHearingDetails linkedHearingDetails = generateLinkHearingDetails(
-                2000000000L,
-                hearingEntity,
-                23L,
+                LocalDateTime.now().plusDays(1),
+                Arrays.asList(generateHearingDetailsEntity(2000000000L, LocalDateTime.now().plusDays(1))),
                 null
             );
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
-            when(linkedHearingDetailsRepository.getLinkedHearingDetailsById(2000000000L)).thenReturn(
-                linkedHearingDetails);
 
-            when(hearingRepository.existsById(2000000002L)).thenReturn(true);
-            when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
-            when(linkedHearingDetailsRepository.getLinkedHearingDetailsById(2000000002L)).thenReturn(
-                linkedHearingDetails);
+            when(hearingRepository.existsById(any())).thenReturn(true);
+            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
-                    groupDetails,
-                    Arrays.asList(
-                            hearingDetails1,
-                            hearingDetails2
-                    )
+                groupDetails,
+                Arrays.asList(
+                    hearingDetails1,
+                    hearingDetails2
+                )
             );
+
+            logger.info("hearingLinkGroupRequest : {}", hearingLinkGroupRequest);
             linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
             verify(hearingRepository).findById(2000000000L);
-            verify(linkedHearingDetailsRepository).getLinkedHearingDetailsById(2000000000L);
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository).findById(2000000002L);
-            verify(linkedHearingDetailsRepository).getLinkedHearingDetailsById(2000000002L);
         }
     }
 
@@ -402,29 +409,38 @@ class LinkHearingGroupServiceTest {
     }
 
     private HearingEntity generateHearingEntity(Long hearingId, String status, Integer versionNumber,
-                                                boolean isLinked, LocalDate hearingDate) {
+                                                boolean isLinked, LocalDateTime requestTimestamp,
+                                                List<HearingDayDetailsEntity> hearingDayDetailsEntities,
+                                                LinkedGroupDetails linkedGroupDetails) {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(hearingId);
         hearingEntity.setStatus(status);
+        hearingEntity.setIsLinkedFlag(isLinked);
+        hearingEntity.setLinkedGroupDetails(linkedGroupDetails);
 
         CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         caseHearingRequestEntity.setHearingRequestReceivedDateTime(LocalDateTime.now());
+        caseHearingRequestEntity.setHearingWindowStartDateRange(LocalDate.now().plusDays(2));
+        caseHearingRequestEntity.setHearingWindowEndDateRange(LocalDate.now().plusDays(4));
         caseHearingRequestEntity.setVersionNumber(versionNumber);
-        caseHearingRequestEntity.setIsLinkedFlag(isLinked);
-        caseHearingRequestEntity.setHearingWindowStartDateRange(hearingDate);
+
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
+
+        HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
+        hearingResponseEntity.setHearingDayDetails(hearingDayDetailsEntities);
+        hearingResponseEntity.setHearing(hearingEntity);
+        hearingResponseEntity.setResponseVersion(versionNumber.toString());
+        hearingResponseEntity.setRequestTimeStamp(requestTimestamp);
+
+        hearingEntity.setHearingResponses(List.of(hearingResponseEntity));
         return hearingEntity;
     }
 
-    private LinkedHearingDetails generateLinkHearingDetails(Long hearingId, HearingEntity hearingEntity,
-                                                            Long order, LinkedGroupDetails linkedGroupDetails) {
-        LinkedHearingDetails linkedHearingDetails = new LinkedHearingDetails();
-        linkedHearingDetails.setHearing(hearingEntity);
-        linkedHearingDetails.setLinkedGroup(linkedGroupDetails);
-        linkedHearingDetails.setLinkedOrder(order);
-        linkedHearingDetails.setLinkedHearingId(hearingId);
-
-        return linkedHearingDetails;
+    private HearingDayDetailsEntity generateHearingDetailsEntity(Long hearingId, LocalDateTime hearingDateTime) {
+        HearingDayDetailsEntity hearingDayDetailsEntity = new HearingDayDetailsEntity();
+        hearingDayDetailsEntity.setStartDateTime(hearingDateTime);
+        hearingDayDetailsEntity.setHearingDayId(hearingId);
+        return hearingDayDetailsEntity;
     }
 
     private LinkedGroupDetails generateLinkGroupDetails(Long linkGroupId, String requestId, String requestName,
@@ -442,6 +458,5 @@ class LinkHearingGroupServiceTest {
 
         return linkedGroupDetails;
     }
-
 
 }

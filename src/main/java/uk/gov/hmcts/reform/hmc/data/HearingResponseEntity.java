@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -35,7 +39,8 @@ public class HearingResponseEntity {
     @Column(name = "hearing_response_id")
     private Long hearingResponseId;
 
-    @Column(name = "received_date_time", nullable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)    @Column(name = "received_date_time", nullable = false)
     private LocalDateTime requestTimeStamp;
 
     @Column(name = "listing_status", nullable = false)
@@ -58,6 +63,8 @@ public class HearingResponseEntity {
     @Column(name = "response_version", nullable = false)
     private String responseVersion;
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @Column(name = "parties_notified_datetime")
     private LocalDateTime partiesNotifiedDateTime;
 

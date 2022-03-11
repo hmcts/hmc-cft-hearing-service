@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,6 +26,7 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
+import uk.gov.hmcts.reform.hmc.service.common.DefaultObjectMapperService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +43,12 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 @ImportAutoConfiguration(TestIdamConfiguration.class)
 class LinkHearingGroupControllerTest {
 
+    private static final Logger logger = LoggerFactory.getLogger(LinkHearingGroupControllerTest.class);
+
+    private DefaultObjectMapperService objectMapperService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+
     @Autowired
     protected MockMvc mockMvc;
 
@@ -51,6 +61,7 @@ class LinkHearingGroupControllerTest {
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        objectMapperService = new DefaultObjectMapperService(objectMapper);
     }
 
     @Nested
@@ -72,6 +83,8 @@ class LinkHearingGroupControllerTest {
             );
 
             LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService);
+            var jsonNode = objectMapperService.convertObjectToJsonNode(hearingLinkGroupRequest);
+            logger.info("jsonNode: {}", jsonNode);
             controller.validateLinkHearing(hearingLinkGroupRequest);
             verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest);
         }

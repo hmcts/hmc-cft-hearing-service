@@ -11,6 +11,9 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 @Repository
 public interface LinkedGroupDetailsRepository extends CrudRepository<LinkedGroupDetails, Long> {
 
+    @Query("select lgd.linkedGroupId from LinkedGroupDetails lgd WHERE lgd.requestId = :requestId ")
+    Long isFoundForRequestId(String requestId);
+
     @Query("from LinkedGroupDetails lgd WHERE lgd.requestId = :requestId ")
-    LinkedGroupDetails getLinkedGroupDetailsById(long requestId);
+    LinkedGroupDetails getLinkedGroupDetailsByRequestId(String requestId);
 }

@@ -44,6 +44,7 @@ import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,12 +73,11 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 @Service
 @Component
 @Slf4j
-public class HearingManagementServiceImpl implements HearingManagementService {
+public class HearingManagementServiceImpl extends HearingIdValidator implements HearingManagementService {
 
     private final DataStoreRepository dataStoreRepository;
     private final RoleAssignmentService roleAssignmentService;
     private final SecurityUtils securityUtils;
-    private final HearingRepository hearingRepository;
     private final HearingMapper hearingMapper;
     private final CancellationReasonsRepository cancellationReasonsRepository;
     private final GetHearingsResponseMapper getHearingsResponseMapper;
@@ -104,10 +104,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         ObjectMapperService objectMapperService,
                                         HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper,
                                         MessageSenderToQueueConfiguration messageSenderToQueueConfiguration) {
+        super(hearingRepository);
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
-        this.hearingRepository = hearingRepository;
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.cancellationReasonsRepository = cancellationReasonsRepository;
@@ -335,7 +335,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     @Override
     public HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
-        validateHearingId(hearingId);
+        validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
         validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
         validateDeleteHearingStatus(hearingId);
         updateCancellationReasons(hearingId, deleteRequest.getCancellationReasonCode());
@@ -427,7 +427,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    private void isValidFormat(String hearingIdStr) {
+    @Override
+    protected void isValidFormat(String hearingIdStr) {
         if (hearingIdStr.length() != HEARING_ID_MAX_LENGTH || !StringUtils.isNumeric(hearingIdStr)
             || hearingIdStr.charAt(0) != '2') {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);

@@ -6,6 +6,6 @@ public interface LinkedHearingGroupService {
 
     void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest);
 
-    void updateLinkHearing(Long requestId, HearingLinkGroupRequest hearingLinkGroupRequest);
+    void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest);
 
 }

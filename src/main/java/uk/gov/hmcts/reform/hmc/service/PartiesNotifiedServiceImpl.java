@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponse;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
-import uk.gov.hmcts.reform.hmc.validation.HearingIdValidation;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIE
 @Service
 @Component
 @Slf4j
-public class PartiesNotifiedServiceImpl extends HearingIdValidation implements PartiesNotifiedService {
+public class PartiesNotifiedServiceImpl extends HearingIdValidator implements PartiesNotifiedService {
 
     private final HearingResponseRepository hearingResponseRepository;
 

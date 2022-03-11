@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -19,7 +19,7 @@ public class GroupDetails {
     @Size(max = 8, message = ValidationError.GROUP_REASON_LENGTH)
     private String groupReason;
 
-    @NotEmpty(message = ValidationError.GROUP_LINK_TYPE_EMPTY)
+    @NotNull(message = ValidationError.GROUP_LINK_TYPE_EMPTY)
     private LinkType groupLinkType;
 
     @Size(max = 4000, message = ValidationError.GROUP_COMMENTS_LENGTH)

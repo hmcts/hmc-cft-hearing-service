@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
-import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,12 +23,10 @@ public class LinkedHearingDetails {
     @Column(name = "linked_hearing_id")
     private Long linkedHearingId;
 
-    @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "linked_group_id")
     private LinkedGroupDetails linkedGroup;
 
-    @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;

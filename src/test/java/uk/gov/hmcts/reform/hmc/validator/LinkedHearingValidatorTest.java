@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.hmc.validation;
+package uk.gov.hmcts.reform.hmc.validator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,12 +30,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LINKED_GROUP_ID_EMPTY;
 
-class LinkedHearingValidationTest {
+class LinkedHearingValidatorTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(LinkedHearingValidationTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(LinkedHearingValidatorTest.class);
 
     @InjectMocks
-    private LinkedHearingValidation linkedHearingValidation;
+    private LinkedHearingValidator linkedHearingValidation;
 
     @Mock
     private HearingRepository hearingRepository;
@@ -50,13 +50,13 @@ class LinkedHearingValidationTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         linkedHearingValidation =
-                new LinkedHearingValidation(hearingRepository, linkedGroupDetailsRepository,
+                new LinkedHearingValidator(hearingRepository, linkedGroupDetailsRepository,
                         linkedHearingDetailsRepository);
     }
 
     @Test
     void shouldFailAsRequestIdIsNull() {
-        Long requestId = null;
+        String requestId = null;
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingValidation
                 .validateRequestId(requestId, null));
         assertEquals(LINKED_GROUP_ID_EMPTY, exception.getMessage());
@@ -64,30 +64,32 @@ class LinkedHearingValidationTest {
 
     @Test
     void shouldFailAsRequestIdDoesNotExist() {
-        Long requestId = 9176L;
+        String requestId = "9176";
         String errorMessage = "This is a test error message";
-        when(linkedGroupDetailsRepository.existsById(requestId)).thenReturn(false);
-
-        Exception exception = assertThrows(LinkedGroupNotFoundException.class, () -> linkedHearingValidation
-                .validateRequestId(requestId, errorMessage));
+        when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId)).thenReturn(null);
+        Exception exception = assertThrows(LinkedGroupNotFoundException.class, () ->
+                linkedHearingValidation.validateRequestId(requestId, errorMessage));
         assertEquals(errorMessage, exception.getMessage());
     }
 
     @Test
     void shouldSucceedAsRequestIdDoesExist() {
-        Long requestId = 9176L;
+        String requestId = "9176";
         String errorMessage = "This is a test error message";
-        when(linkedGroupDetailsRepository.existsById(requestId)).thenReturn(true);
+        LinkedGroupDetails lgdExpected = generateLinkedGroupDetails(1L, PutHearingStatus.HEARING_REQUESTED.name(),
+                "request1","request 1 in action");
+        logger.info("lgdExpected: {}", lgdExpected);
+        when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId)).thenReturn(lgdExpected);
         linkedHearingValidation.validateRequestId(requestId, errorMessage);
     }
 
     @Test
     void shouldFailAsObsoleteDetailsNotForDeleting() {
-        Long requestId = 9176L;
+        String requestId = "9176";
         String requestName = "Special request";
-        when(linkedGroupDetailsRepository.existsById(requestId)).thenReturn(true);
+        when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId)).thenReturn(null);
         List<LinkedHearingDetails> listLinkedHearingDetails =
-                generateLinkedHearingDetailsList(requestId.toString(), requestName, 20L);
+                generateLinkedHearingDetailsList(requestId, requestName, 20L);
         HearingEntity hearing2 = generateHearing(2L, PutHearingStatus.HEARING_REQUESTED.name());
         listLinkedHearingDetails.add(generateLinkedHearingDetails(2L, hearing2,
                 listLinkedHearingDetails.get(0).getLinkedGroup(), 2L));
@@ -103,9 +105,9 @@ class LinkedHearingValidationTest {
 
     @Test
     void shouldSucceedAsObsoleteDetailsAreForDeleting() {
-        final Long requestId = 9176L;
+        final String requestId = "9176";
         final String requestName = "Special request";
-        when(linkedGroupDetailsRepository.existsById(requestId)).thenReturn(true);
+
         List<LinkedHearingDetails> listLinkedHearingDetails =
                 generateLinkedHearingDetailsList(requestId.toString(), requestName, 10L);
         HearingEntity hearing2 = generateHearing(2L, PutHearingStatus.HEARING_REQUESTED.name());
@@ -115,16 +117,21 @@ class LinkedHearingValidationTest {
         listLinkedHearingDetails.add(generateLinkedHearingDetails(3L, hearing3,
                 listLinkedHearingDetails.get(0).getLinkedGroup(), 3L));
 
+        List<LinkedHearingDetails> listObsolete = new ArrayList<>();
+        listObsolete.add(listLinkedHearingDetails.get(0));
+
+        when(linkedHearingDetailsRepository.getLinkedHearingDetailsByRequestId(requestId)).thenReturn(listObsolete);
+
         List<String> errorMessages = linkedHearingValidation.validateObsoleteLinkedHearings(listLinkedHearingDetails);
         assertTrue(errorMessages.isEmpty());
     }
 
     @Test
     void shouldExtractObsoleteDetailsForDeleting() {
-        final long requestId = 89176L;
+        final String requestId = "89176";
         final String requestName = "compare and extract obsolete details";
         List<LinkedHearingDetails> existingInDataList =
-                generateValidLinkedHearingDetailsList(Long.toString(requestId), requestName, 7L);
+                generateValidLinkedHearingDetailsList(requestId, requestName, 7L);
 
         List<LinkHearingDetails> payloadList = new ArrayList<>();
         payloadList.add(new LinkHearingDetails(
@@ -148,10 +155,10 @@ class LinkedHearingValidationTest {
 
     @Test
     void shouldFailWithObsoleteDetailsNotValidForUnlinking() {
-        final long requestId = 78176L;
+        final String requestId = "78176";
         final String requestName = "Find obsolete details ARE NOT not valid for unlinking";
         List<LinkedHearingDetails> existingInDataList =
-                generateLinkedHearingDetailsListWithBadStatus(Long.toString(requestId), requestName, 8L);
+                generateLinkedHearingDetailsListWithBadStatus(requestId, requestName, 8L);
 
         List<LinkHearingDetails> payloadList = new ArrayList<>();
         payloadList.add(new LinkHearingDetails(
@@ -181,10 +188,10 @@ class LinkedHearingValidationTest {
 
     @Test
     void shouldPassWithObsoleteDetailsValidForUnlinking() {
-        final long requestId = 181896L;
+        final String requestId = "181896";
         final String requestName = "Find obsolete details ARE valid for unlinking";
         List<LinkedHearingDetails> existingInDataList =
-                generateValidLinkedHearingDetailsList(Long.toString(requestId), requestName, 9L);
+                generateValidLinkedHearingDetailsList(requestId, requestName, 9L);
 
         List<LinkHearingDetails> payloadList = new ArrayList<>();
         payloadList.add(new LinkHearingDetails(

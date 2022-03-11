@@ -43,7 +43,7 @@ public class LinkHearingGroupController {
     }
 
     @PutMapping(path = "/linkedHearingGroup/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 400, message = "Bad Request"),
@@ -54,8 +54,8 @@ public class LinkHearingGroupController {
             @ApiResponse(code = 400, message = "007 group is in a <state> state"),
             @ApiResponse(code = 400, message = "008 invalid state for unlinking hearing request <hearingid>")
     })
-    public void updateHearing(@PathVariable("id") Long groupRequestId,
-                              @RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
-        linkedHearingGroupService.updateLinkHearing(groupRequestId, hearingLinkGroupRequest);
+    public void updateHearing(@PathVariable("id") String requestId,
+                              @RequestBody HearingLinkGroupRequest hearingLinkGroupRequest) {
+        linkedHearingGroupService.updateLinkHearing(requestId, hearingLinkGroupRequest);
     }
 }

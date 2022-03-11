@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
@@ -44,9 +46,11 @@ public class UnavailabilityEntity {
     @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
     private DayOfWeekUnAvailableType dayOfWeekUnavailableType;
 
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @Column(name = "start_date")
     private LocalDate startDate;
 
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @Column(name = "end_date")
     private LocalDate endDate;
 

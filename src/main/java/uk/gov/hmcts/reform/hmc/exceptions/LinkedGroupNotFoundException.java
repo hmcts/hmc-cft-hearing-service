@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class LinkedGroupNotFoundException extends RuntimeException {
 
-    public LinkedGroupNotFoundException(Long requestId, String errorMessage) {
+    public LinkedGroupNotFoundException(String requestId, String errorMessage) {
         super(String.format(errorMessage, requestId));
     }
 }

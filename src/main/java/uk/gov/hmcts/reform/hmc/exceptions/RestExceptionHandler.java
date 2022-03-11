@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.exceptions;
 
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
         MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         String[] errors = ex.getBindingResult().getFieldErrors().stream()
-            .map(e -> e.getDefaultMessage()).toArray(String[]::new);
-        log.debug("MethodArgumentNotValidException: {}", ex.getLocalizedMessage());
+            .map(DefaultMessageSourceResolvable::getDefaultMessage)
+            .toArray(String[]::new);
+        log.debug("MethodArgumentNotValidException:{}", ex.getLocalizedMessage());
         return toResponseEntity(status, errors);
     }
 

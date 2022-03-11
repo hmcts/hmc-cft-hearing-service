@@ -14,11 +14,10 @@ import java.util.List;
 public interface LinkedHearingDetailsRepository extends CrudRepository<LinkedHearingDetails, Long> {
 
     @Query("from LinkedHearingDetails lhd WHERE lhd.hearing.id = :hearingId ")
-    LinkedHearingDetails getLinkedHearingDetailsById(long hearingId);
+    LinkedHearingDetails getLinkedHearingDetailsByHearingId(Long hearingId);
 
     @Query("from LinkedHearingDetails lhd WHERE lhd.linkedGroup.requestId = :requestId ")
-    List<LinkedHearingDetails> getLinkedHearingDetailsByRequestId(long requestId);
-
+    List<LinkedHearingDetails> getLinkedHearingDetailsByRequestId(String requestId);
 
 }
 

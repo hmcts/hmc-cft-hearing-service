@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.hmc.validation;
+package uk.gov.hmcts.reform.hmc.validator;
 
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetails;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
@@ -15,14 +15,14 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LINKED_GROUP_ID_EMPTY;
 
-public class LinkedHearingValidation extends HearingIdValidation {
+public class LinkedHearingValidator extends HearingIdValidator {
 
     protected final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
     protected final LinkedHearingDetailsRepository linkedHearingDetailsRepository;
 
-    public LinkedHearingValidation(HearingRepository hearingRepository,
-                                   LinkedGroupDetailsRepository linkedGroupDetailsRepository,
-                                   LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
+    public LinkedHearingValidator(HearingRepository hearingRepository,
+                                  LinkedGroupDetailsRepository linkedGroupDetailsRepository,
+                                  LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
         super(hearingRepository);
         this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
         this.linkedHearingDetailsRepository = linkedHearingDetailsRepository;
@@ -32,11 +32,11 @@ public class LinkedHearingValidation extends HearingIdValidation {
      * validate Request id.
      * @param requestId request id
      */
-    protected final void validateRequestId(Long requestId, String errorMessage) {
+    protected final void validateRequestId(String requestId, String errorMessage) {
         if (requestId == null) {
             throw new BadRequestException(LINKED_GROUP_ID_EMPTY);
         } else {
-            if (!linkedGroupDetailsRepository.existsById(requestId)) {
+            if (null == linkedGroupDetailsRepository.isFoundForRequestId(requestId)) {
                 throw new LinkedGroupNotFoundException(requestId, errorMessage);
             }
         }
@@ -47,7 +47,7 @@ public class LinkedHearingValidation extends HearingIdValidation {
      * @param requestId requestId
      * @param linkHearingDetailsListPayload linkHearingDetails from payload
      */
-    protected final void validateLinkedHearingsForUpdate(Long requestId,
+    protected final void validateLinkedHearingsForUpdate(String requestId,
                                                          List<LinkHearingDetails> linkHearingDetailsListPayload) {
         //hman-56 step 7
         // get existing data linkedHearingDetails
