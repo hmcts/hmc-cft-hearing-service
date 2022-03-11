@@ -204,8 +204,8 @@ public class BasePactTesting {
             hearingWindow.setFirstDateTimeMustBe(LocalDateTime.now());
         } else {
             logger.info("using hearing window date range");
-            hearingWindow.setHearingWindowStartDateRange(LocalDate.now());
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeStart(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
         }
         return hearingWindow;
     }

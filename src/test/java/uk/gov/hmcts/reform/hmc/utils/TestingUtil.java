@@ -70,8 +70,8 @@ public class TestingUtil {
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
-        hearingWindow.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindow.setDateRangeEnd(LocalDate.parse("2017-03-01"));
+        hearingWindow.setDateRangeStart(LocalDate.parse("2017-03-01"));
         hearingDetails.setHearingWindow(hearingWindow);
         hearingDetails.setDuration(0);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));

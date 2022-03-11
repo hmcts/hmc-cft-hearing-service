@@ -46,8 +46,8 @@ class ListingMapperTest {
         LocalDateTime localDateTime = LocalDateTime.now();
         HearingWindow hearingWindow = new HearingWindow();
         hearingWindow.setFirstDateTimeMustBe(localDateTime);
-        hearingWindow.setHearingWindowStartDateRange(localDateTime.minusDays(1).toLocalDate());
-        hearingWindow.setHearingWindowEndDateRange(localDateTime.plusDays(1).toLocalDate());
+        hearingWindow.setDateRangeStart(localDateTime.minusDays(1).toLocalDate());
+        hearingWindow.setDateRangeEnd(localDateTime.plusDays(1).toLocalDate());
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingPriorityType(HEARING_PRIORITY_TYPE);
@@ -98,8 +98,8 @@ class ListingMapperTest {
         LocalDateTime localDateTime = LocalDateTime.now();
         HearingWindow hearingWindow = new HearingWindow();
         hearingWindow.setFirstDateTimeMustBe(localDateTime);
-        hearingWindow.setHearingWindowStartDateRange(null);
-        hearingWindow.setHearingWindowEndDateRange(null);
+        hearingWindow.setDateRangeStart(null);
+        hearingWindow.setDateRangeEnd(null);
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingPriorityType(HEARING_PRIORITY_TYPE);
@@ -149,8 +149,8 @@ class ListingMapperTest {
         LocalDateTime localDateTime = LocalDateTime.now();
         HearingWindow hearingWindow = new HearingWindow();
         hearingWindow.setFirstDateTimeMustBe(localDateTime);
-        hearingWindow.setHearingWindowStartDateRange(null);
-        hearingWindow.setHearingWindowEndDateRange(null);
+        hearingWindow.setDateRangeStart(null);
+        hearingWindow.setDateRangeEnd(null);
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingPriorityType(HEARING_PRIORITY_TYPE);

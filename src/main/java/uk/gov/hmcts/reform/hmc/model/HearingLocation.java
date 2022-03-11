@@ -11,10 +11,10 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 public class HearingLocation {
 
-    @NotEmpty(message = ValidationError.LOCATION_TYPE_EMPTY)
+    @EnumPattern(enumClass = LocationId.class, fieldName = "locationId")
     private String locationType;
 
-    @EnumPattern(enumClass = LocationId.class, fieldName = "locationId")
+    @NotEmpty(message = ValidationError.LOCATION_ID_EMPTY)
     private String locationId;
 
 }

@@ -949,8 +949,8 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn400WhenHearingWindowFieldsAreNull() throws Exception {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
-        hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
-        hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
+        hearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(null);
+        hearingRequest.getHearingDetails().getHearingWindow().setDateRangeStart(null);
         hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
         mockMvc.perform(put(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
