@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.hmc.config.MessageProcessor.UNSUPPORTED_MESSAG
 
 class MessageProcessorTest {
     private static final String MESSAGE_TYPE = "message_type";
-    private static final String HEARING_ID = "hearing_id";
 
     private MessageProcessor messageProcessor;
 
@@ -54,7 +53,6 @@ class MessageProcessorTest {
     @Test
     void shouldInitiateRequestHearing() throws JsonProcessingException {
         Map<String, Object> applicationProperties = new HashMap<>();
-        applicationProperties.put(HEARING_ID, "1234567890");
         applicationProperties.put(MESSAGE_TYPE, MessageType.REQUEST_HEARING);
         when(message.getApplicationProperties()).thenReturn(applicationProperties);
         when(message.getBody()).thenReturn(BinaryData.fromString("{ \"test\": \"name\"}"));
@@ -62,6 +60,16 @@ class MessageProcessorTest {
         JsonNode node = OBJECT_MAPPER.readTree(jsonMessage.toString());
         messageProcessor.processMessage(client, message);
         verify(OBJECT_MAPPER).treeToValue(node, HearingResponse.class);
+    }
+
+    @Test
+    void shouldThrowErrorWhenMessageTypeNotCateredFor() {
+        Map<String, Object> applicationProperties = new HashMap<>();
+        applicationProperties.put(MESSAGE_TYPE, MessageType.AMEND_HEARING);
+        JsonNode anyData = OBJECT_MAPPER.convertValue("test data", JsonNode.class);
+        assertThatThrownBy(() -> messageProcessor.processMessage(anyData, applicationProperties))
+            .isInstanceOf(MalformedMessageException.class)
+            .hasMessageContaining(UNSUPPORTED_MESSAGE_TYPE);
     }
 
     @Test
