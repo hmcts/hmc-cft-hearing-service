@@ -33,7 +33,7 @@ class UnNotifiedHearingServiceIT extends BaseTest {
         LocalDateTime startFrom = convertDateTime(dateStr);
         UnNotifiedHearingsResponse response = unNotifiedHearingService
             .getUnNotifiedHearings("ACA2", startFrom, null);
-        final List<Long> expectedHearingIds = Arrays.asList(2100000000L, 2100000001L);
+        final List<String> expectedHearingIds = Arrays.asList("2100000000", "2100000001");
         assertNotNull(response.getHearingIds());
         assertEquals(2, response.getHearingIds().size());
         assertEquals(2, response.getTotalFound());
@@ -49,7 +49,7 @@ class UnNotifiedHearingServiceIT extends BaseTest {
         LocalDateTime startTo = convertDateTime(dateStrTo);
         UnNotifiedHearingsResponse response = unNotifiedHearingService
             .getUnNotifiedHearings("ACA2", startFrom, startTo);
-        final List<Long> expectedHearingIds = Arrays.asList(2100000000L, 2100000001L);
+        final List<String> expectedHearingIds = Arrays.asList("2100000000", "2100000001");
         assertNotNull(response.getHearingIds());
         assertEquals(2, response.getHearingIds().size());
         assertEquals(2, response.getTotalFound());
@@ -65,7 +65,7 @@ class UnNotifiedHearingServiceIT extends BaseTest {
         LocalDateTime startTo = convertDateTime(dateStrTo);
         UnNotifiedHearingsResponse response = unNotifiedHearingService
             .getUnNotifiedHearings("AAA2", startFrom, startTo);
-        final List<Long> expectedHearingIds = Arrays.asList(2100000004L);
+        final List<String> expectedHearingIds = Arrays.asList("2100000004");
         assertNotNull(response.getHearingIds());
         assertEquals(1, response.getHearingIds().size());
         assertEquals(1, response.getTotalFound());
