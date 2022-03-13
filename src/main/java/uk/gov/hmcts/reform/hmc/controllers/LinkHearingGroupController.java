@@ -4,10 +4,10 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
@@ -42,7 +42,7 @@ public class LinkHearingGroupController {
         linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
     }
 
-    @PutMapping(path = "/linkedHearingGroup/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/linkedHearingGroup", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
@@ -54,7 +54,7 @@ public class LinkHearingGroupController {
             @ApiResponse(code = 400, message = "007 group is in a <state> state"),
             @ApiResponse(code = 400, message = "008 invalid state for unlinking hearing request <hearingid>")
     })
-    public void updateHearing(@PathVariable("id") String requestId,
+    public void updateHearing(@RequestParam("id") String requestId,
                               @RequestBody HearingLinkGroupRequest hearingLinkGroupRequest) {
         linkedHearingGroupService.updateLinkHearing(requestId, hearingLinkGroupRequest);
     }
