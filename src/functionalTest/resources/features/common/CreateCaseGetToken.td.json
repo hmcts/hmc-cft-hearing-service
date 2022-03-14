@@ -6,7 +6,8 @@
 
   "method": "GET",
   "uri": "{{CCD_DATA_STORE_API_BASE_URL}}/case-types/FT_CRUD/event-triggers/{etid}",
-
+  "s2sClientId": "xui_webapp",
+  "userTokenClientId": "xuiwebapp",
   "specs": [
     "to create a token for case creation"
   ],

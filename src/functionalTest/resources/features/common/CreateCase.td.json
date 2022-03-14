@@ -5,7 +5,8 @@
   "operationName": "external create case",
   "method": "POST",
   "uri": "{{CCD_DATA_STORE_API_BASE_URL}}/case-types/{ctid}/cases",
-
+  "s2sClientId": "xui_webapp",
+  "userTokenClientId": "xuiwebapp",
   "specs" : [
     "an active profile in CCD",
     "to create a full case"
