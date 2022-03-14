@@ -772,7 +772,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().setHearingLocations(hearingLocationList);
         List<String> facilitiesRequiredList = Collections.singletonList("a".repeat(71));
         hearingRequest.getHearingDetails().setFacilitiesRequired(facilitiesRequiredList);
-        hearingRequest.getHearingDetails().setListingComments("a".repeat(5001));
+        hearingRequest.getHearingDetails().setListingComments("a".repeat(2001));
         hearingRequest.getHearingDetails().setHearingRequester("a".repeat(61));
         hearingRequest.getHearingDetails().setLeadJudgeContractType("a".repeat(71));
         PanelRequirements panelRequirements = new PanelRequirements();
@@ -914,8 +914,8 @@ class HearingManagementControllerIT extends BaseTest {
         individualDetails.setHearingChannelEmail("a".repeat(121));
         individualDetails.setHearingChannelPhone("a".repeat(31));
         RelatedParty relatedParty = new RelatedParty();
-        relatedParty.setRelatedPartyID("a".repeat(2001));
-        relatedParty.setRelationshipType("a".repeat(2001));
+        relatedParty.setRelatedPartyID("a".repeat(16));
+        relatedParty.setRelationshipType("a".repeat(11));
         individualDetails.setRelatedParties(Collections.singletonList(relatedParty));
         OrganisationDetails organisationDetails = new OrganisationDetails();
         organisationDetails.setName("a".repeat(2001));
@@ -1002,4 +1002,47 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.errors", hasItem((INVALID_PUT_HEARING_STATUS))))
             .andReturn();
     }
+
+    @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void shouldReturn201_WhenHearingRequestHasValidData() throws Exception {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getHearingDetails().setListingComments("a".repeat(2000));
+        createHearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
+            .get(0).setRelatedPartyID("a".repeat(15));
+        createHearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
+            .get(0).setRelationshipType("a".repeat(10));
+        stubSuccessfullyValidateHearingObject(createHearingRequest);
+        RoleAssignmentResource resource = new RoleAssignmentResource();
+        resource.setRoleName(ROLE_NAME);
+        resource.setRoleType(ROLE_TYPE);
+        RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
+        attributesResource.setCaseType(Optional.of(CASE_TYPE));
+        attributesResource.setJurisdiction(Optional.of(JURISDICTION));
+        resource.setAttributes(attributesResource);
+        List<RoleAssignmentResource> roleAssignmentList = new ArrayList<>();
+        roleAssignmentList.add(resource);
+        RoleAssignmentResponse response = new RoleAssignmentResponse();
+        response.setRoleAssignments(roleAssignmentList);
+        stubReturn200RoleAssignments(USER_ID, response);
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
+        mockMvc.perform(post(url)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(createHearingRequest)))
+            .andExpect(status().is(201))
+            .andReturn();
+    }
+
+
 }
