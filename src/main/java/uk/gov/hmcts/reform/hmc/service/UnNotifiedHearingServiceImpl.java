@@ -48,9 +48,8 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
     }
 
     private List<String> getHearingIdInStrings(List<Long> hearingIdsLong) {
-        List<String> hearingIds = hearingIdsLong.stream().map(Object::toString)
+        return hearingIdsLong.stream().map(Object::toString)
             .collect(Collectors.toList());
-        return hearingIds;
     }
 
     private UnNotifiedHearingsResponse getUnNotifiedHearingsResponse(List<String> hearingIds, Long totalCount) {
