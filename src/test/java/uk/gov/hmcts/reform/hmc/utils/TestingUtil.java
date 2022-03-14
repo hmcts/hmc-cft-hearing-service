@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
-import uk.gov.hmcts.reform.hmc.model.LocationId;
+import uk.gov.hmcts.reform.hmc.model.LocationType;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
@@ -77,8 +77,8 @@ public class TestingUtil {
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         HearingLocation location1 = new HearingLocation();
-        location1.setLocationId("COURT");
-        location1.setLocationType("Location type");
+        location1.setLocationId("Location type");
+        location1.setLocationType("COURT");
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
@@ -107,7 +107,7 @@ public class TestingUtil {
 
     public static RequiredLocationsEntity locationEntity() {
         RequiredLocationsEntity requiredLocationsEntity = new RequiredLocationsEntity();
-        requiredLocationsEntity.setLocationId(LocationId.CLUSTER);
+        requiredLocationsEntity.setLocationType(LocationType.CLUSTER);
         return requiredLocationsEntity;
     }
 

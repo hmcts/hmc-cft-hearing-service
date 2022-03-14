@@ -286,7 +286,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             for (RequiredLocationsEntity requiredLocationsEntity
                     : hearingEntity.getCaseHearingRequest().getRequiredLocations()) {
                 HearingLocation hearingLocation = new HearingLocation();
-                hearingLocation.setLocationId(requiredLocationsEntity.getLocationId().getLabel());
+                hearingLocation.setLocationId(requiredLocationsEntity.getLocationType().getLabel());
                 hearingLocation.setLocationType(requiredLocationsEntity.getLocationLevelType());
                 hearingLocations.add(hearingLocation);
             }

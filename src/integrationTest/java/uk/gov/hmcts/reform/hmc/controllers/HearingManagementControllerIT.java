@@ -111,7 +111,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LAST_NAME_EMPTY
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LAST_NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LISTING_COMMENTS_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LOCATION_TYPE_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LOCATION_ID_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MEMBER_ID_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MEMBER_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MEMBER_TYPE_MAX_LENGTH;
@@ -800,7 +800,7 @@ class HearingManagementControllerIT extends BaseTest {
                                                      NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE,
                                                      FACILITIES_REQUIRED_MAX_LENGTH_MSG, LISTING_COMMENTS_MAX_LENGTH,
                                                      HEARING_REQUESTER_MAX_LENGTH, LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH,
-                                                     LOCATION_TYPE_EMPTY, "Unsupported type for locationId",
+                                                     LOCATION_ID_EMPTY, "Unsupported type for locationType",
                                                      ROLE_TYPE_MAX_LENGTH_MSG, AUTHORISATION_TYPE_MAX_LENGTH_MSG,
                                                      AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG,
                                                      PANEL_SPECIALISMS_MAX_LENGTH_MSG, MEMBER_ID_EMPTY,

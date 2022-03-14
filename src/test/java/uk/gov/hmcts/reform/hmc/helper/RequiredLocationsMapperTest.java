@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
-import uk.gov.hmcts.reform.hmc.model.LocationId;
+import uk.gov.hmcts.reform.hmc.model.LocationType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +19,9 @@ class RequiredLocationsMapperTest {
         List<HearingLocation> locations = getRequiredLocations();
         CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         List<RequiredLocationsEntity> entities = mapper.modelToEntity(locations, caseHearingRequestEntity);
-        assertEquals(LocationId.COURT, entities.get(0).getLocationId());
+        assertEquals(LocationType.COURT, entities.get(0).getLocationType());
         assertEquals("Location type", entities.get(0).getLocationLevelType());
-        assertEquals(LocationId.CLUSTER, entities.get(1).getLocationId());
+        assertEquals(LocationType.CLUSTER, entities.get(1).getLocationType());
         assertEquals("Location type2", entities.get(1).getLocationLevelType());
     }
 

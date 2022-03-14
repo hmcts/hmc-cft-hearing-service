@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ListingLocationsMapperTest {
 
-    private static final String LOCATION_ID = "LocationId";
+    private static final String LOCATION_ID = "LocationType";
     private static final String LOCATION_ID_TWO = "LocationIdTwo";
     private static final String LOCATION_TYPE = "LocationType";
     private static final String LOCATION_TYPE_TWO = "LocationTypeTwo";

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
-import uk.gov.hmcts.reform.hmc.model.LocationId;
+import uk.gov.hmcts.reform.hmc.model.LocationType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class RequiredLocationsMapper {
         for (HearingLocation location : hearingLocations) {
             final RequiredLocationsEntity locationEntity = new RequiredLocationsEntity();
             locationEntity.setLocationLevelType(location.getLocationType());
-            locationEntity.setLocationId(LocationId.getByLabel(location.getLocationId()));
+            locationEntity.setLocationType(LocationType.getByLabel(location.getLocationId()));
             locationEntity.setCaseHearing(caseHearingRequestEntity);
             requiredLocationsEntities.add(locationEntity);
         }

@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import org.hibernate.annotations.Type;
-import uk.gov.hmcts.reform.hmc.model.LocationId;
+import uk.gov.hmcts.reform.hmc.model.LocationType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,7 +38,7 @@ public class RequiredLocationsEntity {
     @Column(name = "location_id", columnDefinition = "locationid", nullable = false)
     @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
     @Enumerated(EnumType.STRING)
-    private LocationId locationId;
+    private LocationType locationType;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")

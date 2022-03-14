@@ -29,7 +29,6 @@ public final class ValidationError {
     public static final String MEMBER_ID_EMPTY = "Member Id can not be empty";
     public static final String MEMBER_ID_MAX_LENGTH = "Member Id must not be more than 70 " + CHARACTERS_LONG;
     public static final String MEMBER_TYPE_MAX_LENGTH = "Member type must not be more than 70 " + CHARACTERS_LONG;
-    public static final String LOCATION_TYPE_EMPTY = "Location type can not be empty";
     public static final String LOCATION_ID_EMPTY = "Location id can not be empty";
     public static final String HMCTS_SERVICE_CODE_EMPTY_INVALID = "Hmcts service code is invalid";
     public static final String CASE_REF_EMPTY = "Case ref can not be empty";
