@@ -77,8 +77,8 @@ public class TestingUtil {
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         HearingLocation location1 = new HearingLocation();
-        location1.setLocationId(LocationType.CLUSTER.getLabel());
-        location1.setLocationType("Location type");
+        location1.setLocationType(LocationType.CLUSTER.getLabel());
+        location1.setLocationId("Location Id");
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);

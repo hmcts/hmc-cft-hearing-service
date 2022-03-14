@@ -169,8 +169,8 @@ public class BasePactTesting {
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         HearingLocation location1 = new HearingLocation();
-        location1.setLocationId("court");
-        location1.setLocationType("Location type");
+        location1.setLocationType("court");
+        location1.setLocationId("Location id");
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);

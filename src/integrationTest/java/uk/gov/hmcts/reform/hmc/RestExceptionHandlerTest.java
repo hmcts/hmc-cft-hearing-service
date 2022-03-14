@@ -91,8 +91,8 @@ public class RestExceptionHandlerTest extends BaseTest {
         panelRequirements.setAuthorisationSubType(Collections.singletonList("AuthorisationSubType2"));
         hearingDetails.setPanelRequirements(panelRequirements);
         HearingLocation location1 = new HearingLocation();
-        location1.setLocationId("court");
-        location1.setLocationType("Location type");
+        location1.setLocationType("court");
+        location1.setLocationId("Location id");
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);

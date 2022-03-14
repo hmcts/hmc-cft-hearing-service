@@ -27,12 +27,12 @@ class RequiredLocationsMapperTest {
 
     private List<HearingLocation> getRequiredLocations() {
         HearingLocation location1 = new HearingLocation();
-        location1.setLocationId("COURT");
-        location1.setLocationType("Location type");
+        location1.setLocationType("COURT");
+        location1.setLocationId("Location id");
 
         HearingLocation location2 = new HearingLocation();
-        location2.setLocationId("CLUSTER");
-        location2.setLocationType("Location type2");
+        location2.setLocationType("CLUSTER");
+        location2.setLocationId("Location id2");
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingLocations.add(location2);
