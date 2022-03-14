@@ -43,8 +43,7 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
         Page<Long> page = getUnNotifiedHearingResults(
             hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo);
         List<String> hearingIds = getHearingIdInStrings(page.getContent());
-        UnNotifiedHearingsResponse response = getUnNotifiedHearingsResponse(hearingIds, page.getTotalElements());
-        return response;
+        return getUnNotifiedHearingsResponse(hearingIds, page.getTotalElements());
     }
 
     private List<String> getHearingIdInStrings(List<Long> hearingIdsLong) {
