@@ -24,6 +24,6 @@ public class LinkedGroupDetailsRepositoryIT extends BaseTest {
         Optional<LinkedGroupDetails> linkedGroupDetailsOptional = linkedGroupDetailsRepository.findById(7600000000L);
         assertTrue(linkedGroupDetailsOptional.isPresent());
         assertEquals(7600000000L, linkedGroupDetailsOptional.get().getLinkedGroupId());
-        assertEquals("AWAITING_LISTING", linkedGroupDetailsOptional.get().getStatus());
+        assertEquals("ACTIVE", linkedGroupDetailsOptional.get().getStatus());
     }
 }

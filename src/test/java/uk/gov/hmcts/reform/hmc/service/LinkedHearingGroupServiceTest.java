@@ -150,7 +150,6 @@ class LinkedHearingGroupServiceTest {
 
         @Test
         public void shouldReturn400ErrorWhenHearingStatusIsHEARING_REQUESTEDButPlannedHearingDateInThePast() {
-            LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
             HearingEntity hearing1 = new HearingEntity();
             hearing1.setId(HEARING_ID1);
@@ -177,6 +176,7 @@ class LinkedHearingGroupServiceTest {
                 createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
+            LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
                 .willReturn(Optional.of(groupDetails));
@@ -194,7 +194,6 @@ class LinkedHearingGroupServiceTest {
 
         @Test
         public void shouldReturn400ErrorWhenHearingStatusIsUPDATE_REQUESTEDButPlannedHearingDateInThePast() {
-            LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
             HearingEntity hearing = new HearingEntity();
             hearing.setId(HEARING_ID1);
@@ -205,6 +204,7 @@ class LinkedHearingGroupServiceTest {
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE,
                                                                    START_DATE_TIME_IN_THE_PAST)
                 )));
+            LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
                 .willReturn(Optional.of(groupDetails));
@@ -222,7 +222,6 @@ class LinkedHearingGroupServiceTest {
 
         @Test
         public void shouldReturn400ErrorWhenHearingStatusIsInvalidForUnlinking() {
-            LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
             HearingEntity hearing = new HearingEntity();
             hearing.setId(HEARING_ID1);
@@ -232,6 +231,7 @@ class LinkedHearingGroupServiceTest {
                 createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
+            LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
                 .willReturn(Optional.of(groupDetails));
@@ -249,7 +249,6 @@ class LinkedHearingGroupServiceTest {
 
         @Test
         public void shouldDeleteHearingGroupDetailsFilteringOutInvalidMultipleResponseHearingVersions() {
-            LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
             HearingEntity hearing1 = new HearingEntity();
             hearing1.setId(HEARING_ID1);
@@ -273,6 +272,7 @@ class LinkedHearingGroupServiceTest {
                 createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
+            LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
                 .willReturn(Optional.of(groupDetails));
@@ -288,7 +288,6 @@ class LinkedHearingGroupServiceTest {
 
         @Test
         public void shouldDeleteHearingGroupDetailsFilteringOutHearingResponsesWithNonRecentTimestampForSameVersion() {
-            LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
             HearingEntity hearing = new HearingEntity();
             hearing.setId(HEARING_ID1);
@@ -302,6 +301,7 @@ class LinkedHearingGroupServiceTest {
                 createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
+            LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
                 .willReturn(Optional.of(groupDetails));
