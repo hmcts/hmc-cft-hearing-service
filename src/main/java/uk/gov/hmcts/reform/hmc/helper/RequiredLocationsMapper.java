@@ -17,8 +17,8 @@ public class RequiredLocationsMapper {
         List<RequiredLocationsEntity> requiredLocationsEntities = new ArrayList<>();
         for (HearingLocation location : hearingLocations) {
             final RequiredLocationsEntity locationEntity = new RequiredLocationsEntity();
-            locationEntity.setLocationLevelType(location.getLocationType());
-            locationEntity.setLocationType(LocationType.getByLabel(location.getLocationId()));
+            locationEntity.setLocationLevelType(LocationType.getByLabel(location.getLocationType()));
+            locationEntity.setLocationId(location.getLocationId());
             locationEntity.setCaseHearing(caseHearingRequestEntity);
             requiredLocationsEntities.add(locationEntity);
         }

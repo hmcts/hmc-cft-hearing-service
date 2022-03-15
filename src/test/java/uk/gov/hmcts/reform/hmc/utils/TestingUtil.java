@@ -107,7 +107,7 @@ public class TestingUtil {
 
     public static RequiredLocationsEntity locationEntity() {
         RequiredLocationsEntity requiredLocationsEntity = new RequiredLocationsEntity();
-        requiredLocationsEntity.setLocationType(LocationType.CLUSTER);
+        requiredLocationsEntity.setLocationLevelType(LocationType.CLUSTER);
         return requiredLocationsEntity;
     }
 

@@ -767,7 +767,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().setHearingPriorityType("a".repeat(61));
         hearingRequest.getHearingDetails().setNumberOfPhysicalAttendees(-1);
         HearingLocation hearingLocation = new HearingLocation();
-        hearingLocation.setLocationId("invalid enum");
+        hearingLocation.setLocationType("invalid enum");
         List<HearingLocation> hearingLocationList = Collections.singletonList(hearingLocation);
         hearingRequest.getHearingDetails().setHearingLocations(hearingLocationList);
         List<String> facilitiesRequiredList = Collections.singletonList("a".repeat(71));

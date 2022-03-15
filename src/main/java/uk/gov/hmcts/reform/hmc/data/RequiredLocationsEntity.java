@@ -32,13 +32,13 @@ public class RequiredLocationsEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "location_level_type", nullable = false)
-    private String locationLevelType;
+    @Column(name = "location_id", nullable = false)
+    private String locationId;
 
-    @Column(name = "location_id", columnDefinition = "locationid", nullable = false)
+    @Column(name = "location_level_type", columnDefinition = "locationType", nullable = false)
     @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
     @Enumerated(EnumType.STRING)
-    private LocationType locationType;
+    private LocationType locationLevelType;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")

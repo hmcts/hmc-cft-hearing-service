@@ -19,10 +19,10 @@ class RequiredLocationsMapperTest {
         List<HearingLocation> locations = getRequiredLocations();
         CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         List<RequiredLocationsEntity> entities = mapper.modelToEntity(locations, caseHearingRequestEntity);
-        assertEquals(LocationType.COURT, entities.get(0).getLocationType());
-        assertEquals("Location type", entities.get(0).getLocationLevelType());
-        assertEquals(LocationType.CLUSTER, entities.get(1).getLocationType());
-        assertEquals("Location type2", entities.get(1).getLocationLevelType());
+        assertEquals("Location id", entities.get(0).getLocationId());
+        assertEquals(LocationType.COURT, entities.get(0).getLocationLevelType());
+        assertEquals("Location id2", entities.get(1).getLocationId());
+        assertEquals(LocationType.CLUSTER, entities.get(1).getLocationLevelType());
     }
 
     private List<HearingLocation> getRequiredLocations() {
