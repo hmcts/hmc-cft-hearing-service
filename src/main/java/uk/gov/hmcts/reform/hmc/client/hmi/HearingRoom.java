@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.client.hmi;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -13,7 +14,7 @@ public class HearingRoom {
     private String locationIdCaseHQ;
     @Size(max = 70, message = ValidationError.HEARING_ROOM_NAME_LENGTH)
     private String roomName;
-    private Object roomLocationRegion;
-    private Object roomLocationCluster;
-    private Object roomLocationReference;
+    private JsonNode roomLocationRegion;
+    private JsonNode roomLocationCluster;
+    private JsonNode roomLocationReference;
 }

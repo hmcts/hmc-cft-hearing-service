@@ -6,13 +6,14 @@ import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
 public class MetaResponse {
 
-    @NotEmpty(message = ValidationError.TRANSACTION_ID_CASE_HQ_EMPTY)
+    @NotNull(message = ValidationError.TRANSACTION_ID_CASE_HQ_EMPTY)
     private LocalDateTime timestamp;
 
     @NotEmpty(message = ValidationError.TRANSACTION_ID_CASE_HQ_NULL)

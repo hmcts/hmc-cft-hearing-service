@@ -13,13 +13,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
-import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
+import uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.config.MessageProcessor.MISSING_MESSAGE_TYPE;
@@ -30,7 +31,6 @@ class MessageProcessorTest {
 
     private MessageProcessor messageProcessor;
 
-    @Mock
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
         .modules(new Jdk8Module())
         .build();
@@ -44,10 +44,13 @@ class MessageProcessorTest {
     @Mock
     private ServiceBusReceivedMessage message;
 
+    @Mock
+    private InboundQueueServiceImpl inboundQueueService;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        messageProcessor = new MessageProcessor(OBJECT_MAPPER);
+        messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
     }
 
     @Test
@@ -57,9 +60,8 @@ class MessageProcessorTest {
         when(message.getApplicationProperties()).thenReturn(applicationProperties);
         when(message.getBody()).thenReturn(BinaryData.fromString("{ \"test\": \"name\"}"));
         BinaryData jsonMessage = BinaryData.fromString("{ \"test\": \"name\"}");
-        JsonNode node = OBJECT_MAPPER.readTree(jsonMessage.toString());
         messageProcessor.processMessage(client, message);
-        verify(OBJECT_MAPPER).treeToValue(node, HearingResponse.class);
+        verify(inboundQueueService).processMessage(any(), any());
     }
 
     @Test

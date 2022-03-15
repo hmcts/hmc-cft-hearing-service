@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.client.hmi;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -15,6 +16,6 @@ public class HearingAttendee {
     private String entityId;
     private String entityType;
     private String entityClass;
-    private Object entityRole;
+    private JsonNode entityRole;
     private HearingChannel hearingChannel;
 }

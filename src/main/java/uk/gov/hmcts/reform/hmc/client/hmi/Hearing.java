@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc.client.hmi;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -17,16 +19,17 @@ public class Hearing {
     @NotNull(message = ValidationError.HEARING_CASE_VERSION_ID_NULL)
     private Integer hearingCaseVersionId;
 
+    @JsonProperty("hearingCaseIdHMCTS")
     private String hearingCaseIdHmcts;
 
-    private Object hearingCaseJurisdiction;
+    private JsonNode hearingCaseJurisdiction;
 
     @NotNull(message = ValidationError.HEARING_CASE_STATUS_NULL)
     private HearingCaseStatus hearingCaseStatus;
 
     private String hearingIdCaseHQ;
 
-    private Object hearingType;
+    private JsonNode hearingType;
 
     private HearingStatus hearingStatus;
 
@@ -37,11 +40,11 @@ public class Hearing {
 
     private LocalDateTime hearingEndTime;
 
-    private boolean hearingPrivate;
+    private Boolean hearingPrivate;
 
-    private boolean hearingRisk;
+    private Boolean hearingRisk;
 
-    private boolean hearingTranslatorRequired;
+    private Boolean hearingTranslatorRequired;
 
     private LocalDateTime hearingCreatedDate;
 
@@ -51,9 +54,9 @@ public class Hearing {
 
     private HearingRoom hearingRoom;
 
-    private HearingResponse hearingAttendee;
+    private HearingAttendee hearingAttendee;
 
     private HearingJoh hearingJoh;
 
-    private Object hearingSession;
+    private JsonNode hearingSession;
 }
