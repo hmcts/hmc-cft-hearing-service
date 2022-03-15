@@ -37,10 +37,9 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             log.info("Successfully converted message to HearingResponseType " + hearingResponse);
         } else {
             log.info("Total violations found: " + violations.size());
+            for (ConstraintViolation<HearingResponse> violation : violations) {
+                log.error("Violations are " + violation.getMessage());
+            }
         }
-        for (ConstraintViolation<HearingResponse> violation : violations) {
-            log.error("Violations are " + violation.getMessage());
-        }
-
     }
 }
