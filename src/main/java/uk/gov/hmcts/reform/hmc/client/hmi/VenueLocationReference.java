@@ -13,6 +13,6 @@ public class VenueLocationReference {
 
     @NotNull(message = ValidationError.VENUE_LOCATION_CODE_NULL)
     @Size(max = 30, message = ValidationError.VENUE_LOCATION_CODE_LENGTH)
-    private String code;
-    private String description;
+    private String key;
+    private String value;
 }
