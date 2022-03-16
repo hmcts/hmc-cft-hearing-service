@@ -123,9 +123,8 @@ class MessageProcessorIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void shouldInitiateRequestHearing() throws JsonProcessingException {
+    void shouldInitiateRequest() throws JsonProcessingException {
         Map<String, Object> applicationProperties = new HashMap<>();
-        applicationProperties.put(MESSAGE_TYPE, MessageType.REQUEST_HEARING);
         applicationProperties.put(HEARING_ID, "2000000000");
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);

@@ -25,6 +25,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
@@ -181,6 +182,9 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapHmiHearingToEntity(any(), any())).thenReturn(hearingEntity);
             inboundQueueService.processMessage(jsonNode, applicationProperties);
             verify(hearingRepository).save(hearingEntity);
+            verify(hmiHearingResponseMapper, times(1)).mapHmiHearingToEntity(any(), any());
+            verify(hearingRepository, times(1)).existsById(2000000000L);
+            verify(hearingRepository, times(1)).findById(2000000000L);
         }
 
         @Test
@@ -273,8 +277,12 @@ class InboundQueueServiceTest {
                                                            + "    }\n"
                                                            + "  }\n"
                                                            + "}");
-
-            inboundQueueService.processMessage(jsonNode);
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(HEARING_ID, "2000000000");
+            inboundQueueService.processMessage(jsonNode, applicationProperties);
+            verify(hmiHearingResponseMapper, times(0)).mapHmiHearingToEntity(any(), any());
+            verify(hearingRepository, times(0)).existsById(2000000000L);
+            verify(hearingRepository, times(0)).findById(2000000000L);
         }
     }
 
