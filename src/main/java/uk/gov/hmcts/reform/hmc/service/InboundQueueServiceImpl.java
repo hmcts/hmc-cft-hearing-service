@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
-import uk.gov.hmcts.reform.hmc.config.MessageType;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -27,8 +26,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     }
 
     @Override
-    public void processMessage(JsonNode message, MessageType messageType) throws JsonProcessingException {
-        log.info("Message of type " + messageType + " received");
+    public void processMessage(JsonNode message) throws JsonProcessingException {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         HearingResponse hearingResponse = objectMapper.treeToValue(message, HearingResponse.class);

@@ -12,9 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.hmc.config.MessageType;
-
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class InboundQueueServiceTest {
@@ -76,8 +73,8 @@ class InboundQueueServiceTest {
                                                            "      \"locationRegion\": \"<locationRegion>\",\n" +
                                                            "      \"locationCluster\": \"<locationCluster>\",\n" +
                                                            "      \"locationReference\": {\n" +
-                                                           "        \"code\": \"<key>\",\n" +
-                                                           "        \"description\": \"<value>\"\n" +
+                                                           "        \"key\": \"<key>\",\n" +
+                                                           "        \"value\": \"<value>\"\n" +
                                                            "      }\n" +
                                                            "    },\n" +
                                                            "    \"hearingRoom\": {\n" +
@@ -127,7 +124,7 @@ class InboundQueueServiceTest {
                                                            "  }\n" +
                                                            "}");
 
-            inboundQueueService.processMessage(jsonNode, MessageType.REQUEST_HEARING);
+            inboundQueueService.processMessage(jsonNode);
         }
     }
 }
