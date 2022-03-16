@@ -64,4 +64,13 @@ public class HearingResponseEntity {
     @Column(name = "service_data", columnDefinition = "jsonb")
     @Convert(converter = JsonDataConverter.class)
     private JsonNode serviceData;
+
+    @Column(name = "cancellation_reason_type")
+    private String cancellationReasonType;
+
+    @Column(name = "translator_required")
+    private Boolean translatorRequired;
+
+    @Column(name = "listing_transaction_id")
+    private String listingTransactionId;
 }
