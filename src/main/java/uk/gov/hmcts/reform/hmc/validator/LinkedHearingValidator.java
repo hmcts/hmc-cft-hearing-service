@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
-import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetails;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
@@ -36,7 +36,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
         if (requestId == null) {
             throw new BadRequestException(LINKED_GROUP_ID_EMPTY);
         } else {
-            if (null == linkedGroupDetailsRepository.isFoundForRequestId(requestId)) {
+            if (linkedGroupDetailsRepository.isFoundForRequestId(requestId).equals(0L)) {
                 throw new LinkedGroupNotFoundException(requestId, errorMessage);
             }
         }
@@ -49,13 +49,12 @@ public class LinkedHearingValidator extends HearingIdValidator {
      */
     protected final void validateLinkedHearingsForUpdate(String requestId,
                                                          List<LinkHearingDetails> linkHearingDetailsListPayload) {
-        //hman-56 step 7
         // get existing data linkedHearingDetails
-        List<LinkedHearingDetails> linkedHearingDetailsListExisting
+        List<LinkedHearingDetailsAudit> linkedHearingDetailsListExisting
                 = linkedHearingDetailsRepository.getLinkedHearingDetailsByRequestId(requestId);
 
         // get obsolete linkedHearingDetails
-        List<LinkedHearingDetails> linkedHearingDetailsListObsolete =
+        List<LinkedHearingDetailsAudit> linkedHearingDetailsListObsolete =
                 extractObsoleteLinkedHearings(linkHearingDetailsListPayload, linkedHearingDetailsListExisting);
 
         // validate and get errors, if any, for obsolete linkedHearingDetails
@@ -74,15 +73,15 @@ public class LinkedHearingValidator extends HearingIdValidator {
      * @param hearingDetailsListExisting existing in db LinkedHearingDetails
      * @return obsoleteLinkedHearingDetails the obsolete LinkedHearingDetails
      */
-    protected final List<LinkedHearingDetails> extractObsoleteLinkedHearings(
+    protected final List<LinkedHearingDetailsAudit> extractObsoleteLinkedHearings(
             List<LinkHearingDetails> hearingDetailsListPayload,
-            List<LinkedHearingDetails> hearingDetailsListExisting) {
+            List<LinkedHearingDetailsAudit> hearingDetailsListExisting) {
         // build list of hearing ids
         List<String> payloadHearingIds = new ArrayList<>();
         hearingDetailsListPayload.forEach(e -> payloadHearingIds.add(e.getHearingId()));
 
         // deduce obsolete Linked Hearing Details
-        List<LinkedHearingDetails> obsoleteLinkedHearingDetails = new ArrayList<>();
+        List<LinkedHearingDetailsAudit> obsoleteLinkedHearingDetails = new ArrayList<>();
         hearingDetailsListExisting.forEach(e -> {
             if (!payloadHearingIds.contains(e.getHearing().getId().toString())) {
                 obsoleteLinkedHearingDetails.add(e);
@@ -98,7 +97,8 @@ public class LinkedHearingValidator extends HearingIdValidator {
      * @param obsoleteLinkedHearings obsolete linked hearing details
      * @return errorMessages error messages
      */
-    protected final List<String> validateObsoleteLinkedHearings(List<LinkedHearingDetails> obsoleteLinkedHearings) {
+    protected final List<String> validateObsoleteLinkedHearings(
+            List<LinkedHearingDetailsAudit> obsoleteLinkedHearings) {
         List<String> errorMessages = new ArrayList<>();
         obsoleteLinkedHearings.forEach(e -> {
             if (!PutHearingStatus.isValid((e.getHearing().getStatus()))) {

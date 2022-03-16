@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
-import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetails;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -192,9 +192,9 @@ class LinkHearingGroupServiceTest {
             );
 
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
-            LinkedHearingDetails hearingDetails1Data = new LinkedHearingDetails();
+            LinkedHearingDetailsAudit hearingDetails1Data = new LinkedHearingDetailsAudit();
             hearingDetails1Data.setHearing(hearingEntity);
-            hearingDetails1Data.setLinkedHearingId(Long.parseLong(hearingDetails1.getHearingId()));
+            hearingDetails1Data.setLinkedHearingDetailsAuditId(Long.parseLong(hearingDetails1.getHearingId()));
             hearingDetails1Data.setLinkedGroup(groupDetailsAlternate);
 
             when(hearingRepository.existsById(any())).thenReturn(true);
@@ -334,8 +334,8 @@ class LinkHearingGroupServiceTest {
                 null
             );
 
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.existsById(any())).thenReturn(true);
+            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
@@ -396,7 +396,7 @@ class LinkHearingGroupServiceTest {
         GroupDetails groupDetails = new GroupDetails();
         groupDetails.setGroupComments(groupComments);
         groupDetails.setGroupName(groupName);
-        groupDetails.setGroupLinkType(linktype);
+        groupDetails.setGroupLinkType(linktype.label);
         groupDetails.setGroupReason(groupReason);
         return groupDetails;
     }
@@ -448,7 +448,7 @@ class LinkHearingGroupServiceTest {
                                                         String comments, LocalDateTime date) {
         LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
         linkedGroupDetails.setLinkedGroupId(linkGroupId);
-        linkedGroupDetails.setLinkType(linkType);
+        linkedGroupDetails.setLinkType(LinkType.SAME_SLOT.toString());
         linkedGroupDetails.setLinkedComments(comments);
         linkedGroupDetails.setRequestDateTime(date);
         linkedGroupDetails.setReasonForLink(reason);

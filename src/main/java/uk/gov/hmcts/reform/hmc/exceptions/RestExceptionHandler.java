@@ -37,6 +37,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<Object> handleBadRequestException(IllegalArgumentException ex) {
+        log.debug("IllegalArgumentException: {}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     @ExceptionHandler(InvalidRoleAssignmentException.class)
     protected ResponseEntity<Object> handleBadRequestException(InvalidRoleAssignmentException ex) {
         log.debug("InvalidRoleAssignmentException: {}", ex.getLocalizedMessage());
@@ -90,6 +96,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<Object> handleConstraintViolationException(Exception ex) {
+        log.debug(BAD_REQUEST_EXCEPTION + ":{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(LinkedGroupNotFoundException.class)
+    protected ResponseEntity<Object> handleLinkedGroupNotFoundException(Exception ex) {
+        log.debug(BAD_REQUEST_EXCEPTION + ":{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(LinkedHearingNotValidForUnlinkingException.class)
+    protected ResponseEntity<Object> handleLinkedHearingNotValidForUnlinkingException(Exception ex) {
         log.debug(BAD_REQUEST_EXCEPTION + ":{}", ex.getLocalizedMessage());
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }

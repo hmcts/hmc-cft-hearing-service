@@ -5,19 +5,19 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetails;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 
 import java.util.List;
 
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 @Repository
-public interface LinkedHearingDetailsRepository extends CrudRepository<LinkedHearingDetails, Long> {
+public interface LinkedHearingDetailsRepository extends CrudRepository<LinkedHearingDetailsAudit, Long> {
 
-    @Query("from LinkedHearingDetails lhd WHERE lhd.hearing.id = :hearingId ")
-    LinkedHearingDetails getLinkedHearingDetailsByHearingId(Long hearingId);
+    @Query("from LinkedHearingDetailsAudit lhd WHERE lhd.hearing.id = :hearingId ")
+    LinkedHearingDetailsAudit getLinkedHearingDetailsByHearingId(Long hearingId);
 
-    @Query("from LinkedHearingDetails lhd WHERE lhd.linkedGroup.requestId = :requestId ")
-    List<LinkedHearingDetails> getLinkedHearingDetailsByRequestId(String requestId);
+    @Query("from LinkedHearingDetailsAudit lhd WHERE lhd.linkedGroup.requestId = :requestId ")
+    List<LinkedHearingDetailsAudit> getLinkedHearingDetailsByRequestId(String requestId);
 
 }
 

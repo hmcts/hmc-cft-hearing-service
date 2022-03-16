@@ -19,10 +19,14 @@ spring:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
   datasource:
+    hikari:
+      data-source-properties: stringtype=unspecified
+    tomcat:
+      connection-properties: stringtype=unspecified
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${CFT_HEARING_SERVICE_DB_HOST:localhost}:${CFT_HEARING_SERVICE_DB_PORT:5050}/${CFT_HEARING_SERVICE_DB_NAME:hmc_cft_hearing_service}${CFT_HEARING_SERVICE_DB_OPTIONS:}
-    username: ${CFT_HEARING_SERVICE_DB_USERNAME:ccd}
-    password: ${CFT_HEARING_SERVICE_DB_PASSWORD:ccd}
+    url: jdbc:postgresql://${CFT_HEARING_SERVICE_DB_HOST:localhost}:${CFT_HEARING_SERVICE_DB_PORT:5060}/${CFT_HEARING_SERVICE_DB_NAME:hmc_cft_hearing_service}${CFT_HEARING_SERVICE_DB_OPTIONS:}
+    username: ${CFT_HEARING_SERVICE_DB_USERNAME:hmc}
+    password: ${CFT_HEARING_SERVICE_DB_PASSWORD:hmc}
     type: com.zaxxer.hikari.HikariDataSource
   jpa:
     database: postgresql

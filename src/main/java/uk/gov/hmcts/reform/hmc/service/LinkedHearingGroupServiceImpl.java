@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetails;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -60,7 +60,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
             checkSufficientRequestIds(hearingLinkGroupRequest, details);
             log.debug("hearingId: {}", details.getHearingId());
             validateHearingId(Long.valueOf(details.getHearingId()), HEARING_ID_NOT_FOUND);
-            Optional<HearingEntity> hearingEntity = hearingRepository.findById(Long.valueOf(details.getHearingId()));
+            Optional<HearingEntity> hearingEntity = getHearing(Long.valueOf(details.getHearingId()));
 
             if (hearingEntity.isPresent()) {
                 checkHearingRequestAllowsLinking(hearingEntity);
@@ -87,7 +87,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private void checkHearingRequestIsNotInAnotherGroup(LinkHearingDetails details,
                                                        String requestId) {
-        LinkedHearingDetails linkedHearingDetails =
+        LinkedHearingDetailsAudit linkedHearingDetails =
             linkedHearingDetailsRepository.getLinkedHearingDetailsByHearingId(
                     Long.parseLong(details.getHearingId()));
         if (null != linkedHearingDetails) {
@@ -108,9 +108,24 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private void checkValidStateForHearingRequest(Optional<HearingEntity> hearingEntity,
                                            LinkHearingDetails details) {
-        if (hearingEntity.isEmpty()
+
+        if (hearingEntity.isEmpty()) {
+            log.info("hearingEntity is Empty");
+        } else if (!PutHearingStatus.isValid(hearingEntity.get().getStatus())) {
+            log.info("hearingEntity status is invalid {}", hearingEntity.get().getStatus());
+        } else if (null == hearingEntity.get().getCaseHearingRequest()) {
+            log.info("hearingEntity caseHearingRequest is null");
+        } else if (null == hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()) {
+            log.info("hearingEntity caseHearingRequest hearing window start date range is null");
+        } else if (hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()
+                .isBefore(LocalDate.now())) {
+            log.info("hearingEntity caseHearingRequest hearing window start date range already started");
+        }
+
+       if (hearingEntity.isEmpty()
             || !PutHearingStatus.isValid(hearingEntity.get().getStatus())
-            || (null == hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()
+            || (null == hearingEntity.get().getCaseHearingRequest()
+                || null == hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()
                 ||  hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()
                    .isBefore(LocalDate.now()))) {
             throw new BadRequestException("004 Invalid state for hearing request "
@@ -120,7 +135,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private void checkHearingOrderIsUnique(HearingLinkGroupRequest hearingLinkGroupRequest,
                                            LinkHearingDetails details) {
-        if (LinkType.ORDERED.equals(hearingLinkGroupRequest.getGroupDetails().getGroupLinkType())) {
+        if (LinkType.ORDERED.label.equals(hearingLinkGroupRequest.getGroupDetails().getGroupLinkType())) {
             int counter = getOrderOccurrences(
                     hearingLinkGroupRequest.getHearingsInGroup(),
                     details.getHearingOrder()

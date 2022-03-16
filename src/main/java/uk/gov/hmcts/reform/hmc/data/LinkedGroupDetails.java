@@ -6,13 +6,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
-import org.hibernate.annotations.Type;
+//import org.hibernate.annotations.Type;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+//import javax.persistence.EnumType;
+//import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -41,9 +41,9 @@ public class LinkedGroupDetails {
     @Column(name = "request_date_time", nullable = false)
     private LocalDateTime requestDateTime;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "link_type", nullable = false)
-    @Type(type = "uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType")
+//    @Type(type = "uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType")
     private String linkType;
 
     @Column(name = "reason_for_link", nullable = false)

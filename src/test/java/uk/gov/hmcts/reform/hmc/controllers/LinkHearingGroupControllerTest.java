@@ -123,7 +123,7 @@ class LinkHearingGroupControllerTest {
         GroupDetails groupDetails = new GroupDetails();
         groupDetails.setGroupComments(groupComments);
         groupDetails.setGroupName(groupName);
-        groupDetails.setGroupLinkType(linktype);
+        groupDetails.setGroupLinkType(linktype.label);
         groupDetails.setGroupReason(groupReason);
         return groupDetails;
     }
