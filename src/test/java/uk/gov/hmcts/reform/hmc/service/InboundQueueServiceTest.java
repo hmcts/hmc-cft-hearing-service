@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.hmc.client.hmi.Hearing;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingCaseStatus;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingCode;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;;
-import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -164,7 +163,7 @@ class InboundQueueServiceTest {
             applicationProperties.put(HEARING_ID, "2000000000");
 
             Exception exception = assertThrows(HearingNotFoundException.class, () ->
-                inboundQueueService.processMessage(jsonNode, MessageType.REQUEST_HEARING, applicationProperties));
+                inboundQueueService.processMessage(jsonNode, applicationProperties));
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
 
         }
@@ -175,7 +174,7 @@ class InboundQueueServiceTest {
             applicationProperties.put(HEARING_ID, "1000000000");
 
             Exception exception = assertThrows(BadRequestException.class, () ->
-                inboundQueueService.processMessage(jsonNode, MessageType.REQUEST_HEARING, applicationProperties));
+                inboundQueueService.processMessage(jsonNode, applicationProperties));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
 
         }
@@ -190,7 +189,7 @@ class InboundQueueServiceTest {
                 .thenReturn(java.util.Optional.of(hearingEntity));
 
             when(hmiHearingResponseMapper.mapHmiHearingToEntity(any(), any())).thenReturn(hearingEntity);
-            inboundQueueService.processMessage(jsonNode, MessageType.REQUEST_HEARING, applicationProperties);
+            inboundQueueService.processMessage(jsonNode, applicationProperties);
             verify(hearingRepository).save(hearingEntity);
         }
     }

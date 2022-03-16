@@ -6,9 +6,8 @@ import com.azure.messaging.servicebus.ServiceBusReceiverClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 
 import java.util.Map;
@@ -19,9 +18,6 @@ public class MessageProcessor {
 
     private final ObjectMapper objectMapper;
     private final InboundQueueService inboundQueueService;
-    private static final String MESSAGE_TYPE = "message_type";
-    public static final String UNSUPPORTED_MESSAGE_TYPE = "Message has unsupported value for message_type";
-    public static final String MISSING_MESSAGE_TYPE = "Message is missing custom header message_type";
     public static final String MESSAGE_PARSE_ERROR = "Unable to parse incoming message with id '{}'";
 
     public MessageProcessor(ObjectMapper objectMapper, InboundQueueService inboundQueueService) {
@@ -44,24 +40,9 @@ public class MessageProcessor {
         }
     }
 
-    public void processMessage(JsonNode message, Map<String, Object> applicationProperties) {
-        if (applicationProperties.containsKey(MESSAGE_TYPE)) {
-            MessageType messageType;
-            try {
-                messageType = MessageType.valueOf(applicationProperties.get(MESSAGE_TYPE).toString());
-                switch (messageType) {
-                    case REQUEST_HEARING:
-                        inboundQueueService.processMessage(message, messageType, applicationProperties);
-                        break;
-                    default:
-                        throw new MalformedMessageException(UNSUPPORTED_MESSAGE_TYPE);
-                }
-            } catch (Exception exception) {
-                throw new MalformedMessageException(UNSUPPORTED_MESSAGE_TYPE);
-            }
-        } else {
-            throw new MalformedMessageException(MISSING_MESSAGE_TYPE);
-        }
+    public void processMessage(JsonNode message, Map<String, Object> applicationProperties)
+        throws JsonProcessingException {
+        inboundQueueService.processMessage(message, applicationProperties);
     }
 
     private JsonNode convertMessage(BinaryData message) throws JsonProcessingException {

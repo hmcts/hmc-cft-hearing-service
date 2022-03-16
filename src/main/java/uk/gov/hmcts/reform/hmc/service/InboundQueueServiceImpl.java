@@ -47,9 +47,8 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
     }
 
     @Override
-    public void processMessage(JsonNode message, MessageType messageType, Map<String, Object> applicationProperties)
+    public void processMessage(JsonNode message, Map<String, Object> applicationProperties)
         throws JsonProcessingException {
-        log.info("Message of type " + messageType + " received");
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         HearingResponse hearingResponse = objectMapper.treeToValue(message, HearingResponse.class);
