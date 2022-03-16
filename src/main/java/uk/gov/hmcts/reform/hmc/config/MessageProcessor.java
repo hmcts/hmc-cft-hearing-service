@@ -4,25 +4,14 @@ import com.azure.core.util.BinaryData;
 import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
 import com.azure.messaging.servicebus.ServiceBusReceiverClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microsoft.applicationinsights.core.dependencies.google.gson.Gson;
-import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
+import lombok.extern.slf4j.Slf4j;;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
-import uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.util.Map;
-import java.util.Set;
 
 @Slf4j
 @Component
@@ -62,7 +51,7 @@ public class MessageProcessor {
                 messageType = MessageType.valueOf(applicationProperties.get(MESSAGE_TYPE).toString());
                 switch (messageType) {
                     case REQUEST_HEARING:
-                        inboundQueueService.processMessage(message, messageType);
+                        inboundQueueService.processMessage(message, messageType, applicationProperties);
                         break;
                     default:
                         throw new MalformedMessageException(UNSUPPORTED_MESSAGE_TYPE);

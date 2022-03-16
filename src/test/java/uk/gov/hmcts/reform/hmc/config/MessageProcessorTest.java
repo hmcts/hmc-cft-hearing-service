@@ -61,7 +61,7 @@ class MessageProcessorTest {
         when(message.getBody()).thenReturn(BinaryData.fromString("{ \"test\": \"name\"}"));
         BinaryData jsonMessage = BinaryData.fromString("{ \"test\": \"name\"}");
         messageProcessor.processMessage(client, message);
-        verify(inboundQueueService).processMessage(any(), any());
+        verify(inboundQueueService).processMessage(any(), any(), any());
     }
 
     @Test
