@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public class LinkedHearingGroupControllerIT extends BaseTest {
     public static String ERROR_PATH_ERROR = "$.errors";
 
@@ -55,7 +56,8 @@ public class LinkedHearingGroupControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
-    void shouldReturn400_WhenHearingGroupHearingResponseStartDateIsInThePastForHearingStatusHEARING_REQUESTED() throws Exception {
+    void shouldReturn400_WhenHearingGroupHearingResponseStartDateIsInThePastForHearingStatusHEARING_REQUESTED()
+        throws Exception {
         mockMvc.perform(delete(url + "/7600000300")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
@@ -66,7 +68,8 @@ public class LinkedHearingGroupControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
-    void shouldReturn400_WhenHearingGroupHearingResponseStartDateIsInThePastForHearingStatusUPDATE_REQUESTED() throws Exception {
+    void shouldReturn400_WhenHearingGroupHearingResponseStartDateIsInThePastForHearingStatusUPDATE_REQUESTED()
+        throws Exception {
         mockMvc.perform(delete(url + "/7600000301")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
