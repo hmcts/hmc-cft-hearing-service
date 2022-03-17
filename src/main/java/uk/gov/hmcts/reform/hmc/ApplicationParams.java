@@ -43,6 +43,9 @@ public class ApplicationParams {
     @Value("${jms.servicebus.internal.queues.outbound.queue-name}")
     private String internalOutboundQueueName;
 
+    @Value("${access-control.enabled}")
+    private boolean accessControlEnabled;
+
     public static String encode(final String stringToEncode) {
         try {
             return URLEncoder.encode(stringToEncode, "UTF-8");
