@@ -54,7 +54,6 @@ import javax.transaction.Transactional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
@@ -418,26 +417,6 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
 
     private Integer getVersionNumber(Long hearingId) {
         return caseHearingRequestRepository.getVersionNumber(hearingId);
-    }
-
-    private void validateHearingId(Long hearingId) {
-        if (hearingId == null) {
-            throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
-        } else {
-            String hearingIdStr = String.valueOf(hearingId);
-            isValidFormat(hearingIdStr);
-            if (!hearingRepository.existsById(hearingId)) {
-                throw new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND);
-            }
-        }
-    }
-
-    @Override
-    protected void isValidFormat(String hearingIdStr) {
-        if (hearingIdStr.length() != HEARING_ID_MAX_LENGTH || !StringUtils.isNumeric(hearingIdStr)
-            || hearingIdStr.charAt(0) != '2') {
-            throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
-        }
     }
 
     @Override
