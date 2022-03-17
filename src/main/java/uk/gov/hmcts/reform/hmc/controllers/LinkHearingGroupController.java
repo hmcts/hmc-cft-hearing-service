@@ -55,7 +55,7 @@ public class LinkHearingGroupController {
             @ApiResponse(code = 400, message = "008 invalid state for unlinking hearing request <hearingid>")
     })
     public void updateHearing(@RequestParam("id") String requestId,
-                              @RequestBody HearingLinkGroupRequest hearingLinkGroupRequest) {
+                              @RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
         linkedHearingGroupService.updateLinkHearing(requestId, hearingLinkGroupRequest);
     }
 }

@@ -36,7 +36,8 @@ public class LinkedHearingValidator extends HearingIdValidator {
         if (requestId == null) {
             throw new BadRequestException(LINKED_GROUP_ID_EMPTY);
         } else {
-            if (linkedGroupDetailsRepository.isFoundForRequestId(requestId).equals(0L)) {
+            Long answer = linkedGroupDetailsRepository.isFoundForRequestId(requestId);
+            if (null == answer || answer.intValue() == 0) {
                 throw new LinkedGroupNotFoundException(requestId, errorMessage);
             }
         }

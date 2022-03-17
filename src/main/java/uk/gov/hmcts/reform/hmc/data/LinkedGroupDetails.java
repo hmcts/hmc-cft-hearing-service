@@ -41,9 +41,9 @@ public class LinkedGroupDetails {
     @Column(name = "request_date_time", nullable = false)
     private LocalDateTime requestDateTime;
 
-//    @Enumerated(EnumType.STRING)
+    // @Enumerated(EnumType.STRING)
     @Column(name = "link_type", nullable = false)
-//    @Type(type = "uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType")
+    // @Type(type = "uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType")
     private String linkType;
 
     @Column(name = "reason_for_link", nullable = false)

@@ -23,7 +23,6 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -272,61 +271,200 @@ class LinkedHearingGroupControllerIT extends BaseTest {
     @DisplayName("PutLinkedHearingGroup")
     class PutLinkedHearingGroup {
         @Test
-        void shouldReturn400_ForNoGroupDetails_MandatoryParentElementMissing() throws Exception {
-            LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
-            hearingInGroup1.setHearingId("2000000007");
-            hearingInGroup1.setHearingOrder(1);
-            LinkHearingDetails hearingInGroup2 = new LinkHearingDetails();
-            hearingInGroup2.setHearingId("2000000008");
-            hearingInGroup2.setHearingOrder(2);
-            LinkHearingDetails hearingInGroup3 = new LinkHearingDetails();
-            hearingInGroup3.setHearingId("2000000009");
-            hearingInGroup3.setHearingOrder(2);
+        void shouldReturn400_WhenThereIsOnlyOneHearing() throws Exception {
+            LinkHearingDetails hearingInGroup = new LinkHearingDetails();
+            hearingInGroup.setHearingId("2000000001");
+            hearingInGroup.setHearingOrder(1);
 
             HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
-            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(
-                    hearingInGroup1, hearingInGroup2, hearingInGroup3));
-
-            mockMvc.perform(put(url + "?2")
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
-                    .andExpect(status().is(400))
-                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.GROUP_DETAILS)))
-                    .andReturn();
-
-
-        }
-
-        @Test
-        void shouldReturn400_ForRequest_MandatoryChildElementsMissing() throws Exception {
-            LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
-            hearingInGroup1.setHearingId(null);
-            hearingInGroup1.setHearingOrder(1);
-            LinkHearingDetails hearingInGroup2 = new LinkHearingDetails();
-            hearingInGroup2.setHearingId("2000000008");
-            hearingInGroup2.setHearingOrder(2);
-
-            GroupDetails groupDetails = new GroupDetails();
-            groupDetails.setGroupComments("comments");
-            groupDetails.setGroupName("name");
-            groupDetails.setGroupLinkType(null);
-            groupDetails.setGroupReason(null);
-            HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+            GroupDetails groupDetails = generateGroupDetails(LinkType.SAME_SLOT);
             hearingLinkGroupRequest.setGroupDetails(groupDetails);
-            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(
-                    hearingInGroup1, hearingInGroup2));
+            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup));
 
-            mockMvc.perform(put(url + "?2")
+            mockMvc.perform(put(url + "?id=2")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
-                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.GROUP_REASON_EMPTY)))
-                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.GROUP_LINK_TYPE_EMPTY)))
-                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.HEARING_ID_EMPTY)))
+                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.HEARINGS_IN_GROUP_SIZE
+                    )))
                     .andReturn();
         }
 
         @Test
+        void shouldReturn400_WhenHearingIsNotUniqueInGroup() throws Exception {
+            LinkHearingDetails hearingInGroup = new LinkHearingDetails();
+            hearingInGroup.setHearingId("2000000000");
+            hearingInGroup.setHearingOrder(1);
+
+            HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+            GroupDetails groupDetails = generateGroupDetails(LinkType.SAME_SLOT);
+            hearingLinkGroupRequest.setGroupDetails(groupDetails);
+            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup));
+
+            mockMvc.perform(put(url + "?id=2")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
+                    .andExpect(status().is(400))
+                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.HEARINGS_IN_GROUP_SIZE
+                    )))
+                    .andReturn();
+
+        }
+
+        @Test
+        void shouldReturn404_WhenHearingDoesNotExist() throws Exception {
+            LinkHearingDetails hearingInGroup = new LinkHearingDetails();
+            hearingInGroup.setHearingId("2000000001");
+            hearingInGroup.setHearingOrder(1);
+
+            LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
+            hearingInGroup1.setHearingId("2000000002");
+            hearingInGroup1.setHearingOrder(1);
+
+            HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+            GroupDetails groupDetails = generateGroupDetails(LinkType.SAME_SLOT);
+            hearingLinkGroupRequest.setGroupDetails(groupDetails);
+            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
+
+            mockMvc.perform(put(url + "?id=2")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
+                    .andExpect(status().is(404))
+                    .andExpect(jsonPath("$.errors", hasItem("No hearing found for reference: 2000000001"
+                    )))
+                    .andReturn();
+
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldReturn400_WhenHearingIsMalformed() throws Exception {
+            LinkHearingDetails hearingInGroup = new LinkHearingDetails();
+            hearingInGroup.setHearingId("1000000001");
+            hearingInGroup.setHearingOrder(1);
+
+            LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
+            hearingInGroup1.setHearingId("2000000002");
+            hearingInGroup1.setHearingOrder(1);
+
+            HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+            GroupDetails groupDetails = generateGroupDetails(LinkType.SAME_SLOT);
+            hearingLinkGroupRequest.setGroupDetails(groupDetails);
+            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
+
+            mockMvc.perform(put(url + "?id=2")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
+                    .andExpect(status().is(400))
+                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.INVALID_HEARING_ID_DETAILS
+                    )))
+                    .andReturn();
+
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldReturn400_WhenHearingIsLinkedIsFalse() throws Exception {
+            LinkHearingDetails hearingInGroup = new LinkHearingDetails();
+            hearingInGroup.setHearingId("2000000000");
+            hearingInGroup.setHearingOrder(1);
+
+            LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
+            hearingInGroup1.setHearingId("2000000002");
+            hearingInGroup1.setHearingOrder(1);
+
+            HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+            GroupDetails groupDetails = generateGroupDetails(LinkType.SAME_SLOT);
+            hearingLinkGroupRequest.setGroupDetails(groupDetails);
+            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
+
+            mockMvc.perform(put(url + "?id=2")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
+                    .andExpect(status().is(400))
+                    .andExpect(jsonPath("$.errors", hasItem("002 hearing request isLinked is False"
+                    )))
+                    .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldReturn400_WhenHearingRequestIsAlreadyInGroup() throws Exception {
+            LinkHearingDetails hearingInGroup = new LinkHearingDetails();
+            hearingInGroup.setHearingId("2000000010");
+            hearingInGroup.setHearingOrder(1);
+
+            LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
+            hearingInGroup1.setHearingId("2000000005");
+            hearingInGroup1.setHearingOrder(1);
+
+            HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+            GroupDetails groupDetails = generateGroupDetails(LinkType.SAME_SLOT);
+            hearingLinkGroupRequest.setGroupDetails(groupDetails);
+            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
+
+            mockMvc.perform(put(url + "?id=2")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
+                    .andExpect(status().is(400))
+                    .andExpect(jsonPath("$.errors", hasItem("003 hearing request already in a group"
+                    )))
+                    .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldReturn400_WhenHearingIsInInvalidState() throws Exception {
+            LinkHearingDetails hearingInGroup = new LinkHearingDetails();
+            hearingInGroup.setHearingId("2000000011");
+            hearingInGroup.setHearingOrder(1);
+
+            LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
+            hearingInGroup1.setHearingId("2000000000");
+            hearingInGroup1.setHearingOrder(1);
+
+            HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+            GroupDetails groupDetails = generateGroupDetails(LinkType.SAME_SLOT);
+            hearingLinkGroupRequest.setGroupDetails(groupDetails);
+            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
+
+            mockMvc.perform(post(url)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
+                    .andExpect(status().is(400))
+                    .andExpect(jsonPath("$.errors", hasItem("004 Invalid state for hearing request 2000000011"
+                    )))
+                    .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldReturn400_WhenHearingOrderIsNotUnique() throws Exception {
+            LinkHearingDetails hearingInGroup = new LinkHearingDetails();
+            hearingInGroup.setHearingId("2000000012");
+            hearingInGroup.setHearingOrder(1);
+
+            LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
+            hearingInGroup1.setHearingId("2000000002");
+            hearingInGroup1.setHearingOrder(1);
+
+            HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+            GroupDetails groupDetails = generateGroupDetails(LinkType.ORDERED);
+            hearingLinkGroupRequest.setGroupDetails(groupDetails);
+            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
+
+            mockMvc.perform(post(url)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
+                    .andExpect(status().is(400))
+                    .andExpect(jsonPath("$.errors", hasItem("005 Hearing Order is not unique"
+                    )))
+                    .andReturn();
+        }
+
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_ForInvalidRequestId() throws Exception {
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
             hearingInGroup1.setHearingId("2000000007");
@@ -339,12 +477,13 @@ class LinkedHearingGroupControllerIT extends BaseTest {
             GroupDetails groupDetails = generateGroupDetails(LinkType.SAME_SLOT);
             hearingLinkGroupRequest.setGroupDetails(groupDetails);
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup1, hearingInGroup2));
+            logger.info("json: {}", objectMapper.writeValueAsString(hearingLinkGroupRequest));
 
-            mockMvc.perform(put(url + "?2")
+            mockMvc.perform(put(url + "?id=G88782")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
-                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.INVALID_REQUEST_DETAILS)))
+                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS)))
                     .andReturn();
 
         }
@@ -373,7 +512,6 @@ class LinkedHearingGroupControllerIT extends BaseTest {
             mockMvc.perform(put(url + "?id=2")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
-                    .andDo(print())
                     .andExpect(status().is(200))
                     .andReturn();
         }

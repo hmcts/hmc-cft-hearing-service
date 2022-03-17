@@ -122,7 +122,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
             log.info("hearingEntity caseHearingRequest hearing window start date range already started");
         }
 
-       if (hearingEntity.isEmpty()
+        if (hearingEntity.isEmpty()
             || !PutHearingStatus.isValid(hearingEntity.get().getStatus())
             || (null == hearingEntity.get().getCaseHearingRequest()
                 || null == hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()
