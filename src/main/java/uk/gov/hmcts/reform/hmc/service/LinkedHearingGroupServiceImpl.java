@@ -91,6 +91,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private void checkHearingRequestIsNotInAnotherGroup(LinkHearingDetails details,
                                                        String requestId) {
+        log.info("requestId:{}, hearingId: {}", requestId, details.getHearingId());
         LinkedHearingDetailsAudit linkedHearingDetails =
             linkedHearingDetailsRepository.getLinkedHearingDetailsByHearingId(
                     Long.parseLong(details.getHearingId()));
@@ -114,28 +115,9 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private void checkValidStateForHearingRequest(Optional<HearingEntity> hearingEntity,
                                            LinkHearingDetails details) {
-
-        if (log.isDebugEnabled()) {
-            if (hearingEntity.isEmpty()) {
-                log.debug("hearingEntity is Empty");
-            } else if (!PutHearingStatus.isValid(hearingEntity.get().getStatus())) {
-                log.debug("hearingEntity status is invalid {}", hearingEntity.get().getStatus());
-            } else if (null == hearingEntity.get().getCaseHearingRequest()) {
-                log.debug("hearingEntity caseHearingRequest is null");
-            } else if (null == hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()) {
-                log.debug("hearingEntity caseHearingRequest hearing window start date range is null");
-            } else if (hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()
-                    .isBefore(LocalDate.now())) {
-                log.debug("hearingEntity caseHearingRequest hearing window start date range already started");
-            }
-        }
-
         if (hearingEntity.isEmpty()
             || !PutHearingStatus.isValid(hearingEntity.get().getStatus())
-            || (null == hearingEntity.get().getCaseHearingRequest()
-                || null == hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()
-                ||  hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()
-                   .isBefore(LocalDate.now()))) {
+            || filterHearingResponses(hearingEntity.get()).isBefore(LocalDate.now())) {
             throw new BadRequestException("004 Invalid state for hearing request "
                 + details.getHearingId());
         }
@@ -172,16 +154,21 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
                 .getHearingResponses().stream().filter(hearingResponseEntity ->
                         hearingResponseEntity.getResponseVersion().equals(version))
                 .collect(Collectors.toList()).stream()
-                .max(Comparator.comparing(hearingResponseEntity -> hearingResponseEntity.getRequestTimeStamp()));
+                .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
 
-        return getLowestDate(hearingResponse.orElseThrow(() -> new BadRequestException("bad request")));
+        return getLowestDate(hearingResponse.orElseThrow(() ->
+                new BadRequestException("004 Invalid state for hearing request " + hearingEntity.getId()
+                        + " no lowest date")));
     }
 
     private LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
         Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getHearingDayDetails()
-                .stream().min(Comparator.comparing(hearingDayDetailsEntity -> hearingDayDetailsEntity.getStartDateTime()));
+                .stream().min(Comparator.comparing(HearingDayDetailsEntity::getStartDateTime));
 
         return hearingDayDetails
-                .orElseThrow(() -> new BadRequestException("bad request")).getStartDateTime().toLocalDate();
+                .orElseThrow(() -> new BadRequestException("004 Invalid state for hearing request "
+                        + hearingResponse.getHearing().getId() + " "
+                        + "hearingDayDetails issue"))
+                .getStartDateTime().toLocalDate();
     }
 }

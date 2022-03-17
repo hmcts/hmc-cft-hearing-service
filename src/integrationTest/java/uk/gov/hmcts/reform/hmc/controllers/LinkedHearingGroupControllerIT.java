@@ -169,13 +169,13 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_WhenHearingRequestIsAlreadyInGroup() throws Exception {
-            LinkHearingDetails hearingInGroup = new LinkHearingDetails();
-            hearingInGroup.setHearingId("2000000010");
-            hearingInGroup.setHearingOrder(1);
-
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
             hearingInGroup1.setHearingId("2000000005");
             hearingInGroup1.setHearingOrder(1);
+
+            LinkHearingDetails hearingInGroup = new LinkHearingDetails();
+            hearingInGroup.setHearingId("2000000008");
+            hearingInGroup.setHearingOrder(1);
 
             HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
             GroupDetails groupDetails = generateGroupDetails(LinkType.SAME_SLOT);
@@ -390,11 +390,11 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_WhenHearingRequestIsAlreadyInGroup() throws Exception {
             LinkHearingDetails hearingInGroup = new LinkHearingDetails();
-            hearingInGroup.setHearingId("2000000010");
+            hearingInGroup.setHearingId("2000000005");
             hearingInGroup.setHearingOrder(1);
 
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
-            hearingInGroup1.setHearingId("2000000005");
+            hearingInGroup1.setHearingId("2000000008");
             hearingInGroup1.setHearingOrder(1);
 
             HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
@@ -444,7 +444,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
             hearingInGroup.setHearingOrder(1);
 
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
-            hearingInGroup1.setHearingId("2000000002");
+            hearingInGroup1.setHearingId("2000000013");
             hearingInGroup1.setHearingOrder(1);
 
             HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
@@ -496,15 +496,12 @@ class LinkedHearingGroupControllerIT extends BaseTest {
             LinkHearingDetails hearingInGroup2 = new LinkHearingDetails();
             hearingInGroup2.setHearingId("2000000008");
             hearingInGroup2.setHearingOrder(2);
-            LinkHearingDetails hearingInGroup3 = new LinkHearingDetails();
-            hearingInGroup3.setHearingId("2000000009");
-            hearingInGroup3.setHearingOrder(2);
 
             HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
             GroupDetails groupDetails = generateGroupDetails(LinkType.SAME_SLOT);
             hearingLinkGroupRequest.setGroupDetails(groupDetails);
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(
-                    hearingInGroup1, hearingInGroup2, hearingInGroup3));
+                    hearingInGroup1, hearingInGroup2));
 
             logger.info(objectMapper.writeValueAsString(hearingLinkGroupRequest));
 
