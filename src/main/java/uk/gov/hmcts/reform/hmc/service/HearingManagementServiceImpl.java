@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
@@ -57,7 +57,6 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
@@ -88,6 +87,7 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     private final ObjectMapperService objectMapperService;
     private final HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
     private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
+    private final ApplicationParams applicationParams;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -103,7 +103,8 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
                                         MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
                                         ObjectMapperService objectMapperService,
                                         HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper,
-                                        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration) {
+                                        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration,
+                                        ApplicationParams applicationParams) {
         super(hearingRepository);
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
@@ -118,6 +119,7 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
         this.messageSenderToQueueConfiguration = messageSenderToQueueConfiguration;
+        this.applicationParams = applicationParams;
     }
 
     @Override
@@ -151,7 +153,7 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     @Override
     public HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
         validateHearingRequest(hearingRequest);
-        validateHearingId(hearingId);
+        validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
         validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
         validateHearingStatusForUpdate(hearingId);
 
@@ -279,6 +281,9 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     }
 
     public void verifyAccess(String caseReference) {
+        if (!applicationParams.isAccessControlEnabled()) {
+            return;
+        }
         RoleAssignments roleAssignments = roleAssignmentService.getRoleAssignments(securityUtils.getUserId());
         if (roleAssignments.getRoleAssignments().isEmpty()) {
             throw new ResourceNotFoundException(String.format(ROLE_ASSIGNMENTS_NOT_FOUND, securityUtils.getUserId()));
