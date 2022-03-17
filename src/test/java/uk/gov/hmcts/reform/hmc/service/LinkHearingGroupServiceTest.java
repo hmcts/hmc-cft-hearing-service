@@ -271,6 +271,7 @@ class LinkHearingGroupServiceTest {
                 )
             );
 
+
             HearingDayDetailsEntity hearingDayDetailsEntity =
                 generateHearingDetailsEntity(
                     2000000002L,
@@ -286,6 +287,7 @@ class LinkHearingGroupServiceTest {
                     2000000000L,
                     LocalDateTime.of(2022, 11, 11, 12, 1)
                 );
+
 
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
@@ -363,6 +365,15 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+                Arrays.asList(generateHearingDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
+                null
+            );
+
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+
+            when(hearingRepository.existsById(2000000002L)).thenReturn(true);
+            when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
 
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
                 groupDetails,

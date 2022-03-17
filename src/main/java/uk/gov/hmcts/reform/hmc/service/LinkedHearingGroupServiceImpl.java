@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
@@ -19,8 +21,10 @@ import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
@@ -160,5 +164,24 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         List<String> list = new ArrayList<>();
         hearingDetails.forEach(lo -> list.add(lo.getHearingId()));
         return Collections.frequency(list, value);
+    }
+
+    private LocalDate filterHearingResponses(HearingEntity hearingEntity) {
+        String version = hearingEntity.getCaseHearingRequest().getVersionNumber().toString();
+        Optional<HearingResponseEntity> hearingResponse = hearingEntity
+                .getHearingResponses().stream().filter(hearingResponseEntity ->
+                        hearingResponseEntity.getResponseVersion().equals(version))
+                .collect(Collectors.toList()).stream()
+                .max(Comparator.comparing(hearingResponseEntity -> hearingResponseEntity.getRequestTimeStamp()));
+
+        return getLowestDate(hearingResponse.orElseThrow(() -> new BadRequestException("bad request")));
+    }
+
+    private LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
+        Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getHearingDayDetails()
+                .stream().min(Comparator.comparing(hearingDayDetailsEntity -> hearingDayDetailsEntity.getStartDateTime()));
+
+        return hearingDayDetails
+                .orElseThrow(() -> new BadRequestException("bad request")).getStartDateTime().toLocalDate();
     }
 }

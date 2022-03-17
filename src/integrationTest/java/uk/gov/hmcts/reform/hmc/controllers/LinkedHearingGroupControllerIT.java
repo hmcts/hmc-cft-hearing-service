@@ -46,7 +46,6 @@ class LinkedHearingGroupControllerIT extends BaseTest {
 
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-caseHearings_LinkedHearings.sql";
 
-
     @Nested
     @DisplayName("PostLinkedHearingGroup")
     class PostLinkedHearingGroup {

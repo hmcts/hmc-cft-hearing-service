@@ -20,5 +20,3 @@ public interface LinkedHearingDetailsRepository extends CrudRepository<LinkedHea
     List<LinkedHearingDetailsAudit> getLinkedHearingDetailsByRequestId(String requestId);
 
 }
-
-

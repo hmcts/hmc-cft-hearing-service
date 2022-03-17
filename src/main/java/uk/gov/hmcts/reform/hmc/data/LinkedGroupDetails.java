@@ -56,5 +56,5 @@ public class LinkedGroupDetails {
     private String linkedComments;
 
     @Column(name = "linked_group_latest_version")
-    private Long linkedGroupLatestVersion;
+    private String linkedGroupLatestVersion;
 }
