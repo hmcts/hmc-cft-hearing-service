@@ -91,11 +91,13 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
             linkedHearingDetailsRepository.getLinkedHearingDetailsByHearingId(
                     Long.parseLong(details.getHearingId()));
         if (null != linkedHearingDetails) {
-            log.info("requestId:{}", requestId);
-            log.info("linkedHearingDetails:{}", linkedHearingDetails);
-            log.info("linkedHearingDetails.getLinkedGroup():{}", linkedHearingDetails.getLinkedGroup());
-            if (null != requestId) {
-                log.info("linkedGroupDetailsById:{}",
+            if (log.isDebugEnabled()) {
+                log.debug("requestId:{}", requestId);
+                log.debug("linkedHearingDetails:{}", linkedHearingDetails);
+                log.debug("linkedHearingDetails.getLinkedGroup():{}", linkedHearingDetails.getLinkedGroup());
+            }
+            if (log.isDebugEnabled() && (null != requestId)) {
+                log.debug("linkedGroupDetailsById:{}",
                         linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId));
             }
             if ((null == requestId && linkedHearingDetails.getLinkedGroup() != null)
@@ -109,17 +111,19 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     private void checkValidStateForHearingRequest(Optional<HearingEntity> hearingEntity,
                                            LinkHearingDetails details) {
 
-        if (hearingEntity.isEmpty()) {
-            log.info("hearingEntity is Empty");
-        } else if (!PutHearingStatus.isValid(hearingEntity.get().getStatus())) {
-            log.info("hearingEntity status is invalid {}", hearingEntity.get().getStatus());
-        } else if (null == hearingEntity.get().getCaseHearingRequest()) {
-            log.info("hearingEntity caseHearingRequest is null");
-        } else if (null == hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()) {
-            log.info("hearingEntity caseHearingRequest hearing window start date range is null");
-        } else if (hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()
-                .isBefore(LocalDate.now())) {
-            log.info("hearingEntity caseHearingRequest hearing window start date range already started");
+        if (log.isDebugEnabled()) {
+            if (hearingEntity.isEmpty()) {
+                log.debug("hearingEntity is Empty");
+            } else if (!PutHearingStatus.isValid(hearingEntity.get().getStatus())) {
+                log.debug("hearingEntity status is invalid {}", hearingEntity.get().getStatus());
+            } else if (null == hearingEntity.get().getCaseHearingRequest()) {
+                log.debug("hearingEntity caseHearingRequest is null");
+            } else if (null == hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()) {
+                log.debug("hearingEntity caseHearingRequest hearing window start date range is null");
+            } else if (hearingEntity.get().getCaseHearingRequest().getHearingWindowStartDateRange()
+                    .isBefore(LocalDate.now())) {
+                log.debug("hearingEntity caseHearingRequest hearing window start date range already started");
+            }
         }
 
         if (hearingEntity.isEmpty()
