@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -13,6 +14,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
+import uk.gov.hmcts.reform.hmc.config.MessageType;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
@@ -152,6 +160,7 @@ class InboundQueueServiceTest {
         void shouldThrowHearingNotFoundException() {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "2000000000");
+            applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
 
             Exception exception = assertThrows(HearingNotFoundException.class, () ->
                 inboundQueueService.processMessage(jsonNode, applicationProperties));
@@ -163,6 +172,7 @@ class InboundQueueServiceTest {
         void shouldThrowMalformedIdException() {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "1000000000");
+            applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
 
             Exception exception = assertThrows(BadRequestException.class, () ->
                 inboundQueueService.processMessage(jsonNode, applicationProperties));
@@ -171,9 +181,11 @@ class InboundQueueServiceTest {
         }
 
         @Test
-        void shouldProcessMessage() throws JsonProcessingException {
+        void shouldProcessHearingResponseMessage() throws JsonProcessingException {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "2000000000");
+            applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+
             HearingEntity hearingEntity = generateHearingEntity(2000000000L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L))
@@ -188,7 +200,7 @@ class InboundQueueServiceTest {
         }
 
         @Test
-        void shouldProcessMessageWithErrors() throws JsonProcessingException {
+        void shouldProcessHearingResponseMessageWithErrors() throws JsonProcessingException {
             JsonNode jsonNode = OBJECT_MAPPER.readTree("{\n"
                                                            + "  \"meta\": {\n"
                                                            + "    \"transactionIdCaseHQ\": \"<transactionIdCaseHQ>\"\n"
@@ -279,10 +291,23 @@ class InboundQueueServiceTest {
                                                            + "}");
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "2000000000");
+            applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+
             inboundQueueService.processMessage(jsonNode, applicationProperties);
             verify(hmiHearingResponseMapper, times(0)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(0)).existsById(2000000000L);
             verify(hearingRepository, times(0)).findById(2000000000L);
+        }
+
+        @Test
+        void shouldProcessErrorResponseWithNoIssues() throws JsonProcessingException {
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
+            ErrorDetails errorDetails = new ErrorDetails();
+            errorDetails.setErrorCode(2000);
+            errorDetails.setErrorDescription("Unable to create case");
+            JsonNode jsonNode = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
+            inboundQueueService.processMessage(jsonNode, applicationProperties);
         }
     }
 
