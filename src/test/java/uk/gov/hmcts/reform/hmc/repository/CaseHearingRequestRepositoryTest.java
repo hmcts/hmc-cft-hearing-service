@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -88,6 +89,7 @@ class CaseHearingRequestRepositoryTest {
             () -> assertEquals("ABA1", entities.get(0).getHmctsServiceID()),
             () -> assertEquals(2000000000L, entities.get(0).getHearing().getId()),
             () -> assertEquals(1, entities.get(0).getHearing().getHearingResponses().size()),
+            () -> assertTrue(entities.get(0).getHearing().getIsLinkedFlag()),
             () -> verify(caseHearingRequestRepository, times(1)).getHearingDetails(any())
         );
     }
@@ -98,8 +100,8 @@ class CaseHearingRequestRepositoryTest {
         doReturn(expectedCaseHearingId).when(caseHearingRequestRepository).getCaseHearingId(any());
         Long caseHearingId = caseHearingRequestRepository.getCaseHearingId(any());
         assertAll(
-                () -> assertThat(caseHearingId, is(expectedCaseHearingId)),
-                () -> verify(caseHearingRequestRepository, times(1)).getCaseHearingId(any())
+            () -> assertThat(caseHearingId, is(expectedCaseHearingId)),
+            () -> verify(caseHearingRequestRepository, times(1)).getCaseHearingId(any())
         );
     }
 
