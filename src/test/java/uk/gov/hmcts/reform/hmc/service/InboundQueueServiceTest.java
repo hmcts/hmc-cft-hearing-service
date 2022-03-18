@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -12,6 +13,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
+import uk.gov.hmcts.reform.hmc.config.MessageType;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
 
 @ExtendWith(MockitoExtension.class)
 class InboundQueueServiceTest {
@@ -19,7 +27,10 @@ class InboundQueueServiceTest {
     @InjectMocks
     private InboundQueueServiceImpl inboundQueueService;
 
-    private static ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
+    private static ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
+        .registerModule(new JavaTimeModule());
 
     @BeforeEach
     public void setUp() {
@@ -34,7 +45,7 @@ class InboundQueueServiceTest {
     @DisplayName("ProcessInboundMessage")
     class ProcessInboundMessage {
         @Test
-        void shouldProcessMessage() throws JsonProcessingException {
+        void shouldProcessMessageHearingResponseWithNoIssues() throws JsonProcessingException {
             JsonNode jsonNode = OBJECT_MAPPER.readTree("{\n"
                                                            + "  \"meta\": {\n"
                                                            + "    \"transactionIdCaseHQ\": \"<transactionIdCaseHQ>\",\n"
@@ -124,12 +135,13 @@ class InboundQueueServiceTest {
                                                            + "    }\n"
                                                            + "  }\n"
                                                            + "}");
-
-            inboundQueueService.processMessage(jsonNode);
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+            inboundQueueService.processMessage(jsonNode, applicationProperties);
         }
 
         @Test
-        void shouldProcessMessageWithErrors() throws JsonProcessingException {
+        void shouldProcessHearingResponseMessageWithErrors() throws JsonProcessingException {
             JsonNode jsonNode = OBJECT_MAPPER.readTree("{\n"
                                                            + "  \"meta\": {\n"
                                                            + "    \"transactionIdCaseHQ\": \"<transactionIdCaseHQ>\"\n"
@@ -218,8 +230,20 @@ class InboundQueueServiceTest {
                                                            + "    }\n"
                                                            + "  }\n"
                                                            + "}");
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+            inboundQueueService.processMessage(jsonNode, applicationProperties);
+        }
 
-            inboundQueueService.processMessage(jsonNode);
+        @Test
+        void shouldProcessErrorResponseWithNoIssues() throws JsonProcessingException {
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
+            ErrorDetails errorDetails = new ErrorDetails();
+            errorDetails.setErrorCode(2000);
+            errorDetails.setErrorDescription("Unable to create case");
+            JsonNode jsonNode = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
+            inboundQueueService.processMessage(jsonNode, applicationProperties);
         }
     }
 }
