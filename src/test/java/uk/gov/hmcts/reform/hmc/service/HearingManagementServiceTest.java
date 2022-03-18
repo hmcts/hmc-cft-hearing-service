@@ -309,9 +309,11 @@ class HearingManagementServiceTest {
 
         @Test
         void shouldPassWithHearing_Case_Request_Party_Details_Valid() {
+            HearingDetails hearingDetails = TestingUtil.hearingDetails();
+            hearingDetails.setHearingIsLinkedFlag(Boolean.FALSE);
             CreateHearingRequest createHearingRequest = new CreateHearingRequest();
             createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
-            createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+            createHearingRequest.setHearingDetails(hearingDetails);
             createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
             createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
             createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
