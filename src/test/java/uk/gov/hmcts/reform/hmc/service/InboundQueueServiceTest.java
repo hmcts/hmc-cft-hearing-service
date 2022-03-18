@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -16,14 +15,10 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageType;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
@@ -37,7 +32,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
+import static uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl.MISSING_HEARING_ID;
 
 @ExtendWith(MockitoExtension.class)
 class InboundQueueServiceTest {
@@ -181,6 +178,17 @@ class InboundQueueServiceTest {
         }
 
         @Test
+        void shouldThrowMissingHearingIdForHearingResponse() {
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+
+            Exception exception = assertThrows(MalformedMessageException.class, () ->
+                inboundQueueService.processMessage(jsonNode, applicationProperties));
+            assertEquals(MISSING_HEARING_ID, exception.getMessage());
+
+        }
+
+        @Test
         void shouldProcessHearingResponseMessage() throws JsonProcessingException {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "2000000000");
@@ -303,11 +311,66 @@ class InboundQueueServiceTest {
         void shouldProcessErrorResponseWithNoIssues() throws JsonProcessingException {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
+            applicationProperties.put(HEARING_ID, "2000000000");
             ErrorDetails errorDetails = new ErrorDetails();
             errorDetails.setErrorCode(2000);
             errorDetails.setErrorDescription("Unable to create case");
-            JsonNode jsonNode = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
-            inboundQueueService.processMessage(jsonNode, applicationProperties);
+
+            HearingEntity hearingEntity = generateHearingEntity(2000000000L);
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L))
+                .thenReturn(java.util.Optional.of(hearingEntity));
+            when(hmiHearingResponseMapper.mapHmiHearingErrorToEntity(any(), any())).thenReturn(hearingEntity);
+
+            JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
+            inboundQueueService.processMessage(data, applicationProperties);
+            verify(hmiHearingResponseMapper, times(1)).mapHmiHearingErrorToEntity(any(), any());
+            verify(hearingRepository, times(1)).existsById(2000000000L);
+            verify(hearingRepository, times(1)).findById(2000000000L);
+        }
+
+        @Test
+        void shouldThrowHearingNotFoundExceptionForErrorPayload() {
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(HEARING_ID, "2000000000");
+            applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
+            ErrorDetails errorDetails = new ErrorDetails();
+            errorDetails.setErrorCode(2000);
+            errorDetails.setErrorDescription("Unable to create case");
+            JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
+            Exception exception = assertThrows(HearingNotFoundException.class, () ->
+                inboundQueueService.processMessage(data, applicationProperties));
+            assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
+
+        }
+
+        @Test
+        void shouldThrowMalformedIdExceptionForErrorPayload() {
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(HEARING_ID, "1000000000");
+            applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
+            ErrorDetails errorDetails = new ErrorDetails();
+            errorDetails.setErrorCode(2000);
+            errorDetails.setErrorDescription("Unable to create case");
+            JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
+            Exception exception = assertThrows(BadRequestException.class, () ->
+                inboundQueueService.processMessage(data, applicationProperties));
+            assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
+
+        }
+
+        @Test
+        void shouldThrowMissingHearingIdForErrorPayload() {
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
+            ErrorDetails errorDetails = new ErrorDetails();
+            errorDetails.setErrorCode(2000);
+            errorDetails.setErrorDescription("Unable to create case");
+            JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
+            Exception exception = assertThrows(MalformedMessageException.class, () ->
+                inboundQueueService.processMessage(data, applicationProperties));
+            assertEquals(MISSING_HEARING_ID, exception.getMessage());
+
         }
     }
 

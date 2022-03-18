@@ -59,7 +59,6 @@ class MessageProcessorTest {
         applicationProperties.put("HEARING_ID", "20000000000");
         when(message.getApplicationProperties()).thenReturn(applicationProperties);
         when(message.getBody()).thenReturn(BinaryData.fromString("{ \"test\": \"name\"}"));
-        BinaryData jsonMessage = BinaryData.fromString("{ \"test\": \"name\"}");
         messageProcessor.processMessage(client, message);
         verify(inboundQueueService).processMessage(any(), any());
     }
@@ -67,6 +66,7 @@ class MessageProcessorTest {
     @Test
     void shouldInitiateErrorResponseRequest() throws JsonProcessingException {
         Map<String, Object> applicationProperties = new HashMap<>();
+        applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
         when(message.getApplicationProperties()).thenReturn(applicationProperties);
         when(message.getBody()).thenReturn(BinaryData.fromString("{ \"test\": \"name\"}"));
         messageProcessor.processMessage(client, message);

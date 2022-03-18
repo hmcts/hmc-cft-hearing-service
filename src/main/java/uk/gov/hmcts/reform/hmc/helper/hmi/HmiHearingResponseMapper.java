@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingCode;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
@@ -35,6 +36,13 @@ public class HmiHearingResponseMapper {
         responseEntities.add(hearingResponseEntity);
         hearingEntity.setHearingResponses(responseEntities);
         hearingEntity.setStatus(postStatus.name());
+        return hearingEntity;
+    }
+
+    public HearingEntity mapHmiHearingErrorToEntity(ErrorDetails hearing, HearingEntity hearingEntity) {
+        hearingEntity.setErrorCode(hearing.getErrorCode());
+        hearingEntity.setErrorDescription(hearing.getErrorDescription());
+        hearingEntity.setStatus(EXCEPTION.name());
         return hearingEntity;
     }
 

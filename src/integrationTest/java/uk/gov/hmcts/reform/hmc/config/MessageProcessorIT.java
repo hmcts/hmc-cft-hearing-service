@@ -9,10 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.hmcts.reform.hmc.config.MessageProcessor.MISSING_MESSAGE_TYPE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
+import static uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl.MISSING_HEARING_ID;
 
 
 class MessageProcessorIT extends BaseTest {
@@ -126,9 +135,59 @@ class MessageProcessorIT extends BaseTest {
     void shouldInitiateRequest() throws JsonProcessingException {
         Map<String, Object> applicationProperties = new HashMap<>();
         applicationProperties.put(HEARING_ID, "2000000000");
+        applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
         messageProcessor.processMessage(jsonNode, applicationProperties);
     }
 
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldThrowMissingHeaderMessageType() {
+        Map<String, Object> applicationProperties = new HashMap<>();
+        applicationProperties.put(HEARING_ID, "2000000000");
+
+        MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
+        Exception exception = assertThrows(MalformedMessageException.class, () ->
+            messageProcessor.processMessage(jsonNode, applicationProperties));
+        assertEquals(MISSING_MESSAGE_TYPE, exception.getMessage());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldThrowMissingHeaderHearingId() {
+        Map<String, Object> applicationProperties = new HashMap<>();
+        applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+
+        MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
+        Exception exception = assertThrows(MalformedMessageException.class, () ->
+            messageProcessor.processMessage(jsonNode, applicationProperties));
+        assertEquals(MISSING_HEARING_ID, exception.getMessage());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldThrowHearingIdNotFound() {
+        Map<String, Object> applicationProperties = new HashMap<>();
+        applicationProperties.put(HEARING_ID, "2000000001");
+        applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+
+        MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
+        Exception exception = assertThrows(HearingNotFoundException.class, () ->
+            messageProcessor.processMessage(jsonNode, applicationProperties));
+        assertEquals("No hearing found for reference: 2000000001", exception.getMessage());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldThrowHearingIdNotMalformed() {
+        Map<String, Object> applicationProperties = new HashMap<>();
+        applicationProperties.put(HEARING_ID, "1000000000");
+        applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+
+        MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            messageProcessor.processMessage(jsonNode, applicationProperties));
+        assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
+    }
 }

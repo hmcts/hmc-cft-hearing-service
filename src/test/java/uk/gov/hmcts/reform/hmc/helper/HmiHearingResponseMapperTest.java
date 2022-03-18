@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
+import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.Hearing;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingAttendee;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingCaseStatus;
@@ -44,6 +45,20 @@ class HmiHearingResponseMapperTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         hmiHearingResponseMapper = new HmiHearingResponseMapper();
+    }
+
+
+    @Test
+    void mapHmiHearingToEntityErrorPayload() {
+        HearingEntity response = hmiHearingResponseMapper.mapHmiHearingErrorToEntity(
+            generateErrorDetails("random", 1),
+            generateHearingEntity("AWAITING_LISTING", 1)
+        );
+        assertAll(
+            () -> assertThat(response.getStatus(), is(EXCEPTION.name())),
+            () -> assertThat(response.getErrorCode(), is(1)),
+            () -> assertThat(response.getErrorDescription(), is("random"))
+        );
     }
 
     @Test
@@ -358,5 +373,12 @@ class HmiHearingResponseMapperTest {
         hearingEntity.setStatus(status);
 
         return hearingEntity;
+    }
+
+    private ErrorDetails generateErrorDetails(String description, int code) {
+        ErrorDetails errorDetails = new ErrorDetails();
+        errorDetails.setErrorDescription(description);
+        errorDetails.setErrorCode(code);
+        return errorDetails;
     }
 }
