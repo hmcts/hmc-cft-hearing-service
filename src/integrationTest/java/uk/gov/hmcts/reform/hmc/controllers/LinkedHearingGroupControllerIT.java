@@ -19,8 +19,6 @@ public class LinkedHearingGroupControllerIT extends BaseTest {
     private MockMvc mockMvc;
 
     private static final String url = "/linkedHearingGroup";
-    public static final String JURISDICTION = "Jurisdiction1";
-    public static final String CASE_TYPE = "CaseType1";
 
     private static final String INSERT_LINKED_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-linked-hearings.sql";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
