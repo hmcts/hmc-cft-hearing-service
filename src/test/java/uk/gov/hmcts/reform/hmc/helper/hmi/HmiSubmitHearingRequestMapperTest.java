@@ -41,14 +41,15 @@ class HmiSubmitHearingRequestMapperTest {
 
     @Test
     void shouldReturnSubmitHearingRequestForCreateHearingRequest() {
-        Entity entity = Entity.builder().build();
         CreateHearingRequest createHearingRequest = new CreateHearingRequest();
         CaseDetails caseDetails = new CaseDetails();
         createHearingRequest.setCaseDetails(caseDetails);
         HearingDetails hearingDetails = new HearingDetails();
+        hearingDetails.setHearingIsLinkedFlag(Boolean.TRUE);
         createHearingRequest.setHearingDetails(hearingDetails);
         PartyDetails partyDetails = new PartyDetails();
         createHearingRequest.setPartyDetails(Collections.singletonList(partyDetails));
+        Entity entity = Entity.builder().build();
         EntitiesMapperObject entities = EntitiesMapperObject.builder()
             .entities(Collections.singletonList(entity))
             .preferredHearingChannels(Collections.singletonList(PREFERRED_HEARING_CHANNEL))
