@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -47,86 +48,61 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
     }
 
     @Override
+    @Transactional
     public void processMessage(JsonNode message, Map<String, Object> applicationProperties)
         throws JsonProcessingException {
         MessageType messageType = MessageType.valueOf(applicationProperties.get(MESSAGE_TYPE).toString());
         log.info("Message of type " + messageType + " received");
-        if (messageType.equals(MessageType.HEARING_RESPONSE)) {
-            validateHearingResponse(message, applicationProperties);
-        } else if (messageType.equals(MessageType.ERROR)) {
-            validateError(message, applicationProperties);
-        }
-    }
-
-    private void updateHearing(HearingResponse hearingResponse, Map<String, Object> applicationProperties) {
         if (applicationProperties.containsKey(HEARING_ID)) {
             Long hearingId = Long.valueOf(applicationProperties.get(HEARING_ID).toString());
             validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
-            updateHearingAndStatus(hearingId, hearingResponse);
+            validateResponse(message, messageType, hearingId);
         } else {
             throw new MalformedMessageException(MISSING_HEARING_ID);
         }
-
     }
 
-    private void updateHearing(ErrorDetails errorDetails, Map<String, Object> applicationProperties) {
-        if (applicationProperties.containsKey(HEARING_ID)) {
-            Long hearingId = Long.valueOf(applicationProperties.get(HEARING_ID).toString());
-            validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
-            updateHearingAndStatus(hearingId, errorDetails);
-        } else {
-            throw new MalformedMessageException(MISSING_HEARING_ID);
-        }
-
-    }
-
-    private void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse) {
-
-        Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
-        if (hearingResult.isPresent()) {
-            HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                hearingResponse,
-                hearingResult.get()
-            );
-            hearingRepository.save(hearingToSave);
-            // transform and add to queue 79
-        }
-    }
-
-    private void updateHearingAndStatus(Long hearingId, ErrorDetails errorDetails) {
-
-        Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
-        if (hearingResult.isPresent()) {
-            HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiHearingErrorToEntity(
-                errorDetails,
-                hearingResult.get()
-            );
-            hearingRepository.save(hearingToSave);
-            // transform and add to queue 79
-        }
-    }
-
-    private void validateHearingResponse(JsonNode message,
-                                         Map<String, Object> applicationProperties) throws JsonProcessingException {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        HearingResponse hearingResponse = objectMapper.treeToValue(message, HearingResponse.class);
-        Set<ConstraintViolation<HearingResponse>> violations = validator.validate(hearingResponse);
-        if (violations.size() == 0) {
-            log.info("Successfully converted message to HearingResponseType " + hearingResponse);
-            updateHearing(hearingResponse, applicationProperties);
-        } else {
-            log.info("Total violations found: " + violations.size());
-            for (ConstraintViolation<HearingResponse> violation : violations) {
-                log.error("Violations are " + violation.getMessage());
-            }
-        }
-    }
-
-    private void validateError(JsonNode message, Map<String, Object> applicationProperties)
+    private void validateResponse(JsonNode message, MessageType messageType, Long hearingId)
         throws JsonProcessingException {
-        ErrorDetails errorResponse = objectMapper.treeToValue(message, ErrorDetails.class);
-        log.info("Successfully converted message to ErrorResponse " + errorResponse);
-        updateHearing(errorResponse, applicationProperties);
+        if (messageType.equals(MessageType.HEARING_RESPONSE)) {
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+            Validator validator = factory.getValidator();
+            HearingResponse hearingResponse = objectMapper.treeToValue(message, HearingResponse.class);
+            Set<ConstraintViolation<HearingResponse>> violations = validator.validate(hearingResponse);
+            if (violations.size() == 0) {
+                log.info("Successfully converted message to HearingResponseType " + hearingResponse);
+                updateHearingAndStatus(hearingId, hearingResponse, messageType, null);
+            } else {
+                log.info("Total violations found: " + violations.size());
+                for (ConstraintViolation<HearingResponse> violation : violations) {
+                    log.error("Violations are " + violation.getMessage());
+                }
+            }
+        } else if (messageType.equals(MessageType.ERROR)) {
+            ErrorDetails errorResponse = objectMapper.treeToValue(message, ErrorDetails.class);
+            log.info("Successfully converted message to ErrorResponse " + errorResponse);
+            updateHearingAndStatus(hearingId, null, messageType, errorResponse);
+        }
+    }
+
+    private void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse, MessageType messageType,
+                                        ErrorDetails errorDetails) {
+        Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
+        if (hearingResult.isPresent()) {
+            HearingEntity hearingToSave = null;
+            if (messageType.equals(MessageType.HEARING_RESPONSE)) {
+                hearingToSave = hmiHearingResponseMapper.mapHmiHearingToEntity(
+                    hearingResponse,
+                    hearingResult.get()
+                );
+            } else if (messageType.equals(MessageType.ERROR)) {
+                hearingToSave = hmiHearingResponseMapper.mapHmiHearingErrorToEntity(
+                    errorDetails,
+                    hearingResult.get()
+                );
+            }
+            hearingRepository.save(hearingToSave);
+            // transform and add to queue 79
+        }
     }
 }

@@ -6,6 +6,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -51,11 +52,11 @@ public class HearingDayDetailsEntity {
     @JoinColumn(name = "hearing_response_id")
     private HearingResponseEntity hearingResponse;
 
-    @OneToMany(mappedBy = "hearingDayDetails")
+    @OneToMany(mappedBy = "hearingDayDetails", cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingDayPanelEntity> hearingDayPanel;
 
-    @OneToMany(mappedBy = "hearingDayDetails")
+    @OneToMany(mappedBy = "hearingDayDetails", cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingAttendeeDetailsEntity> hearingAttendeeDetails;
 

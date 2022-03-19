@@ -209,6 +209,9 @@ class InboundQueueServiceTest {
 
         @Test
         void shouldProcessHearingResponseMessageWithErrors() throws JsonProcessingException {
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(HEARING_ID, "2000000000");
+            applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
             JsonNode jsonNode = OBJECT_MAPPER.readTree("{\n"
                                                            + "  \"meta\": {\n"
                                                            + "    \"transactionIdCaseHQ\": \"<transactionIdCaseHQ>\"\n"
@@ -297,13 +300,10 @@ class InboundQueueServiceTest {
                                                            + "    }\n"
                                                            + "  }\n"
                                                            + "}");
-            Map<String, Object> applicationProperties = new HashMap<>();
-            applicationProperties.put(HEARING_ID, "2000000000");
-            applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
-
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             inboundQueueService.processMessage(jsonNode, applicationProperties);
             verify(hmiHearingResponseMapper, times(0)).mapHmiHearingToEntity(any(), any());
-            verify(hearingRepository, times(0)).existsById(2000000000L);
+            verify(hearingRepository, times(1)).existsById(2000000000L);
             verify(hearingRepository, times(0)).findById(2000000000L);
         }
 

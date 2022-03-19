@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
@@ -23,7 +22,7 @@ public class HmiHearingResponseMapper {
 
     public HearingEntity mapHmiHearingToEntity(HearingResponse hearing, HearingEntity hearingEntity) {
 
-        HearingResponseEntity hearingResponseEntity = mapHearingResponseEntity(hearing);
+        HearingResponseEntity hearingResponseEntity = mapHearingResponseEntity(hearing, hearingEntity);
         HearingDayDetailsEntity hearingDayDetailsEntity = mapHearingDayDetailsEntity(hearing);
         HearingAttendeeDetailsEntity hearingAttendeeDetailsEntity = mapHearingAttendeeDetailsEntity(hearing);
         HearingDayPanelEntity hearingDayPanelEntity = mapHearingDayPanelEntity(hearing);
@@ -31,10 +30,10 @@ public class HmiHearingResponseMapper {
         hearingDayDetailsEntity.setHearingDayPanel(List.of(hearingDayPanelEntity));
         hearingDayDetailsEntity.setHearingAttendeeDetails(List.of(hearingAttendeeDetailsEntity));
         hearingResponseEntity.setHearingDayDetails(List.of(hearingDayDetailsEntity));
+        hearingEntity.addToHearingResponseEntity(hearingResponseEntity);
+
         HearingStatus postStatus = getHearingStatus(hearing, hearingEntity);
-        List<HearingResponseEntity> responseEntities = new ArrayList<>(hearingEntity.getHearingResponses());
-        responseEntities.add(hearingResponseEntity);
-        hearingEntity.setHearingResponses(responseEntities);
+
         hearingEntity.setStatus(postStatus.name());
         return hearingEntity;
     }
@@ -73,16 +72,20 @@ public class HmiHearingResponseMapper {
         return hearingDayDetailsEntity;
     }
 
-    private HearingResponseEntity mapHearingResponseEntity(HearingResponse hearing) {
+    private HearingResponseEntity mapHearingResponseEntity(HearingResponse hearingResponse, HearingEntity hearing) {
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
-        hearingResponseEntity.setListingTransactionId(hearing.getMeta().getTransactionIdCaseHQ());
-        hearingResponseEntity.setRequestTimeStamp(hearing.getMeta().getTimestamp());
-        hearingResponseEntity.setRequestVersion(hearing.getHearing().getHearingCaseVersionId().toString());
-        hearingResponseEntity.setListingStatus(hearing.getHearing().getHearingStatus().toString());
-        hearingResponseEntity.setCancellationReasonType(hearing.getHearing().getHearingCancellationReason());
-        hearingResponseEntity.setTranslatorRequired(hearing.getHearing().getHearingTranslatorRequired());
-        hearingResponseEntity.setListingCaseStatus(hearing.getHearing().getHearingCaseStatus().getCode().toString());
-        hearingResponseEntity.setListingStatus(hearing.getHearing().getHearingStatus().getCode());
+        hearingResponseEntity.setHearing(hearing);
+        hearingResponseEntity.setListingTransactionId(hearingResponse.getMeta().getTransactionIdCaseHQ());
+        hearingResponseEntity.setRequestTimeStamp(hearingResponse.getMeta().getTimestamp());
+        hearingResponseEntity.setRequestVersion(hearingResponse.getHearing().getHearingCaseVersionId().toString());
+        hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().toString());
+        hearingResponseEntity.setCancellationReasonType(hearingResponse.getHearing().getHearingCancellationReason());
+        hearingResponseEntity.setTranslatorRequired(hearingResponse.getHearing().getHearingTranslatorRequired());
+        hearingResponseEntity.setListingCaseStatus(hearingResponse.getHearing()
+                                                       .getHearingCaseStatus().getCode().toString());
+        hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode());
+        //ToDo response version is mandatory in db
+        hearingResponseEntity.setResponseVersion(hearingResponse.getHearing().getHearingCaseVersionId().toString());
         return hearingResponseEntity;
     }
 

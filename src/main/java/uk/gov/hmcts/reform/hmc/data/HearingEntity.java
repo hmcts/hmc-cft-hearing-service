@@ -42,6 +42,11 @@ public class HearingEntity {
     @OneToOne(mappedBy = "hearing", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private CaseHearingRequestEntity caseHearingRequest;
 
-    @OneToMany(mappedBy = "hearing", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "hearing", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<HearingResponseEntity> hearingResponses;
+
+    public void addToHearingResponseEntity(HearingResponseEntity hearingResponse) {
+        hearingResponse.setHearing(this);
+        this.hearingResponses.add(hearingResponse);
+    }
 }
