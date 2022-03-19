@@ -137,4 +137,12 @@ public final class ValidationError {
     public static final String PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH = "002 No such response version";
     public static final String PARTIES_NOTIFIED_ALREADY_SET = "003 Already set";
 
+    public static final String HEARING_REQUEST_ID_MAX_LENGTH =
+            "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
+    public static final String HEARING_GROUP_REQUEST_ID_MAX_LENGTH =
+            "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
+    public static final String LIST_ASSIST_TRANSACTION_ID_MAX_LENGTH =
+            "List assist transaction id length cannot be greater than 40 " + CHARACTERS_LONG;
+    public static final String HEARING_CANCELLATION_REASON_MAX_LENGTH =
+            "Hearing cancellation reason length cannot be greater than 40 " + CHARACTERS_LONG;
 }
