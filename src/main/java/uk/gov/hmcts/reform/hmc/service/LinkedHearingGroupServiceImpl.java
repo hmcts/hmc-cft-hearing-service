@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
@@ -60,6 +61,8 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     }
 
     private void validateHearingLinkGroupRequest(HearingLinkGroupRequest hearingLinkGroupRequest, String requestId) {
+        checkLinkedGroupValidStatus(requestId);
+
         hearingLinkGroupRequest.getHearingsInGroup().forEach(details -> {
             checkSufficientRequestIds(hearingLinkGroupRequest, details);
             log.debug("hearingId: {}", details.getHearingId());
@@ -89,6 +92,16 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         }
     }
 
+    private void checkLinkedGroupValidStatus(String requestId) {
+        LinkedGroupDetails linkedGroupDetails =
+                linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId);
+        if (null != linkedGroupDetails
+                && (linkedGroupDetails.getStatus().equals("PENDING")
+                    || linkedGroupDetails.getStatus().equals("ERROR"))) {
+            throw new BadRequestException("007 group is in a " + linkedGroupDetails.getStatus() + " state");
+        }
+    }
+
     private void checkHearingRequestIsNotInAnotherGroup(LinkHearingDetails details,
                                                        String requestId) {
         log.info("requestId:{}, hearingId: {}", requestId, details.getHearingId());
@@ -100,10 +113,10 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
                 log.debug("requestId:{}", requestId);
                 log.debug("linkedHearingDetails:{}", linkedHearingDetails);
                 log.debug("linkedHearingDetails.getLinkedGroup():{}", linkedHearingDetails.getLinkedGroup());
-            }
-            if (log.isDebugEnabled() && (null != requestId)) {
-                log.debug("linkedGroupDetailsById:{}",
-                        linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId));
+                if (null != requestId) {
+                    log.debug("linkedGroupDetailsById:{}",
+                            linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId));
+                }
             }
             if ((null == requestId && linkedHearingDetails.getLinkedGroup() != null)
                     || (null != requestId && !linkedHearingDetails.getLinkedGroup()
@@ -138,7 +151,12 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private int getOrderOccurrences(List<LinkHearingDetails> hearingDetails, int value) {
         List<Integer> list = new ArrayList<>();
-        hearingDetails.forEach(lo -> list.add(lo.getHearingOrder()));
+        hearingDetails.forEach(lo -> {
+            if (lo.getHearingOrder() < 1) {
+                throw new BadRequestException("Valid order not provided for hearing id " + lo.getHearingId());
+            }
+            list.add(lo.getHearingOrder());
+        });
         return Collections.frequency(list, value);
     }
 
@@ -149,26 +167,45 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     }
 
     private LocalDate filterHearingResponses(HearingEntity hearingEntity) {
+        log.debug("hearing id: {}", hearingEntity.getId());
         String version = hearingEntity.getCaseHearingRequest().getVersionNumber().toString();
         Optional<HearingResponseEntity> hearingResponse = hearingEntity
                 .getHearingResponses().stream().filter(hearingResponseEntity ->
                         hearingResponseEntity.getResponseVersion().equals(version))
                 .collect(Collectors.toList()).stream()
                 .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
+        if (log.isDebugEnabled()) {
+            if (hearingResponse.isPresent()) {
+                log.debug("hearing response: {} : {}",
+                        hearingResponse.get().getHearingResponseId(),
+                        hearingResponse.get().getRequestTimeStamp());
+            } else {
+                log.debug("No hearing response found");
+            }
+        }
 
         return getLowestDate(hearingResponse.orElseThrow(() ->
                 new BadRequestException("004 Invalid state for hearing request " + hearingEntity.getId()
-                        + " no lowest date")));
+                        + " no lowest date for given version")));
     }
 
     private LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
         Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getHearingDayDetails()
                 .stream().min(Comparator.comparing(HearingDayDetailsEntity::getStartDateTime));
+        if (log.isDebugEnabled()) {
+            if (hearingDayDetails.isPresent()) {
+                log.debug("hearing day details: {} : {}",
+                    hearingDayDetails.get().getHearingDayId(),
+                    hearingDayDetails.get().getStartDateTime());
+            } else {
+                log.debug("No hearing day details found");
+            }
+        }
 
         return hearingDayDetails
                 .orElseThrow(() -> new BadRequestException("004 Invalid state for hearing request "
                         + hearingResponse.getHearing().getId() + " "
-                        + "hearingDayDetails issue"))
+                        + "valid hearingDayDetails not found"))
                 .getStartDateTime().toLocalDate();
     }
 }
