@@ -518,8 +518,6 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.hearingRequestID").value("2000000000"))
             .andExpect(jsonPath("$.status").value(CANCELLATION_REQUESTED))
-            .andExpect(jsonPath("$.versionNumber").value(
-                deleteHearingRequest.getVersionNumber() + 1))
             .andExpect(jsonPath("$.timeStamp").value(IsNull.notNullValue()))
             .andReturn();
     }
