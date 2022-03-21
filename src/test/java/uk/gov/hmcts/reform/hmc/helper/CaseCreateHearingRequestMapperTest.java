@@ -31,7 +31,6 @@ class CaseCreateHearingRequestMapperTest {
         expectedEntity.setOwningLocationId("CMLC123");
         expectedEntity.setCaseRestrictedFlag(false);
         expectedEntity.setVersionNumber(1);
-        expectedEntity.setIsLinkedFlag(false);
         expectedEntity.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
         expectedEntity.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
         expectedEntity.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
@@ -7,6 +8,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.IndividualDetailEntity;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
@@ -29,12 +31,21 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
+
+    private LinkedHearingDetailsRepository linkedHearingDetailsRepository;
+
+    @Autowired
+    public GetHearingResponseMapper(LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
+        this.linkedHearingDetailsRepository = linkedHearingDetailsRepository;
+    }
+
 
     public GetHearingResponse toHearingResponse(HearingEntity hearingEntity) {
         GetHearingResponse getHearingResponse = new GetHearingResponse();
@@ -48,10 +59,21 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
 
     private RequestDetails setRequestDetails(HearingEntity hearingEntity) {
         RequestDetails requestDetails = new RequestDetails();
+        requestDetails.setHearingRequestId(hearingEntity.getId().toString());
+        requestDetails.setHearingGroupRequestId(getRequestId(hearingEntity.getId()));
         requestDetails.setStatus(hearingEntity.getStatus());
         requestDetails.setTimestamp(hearingEntity.getCaseHearingRequest().getHearingRequestReceivedDateTime());
         requestDetails.setVersionNumber(hearingEntity.getCaseHearingRequest().getVersionNumber());
         return requestDetails;
+    }
+
+    private String getRequestId(Long hearingId) {
+        LinkedHearingDetailsAudit linkedHearingDetails =
+                linkedHearingDetailsRepository.getLinkedHearingDetailsByHearingId(hearingId);
+        if (null != linkedHearingDetails && null != linkedHearingDetails.getLinkedGroup()) {
+            return linkedHearingDetails.getLinkedGroup().getRequestId();
+        }
+        return null;
     }
 
     private CaseDetails setCaseDetails(HearingEntity hearingEntity) {
@@ -202,7 +224,6 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         return individualDetailsArrayList;
     }
 
-
     private ArrayList<HearingResponse> setHearingResponse(HearingEntity hearingEntity) {
         ArrayList<HearingResponse> hearingResponses = new ArrayList<>();
         for (HearingResponseEntity hearingResponseEntity : hearingEntity.getHearingResponses()) {
@@ -239,7 +260,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             hearingEntity.getCaseHearingRequest().getPrivateHearingRequiredFlag());
         hearingDetails.setLeadJudgeContractType(hearingEntity.getCaseHearingRequest().getLeadJudgeContractType());
         hearingDetails.setPanelRequirements(setPanelRequirements(hearingEntity));
-        hearingDetails.setHearingIsLinkedFlag(hearingEntity.getCaseHearingRequest().getIsLinkedFlag());
+        hearingDetails.setHearingIsLinkedFlag(hearingEntity.getIsLinkedFlag());
         return hearingDetails;
     }
 
@@ -313,7 +334,9 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             if (null != hearingDayDetailEntities && !hearingDayDetailEntities.isEmpty()) {
                 for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
                     HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
-                    setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
+                    if (!detailEntity.getHearingDayPanel().isEmpty()) {
+                        setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
+                    }
                     setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
                     scheduleList.add(hearingDaySchedule);
                 }
