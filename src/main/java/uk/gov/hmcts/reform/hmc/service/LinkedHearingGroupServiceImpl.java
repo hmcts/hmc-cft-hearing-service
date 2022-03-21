@@ -74,7 +74,14 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
                 }
 
                 //hman-55 step 4.4 / hman-56 step 6.4
-                if (LinkType.ORDERED.equals(hearingLinkGroupRequest.getGroupDetails().getGroupLinkType())) {
+                LinkType value = LinkType.getByLabel(hearingLinkGroupRequest.getGroupDetails().getGroupLinkType());
+                if (value == null) {
+                    throw new BadRequestException("Invalid value for GroupLinkType");
+                }
+                if (LinkType.ORDERED.equals(value)) {
+                    if (details.getHearingOrder() == 0) {
+                        throw new BadRequestException("Hearing order must exists and be greater than 0");
+                    }
                     int counter = getOrderOccurrences(
                         hearingLinkGroupRequest.getHearingsInGroup(),
                         details.getHearingOrder()

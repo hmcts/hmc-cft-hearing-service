@@ -12,7 +12,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
@@ -52,7 +51,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         void shouldReturn400_WhenThereIsOnlyOneHearing() throws Exception {
             GroupDetails groupDetails = new GroupDetails();
             groupDetails.setGroupComments("comments");
-            groupDetails.setGroupLinkType(LinkType.SAME_SLOT);
+            groupDetails.setGroupLinkType("Same Slot");
             groupDetails.setGroupName("name");
             groupDetails.setGroupReason("reason");
 
@@ -78,7 +77,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         void shouldReturn400_WhenHearingIsNotUniqueInGroup() throws Exception {
             GroupDetails groupDetails = new GroupDetails();
             groupDetails.setGroupComments("comments");
-            groupDetails.setGroupLinkType(LinkType.SAME_SLOT);
+            groupDetails.setGroupLinkType("Same Slot");
             groupDetails.setGroupName("name");
             groupDetails.setGroupReason("reason");
 
@@ -104,7 +103,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         void shouldReturn404_WhenHearingDoesNotExist() throws Exception {
             GroupDetails groupDetails = new GroupDetails();
             groupDetails.setGroupComments("comments");
-            groupDetails.setGroupLinkType(LinkType.SAME_SLOT);
+            groupDetails.setGroupLinkType("Same Slot");
             groupDetails.setGroupName("name");
             groupDetails.setGroupReason("reason");
 
@@ -134,7 +133,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         void shouldReturn400_WhenHearingIsMalformed() throws Exception {
             GroupDetails groupDetails = new GroupDetails();
             groupDetails.setGroupComments("comments");
-            groupDetails.setGroupLinkType(LinkType.SAME_SLOT);
+            groupDetails.setGroupLinkType("Same Slot");
             groupDetails.setGroupName("name");
             groupDetails.setGroupReason("reason");
 
@@ -165,7 +164,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         void shouldReturn400_WhenHearingIsLinkedIsFalse() throws Exception {
             GroupDetails groupDetails = new GroupDetails();
             groupDetails.setGroupComments("comments");
-            groupDetails.setGroupLinkType(LinkType.SAME_SLOT);
+            groupDetails.setGroupLinkType("Same Slot");
             groupDetails.setGroupName("name");
             groupDetails.setGroupReason("reason");
 
@@ -195,7 +194,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         void shouldReturn400_WhenHearingRequestIsAlreadyInGroup() throws Exception {
             GroupDetails groupDetails = new GroupDetails();
             groupDetails.setGroupComments("comments");
-            groupDetails.setGroupLinkType(LinkType.SAME_SLOT);
+            groupDetails.setGroupLinkType("Same Slot");
             groupDetails.setGroupName("name");
             groupDetails.setGroupReason("reason");
 
@@ -225,7 +224,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         void shouldReturn400_WhenHearingIsInInvalidState() throws Exception {
             GroupDetails groupDetails = new GroupDetails();
             groupDetails.setGroupComments("comments");
-            groupDetails.setGroupLinkType(LinkType.SAME_SLOT);
+            groupDetails.setGroupLinkType("Same Slot");
             groupDetails.setGroupName("name");
             groupDetails.setGroupReason("reason");
 
@@ -255,7 +254,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         void shouldReturn400_WhenHearingOrderIsNotUnique() throws Exception {
             GroupDetails groupDetails = new GroupDetails();
             groupDetails.setGroupComments("comments");
-            groupDetails.setGroupLinkType(LinkType.ORDERED);
+            groupDetails.setGroupLinkType("Ordered");
             groupDetails.setGroupName("name");
             groupDetails.setGroupReason("reason");
 
@@ -285,7 +284,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         void shouldReturn201_WhenRequestIsValid() throws Exception {
             GroupDetails groupDetails = new GroupDetails();
             groupDetails.setGroupComments("comments");
-            groupDetails.setGroupLinkType(LinkType.SAME_SLOT);
+            groupDetails.setGroupLinkType("Same Slot");
             groupDetails.setGroupName("name");
             groupDetails.setGroupReason("reason");
 

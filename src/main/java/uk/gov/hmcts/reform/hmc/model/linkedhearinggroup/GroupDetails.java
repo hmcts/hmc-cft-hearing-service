@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.model.linkedhearinggroup;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import javax.validation.constraints.NotBlank;
@@ -20,7 +19,7 @@ public class GroupDetails {
     private String groupReason;
 
     @NotNull(message = ValidationError.GROUP_LINK_TYPE_EMPTY)
-    private LinkType groupLinkType;
+    private String groupLinkType;
 
     @Size(max = 4000, message = ValidationError.GROUP_COMMENTS_LENGTH)
     private String groupComments;
