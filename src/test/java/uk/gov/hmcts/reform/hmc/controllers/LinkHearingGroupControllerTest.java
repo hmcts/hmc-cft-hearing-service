@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
@@ -70,7 +69,7 @@ class LinkHearingGroupControllerTest {
         @Test
         void shouldReturn200_whenRequest_Details_Are_Present() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.ORDERED, "reason"
+                                                             "Ordered", "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
@@ -92,7 +91,7 @@ class LinkHearingGroupControllerTest {
         @Test
         void shouldReturn400_whenRequest_HasOnlyOneHearingDetail() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.ORDERED, "reason"
+                                                             "Ordered", "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
@@ -118,7 +117,7 @@ class LinkHearingGroupControllerTest {
         return hearingLinkGroupRequest;
     }
 
-    private GroupDetails generateGroupDetails(String groupComments, String groupName, LinkType linktype,
+    private GroupDetails generateGroupDetails(String groupComments, String groupName, String linktype,
                                               String groupReason) {
         GroupDetails groupDetails = new GroupDetails();
         groupDetails.setGroupComments(groupComments);
