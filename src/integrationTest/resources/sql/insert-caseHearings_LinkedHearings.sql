@@ -10,7 +10,7 @@ INSERT INTO public.linked_group_details(
 	VALUES (2, 1, 2, 'HMAN-56 group 2', '2022-03-11T20:33:01', 'Ordered', 'Test 2', 'ACTIVE', 'commented');
 INSERT INTO public.linked_group_details_audit(
 	linked_group_id, linked_group_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
-	VALUES (2, 1, 2, 'HMAN-56 group 2', '2022-03-11T20:33:01', 'Ordered', 'Test 2', 'ACTYIVE', 'commented');
+	VALUES (2, 1, 2, 'HMAN-56 group 2', '2022-03-11T20:33:01', 'Ordered', 'Test 2', 'ACTIVE', 'commented');
 
 INSERT INTO public.linked_group_details(
 	linked_group_id, linked_group_latest_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
