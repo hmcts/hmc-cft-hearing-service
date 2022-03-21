@@ -4,14 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
-import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
-import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
-import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -19,15 +11,8 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 
 @Service
@@ -60,152 +45,4 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         validateLinkedHearingsForUpdate(requestId, linkedHearingDetailsListPayload);
     }
 
-    private void validateHearingLinkGroupRequest(HearingLinkGroupRequest hearingLinkGroupRequest, String requestId) {
-        checkLinkedGroupValidStatus(requestId);
-
-        hearingLinkGroupRequest.getHearingsInGroup().forEach(details -> {
-            checkSufficientRequestIds(hearingLinkGroupRequest, details);
-            log.debug("hearingId: {}", details.getHearingId());
-            validateHearingId(Long.valueOf(details.getHearingId()), HEARING_ID_NOT_FOUND);
-            Optional<HearingEntity> hearingEntity = getHearing(Long.valueOf(details.getHearingId()));
-
-            if (hearingEntity.isPresent()) {
-                checkHearingRequestAllowsLinking(hearingEntity);
-                checkHearingRequestIsNotInAnotherGroup(details, requestId);
-                checkValidStateForHearingRequest(hearingEntity, details);
-                checkHearingOrderIsUnique(hearingLinkGroupRequest, details);
-            }
-        });
-    }
-
-    private void checkSufficientRequestIds(HearingLinkGroupRequest hearingLinkGroupRequest,
-                                           LinkHearingDetails details) {
-        int occurrences = getIdOccurrences(hearingLinkGroupRequest.getHearingsInGroup(), details.getHearingId());
-        if (occurrences > 1) {
-            throw new BadRequestException("001 Insufficient requestIds");
-        }
-    }
-
-    private void checkHearingRequestAllowsLinking(Optional<HearingEntity> hearingEntity) {
-        if (hearingEntity.isEmpty() || Boolean.FALSE.equals(hearingEntity.get().getIsLinkedFlag())) {
-            throw new BadRequestException("002 hearing request isLinked is False");
-        }
-    }
-
-    private void checkLinkedGroupValidStatus(String requestId) {
-        LinkedGroupDetails linkedGroupDetails =
-                linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId);
-        if (null != linkedGroupDetails
-                && (linkedGroupDetails.getStatus().equals("PENDING")
-                    || linkedGroupDetails.getStatus().equals("ERROR"))) {
-            throw new BadRequestException("007 group is in a " + linkedGroupDetails.getStatus() + " state");
-        }
-    }
-
-    private void checkHearingRequestIsNotInAnotherGroup(LinkHearingDetails details,
-                                                       String requestId) {
-        log.info("requestId:{}, hearingId: {}", requestId, details.getHearingId());
-        LinkedHearingDetailsAudit linkedHearingDetails =
-            linkedHearingDetailsRepository.getLinkedHearingDetailsByHearingId(
-                    Long.parseLong(details.getHearingId()));
-        if (null != linkedHearingDetails) {
-            if (log.isDebugEnabled()) {
-                log.debug("requestId:{}", requestId);
-                log.debug("linkedHearingDetails:{}", linkedHearingDetails);
-                log.debug("linkedHearingDetails.getLinkedGroup():{}", linkedHearingDetails.getLinkedGroup());
-                if (null != requestId) {
-                    log.debug("linkedGroupDetailsById:{}",
-                            linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId));
-                }
-            }
-            if ((null == requestId && linkedHearingDetails.getLinkedGroup() != null)
-                    || (null != requestId && !linkedHearingDetails.getLinkedGroup()
-                    .equals(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId)))) {
-                throw new BadRequestException("003 hearing request already in a group");
-            }
-        }
-    }
-
-    private void checkValidStateForHearingRequest(Optional<HearingEntity> hearingEntity,
-                                           LinkHearingDetails details) {
-        if (hearingEntity.isEmpty()
-            || !PutHearingStatus.isValid(hearingEntity.get().getStatus())
-            || filterHearingResponses(hearingEntity.get()).isBefore(LocalDate.now())) {
-            throw new BadRequestException("004 Invalid state for hearing request "
-                + details.getHearingId());
-        }
-    }
-
-    private void checkHearingOrderIsUnique(HearingLinkGroupRequest hearingLinkGroupRequest,
-                                           LinkHearingDetails details) {
-        if (LinkType.ORDERED.label.equals(hearingLinkGroupRequest.getGroupDetails().getGroupLinkType())) {
-            int counter = getOrderOccurrences(
-                    hearingLinkGroupRequest.getHearingsInGroup(),
-                    details.getHearingOrder()
-            );
-            if (counter > 1) {
-                throw new BadRequestException("005 Hearing Order is not unique");
-            }
-        }
-    }
-
-    private int getOrderOccurrences(List<LinkHearingDetails> hearingDetails, int value) {
-        List<Integer> list = new ArrayList<>();
-        hearingDetails.forEach(lo -> {
-            if (lo.getHearingOrder() < 1) {
-                throw new BadRequestException("Valid order not provided for hearing id " + lo.getHearingId());
-            }
-            list.add(lo.getHearingOrder());
-        });
-        return Collections.frequency(list, value);
-    }
-
-    private int getIdOccurrences(List<LinkHearingDetails> hearingDetails, String value) {
-        List<String> list = new ArrayList<>();
-        hearingDetails.forEach(lo -> list.add(lo.getHearingId()));
-        return Collections.frequency(list, value);
-    }
-
-    private LocalDate filterHearingResponses(HearingEntity hearingEntity) {
-        log.debug("hearing id: {}", hearingEntity.getId());
-        String version = hearingEntity.getCaseHearingRequest().getVersionNumber().toString();
-        Optional<HearingResponseEntity> hearingResponse = hearingEntity
-                .getHearingResponses().stream().filter(hearingResponseEntity ->
-                        hearingResponseEntity.getResponseVersion().equals(version))
-                .collect(Collectors.toList()).stream()
-                .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
-        if (log.isDebugEnabled()) {
-            if (hearingResponse.isPresent()) {
-                log.debug("hearing response: {} : {}",
-                        hearingResponse.get().getHearingResponseId(),
-                        hearingResponse.get().getRequestTimeStamp());
-            } else {
-                log.debug("No hearing response found");
-            }
-        }
-
-        return getLowestDate(hearingResponse.orElseThrow(() ->
-                new BadRequestException("004 Invalid state for hearing request " + hearingEntity.getId()
-                        + " no lowest date for given version")));
-    }
-
-    private LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
-        Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getHearingDayDetails()
-                .stream().min(Comparator.comparing(HearingDayDetailsEntity::getStartDateTime));
-        if (log.isDebugEnabled()) {
-            if (hearingDayDetails.isPresent()) {
-                log.debug("hearing day details: {} : {}",
-                    hearingDayDetails.get().getHearingDayId(),
-                    hearingDayDetails.get().getStartDateTime());
-            } else {
-                log.debug("No hearing day details found");
-            }
-        }
-
-        return hearingDayDetails
-                .orElseThrow(() -> new BadRequestException("004 Invalid state for hearing request "
-                        + hearingResponse.getHearing().getId() + " "
-                        + "valid hearingDayDetails not found"))
-                .getStartDateTime().toLocalDate();
-    }
 }

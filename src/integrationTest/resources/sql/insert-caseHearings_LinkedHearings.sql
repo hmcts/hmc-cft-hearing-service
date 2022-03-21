@@ -1,16 +1,16 @@
 INSERT INTO public.linked_group_details(
 	linked_group_id, linked_group_latest_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
-	VALUES (1, 1, 1, 'HMAN-56 group 1', '2022-03-08T10:33:01', 'Same Slot', 'Test 1', 'HEARING_REQUESTED', 'What to go here');
+	VALUES (1, 1, 1, 'HMAN-56 group 1', '2022-03-08T10:33:01', 'Same Slot', 'Test 1', 'ACTIVE', 'What to go here');
 INSERT INTO public.linked_group_details_audit(
 	linked_group_id, linked_group_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
-	VALUES (1, 1, 1, 'HMAN-56 group 1', '2022-03-08T10:33:01', 'Same Slot', 'Test 1', 'HEARING_REQUESTED', 'What to go here');
+	VALUES (1, 1, 1, 'HMAN-56 group 1', '2022-03-08T10:33:01', 'Same Slot', 'Test 1', 'ACTIVE', 'What to go here');
 
 INSERT INTO public.linked_group_details(
 	linked_group_id, linked_group_latest_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
-	VALUES (2, 1, 2, 'HMAN-56 group 2', '2022-03-11T20:33:01', 'Ordered', 'Test 2', 'HEARING_REQUESTED', 'commented');
+	VALUES (2, 1, 2, 'HMAN-56 group 2', '2022-03-11T20:33:01', 'Ordered', 'Test 2', 'ACTIVE', 'commented');
 INSERT INTO public.linked_group_details_audit(
 	linked_group_id, linked_group_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
-	VALUES (2, 1, 2, 'HMAN-56 group 2', '2022-03-11T20:33:01', 'Ordered', 'Test 2', 'HEARING_REQUESTED', 'commented');
+	VALUES (2, 1, 2, 'HMAN-56 group 2', '2022-03-11T20:33:01', 'Ordered', 'Test 2', 'ACTYIVE', 'commented');
 
 INSERT INTO public.linked_group_details(
 	linked_group_id, linked_group_latest_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
