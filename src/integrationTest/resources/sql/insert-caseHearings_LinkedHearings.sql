@@ -36,6 +36,7 @@ insert into hearing ( hearing_id, status, is_linked_flag, linked_group_id) value
 insert into hearing ( hearing_id, status, is_linked_flag) values ('2000000011', 'INVALID_STATE', true);
 insert into hearing ( hearing_id, status, is_linked_flag) values ('2000000012', 'HEARING_REQUESTED', true);
 insert into hearing ( hearing_id, status, is_linked_flag) values ('2000000013', 'HEARING_REQUESTED', true);
+insert into hearing ( hearing_id, status, is_linked_flag) values ('2000000014', 'HEARING_REQUESTED', true);
 
 INSERT INTO public.linked_hearing_details_audit(
 	linked_hearing_details_audit_id, linked_group_id, linked_group_version, hearing_id, linked_order)
@@ -75,6 +76,9 @@ values ( 't'	,'hearingType1',	60,	'Priority type1',	4,'f','f','AB123',null,'ABA1
 insert into case_hearing_request (
  auto_list_flag, hearing_type, required_duration_in_minutes, hearing_priority_type, number_of_physical_attendees, hearing_in_welsh_flag, private_hearing_required_flag, lead_judge_contract_type, first_date_time_of_hearing_must_be, hmcts_service_id, case_reference, hearing_request_received_date_time, external_case_reference, case_url_context_path, hmcts_internal_case_name, public_case_name, additional_security_required_flag, owning_location_id, case_restricted_flag, case_sla_start_date, hearing_request_version, hearing_id, interpreter_booking_required_flag, listing_comments, requester, hearing_window_start_date_range, hearing_window_end_date_range, request_timestamp)
 values ( 't'	,'hearingType1',	60,	'Priority type1',	4,'f','f','AB123',null,'ABA1'	,9372710950276233,	'2021-08-10 11:20:00','EXT/REF123',	'https://www.google.com',	'Internal case name','Public case name',	't'	,'CMLC123',	't',	'2021-10-10 00:00:00',	1,	2000000013	,'t'	,	'Some listing comments1',	'Some judge1',	'2022-06-01 00:00:00',	'2022-06-12 00:00:00',	'2021-08-10 11:20:00');
+insert into case_hearing_request (
+ auto_list_flag, hearing_type, required_duration_in_minutes, hearing_priority_type, number_of_physical_attendees, hearing_in_welsh_flag, private_hearing_required_flag, lead_judge_contract_type, first_date_time_of_hearing_must_be, hmcts_service_id, case_reference, hearing_request_received_date_time, external_case_reference, case_url_context_path, hmcts_internal_case_name, public_case_name, additional_security_required_flag, owning_location_id, case_restricted_flag, case_sla_start_date, hearing_request_version, hearing_id, interpreter_booking_required_flag, listing_comments, requester, hearing_window_start_date_range, hearing_window_end_date_range, request_timestamp)
+values ( 't'	,'hearingType1',	60,	'Priority type1',	4,'f','f','AB123',null,'ABA1'	,9372710950276233,	'2021-08-10 11:20:00','EXT/REF123',	'https://www.google.com',	'Internal case name','Public case name',	't'	,'CMLC123',	't',	'2021-10-10 00:00:00',	1,	2000000014	,'t'	,	'Some listing comments1',	'Some judge1',	'2022-06-01 00:00:00',	'2022-06-12 00:00:00',	'2021-08-10 11:20:00');
 
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version)
 values (1, '2000000000', '2022-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', 2, 1);
@@ -90,6 +94,8 @@ insert into hearing_response(hearing_response_id, hearing_id, received_date_time
 values (6, '2000000007', '2022-06-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', 2, 1, '2022-06-05 11:20:00');
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version, parties_notified_datetime)
 values (7, '2000000008', '2022-05-03 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', 2, 1, '2022-05-01 11:20:00');
+insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version)
+values (8, '2000000014', '2022-08-10 11:20:00', 'listingStatus3-1', 'caselistingStatus3-1', 1, 1);
 
 
 insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
@@ -112,6 +118,8 @@ insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_
 values (9, 6, '2023-01-10 11:20:00', '2023-08-10 11:20:00', 'session1-2', 'venue3-1', 'room3-1');
 insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
 values (10, 7, '2023-01-10 11:20:00', '2023-08-10 11:20:00', 'session1-2', 'venue3-1', 'room3-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
+values (11, 8, '2022-01-10 11:20:00', '2022-08-10 11:20:00', 'session1-2', 'venue3-1', 'room3-1');
 
 insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (1, 1, 'panel1-1','true');
 insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (2, 1, 'panel1-2','false');
