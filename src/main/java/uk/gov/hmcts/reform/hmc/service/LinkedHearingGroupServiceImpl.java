@@ -109,7 +109,7 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
     }
 
     private LocalDate filterHearingResponses(HearingEntity hearingEntity) {
-        String version = hearingEntity.getCaseHearingRequest().getVersionNumber().toString();
+        String version = hearingEntity.getLatestRequestVersion().toString();
         Optional<HearingResponseEntity> hearingResponse = hearingEntity
             .getHearingResponses().stream().filter(hearingResponseEntity ->
                                                        hearingResponseEntity.getResponseVersion().equals(version))
