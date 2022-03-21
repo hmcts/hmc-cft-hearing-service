@@ -80,7 +80,7 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
                 }
                 if (LinkType.ORDERED.equals(value)) {
                     if (details.getHearingOrder() == 0) {
-                        throw new BadRequestException("Hearing order must exists and be greater than 0");
+                        throw new BadRequestException("Hearing order must exist and be greater than 0");
                     }
                     int counter = getOrderOccurrences(
                         hearingLinkGroupRequest.getHearingsInGroup(),

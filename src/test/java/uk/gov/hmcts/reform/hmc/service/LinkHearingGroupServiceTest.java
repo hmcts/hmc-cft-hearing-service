@@ -333,7 +333,7 @@ class LinkHearingGroupServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
             });
-            assertEquals("Hearing order must exists and be greater than 0", exception.getMessage());
+            assertEquals("Hearing order must exist and be greater than 0", exception.getMessage());
         }
 
         @Test
