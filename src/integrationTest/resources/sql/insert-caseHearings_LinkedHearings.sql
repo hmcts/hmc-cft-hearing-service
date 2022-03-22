@@ -1,30 +1,30 @@
 INSERT INTO public.linked_group_details(
 	linked_group_id, linked_group_latest_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
-	VALUES (1, 1, 1, 'HMAN-56 group 1', '2022-03-08T10:33:01', 'Same Slot', 'Test 1', 'ACTIVE', 'What to go here');
+	VALUES (1, 1, 1, 'HMAN-56 group 1', '2022-03-08T10:33:01', 'SAME_SLOT', 'Test 1', 'ACTIVE', 'What to go here');
 INSERT INTO public.linked_group_details_audit(
 	linked_group_id, linked_group_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
-	VALUES (1, 1, 1, 'HMAN-56 group 1', '2022-03-08T10:33:01', 'Same Slot', 'Test 1', 'ACTIVE', 'What to go here');
+	VALUES (1, 1, 1, 'HMAN-56 group 1', '2022-03-08T10:33:01', 'SAME_SLOT', 'Test 1', 'ACTIVE', 'What to go here');
 
 INSERT INTO public.linked_group_details(
 	linked_group_id, linked_group_latest_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
-	VALUES (2, 1, 2, 'HMAN-56 group 2', '2022-03-11T20:33:01', 'Ordered', 'Test 2', 'ACTIVE', 'commented');
+	VALUES (2, 1, 2, 'HMAN-56 group 2', '2022-03-11T20:33:01', 'ORDERED', 'Test 2', 'ACTIVE', 'commented');
 INSERT INTO public.linked_group_details_audit(
 	linked_group_id, linked_group_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
-	VALUES (2, 1, 2, 'HMAN-56 group 2', '2022-03-11T20:33:01', 'Ordered', 'Test 2', 'ACTIVE', 'commented');
+	VALUES (2, 1, 2, 'HMAN-56 group 2', '2022-03-11T20:33:01', 'ORDERED', 'Test 2', 'ACTIVE', 'commented');
 
 INSERT INTO public.linked_group_details(
 	linked_group_id, linked_group_latest_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
-	VALUES (3, 1, 'G11', 'HMAN-56 group 3', '2022-03-11T20:33:01', 'Ordered', 'Test 3', 'PENDING', 'commented');
+	VALUES (3, 1, 'G11', 'HMAN-56 group 3', '2022-03-11T20:33:01', 'ORDERED', 'Test 3', 'PENDING', 'commented');
 INSERT INTO public.linked_group_details_audit(
 	linked_group_id, linked_group_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
-	VALUES (3, 1, 'G11', 'HMAN-56 group 3', '2022-03-11T20:33:01', 'Ordered', 'Test 3', 'PENDING', 'commented');
+	VALUES (3, 1, 'G11', 'HMAN-56 group 3', '2022-03-11T20:33:01', 'ORDERED', 'Test 3', 'PENDING', 'commented');
 
 INSERT INTO public.linked_group_details(
 	linked_group_id, linked_group_latest_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
-	VALUES (4, 1, 'G12', 'HMAN-56 group 3', '2022-03-11T20:33:01', 'Ordered', 'Test 4', 'ERROR', 'commented');
+	VALUES (4, 1, 'G12', 'HMAN-56 group 3', '2022-03-11T20:33:01', 'ORDERED', 'Test 4', 'ERROR', 'commented');
 INSERT INTO public.linked_group_details_audit(
 	linked_group_id, linked_group_version, request_id, request_name, request_date_time, link_type, reason_for_link, status, linked_comments)
-	VALUES (4, 1, 'G12', 'HMAN-56 group 3', '2022-03-11T20:33:01', 'Ordered', 'Test 4', 'ERROR', 'commented');
+	VALUES (4, 1, 'G12', 'HMAN-56 group 3', '2022-03-11T20:33:01', 'ORDERED', 'Test 4', 'ERROR', 'commented');
 
 insert into hearing ( hearing_id, status, is_linked_flag) values ('2000000000', 'HEARING_REQUESTED', false);
 insert into hearing ( hearing_id, status, is_linked_flag, linked_group_id) values ('2000000005', 'HEARING_REQUESTED', true, 1);
