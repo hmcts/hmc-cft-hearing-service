@@ -16,7 +16,7 @@ CREATE TABLE public.linked_hearing_details_audit (
                                                  linked_group_id bigint not null,
                                                  linked_group_version bigint not null,
                                                  hearing_id bigint not null,
-                                                 linked_order bigint not null
+                                                 linked_order bigint
 );
 
 ALTER SEQUENCE public.linked_hearing_details_audit_id_seq OWNED BY public.linked_hearing_details_audit.linked_hearing_details_audit_id;
@@ -40,7 +40,7 @@ CREATE TABLE public.linked_group_details_audit (
                                                  linked_group_id bigint not null,
                                                  linked_group_version bigint not null,
                                                  request_id varchar(50) not null,
-                                                 request_name varchar(255) not null,
+                                                 request_name varchar(255),
                                                  request_date_time timestamp without time zone default now() not null,
                                                  link_type public.link_type_enum not null,
                                                  reason_for_link varchar(255) not null,

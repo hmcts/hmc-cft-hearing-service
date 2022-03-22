@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -40,7 +41,7 @@ public class HearingEntity {
     @OneToMany(mappedBy = "hearing", fetch = FetchType.EAGER)
     private List<HearingResponseEntity> hearingResponses;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "linked_group_id")
     private LinkedGroupDetails linkedGroupDetails;
 
