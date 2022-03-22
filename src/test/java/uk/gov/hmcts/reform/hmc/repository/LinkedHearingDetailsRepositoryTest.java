@@ -79,7 +79,7 @@ class LinkedHearingDetailsRepositoryTest {
     private LinkedGroupDetails generateLinkedGroupDetails(Long lgdId, String requestId, String requestName) {
         LinkedGroupDetails groupDetails = new LinkedGroupDetails();
         groupDetails.setLinkedGroupId(lgdId);
-        groupDetails.setLinkType(LinkType.ORDERED.toString());
+        groupDetails.setLinkType(LinkType.ORDERED);
         groupDetails.setReasonForLink("reason for link");
         groupDetails.setRequestDateTime(LocalDateTime.now());
         groupDetails.setRequestId(requestId);

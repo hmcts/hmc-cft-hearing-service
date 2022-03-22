@@ -39,6 +39,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -78,7 +79,7 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldFailWithHearingNotFound() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.ORDERED, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
@@ -101,7 +102,7 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldFailWithInsufficientRequestIds() throws JsonProcessingException {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.ORDERED, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000000", 2);
@@ -126,7 +127,7 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldFailWithHearingRequestIsLinkedIsFalse() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.ORDERED, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
@@ -164,7 +165,7 @@ class LinkHearingGroupServiceTest {
                 200L,
                 "requestId",
                 "request name 1",
-                "linkType",
+                "Same Slot",
                 "status",
                 "reason",
                 "comments",
@@ -174,7 +175,7 @@ class LinkHearingGroupServiceTest {
                     202L,
                     "requestId2",
                     "request name2",
-                    "linkTYpe",
+                    "Same Slot",
                     "status",
                     "reason",
                     "comments",
@@ -203,7 +204,7 @@ class LinkHearingGroupServiceTest {
                     .thenReturn(hearingDetails1Data);
 
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                    LinkType.ORDERED, "reason"
+                    LinkType.ORDERED.label, "reason"
             );
 
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
@@ -225,7 +226,7 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldFailWithInvalidState() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.ORDERED, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
@@ -259,7 +260,7 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldFailWithInvalidDate() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.ORDERED, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
@@ -314,7 +315,7 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldFailWithHearingOrderIsNotUnique() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.ORDERED, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
@@ -348,7 +349,7 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldFailWithNoHearingOrderWhenLinkTypeIsOrdered() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             "Ordered", "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails = new LinkHearingDetails();
             hearingDetails.setHearingId("2000000000");
@@ -371,8 +372,8 @@ class LinkHearingGroupServiceTest {
                 null
             );
 
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.existsById(any())).thenReturn(true);
+            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
@@ -405,19 +406,20 @@ class LinkHearingGroupServiceTest {
                 null
             );
 
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.existsById(any())).thenReturn(true);
+            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
             });
-            assertEquals("Invalid value for GroupLinkType", exception.getMessage());
+            assertTrue(exception.getMessage().startsWith("Invalid value"));
+            assertTrue(exception.getMessage().contains("for GroupLinkType"));
         }
 
         @Test
         void shouldPassWhenHearingOrderIsSameSlot() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             "Same Slot", "reason"
+                    LinkType.SAME_SLOT.label, "reason"
             );
 
             HearingEntity hearingEntity = generateHearingEntity(
@@ -430,11 +432,8 @@ class LinkHearingGroupServiceTest {
                 null
             );
 
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
-
-            when(hearingRepository.existsById(2000000002L)).thenReturn(true);
-            when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.existsById(any())).thenReturn(true);
+            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
@@ -456,7 +455,7 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldPassWithValidLinkedHearing() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.ORDERED, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
@@ -500,12 +499,12 @@ class LinkHearingGroupServiceTest {
         return hearingLinkGroupRequest;
     }
 
-    private GroupDetails generateGroupDetails(String groupComments, String groupName, LinkType linktype,
+    private GroupDetails generateGroupDetails(String groupComments, String groupName, String linkTypeLabel,
                                               String groupReason) {
         GroupDetails groupDetails = new GroupDetails();
         groupDetails.setGroupComments(groupComments);
         groupDetails.setGroupName(groupName);
-        groupDetails.setGroupLinkType(linktype.label);
+        groupDetails.setGroupLinkType(linkTypeLabel);
         groupDetails.setGroupReason(groupReason);
         return groupDetails;
     }
@@ -553,11 +552,11 @@ class LinkHearingGroupServiceTest {
     }
 
     private LinkedGroupDetails generateLinkGroupDetails(Long linkGroupId, String requestId, String requestName,
-                                                        String linkType, String status, String reason,
+                                                        String linkTypeLabel, String status, String reason,
                                                         String comments, LocalDateTime date) {
         LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
         linkedGroupDetails.setLinkedGroupId(linkGroupId);
-        linkedGroupDetails.setLinkType(LinkType.SAME_SLOT.toString());
+        linkedGroupDetails.setLinkType(LinkType.getByLabel(linkTypeLabel));
         linkedGroupDetails.setLinkedComments(comments);
         linkedGroupDetails.setRequestDateTime(date);
         linkedGroupDetails.setReasonForLink(reason);

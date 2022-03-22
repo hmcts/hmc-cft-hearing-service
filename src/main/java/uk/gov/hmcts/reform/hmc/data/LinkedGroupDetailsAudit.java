@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 import org.hibernate.annotations.Type;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -44,8 +45,8 @@ public class LinkedGroupDetailsAudit {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "link_type", nullable = false)
-    @Type(type = "uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType")
-    private String linkType;
+    @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
+    private LinkType linkType;
 
     @Column(name = "request_id", nullable = false)
     private String requestId;

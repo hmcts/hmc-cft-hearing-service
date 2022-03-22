@@ -272,7 +272,7 @@ class LinkedHearingValidatorTest {
                                                           String requestId, String requestName) {
         LinkedGroupDetails groupDetails = new LinkedGroupDetails();
         groupDetails.setLinkedGroupId(id);
-        groupDetails.setLinkType(LinkType.SAME_SLOT.toString());
+        groupDetails.setLinkType(LinkType.SAME_SLOT);
         groupDetails.setReasonForLink("reason for link");
         groupDetails.setRequestDateTime(LocalDateTime.now());
         groupDetails.setRequestId(requestId);

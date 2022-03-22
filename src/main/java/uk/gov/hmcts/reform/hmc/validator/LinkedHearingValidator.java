@@ -26,6 +26,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ORDER_NOT_UNIQUE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_REQUEST_ALREADY_LINKED;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_REQUEST_CANNOT_BE_LINKED;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INSUFFICIENT_REQUEST_IDS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_GROUP_LINK_TYPE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ORDER;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_HEARING_REQUEST;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_LINKED_GROUP;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LINKED_GROUP_ID_EMPTY;
 
 @Slf4j
@@ -117,7 +126,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
         List<String> errorMessages = new ArrayList<>();
         obsoleteLinkedHearings.forEach(e -> {
             if (!PutHearingStatus.isValid((e.getHearing().getStatus()))) {
-                errorMessages.add("008 Invalid state for unlinking hearing request <hearingId>"
+                errorMessages.add(INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST
                         .replace("<hearingId>", e.getHearing().getId().toString()));
             }
         });
@@ -146,13 +155,13 @@ public class LinkedHearingValidator extends HearingIdValidator {
                                            LinkHearingDetails details) {
         int occurrences = getIdOccurrences(hearingLinkGroupRequest.getHearingsInGroup(), details.getHearingId());
         if (occurrences > 1) {
-            throw new BadRequestException("001 Insufficient requestIds");
+            throw new BadRequestException(INSUFFICIENT_REQUEST_IDS);
         }
     }
 
     protected void checkHearingRequestAllowsLinking(Optional<HearingEntity> hearingEntity) {
         if (hearingEntity.isEmpty() || Boolean.FALSE.equals(hearingEntity.get().getIsLinkedFlag())) {
-            throw new BadRequestException("002 hearing request isLinked is False");
+            throw new BadRequestException(HEARING_REQUEST_CANNOT_BE_LINKED);
         }
     }
 
@@ -161,7 +170,8 @@ public class LinkedHearingValidator extends HearingIdValidator {
                 linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId);
         if (null != linkedGroupDetails
                 && !linkedGroupDetails.getStatus().equals("ACTIVE")) {
-            throw new BadRequestException("007 group is in a " + linkedGroupDetails.getStatus() + " state");
+            throw new BadRequestException(INVALID_STATE_FOR_LINKED_GROUP.replace("<state>",
+                    linkedGroupDetails.getStatus()));
         }
     }
 
@@ -184,7 +194,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
             if ((null == requestId && linkedHearingDetails.getLinkedGroup() != null)
                     || (null != requestId && !linkedHearingDetails.getLinkedGroup()
                     .equals(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId)))) {
-                throw new BadRequestException("003 hearing request already in a group");
+                throw new BadRequestException(HEARING_REQUEST_ALREADY_LINKED);
             }
         }
     }
@@ -194,20 +204,33 @@ public class LinkedHearingValidator extends HearingIdValidator {
         if (hearingEntity.isEmpty()
                 || !PutHearingStatus.isValid(hearingEntity.get().getStatus())
                 || filterHearingResponses(hearingEntity.get()).isBefore(LocalDate.now())) {
-            throw new BadRequestException("004 Invalid state for hearing request "
-                    + details.getHearingId());
+            throw new BadRequestException(
+                    INVALID_STATE_FOR_HEARING_REQUEST.replace("<hearingId>", details.getHearingId()));
         }
     }
 
     protected void checkHearingOrderIsUnique(HearingLinkGroupRequest hearingLinkGroupRequest,
                                            LinkHearingDetails details) {
-        if (LinkType.ORDERED.label.equals(hearingLinkGroupRequest.getGroupDetails().getGroupLinkType())) {
+        //hman-55 step 4.4 / hman-56 step 6.4
+        log.info(hearingLinkGroupRequest.toString());
+
+        LinkType value = LinkType.getByLabel(hearingLinkGroupRequest.getGroupDetails().getGroupLinkType());
+        if (value == null) {
+            throw new BadRequestException(
+                    INVALID_GROUP_LINK_TYPE
+                            .replace("<linkType>",
+                                    hearingLinkGroupRequest.getGroupDetails().getGroupLinkType()));
+        }
+        if (LinkType.ORDERED.equals(value)) {
+            if (details.getHearingOrder() == 0) {
+                throw new BadRequestException(INVALID_HEARING_ORDER);
+            }
             int counter = getOrderOccurrences(
                     hearingLinkGroupRequest.getHearingsInGroup(),
                     details.getHearingOrder()
             );
             if (counter > 1) {
-                throw new BadRequestException("005 Hearing Order is not unique");
+                throw new BadRequestException(HEARING_ORDER_NOT_UNIQUE);
             }
         }
     }
@@ -248,8 +271,10 @@ public class LinkedHearingValidator extends HearingIdValidator {
         }
 
         return getLowestDate(hearingResponse.orElseThrow(() ->
-                new BadRequestException("004 Invalid state for hearing request " + hearingEntity.getId()
-                        + " no lowest date for given version")));
+                new BadRequestException(
+                        INVALID_STATE_FOR_HEARING_REQUEST
+                                .replace("<hearingId>", hearingEntity.getId()
+                        + " no lowest date for given version"))));
     }
 
     protected LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
@@ -266,9 +291,10 @@ public class LinkedHearingValidator extends HearingIdValidator {
         }
 
         return hearingDayDetails
-                .orElseThrow(() -> new BadRequestException("004 Invalid state for hearing request "
-                        + hearingResponse.getHearing().getId() + " "
-                        + "valid hearingDayDetails not found"))
+                .orElseThrow(() -> new BadRequestException(
+                        INVALID_STATE_FOR_HEARING_REQUEST
+                                .replace("<hearingId>", hearingResponse.getHearing().getId().toString())
+                                + " valid hearingDayDetails not found"))
                 .getStartDateTime().toLocalDate();
     }
 }
