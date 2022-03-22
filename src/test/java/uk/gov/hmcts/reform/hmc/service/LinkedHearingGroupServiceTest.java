@@ -54,12 +54,12 @@ class LinkedHearingGroupServiceTest {
     HearingRepository hearingRepository;
 
     @InjectMocks
-    private LinkedHearingGroupService service;
+    private LinkedHearingGroupServiceImpl service;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        service = new LinkedHearingGroupService(linkedGroupDetailsRepository, hearingRepository);
+        service = new LinkedHearingGroupServiceImpl(linkedGroupDetailsRepository, hearingRepository);
     }
 
     @Nested

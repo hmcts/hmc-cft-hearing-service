@@ -50,4 +50,8 @@ public class HearingEntity {
 
     @Column(name = "is_linked_flag")
     private Boolean isLinkedFlag;
+
+    public Integer getLatestRequestVersion() {
+        return getCaseHearingRequest().getVersionNumber();
+    }
 }
