@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
@@ -485,8 +487,8 @@ public class TestingUtil {
         HearingResponseEntity entity = new HearingResponseEntity();
         entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00"));
         entity.setHearingResponseId(2L);
-        entity.setListingStatus("listingStatus");
-        entity.setListingCaseStatus("Case_listingStatus");
+        entity.setListingStatus(ListingStatus.FIXED.name());
+        entity.setListingCaseStatus(ListAssistCaseStatus.CASE_CREATED.name());
         entity.setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity()));
         return entity;
     }

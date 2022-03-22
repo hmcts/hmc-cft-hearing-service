@@ -16,14 +16,21 @@ public enum LinkType {
         this.label = label;
     }
 
-    public static boolean isValid(String label) {
-        return Arrays.stream(values()).anyMatch(enumStatus -> enumStatus.name().equals(label));
-    }
-
     public static LinkType getByLabel(String label) {
         return Arrays.stream(LinkType.values())
-                .filter(eachLinkType -> eachLinkType.toString().toLowerCase(Locale.ROOT)
-                        .equals(label.toLowerCase(Locale.ROOT))).findAny().orElse(null);
+            .filter(eachLinkType -> eachLinkType.label.toLowerCase(Locale.ROOT)
+                .equals(label.toLowerCase(Locale.ROOT))).findAny().orElse(null);
+    }
+
+    public static boolean isValidLabel(String label) {
+        return Arrays.stream(values())
+                .anyMatch(eachLinkType -> eachLinkType.label.toLowerCase(Locale.ROOT)
+                                .equals(label.toLowerCase(Locale.ROOT)));
+    }
+
+    public static boolean isValidName(String name) {
+        return Arrays.stream(values())
+                .anyMatch(eachLinkType -> eachLinkType.name().equals(name));
     }
 
 }

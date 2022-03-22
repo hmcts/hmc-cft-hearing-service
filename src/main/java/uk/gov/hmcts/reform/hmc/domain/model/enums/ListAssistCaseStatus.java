@@ -19,8 +19,30 @@ public enum ListAssistCaseStatus {
 
     public static ListAssistCaseStatus getByLabel(String label) {
         return Arrays.stream(ListAssistCaseStatus.values())
-                .filter(eachStatus -> eachStatus.toString().toLowerCase(Locale.ROOT)
+                .filter(eachStatus -> eachStatus.label.toLowerCase(Locale.ROOT)
                         .equals(label.toLowerCase(Locale.ROOT))).findAny().orElse(null);
+    }
+
+    public static String getLabel(String name) {
+        ListAssistCaseStatus status = getByName(name);
+        return null == status ? null : status.label;
+    }
+
+    public static ListAssistCaseStatus getByName(String name) {
+        return Arrays.stream(ListAssistCaseStatus.values())
+                .filter(eachStatus -> eachStatus.name().toLowerCase(Locale.ROOT)
+                        .equals(name.toLowerCase(Locale.ROOT))).findAny().orElse(null);
+    }
+
+    public static boolean isValidLabel(String label) {
+        return Arrays.stream(values())
+                .anyMatch(eachStatus -> eachStatus.label.toLowerCase(Locale.ROOT)
+                                .equals(label.toLowerCase(Locale.ROOT)));
+    }
+
+    public static boolean isValidName(String name) {
+        return Arrays.stream(values())
+                .anyMatch(eachStatus -> eachStatus.name().equals(name));
     }
 
 }

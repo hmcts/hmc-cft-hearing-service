@@ -6,6 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
@@ -228,8 +230,8 @@ class GetHearingResponseMapperTest {
 
     private void assertHearingResponse(HearingResponse hearingResponse) {
         assertAll(
-            () -> assertEquals("Case_listingStatus", hearingResponse.getLaCaseStatus()),
-            () -> assertEquals("listingStatus", hearingResponse.getListingStatus()),
+            () -> assertEquals(ListAssistCaseStatus.CASE_CREATED.label, hearingResponse.getLaCaseStatus()),
+            () -> assertEquals(ListingStatus.FIXED.label, hearingResponse.getListingStatus()),
             () -> assertEquals(2, hearingResponse.getResponseVersion())
         );
     }
