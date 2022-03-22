@@ -137,4 +137,15 @@ public final class ValidationError {
     public static final String PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH = "002 No such response version";
     public static final String PARTIES_NOTIFIED_ALREADY_SET = "003 Already set";
 
+    public static final String HEARING_ID_LENGTH = "Hearing id cannot be greater than 30 " + CHARACTERS_LONG;
+    public static final String HEARING_ID_EMPTY = "Hearing id can not be null or empty";
+    public static final String GROUP_REASON_LENGTH = "Group reason cannot be greater than 8 " + CHARACTERS_LONG;
+    public static final String GROUP_NAME_LENGTH = "Group name cannot be greater than 255 " + CHARACTERS_LONG;
+    public static final String GROUP_COMMENTS_LENGTH = "Group comments cannot be greater than 4000 " + CHARACTERS_LONG;
+    public static final String GROUP_LINK_TYPE_EMPTY = "Group link type can not be null or empty";
+    public static final String GROUP_REASON_EMPTY = "Group reason can not be null or empty";
+    public static final String GROUP_DETAILS = "Group details are required";
+    public static final String HEARINGS_IN_GROUP = "Linked hearing details are required";
+    public static final String HEARINGS_IN_GROUP_SIZE = "001 Insufficient requestIds";
+
 }
