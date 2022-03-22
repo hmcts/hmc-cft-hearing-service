@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
+import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
@@ -25,6 +26,8 @@ import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnavailable;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingActual;
+import uk.gov.hmcts.reform.hmc.model.HearingActualsOutcome;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
@@ -346,6 +349,25 @@ public class TestingUtil {
         caseHearingList.add(caseHearing);
         getHearingsResponse.setCaseHearings(caseHearingList);
         return getHearingsResponse;
+    }
+
+    public static HearingActual hearingActual() {
+        HearingActual request = new HearingActual();
+        request.setHearingOutcome(hearingActualsOutcome());
+        request.setActualHearingDays(Arrays.asList(actualHearingDay()));
+
+        return request;
+    }
+
+    public static HearingActualsOutcome hearingActualsOutcome() {
+        HearingActualsOutcome hearingActualsOutcome = new HearingActualsOutcome();
+        return hearingActualsOutcome;
+    }
+
+    public static ActualHearingDay actualHearingDay() {
+        ActualHearingDay entity = new ActualHearingDay();
+
+        return entity;
     }
 
     public static CaseHearingRequestEntity getCaseHearingsEntities() {

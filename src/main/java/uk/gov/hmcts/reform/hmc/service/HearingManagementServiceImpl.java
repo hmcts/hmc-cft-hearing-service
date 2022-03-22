@@ -69,7 +69,6 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
 
 @Service
-@Component
 @Slf4j
 public class HearingManagementServiceImpl extends HearingIdValidator implements HearingManagementService {
 
