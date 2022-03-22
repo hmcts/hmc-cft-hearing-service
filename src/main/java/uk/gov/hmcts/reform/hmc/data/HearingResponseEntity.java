@@ -44,6 +44,9 @@ public class HearingResponseEntity {
     @Column(name = "listing_case_status", nullable = false)
     private String listingCaseStatus;
 
+    @Column(name = "list_assist_transaction_id", nullable = false)
+    private String listAssistTransactionId;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;

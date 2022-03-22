@@ -16,7 +16,7 @@ public class HearingResponse {
 
     @JsonProperty("listAssistTransactionID")
     @Size(max = 40, message = ValidationError.LIST_ASSIST_TRANSACTION_ID_MAX_LENGTH)
-    private Long listAssistTransactionID;
+    private String listAssistTransactionID;
 
     @JsonProperty("laCaseStatus")
     private String laCaseStatus;
