@@ -239,7 +239,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             hearingEntity.getCaseHearingRequest().getPrivateHearingRequiredFlag());
         hearingDetails.setLeadJudgeContractType(hearingEntity.getCaseHearingRequest().getLeadJudgeContractType());
         hearingDetails.setPanelRequirements(setPanelRequirements(hearingEntity));
-        hearingDetails.setHearingIsLinkedFlag(hearingEntity.getCaseHearingRequest().getIsLinkedFlag());
+        hearingDetails.setHearingIsLinkedFlag(hearingEntity.getIsLinkedFlag());
         return hearingDetails;
     }
 
