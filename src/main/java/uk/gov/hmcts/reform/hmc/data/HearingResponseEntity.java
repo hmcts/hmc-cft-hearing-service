@@ -40,7 +40,8 @@ public class HearingResponseEntity {
     private Long hearingResponseId;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)    @Column(name = "received_date_time", nullable = false)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @Column(name = "received_date_time", nullable = false)
     private LocalDateTime requestTimeStamp;
 
     @Column(name = "listing_status", nullable = false)

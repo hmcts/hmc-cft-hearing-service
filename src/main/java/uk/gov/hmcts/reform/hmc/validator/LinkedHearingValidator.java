@@ -42,6 +42,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
 
     protected final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
     protected final LinkedHearingDetailsRepository linkedHearingDetailsRepository;
+    private static final String HEARING_ID_PLACEHOLDER = "<hearingId>";
 
     public LinkedHearingValidator(HearingRepository hearingRepository,
                                   LinkedGroupDetailsRepository linkedGroupDetailsRepository,
@@ -127,7 +128,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
         obsoleteLinkedHearings.forEach(e -> {
             if (!PutHearingStatus.isValid((e.getHearing().getStatus()))) {
                 errorMessages.add(INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST
-                        .replace("<hearingId>", e.getHearing().getId().toString()));
+                        .replace(HEARING_ID_PLACEHOLDER, e.getHearing().getId().toString()));
             }
         });
         return errorMessages;
@@ -205,7 +206,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
                 || !PutHearingStatus.isValid(hearingEntity.get().getStatus())
                 || filterHearingResponses(hearingEntity.get()).isBefore(LocalDate.now())) {
             throw new BadRequestException(
-                    INVALID_STATE_FOR_HEARING_REQUEST.replace("<hearingId>", details.getHearingId()));
+                    INVALID_STATE_FOR_HEARING_REQUEST.replace(HEARING_ID_PLACEHOLDER, details.getHearingId()));
         }
     }
 
@@ -254,7 +255,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
 
     protected LocalDate filterHearingResponses(HearingEntity hearingEntity) {
         log.debug("hearing id: {}", hearingEntity.getId());
-        String version = hearingEntity.getCaseHearingRequest().getVersionNumber().toString();
+        String version = hearingEntity.getLatestRequestVersion().toString();
         Optional<HearingResponseEntity> hearingResponse = hearingEntity
                 .getHearingResponses().stream().filter(hearingResponseEntity ->
                         hearingResponseEntity.getResponseVersion().equals(version))
@@ -273,7 +274,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
         return getLowestDate(hearingResponse.orElseThrow(() ->
                 new BadRequestException(
                         INVALID_STATE_FOR_HEARING_REQUEST
-                                .replace("<hearingId>", hearingEntity.getId()
+                                .replace(HEARING_ID_PLACEHOLDER, hearingEntity.getId()
                         + " no lowest date for given version"))));
     }
 
@@ -293,7 +294,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
         return hearingDayDetails
                 .orElseThrow(() -> new BadRequestException(
                         INVALID_STATE_FOR_HEARING_REQUEST
-                                .replace("<hearingId>", hearingResponse.getHearing().getId().toString())
+                                .replace(HEARING_ID_PLACEHOLDER, hearingResponse.getHearing().getId().toString())
                                 + " valid hearingDayDetails not found"))
                 .getStartDateTime().toLocalDate();
     }
