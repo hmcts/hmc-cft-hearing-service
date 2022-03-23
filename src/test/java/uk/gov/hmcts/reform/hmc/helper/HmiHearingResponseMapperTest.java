@@ -4,7 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.Hearing;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingAttendee;
@@ -20,9 +23,11 @@ import uk.gov.hmcts.reform.hmc.client.hmi.VenueLocationReference;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,6 +35,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_LISTING;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLED;
@@ -39,11 +47,23 @@ import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_RE
 
 class HmiHearingResponseMapperTest {
 
+
     private HmiHearingResponseMapper hmiHearingResponseMapper;
+
+    @MockBean
+    private HmiHearingResponseMapper mockService;
+
+    @Mock
+    private HearingEntity hearingEntity;
+
+    private HearingEntity he;
+
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        he = generateHearingEntity("AWAITING_LISTING", 1);
+        //Mockito.doNothing().when(mockService).extracted(any(HearingEntity.class), any(HearingResponseEntity.class));
         hmiHearingResponseMapper = new HmiHearingResponseMapper();
     }
 
@@ -64,8 +84,7 @@ class HmiHearingResponseMapperTest {
     @Test
     void mapHmiHearingToEntity() {
         HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-            generateHmiHearing("random", HearingCode.EXCEPTION, 1),
-            generateHearingEntity("AWAITING_LISTING", 1)
+            generateHmiHearing("random", HearingCode.EXCEPTION, 1, ListingStatus.DRAFT), he
         );
         assertAll(
             () -> assertThat(response.getHearingResponses().size(), is(2)),
@@ -113,7 +132,7 @@ class HmiHearingResponseMapperTest {
     @Test
     void mapHmiHearingToEntityWithEpims() {
         HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-            generateHmiHearing("EPIMS", HearingCode.EXCEPTION, 1),
+            generateHmiHearing("EPIMS", HearingCode.EXCEPTION, 1, ListingStatus.DRAFT),
             generateHearingEntity("AWAITING_LISTING", 1)
         );
         assertAll(
@@ -169,7 +188,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfExceptionWhenLaStateIsException() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.EXCEPTION, 1),
+                generateHmiHearing("random", HearingCode.EXCEPTION, 1, ListingStatus.DRAFT),
                 generateHearingEntity("AWAITING_LISTING", 1)
             );
             assertEquals(response.getStatus(), EXCEPTION.name());
@@ -178,7 +197,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfCurrentStateWhenLaStateIsPendingRelisting() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.PENDING_RELISTING, 1),
+                generateHmiHearing("random", HearingCode.PENDING_RELISTING, 1, ListingStatus.DRAFT),
                 generateHearingEntity("AWAITING_LISTING", 1)
             );
             assertEquals(response.getStatus(), AWAITING_LISTING.name());
@@ -187,7 +206,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfClosedWhenLaStateIsClosedAndCurrentIsAwaitingListing() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.CLOSED, 1),
+                generateHmiHearing("random", HearingCode.CLOSED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("AWAITING_LISTING", 1)
             );
             assertEquals(response.getStatus(), CANCELLED.name());
@@ -196,7 +215,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfClosedWhenLaStateIsClosedAndCurrentIsUpdateSubmitted() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.CLOSED, 1),
+                generateHmiHearing("random", HearingCode.CLOSED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("UPDATE_SUBMITTED", 1)
             );
             assertEquals(response.getStatus(), CANCELLED.name());
@@ -205,7 +224,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfClosedWhenLaStateIsClosedAndCurrentIsListed() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.CLOSED, 1),
+                generateHmiHearing("random", HearingCode.CLOSED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("LISTED", 1)
             );
             assertEquals(response.getStatus(), CANCELLED.name());
@@ -214,7 +233,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfClosedWhenLaStateIsClosedAndCurrentIsUpdatedRequested() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.CLOSED, 1),
+                generateHmiHearing("random", HearingCode.CLOSED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("UPDATE_REQUESTED", 1)
             );
             assertEquals(response.getStatus(), CANCELLED.name());
@@ -223,7 +242,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfClosedWhenLaStateIsClosedAndCurrentIsCancellationRequested() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.CLOSED, 1),
+                generateHmiHearing("random", HearingCode.CLOSED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("CANCELLATION_REQUESTED", 1)
             );
             assertEquals(response.getStatus(), CANCELLED.name());
@@ -232,7 +251,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfExceptionWhenLaStateIsClosedAndCurrentIsException() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.CLOSED, 1),
+                generateHmiHearing("random", HearingCode.CLOSED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("EXCEPTION", 1)
             );
             assertEquals(response.getStatus(), EXCEPTION.name());
@@ -241,7 +260,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfListedWhenLaStateIsListedAndCurrentIsAwaitingListing() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.LISTED, 1),
+                generateHmiHearing("random", HearingCode.LISTED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("AWAITING_LISTING", 1)
             );
             assertEquals(response.getStatus(), LISTED.name());
@@ -250,7 +269,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfListedWhenLaStateIsListedAndCurrentIsUpdateSubmitted() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.LISTED, 1),
+                generateHmiHearing("random", HearingCode.LISTED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("UPDATE_SUBMITTED", 1)
             );
             assertEquals(response.getStatus(), LISTED.name());
@@ -259,7 +278,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfListedWhenLaStateIsListedAndCurrentIsListed() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.LISTED, 1),
+                generateHmiHearing("random", HearingCode.LISTED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("LISTED", 1)
             );
             assertEquals(response.getStatus(), LISTED.name());
@@ -268,7 +287,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfExceptionWhenLaStateIsListedAndCurrentIsException() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.LISTED, 1),
+                generateHmiHearing("random", HearingCode.LISTED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("EXCEPTION", 1)
             );
             assertEquals(response.getStatus(), EXCEPTION.name());
@@ -277,7 +296,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfListedWhenLaStateIsListedAndCurrentIsUpdateRequestedAndVersionIsEqual() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.LISTED, 1),
+                generateHmiHearing("random", HearingCode.LISTED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("UPDATE_REQUESTED", 1)
             );
             assertEquals(response.getStatus(), LISTED.name());
@@ -286,7 +305,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfUpdateRequestedWhenLaStateIsListedAndCurrentIsUpdateRequestedAndVersionIsNotEqual() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.LISTED, 1),
+                generateHmiHearing("random", HearingCode.LISTED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("UPDATE_REQUESTED", 11)
             );
             assertEquals(response.getStatus(), UPDATE_REQUESTED.name());
@@ -295,7 +314,7 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfExceptionWhenLaStateIsListedAndCurrentIsCancellationRequestedAndVersionIsEqual() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.LISTED, 1),
+                generateHmiHearing("random", HearingCode.LISTED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("CANCELLATION_REQUESTED", 1)
             );
             assertEquals(response.getStatus(), EXCEPTION.name());
@@ -304,14 +323,14 @@ class HmiHearingResponseMapperTest {
         @Test
         void shouldGetPostStateOfCancellationRequestedWhenLaStateIsListedAndCurrentIsCancellationRequested() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                generateHmiHearing("random", HearingCode.LISTED, 1),
+                generateHmiHearing("random", HearingCode.LISTED, 1, ListingStatus.DRAFT),
                 generateHearingEntity("CANCELLATION_REQUESTED", 11)
             );
             assertEquals(response.getStatus(), CANCELLATION_REQUESTED.name());
         }
     }
 
-    private HearingResponse generateHmiHearing(String key, HearingCode hearingCode, int version) {
+    private HearingResponse generateHmiHearing(String key, HearingCode hearingCode, int version, ListingStatus status) {
         HearingResponse hearingResponse = new HearingResponse();
 
         MetaResponse metaResponse = new MetaResponse();
@@ -328,7 +347,7 @@ class HmiHearingResponseMapperTest {
 
         uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus hearingStatus =
             new uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus();
-        hearingStatus.setCode("code");
+        hearingStatus.setCode(status.name());
         hearing.setHearingStatus(hearingStatus);
 
         HearingCaseStatus hearingCaseStatus = new HearingCaseStatus();

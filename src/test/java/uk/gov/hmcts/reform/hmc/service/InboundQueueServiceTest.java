@@ -14,20 +14,29 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.ListAssistResponseException;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
+import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,6 +56,9 @@ class InboundQueueServiceTest {
 
     @Mock
     private HmiHearingResponseMapper hmiHearingResponseMapper;
+
+    @Mock
+    private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
 
     private static ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -146,7 +158,12 @@ class InboundQueueServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        inboundQueueService = new InboundQueueServiceImpl(OBJECT_MAPPER, hearingRepository, hmiHearingResponseMapper);
+        inboundQueueService = new InboundQueueServiceImpl(
+            OBJECT_MAPPER,
+            hearingRepository,
+            hmiHearingResponseMapper,
+            messageSenderToTopicConfiguration
+        );
     }
 
     @Nested
@@ -198,8 +215,11 @@ class InboundQueueServiceTest {
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L))
                 .thenReturn(java.util.Optional.of(hearingEntity));
-
             when(hmiHearingResponseMapper.mapHmiHearingToEntity(any(), any())).thenReturn(hearingEntity);
+            when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
+                .thenReturn(generateHmcResponse(HearingStatus.AWAITING_LISTING));
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any());
+
             inboundQueueService.processMessage(jsonNode, applicationProperties);
             verify(hearingRepository).save(hearingEntity);
             verify(hmiHearingResponseMapper, times(1)).mapHmiHearingToEntity(any(), any());
@@ -321,12 +341,15 @@ class InboundQueueServiceTest {
             when(hearingRepository.findById(2000000000L))
                 .thenReturn(java.util.Optional.of(hearingEntity));
             when(hmiHearingResponseMapper.mapHmiHearingErrorToEntity(any(), any())).thenReturn(hearingEntity);
+            when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
+                .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any());
 
             JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
-            inboundQueueService.processMessage(data, applicationProperties);
-            verify(hmiHearingResponseMapper, times(1)).mapHmiHearingErrorToEntity(any(), any());
-            verify(hearingRepository, times(1)).existsById(2000000000L);
-            verify(hearingRepository, times(1)).findById(2000000000L);
+            Exception exception = assertThrows(ListAssistResponseException.class, () ->
+                inboundQueueService.processMessage(data, applicationProperties));
+            assertEquals("Error received for hearing Id: 2000000000 with an "
+                             + "error message of 2000 Unable to create case", exception.getMessage());
         }
 
         @Test
@@ -377,6 +400,17 @@ class InboundQueueServiceTest {
     private HearingEntity generateHearingEntity(Long hearingId) {
         HearingEntity entity = new HearingEntity();
         entity.setId(hearingId);
+
+        HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
+        entity.setHearingResponses(List.of(hearingResponseEntity));
         return entity;
+    }
+
+    private HmcHearingResponse generateHmcResponse(uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus status) {
+        HmcHearingResponse hmcHearingResponse = new HmcHearingResponse();
+        HmcHearingUpdate hmcHearingUpdate = new HmcHearingUpdate();
+        hmcHearingUpdate.setHMCStatus(status.name());
+        hmcHearingResponse.setHearingUpdate(hmcHearingUpdate);
+        return hmcHearingResponse;
     }
 }

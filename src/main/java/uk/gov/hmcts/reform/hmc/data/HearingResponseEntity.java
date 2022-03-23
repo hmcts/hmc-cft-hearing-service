@@ -49,14 +49,14 @@ public class HearingResponseEntity {
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
 
-    @OneToMany(mappedBy = "hearingResponse", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hearingResponse", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingDayDetailsEntity> hearingDayDetails;
 
     @Column(name = "request_version", nullable = false)
     private String requestVersion;
 
-    @Column(name = "response_version", nullable = false)
+    @Column(name = "response_version")
     private String responseVersion;
 
     @Column(name = "parties_notified_datetime")

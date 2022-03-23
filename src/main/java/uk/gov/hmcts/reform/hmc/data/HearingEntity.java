@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import org.hibernate.annotations.Immutable;
 
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -44,9 +45,4 @@ public class HearingEntity {
 
     @OneToMany(mappedBy = "hearing", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<HearingResponseEntity> hearingResponses;
-
-    public void addToHearingResponseEntity(HearingResponseEntity hearingResponse) {
-        hearingResponse.setHearing(this);
-        this.hearingResponses.add(hearingResponse);
-    }
 }

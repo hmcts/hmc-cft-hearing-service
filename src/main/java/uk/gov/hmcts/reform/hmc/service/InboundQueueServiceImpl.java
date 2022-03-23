@@ -9,10 +9,15 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.config.MessageType;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
+import uk.gov.hmcts.reform.hmc.exceptions.ListAssistResponseException;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
+import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.Map;
@@ -35,16 +40,20 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
     private final ObjectMapper objectMapper;
     private HearingRepository hearingRepository;
     private final HmiHearingResponseMapper hmiHearingResponseMapper;
+    private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
     private static final String HEARING_ID = "hearing_id";
     public static final String UNSUPPORTED_HEARING_STATUS = "Hearing has unsupported value for hearing status";
     public static final String MISSING_HEARING_ID = "Message is missing custom header hearing_id";
 
-    public InboundQueueServiceImpl(ObjectMapper objectMapper, HearingRepository hearingRepository,
-                                   HmiHearingResponseMapper hmiHearingResponseMapper) {
+    public InboundQueueServiceImpl(ObjectMapper objectMapper,
+                                   HearingRepository hearingRepository,
+                                   HmiHearingResponseMapper hmiHearingResponseMapper,
+                                   MessageSenderToTopicConfiguration messageSenderToTopicConfiguration) {
         super(hearingRepository);
         this.objectMapper = objectMapper;
         this.hearingRepository = hearingRepository;
         this.hmiHearingResponseMapper = hmiHearingResponseMapper;
+        this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
     }
 
     @Override
@@ -102,7 +111,20 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
                 );
             }
             hearingRepository.save(hearingToSave);
-            // transform and add to queue 79
+
+            HmcHearingResponse hmcHearingResponse = hmiHearingResponseMapper.mapEntityToHmcModel(
+                hearingToSave.getHearingResponses().get((hearingToSave.getHearingResponses().size() - 1)),
+                hearingToSave
+            );
+            messageSenderToTopicConfiguration.sendMessage(hmcHearingResponse.toString());
+            if (hmcHearingResponse.getHearingUpdate().getHMCStatus().equals(HearingStatus.EXCEPTION.name())) {
+                throw new ListAssistResponseException(
+                    hearingId,
+                    errorDetails.getErrorCode() + " "
+                        + errorDetails.getErrorDescription()
+                );
+
+            }
         }
     }
 }

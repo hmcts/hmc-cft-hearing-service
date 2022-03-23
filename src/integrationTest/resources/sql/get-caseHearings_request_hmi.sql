@@ -5,15 +5,15 @@ insert into case_hearing_request (
 values ( 't'	,'hearingType1',	60,	'Priority type1',	4,'f','f','AB123',null,'ABA1'	,9372710950276233,	'2021-08-10 11:20:00','EXT/REF123',	'https://www.google.com',	'Internal case name','Public case name',	't'	,'CMLC123',	't',	'2021-10-10 00:00:00',	1,	2000000000	,'t'	,'f',	'Some listing comments1',	'Some judge1',	'2021-11-01 00:00:00',	'2021-11-12 00:00:00',	'2021-08-10 11:20:00');
 
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version)
-values (1, '2000000000', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '2', '1');
+values (61, '2000000000', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '2', '1');
 
 insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (1, 1, '2021-01-10 11:20:00', '2021-08-10 11:20:00', 'session1-1', 'venue1-1', 'room1-1');
+values (71, 61, '2021-01-10 11:20:00', '2021-08-10 11:20:00', 'session1-1', 'venue1-1', 'room1-1');
 insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (2, 1, '2020-01-10 11:20:00', '2020-08-10 11:20:00', 'session1-2', 'venue1-2', 'room1-2');
+values (72, 61, '2020-01-10 11:20:00', '2020-08-10 11:20:00', 'session1-2', 'venue1-2', 'room1-2');
 
-insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (1, 1, 'panel1-1','true');
-insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (2, 1, 'panel1-2','false');
+insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (81, 71, 'panel1-1','true');
+insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (82, 71, 'panel1-2','false');
 
-insert into hearing_attendee_details(id, hearing_day_id, party_id, party_sub_channel_type) values (1, 1, 'party1-1','subChannel1-1');
-insert into hearing_attendee_details(id, hearing_day_id, party_id, party_sub_channel_type) values (2, 1, 'party1-2','subChannel1-2');
+insert into hearing_attendee_details(id, hearing_day_id, party_id, party_sub_channel_type) values (91, 71, 'party1-1','subChannel1-1');
+insert into hearing_attendee_details(id, hearing_day_id, party_id, party_sub_channel_type) values (92, 71, 'party1-2','subChannel1-2');

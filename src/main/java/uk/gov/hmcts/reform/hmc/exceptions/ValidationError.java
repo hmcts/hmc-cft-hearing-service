@@ -160,5 +160,10 @@ public final class ValidationError {
     public static final String HEARING_CANCELLATION_REASON_LENGTH =
         "Hearing cancellation reason must not be more than 70 " + CHARACTERS_LONG;
 
+    public static final String HEARING_RESPONSE_DATETIME_NULL = "Hearing response received date time can not be null or empty";
+    public static final String HEARING_BROADCAST_DATETIME_NULL = "Hearing response broadcast date time can not be null or empty";
+    public static final String HMCTS_STATUS_NULL = "HMCTS status can not be null or empty";
+    public static final String HMCTS_STATUS_LENGTH = "HMCTS status must not be more than 100 " + CHARACTERS_LONG;
+    public static final String LISTING_STATUS_NULL = "Listing status can not be null or empty";
 
 }

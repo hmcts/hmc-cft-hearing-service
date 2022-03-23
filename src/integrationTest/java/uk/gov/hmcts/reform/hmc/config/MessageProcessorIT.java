@@ -6,11 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.ListAssistResponseException;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 
@@ -25,6 +27,9 @@ import static uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl.MISSING_HE
 
 
 class MessageProcessorIT extends BaseTest {
+
+    @MockBean
+    private MessageSenderToTopicConfiguration messageSenderConfiguration;
 
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
         .modules(new Jdk8Module())
@@ -54,7 +59,7 @@ class MessageProcessorIT extends BaseTest {
                                                    + "      \"test\": \"value\"\n"
                                                    + "    },\n"
                                                    + "    \"hearingStatus\": {\n"
-                                                   + "      \"code\": \"<code>\",\n"
+                                                   + "      \"code\": \"DRAFT\",\n"
                                                    + "      \"description\": \"<descrixption>\"\n"
                                                    + "    },\n"
                                                    + "    \"hearingCancellationReason\""
@@ -129,7 +134,6 @@ class MessageProcessorIT extends BaseTest {
     MessageProcessorIT() throws JsonProcessingException {
     }
 
-
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldInitiateRequest() throws JsonProcessingException {
@@ -139,6 +143,28 @@ class MessageProcessorIT extends BaseTest {
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
         messageProcessor.processMessage(jsonNode, applicationProperties);
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldThrowErrorForExceptionFlow() throws JsonProcessingException {
+        Map<String, Object> applicationProperties = new HashMap<>();
+        applicationProperties.put(HEARING_ID, "2000000000");
+        applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
+
+        JsonNode errorJsonNode = OBJECT_MAPPER.readTree("{\n" +
+                                                            " \"errCode\": 2000,\n" +
+                                                            " \"errDesc\": \"unable to create case\"\n" +
+                                                            "}");
+
+        MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
+        Exception exception = assertThrows(ListAssistResponseException.class, () ->
+            messageProcessor.processMessage(errorJsonNode, applicationProperties));
+        assertEquals(
+            "Error received for hearing Id: 2000000000 with an error message of 2000 unable to create case",
+            exception.getMessage()
+        );
+        ;
     }
 
     @Test
