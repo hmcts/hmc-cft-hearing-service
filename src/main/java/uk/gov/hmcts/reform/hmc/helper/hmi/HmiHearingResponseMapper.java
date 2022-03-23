@@ -54,20 +54,20 @@ public class HmiHearingResponseMapper {
         hmcHearingResponse.setCaseRef(hearing.getCaseHearingRequest().getCaseReference());
         hmcHearingResponse.setHmctsServiceCode(hearing.getCaseHearingRequest().getHmctsServiceID());
 
+        //There is currently only support for one hearingDayDetail to be provided in HearingResponse From ListAssist
         HmcHearingUpdate hmcHearingUpdate = new HmcHearingUpdate();
-        hmcHearingUpdate.setHearingResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
-        hmcHearingUpdate.setHearingEventBroadcastDateTime(LocalDateTime.now(Clock.systemUTC()));
         hmcHearingUpdate.setHmcStatus(hearing.getStatus());
         if (HearingStatus.valueOf(hearing.getStatus()) != EXCEPTION) {
+            hmcHearingUpdate.setHearingResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
+            hmcHearingUpdate.setHearingEventBroadcastDateTime(LocalDateTime.now(Clock.systemUTC()));
             hmcHearingUpdate.setHearingListingStatus(ListingStatus.valueOf(hearingResponseEntity.getListingStatus()));
-        }
-        //There is currently only support for one hearingDayDetail to be provided in HearingResponse From ListAssist
-        hmcHearingUpdate.setNextHearingDate(hearingResponseEntity.getHearingDayDetails().get(0).getStartDateTime());
-        hmcHearingUpdate.setHearingVenueId(hearingResponseEntity.getHearingDayDetails().get(0).getVenueId());
-        if (Boolean.TRUE.equals(
-            hearingResponseEntity.getHearingDayDetails().get(0).getHearingDayPanel().get(0).getIsPresiding())) {
-            hmcHearingUpdate.setHearingJudgeId(
-                hearingResponseEntity.getHearingDayDetails().get(0).getHearingDayPanel().get(0).getPanelUserId());
+            hmcHearingUpdate.setNextHearingDate(hearingResponseEntity.getHearingDayDetails().get(0).getStartDateTime());
+            hmcHearingUpdate.setHearingVenueId(hearingResponseEntity.getHearingDayDetails().get(0).getVenueId());
+            if (Boolean.TRUE.equals(
+                hearingResponseEntity.getHearingDayDetails().get(0).getHearingDayPanel().get(0).getIsPresiding())) {
+                hmcHearingUpdate.setHearingJudgeId(
+                    hearingResponseEntity.getHearingDayDetails().get(0).getHearingDayPanel().get(0).getPanelUserId());
+            }
         }
         hmcHearingResponse.setHearingUpdate(hmcHearingUpdate);
         return hmcHearingResponse;
