@@ -132,7 +132,8 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
 
     private HmcHearingResponse getHmcHearingResponse(HearingEntity hearingEntity) {
         Optional<HearingResponseEntity> hearingResponseEntity =
-            hearingEntity.getHearingResponses().stream().max(Comparator.comparing(hre -> hre.getHearingResponseId()));
+            hearingEntity.getHearingResponses()
+                .stream().max(Comparator.comparing(HearingResponseEntity::getHearingResponseId));
         return hmiHearingResponseMapper
             .mapEntityToHmcModel(hearingResponseEntity
                                      .orElseThrow(() -> new BadRequestException("bad request")), hearingEntity);
