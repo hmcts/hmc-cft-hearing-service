@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
@@ -85,6 +86,7 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     private final ObjectMapperService objectMapperService;
     private final HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
     private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
+    private final ApplicationParams applicationParams;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -100,7 +102,8 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
                                         MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
                                         ObjectMapperService objectMapperService,
                                         HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper,
-                                        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration) {
+                                        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration,
+                                        ApplicationParams applicationParams) {
         super(hearingRepository);
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
@@ -115,6 +118,7 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
         this.messageSenderToQueueConfiguration = messageSenderToQueueConfiguration;
+        this.applicationParams = applicationParams;
     }
 
     @Override
@@ -276,6 +280,9 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     }
 
     public void verifyAccess(String caseReference) {
+        if (!applicationParams.isAccessControlEnabled()) {
+            return;
+        }
         RoleAssignments roleAssignments = roleAssignmentService.getRoleAssignments(securityUtils.getUserId());
         if (roleAssignments.getRoleAssignments().isEmpty()) {
             throw new ResourceNotFoundException(String.format(ROLE_ASSIGNMENTS_NOT_FOUND, securityUtils.getUserId()));

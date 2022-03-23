@@ -97,6 +97,8 @@ jms:
       connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING}
       topic-name: ${HMC_SERVICE_BUS_TOPIC}
 
+access-control:
+  enabled: ${HMC_ACCESS_CONTROL_ENABLED:true}
 
 role:
   assignment:
