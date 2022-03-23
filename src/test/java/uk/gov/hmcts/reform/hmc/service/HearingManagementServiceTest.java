@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
@@ -79,6 +80,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
@@ -148,6 +150,9 @@ class HearingManagementServiceTest {
     @Mock
     MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
 
+    @Mock
+    ApplicationParams applicationParams;
+
     JsonNode jsonNode = mock(JsonNode.class);
 
     @BeforeEach
@@ -168,7 +173,8 @@ class HearingManagementServiceTest {
                 messageSenderToTopicConfiguration,
                 objectMapperService,
                 hmiDeleteHearingRequestMapper,
-                messageSenderToQueueConfiguration
+                messageSenderToQueueConfiguration,
+                applicationParams
             );
     }
 
@@ -428,6 +434,12 @@ class HearingManagementServiceTest {
     @Nested
     @DisplayName("VerifyAccess")
     class VerifyAccess {
+
+        @BeforeEach
+        void setup() {
+            when(applicationParams.isAccessControlEnabled()).thenReturn(true);
+        }
+
         @Test
         void shouldVerifyAccessWhenRoleAssignmentValidAndMatchesCaseJurisdictionAndCaseTypeId() {
             RoleAssignmentAttributes roleAssignmentAttributes = RoleAssignmentAttributes.builder()
@@ -706,6 +718,15 @@ class HearingManagementServiceTest {
                 .build();
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
             hearingManagementService.verifyAccess(CASE_REFERENCE);
+        }
+
+        @Test
+        void shouldVerifyAccessWhenAccessControlsDisabled() {
+            when(applicationParams.isAccessControlEnabled()).thenReturn(false);
+
+            hearingManagementService.verifyAccess(CASE_REFERENCE);
+
+            verifyNoInteractions(roleAssignmentService, dataStoreRepository);
         }
 
         @Test

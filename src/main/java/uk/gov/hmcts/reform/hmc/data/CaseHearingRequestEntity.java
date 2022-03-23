@@ -99,9 +99,6 @@ public class CaseHearingRequestEntity {
     @Column(name = "interpreter_booking_required_flag")
     private Boolean interpreterBookingRequiredFlag;
 
-    @Column(name = "is_linked_flag")
-    private Boolean isLinkedFlag;
-
     @Column(name = "listing_comments")
     private String listingComments;
 
