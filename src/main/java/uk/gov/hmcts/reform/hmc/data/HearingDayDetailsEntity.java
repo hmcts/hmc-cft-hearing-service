@@ -53,11 +53,11 @@ public class HearingDayDetailsEntity {
     @JoinColumn(name = "hearing_response_id")
     private HearingResponseEntity hearingResponse;
 
-    @OneToMany(mappedBy = "hearingDayDetails", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "hearingDayDetails", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingDayPanelEntity> hearingDayPanel;
 
-    @OneToMany(mappedBy = "hearingDayDetails", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "hearingDayDetails", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingAttendeeDetailsEntity> hearingAttendeeDetails;
 

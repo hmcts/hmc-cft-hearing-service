@@ -77,7 +77,7 @@ class MessageProcessorIT extends BaseTest {
                                                    + "      \"locationRegion\": \"<locationRegion>\",\n"
                                                    + "      \"locationCluster\": \"<locationCluster>\",\n"
                                                    + "      \"locationReference\": {\n"
-                                                   + "        \"key\": \"<key>\",\n"
+                                                   + "        \"key\": \"EPIMS\",\n"
                                                    + "        \"value\": \"<value>\"\n"
                                                    + "      }\n"
                                                    + "    },\n"
