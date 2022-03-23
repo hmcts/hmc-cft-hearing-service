@@ -2,10 +2,13 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import org.hibernate.annotations.Type;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,9 +34,10 @@ public class LinkedGroupDetails {
     @Column(name = "request_date_time", nullable = false)
     private LocalDateTime requestDateTime;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "link_type", nullable = false)
-    @Type(type = "uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType")
-    private String linkType;
+    @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
+    private LinkType linkType;
 
     @Column(name = "reason_for_link", nullable = false)
     private String reasonForLink;
