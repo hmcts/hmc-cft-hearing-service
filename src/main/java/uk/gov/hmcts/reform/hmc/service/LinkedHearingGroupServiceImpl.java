@@ -35,7 +35,6 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_GROUP_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_DAY_IN_THE_PAST;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_STATUS;
 
@@ -205,7 +204,7 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
 
                 if (hasHearingDateInThePast) {
                     throw new BadRequestException(format(
-                        INVALID_DELETE_HEARING_GROUP_DAY_IN_THE_PAST,
+                        INVALID_DELETE_HEARING_GROUP_HEARING_STATUS,
                         hearing.getId()
                     ));
                 }

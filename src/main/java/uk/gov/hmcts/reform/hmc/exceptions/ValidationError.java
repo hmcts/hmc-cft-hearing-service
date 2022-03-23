@@ -137,8 +137,6 @@ public final class ValidationError {
     public static final String INVALID_DELETE_HEARING_GROUP_STATUS = "007 group is in a %s state";
     public static final String INVALID_DELETE_HEARING_GROUP_HEARING_STATUS = "008 Invalid state for unlinking hearing"
         + " request %s";
-    public static final String INVALID_DELETE_HEARING_GROUP_DAY_IN_THE_PAST = "004 Invalid start date in the past"
-        + " for unlinking hearing request %s";
     public static final String PARTIES_NOTIFIED_ID_NOT_FOUND = "001 No such id: %s";
     public static final String PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH = "002 No such response version";
     public static final String PARTIES_NOTIFIED_ALREADY_SET = "003 Already set";

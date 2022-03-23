@@ -352,7 +352,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(ERROR_PATH_ERROR)
-                               .value("004 Invalid start date in the past for unlinking hearing request 2000000301"))
+                               .value("008 Invalid state for unlinking hearing request 2000000301"))
                 .andReturn();
         }
 
@@ -364,7 +364,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(ERROR_PATH_ERROR)
-                               .value("004 Invalid start date in the past for unlinking hearing request 2000000302"))
+                               .value("008 Invalid state for unlinking hearing request 2000000302"))
                 .andReturn();
         }
 

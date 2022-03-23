@@ -185,7 +185,7 @@ class LinkedHearingGroupServiceTest {
 
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(HEARING_GROUP_ID));
-            assertEquals("004 Invalid start date in the past for unlinking hearing request " + HEARING_ID2,
+            assertEquals("008 Invalid state for unlinking hearing request " + HEARING_ID2,
                          exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
@@ -213,7 +213,7 @@ class LinkedHearingGroupServiceTest {
 
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(HEARING_GROUP_ID));
-            assertEquals("004 Invalid start date in the past for unlinking hearing request " + HEARING_ID1,
+            assertEquals("008 Invalid state for unlinking hearing request " + HEARING_ID1,
                          exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
