@@ -1,0 +1,63 @@
+{
+  "_guid_": "S-004.1",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "amend hearing",
+  "method": "PUT",
+  "uri": "/hearing/{hearingID}",
+  "specs": [
+    "has the 201 code",
+    "an active profile in CCD",
+    "has a versionNumber of 2",
+    "has a status of UPDATE_REQUESTED"
+  ],
+  "users": {
+    "invokingUser": {
+      "username": "master.caseworker@gmail.com",
+      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
+    }
+  },
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    },
+    "pathVariables": {
+      "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    },
+    "body": {
+      "_extends_" : "createHearingRequestFullData",
+      "requestDetails": {
+        "versionNumber": 1
+      },
+      "hearingDetails": {
+        "amendReasonCode": "test for amend hearing reqest"
+      },
+      "caseDetails": {
+        "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
+        "individualDetails": {
+          "firstName": "john",
+          "lastName": "doe"
+        }
+      }
+    }
+  },
+  "expectedResponse": {
+    "responseCode": 201,
+    "responseMessage": "OK",
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    },
+    "body": {
+      "hearingRequestID": "[[ANYTHING_PRESENT]]",
+      "status": "UPDATE_REQUESTED",
+      "timeStamp": "[[ANYTHING_PRESENT]]",
+      "versionNumber": 2,
+      "responseVersion": null,
+      "requestVersion": null,
+      "partiesNotified": null,
+      "serviceData": null
+    }
+  }
+}

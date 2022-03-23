@@ -1,0 +1,53 @@
+{
+  "_guid_" : "createHearingRequestDataMandatoryOnly",
+  "requestDetails" : {
+    "requestTimeStamp":"2021-08-10T12:20:00.000Z"
+  },
+  "hearingDetails": {
+    "autolistFlag": true,
+    "hearingType": "Some hearing type",
+    "hearingWindow": {
+      "hearingWindowStartDateRange": "2021-11-01",
+      "hearingWindowEndDateRange": "2021-11-12"
+    },
+    "duration": 60,
+    "hearingPriorityType": "Priority type",
+    "hearingLocations": [
+      {
+        "locationType": "Location type",
+        "locationId": "COURT"
+      }
+    ],
+    "panelRequirements": {
+    }
+  },
+  "caseDetails": {
+    "hmctsServiceCode": "1234",
+    "caseRef": "1641911514704411",
+    "requestTimeStamp": "2000-08-10T12:20:00.000Z",
+    "caseDeepLink": "https://www.google.com",
+    "hmctsInternalCaseName": "Internal case name",
+    "publicCaseName": "Public case name",
+    "caseCategories": [
+      {
+        "categoryType": "CASETYPE",
+        "categoryValue": "CT2"
+      }
+    ],
+    "caseManagementLocationCode": "CMLC123",
+    "caserestrictedFlag": true,
+    "caseSLAStartDate": "2021-10-10"
+  },
+  "partyDetails": [
+    {
+      "partyID": "P1",
+      "partyType": "IND",
+      "partyRole": "DEF",
+      "individualDetails": {
+        "title": "Mr",
+        "firstName": "Joe",
+        "lastName": "Bloggs"
+      }
+    }
+  ]
+}

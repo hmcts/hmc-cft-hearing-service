@@ -1,20 +1,14 @@
 {
-  "_guid_": "S-001.1",
+  "_guid_": "CreateHearingRequest",
   "_extends_" : "CreateHearingRequestBase",
   "specs": [
-    "has the 200 OK code",
-    "an active profile in CCD",
-    "has 201 Created code",
-    "has a versionNumber of 1",
-    "has a status of HEARING_REQUESTED"
+
+    "to create a hearing request"
 
   ],
   "request": {
     "body": {
-      "_extends_": "createHearingRequestFullData",
-      "caseDetails": {
-        "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
-      }
+      "_extends_": "createHearingRequestFullData"
     }
   },
   "expectedResponse": {
