@@ -16,7 +16,6 @@ import javax.persistence.Table;
 @Table(name = "linked_group_details")
 @Entity
 @Data
-
 public class LinkedGroupDetails {
 
     @Id
@@ -36,7 +35,7 @@ public class LinkedGroupDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "link_type", nullable = false)
-    @Type(type = "uk.gov.hmcts.reform.hmc.model.LinkType")
+    @Type(type = "uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType")
     private String linkType;
 
     @Column(name = "reason_for_link", nullable = false)
@@ -47,4 +46,7 @@ public class LinkedGroupDetails {
 
     @Column(name = "linked_comments")
     private String linkedComments;
+
+    @Column(name = "linked_group_latest_version")
+    private Long linkedGroupLatestVersion;
 }

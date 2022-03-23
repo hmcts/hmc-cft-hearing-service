@@ -46,7 +46,6 @@ class CaseHearingRequestMapperTest {
         assertEquals(Boolean.FALSE, entity.getCaseRestrictedFlag());
         assertEquals(1, entity.getVersionNumber());
         assertNull(entity.getInterpreterBookingRequiredFlag());
-        assertEquals(Boolean.FALSE, entity.getIsLinkedFlag());
         assertNull(entity.getListingComments());
         assertNull(entity.getRequester());
         assertEquals(LocalDate.parse("2017-03-01"), entity.getHearingWindowStartDateRange());
