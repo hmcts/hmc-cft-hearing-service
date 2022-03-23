@@ -8,13 +8,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.ListAssistResponseException;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
+import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -35,16 +42,20 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
     private final ObjectMapper objectMapper;
     private HearingRepository hearingRepository;
     private final HmiHearingResponseMapper hmiHearingResponseMapper;
+    private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
     private static final String HEARING_ID = "hearing_id";
     public static final String UNSUPPORTED_HEARING_STATUS = "Hearing has unsupported value for hearing status";
     public static final String MISSING_HEARING_ID = "Message is missing custom header hearing_id";
 
-    public InboundQueueServiceImpl(ObjectMapper objectMapper, HearingRepository hearingRepository,
-                                   HmiHearingResponseMapper hmiHearingResponseMapper) {
+    public InboundQueueServiceImpl(ObjectMapper objectMapper,
+                                   HearingRepository hearingRepository,
+                                   HmiHearingResponseMapper hmiHearingResponseMapper,
+                                   MessageSenderToTopicConfiguration messageSenderToTopicConfiguration) {
         super(hearingRepository);
         this.objectMapper = objectMapper;
         this.hearingRepository = hearingRepository;
         this.hmiHearingResponseMapper = hmiHearingResponseMapper;
+        this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
     }
 
     @Override
@@ -69,9 +80,9 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
             Validator validator = factory.getValidator();
             HearingResponse hearingResponse = objectMapper.treeToValue(message, HearingResponse.class);
             Set<ConstraintViolation<HearingResponse>> violations = validator.validate(hearingResponse);
-            if (violations.size() == 0) {
+            if (violations.isEmpty()) {
                 log.info("Successfully converted message to HearingResponseType " + hearingResponse);
-                updateHearingAndStatus(hearingId, hearingResponse, messageType, null);
+                updateHearingAndStatus(hearingId, hearingResponse);
             } else {
                 log.info("Total violations found: " + violations.size());
                 for (ConstraintViolation<HearingResponse> violation : violations) {
@@ -81,28 +92,50 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
         } else if (messageType.equals(MessageType.ERROR)) {
             ErrorDetails errorResponse = objectMapper.treeToValue(message, ErrorDetails.class);
             log.info("Successfully converted message to ErrorResponse " + errorResponse);
-            updateHearingAndStatus(hearingId, null, messageType, errorResponse);
+            updateHearingAndStatus(hearingId, errorResponse);
         }
     }
 
-    private void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse, MessageType messageType,
-                                        ErrorDetails errorDetails) {
+    private void updateHearingAndStatus(Long hearingId, ErrorDetails errorDetails) {
+        Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
+        if (hearingResult.isPresent()) {
+            HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiHearingErrorToEntity(
+                errorDetails,
+                hearingResult.get()
+            );
+            hearingRepository.save(hearingToSave);
+            HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingToSave);
+            messageSenderToTopicConfiguration.sendMessage(hmcHearingResponse.toString());
+            if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
+                throw new ListAssistResponseException(
+                    hearingId,
+                    errorDetails.getErrorCode() + " "
+                        + errorDetails.getErrorDescription()
+                );
+            }
+        }
+    }
+
+    private void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = null;
-            if (messageType.equals(MessageType.HEARING_RESPONSE)) {
-                hearingToSave = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                    hearingResponse,
-                    hearingResult.get()
-                );
-            } else if (messageType.equals(MessageType.ERROR)) {
-                hearingToSave = hmiHearingResponseMapper.mapHmiHearingErrorToEntity(
-                    errorDetails,
-                    hearingResult.get()
-                );
-            }
+            hearingToSave = hmiHearingResponseMapper.mapHmiHearingToEntity(
+                hearingResponse,
+                hearingResult.get()
+            );
             hearingRepository.save(hearingToSave);
-            // transform and add to queue 79
+            HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingToSave);
+            messageSenderToTopicConfiguration.sendMessage(hmcHearingResponse.toString());
         }
+    }
+
+    private HmcHearingResponse getHmcHearingResponse(HearingEntity hearingEntity) {
+        Optional<HearingResponseEntity> hearingResponseEntity =
+            hearingEntity.getHearingResponses()
+                .stream().max(Comparator.comparing(HearingResponseEntity::getHearingResponseId));
+        return hmiHearingResponseMapper
+            .mapEntityToHmcModel(hearingResponseEntity
+                                     .orElseThrow(() -> new BadRequestException("bad request")), hearingEntity);
     }
 }

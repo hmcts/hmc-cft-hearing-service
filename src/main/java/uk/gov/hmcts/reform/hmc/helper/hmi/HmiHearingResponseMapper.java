@@ -10,8 +10,13 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
+import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
@@ -19,30 +24,53 @@ import static uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl.UNSUPPORTE
 
 @Component
 public class HmiHearingResponseMapper {
-
     public HearingEntity mapHmiHearingToEntity(HearingResponse hearing, HearingEntity hearingEntity) {
-
         HearingResponseEntity hearingResponseEntity = mapHearingResponseEntity(hearing, hearingEntity);
         HearingDayDetailsEntity hearingDayDetailsEntity = mapHearingDayDetailsEntity(hearing);
+        hearingDayDetailsEntity.setHearingResponse(hearingResponseEntity);
         HearingAttendeeDetailsEntity hearingAttendeeDetailsEntity = mapHearingAttendeeDetailsEntity(hearing);
         HearingDayPanelEntity hearingDayPanelEntity = mapHearingDayPanelEntity(hearing);
-
         hearingDayDetailsEntity.setHearingDayPanel(List.of(hearingDayPanelEntity));
         hearingDayDetailsEntity.setHearingAttendeeDetails(List.of(hearingAttendeeDetailsEntity));
+        hearingDayPanelEntity.setHearingDayDetails(hearingDayDetailsEntity);
+        hearingAttendeeDetailsEntity.setHearingDayDetails(hearingDayDetailsEntity);
         hearingResponseEntity.setHearingDayDetails(List.of(hearingDayDetailsEntity));
-        hearingEntity.addToHearingResponseEntity(hearingResponseEntity);
-
-        HearingStatus postStatus = getHearingStatus(hearing, hearingEntity);
-
-        hearingEntity.setStatus(postStatus.name());
+        hearingEntity.getHearingResponses().add(hearingResponseEntity);
+        hearingEntity.setStatus(getHearingStatus(hearing, hearingEntity).name());
         return hearingEntity;
     }
+
 
     public HearingEntity mapHmiHearingErrorToEntity(ErrorDetails hearing, HearingEntity hearingEntity) {
         hearingEntity.setErrorCode(hearing.getErrorCode());
         hearingEntity.setErrorDescription(hearing.getErrorDescription());
         hearingEntity.setStatus(EXCEPTION.name());
         return hearingEntity;
+    }
+
+    public HmcHearingResponse mapEntityToHmcModel(HearingResponseEntity hearingResponseEntity, HearingEntity hearing) {
+        HmcHearingResponse hmcHearingResponse = new HmcHearingResponse();
+        hmcHearingResponse.setHearingID(hearing.getId().toString());
+        hmcHearingResponse.setCaseRef(hearing.getCaseHearingRequest().getCaseReference());
+        hmcHearingResponse.setHmctsServiceCode(hearing.getCaseHearingRequest().getHmctsServiceID());
+
+        //There is currently only support for one hearingDayDetail to be provided in HearingResponse From ListAssist
+        HmcHearingUpdate hmcHearingUpdate = new HmcHearingUpdate();
+        hmcHearingUpdate.setHmcStatus(hearing.getStatus());
+        if (HearingStatus.valueOf(hearing.getStatus()) != EXCEPTION) {
+            hmcHearingUpdate.setHearingResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
+            hmcHearingUpdate.setHearingEventBroadcastDateTime(LocalDateTime.now(Clock.systemUTC()));
+            hmcHearingUpdate.setHearingListingStatus(ListingStatus.valueOf(hearingResponseEntity.getListingStatus()));
+            hmcHearingUpdate.setNextHearingDate(hearingResponseEntity.getHearingDayDetails().get(0).getStartDateTime());
+            hmcHearingUpdate.setHearingVenueId(hearingResponseEntity.getHearingDayDetails().get(0).getVenueId());
+            if (Boolean.TRUE.equals(
+                hearingResponseEntity.getHearingDayDetails().get(0).getHearingDayPanel().get(0).getIsPresiding())) {
+                hmcHearingUpdate.setHearingJudgeId(
+                    hearingResponseEntity.getHearingDayDetails().get(0).getHearingDayPanel().get(0).getPanelUserId());
+            }
+        }
+        hmcHearingResponse.setHearingUpdate(hmcHearingUpdate);
+        return hmcHearingResponse;
     }
 
     private HearingDayPanelEntity mapHearingDayPanelEntity(HearingResponse hearing) {
@@ -78,14 +106,12 @@ public class HmiHearingResponseMapper {
         hearingResponseEntity.setListingTransactionId(hearingResponse.getMeta().getTransactionIdCaseHQ());
         hearingResponseEntity.setRequestTimeStamp(hearingResponse.getMeta().getTimestamp());
         hearingResponseEntity.setRequestVersion(hearingResponse.getHearing().getHearingCaseVersionId().toString());
-        hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().toString());
+        hearingResponseEntity.setListingStatus(ListingStatus.valueOf(
+            hearingResponse.getHearing().getHearingStatus().getCode()).name());
         hearingResponseEntity.setCancellationReasonType(hearingResponse.getHearing().getHearingCancellationReason());
         hearingResponseEntity.setTranslatorRequired(hearingResponse.getHearing().getHearingTranslatorRequired());
         hearingResponseEntity.setListingCaseStatus(hearingResponse.getHearing()
-                                                       .getHearingCaseStatus().getCode().toString());
-        hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode());
-        //ToDo response version is mandatory in db
-        hearingResponseEntity.setResponseVersion(hearingResponse.getHearing().getHearingCaseVersionId().toString());
+                                                       .getHearingCaseStatus().getCode().name());
         return hearingResponseEntity;
     }
 
