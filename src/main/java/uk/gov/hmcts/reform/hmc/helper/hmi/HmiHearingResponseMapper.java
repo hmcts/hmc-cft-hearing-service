@@ -17,10 +17,7 @@ import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl.UNSUPPORTED_HEARING_STATUS;
@@ -38,19 +35,11 @@ public class HmiHearingResponseMapper {
         hearingDayPanelEntity.setHearingDayDetails(hearingDayDetailsEntity);
         hearingAttendeeDetailsEntity.setHearingDayDetails(hearingDayDetailsEntity);
         hearingResponseEntity.setHearingDayDetails(List.of(hearingDayDetailsEntity));
-
-
         hearingEntity.getHearingResponses().add(hearingResponseEntity);
         hearingEntity.setStatus(getHearingStatus(hearing, hearingEntity).name());
-
-
-        extracted(hearingEntity, hearingResponseEntity);
         return hearingEntity;
     }
 
-    public void extracted(HearingEntity hearingEntity, HearingResponseEntity hearingResponseEntity) {
-        hearingEntity.getHearingResponses().add(hearingResponseEntity);
-    }
 
     public HearingEntity mapHmiHearingErrorToEntity(ErrorDetails hearing, HearingEntity hearingEntity) {
         hearingEntity.setErrorCode(hearing.getErrorCode());
@@ -68,7 +57,7 @@ public class HmiHearingResponseMapper {
         HmcHearingUpdate hmcHearingUpdate = new HmcHearingUpdate();
         hmcHearingUpdate.setHearingResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
         hmcHearingUpdate.setHearingEventBroadcastDateTime(LocalDateTime.now(Clock.systemUTC()));
-        hmcHearingUpdate.setHMCStatus(hearing.getStatus());
+        hmcHearingUpdate.setHmcStatus(hearing.getStatus());
         if (HearingStatus.valueOf(hearing.getStatus()) != EXCEPTION) {
             hmcHearingUpdate.setHearingListingStatus(ListingStatus.valueOf(hearingResponseEntity.getListingStatus()));
         }

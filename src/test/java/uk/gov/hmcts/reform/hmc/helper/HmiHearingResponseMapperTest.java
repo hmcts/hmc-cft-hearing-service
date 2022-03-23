@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import com.google.common.collect.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.Hearing;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingAttendee;
@@ -27,17 +25,12 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_LISTING;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLED;
@@ -50,23 +43,11 @@ class HmiHearingResponseMapperTest {
 
     private HmiHearingResponseMapper hmiHearingResponseMapper;
 
-    @MockBean
-    private HmiHearingResponseMapper mockService;
-
-    @Mock
-    private HearingEntity hearingEntity;
-
-    private HearingEntity he;
-
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        he = generateHearingEntity("AWAITING_LISTING", 1);
-        //Mockito.doNothing().when(mockService).extracted(any(HearingEntity.class), any(HearingResponseEntity.class));
         hmiHearingResponseMapper = new HmiHearingResponseMapper();
     }
-
 
     @Test
     void mapHmiHearingToEntityErrorPayload() {
@@ -84,7 +65,8 @@ class HmiHearingResponseMapperTest {
     @Test
     void mapHmiHearingToEntity() {
         HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
-            generateHmiHearing("random", HearingCode.EXCEPTION, 1, ListingStatus.DRAFT), he
+            generateHmiHearing("random", HearingCode.EXCEPTION, 1, ListingStatus.DRAFT),
+            generateHearingEntity("AWAITING_LISTING", 1)
         );
         assertAll(
             () -> assertThat(response.getHearingResponses().size(), is(2)),
@@ -97,11 +79,10 @@ class HmiHearingResponseMapperTest {
                 is(LocalDateTime.parse("2021-08-10T12:20:00"))
             ),
             () -> assertThat(response.getHearingResponses().get(1).getRequestVersion(), is("1")),
-            () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is("code")),
+            () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is(ListingStatus.DRAFT.name())),
             () -> assertThat(response.getHearingResponses().get(1).getCancellationReasonType(), is("reason")),
             () -> assertThat(response.getHearingResponses().get(1).getTranslatorRequired(), is(true)),
             () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name())),
-            () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is("code")),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getStartDateTime(),
                 is(LocalDateTime.parse("2021-08-10T12:20:00"))
@@ -146,11 +127,10 @@ class HmiHearingResponseMapperTest {
                 is(LocalDateTime.parse("2021-08-10T12:20:00"))
             ),
             () -> assertThat(response.getHearingResponses().get(1).getRequestVersion(), is("1")),
-            () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is("code")),
+            () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is(ListingStatus.DRAFT.name())),
             () -> assertThat(response.getHearingResponses().get(1).getCancellationReasonType(), is("reason")),
             () -> assertThat(response.getHearingResponses().get(1).getTranslatorRequired(), is(true)),
             () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name())),
-            () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is("code")),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getStartDateTime(),
                 is(LocalDateTime.parse("2021-08-10T12:20:00"))
@@ -388,7 +368,7 @@ class HmiHearingResponseMapperTest {
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
 
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
-        hearingEntity.setHearingResponses(List.of(hearingResponseEntity));
+        hearingEntity.setHearingResponses(Lists.newArrayList(hearingResponseEntity));
         hearingEntity.setStatus(status);
 
         return hearingEntity;

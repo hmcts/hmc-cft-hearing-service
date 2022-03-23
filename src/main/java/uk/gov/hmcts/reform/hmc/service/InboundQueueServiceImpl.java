@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
-import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
+import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.ListAssistResponseException;
@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.Map;
@@ -117,7 +116,7 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
                 hearingToSave
             );
             messageSenderToTopicConfiguration.sendMessage(hmcHearingResponse.toString());
-            if (hmcHearingResponse.getHearingUpdate().getHMCStatus().equals(HearingStatus.EXCEPTION.name())) {
+            if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
                 throw new ListAssistResponseException(
                     hearingId,
                     errorDetails.getErrorCode() + " "

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
-import org.hibernate.annotations.Immutable;
 
 import java.util.List;
 import javax.persistence.CascadeType;

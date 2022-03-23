@@ -152,10 +152,10 @@ class MessageProcessorIT extends BaseTest {
         applicationProperties.put(HEARING_ID, "2000000000");
         applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
 
-        JsonNode errorJsonNode = OBJECT_MAPPER.readTree("{\n" +
-                                                            " \"errCode\": 2000,\n" +
-                                                            " \"errDesc\": \"unable to create case\"\n" +
-                                                            "}");
+        JsonNode errorJsonNode = OBJECT_MAPPER.readTree("{\n"
+                                                            + " \"errCode\": 2000,\n"
+                                                            + " \"errDesc\": \"unable to create case\"\n"
+                                                            + "}");
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
         Exception exception = assertThrows(ListAssistResponseException.class, () ->
