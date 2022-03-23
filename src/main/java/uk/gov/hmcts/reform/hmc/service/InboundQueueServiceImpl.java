@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ListAssistResponseException;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
@@ -132,6 +133,8 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
     private HmcHearingResponse getHmcHearingResponse(HearingEntity hearingEntity) {
         Optional<HearingResponseEntity> hearingResponseEntity =
             hearingEntity.getHearingResponses().stream().max(Comparator.comparing(hre -> hre.getHearingResponseId()));
-        return hmiHearingResponseMapper.mapEntityToHmcModel(hearingResponseEntity.get(), hearingEntity);
+        return hmiHearingResponseMapper
+            .mapEntityToHmcModel(hearingResponseEntity
+                                     .orElseThrow(() -> new BadRequestException("bad request")), hearingEntity);
     }
 }
