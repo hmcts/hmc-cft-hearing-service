@@ -329,7 +329,7 @@ class HmiHearingResponseMapperTest {
 
         uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus hearingStatus =
             new uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus();
-        hearingStatus.setCode(status.name());
+        hearingStatus.setCode(status);
         hearing.setHearingStatus(hearingStatus);
 
         HearingCaseStatus hearingCaseStatus = new HearingCaseStatus();
