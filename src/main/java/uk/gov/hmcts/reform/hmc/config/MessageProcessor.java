@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.exceptions.ListAssistResponseException;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 
@@ -35,7 +34,8 @@ public class MessageProcessor {
             log.info("Received message with id '{}'", message.getMessageId());
             processMessage(
                 convertMessage(message.getBody()),
-                message.getApplicationProperties()
+                message.getApplicationProperties(),
+                client, message
             );
             client.complete(message);
             log.info("Message with id '{}' handled successfully", message.getMessageId());
@@ -43,16 +43,14 @@ public class MessageProcessor {
         } catch (JsonProcessingException ex) {
             log.error(MESSAGE_PARSE_ERROR, message.getMessageId(), ex);
             throw new MalformedMessageException(MESSAGE_PARSE_ERROR);
-        } catch (ListAssistResponseException ex) {
-            log.error(ERROR_MESSAGE_TYPE, message.getMessageId());
-            client.abandon(message);
         }
     }
 
-    public void processMessage(JsonNode message, Map<String, Object> applicationProperties)
+    public void processMessage(JsonNode message, Map<String, Object> applicationProperties,
+                               ServiceBusReceiverClient client, ServiceBusReceivedMessage serviceBusReceivedMessage)
         throws JsonProcessingException {
         if (applicationProperties.containsKey(MESSAGE_TYPE)) {
-            inboundQueueService.processMessage(message, applicationProperties);
+            inboundQueueService.processMessage(message, applicationProperties, client, serviceBusReceivedMessage);
         } else {
             throw new MalformedMessageException(MISSING_MESSAGE_TYPE);
         }

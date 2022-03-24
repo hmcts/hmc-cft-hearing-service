@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
+import com.azure.messaging.servicebus.ServiceBusReceiverClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,6 +57,11 @@ class InboundQueueServiceTest {
 
     @Mock
     private HmiHearingResponseMapper hmiHearingResponseMapper;
+    @Mock
+    ServiceBusReceiverClient client;
+
+    @Mock
+    ServiceBusReceivedMessage serviceBusReceivedMessage;
 
     @Mock
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
@@ -176,7 +183,7 @@ class InboundQueueServiceTest {
             applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
 
             Exception exception = assertThrows(HearingNotFoundException.class, () ->
-                inboundQueueService.processMessage(jsonNode, applicationProperties));
+                inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage));
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
 
         }
@@ -188,7 +195,7 @@ class InboundQueueServiceTest {
             applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
 
             Exception exception = assertThrows(BadRequestException.class, () ->
-                inboundQueueService.processMessage(jsonNode, applicationProperties));
+                inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
 
         }
@@ -199,7 +206,7 @@ class InboundQueueServiceTest {
             applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
 
             Exception exception = assertThrows(MalformedMessageException.class, () ->
-                inboundQueueService.processMessage(jsonNode, applicationProperties));
+                inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage));
             assertEquals(MISSING_HEARING_ID, exception.getMessage());
 
         }
@@ -219,11 +226,11 @@ class InboundQueueServiceTest {
                 .thenReturn(generateHmcResponse(HearingStatus.AWAITING_LISTING));
             doNothing().when(messageSenderToTopicConfiguration).sendMessage(any());
 
-            inboundQueueService.processMessage(jsonNode, applicationProperties);
+            inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage);
             verify(hearingRepository).save(hearingEntity);
             verify(hmiHearingResponseMapper, times(1)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).existsById(2000000000L);
-            verify(hearingRepository, times(1)).findById(2000000000L);
+            verify(hearingRepository, times(2)).findById(2000000000L);
         }
 
         @Test
@@ -320,7 +327,7 @@ class InboundQueueServiceTest {
                                                            + "  }\n"
                                                            + "}");
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            inboundQueueService.processMessage(jsonNode, applicationProperties);
+            inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage);
             verify(hmiHearingResponseMapper, times(0)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).existsById(2000000000L);
             verify(hearingRepository, times(0)).findById(2000000000L);
@@ -346,7 +353,7 @@ class InboundQueueServiceTest {
 
             JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
             Exception exception = assertThrows(ListAssistResponseException.class, () ->
-                inboundQueueService.processMessage(data, applicationProperties));
+                inboundQueueService.processMessage(data, applicationProperties, client, serviceBusReceivedMessage));
             assertEquals("Error received for hearing Id: 2000000000 with an "
                              + "error message of 2000 Unable to create case", exception.getMessage());
         }
@@ -361,7 +368,7 @@ class InboundQueueServiceTest {
             errorDetails.setErrorDescription("Unable to create case");
             JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
             Exception exception = assertThrows(HearingNotFoundException.class, () ->
-                inboundQueueService.processMessage(data, applicationProperties));
+                inboundQueueService.processMessage(data, applicationProperties, client, serviceBusReceivedMessage));
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
 
         }
@@ -376,7 +383,7 @@ class InboundQueueServiceTest {
             errorDetails.setErrorDescription("Unable to create case");
             JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
             Exception exception = assertThrows(BadRequestException.class, () ->
-                inboundQueueService.processMessage(data, applicationProperties));
+                inboundQueueService.processMessage(data, applicationProperties, client, serviceBusReceivedMessage));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
 
         }
@@ -390,7 +397,7 @@ class InboundQueueServiceTest {
             errorDetails.setErrorDescription("Unable to create case");
             JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
             Exception exception = assertThrows(MalformedMessageException.class, () ->
-                inboundQueueService.processMessage(data, applicationProperties));
+                inboundQueueService.processMessage(data, applicationProperties, client, serviceBusReceivedMessage));
             assertEquals(MISSING_HEARING_ID, exception.getMessage());
 
         }

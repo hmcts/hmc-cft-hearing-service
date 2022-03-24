@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
+import com.azure.messaging.servicebus.ServiceBusReceiverClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,21 +61,23 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
     }
 
     @Override
-    @Transactional
-    public void processMessage(JsonNode message, Map<String, Object> applicationProperties)
+    public void processMessage(JsonNode message, Map<String, Object> applicationProperties,
+                               ServiceBusReceiverClient client, ServiceBusReceivedMessage serviceBusReceivedMessage)
         throws JsonProcessingException {
         MessageType messageType = MessageType.valueOf(applicationProperties.get(MESSAGE_TYPE).toString());
         log.info("Message of type " + messageType + " received");
         if (applicationProperties.containsKey(HEARING_ID)) {
             Long hearingId = Long.valueOf(applicationProperties.get(HEARING_ID).toString());
             validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
-            validateResponse(message, messageType, hearingId);
+            validateResponse(message, messageType, hearingId, client, serviceBusReceivedMessage);
         } else {
             throw new MalformedMessageException(MISSING_HEARING_ID);
         }
     }
 
-    private void validateResponse(JsonNode message, MessageType messageType, Long hearingId)
+    private void validateResponse(JsonNode message, MessageType messageType, Long hearingId,
+                                  ServiceBusReceiverClient client,
+                                  ServiceBusReceivedMessage serviceBusReceivedMessage)
         throws JsonProcessingException {
         if (messageType.equals(MessageType.HEARING_RESPONSE)) {
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
@@ -91,12 +95,14 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
             }
         } else if (messageType.equals(MessageType.ERROR)) {
             ErrorDetails errorResponse = objectMapper.treeToValue(message, ErrorDetails.class);
-            log.info("Successfully converted message to ErrorResponse " + errorResponse);
-            updateHearingAndStatus(hearingId, errorResponse);
+            log.debug("Successfully converted message to ErrorResponse " + errorResponse);
+            updateHearingAndStatus(hearingId, errorResponse, client, serviceBusReceivedMessage);
         }
     }
 
-    private void updateHearingAndStatus(Long hearingId, ErrorDetails errorDetails) {
+    private void updateHearingAndStatus(Long hearingId, ErrorDetails errorDetails,
+                                        ServiceBusReceiverClient client,
+                                        ServiceBusReceivedMessage message) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiHearingErrorToEntity(
@@ -107,6 +113,7 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingToSave);
             messageSenderToTopicConfiguration.sendMessage(hmcHearingResponse.toString());
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
+                client.complete(message);
                 throw new ListAssistResponseException(
                     hearingId,
                     errorDetails.getErrorCode() + " "
@@ -116,6 +123,7 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
         }
     }
 
+    @Transactional
     private void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
@@ -125,8 +133,11 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
                 hearingResult.get()
             );
             hearingRepository.save(hearingToSave);
-            HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingToSave);
-            messageSenderToTopicConfiguration.sendMessage(hmcHearingResponse.toString());
+            Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
+            if (hearingEntity.isPresent()) {
+                HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity.get());
+                messageSenderToTopicConfiguration.sendMessage(hmcHearingResponse.toString());
+            }
         }
     }
 

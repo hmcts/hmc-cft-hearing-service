@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.hmc.config;
 
+import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
+import com.azure.messaging.servicebus.ServiceBusReceiverClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -30,6 +33,12 @@ class MessageProcessorIT extends BaseTest {
 
     @MockBean
     private MessageSenderToTopicConfiguration messageSenderConfiguration;
+
+    @Mock
+    private ServiceBusReceivedMessage message;
+
+    @Mock
+    private ServiceBusReceiverClient client;
 
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
         .modules(new Jdk8Module())
@@ -142,7 +151,7 @@ class MessageProcessorIT extends BaseTest {
         applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
-        messageProcessor.processMessage(jsonNode, applicationProperties);
+        messageProcessor.processMessage(jsonNode, applicationProperties, client, message);
     }
 
     @Test
@@ -159,7 +168,7 @@ class MessageProcessorIT extends BaseTest {
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
         Exception exception = assertThrows(ListAssistResponseException.class, () ->
-            messageProcessor.processMessage(errorJsonNode, applicationProperties));
+            messageProcessor.processMessage(errorJsonNode, applicationProperties, client, message));
         assertEquals(
             "Error received for hearing Id: 2000000000 with an error message of 2000 unable to create case",
             exception.getMessage()
@@ -175,7 +184,7 @@ class MessageProcessorIT extends BaseTest {
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
         Exception exception = assertThrows(MalformedMessageException.class, () ->
-            messageProcessor.processMessage(jsonNode, applicationProperties));
+            messageProcessor.processMessage(jsonNode, applicationProperties, client, message));
         assertEquals(MISSING_MESSAGE_TYPE, exception.getMessage());
     }
 
@@ -187,7 +196,7 @@ class MessageProcessorIT extends BaseTest {
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
         Exception exception = assertThrows(MalformedMessageException.class, () ->
-            messageProcessor.processMessage(jsonNode, applicationProperties));
+            messageProcessor.processMessage(jsonNode, applicationProperties, client, message));
         assertEquals(MISSING_HEARING_ID, exception.getMessage());
     }
 
@@ -200,7 +209,7 @@ class MessageProcessorIT extends BaseTest {
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
         Exception exception = assertThrows(HearingNotFoundException.class, () ->
-            messageProcessor.processMessage(jsonNode, applicationProperties));
+            messageProcessor.processMessage(jsonNode, applicationProperties, client, message));
         assertEquals("No hearing found for reference: 2000000001", exception.getMessage());
     }
 
@@ -213,7 +222,7 @@ class MessageProcessorIT extends BaseTest {
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
         Exception exception = assertThrows(BadRequestException.class, () ->
-            messageProcessor.processMessage(jsonNode, applicationProperties));
+            messageProcessor.processMessage(jsonNode, applicationProperties, client, message));
         assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
     }
 }
