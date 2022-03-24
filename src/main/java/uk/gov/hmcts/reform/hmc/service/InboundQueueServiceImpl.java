@@ -113,6 +113,7 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingToSave);
             messageSenderToTopicConfiguration.sendMessage(hmcHearingResponse.toString());
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
+                //Service bus sessionhas to completed first else it will try to re process the message
                 client.complete(message);
                 throw new ListAssistResponseException(
                     hearingId,

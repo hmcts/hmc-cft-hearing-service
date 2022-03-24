@@ -25,6 +25,8 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -338,7 +340,7 @@ class HmiHearingResponseMapperTest {
         VenueLocationReference venueLocationReference = new VenueLocationReference();
         venueLocationReference.setKey(key);
         venueLocationReference.setValue("value");
-        hearingVenue.setLocationReference(venueLocationReference);
+        hearingVenue.setLocationReference(new ArrayList<>(List.of(venueLocationReference)));
         hearing.setHearingVenue(hearingVenue);
 
         HearingRoom hearingRoom = new HearingRoom();
@@ -350,12 +352,12 @@ class HmiHearingResponseMapperTest {
         HearingChannel hearingChannel = new HearingChannel();
         hearingChannel.setCode("codeSubChannel");
         hearingAttendee.setHearingChannel(hearingChannel);
-        hearing.setHearingAttendee(hearingAttendee);
+        hearing.setHearingAttendee(new ArrayList<>(List.of(hearingAttendee)));
 
         HearingJoh hearingJoh = new HearingJoh();
         hearingJoh.setJohCode("JohCode");
         hearingJoh.setIsPresiding(true);
-        hearing.setHearingJoh(hearingJoh);
+        hearing.setHearingJoh(new ArrayList<>(List.of(hearingJoh)));
 
         hearingResponse.setHearing(hearing);
         return hearingResponse;
