@@ -17,7 +17,7 @@ import java.util.Optional;
 import static java.util.stream.Collectors.groupingBy;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_VALID_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_STATE;
 
 public class HearingIdValidator {
 
@@ -62,14 +62,14 @@ public class HearingIdValidator {
         Optional<HearingResponseEntity> mostRecentLatestVersionHearingResponseOpt = latestVersionHearingResponses
             .stream().max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
         if (mostRecentLatestVersionHearingResponseOpt.isEmpty()) {
-            throw new BadRequestException(INVALID_PUT_HEARING_STATUS);
+            throw new BadRequestException(INVALID_HEARING_STATE);
         }
 
         Optional<HearingDayDetailsEntity> hearingDayDetailsOpt = mostRecentLatestVersionHearingResponseOpt.get()
             .getHearingDayDetails().stream()
             .min(Comparator.comparing(HearingDayDetailsEntity::getStartDateTime));
         if (hearingDayDetailsOpt.isEmpty()) {
-            throw new BadRequestException(INVALID_PUT_HEARING_STATUS);
+            throw new BadRequestException(INVALID_HEARING_STATE);
         }
         return hearingDayDetailsOpt.get().getStartDateTime();
     }
