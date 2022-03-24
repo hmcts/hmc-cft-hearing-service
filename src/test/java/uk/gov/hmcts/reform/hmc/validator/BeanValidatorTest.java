@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
+import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.util.ArrayList;
@@ -217,6 +218,38 @@ class BeanValidatorTest {
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    void shouldHave_HearingResponseViolations() {
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setListAssistTransactionID("a".repeat(41));
+        hearingResponse.setHearingCancellationReason("a".repeat(41));
+        Set<ConstraintViolation<HearingResponse>> violations = validator.validate(hearingResponse);
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
+        assertFalse(violations.isEmpty());
+        assertEquals(4, violations.size());
+        assertTrue(validationErrors.contains(ValidationError.LIST_ASSIST_TRANSACTION_ID_MAX_LENGTH));
+        assertTrue(validationErrors.contains(ValidationError.HEARING_CANCELLATION_REASON_MAX_LENGTH));
+        assertTrue(validationErrors.contains("Unsupported type for laCaseStatus"));
+        assertTrue(validationErrors.contains("Unsupported type for listingStatus"));
+    }
+
+    @Test
+    void shouldHave_HmiRequestDetailsViolations() {
+        uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails requestDetails
+                = new uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails();
+        requestDetails.setHearingRequestId("a".repeat(31));
+        requestDetails.setHearingGroupRequestId("b".repeat(31));
+        Set<ConstraintViolation<uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails>> violations
+                = validator.validate(requestDetails);
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
+        assertFalse(violations.isEmpty());
+        assertEquals(2, violations.size());
+        assertTrue(validationErrors.contains(ValidationError.HEARING_GROUP_REQUEST_ID_MAX_LENGTH));
+        assertTrue(validationErrors.contains(ValidationError.HEARING_REQUEST_ID_MAX_LENGTH));
     }
 
     @Test

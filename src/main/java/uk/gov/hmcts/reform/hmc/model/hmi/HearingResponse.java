@@ -3,8 +3,11 @@ package uk.gov.hmcts.reform.hmc.model.hmi;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
+import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,9 +22,11 @@ public class HearingResponse {
     private String listAssistTransactionID;
 
     @JsonProperty("laCaseStatus")
+    @EnumPattern(enumClass = ListAssistCaseStatus.class, fieldName = "laCaseStatus")
     private String laCaseStatus;
 
     @JsonProperty("listingStatus")
+    @EnumPattern(enumClass = ListingStatus.class, fieldName = "listingStatus")
     private String listingStatus;
 
     @JsonProperty("receivedDateTime")

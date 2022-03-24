@@ -6,6 +6,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.RequirementType;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
+import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -216,6 +219,38 @@ class EnumPatternValidatorTest {
         panelPreference.setRequirementType(RequirementType.MUSTINC.toString());
         Set<ConstraintViolation<PanelPreference>> violations = validator.validate(panelPreference);
         assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    void whenInvalidListAssistCaseStatusIsEmpty() {
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setLaCaseStatus("");
+        hearingResponse.setListingStatus(ListingStatus.FIXED.name());
+        Set<ConstraintViolation<HearingResponse>> violations = validator.validate(hearingResponse);
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertTrue(validationErrors.contains("Unsupported type for laCaseStatus"));
+    }
+
+    @Test
+    void whenInvalidListingStatusIsEmpty() {
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setLaCaseStatus(ListAssistCaseStatus.CASE_CLOSED.name());
+        hearingResponse.setListingStatus("");
+        Set<ConstraintViolation<HearingResponse>> violations = validator.validate(hearingResponse);
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertTrue(validationErrors.contains("Unsupported type for listingStatus"));
     }
 
     @Test
