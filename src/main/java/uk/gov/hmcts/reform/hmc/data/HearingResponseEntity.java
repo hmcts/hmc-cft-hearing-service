@@ -7,6 +7,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -51,7 +52,7 @@ public class HearingResponseEntity {
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
 
-    @OneToMany(mappedBy = "hearingResponse")
+    @OneToMany(mappedBy = "hearingResponse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingDayDetailsEntity> hearingDayDetails;
 
@@ -67,4 +68,8 @@ public class HearingResponseEntity {
     @Column(name = "service_data", columnDefinition = "jsonb")
     @Convert(converter = JsonDataConverter.class)
     private JsonNode serviceData;
+
+    @Column(name = "cancellation_reason_type")
+    private String cancellationReasonType;
+
 }

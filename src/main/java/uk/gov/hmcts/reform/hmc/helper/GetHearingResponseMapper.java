@@ -245,6 +245,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             hearingResponse.setLaCaseStatus(ListAssistCaseStatus.getLabel(
                     hearingResponseEntity.getListingCaseStatus()));
             hearingResponse.setListingStatus(ListingStatus.getLabel(hearingResponseEntity.getListingStatus()));
+            hearingResponse.setHearingCancellationReason(hearingResponseEntity.getCancellationReasonType());
             setHearingDaySchedule(hearingResponse, List.of(hearingResponseEntity));
             hearingResponses.add(hearingResponse);
         }

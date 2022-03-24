@@ -421,6 +421,7 @@ public class TestingUtil {
         entity.setHearingResponseId(2L);
         entity.setListingStatus("listingStatus");
         entity.setListingCaseStatus("Case_listingStatus");
+        entity.setCancellationReasonType("Cancelled Reason 1");
         return entity;
     }
 
@@ -489,6 +490,7 @@ public class TestingUtil {
         entity.setHearingResponseId(2L);
         entity.setListingStatus(ListingStatus.FIXED.name());
         entity.setListingCaseStatus(ListAssistCaseStatus.CASE_CREATED.name());
+        entity.setCancellationReasonType("Cancelled Reason 1");
         entity.setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity()));
         return entity;
     }
