@@ -14,7 +14,7 @@ public class ActualHearingDay {
     private LocalDate hearingDate;
     private LocalDateTime hearingStartTime;
     private LocalDateTime hearingEndTime;
-    private List<ActualHearingDayPauseDayTime> actualHearingDayPauseDayTimes;
-    private List<ActualHearingDayParties> actualHearingDayParties;
+    private List<ActualHearingDayPauseDayTime> pauseDateTimes;
+    private List<ActualHearingDayParties> actualDayParties;
 
 }

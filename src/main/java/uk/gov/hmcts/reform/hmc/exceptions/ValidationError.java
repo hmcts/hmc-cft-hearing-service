@@ -139,6 +139,8 @@ public final class ValidationError {
 
     public static final String HEARING_ACTUALS_ID_NOT_FOUND = "001 No such id: %s";
     public static final String HEARING_ACTUALS_INVALID_STATUS = "002 invalid status %s";
+    public static final String HEARING_ACTUALS_HEARING_DAYS_INVALID = "003 invalid date";
+    public static final String HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS = "004 non-unique dates";
 
     public static final String HEARING_ID_LENGTH = "Hearing id cannot be greater than 30 " + CHARACTERS_LONG;
     public static final String HEARING_ID_EMPTY = "Hearing id can not be null or empty";

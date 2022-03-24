@@ -1,27 +1,35 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
-import java.util.Arrays;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS;
 
 @Service
 public class HearingActualsServiceImpl extends HearingIdValidator implements HearingActualsService {
 
-    private static final List<String> allowedActualsStatuses = Arrays.asList("LISTED",
-                                                                             "UPDATE_REQUESTED",
-                                                                             "UPDATE_SUBMITTED");
+    private static final List<String> ALLOWED_ACTUALS_STATUSES = List.of("LISTED",
+                                                                         "UPDATE_REQUESTED",
+                                                                         "UPDATE_SUBMITTED");
+    public static final List<String> HEARING_RESULTS_THAT_NEED_REASON_TYPE = List.of("ADJOURNED", "CANCELLED");
 
     @Autowired
     public HearingActualsServiceImpl(HearingRepository hearingRepository) {
@@ -30,24 +38,66 @@ public class HearingActualsServiceImpl extends HearingIdValidator implements Hea
 
     public void updateHearingActuals(Long hearingId, HearingActual request) {
         isValidFormat(hearingId.toString());
-
-        Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
-        validateHearingId(hearingId, hearingEntityOptional);
-
-        HearingEntity hearing = hearingEntityOptional.get();
+        HearingEntity hearing = getHearing(hearingId);
         String hearingStatus = hearing.getStatus();
         validateHearingStatusForActuals(hearingStatus);
+        validateRequestPayload(request, hearing);
+
+    }
+
+    private void validateRequestPayload(HearingActual request, HearingEntity hearing) {
+        validateHearingActualDaysNotInTheFuture(request);
+        validateDuplicateHearingActualDays(request);
+        validateHearingActualDaysNotBeforeFirstHearingDate(request, hearing);
+        validateAdjournedHearingResult(request);
+    }
+
+    private void validateAdjournedHearingResult(HearingActual request) {
+        if (HEARING_RESULTS_THAT_NEED_REASON_TYPE.contains(request.getHearingOutcome().getHearingResult())
+            && StringUtils.isBlank(request.getHearingOutcome().getHearingResultReasonType())) {
+            throw new BadRequestException(null);
+        }
+    }
+
+    private void validateHearingActualDaysNotBeforeFirstHearingDate(HearingActual request, HearingEntity hearing) {
+        LocalDateTime startDate = getLowestStartDateOfMostRecentHearingResponse(hearing);
+        request.getActualHearingDays().forEach(actualHearingDay -> {
+            if (actualHearingDay.getHearingDate().isBefore(startDate.toLocalDate())) {
+                throw new BadRequestException(HEARING_ACTUALS_HEARING_DAYS_INVALID);
+            }
+        });
+    }
+
+    private void validateHearingActualDaysNotInTheFuture(HearingActual request) {
+        request.getActualHearingDays().forEach(hearingDay -> {
+            if (hearingDay.getHearingDate().isAfter(LocalDate.now())) {
+                throw new BadRequestException(HEARING_ACTUALS_HEARING_DAYS_INVALID);
+            }
+        });
+    }
+
+    private void validateDuplicateHearingActualDays(HearingActual request) {
+        Set<LocalDate> hearingDays = request.getActualHearingDays()
+            .stream()
+            .map(ActualHearingDay::getHearingDate)
+            .collect(Collectors.toSet());
+        if (hearingDays.size() != request.getActualHearingDays().size()) {
+            throw new BadRequestException(HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS);
+        }
     }
 
     private void validateHearingStatusForActuals(String hearingStatus) {
-        if (allowedActualsStatuses.stream().noneMatch(e -> e.equals(hearingStatus))) {
+        if (ALLOWED_ACTUALS_STATUSES.stream().noneMatch(e -> e.equals(hearingStatus))) {
             throw new BadRequestException(String.format(HEARING_ACTUALS_INVALID_STATUS, hearingStatus));
         }
     }
 
-    private void validateHearingId(Long hearingId, Optional<HearingEntity> hearingEntityOptional) {
+    private HearingEntity getHearing(Long hearingId) {
+        Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
+
         if (hearingEntityOptional.isEmpty()) {
             throw new HearingNotFoundException(hearingId, HEARING_ACTUALS_ID_NOT_FOUND);
         }
+        return hearingEntityOptional.get();
     }
 }
