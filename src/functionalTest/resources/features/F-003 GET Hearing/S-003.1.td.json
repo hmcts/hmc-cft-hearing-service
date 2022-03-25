@@ -1,7 +1,7 @@
 {
   "_guid_": "S-003.1",
   "productName": "HMC CFT Hearing Service",
-  "operationName": "delete hearing",
+  "operationName": "get hearing",
   "method": "GET",
   "uri": "/hearing/{hearingID}",
   "specs": [
@@ -32,7 +32,17 @@
       "Request-Context": "[[ANY_NULLABLE]]"
     },
     "body": {
-      "_extends_" : "createHearingRequestFullData"
+      "_extends_" : "createHearingRequestFullData",
+      "requestDetails": {
+        "timestamp": "[[ANYTHING_PRESENT]]",
+        "status": "HEARING_REQUESTED",
+        "versionNumber": 1,
+        "partiesNotified": null
+      },
+      "caseDetails": {
+        "caseRef": "${[scenarioContext][parentContext][CreateCase][testData][actualResponse][body][id]}"
+      },
+      "hearingResponse": []
     }
   }
 }
