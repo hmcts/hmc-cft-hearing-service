@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
@@ -33,6 +33,8 @@ import javax.transaction.Transactional;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.PENDING;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_GROUP_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_HEARING_STATUS;
@@ -223,9 +225,18 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
 
     private void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings, Long hearingGroupId) {
         linkedGroupHearings.forEach(hearingEntity -> {
-            // TODO: unlink hearingEntity from the group and persist - https://tools.hmcts.net/jira/browse/HMAN-96
+            setHearingGroupDetails(hearingEntity);
+            hearingRepository.save(hearingEntity);
         });
         linkedGroupDetailsRepository.deleteHearingGroup(hearingGroupId);
         // TODO: call ListAssist - https://tools.hmcts.net/jira/browse/HMAN-97
+    }
+
+    private void setHearingGroupDetails(HearingEntity hearingEntity) {
+        Long versionNumber = hearingEntity.getLinkedGroupDetails().getLinkedGroupLatestVersion();
+        hearingEntity.getLinkedGroupDetails().setLinkedGroupLatestVersion(versionNumber + VERSION_NUMBER);
+        hearingEntity.getLinkedGroupDetails().setStatus(PENDING);
+        hearingEntity.getLinkedGroupDetails().setLinkedGroupId(null);
+        hearingEntity.setLinkedOrder(null);
     }
 }

@@ -19,4 +19,5 @@ public final class Constants {
     public static final String REQUEST_HEARING = "REQUEST_HEARING";
     public static final String AMEND_HEARING = "AMEND_HEARING";
     public static final String DELETE_HEARING = "DELETE_HEARING";
+    public static final String PENDING = "PENDING";
 }
