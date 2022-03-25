@@ -16,7 +16,9 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -56,10 +58,18 @@ class LinkedHearingGroupServiceTest {
     @InjectMocks
     private LinkedHearingGroupServiceImpl service;
 
+    @Mock
+    LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
+
+    @Mock
+    LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        service = new LinkedHearingGroupServiceImpl(linkedGroupDetailsRepository, hearingRepository);
+        service = new LinkedHearingGroupServiceImpl(linkedGroupDetailsRepository, hearingRepository,
+                                                    linkedHearingDetailsAuditRepository,
+                                                    linkedGroupDetailsAuditRepository);
     }
 
     @Nested

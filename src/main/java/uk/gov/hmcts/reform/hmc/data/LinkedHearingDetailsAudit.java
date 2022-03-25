@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -36,4 +37,5 @@ public class LinkedHearingDetailsAudit {
 
     @Column(name = "linked_order")
     private Long linkedOrder;
+
 }

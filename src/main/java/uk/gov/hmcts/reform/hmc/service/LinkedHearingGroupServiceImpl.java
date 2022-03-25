@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
+import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
@@ -16,7 +18,9 @@ import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDate;
@@ -50,11 +54,19 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
 
     private final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
+    private final LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
+
+    private final LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
+
     @Autowired
     public LinkedHearingGroupServiceImpl(LinkedGroupDetailsRepository linkedGroupDetailsRepository,
-                                         HearingRepository hearingRepository) {
+                                         HearingRepository hearingRepository,
+                                         LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository,
+                                         LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository) {
         super(hearingRepository);
         this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
+        this.linkedHearingDetailsAuditRepository = linkedHearingDetailsAuditRepository;
+        this.linkedGroupDetailsAuditRepository = linkedGroupDetailsAuditRepository;
     }
 
     @Override
@@ -224,7 +236,9 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
     }
 
     private void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings, Long hearingGroupId) {
+        saveLinkedGroupDetailAudit(linkedGroupHearings.get(0));
         linkedGroupHearings.forEach(hearingEntity -> {
+            saveLinkedHearingDetailsAudit(hearingEntity);
             setHearingGroupDetails(hearingEntity);
             hearingRepository.save(hearingEntity);
         });
@@ -232,11 +246,38 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
         // TODO: call ListAssist - https://tools.hmcts.net/jira/browse/HMAN-97
     }
 
+    private void saveLinkedGroupDetailAudit(HearingEntity hearingEntity) {
+        LinkedGroupDetails linkedGroupDetails =hearingEntity.getLinkedGroupDetails();
+        linkedGroupDetails.setLinkedGroupId(linkedGroupDetails.getLinkedGroupId());
+        LinkedGroupDetailsAudit linkedGroupDetailsAudit = new LinkedGroupDetailsAudit();
+        linkedGroupDetailsAudit.setLinkedGroup(linkedGroupDetails);
+        linkedGroupDetailsAudit.setLinkedGroupVersion(linkedGroupDetails.getLinkedGroupLatestVersion());
+        linkedGroupDetailsAudit.setRequestId(linkedGroupDetails.getRequestId());
+        linkedGroupDetailsAudit.setRequestName(linkedGroupDetails.getRequestName());
+        linkedGroupDetailsAudit.setRequestDateTime(linkedGroupDetails.getRequestDateTime());
+        linkedGroupDetailsAudit.setLinkType(linkedGroupDetails.getLinkType());
+        linkedGroupDetailsAudit.setReasonForLink(linkedGroupDetails.getReasonForLink());
+        linkedGroupDetailsAudit.setStatus(linkedGroupDetails.getStatus());
+        linkedGroupDetailsAudit.setLinkedComments(linkedGroupDetails.getLinkedComments());
+        linkedGroupDetailsAuditRepository.save(linkedGroupDetailsAudit);
+    }
+
+    private void saveLinkedHearingDetailsAudit(HearingEntity hearingEntity) {
+        LinkedGroupDetails linkedGroupDetails =new LinkedGroupDetails();
+        linkedGroupDetails.setLinkedGroupId(hearingEntity.getLinkedGroupDetails().getLinkedGroupId());
+        LinkedHearingDetailsAudit linkedHearingDetailsAuditEntity = new LinkedHearingDetailsAudit();
+        linkedHearingDetailsAuditEntity.setLinkedGroup(linkedGroupDetails);
+        linkedHearingDetailsAuditEntity.setLinkedGroupVersion(hearingEntity.getLinkedOrder());
+        linkedHearingDetailsAuditEntity.setHearing(hearingEntity);
+        linkedHearingDetailsAuditEntity.setLinkedOrder(hearingEntity.getLinkedOrder());
+        linkedHearingDetailsAuditRepository.save(linkedHearingDetailsAuditEntity);
+    }
+
     private void setHearingGroupDetails(HearingEntity hearingEntity) {
         Long versionNumber = hearingEntity.getLinkedGroupDetails().getLinkedGroupLatestVersion();
         hearingEntity.getLinkedGroupDetails().setLinkedGroupLatestVersion(versionNumber + VERSION_NUMBER);
         hearingEntity.getLinkedGroupDetails().setStatus(PENDING);
-        hearingEntity.getLinkedGroupDetails().setLinkedGroupId(null);
+        hearingEntity.setLinkedGroupDetails(null);
         hearingEntity.setLinkedOrder(null);
     }
 }
