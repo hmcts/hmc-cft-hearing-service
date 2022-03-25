@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponse;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
-import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
@@ -25,20 +24,21 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIE
 @Service
 @Component
 @Slf4j
-public class PartiesNotifiedServiceImpl extends HearingIdValidator implements PartiesNotifiedService {
+public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
 
     private final HearingResponseRepository hearingResponseRepository;
+    private HearingIdValidator hearingIdValidator;
 
     @Autowired
-    public PartiesNotifiedServiceImpl(HearingRepository hearingRepository,
-                                      HearingResponseRepository hearingResponseRepository) {
-        super(hearingRepository);
+    public PartiesNotifiedServiceImpl(HearingResponseRepository hearingResponseRepository,
+                                      HearingIdValidator hearingIdValidator) {
         this.hearingResponseRepository = hearingResponseRepository;
+        this.hearingIdValidator = hearingIdValidator;
     }
 
     @Override
     public void getPartiesNotified(Long hearingId, int responseVersion, PartiesNotified partiesNotified) {
-        validateHearingId(hearingId, PARTIES_NOTIFIED_ID_NOT_FOUND);
+        hearingIdValidator.validateHearingId(hearingId, PARTIES_NOTIFIED_ID_NOT_FOUND);
         HearingResponseEntity hearingResponseEntity = hearingResponseRepository.getHearingResponse(hearingId);
         if (Integer.valueOf(hearingResponseEntity.getResponseVersion()) != responseVersion) {
             throw new PartiesNotifiedNotFoundException(PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH);
@@ -60,7 +60,7 @@ public class PartiesNotifiedServiceImpl extends HearingIdValidator implements Pa
      */
     @Override
     public PartiesNotifiedResponses getPartiesNotified(Long hearingId) {
-        validateHearingId(hearingId, PARTIES_NOTIFIED_ID_NOT_FOUND);
+        hearingIdValidator.validateHearingId(hearingId, PARTIES_NOTIFIED_ID_NOT_FOUND);
         List<HearingResponseEntity> entities = hearingResponseRepository.getPartiesNotified(hearingId);
         if (entities.isEmpty()) {
             log.info("No partiesNotified found for hearingId {}", hearingId);

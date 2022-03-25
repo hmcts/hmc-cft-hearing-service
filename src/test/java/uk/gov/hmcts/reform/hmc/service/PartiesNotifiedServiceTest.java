@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,11 +50,15 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
     @Mock
     HearingResponseRepository hearingResponseRepository;
 
+    private HearingIdValidator hearingIdValidator;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        hearingIdValidator = new HearingIdValidator(hearingRepository);
         partiesNotifiedService =
-            new PartiesNotifiedServiceImpl(hearingRepository, hearingResponseRepository);
+            new PartiesNotifiedServiceImpl(hearingResponseRepository,
+                                           hearingIdValidator);
     }
 
     @Nested

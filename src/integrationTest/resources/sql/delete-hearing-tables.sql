@@ -1,3 +1,5 @@
+DELETE FROM actual_hearing_day;
+DELETE FROM actual_hearing;
 DELETE FROM non_standard_durations;
 DELETE FROM required_locations;
 DELETE FROM required_facilities;

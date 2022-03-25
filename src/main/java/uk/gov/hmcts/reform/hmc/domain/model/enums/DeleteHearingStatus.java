@@ -12,6 +12,18 @@ public enum DeleteHearingStatus {
     public static boolean isValid(String status) {
         return Arrays.stream(values()).anyMatch(enumStatus -> enumStatus.name().equals(status));
     }
+
+    public static boolean isValidHearingActuals(String status) {
+        DeleteHearingStatus deleteHearingStatus = valueOf(status);
+        switch (deleteHearingStatus) {
+            case LISTED:
+            case UPDATE_REQUESTED:
+            case UPDATE_SUBMITTED:
+                return true;
+            default:
+                return false;
+        }
+    }
 }
 
 

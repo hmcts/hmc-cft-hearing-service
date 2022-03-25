@@ -3,10 +3,13 @@ package uk.gov.hmcts.reform.hmc.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
@@ -14,6 +17,7 @@ import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,9 +41,14 @@ class HearingManagementServiceIT extends BaseTest {
     @MockBean
     private ApplicationParams applicationParams;
 
+    @Autowired
+    HearingRepository hearingRepository;
+
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
 
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
+
+    private static final String HEARING_COMPLETION_DATA_SCRIPT = "classpath:sql/insert-caseHearings_actualhearings.sql";
 
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-caseHearings_request.sql";
 
@@ -195,6 +204,15 @@ class HearingManagementServiceIT extends BaseTest {
     void testUpdateHearingRequest_WithValidData() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequest();
         hearingManagementService.updateHearingRequest(2000000000L, request);
+    }
+
+    @Test
+    @Sql(scripts = {HEARING_COMPLETION_DATA_SCRIPT})
+    void testUpdateHearingCompletion_WithValidData() {
+        ResponseEntity responseEntity = hearingManagementService.hearingCompletion(2000000000L);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        HearingEntity hearingEntity = hearingRepository.findById(2000000000L).get();
+        assertEquals("ADJOURNED", hearingEntity.getStatus());
     }
 
     @Test
