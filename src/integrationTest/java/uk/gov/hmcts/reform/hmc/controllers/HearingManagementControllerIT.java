@@ -887,8 +887,9 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(16)))
+            .andExpect(jsonPath("$.errors", hasSize(17)))
             .andExpect(jsonPath("$.errors", hasItems(PARTY_DETAILS_NULL_EMPTY,
+                                                     "Unsupported type for dowUnavailabilityType",
                                                      "Unsupported type for partyType", UNAVAILABLE_FROM_DATE_EMPTY,
                                                      UNAVAILABLE_TO_DATE_EMPTY, "Unsupported type for dow",
                                                      "Unsupported type for dowUnavailabilityType", NAME_NULL_EMPTY,

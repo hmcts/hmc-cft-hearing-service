@@ -137,7 +137,8 @@ public final class ValidationError {
     public static final String PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH = "002 No such response version";
     public static final String PARTIES_NOTIFIED_ALREADY_SET = "003 Already set";
 
-    public static final String OTHER_REASON_LENGTH = "Other reasonable adjustment details cannot be greater than 200 " + CHARACTERS_LONG;
+    public static final String OTHER_REASON_LENGTH = "Other reasonable adjustment details cannot be greater than 200 "
+        + CHARACTERS_LONG;
     public static final String CUSTODY_STATUS_LENGTH = "Custody status cannot be greater than 80 " + CHARACTERS_LONG;
     public static final String HEARING_ID_LENGTH = "Hearing id cannot be greater than 30 " + CHARACTERS_LONG;
     public static final String HEARING_ID_EMPTY = "Hearing id can not be null or empty";

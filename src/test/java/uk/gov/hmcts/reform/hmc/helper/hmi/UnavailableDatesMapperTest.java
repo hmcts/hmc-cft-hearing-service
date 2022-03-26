@@ -20,7 +20,7 @@ class UnavailableDatesMapperTest {
         UnavailabilityRanges unavailabilityRanges = new UnavailabilityRanges();
         unavailabilityRanges.setUnavailableToDate(localDate);
         unavailabilityRanges.setUnavailableFromDate(localDate.minusDays(2L));
-        unavailabilityRanges.setUnAvailableType(DayOfWeekUnAvailableType.AM);
+        unavailabilityRanges.setUnavailabilityType(DayOfWeekUnAvailableType.AM.label);
         UnavailabilityRanges unavailabilityRangesTwo = new UnavailabilityRanges();
         unavailabilityRangesTwo.setUnavailableToDate(localDate);
         unavailabilityRangesTwo.setUnavailableFromDate(localDate.minusDays(3L));
@@ -32,7 +32,7 @@ class UnavailableDatesMapperTest {
         EntityUnavailableDate entityUnavailableDate = EntityUnavailableDate.builder()
             .unavailableEndDate(localDate)
             .unavailableStartDate(localDate.minusDays(2L))
-            .unavailableType(DayOfWeekUnAvailableType.AM)
+            .unavailableType(DayOfWeekUnAvailableType.AM.label)
             .build();
         EntityUnavailableDate entityUnavailableDateTwo = EntityUnavailableDate.builder()
             .unavailableEndDate(localDate)

@@ -46,8 +46,10 @@ class UnAvailabilityDetailMapperTest {
         List<UnavailabilityEntity> entities = mapper.modelToEntity(partyDetail, hearingPartyEntity);
         assertEquals(LocalDate.parse("2020-09-10"), entities.get(0).getEndDate());
         assertEquals(LocalDate.parse("2021-10-10"), entities.get(0).getStartDate());
+        assertEquals(DayOfWeekUnAvailableType.ALL, entities.get(0).getDayOfWeekUnavailableType());
         assertEquals(LocalDate.parse("2022-10-15"), entities.get(1).getEndDate());
         assertEquals(LocalDate.parse("2023-10-20"), entities.get(1).getStartDate());
+        assertEquals(DayOfWeekUnAvailableType.AM, entities.get(1).getDayOfWeekUnavailableType());
     }
 
     @Test
@@ -75,13 +77,13 @@ class UnAvailabilityDetailMapperTest {
         assertEquals(UNAVAILABILITY_DOW_TYPE, entities.get(2).getUnAvailabilityType());
 
         assertNull(entities.get(3).getDayOfWeekUnavailable());
-        assertNull(entities.get(3).getDayOfWeekUnavailableType());
+        assertEquals(DayOfWeekUnAvailableType.ALL, entities.get(3).getDayOfWeekUnavailableType());
         assertEquals(LocalDate.parse("2020-09-10"), entities.get(3).getEndDate());
         assertEquals(LocalDate.parse("2021-10-10"), entities.get(3).getStartDate());
         assertEquals(UNAVAILABILITY_RANGE_TYPE, entities.get(3).getUnAvailabilityType());
 
         assertNull(entities.get(4).getDayOfWeekUnavailable());
-        assertNull(entities.get(4).getDayOfWeekUnavailableType());
+        assertEquals(DayOfWeekUnAvailableType.AM, entities.get(4).getDayOfWeekUnavailableType());
         assertEquals(LocalDate.parse("2022-10-15"), entities.get(4).getEndDate());
         assertEquals(LocalDate.parse("2023-10-20"), entities.get(4).getStartDate());
         assertEquals(UNAVAILABILITY_RANGE_TYPE, entities.get(4).getUnAvailabilityType());
@@ -99,11 +101,12 @@ class UnAvailabilityDetailMapperTest {
         UnavailabilityRanges unavailabilityRanges1 = new UnavailabilityRanges();
         unavailabilityRanges1.setUnavailableToDate(LocalDate.parse("2020-09-10"));
         unavailabilityRanges1.setUnavailableFromDate(LocalDate.parse("2021-10-10"));
+        unavailabilityRanges1.setUnavailabilityType(DayOfWeekUnAvailableType.ALL.label);
 
         UnavailabilityRanges unavailabilityRanges2 = new UnavailabilityRanges();
         unavailabilityRanges2.setUnavailableToDate(LocalDate.parse("2022-10-15"));
         unavailabilityRanges2.setUnavailableFromDate(LocalDate.parse("2023-10-20"));
-
+        unavailabilityRanges2.setUnavailabilityType(DayOfWeekUnAvailableType.AM.label);
 
         List<UnavailabilityRanges> ranges = new ArrayList<>();
         ranges.add(unavailabilityRanges1);
