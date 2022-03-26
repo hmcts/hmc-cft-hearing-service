@@ -74,6 +74,14 @@ public class HearingEntity {
                 + "hearing request for hearing " + id));
     }
 
+    public CaseHearingRequestEntity getCaseHearingRequest(int version) {
+        return getCaseHearingRequests().stream()
+            .filter(caseHearingRequestEntity -> version == caseHearingRequestEntity.getVersionNumber())
+            .findFirst()
+            .orElseThrow(() -> new ResourceNotFoundException("Cannot find request version " + version
+                                                                 + " for hearing " + id));
+    }
+
     public Integer getLatestRequestVersion() {
         return getLatestCaseHearingRequest().getVersionNumber();
     }

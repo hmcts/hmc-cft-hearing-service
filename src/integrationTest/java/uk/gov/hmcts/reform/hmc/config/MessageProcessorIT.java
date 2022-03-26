@@ -54,7 +54,7 @@ class MessageProcessorIT extends BaseTest {
                                                    + "  },\n"
                                                    + "  \"hearing\": {\n"
                                                    + "    \"listingRequestId\": \"<listingRequestId>\",\n"
-                                                   + "    \"hearingCaseVersionId\": 10,\n"
+                                                   + "    \"hearingCaseVersionId\": 1,\n"
                                                    + "    \"hearingCaseIdHMCTS\": \"<hearingCaseIdHMCTS>\",\n"
                                                    + "    \"hearingCaseJurisdiction\": {\n"
                                                    + "      \"test\": \"value\"\n"

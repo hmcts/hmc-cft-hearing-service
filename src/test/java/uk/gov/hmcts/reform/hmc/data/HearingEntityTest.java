@@ -34,8 +34,12 @@ class HearingEntityTest {
         @Test
         void shouldErrorWhenNoRequestsExist() {
             HearingEntity hearing = new HearingEntity();
+            hearing.setId(2000000001L);
 
-            assertThrows(ResourceNotFoundException.class, hearing::getLatestCaseHearingRequest);
+            ResourceNotFoundException exception =
+                assertThrows(ResourceNotFoundException.class, hearing::getLatestCaseHearingRequest);
+            assertEquals("Cannot find latest case hearing request for hearing 2000000001",
+                         exception.getMessage());
         }
     }
 
@@ -58,8 +62,39 @@ class HearingEntityTest {
         @Test
         void shouldErrorWhenNoRequestsExist() {
             HearingEntity hearing = new HearingEntity();
+            hearing.setId(2000000002L);
 
-            assertThrows(ResourceNotFoundException.class, hearing::getLatestRequestVersion);
+            ResourceNotFoundException exception =
+                assertThrows(ResourceNotFoundException.class, hearing::getLatestRequestVersion);
+            assertEquals("Cannot find latest case hearing request for hearing 2000000002",
+                         exception.getMessage());
+        }
+    }
+
+    @Nested
+    class GetCaseHearingRequest {
+
+        @Test
+        void shouldGetSpecificRequestVersion() {
+            HearingEntity hearing = new HearingEntity();
+            CaseHearingRequestEntity caseHearingRequest1 = caseHearingRequest(1);
+            CaseHearingRequestEntity caseHearingRequest2 = caseHearingRequest(2);
+            CaseHearingRequestEntity caseHearingRequest3 = caseHearingRequest(3);
+            hearing.setCaseHearingRequests(List.of(caseHearingRequest1, caseHearingRequest2, caseHearingRequest3));
+
+            CaseHearingRequestEntity result = hearing.getCaseHearingRequest(2);
+
+            assertEquals(caseHearingRequest2, result);
+        }
+
+        @Test
+        void shouldErrorWhenNoRequestsExist() {
+            HearingEntity hearing = new HearingEntity();
+            hearing.setId(2000000003L);
+
+            ResourceNotFoundException exception =
+                assertThrows(ResourceNotFoundException.class, () -> hearing.getCaseHearingRequest(1));
+            assertEquals("Cannot find request version 1 for hearing 2000000003", exception.getMessage());
         }
     }
 
