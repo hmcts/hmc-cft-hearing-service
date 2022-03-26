@@ -164,10 +164,6 @@ public class HearingResponsePactUtil {
         PactDslJsonBody pactDslJsonBody = genericCreateHearingJsonBody(statusMessage, hearingRequestId,
                 CANCELLATION_REQUESTED, LocalDateTime.now());
 
-        pactDslJsonBody
-                .integerType("versionNumber", deleteHearingRequest.getVersionNumber() + 1)
-                .asBody();
-
         // return constructed body
         logger.info("pactDslJsonBody (DeleteHearing): {}", pactDslJsonBody);
         return pactDslJsonBody;
@@ -467,7 +463,6 @@ public class HearingResponsePactUtil {
     private static DeleteHearingRequest generateDeleteHearingRequest() {
         DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
         deleteHearingRequest.setCancellationReasonCode("REASONCODE25");
-        deleteHearingRequest.setVersionNumber(2);
         return  deleteHearingRequest;
     }
 
