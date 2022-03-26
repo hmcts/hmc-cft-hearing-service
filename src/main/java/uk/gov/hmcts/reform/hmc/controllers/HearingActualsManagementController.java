@@ -27,8 +27,12 @@ public class HearingActualsManagementController {
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Hearing actuals update processed"),
-        @ApiResponse(code = 400, message = "Invalid hearing details found"),
-        @ApiResponse(code = 404, message = "Hearing id not found"),
+        @ApiResponse(code = 400, message = "Invalid hearing Id"),
+        @ApiResponse(code = 400, message = "001 No such id: hearingId"),
+        @ApiResponse(code = 400, message = "002 invalid status HEARING_REQUESTED"),
+        @ApiResponse(code = 400, message = "002 invalid status AWAITING_LISTING"),
+        @ApiResponse(code = 400, message = "003 invalid date"),
+        @ApiResponse(code = 400, message = "004 non-unique dates"),
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
     public void updateHearingActuals(@PathVariable("id") Long hearingId,

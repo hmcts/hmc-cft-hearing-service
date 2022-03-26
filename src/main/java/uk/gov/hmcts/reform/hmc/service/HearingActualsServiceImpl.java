@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,7 +23,9 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS;
 
 @Service
-public class HearingActualsServiceImpl extends HearingIdValidator implements HearingActualsService {
+public class HearingActualsServiceImpl implements HearingActualsService {
+    private final HearingHelper hearingHelper;
+    private final HearingRepository hearingRepository;
 
     private static final List<String> ALLOWED_ACTUALS_STATUSES = List.of("LISTED",
                                                                          "UPDATE_REQUESTED",
@@ -32,12 +33,13 @@ public class HearingActualsServiceImpl extends HearingIdValidator implements Hea
     public static final List<String> HEARING_RESULTS_THAT_NEED_REASON_TYPE = List.of("ADJOURNED", "CANCELLED");
 
     @Autowired
-    public HearingActualsServiceImpl(HearingRepository hearingRepository) {
-        super(hearingRepository);
+    public HearingActualsServiceImpl(HearingRepository hearingRepository, HearingHelper hearingHelper) {
+        this.hearingRepository = hearingRepository;
+        this.hearingHelper = hearingHelper;
     }
 
     public void updateHearingActuals(Long hearingId, HearingActual request) {
-        isValidFormat(hearingId.toString());
+        hearingHelper.isValidFormat(hearingId.toString());
         HearingEntity hearing = getHearing(hearingId);
         String hearingStatus = hearing.getStatus();
         validateHearingStatusForActuals(hearingStatus);
@@ -49,18 +51,18 @@ public class HearingActualsServiceImpl extends HearingIdValidator implements Hea
         validateHearingActualDaysNotInTheFuture(request);
         validateDuplicateHearingActualDays(request);
         validateHearingActualDaysNotBeforeFirstHearingDate(request, hearing);
-        validateAdjournedHearingResult(request);
+        validateHearingResult(request);
     }
 
-    private void validateAdjournedHearingResult(HearingActual request) {
-        if (HEARING_RESULTS_THAT_NEED_REASON_TYPE.contains(request.getHearingOutcome().getHearingResult())
+    private void validateHearingResult(HearingActual request) {
+        if (HEARING_RESULTS_THAT_NEED_REASON_TYPE.contains(request.getHearingOutcome().getHearingResult().toUpperCase())
             && StringUtils.isBlank(request.getHearingOutcome().getHearingResultReasonType())) {
             throw new BadRequestException(null);
         }
     }
 
     private void validateHearingActualDaysNotBeforeFirstHearingDate(HearingActual request, HearingEntity hearing) {
-        LocalDateTime startDate = getLowestStartDateOfMostRecentHearingResponse(hearing);
+        LocalDateTime startDate = hearingHelper.getLowestStartDateOfMostRecentHearingResponse(hearing);
         request.getActualHearingDays().forEach(actualHearingDay -> {
             if (actualHearingDay.getHearingDate().isBefore(startDate.toLocalDate())) {
                 throw new BadRequestException(HEARING_ACTUALS_HEARING_DAYS_INVALID);

@@ -374,7 +374,7 @@ public class TestingUtil {
     public static HearingActual hearingActual() {
         HearingActual request = new HearingActual();
         request.setHearingOutcome(hearingActualsOutcome());
-        request.setActualHearingDays(List.of(actualHearingDay(LocalDate.now().plusDays(10))));
+        request.setActualHearingDays(List.of(actualHearingDay(LocalDate.of(2022, 1, 28))));
 
         return request;
     }
@@ -463,9 +463,9 @@ public class TestingUtil {
         entity.setCaseReference("12345");
         entity.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity.setHearingType("Some hearing type");
-        entity.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntities()));
+        entity.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntity()));
         entity.getHearing().getHearingResponses().get(0)
-            .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntities()));
+            .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity()));
         return entity;
     }
 
@@ -494,9 +494,9 @@ public class TestingUtil {
         entity1.setCaseReference("12345");
         entity1.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity1.setHearingType("Some hearing type");
-        entity1.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntities()));
+        entity1.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntity()));
         entity1.getHearing().getHearingResponses().get(0)
-            .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntities()));
+            .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity()));
         entities.add(entity1);
     }
 
@@ -511,24 +511,15 @@ public class TestingUtil {
         entity1.setCaseReference("4567");
         entity1.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity1.setHearingType("Some hearing type");
-        entity1.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntities()));
+        entity1.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntity()));
         entity1.getHearing().getHearingResponses().get(0)
-            .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntities()));
+            .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity()));
         entities.add(entity1);
     }
 
-    public static HearingResponseEntity hearingResponseEntities() {
-        HearingResponseEntity entity = new HearingResponseEntity();
-        entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00"));
-        entity.setHearingResponseId(2L);
-        entity.setListingStatus("listingStatus");
-        entity.setListingCaseStatus("Case_listingStatus");
-        return entity;
-    }
-
-    public static HearingDayDetailsEntity hearingDayDetailsEntities() {
+    public static HearingDayDetailsEntity hearingDayDetailsEntity(LocalDateTime startDateTime) {
         HearingDayDetailsEntity entity = new HearingDayDetailsEntity();
-        entity.setStartDateTime(LocalDateTime.parse("2020-08-10T12:20:00"));
+        entity.setStartDateTime(startDateTime);
         entity.setEndDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         entity.setVenueId("venue1");
         entity.setRoomId("room1");
@@ -536,6 +527,10 @@ public class TestingUtil {
         entity.setHearingAttendeeDetails(Arrays.asList(hearingAttendeeDetailsEntity()));
         entity.setHearingDayPanel(Arrays.asList(hearingDayPanelEntities()));
         return entity;
+    }
+
+    public static HearingDayDetailsEntity hearingDayDetailsEntity() {
+        return hearingDayDetailsEntity(LocalDateTime.parse("2020-08-10T12:20:00"));
     }
 
     public static HearingDayPanelEntity hearingDayPanelEntities() {
@@ -586,25 +581,21 @@ public class TestingUtil {
     }
 
     public static HearingResponseEntity hearingResponseEntity() {
+        return hearingResponseEntity("1", "1", LocalDateTime.parse("2020-08-10T12:20:00"),
+                                     List.of(hearingDayDetailsEntity()));
+    }
+
+    public static HearingResponseEntity hearingResponseEntity(String version, String requestVersion,
+                                                              LocalDateTime requestTimestamp,
+                                                              List<HearingDayDetailsEntity> hearingDayDetailsEntities) {
         HearingResponseEntity entity = new HearingResponseEntity();
-        entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00"));
+        entity.setResponseVersion(version);
+        entity.setRequestVersion(requestVersion);
+        entity.setRequestTimeStamp(requestTimestamp);
         entity.setHearingResponseId(2L);
         entity.setListingStatus("listingStatus");
         entity.setListingCaseStatus("Case_listingStatus");
-        entity.setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity()));
-        return entity;
-    }
-
-    public static HearingDayDetailsEntity hearingDayDetailsEntity() {
-        HearingDayDetailsEntity entity = new HearingDayDetailsEntity();
-        entity.setStartDateTime(LocalDateTime.of(2000, 8, 10, 12, 20));
-        entity.setEndDateTime(LocalDateTime.of(2000, 8, 10, 12, 20));
-        entity.setRoomId("roomId");
-        entity.setListAssistSessionId("sessionId");
-        entity.setVenueId("venueId");
-
-        HearingAttendeeDetailsEntity attendee = new HearingAttendeeDetailsEntity();
-        entity.setHearingAttendeeDetails(Arrays.asList(attendee));
+        entity.setHearingDayDetails(hearingDayDetailsEntities);
         return entity;
     }
 
@@ -648,9 +639,9 @@ public class TestingUtil {
         entity1.setCaseReference("12345");
         entity1.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity1.setHearingType("Some hearing type");
-        entity1.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntities()));
+        entity1.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntity()));
         entity1.getHearing().getHearingResponses().get(0)
-            .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntities()));
+            .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity()));
         entity1.setHearingParties(Arrays.asList(hearingPartyEntityInd()));
 
         return entity1;

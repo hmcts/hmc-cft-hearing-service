@@ -12,8 +12,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
-import javax.validation.ConstraintViolationException;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.validation.ConstraintViolationException;
 
 @RestControllerAdvice
@@ -93,9 +95,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-
     private ResponseEntity<Object> toResponseEntity(HttpStatus status, String... errors) {
-        var apiError = new ApiError(status, errors == null ? null : List.of(errors));
+        List<String> errorList = Arrays.stream(errors).filter(Objects::nonNull).collect(Collectors.toList());
+        var apiError = new ApiError(status, errorList);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
