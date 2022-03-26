@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,6 +42,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.HEARING_REQUESTED;
@@ -432,8 +435,13 @@ class LinkHearingGroupServiceTest {
                 null
             );
 
-            when(hearingRepository.existsById(any())).thenReturn(true);
-            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+
+            when(hearingRepository.existsById(2000000002L)).thenReturn(true);
+            when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
+            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntity());
+            given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
 
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
@@ -447,9 +455,11 @@ class LinkHearingGroupServiceTest {
 
             linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
-            verify(hearingRepository).findById(2000000000L);
+            verify(hearingRepository, times(2)).findById(2000000000L);
             verify(hearingRepository).existsById(2000000002L);
-            verify(hearingRepository).findById(2000000002L);
+            verify(hearingRepository, times(2)).findById(2000000002L);
+            verify(hearingRepository, times(2)).save(any());
+            verify(linkedGroupDetailsRepository, times(1)).save(any());
         }
 
         @Test
@@ -472,6 +482,9 @@ class LinkHearingGroupServiceTest {
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
+            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntity());
+            given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
+
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
                 groupDetails,
                 Arrays.asList(
@@ -483,9 +496,11 @@ class LinkHearingGroupServiceTest {
             logger.info("hearingLinkGroupRequest : {}", hearingLinkGroupRequest);
             linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
-            verify(hearingRepository).findById(2000000000L);
+            verify(hearingRepository, times(2)).findById(2000000000L);
             verify(hearingRepository).existsById(2000000002L);
-            verify(hearingRepository).findById(2000000002L);
+            verify(hearingRepository, times(2)).findById(2000000002L);
+            verify(hearingRepository, times(2)).save(any());
+            verify(linkedGroupDetailsRepository, times(1)).save(any());
         }
     }
 

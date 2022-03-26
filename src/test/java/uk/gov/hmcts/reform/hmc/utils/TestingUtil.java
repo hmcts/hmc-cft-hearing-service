@@ -10,12 +10,14 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.IndividualDetailEntity;
+import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
 import uk.gov.hmcts.reform.hmc.data.OrganisationDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
@@ -235,6 +237,10 @@ public class TestingUtil {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(1L);
         hearingEntity.setStatus(HEARING_STATUS);
+        hearingEntity.setLinkedOrder(1L);
+        LinkedGroupDetails linkedGroupDetailsEntity = linkedGroupDetailsEntity();
+        hearingEntity.setLinkedGroupDetails(linkedGroupDetailsEntity);
+        hearingEntity.setLinkedOrder(1L);
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
         return hearingEntity;
@@ -259,6 +265,19 @@ public class TestingUtil {
         return entity;
 
     }
+
+    public static LinkedGroupDetails linkedGroupDetailsEntity() {
+        LinkedGroupDetails entity = new LinkedGroupDetails();
+        entity.setRequestName("RequestName");
+        entity.setReasonForLink("ReasonForLink");
+        entity.setLinkType(LinkType.ORDERED);
+        entity.setLinkedComments("linkComments");
+        entity.setStatus("PENDING");
+        entity.setRequestDateTime(LocalDateTime.now());
+        entity.setLinkedGroupLatestVersion(1L);
+        return entity;
+    }
+
 
     public static IndividualDetails individualContactDetails_HearingChannelEmail() {
         IndividualDetails individualDetails = new IndividualDetails();

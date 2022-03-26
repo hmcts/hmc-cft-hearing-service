@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.util.List;
+import javax.transaction.Transactional;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 
@@ -19,6 +20,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_
 @Component
 @Slf4j
 public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implements LinkedHearingGroupService {
+
 
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
@@ -28,8 +30,10 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     }
 
     @Override
+    @Transactional
     public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
         validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
+        updateHearingWithLinkGroup(hearingLinkGroupRequest);
     }
 
     @Override
