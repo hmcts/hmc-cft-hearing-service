@@ -208,20 +208,17 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
     }
 
 
-    private ArrayList<HearingResponse> setHearingResponse(HearingEntity hearingEntity) {
-        ArrayList<HearingResponse> hearingResponses = new ArrayList<>();
-        for (HearingResponseEntity hearingResponseEntity : hearingEntity.getHearingResponses()) {
-            HearingResponse hearingResponse = new HearingResponse();
-            hearingResponse.setListAssistTransactionID(
-                hearingResponseEntity.getHearingResponseId());
-            hearingResponse.setReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
-            hearingResponse.setResponseVersion(hearingResponseEntity.getHearingResponseId());
-            hearingResponse.setLaCaseStatus(hearingResponseEntity.getListingCaseStatus());
-            hearingResponse.setListingStatus(hearingResponseEntity.getListingStatus());
-            setHearingDaySchedule(hearingResponse, List.of(hearingResponseEntity));
-            hearingResponses.add(hearingResponse);
-        }
-        return hearingResponses;
+    private HearingResponse setHearingResponse(HearingEntity hearingEntity) {
+        HearingResponseEntity hearingResponseEntity = hearingEntity.getLatestHearingResponse().orElseThrow();
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setListAssistTransactionID(
+            hearingResponseEntity.getHearingResponseId());
+        hearingResponse.setReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
+        hearingResponse.setResponseVersion(hearingResponseEntity.getHearingResponseId());
+        hearingResponse.setLaCaseStatus(hearingResponseEntity.getListingCaseStatus());
+        hearingResponse.setListingStatus(hearingResponseEntity.getListingStatus());
+        setHearingDaySchedule(hearingResponse, List.of(hearingResponseEntity));
+        return hearingResponse;
     }
 
 

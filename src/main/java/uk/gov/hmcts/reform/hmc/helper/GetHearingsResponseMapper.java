@@ -31,36 +31,34 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         List<CaseHearing> caseHearingList = new ArrayList<>();
         for (CaseHearingRequestEntity entity : entities) {
             CaseHearing caseHearing = getCaseHearing(entity);
-            List<HearingResponseEntity> hearingResponses = getHearingResponseEntities(entity, caseHearing);
-            setHearingDaySchedule(caseHearingList, caseHearing, hearingResponses);
+            HearingResponseEntity latestHearingResponse = getHearingResponseEntities(entity, caseHearing);
+            setHearingDaySchedule(caseHearingList, caseHearing, latestHearingResponse);
         }
         getHearingsResponse.setCaseHearings(caseHearingList);
     }
 
     private void setHearingDaySchedule(List<CaseHearing> caseHearingList, CaseHearing caseHearing,
-                                       List<HearingResponseEntity> hearingResponses) {
+                                       HearingResponseEntity hearingResponseEntity) {
         List<HearingDaySchedule> scheduleList = new ArrayList<>();
 
-        for (HearingResponseEntity hearingResponseEntity : hearingResponses) {
-            List<HearingDayDetailsEntity> hearingDayDetailEntities = hearingResponseEntity.getHearingDayDetails();
-            if (!hearingDayDetailEntities.isEmpty()) {
-                for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
-                    HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
-                    setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
-                    setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
-                    scheduleList.add(hearingDaySchedule);
-                }
+        List<HearingDayDetailsEntity> hearingDayDetailEntities = hearingResponseEntity.getHearingDayDetails();
+        if (!hearingDayDetailEntities.isEmpty()) {
+            for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
+                HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
+                setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
+                setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
+                scheduleList.add(hearingDaySchedule);
             }
-            caseHearing.setHearingDaySchedule(scheduleList);
-            caseHearingList.add(caseHearing);
         }
+        caseHearing.setHearingDaySchedule(scheduleList);
+        caseHearingList.add(caseHearing);
     }
 
-    private List<HearingResponseEntity> getHearingResponseEntities(CaseHearingRequestEntity entity,
-                                                                   CaseHearing caseHearing) {
-        List<HearingResponseEntity> hearingResponses = entity.getHearing().getHearingResponses();
-        setHearingResponseDetails(caseHearing, hearingResponses);
-        return hearingResponses;
+    private HearingResponseEntity getHearingResponseEntities(CaseHearingRequestEntity entity,
+                                                             CaseHearing caseHearing) {
+        HearingResponseEntity hearingResponseEntity = entity.getHearing().getLatestHearingResponse().orElseThrow();
+        setHearingResponseDetails(caseHearing, hearingResponseEntity);
+        return hearingResponseEntity;
     }
 
     private CaseHearing getCaseHearing(CaseHearingRequestEntity entity) {
@@ -72,13 +70,11 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         return caseHearing;
     }
 
-    private void setHearingResponseDetails(CaseHearing caseHearing, List<HearingResponseEntity> entities) {
-        for (HearingResponseEntity hearingResponseEntity : entities) {
-            caseHearing.setLastResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
-            caseHearing.setResponseVersion(hearingResponseEntity.getHearingResponseId());
-            caseHearing.setHearingListingStatus(hearingResponseEntity.getListingStatus());
-            caseHearing.setListAssistCaseStatus(hearingResponseEntity.getListingCaseStatus());
-        }
+    private void setHearingResponseDetails(CaseHearing caseHearing, HearingResponseEntity hearingResponseEntity) {
+        caseHearing.setLastResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
+        caseHearing.setResponseVersion(hearingResponseEntity.getHearingResponseId());
+        caseHearing.setHearingListingStatus(hearingResponseEntity.getListingStatus());
+        caseHearing.setListAssistCaseStatus(hearingResponseEntity.getListingCaseStatus());
     }
 
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeMap;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,6 +23,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 @Table(name = "hearing")
 @Entity
@@ -74,10 +78,25 @@ public class HearingEntity {
         return getLatestCaseHearingRequest().getVersionNumber();
     }
 
-    public Optional<HearingResponseEntity> getLatestHearingResponse() {
+    /**
+     * Gets the most recent hearing response associated with the latest request.
+     */
+    public Optional<HearingResponseEntity> getHearingResponseForLatestRequest() {
         String latestRequestVersion = getLatestRequestVersion().toString();
-        return getHearingResponses().stream()
-            .filter(hearingResponseEntity -> hearingResponseEntity.getResponseVersion().equals(latestRequestVersion))
+        return getHearingResponses() == null ? Optional.empty() : getHearingResponses().stream()
+            .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
+            .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
+    }
+
+    /**
+     * Gets the *latest* hearing response - note that this will not necessarily be associated with the latest request.
+     */
+    public Optional<HearingResponseEntity> getLatestHearingResponse() {
+        return getHearingResponses() == null ? Optional.empty() : getHearingResponses().stream()
+            .collect(groupingBy(HearingResponseEntity::getRequestVersion, TreeMap::new, toList()))
+            .lastEntry()
+            .getValue()
+            .stream()
             .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
     }
 

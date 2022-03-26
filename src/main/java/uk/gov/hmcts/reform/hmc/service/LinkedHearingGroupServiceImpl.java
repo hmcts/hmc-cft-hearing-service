@@ -106,7 +106,7 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
     }
 
     private LocalDate filterHearingResponses(HearingEntity hearingEntity) {
-        Optional<HearingResponseEntity> hearingResponse = hearingEntity.getLatestHearingResponse();
+        Optional<HearingResponseEntity> hearingResponse = hearingEntity.getHearingResponseForLatestRequest();
         return getLowestDate(hearingResponse.orElseThrow(() -> new BadRequestException("bad request")));
     }
 

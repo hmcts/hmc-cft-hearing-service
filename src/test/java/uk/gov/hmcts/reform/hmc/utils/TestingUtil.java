@@ -343,6 +343,7 @@ public class TestingUtil {
         hearingEntity.setId(2000000000L);
         entity.setCaseHearingID(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
+        entity.setVersionNumber(1);
         entity.setHearing(hearingEntity);
         entity.setHmctsServiceCode("ABA1");
         entity.setCaseReference("12345");
@@ -401,6 +402,7 @@ public class TestingUtil {
 
     public static HearingResponseEntity hearingResponseEntities() {
         HearingResponseEntity entity = new HearingResponseEntity();
+        entity.setRequestVersion("1");
         entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00"));
         entity.setHearingResponseId(2L);
         entity.setListingStatus("listingStatus");
@@ -469,6 +471,7 @@ public class TestingUtil {
 
     public static HearingResponseEntity hearingResponseEntity() {
         HearingResponseEntity entity = new HearingResponseEntity();
+        entity.setRequestVersion("1");
         entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00"));
         entity.setHearingResponseId(2L);
         entity.setListingStatus("listingStatus");
@@ -513,6 +516,7 @@ public class TestingUtil {
 
     private static CaseHearingRequestEntity caseHearingRequestEntityWithPartyOrg() {
         CaseHearingRequestEntity entity1 = new CaseHearingRequestEntity();
+        entity1.setVersionNumber(1);
         entity1.setCaseHearingID(2000000000L);
         entity1.setHmctsServiceCode("ABA1");
         entity1.setCaseReference("12345");
@@ -522,6 +526,7 @@ public class TestingUtil {
 
     private static CaseHearingRequestEntity caseHearingRequestEntityWithPartyInd() {
         CaseHearingRequestEntity entity1 = new CaseHearingRequestEntity();
+        entity1.setVersionNumber(1);
         entity1.setCaseHearingID(2000000000L);
 
         entity1.setHearing(getCaseHearingsEntity());
