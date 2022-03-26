@@ -15,10 +15,13 @@ import uk.gov.hmcts.reform.hmc.model.hmi.ListingJoh;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingLocation;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +33,9 @@ class ListingMapperTest {
 
     @Mock
     private ListingLocationsMapper listingLocationsMapper;
+
+    @Mock
+    private ListingOtherConsiderationsMapper listingOtherConsiderationsMapper;
 
     @InjectMocks
     private ListingMapper listingMapper;
@@ -68,7 +74,18 @@ class ListingMapperTest {
         HearingLocation hearingLocation = new HearingLocation();
         hearingDetails.setHearingLocations(Collections.singletonList(hearingLocation));
         ListingJoh listingJoh = ListingJoh.builder().build();
+
+        Boolean hearingInWelsh = Boolean.TRUE;
+        String facilityType1 = "consideration 1";
+        String facilityType2 = "consideration 2";
+        List<String> facilityTypes = new ArrayList<>();
+        facilityTypes.add(facilityType1);
+        facilityTypes.add(facilityType2);
+        List<String> otherConsiderations = generateOtherConsiderations(hearingInWelsh, facilityTypes);
+
         when(listingJohsMapper.getListingJohs(any())).thenReturn(Collections.singletonList(listingJoh));
+        when(listingOtherConsiderationsMapper.getListingOtherConsiderations(any(), any()))
+                .thenReturn(otherConsiderations);
 
         Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
 
@@ -81,8 +98,15 @@ class ListingMapperTest {
         assertEquals(LISTING_COMMENTS, listing.getListingComments());
         assertEquals(HEARING_REQUESTER, listing.getListingRequestedBy());
         assertEquals(false, listing.getListingPrivateFlag());
+
         assertEquals(1, listing.getListingJohs().size());
         assertEquals(listingJoh, listing.getListingJohs().get(0));
+
+        assertEquals(3, listing.getListingOtherConsiderations().size());
+        assertTrue(listing.getListingOtherConsiderations().contains(hearingInWelsh.toString()));
+        assertTrue(listing.getListingOtherConsiderations().contains(facilityType1));
+        assertTrue(listing.getListingOtherConsiderations().contains(facilityType2));
+
         assertEquals(1, listing.getListingHearingChannels().size());
         assertEquals(HEARING_CHANNEL, listing.getListingHearingChannels().get(0));
         assertEquals(1, listing.getListingLocations().size());
@@ -91,6 +115,14 @@ class ListingMapperTest {
         assertEquals(localDateTime.plusDays(1).toLocalDate(), listing.getListingEndDate());
         assertEquals(1, listing.getListingJohTiers().size());
         assertEquals(ROLE_TYPE, listing.getListingJohTiers().get(0));
+    }
+
+    private List<String> generateOtherConsiderations(Boolean hearingInWelsh,
+                                                     List<String> facilityTypes) {
+        List<String> otherConsiderations = new ArrayList<>();
+        otherConsiderations.add(hearingInWelsh.toString());
+        facilityTypes.forEach(e -> otherConsiderations.add(e));
+        return otherConsiderations;
     }
 
     @Test

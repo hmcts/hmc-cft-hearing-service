@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import javax.validation.Valid;
@@ -70,7 +71,8 @@ public class HearingManagementController {
     public HearingResponse saveHearing(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
         hearingManagementService.verifyAccess(getCaseRef(createHearingRequest));
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
-        hearingManagementService.sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest,
+        hearingManagementService.sendRequestToHmiAndQueue(createHearingRequest,
+                                                          hearingResponse.getHearingRequestId(),
                                                           REQUEST_HEARING
         );
         return hearingResponse;
@@ -130,8 +132,29 @@ public class HearingManagementController {
     public HearingResponse updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
                                          @PathVariable("id") Long hearingId) {
         HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
-        hearingManagementService.sendRequestToHmiAndQueue(hearingId, hearingRequest, AMEND_HEARING);
+        hearingManagementService.sendRequestToHmiAndQueue(hearingRequest, hearingId, AMEND_HEARING);
         return hearingResponse;
+    }
+
+
+
+    @PostMapping(path = "/test", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public HmiSubmitHearingRequest test(@RequestBody CreateHearingRequest createHearingRequest) {
+        hearingManagementService.verifyAccess(createHearingRequest.getCaseDetails().getCaseRef());
+        HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
+        return hearingManagementService.test(
+                hearingResponse.getHearingRequestId(),
+                createHearingRequest
+        );
+    }
+
+    @PutMapping(path = "/test/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public HmiSubmitHearingRequest test(@RequestBody UpdateHearingRequest hearingRequest,
+                                        @PathVariable("id") Long hearingId) {
+        hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
+        return hearingManagementService.test(hearingId, hearingRequest);
     }
 
     private String getCaseRef(CreateHearingRequest hearingRequest) {

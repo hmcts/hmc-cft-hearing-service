@@ -34,4 +34,12 @@ public class HmiCaseDetails {
 
     private Boolean caseRestrictedFlag;
 
+    private Integer caseVersionId;
+
+    private CaseLinks[] caseLinks;
+
+    private String casePublishedName;
+
+    private Boolean caseAdditionalSecurityFlag;
+
 }
