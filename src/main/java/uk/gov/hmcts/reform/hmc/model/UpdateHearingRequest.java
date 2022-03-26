@@ -17,6 +17,5 @@ public class UpdateHearingRequest extends HearingRequest {
 
     @Valid
     @NotNull(message = ValidationError.INVALID_REQUEST_DETAILS)
-    private UpdateRequestDetails requestDetails;
-
+    private RequestDetails requestDetails;
 }

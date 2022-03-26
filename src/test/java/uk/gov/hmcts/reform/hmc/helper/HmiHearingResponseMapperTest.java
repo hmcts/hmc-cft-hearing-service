@@ -367,7 +367,7 @@ class HmiHearingResponseMapperTest {
         HearingEntity hearingEntity = new HearingEntity();
         CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         caseHearingRequestEntity.setVersionNumber(version);
-        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
+        hearingEntity.setCaseHearingRequests(Lists.newArrayList(caseHearingRequestEntity));
 
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingEntity.setHearingResponses(Lists.newArrayList(hearingResponseEntity));

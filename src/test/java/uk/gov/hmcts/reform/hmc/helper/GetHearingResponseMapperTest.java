@@ -34,7 +34,8 @@ class GetHearingResponseMapperTest {
     @Test
     void toHearingsResponseWhenDataIsPresentForOrg() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
 
@@ -58,7 +59,8 @@ class GetHearingResponseMapperTest {
     @Test
     void toHearingsResponseWhenDataIsPresentForInd() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.IND);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityInd()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityInd()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
 
@@ -79,10 +81,11 @@ class GetHearingResponseMapperTest {
     @Test
     void toHearingsResponseWhenDataIsPresentWithCaseCategories() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
-        hearingEntity.getCaseHearingRequest().setCaseCategories(TestingUtil.caseCategoriesEntities());
+        hearingEntity.getCaseHearingRequests().get(0).setCaseCategories(TestingUtil.caseCategoriesEntities());
 
         GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
@@ -103,10 +106,12 @@ class GetHearingResponseMapperTest {
     @Test
     void toHearingsResponseWhenDataIsPresentWithHearingPriority() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
-        hearingEntity.getCaseHearingRequest().setNonStandardDurations(TestingUtil.getNonStandardDurationEntities());
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setNonStandardDurations(TestingUtil.getNonStandardDurationEntities());
 
         GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
@@ -127,10 +132,11 @@ class GetHearingResponseMapperTest {
     @Test
     void toHearingsResponseWhenDataIsPresentWithPanelRequirements() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
-        hearingEntity.getCaseHearingRequest()
+        hearingEntity.getCaseHearingRequests().get(0)
             .setPanelRequirements(Arrays.asList(TestingUtil.panelRequirementsEntity()));
 
         GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
@@ -152,10 +158,12 @@ class GetHearingResponseMapperTest {
     @Test
     void toHearingsResponseWhenDataIsPresentWithFacilityType() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
-        hearingEntity.getCaseHearingRequest().setRequiredFacilities(Arrays.asList(TestingUtil.facilityEntity()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setRequiredFacilities(Arrays.asList(TestingUtil.facilityEntity()));
 
         GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
@@ -176,10 +184,11 @@ class GetHearingResponseMapperTest {
     @Test
     void toHearingsResponseWhenDataIsPresentWithHearingLocations() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
-        hearingEntity.getCaseHearingRequest().setRequiredLocations(Arrays.asList(TestingUtil.locationEntity()));
+        hearingEntity.getCaseHearingRequests().get(0).setRequiredLocations(Arrays.asList(TestingUtil.locationEntity()));
 
         GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);

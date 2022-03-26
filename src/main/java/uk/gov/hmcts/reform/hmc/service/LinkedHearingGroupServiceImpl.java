@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
@@ -18,10 +17,8 @@ import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 
@@ -109,21 +106,12 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
     }
 
     private LocalDate filterHearingResponses(HearingEntity hearingEntity) {
-        String version = hearingEntity.getLatestRequestVersion().toString();
-        Optional<HearingResponseEntity> hearingResponse = hearingEntity
-            .getHearingResponses().stream().filter(hearingResponseEntity ->
-                                                       hearingResponseEntity.getResponseVersion().equals(version))
-            .collect(Collectors.toList()).stream()
-            .max(Comparator.comparing(hearingResponseEntity -> hearingResponseEntity.getRequestTimeStamp()));
-
+        Optional<HearingResponseEntity> hearingResponse = hearingEntity.getLatestHearingResponse();
         return getLowestDate(hearingResponse.orElseThrow(() -> new BadRequestException("bad request")));
     }
 
     private LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
-        Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getHearingDayDetails()
-            .stream().min(Comparator.comparing(hearingDayDetailsEntity -> hearingDayDetailsEntity.getStartDateTime()));
-
-        return hearingDayDetails
+        return hearingResponse.getEarliestHearingDayDetails()
             .orElseThrow(() -> new BadRequestException("bad request")).getStartDateTime().toLocalDate();
     }
 }

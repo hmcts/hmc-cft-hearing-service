@@ -489,7 +489,7 @@ class LinkHearingGroupServiceTest {
         caseHearingRequestEntity.setHearingRequestReceivedDateTime(LocalDateTime.now());
         caseHearingRequestEntity.setVersionNumber(versionNumber);
 
-        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
+        hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
 
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingResponseEntity.setHearingDayDetails(hearingDayDetailsEntities);

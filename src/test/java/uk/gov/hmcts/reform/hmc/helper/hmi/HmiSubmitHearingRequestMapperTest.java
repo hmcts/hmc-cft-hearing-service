@@ -6,8 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
@@ -42,7 +42,7 @@ class HmiSubmitHearingRequestMapperTest {
     @Test
     void shouldReturnSubmitHearingRequestForCreateHearingRequest() {
         Entity entity = Entity.builder().build();
-        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        HearingRequest createHearingRequest = new HearingRequest();
         CaseDetails caseDetails = new CaseDetails();
         createHearingRequest.setCaseDetails(caseDetails);
         HearingDetails hearingDetails = new HearingDetails();

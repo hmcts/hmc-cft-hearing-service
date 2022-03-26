@@ -1,8 +1,14 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +19,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
@@ -41,8 +46,9 @@ public class HearingEntity {
     @Column(name = "error_description")
     private String errorDescription;
 
-    @OneToOne(mappedBy = "hearing", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private CaseHearingRequestEntity caseHearingRequest;
+    @OneToMany(mappedBy = "hearing", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<CaseHearingRequestEntity> caseHearingRequests = new ArrayList<>();
 
     @OneToMany(mappedBy = "hearing", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<HearingResponseEntity> hearingResponses;
@@ -57,7 +63,25 @@ public class HearingEntity {
     @Column(name = "is_linked_flag")
     private Boolean isLinkedFlag;
 
+    public CaseHearingRequestEntity getLatestCaseHearingRequest() {
+        return getCaseHearingRequests().stream()
+            .max(Comparator.comparingInt(CaseHearingRequestEntity::getVersionNumber))
+            .orElseThrow(() -> new ResourceNotFoundException("Cannot find latest case "
+                + "hearing request for hearing " + id));
+    }
+
     public Integer getLatestRequestVersion() {
-        return getCaseHearingRequest().getVersionNumber();
+        return getLatestCaseHearingRequest().getVersionNumber();
+    }
+
+    public Optional<HearingResponseEntity> getLatestHearingResponse() {
+        String latestRequestVersion = getLatestRequestVersion().toString();
+        return getHearingResponses().stream()
+            .filter(hearingResponseEntity -> hearingResponseEntity.getResponseVersion().equals(latestRequestVersion))
+            .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
+    }
+
+    public Integer getNextRequestVersion() {
+        return getLatestRequestVersion() + 1;
     }
 }

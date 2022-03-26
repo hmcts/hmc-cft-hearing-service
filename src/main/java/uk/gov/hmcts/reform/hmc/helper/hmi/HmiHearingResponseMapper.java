@@ -59,8 +59,8 @@ public class HmiHearingResponseMapper {
     public HmcHearingResponse mapEntityToHmcModel(HearingResponseEntity hearingResponseEntity, HearingEntity hearing) {
         HmcHearingResponse hmcHearingResponse = new HmcHearingResponse();
         hmcHearingResponse.setHearingID(hearing.getId().toString());
-        hmcHearingResponse.setCaseRef(hearing.getCaseHearingRequest().getCaseReference());
-        hmcHearingResponse.setHmctsServiceCode(hearing.getCaseHearingRequest().getHmctsServiceID());
+        hmcHearingResponse.setCaseRef(hearing.getCaseHearingRequests().get(0).getCaseReference());
+        hmcHearingResponse.setHmctsServiceCode(hearing.getCaseHearingRequests().get(0).getHmctsServiceID());
 
         //There is currently only support for one hearingDayDetail to be provided in HearingResponse From ListAssist
         HmcHearingUpdate hmcHearingUpdate = new HmcHearingUpdate();
@@ -144,7 +144,7 @@ public class HmiHearingResponseMapper {
                 postStatus = EXCEPTION;
                 break;
             case LISTED:
-                int currentVersion = hearingEntity.getCaseHearingRequest().getVersionNumber();
+                int currentVersion = hearingEntity.getCaseHearingRequests().get(0).getVersionNumber();
                 int hearingVersion = hearing.getHearing().getHearingCaseVersionId();
                 postStatus = getHearingStatusWhenLaStatusIsListed(currentStatus, hearingVersion, currentVersion);
                 break;
