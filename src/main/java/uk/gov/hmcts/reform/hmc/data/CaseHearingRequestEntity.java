@@ -68,7 +68,7 @@ public class CaseHearingRequestEntity {
     @Column(name = "first_date_time_of_hearing_must_be")
     private LocalDateTime firstDateTimeOfHearingMustBe;
 
-    @Column(name = "hmcts_service_code", nullable = false)
+    @Column(name = "hmcts_service_id", nullable = false)
     private String hmctsServiceID;
 
     @Column(name = "case_reference", nullable = false)

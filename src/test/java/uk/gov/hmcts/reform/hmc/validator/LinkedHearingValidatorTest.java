@@ -237,10 +237,10 @@ class LinkedHearingValidatorTest {
         hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-        when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(TestingUtil.hearingEntity()));
+        when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(TestingUtil.hearingEntityWithLinkDetails()));
 
         when(hearingRepository.existsById(2000000002L)).thenReturn(true);
-        when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(TestingUtil.hearingEntity()));
+        when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(TestingUtil.hearingEntityWithLinkDetails()));
 
         given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntity());
         given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());

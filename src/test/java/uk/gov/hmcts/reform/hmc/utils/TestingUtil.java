@@ -238,6 +238,16 @@ public class TestingUtil {
         hearingEntity.setId(1L);
         hearingEntity.setStatus(HEARING_STATUS);
         hearingEntity.setLinkedOrder(1L);
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
+        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
+        return hearingEntity;
+    }
+
+    public static HearingEntity hearingEntityWithLinkDetails() {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(1L);
+        hearingEntity.setStatus(HEARING_STATUS);
+        hearingEntity.setLinkedOrder(1L);
         LinkedGroupDetails linkedGroupDetailsEntity = linkedGroupDetailsEntity();
         hearingEntity.setLinkedGroupDetails(linkedGroupDetailsEntity);
         hearingEntity.setLinkedOrder(1L);

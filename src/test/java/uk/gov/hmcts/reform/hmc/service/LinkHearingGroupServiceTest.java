@@ -440,7 +440,7 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(2000000002L)).thenReturn(true);
             when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
-            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntity());
+            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntityWithLinkDetails());
             given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
 
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
@@ -482,7 +482,7 @@ class LinkHearingGroupServiceTest {
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
-            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntity());
+            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntityWithLinkDetails());
             given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
 
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
