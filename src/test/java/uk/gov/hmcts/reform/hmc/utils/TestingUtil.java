@@ -190,6 +190,8 @@ public class TestingUtil {
         individualDetails.setTitle("Mr");
         individualDetails.setFirstName("firstName");
         individualDetails.setLastName("lastName");
+        individualDetails.setCustodyStatus("custodyStatus");
+        individualDetails.setOtherReasonableAdjustmentDetails("otherReason");
         List<RelatedParty> relatedParties = new ArrayList<>();
         RelatedParty relatedParty1 = new RelatedParty();
         relatedParty1.setRelatedPartyID("P1");

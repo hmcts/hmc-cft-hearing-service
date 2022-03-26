@@ -78,7 +78,7 @@ public final class ValidationError {
     public static final String FIRST_NAME_EMPTY = "First name can not be empty";
     public static final String FIRST_NAME_MAX_LENGTH = "First name must not be more than 100 " + CHARACTERS_LONG;
     public static final String LAST_NAME_EMPTY = "Last name can not be empty";
-    public static final String LAST_NAME_MAX_LENGTH = "Last name must not be more than 100 " + CHARACTERS_LONG;
+    public static final String LAST_NAME_MAX_LENGTH = "Last name must not be more than 730 " + CHARACTERS_LONG;
     public static final String PREFERRED_HEARING_CHANNEL_MAX_LENGTH = "Preferred hearing channel must not be more than "
         + "70 " + CHARACTERS_LONG;
     public static final String INTERPRETER_LANGUAGE_MAX_LENGTH = "Interpreter language must not be more than 10 "
@@ -137,6 +137,8 @@ public final class ValidationError {
     public static final String PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH = "002 No such response version";
     public static final String PARTIES_NOTIFIED_ALREADY_SET = "003 Already set";
 
+    public static final String OTHER_REASON_LENGTH = "Other reasonable adjustment details cannot be greater than 200 " + CHARACTERS_LONG;
+    public static final String CUSTODY_STATUS_LENGTH = "Custody status cannot be greater than 80 " + CHARACTERS_LONG;
     public static final String HEARING_ID_LENGTH = "Hearing id cannot be greater than 30 " + CHARACTERS_LONG;
     public static final String HEARING_ID_EMPTY = "Hearing id can not be null or empty";
     public static final String GROUP_REASON_LENGTH = "Group reason cannot be greater than 8 " + CHARACTERS_LONG;

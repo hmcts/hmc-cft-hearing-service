@@ -40,6 +40,7 @@ class ListingMapperTest {
     private static final String HEARING_REQUESTER = "HearingRequester";
     private static final String ROLE_TYPE = "RoleType";
     private static final String HEARING_CHANNEL = "Email";
+    private static final String AMEND_REASON_CODE = "code";
 
     @Test
     void shouldReturnListingWithBothHearingWindowFieldsAndRoleType() {
@@ -57,6 +58,7 @@ class ListingMapperTest {
         hearingDetails.setNumberOfPhysicalAttendees(2);
         hearingDetails.setListingComments(LISTING_COMMENTS);
         hearingDetails.setHearingRequester(HEARING_REQUESTER);
+        hearingDetails.setAmendReasonCode(AMEND_REASON_CODE);
         hearingDetails.setPrivateHearingRequiredFlag(false);
         PanelRequirements panelRequirements = new PanelRequirements();
         PanelPreference panelPreference = new PanelPreference();
@@ -84,6 +86,7 @@ class ListingMapperTest {
         assertEquals(1, listing.getListingJohs().size());
         assertEquals(listingJoh, listing.getListingJohs().get(0));
         assertEquals(1, listing.getListingHearingChannels().size());
+        assertEquals(AMEND_REASON_CODE, listing.getAmendReasonCode());
         assertEquals(HEARING_CHANNEL, listing.getListingHearingChannels().get(0));
         assertEquals(1, listing.getListingLocations().size());
         assertEquals(listingLocation, listing.getListingLocations().get(0));

@@ -36,6 +36,7 @@ public class UnAvailabilityDetailMapper {
             rangeEntity.setStartDate(range.getUnavailableFromDate());
             rangeEntity.setEndDate(range.getUnavailableToDate());
             rangeEntity.setUnAvailabilityType(UNAVAILABILITY_RANGE_TYPE);
+            rangeEntity.setDayOfWeekUnavailableType(DayOfWeekUnAvailableType.getByLabel(range.getUnavailabilityType()));
             rangeEntity.setHearingParty(hearingPartyEntity);
             unavailabilityEntities.add(rangeEntity);
         }

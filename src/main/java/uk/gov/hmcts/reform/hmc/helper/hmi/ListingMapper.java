@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.helper.hmi;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 
@@ -35,6 +36,7 @@ public class ListingMapper {
             .listingJohs(listingJohsMapper.getListingJohs(hearingDetails.getPanelRequirements()))
             .listingHearingChannels(preferredHearingChannels)
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
+            .amendReasonCode(hearingDetails.getAmendReasonCode())
             .build();
         if (hearingDetails.getHearingWindow().getHearingWindowStartDateRange() != null) {
             listing.setListingStartDate(hearingDetails.getHearingWindow().getHearingWindowStartDateRange());
