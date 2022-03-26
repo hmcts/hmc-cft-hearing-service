@@ -46,7 +46,7 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setLeadJudgeContractType(hearingDetails.getLeadJudgeContractType());
         caseHearingRequestEntity.setFirstDateTimeOfHearingMustBe(hearingDetails.getHearingWindow()
                                                                      .getFirstDateTimeMustBe());
-        caseHearingRequestEntity.setHmctsServiceID(caseDetails.getHmctsServiceCode());
+        caseHearingRequestEntity.setHmctsServiceCode(caseDetails.getHmctsServiceCode());
         caseHearingRequestEntity.setCaseReference(caseDetails.getCaseRef());
         caseHearingRequestEntity.setExternalCaseReference(caseDetails.getExternalCaseReference());
         caseHearingRequestEntity.setCaseUrlContextPath(caseDetails.getCaseDeepLink());

@@ -36,7 +36,7 @@ class CaseHearingRequestMapperTest {
         assertEquals(Boolean.TRUE, entity.getPrivateHearingRequiredFlag());
         assertNull(entity.getLeadJudgeContractType());
         assertNull(entity.getFirstDateTimeOfHearingMustBe());
-        assertEquals("ABA1", entity.getHmctsServiceID());
+        assertEquals("ABA1", entity.getHmctsServiceCode());
         assertEquals("1111222233334444", entity.getCaseReference());
         assertEquals(LocalDateTime.now(clock), entity.getHearingRequestReceivedDateTime());
         assertNull(entity.getExternalCaseReference());

@@ -59,7 +59,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
     private CaseDetails setCaseDetails(HearingEntity hearingEntity) {
         CaseDetails caseDetails = new CaseDetails();
         CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
-        caseDetails.setHmctsServiceCode(caseHearingRequestEntity.getHmctsServiceID());
+        caseDetails.setHmctsServiceCode(caseHearingRequestEntity.getHmctsServiceCode());
         caseDetails.setCaseRef(caseHearingRequestEntity.getCaseReference());
         caseDetails.setExternalCaseReference(caseHearingRequestEntity.getExternalCaseReference());
         caseDetails.setCaseDeepLink(caseHearingRequestEntity.getCaseUrlContextPath());

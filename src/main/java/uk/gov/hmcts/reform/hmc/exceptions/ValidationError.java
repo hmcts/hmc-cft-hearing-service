@@ -116,8 +116,8 @@ public final class ValidationError {
     public static final String INVALID_UNAVAILABILITY_RANGES_DETAILS = "Unavailability range details should be present";
     public static final String INVALID_RELATED_PARTY_DETAILS = "Related Party details are not present";
     public static final String INVALID_CANCELLATION_REASON_CODE = "Cancellation Reason code details are not present";
-    public static final String CANCELLATION_REASON_CODE_MAX_LENGTH_MSG = "Non standard hearing duration "
-        + "reasons length cannot be greater than 100 characters";
+    public static final String CANCELLATION_REASON_CODE_MAX_LENGTH_MSG = "Cancellation Reason code "
+        + "length cannot be greater than 100 characters";
     public static final String INVALID_VERSION_NUMBER = "Invalid version number";
     public static final String INVALID_HEARING_ID_DETAILS = "Invalid hearing Id";
     public static final String CASE_NOT_FOUND = "Case could not be found";

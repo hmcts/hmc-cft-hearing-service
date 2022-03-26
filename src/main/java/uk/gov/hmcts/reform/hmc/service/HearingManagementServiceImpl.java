@@ -347,7 +347,6 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     @Override
     public HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
         validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
-        validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
         validateDeleteHearingStatus(hearingId);
 
         HearingEntity existingHearing = hearingRepository.findById(hearingId)
