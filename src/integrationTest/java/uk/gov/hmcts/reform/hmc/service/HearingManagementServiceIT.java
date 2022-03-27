@@ -192,12 +192,12 @@ class HearingManagementServiceIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testUpdateHearingRequest_WithValidData() {
-        UpdateHearingRequest request = TestingUtil.updateHearingRequest();
-        hearingManagementService.updateHearingRequest(2000000000L, request);
-        HearingResponse response = hearingManagementService.updateHearingRequest(2000000000L, request);
+        hearingManagementService.updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest(1));
+        HearingResponse response = hearingManagementService
+            .updateHearingRequest(2000000000L, TestingUtil.updateHearingRequest(2));
         assertEquals(2000000000L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.HEARING_REQUESTED.name(), response.getStatus());
-        assertNotNull(response.getVersionNumber());
+        assertEquals(3, response.getVersionNumber());
         assertNotNull(response.getTimeStamp());
     }
 
@@ -208,7 +208,7 @@ class HearingManagementServiceIT extends BaseTest {
         HearingResponse response = hearingManagementService.updateHearingRequest(2000000012L, request);
         assertEquals(2000000012L, response.getHearingRequestId());
         assertEquals(response.getStatus(), PutHearingStatus.UPDATE_REQUESTED.name());
-        assertNotNull(response.getVersionNumber());
+        assertEquals(2, response.getVersionNumber());
         assertNotNull(response.getTimeStamp());
     }
 
@@ -219,7 +219,7 @@ class HearingManagementServiceIT extends BaseTest {
         HearingResponse response = hearingManagementService.updateHearingRequest(2000000024L, request);
         assertEquals(2000000024L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
-        assertNotNull(response.getVersionNumber());
+        assertEquals(2, response.getVersionNumber());
         assertNotNull(response.getTimeStamp());
     }
 

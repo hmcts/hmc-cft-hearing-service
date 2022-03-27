@@ -286,12 +286,16 @@ public class TestingUtil {
     }
 
     public static UpdateHearingRequest updateHearingRequest() {
+        return updateHearingRequest(1);
+    }
+
+    public static UpdateHearingRequest updateHearingRequest(int version) {
         UpdateHearingRequest request = new UpdateHearingRequest();
         request.setHearingDetails(hearingDetails());
         request.setCaseDetails(caseDetails());
         request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         RequestDetails requestDetails = new RequestDetails();
-        requestDetails.setVersionNumber(1);
+        requestDetails.setVersionNumber(version);
         request.setRequestDetails(requestDetails);
         return request;
     }

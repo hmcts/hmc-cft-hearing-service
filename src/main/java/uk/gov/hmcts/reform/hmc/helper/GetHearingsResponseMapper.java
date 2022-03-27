@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
@@ -31,13 +32,15 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         List<CaseHearing> caseHearingList = new ArrayList<>();
         for (CaseHearingRequestEntity entity : entities) {
             CaseHearing caseHearing = getCaseHearing(entity);
-            HearingResponseEntity latestHearingResponse = getHearingResponseEntities(entity, caseHearing);
-            setHearingDaySchedule(caseHearingList, caseHearing, latestHearingResponse);
+            Optional<HearingResponseEntity> latestHearingResponseOpt = getLatestHearingResponse(entity, caseHearing);
+            latestHearingResponseOpt.ifPresent(latestHearingResponse ->
+                setHearingDaySchedule(caseHearing, latestHearingResponse));
+            caseHearingList.add(caseHearing);
         }
         getHearingsResponse.setCaseHearings(caseHearingList);
     }
 
-    private void setHearingDaySchedule(List<CaseHearing> caseHearingList, CaseHearing caseHearing,
+    private void setHearingDaySchedule(CaseHearing caseHearing,
                                        HearingResponseEntity hearingResponseEntity) {
         List<HearingDaySchedule> scheduleList = new ArrayList<>();
 
@@ -51,14 +54,14 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
             }
         }
         caseHearing.setHearingDaySchedule(scheduleList);
-        caseHearingList.add(caseHearing);
     }
 
-    private HearingResponseEntity getHearingResponseEntities(CaseHearingRequestEntity entity,
-                                                             CaseHearing caseHearing) {
-        HearingResponseEntity hearingResponseEntity = entity.getHearing().getLatestHearingResponse().orElseThrow();
-        setHearingResponseDetails(caseHearing, hearingResponseEntity);
-        return hearingResponseEntity;
+    private Optional<HearingResponseEntity> getLatestHearingResponse(CaseHearingRequestEntity entity,
+                                                                     CaseHearing caseHearing) {
+        Optional<HearingResponseEntity> hearingResponseEntityOpt = entity.getHearing().getLatestHearingResponse();
+        hearingResponseEntityOpt.ifPresent(hearingResponseEntity ->
+            setHearingResponseDetails(caseHearing, hearingResponseEntity));
+        return hearingResponseEntityOpt;
     }
 
     private CaseHearing getCaseHearing(CaseHearingRequestEntity entity) {

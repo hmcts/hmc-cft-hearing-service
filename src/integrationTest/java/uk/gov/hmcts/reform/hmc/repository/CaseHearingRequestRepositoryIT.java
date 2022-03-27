@@ -35,14 +35,14 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testGetVersionNumber_HearingIdIsValid() {
-        Integer versionNumber = caseHearingRequestRepository.getVersionNumber(2000000000L);
+        Integer versionNumber = caseHearingRequestRepository.getLatestVersionNumber(2000000000L);
         assertEquals(1, versionNumber);
     }
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testGetVersionNumber_HearingIdIsInValid() {
-        Integer versionNumber = caseHearingRequestRepository.getVersionNumber(2020000001L);
+        Integer versionNumber = caseHearingRequestRepository.getLatestVersionNumber(2020000001L);
         assertNull(versionNumber);
     }
 

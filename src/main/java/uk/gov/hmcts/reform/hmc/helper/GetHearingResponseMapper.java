@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
@@ -209,15 +210,17 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
 
 
     private HearingResponse setHearingResponse(HearingEntity hearingEntity) {
-        HearingResponseEntity hearingResponseEntity = hearingEntity.getLatestHearingResponse().orElseThrow();
         HearingResponse hearingResponse = new HearingResponse();
-        hearingResponse.setListAssistTransactionID(
-            hearingResponseEntity.getHearingResponseId());
-        hearingResponse.setReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
-        hearingResponse.setResponseVersion(hearingResponseEntity.getHearingResponseId());
-        hearingResponse.setLaCaseStatus(hearingResponseEntity.getListingCaseStatus());
-        hearingResponse.setListingStatus(hearingResponseEntity.getListingStatus());
-        setHearingDaySchedule(hearingResponse, List.of(hearingResponseEntity));
+        Optional<HearingResponseEntity> hearingResponseEntityOpt = hearingEntity.getLatestHearingResponse();
+        hearingResponseEntityOpt.ifPresent(hearingResponseEntity -> {
+            hearingResponse.setListAssistTransactionID(
+                hearingResponseEntity.getHearingResponseId());
+            hearingResponse.setReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
+            hearingResponse.setResponseVersion(hearingResponseEntity.getHearingResponseId());
+            hearingResponse.setLaCaseStatus(hearingResponseEntity.getListingCaseStatus());
+            hearingResponse.setListingStatus(hearingResponseEntity.getListingStatus());
+            setHearingDaySchedule(hearingResponse, List.of(hearingResponseEntity));
+        });
         return hearingResponse;
     }
 

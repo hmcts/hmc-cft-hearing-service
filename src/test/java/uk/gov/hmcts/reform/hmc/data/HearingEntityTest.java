@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,9 +33,21 @@ class HearingEntityTest {
         }
 
         @Test
-        void shouldErrorWhenNoRequestsExist() {
+        void shouldErrorWhenNoRequestsExistWithNullList() {
             HearingEntity hearing = new HearingEntity();
             hearing.setId(2000000001L);
+
+            ResourceNotFoundException exception =
+                assertThrows(ResourceNotFoundException.class, hearing::getLatestCaseHearingRequest);
+            assertEquals("Cannot find latest case hearing request for hearing 2000000001",
+                         exception.getMessage());
+        }
+
+        @Test
+        void shouldErrorWhenNoRequestsExistWithEmptyList() {
+            HearingEntity hearing = new HearingEntity();
+            hearing.setId(2000000001L);
+            hearing.setHearingResponses(emptyList());
 
             ResourceNotFoundException exception =
                 assertThrows(ResourceNotFoundException.class, hearing::getLatestCaseHearingRequest);
@@ -60,9 +73,21 @@ class HearingEntityTest {
         }
 
         @Test
-        void shouldErrorWhenNoRequestsExist() {
+        void shouldErrorWhenNoRequestsExistWithNullList() {
             HearingEntity hearing = new HearingEntity();
             hearing.setId(2000000002L);
+
+            ResourceNotFoundException exception =
+                assertThrows(ResourceNotFoundException.class, hearing::getLatestRequestVersion);
+            assertEquals("Cannot find latest case hearing request for hearing 2000000002",
+                         exception.getMessage());
+        }
+
+        @Test
+        void shouldErrorWhenNoRequestsExistWithEmptyList() {
+            HearingEntity hearing = new HearingEntity();
+            hearing.setId(2000000002L);
+            hearing.setHearingResponses(emptyList());
 
             ResourceNotFoundException exception =
                 assertThrows(ResourceNotFoundException.class, hearing::getLatestRequestVersion);

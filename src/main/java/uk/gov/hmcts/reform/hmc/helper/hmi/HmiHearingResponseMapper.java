@@ -148,9 +148,8 @@ public class HmiHearingResponseMapper {
                 break;
             case LISTED:
                 int hearingVersion = hearing.getHearing().getHearingCaseVersionId();
-                CaseHearingRequestEntity caseHearingRequest = hearingEntity.getCaseHearingRequest(hearingVersion);
                 postStatus = getHearingStatusWhenLaStatusIsListed(currentStatus, hearingVersion,
-                                                                  caseHearingRequest.getVersionNumber());
+                                                                  hearingEntity.getLatestRequestVersion());
                 break;
             case PENDING_RELISTING:
                 postStatus = currentStatus;

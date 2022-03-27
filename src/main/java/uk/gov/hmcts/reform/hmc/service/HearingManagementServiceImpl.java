@@ -144,6 +144,7 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     }
 
     @Override
+    @Transactional
     public HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
         validateHearingRequest(hearingRequest);
         validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
@@ -345,6 +346,7 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     }
 
     @Override
+    @Transactional
     public HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
         validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
         validateDeleteHearingStatus(hearingId);
@@ -368,14 +370,14 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     }
 
     private void validateVersionNumber(Long hearingId, Integer versionNumber) {
-        Integer versionNumberFromDb = getVersionNumber(hearingId);
-        if (!versionNumberFromDb.equals(versionNumber)) {
+        Integer latestVersionNumberFromDb = getLatestVersionNumber(hearingId);
+        if (!latestVersionNumberFromDb.equals(versionNumber)) {
             throw new BadRequestException(INVALID_VERSION_NUMBER);
         }
     }
 
-    private Integer getVersionNumber(Long hearingId) {
-        return caseHearingRequestRepository.getVersionNumber(hearingId);
+    private Integer getLatestVersionNumber(Long hearingId) {
+        return caseHearingRequestRepository.getLatestVersionNumber(hearingId);
     }
 
     @Override
