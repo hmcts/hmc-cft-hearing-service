@@ -248,7 +248,7 @@ public class TestingUtil {
         entity.setHearingType("Some hearing type");
         entity.setRequiredDurationInMinutes(10);
         entity.setHearingPriorityType("Priority type");
-        entity.setHmctsServiceID("ABA1");
+        entity.setHmctsServiceCode("ABA1");
         entity.setCaseReference("1111222233334444");
         entity.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity.setCaseUrlContextPath("https://www.google.com");
@@ -284,7 +284,6 @@ public class TestingUtil {
 
     public static DeleteHearingRequest deleteHearingRequest() {
         DeleteHearingRequest request = new DeleteHearingRequest();
-        request.setVersionNumber(1);
         request.setCancellationReasonCode("test");
         return request;
     }
@@ -357,7 +356,7 @@ public class TestingUtil {
         entity.setCaseHearingID(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
         entity.setHearing(hearingEntity);
-        entity.setHmctsServiceID("ABA1");
+        entity.setHmctsServiceCode("ABA1");
         entity.setCaseReference("12345");
         entity.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity.setHearingType("Some hearing type");
@@ -388,7 +387,7 @@ public class TestingUtil {
         entity1.setCaseHearingID(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
         entity1.setHearing(hearingEntity);
-        entity1.setHmctsServiceID("ABA1");
+        entity1.setHmctsServiceCode("ABA1");
         entity1.setCaseReference("12345");
         entity1.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity1.setHearingType("Some hearing type");
@@ -405,7 +404,7 @@ public class TestingUtil {
         entity1.setCaseHearingID(2000000001L);
         hearingEntity.setStatus("HEARING_UPDATED");
         entity1.setHearing(hearingEntity);
-        entity1.setHmctsServiceID("ABA1");
+        entity1.setHmctsServiceCode("ABA1");
         entity1.setCaseReference("4567");
         entity1.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity1.setHearingType("Some hearing type");
@@ -532,7 +531,7 @@ public class TestingUtil {
     private static CaseHearingRequestEntity caseHearingRequestEntityWithPartyOrg() {
         CaseHearingRequestEntity entity1 = new CaseHearingRequestEntity();
         entity1.setCaseHearingID(2000000000L);
-        entity1.setHmctsServiceID("ABA1");
+        entity1.setHmctsServiceCode("ABA1");
         entity1.setCaseReference("12345");
         entity1.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity1.setHearingType("Some hearing type");
@@ -544,7 +543,7 @@ public class TestingUtil {
         entity1.setCaseHearingID(2000000000L);
 
         entity1.setHearing(getCaseHearingsEntity());
-        entity1.setHmctsServiceID("ABA1");
+        entity1.setHmctsServiceCode("ABA1");
         entity1.setCaseReference("12345");
         entity1.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity1.setHearingType("Some hearing type");
