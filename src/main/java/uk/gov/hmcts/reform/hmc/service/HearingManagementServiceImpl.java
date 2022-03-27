@@ -487,7 +487,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private void validateHearingActualsStatus(Long hearingId, String errorMessage) {
         String status = getStatus(hearingId);
         boolean isValidStatus = DeleteHearingStatus.isValidHearingActuals(status);
-        LocalDate minStartDate = hearingIdValidator.filterHearingResponses(hearingRepository.findById(hearingId).get());
+        LocalDate minStartDate = hearingIdValidator
+            .filterHearingResponses(hearingRepository.findById(hearingId).get());
         LocalDate now = LocalDate.now();
         if (isValidStatus && (minStartDate.isBefore(now) || minStartDate.equals(now))) {
             throw new BadRequestException(errorMessage);

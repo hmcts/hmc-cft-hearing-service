@@ -57,12 +57,7 @@ public class HearingIdValidator {
     }
 
     public LocalDate filterHearingResponses(HearingEntity hearingEntity) {
-        String version = hearingEntity.getLatestRequestVersion().toString();
-        Optional<HearingResponseEntity> hearingResponse = hearingEntity
-            .getHearingResponses().stream().filter(hearingResponseEntity ->
-                                                       hearingResponseEntity.getResponseVersion().equals(version))
-            .collect(Collectors.toList()).stream()
-            .max(Comparator.comparing(hearingResponseEntity -> hearingResponseEntity.getRequestTimeStamp()));
+        Optional<HearingResponseEntity> hearingResponse = getHearingResponse(hearingEntity);
 
         return getLowestDate(hearingResponse.orElseThrow(() -> new BadRequestException("bad request")));
     }
