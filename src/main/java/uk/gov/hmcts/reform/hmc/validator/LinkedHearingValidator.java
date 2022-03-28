@@ -203,10 +203,15 @@ public class LinkedHearingValidator extends HearingIdValidator {
     protected void checkValidStateForHearingRequest(Optional<HearingEntity> hearingEntity,
                                                   LinkHearingDetails details) {
         if (hearingEntity.isEmpty()
-                || !PutHearingStatus.isValid(hearingEntity.get().getStatus())
-                || filterHearingResponses(hearingEntity.get()).isBefore(LocalDate.now())) {
+            || !PutHearingStatus.isValid(hearingEntity.get().getStatus())) {
             throw new BadRequestException(
+                INVALID_STATE_FOR_HEARING_REQUEST.replace(HEARING_ID_PLACEHOLDER, details.getHearingId()));
+        }
+        if (null != hearingEntity.get().getHearingResponses()) {
+            if (filterHearingResponses(hearingEntity.get()).isBefore(LocalDate.now())) {
+                throw new BadRequestException(
                     INVALID_STATE_FOR_HEARING_REQUEST.replace(HEARING_ID_PLACEHOLDER, details.getHearingId()));
+            }
         }
     }
 
