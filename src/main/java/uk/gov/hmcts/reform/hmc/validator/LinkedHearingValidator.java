@@ -55,7 +55,6 @@ public class LinkedHearingValidator extends HearingIdValidator {
 
     /**
      * validate Request id.
-     *
      * @param requestId request id
      */
     protected final void validateRequestId(String requestId, String errorMessage) {
@@ -230,8 +229,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
                 INVALID_GROUP_LINK_TYPE
                     .replace(
                         "<linkType>",
-                        hearingLinkGroupRequest.getGroupDetails().getGroupLinkType()
-                    ));
+                        hearingLinkGroupRequest.getGroupDetails().getGroupLinkType()));
         }
         if (LinkType.ORDERED.equals(value)) {
             if (details.getHearingOrder() == 0) {
@@ -277,8 +275,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
                 log.debug(
                     "hearing response: {} : {}",
                     hearingResponse.get().getHearingResponseId(),
-                    hearingResponse.get().getRequestTimeStamp()
-                );
+                    hearingResponse.get().getRequestTimeStamp());
             } else {
                 log.debug("No hearing response found");
             }
@@ -290,8 +287,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
                                                                      .replace(
                                                                          HEARING_ID_PLACEHOLDER,
                                                                          hearingEntity.getId()
-                                                                             + " no lowest date for given version"
-                                                                     ))));
+                                                                             + " no lowest date for given version"))));
     }
 
     protected LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
@@ -302,8 +298,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
                 log.debug(
                     "hearing day details: {} : {}",
                     hearingDayDetails.get().getHearingDayId(),
-                    hearingDayDetails.get().getStartDateTime()
-                );
+                    hearingDayDetails.get().getStartDateTime());
             } else {
                 log.debug("No hearing day details found");
             }
