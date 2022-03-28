@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
-import uk.gov.hmcts.reform.hmc.exceptions.ListAssistResponseException;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
@@ -118,13 +117,13 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
             messageSenderToTopicConfiguration
                 .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString());
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
-                //Service bus sessionhas to completed first else it will try to re process the message
+                //Service bus session has to completed first else it will try to re process the message
                 client.complete(message);
-//                throw new ListAssistResponseException(
-//                    hearingId,
-//                    errorDetails.getErrorCode() + " "
-//                        + errorDetails.getErrorDescription()
-//                );
+                //                throw new ListAssistResponseException(
+                //                    hearingId,
+                //                    errorDetails.getErrorCode() + " "
+                //                        + errorDetails.getErrorDescription()
+                //                );
             }
         }
     }
