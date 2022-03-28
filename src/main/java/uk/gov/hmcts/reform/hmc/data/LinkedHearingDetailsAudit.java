@@ -36,5 +36,4 @@ public class LinkedHearingDetailsAudit {
 
     @Column(name = "linked_order")
     private Long linkedOrder;
-
 }
