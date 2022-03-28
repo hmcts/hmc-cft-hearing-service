@@ -676,6 +676,7 @@ class LinkedHearingValidatorTest {
         }
 
     }
+
     private HearingLinkGroupRequest generateHearingLink(GroupDetails groupDetails,
                                                         List<LinkHearingDetails> hearingDetails) {
 
@@ -773,10 +774,6 @@ class LinkedHearingValidatorTest {
 
         return linkedGroupDetails;
     }
-
-
-
-
 
     private List<LinkedHearingDetailsAudit> generateLinkedHearingDetailsListWithBadStatus(
             String requestId, String requestName, Long groupId) {
