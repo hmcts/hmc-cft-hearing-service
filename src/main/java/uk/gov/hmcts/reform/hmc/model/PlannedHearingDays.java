@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -12,7 +13,7 @@ import java.util.List;
 @Getter
 public class PlannedHearingDays {
 
-    private LocalDate plannedStartTime;
-    private LocalDate plannedEndTime;
-    private List<PartyDetails> plannedHearingDays;
+    private LocalDateTime plannedStartTime;
+    private LocalDateTime plannedEndTime;
+    private List<PartyDetails> parties;
 }
