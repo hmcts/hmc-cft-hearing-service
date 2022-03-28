@@ -1,0 +1,35 @@
+{
+  "_guid_": "S-001.1-get-hearing",
+  "_extends_" : "GetHearingRequestPositiveGeneric",
+  "specs": [
+    "to verify versionNumber=1 and status=HEARING_REQUESTED"
+
+  ],
+  "request": {
+    "pathVariables": {
+      "hearingID": "${[scenarioContext][parentContext][testData][actualResponse][body][hearingRequestID]}"
+    }
+  },
+  "expectedResponse": {
+    "responseCode": 200,
+    "responseMessage": "OK",
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    },
+    "body": {
+      "requestDetails": {
+        "timestamp": "[[ANYTHING_PRESENT]]",
+        "status": "HEARING_REQUESTED",
+        "versionNumber": 1,
+        "partiesNotified": "[[ANY_STRING_NULLABLE]]"
+      },
+      "caseDetails": "[[ANYTHING_PRESENT]]",
+      "hearingDetails" : "[[ANYTHING_PRESENT]]",
+      "partyDetails" : "[[ANYTHING_PRESENT]]",
+      "hearingResponse": "[[ANYTHING_PRESENT]]"
+    }
+  }
+}

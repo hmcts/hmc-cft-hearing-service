@@ -1,0 +1,26 @@
+{
+  "_guid_": "GetHearingRequestBase",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "get hearing",
+  "method": "GET",
+  "uri": "/hearing/{hearingID}",
+  "specs": [
+    "has the 200 OK code",
+    "an active profile in CCD"
+  ],
+  "users": {
+    "invokingUser": {
+      "username": "master.caseworker@gmail.com",
+      "password": "[[$CCD_PRIVATE_CROSS_CASE_TYPE_CASEWORKER_PASSWORD]]"
+    }
+  },
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    },
+    "pathVariables": {
+      "hearingID": "overwriteme"
+    }
+  },
+  "expectedResponse": {}
+}

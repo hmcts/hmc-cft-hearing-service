@@ -16,15 +16,52 @@ Feature: Amend hearing request
     And the response [has a versionNumber of 2]
     And the response [has a status of UPDATE_REQUESTED]
     And the response has all other details as expected.
+#    And a call [to verify the values have been updated] will get the expected response as in [S-004.1-get-hearing],
 
-#  Scenario: Cannot amend hearing with incorrect version number
-#     -version number is not incremented on unsuccessful request
-#  Scenario: Cannot amend hearing with incorrect hearing ID
-#  Scenario: Can amend hearing in the  UPDATE_REQUESTED state
-#  Scenario: Cannot amend hearing in the  CANCELLATION_REQUESTED state
-#
+  @S-004.2
+  Scenario: Cannot amend hearing with incorrect version number
+    Given a successful call [to create a hearing request] as in [CreateHearingRequest]
+    When a request is prepared with appropriate values
+    And the request [has an incorrect version number of 2]
+    And it is submitted to call the [amend hearing] operation of [HMC CFT Hearing Service]
+    Then a negative response is received
+    And the response [has the 400 code]
+    And the response has all other details as expected.
+#    And a call [to get hearing to show version number hasn't been incremented] will get the expected response as in [],
+
+  @S-004.3
+  Scenario: Cannot amend hearing with incorrect hearing id
+    Given a successful call [to create a hearing request] as in [CreateHearingRequest]
+    When a request is prepared with appropriate values
+    And the request [has an incorrect hearing id]
+    And it is submitted to call the [amend hearing] operation of [HMC CFT Hearing Service]
+    Then a negative response is received
+    And the response [has the 404 code]
+    And the response has all other details as expected.
+
+  @S-004.4
+  Scenario: successfully amend hearing request in the UPDATE_REQUESTED state
+    Given a successful call [to create a hearing request] as in [CreateHearingRequest]
+    And a successful call [to amend a hearing request] as in [AmendHearingRequest]
+    When a request is prepared with appropriate values
+    And it is submitted to call the [amend hearing] operation of [HMC CFT Hearing Service]
+    Then a positive response is received
+    And the response [has the 201 code]
+    And the response [has a versionNumber of 3]
+    And the response [has a status of UPDATE_REQUESTED]
+    And the response has all other details as expected.
+#    And a call [to verify the values have been updated] will get the expected response as in [S-004.1-get-hearing],
+
+
+  @S-004.5
+  Scenario: cannot amend hearing request in the CANCELLATION_REQUESTED state
+    Given a successful call [to create a hearing request] as in [CreateHearingRequest]
+    And a successful call [to delete a hearing request] as in [deleteHearingRequest]
+    When a request is prepared with appropriate values
+    And it is submitted to call the [amend hearing] operation of [HMC CFT Hearing Service]
+    Then a negative response is received
+    And the response [has the 400 code]
+    And the response has all other details as expected.
+
+
 #  Scenario: can successfully create hearing using only mandatory fields
-#
-#  Scenario: cannot send request with requestDetails missing
-#  Scenario: cannot send request with hearingDetails missing
-#  Scenario: cannot send request with partyDetails missing

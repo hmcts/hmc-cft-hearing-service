@@ -1,0 +1,47 @@
+{
+  "_guid_": "PutHearingRequestBase",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "amend hearing",
+  "method": "PUT",
+  "uri": "/hearing/{hearingID}",
+  "specs": [
+  ],
+  "users": {
+    "invokingUser": {
+      "username": "master.caseworker@gmail.com",
+      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
+    }
+  },
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    },
+    "pathVariables": {
+      "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    },
+    "body": {
+      "_extends_" : "createHearingRequestFullData",
+      "requestDetails": {
+        "versionNumber": 1
+      },
+      "hearingDetails": {
+        "amendReasonCode": "test for amend hearing reqest"
+      },
+      "caseDetails": {
+        "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
+        "individualDetails": {
+          "firstName": "john",
+          "lastName": "doe"
+        }
+      }
+    }
+  },
+  "expectedResponse": {
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    }
+  }
+}

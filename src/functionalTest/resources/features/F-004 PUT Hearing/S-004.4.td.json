@@ -1,15 +1,20 @@
 {
-  "_guid_": "S-004.1",
+  "_guid_": "S-004.4",
   "_extends_" : "PutHearingRequestBase",
   "specs": [
     "has the 201 code",
     "an active profile in CCD",
-    "has a versionNumber of 2",
+    "has a versionNumber of 3",
     "has a status of UPDATE_REQUESTED"
   ],
   "request": {
     "headers": {
       "_extends_": "Common_Request_Headers"
+    },
+    "body": {
+      "requestDetails": {
+        "versionNumber": 2
+      }
     },
     "pathVariables": {
       "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
@@ -22,7 +27,7 @@
       "hearingRequestID": "[[ANYTHING_PRESENT]]",
       "status": "UPDATE_REQUESTED",
       "timeStamp": "[[ANYTHING_PRESENT]]",
-      "versionNumber": 2,
+      "versionNumber": 3,
       "responseVersion": null,
       "requestVersion": null,
       "partiesNotified": null,

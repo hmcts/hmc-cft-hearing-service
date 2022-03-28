@@ -1,11 +1,12 @@
 {
-  "_guid_": "S-002.1",
+  "_guid_": "deleteHearingRequestBase",
   "productName": "HMC CFT Hearing Service",
   "operationName": "delete hearing",
   "method": "DELETE",
   "uri": "/hearing/{hearingID}",
   "specs": [
     "has the 200 OK code",
+    "to delete a hearing request",
     "has a versionNumber of 2",
     "has a status of CANCELLATION_REQUESTED",
     "an active profile in CCD"
@@ -29,23 +30,11 @@
     }
   },
   "expectedResponse": {
-    "responseCode": 200,
-    "responseMessage": "OK",
     "headers": {
       "Content-Length": "[[ANYTHING_PRESENT]]",
       "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
       "Date": "[[ANYTHING_PRESENT]]",
       "Request-Context": "[[ANY_NULLABLE]]"
-    },
-    "body": {
-      "hearingRequestID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}",
-      "status": "CANCELLATION_REQUESTED",
-      "timeStamp": "[[ANYTHING_PRESENT]]",
-      "versionNumber": 2,
-      "responseVersion": null,
-      "requestVersion": null,
-      "partiesNotified": null,
-      "serviceData": null
     }
   }
 }

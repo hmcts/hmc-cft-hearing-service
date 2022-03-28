@@ -1,0 +1,24 @@
+{
+  "_guid_": "S-002.2",
+  "_extends_" : "deleteHearingRequestBase",
+  "specs": [
+    "has the 200 OK code",
+    "has a versionNumber of 3",
+    "has a status of CANCELLATION_REQUESTED",
+    "an active profile in CCD"
+  ],
+  "expectedResponse": {
+    "responseCode": 200,
+    "responseMessage": "OK",
+    "body": {
+      "hearingRequestID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+      "status": "CANCELLATION_REQUESTED",
+      "timeStamp": "[[ANYTHING_PRESENT]]",
+      "versionNumber": 3,
+      "responseVersion": null,
+      "requestVersion": null,
+      "partiesNotified": null,
+      "serviceData": null
+    }
+  }
+}

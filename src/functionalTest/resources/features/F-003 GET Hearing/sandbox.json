@@ -1,0 +1,88 @@
+{
+  "requestDetails" : {
+    "timestamp" : "2000-08-10T12:20:00",
+    "status" : "HEARING_REQUESTED",
+    "versionNumber" : 1,
+    "partiesNotified" : null
+  },
+  "hearingDetails" : {
+    "hearingType" : "Some hearing type",
+    "hearingWindow" : {
+      "hearingWindowStartDateRange" : "2021-11-01",
+      "hearingWindowEndDateRange" : "2021-11-12",
+      "firstDateTimeMustBe" : null
+    },
+    "duration" : 60,
+    "nonStandardHearingDurationReasons" : [ "First reason", "Second reason" ],
+    "hearingPriorityType" : "Priority type",
+    "numberOfPhysicalAttendees" : 4,
+    "hearingInWelshFlag" : false,
+    "hearingLocations" : [ {
+      "locationType" : "Location type",
+      "locationId" : "court"
+    } ],
+    "facilitiesRequired" : [ "First facility", "Second facility" ],
+    "listingComments" : "Some listing comments",
+    "hearingRequester" : "Some judge",
+    "privateHearingRequiredFlag" : false,
+    "leadJudgeContractType" : "AB123",
+    "panelRequirements" : {
+      "roleType" : [ "RoleType2" ],
+      "authorisationTypes" : null,
+      "authorisationSubType" : null,
+      "panelPreferences" : null,
+      "panelSpecialisms" : null
+    },
+    "hearingIsLinkedFlag" : null,
+    "autolistFlag" : true
+  },
+  "caseDetails" : {
+    "hmctsServiceCode" : "ABA1",
+    "caseRef" : "1648110316993784",
+    "requestTimeStamp" : null,
+    "externalCaseReference" : "EXT/REF123",
+    "caseDeepLink" : "https://www.google.com",
+    "hmctsInternalCaseName" : "Internal case name",
+    "publicCaseName" : "Public case name",
+    "caseAdditionalSecurityFlag" : true,
+    "caseInterpreterRequiredFlag" : true,
+    "caseCategories" : [ {
+      "categoryType" : "caseType",
+      "categoryValue" : "CT2"
+    } ],
+    "caseManagementLocationCode" : "CMLC123",
+    "caserestrictedFlag" : true,
+    "caseSLAStartDate" : "2021-10-10"
+  },
+  "partyDetails" : [ {
+    "partyID" : "P1",
+    "partyType" : "IND",
+    "partyRole" : "DEF",
+    "individualDetails" : {
+      "title" : "Mr",
+      "firstName" : "Joe",
+      "lastName" : "Bloggs",
+      "preferredHearingChannel" : "Channel 4",
+      "interpreterLanguage" : "French",
+      "reasonableAdjustments" : [ "Ad1" ],
+      "vulnerableFlag" : true,
+      "vulnerabilityDetails" : "A bit vulnerable",
+      "hearingChannelEmail" : "hearing.channel@email.com",
+      "hearingChannelPhone" : null,
+      "relatedParties" : [ {
+        "relatedPartyID" : "P7",
+        "relationshipType" : "p7 Sibling"
+      } ]
+    },
+    "organisationDetails" : null,
+    "unavailabilityRanges" : [ {
+      "unavailableFromDate" : "2021-10-20",
+      "unavailableToDate" : "2021-10-22"
+    } ],
+    "unavailabilityDOW" : [ {
+      "DOW" : "Monday",
+      "DOWUnavailabilityType" : "AM"
+    } ]
+  } ],
+  "hearingResponse" : [ ]
+}
