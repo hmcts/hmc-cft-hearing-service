@@ -7,11 +7,9 @@ import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType.ORDERED;
 
 class LinkedGroupDetailsAuditRepositoryTest {
@@ -32,7 +30,7 @@ class LinkedGroupDetailsAuditRepositoryTest {
         groupDetailsAudit.setLinkedGroupVersion(1L);
         groupDetailsAudit.setLinkType(ORDERED);
         groupDetailsAudit.setStatus("ACTIVE");
-        when(linkedGroupDetailsAuditRepository.save(any())).thenReturn(groupDetails);
+        linkedGroupDetailsAuditRepository.save(groupDetailsAudit);
         verify(linkedGroupDetailsAuditRepository, times(1)).save(any());
     }
 

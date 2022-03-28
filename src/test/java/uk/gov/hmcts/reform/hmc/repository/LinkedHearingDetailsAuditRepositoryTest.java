@@ -7,11 +7,9 @@ import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class LinkedHearingDetailsAuditRepositoryTest {
 
@@ -30,7 +28,7 @@ class LinkedHearingDetailsAuditRepositoryTest {
         entity.setLinkedOrder(1L);
         entity.setLinkedGroupVersion(10L);
         entity.setLinkedGroup(groupDetails);
-        when(linkedHearingDetailsAuditRepository.save(any())).thenReturn(groupDetails);
+        linkedHearingDetailsAuditRepository.save(entity);
         verify(linkedHearingDetailsAuditRepository, times(1)).save(any());
     }
 
