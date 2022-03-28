@@ -298,7 +298,8 @@ class LinkedHearingGroupServiceTest {
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
-
+            hearing1.setLinkedGroupDetails(groupDetails);
+            hearing2.setLinkedGroupDetails(groupDetails);
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
                 .willReturn(Optional.of(groupDetails));
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
@@ -327,7 +328,7 @@ class LinkedHearingGroupServiceTest {
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
-
+            hearing.setLinkedGroupDetails(groupDetails);
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
                 .willReturn(Optional.of(groupDetails));
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
@@ -364,6 +365,7 @@ class LinkedHearingGroupServiceTest {
             LinkedGroupDetails groupDetails = new LinkedGroupDetails();
             groupDetails.setLinkedGroupId(hearingGroupId);
             groupDetails.setStatus(groupStatus);
+            groupDetails.setLinkedGroupLatestVersion(1L);
             return groupDetails;
         }
     }
