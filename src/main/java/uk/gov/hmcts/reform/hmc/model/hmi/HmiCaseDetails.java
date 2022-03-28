@@ -36,7 +36,7 @@ public class HmiCaseDetails {
 
     private Integer caseVersionId;
 
-    private CaseLinks[] caseLinks;
+    private List<CaseLinks> caseLinks;
 
     private String casePublishedName;
 

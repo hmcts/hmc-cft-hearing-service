@@ -57,7 +57,7 @@ class HmiSubmitHearingRequestMapperTest {
                 .build();
         when(entitiesMapper.getEntities(Collections.singletonList(partyDetails))).thenReturn(entities);
         HmiCaseDetails hmiCaseDetails = HmiCaseDetails.builder().build();
-        when(hmiCaseDetailsMapper.getCaseDetails(caseDetails, HEARING_ID)).thenReturn(hmiCaseDetails);
+        when(hmiCaseDetailsMapper.getCaseDetails(caseDetails, 1, HEARING_ID)).thenReturn(hmiCaseDetails);
         Listing listing = Listing.builder().build();
         when(listingMapper.getListing(hearingDetails, Collections.singletonList(PREFERRED_HEARING_CHANNEL)))
                 .thenReturn(listing);

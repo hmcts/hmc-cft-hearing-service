@@ -64,11 +64,12 @@ class HmiCaseDetailsMapperTest {
             .caseRegistered(localDate)
             .caseInterpreterRequiredFlag(false)
             .caseRestrictedFlag(true)
+            .caseVersionId(1)
             .caseLinks(hmiCaseDetailsMapper.getCaseLinksArray(Arrays.asList(caseDetails.getCaseDeepLink())))
             .casePublishedName(caseDetails.getPublicCaseName())
             .caseAdditionalSecurityFlag(Boolean.TRUE)
             .build();
-        HmiCaseDetails actualHmiCaseDetails = hmiCaseDetailsMapper.getCaseDetails(caseDetails, hearingId);
+        HmiCaseDetails actualHmiCaseDetails = hmiCaseDetailsMapper.getCaseDetails(caseDetails, 1, hearingId);
         assertEquals(expectedHmiCaseDetails, actualHmiCaseDetails);
     }
 }

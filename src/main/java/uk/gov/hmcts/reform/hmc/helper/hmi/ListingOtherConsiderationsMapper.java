@@ -13,8 +13,6 @@ public class ListingOtherConsiderationsMapper {
         List<String> listOtherConsiderations = new ArrayList<>();
         if (null != hearingInWelshFlag) {
             listOtherConsiderations.add(hearingInWelshFlag.toString());
-        } else {
-            listOtherConsiderations.add(Boolean.FALSE.toString());
         }
         if (null != facilityTypes) {
             facilityTypes.stream().forEach(listOtherConsiderations::add);

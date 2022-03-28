@@ -20,23 +20,6 @@ public class HmiCaseDetailsMapper {
         this.caseClassificationsMapper = caseClassificationsMapper;
     }
 
-    public HmiCaseDetails getCaseDetails(CaseDetails caseDetails, Long hearingId) {
-        return HmiCaseDetails.builder()
-            .caseClassifications(caseClassificationsMapper.getCaseClassifications(caseDetails))
-            .caseIdHmcts(caseDetails.getCaseRef())
-            .caseListingRequestId(hearingId.toString())
-            .caseJurisdiction(caseDetails.getHmctsServiceCode().substring(0, 2))
-            .caseTitle(caseDetails.getHmctsInternalCaseName())
-            .caseCourt(caseDetails.getCaseManagementLocationCode())
-            .caseRegistered(caseDetails.getCaseSlaStartDate())
-            .caseInterpreterRequiredFlag(caseDetails.getCaseInterpreterRequiredFlag())
-            .caseRestrictedFlag(caseDetails.getCaseRestrictedFlag())
-            .caseLinks(getCaseLinksArray(Arrays.asList(caseDetails.getCaseDeepLink())))
-            .casePublishedName(caseDetails.getPublicCaseName())
-            .caseAdditionalSecurityFlag(caseDetails.getCaseAdditionalSecurityFlag())
-            .build();
-    }
-
     public HmiCaseDetails getCaseDetails(CaseDetails caseDetails, Integer versionNumber, Long hearingId) {
         return HmiCaseDetails.builder()
                 .caseClassifications(caseClassificationsMapper.getCaseClassifications(caseDetails))
@@ -55,10 +38,10 @@ public class HmiCaseDetailsMapper {
                 .build();
     }
 
-    public CaseLinks[] getCaseLinksArray(List<String> urls) {
+    public List<CaseLinks> getCaseLinksArray(List<String> urls) {
         List<CaseLinks> caseLinks = new ArrayList<>();
         urls.forEach(e -> caseLinks.add(getCaseLinks(e)));
-        return caseLinks.toArray(new CaseLinks[0]);
+        return caseLinks;
     }
 
     private CaseLinks getCaseLinks(String url) {

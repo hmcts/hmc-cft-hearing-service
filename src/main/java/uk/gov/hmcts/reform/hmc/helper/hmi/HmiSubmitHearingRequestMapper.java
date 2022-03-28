@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.hmc.helper.hmi;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
@@ -22,12 +22,22 @@ public class HmiSubmitHearingRequestMapper {
         this.listingMapper = listingMapper;
     }
 
-    public HmiSubmitHearingRequest mapRequest(Long hearingId, CreateHearingRequest hearingRequest) {
+    public HmiSubmitHearingRequest mapRequest(Long hearingId, HearingRequest hearingRequest) {
         EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest.getPartyDetails());
+
+        int versionNumber = 1;
+        if (hearingRequest.getClass().isInstance(UpdateHearingRequest.class)) {
+            UpdateHearingRequest request = (UpdateHearingRequest) hearingRequest;
+            if (null != request.getRequestDetails()) {
+                versionNumber = request.getRequestDetails().getVersionNumber();
+            }
+        }
 
         HmiHearingRequest hmiHearingRequest = HmiHearingRequest.builder()
             .caseDetails(hmiCaseDetailsMapper.getCaseDetails(
-                    hearingRequest.getCaseDetails(), hearingId))
+                    hearingRequest.getCaseDetails(),
+                    versionNumber,
+                    hearingId))
             .entities(entities.getEntities())
             .listing(listingMapper.getListing(hearingRequest.getHearingDetails(), entities
                 .getPreferredHearingChannels()))
@@ -36,24 +46,6 @@ public class HmiSubmitHearingRequestMapper {
         return HmiSubmitHearingRequest.builder()
             .hearingRequest(hmiHearingRequest)
             .build();
-    }
-
-    public HmiSubmitHearingRequest mapRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
-        EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest.getPartyDetails());
-
-        HmiHearingRequest hmiHearingRequest = HmiHearingRequest.builder()
-                .caseDetails(hmiCaseDetailsMapper.getCaseDetails(
-                        hearingRequest.getCaseDetails(),
-                        hearingRequest.getRequestDetails().getVersionNumber(),
-                        hearingId))
-                .entities(entities.getEntities())
-                .listing(listingMapper.getListing(hearingRequest.getHearingDetails(), entities
-                        .getPreferredHearingChannels()))
-                .build();
-
-        return HmiSubmitHearingRequest.builder()
-                .hearingRequest(hmiHearingRequest)
-                .build();
     }
 
 }

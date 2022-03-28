@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import javax.validation.Valid;
@@ -136,33 +135,11 @@ public class HearingManagementController {
         return hearingResponse;
     }
 
-
-
-    @PostMapping(path = "/test", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public HmiSubmitHearingRequest test(@RequestBody CreateHearingRequest createHearingRequest) {
-        hearingManagementService.verifyAccess(createHearingRequest.getCaseDetails().getCaseRef());
-        HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
-        return hearingManagementService.test(
-                hearingResponse.getHearingRequestId(),
-                createHearingRequest
-        );
-    }
-
-    @PutMapping(path = "/test/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public HmiSubmitHearingRequest test(@RequestBody UpdateHearingRequest hearingRequest,
-                                        @PathVariable("id") Long hearingId) {
-        hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
-        return hearingManagementService.test(hearingId, hearingRequest);
-    }
-
     private String getCaseRef(CreateHearingRequest hearingRequest) {
         if (null == hearingRequest || null == hearingRequest.getCaseDetails()) {
             return null;
         }
         return hearingRequest.getCaseDetails().getCaseRef();
-
     }
 
 }
