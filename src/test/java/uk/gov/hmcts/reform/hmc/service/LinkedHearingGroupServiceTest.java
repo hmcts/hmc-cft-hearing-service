@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
+import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS_UPDATE_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType.ORDERED;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
@@ -94,7 +96,6 @@ class LinkedHearingGroupServiceTest {
         @Test
         public void shouldDeleteHearingGroupDetails() {
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
-
             HearingEntity hearing1 = new HearingEntity();
             hearing1.setId(HEARING_ID1);
             hearing1.setLinkedGroupDetails(groupDetails);
@@ -119,10 +120,14 @@ class LinkedHearingGroupServiceTest {
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
 
+            LinkedGroupDetailsAudit groupDetailsAudit = createGroupDetailsAuditEntity(HEARING_GROUP_ID,
+                                                                                      "ACTIVE",groupDetails);
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
                 .willReturn(Optional.of(groupDetails));
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing1, hearing2));
+            given(linkedGroupDetailsAuditMapper.modelToEntity(groupDetails))
+                .willReturn(groupDetailsAudit);
 
             service.deleteLinkedHearingGroup(HEARING_GROUP_ID);
 
@@ -207,7 +212,6 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(Optional.of(groupDetails));
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing1, hearing2));
-
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(HEARING_GROUP_ID));
             assertEquals("008 Invalid state for unlinking hearing request " + HEARING_ID2,
@@ -368,5 +372,16 @@ class LinkedHearingGroupServiceTest {
             groupDetails.setLinkedGroupLatestVersion(1L);
             return groupDetails;
         }
+
+        private LinkedGroupDetailsAudit createGroupDetailsAuditEntity(long hearingGroupId, String groupStatus,
+                                                                      LinkedGroupDetails groupDetails) {
+            LinkedGroupDetailsAudit groupDetailsAudit = new LinkedGroupDetailsAudit();
+            groupDetailsAudit.setLinkedGroup(groupDetails);
+            groupDetailsAudit.setLinkedGroupVersion(1L);
+            groupDetailsAudit.setLinkType(ORDERED);
+            groupDetailsAudit.setStatus(groupStatus);
+            return groupDetailsAudit;
+        }
+
     }
 }
