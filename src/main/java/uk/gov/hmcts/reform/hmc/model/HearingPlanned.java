@@ -13,5 +13,4 @@ public class HearingPlanned {
 
     private String plannedHearingType;
     private List<PlannedHearingDays> plannedHearingDays;
-    private PartyDetails partyDetails;
 }
