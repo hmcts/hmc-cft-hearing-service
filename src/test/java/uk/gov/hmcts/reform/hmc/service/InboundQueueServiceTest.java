@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +63,9 @@ class InboundQueueServiceTest {
 
     @Mock
     ServiceBusReceivedMessage serviceBusReceivedMessage;
+
+    @Mock
+    ObjectMapperService objectMapperService;
 
     @Mock
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
@@ -168,7 +172,8 @@ class InboundQueueServiceTest {
             OBJECT_MAPPER,
             hearingRepository,
             hmiHearingResponseMapper,
-            messageSenderToTopicConfiguration
+            messageSenderToTopicConfiguration,
+            objectMapperService
         );
     }
 
