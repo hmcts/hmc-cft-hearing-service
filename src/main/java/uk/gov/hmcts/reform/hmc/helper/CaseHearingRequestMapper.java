@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 
 import java.util.List;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 
 @Component
 public class CaseHearingRequestMapper {
@@ -50,7 +50,7 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setOwningLocationId(caseDetails.getCaseManagementLocationCode());
         caseHearingRequestEntity.setCaseRestrictedFlag(caseDetails.getCaseRestrictedFlag());
         caseHearingRequestEntity.setCaseSlaStartDate(caseDetails.getCaseSlaStartDate());
-        caseHearingRequestEntity.setVersionNumber(VERSION_NUMBER);
+        caseHearingRequestEntity.setVersionNumber(VERSION_NUMBER_TO_INCREMENT);
         caseHearingRequestEntity.setInterpreterBookingRequiredFlag(caseDetails.getCaseInterpreterRequiredFlag());
         caseHearingRequestEntity.setListingComments(hearingDetails.getListingComments());
         caseHearingRequestEntity.setRequester(hearingDetails.getHearingRequester());

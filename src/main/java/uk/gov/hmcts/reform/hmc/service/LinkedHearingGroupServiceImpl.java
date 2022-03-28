@@ -41,7 +41,7 @@ import javax.transaction.Transactional;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PENDING;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_GROUP_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_HEARING_STATUS;
@@ -264,7 +264,7 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
 
     private void setLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails) {
         Long versionNumber = linkedGroupDetails.getLinkedGroupLatestVersion();
-        linkedGroupDetails.setLinkedGroupLatestVersion(versionNumber + VERSION_NUMBER);
+        linkedGroupDetails.setLinkedGroupLatestVersion(versionNumber + VERSION_NUMBER_TO_INCREMENT);
         linkedGroupDetails.setStatus(PENDING);
     }
 

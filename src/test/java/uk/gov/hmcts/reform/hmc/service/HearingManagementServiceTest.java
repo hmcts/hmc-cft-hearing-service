@@ -86,7 +86,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
@@ -302,7 +302,7 @@ class HearingManagementServiceTest {
             given(hearingMapper.modelToEntity(createHearingRequest)).willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
-            assertEquals(VERSION_NUMBER, response.getVersionNumber());
+            assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
             assertEquals(HEARING_STATUS, response.getStatus());
             assertNotNull(response.getHearingRequestId());
         }
@@ -320,7 +320,7 @@ class HearingManagementServiceTest {
             given(hearingMapper.modelToEntity(createHearingRequest)).willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
-            assertEquals(VERSION_NUMBER, response.getVersionNumber());
+            assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
             assertEquals(HEARING_STATUS, response.getStatus());
             assertNotNull(response.getHearingRequestId());
 
@@ -340,7 +340,7 @@ class HearingManagementServiceTest {
             given(hearingMapper.modelToEntity(createHearingRequest)).willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
-            assertEquals(VERSION_NUMBER, response.getVersionNumber());
+            assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
             assertEquals(HEARING_STATUS, response.getStatus());
             assertNotNull(response.getHearingRequestId());
 
@@ -359,7 +359,7 @@ class HearingManagementServiceTest {
             given(hearingMapper.modelToEntity(createHearingRequest)).willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
-            assertEquals(VERSION_NUMBER, response.getVersionNumber());
+            assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
             assertEquals(HEARING_STATUS, response.getStatus());
             assertNotNull(response.getHearingRequestId());
         }
