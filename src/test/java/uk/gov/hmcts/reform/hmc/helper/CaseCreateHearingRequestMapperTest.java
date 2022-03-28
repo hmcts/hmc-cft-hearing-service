@@ -21,7 +21,7 @@ class CaseCreateHearingRequestMapperTest {
         expectedEntity.setRequiredDurationInMinutes(0);
         expectedEntity.setHearingPriorityType("Priority type");
         expectedEntity.setPrivateHearingRequiredFlag(true);
-        expectedEntity.setHmctsServiceID("ABA1");
+        expectedEntity.setHmctsServiceCode("ABA1");
         expectedEntity.setCaseReference("1111222233334444");
         expectedEntity.setHearingRequestReceivedDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         expectedEntity.setCaseUrlContextPath("https://www.google.com");
@@ -31,7 +31,6 @@ class CaseCreateHearingRequestMapperTest {
         expectedEntity.setOwningLocationId("CMLC123");
         expectedEntity.setCaseRestrictedFlag(false);
         expectedEntity.setVersionNumber(1);
-        expectedEntity.setIsLinkedFlag(false);
         expectedEntity.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
         expectedEntity.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
         expectedEntity.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));

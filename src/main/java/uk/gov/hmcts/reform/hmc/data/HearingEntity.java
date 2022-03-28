@@ -10,6 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -38,4 +40,18 @@ public class HearingEntity {
 
     @OneToMany(mappedBy = "hearing", fetch = FetchType.EAGER)
     private List<HearingResponseEntity> hearingResponses;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "linked_group_id")
+    private LinkedGroupDetails linkedGroupDetails;
+
+    @Column(name = "linked_order")
+    private Long linkedOrder;
+
+    @Column(name = "is_linked_flag")
+    private Boolean isLinkedFlag;
+
+    public Integer getLatestRequestVersion() {
+        return getCaseHearingRequest().getVersionNumber();
+    }
 }
