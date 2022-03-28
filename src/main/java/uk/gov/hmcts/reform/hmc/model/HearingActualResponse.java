@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @NoArgsConstructor
 @Data
 @Setter
@@ -13,5 +15,5 @@ public class HearingActualResponse {
     private String hmcStatus;
     private CaseDetails caseDetails;
     private HearingPlanned hearingPlanned;
-    private HearingActual hearingActual;
+    private List<HearingActual> hearingActuals;
 }

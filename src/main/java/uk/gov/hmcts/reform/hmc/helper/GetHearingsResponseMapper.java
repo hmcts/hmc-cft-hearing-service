@@ -2,15 +2,8 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import lombok.val;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
-import uk.gov.hmcts.reform.hmc.model.CaseHearing;
-import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
-import uk.gov.hmcts.reform.hmc.model.HearingActualResponse;
-import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
-import uk.gov.hmcts.reform.hmc.model.HearingPlanned;
+import uk.gov.hmcts.reform.hmc.data.*;
+import uk.gov.hmcts.reform.hmc.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,8 +82,18 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         val hearingResponseEntity = hearingEntity.getHearingResponses();
         val response = new HearingActualResponse();
         response.setHmcStatus(hearingEntity.getStatus());
+        response.setCaseDetails(setCaseDetails(hearingEntity));
         setHearingPlanned(hearingEntity, response);
+        setHearingActuals(hearingEntity, response);
         return response;
+    }
+
+    private void setHearingActuals(HearingEntity hearingEntity, HearingActualResponse response) {
+        val hearingResponses = hearingEntity.getHearingResponses();
+
+        hearingResponses.stream().map(hearingResponse -> {
+            return hearingResponse.getHearingResponseId();
+        });
     }
 
     private void setHearingPlanned(HearingEntity hearingEntity, HearingActualResponse response) {
@@ -100,12 +103,37 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         response.setHearingPlanned(hearingPlanned);
     }
 
+    private CaseDetails setCaseDetails(HearingEntity hearingEntity) {
+        CaseDetails caseDetails = new CaseDetails();
+        caseDetails.setHmctsServiceCode(hearingEntity.getCaseHearingRequest().getHmctsServiceID());
+        caseDetails.setCaseRef(hearingEntity.getCaseHearingRequest().getCaseReference());
+        caseDetails.setExternalCaseReference(hearingEntity.getCaseHearingRequest().getExternalCaseReference());
+        caseDetails.setCaseDeepLink(hearingEntity.getCaseHearingRequest().getCaseUrlContextPath());
+        caseDetails.setHmctsInternalCaseName(hearingEntity.getCaseHearingRequest().getHmctsInternalCaseName());
+        caseDetails.setPublicCaseName(hearingEntity.getCaseHearingRequest().getPublicCaseName());
+        caseDetails.setCaseAdditionalSecurityFlag(
+            hearingEntity.getCaseHearingRequest().getAdditionalSecurityRequiredFlag());
+        caseDetails.setCaseInterpreterRequiredFlag(
+            hearingEntity.getCaseHearingRequest().getInterpreterBookingRequiredFlag());
+        caseDetails.setCaseCategories(setCaseCategories(hearingEntity));
+        caseDetails.setCaseManagementLocationCode(hearingEntity.getCaseHearingRequest().getOwningLocationId());
+        caseDetails.setCaseRestrictedFlag(hearingEntity.getCaseHearingRequest().getCaseRestrictedFlag());
+        caseDetails.setCaseSlaStartDate(hearingEntity.getCaseHearingRequest().getCaseSlaStartDate());
+        return caseDetails;
+    }
 
-    private void setHearingActuals(HearingEntity hearingEntity, HearingActualResponse response) {
-        val hearingResponses = hearingEntity.getHearingResponses();
-
-        hearingResponses.stream().map(hearingResponse -> {
-            return hearingResponse.getHearingResponseId();
-        });
+    private ArrayList<CaseCategory> setCaseCategories(HearingEntity hearingEntity) {
+        ArrayList<CaseCategory> caseCategories = new ArrayList<>();
+        if (null != hearingEntity.getCaseHearingRequest().getCaseCategories()
+            && !hearingEntity.getCaseHearingRequest().getCaseCategories().isEmpty()) {
+            for (CaseCategoriesEntity caseCategoriesEntity :
+                hearingEntity.getCaseHearingRequest().getCaseCategories()) {
+                CaseCategory caseCategory = new CaseCategory();
+                caseCategory.setCategoryType(caseCategoriesEntity.getCategoryType().getLabel());
+                caseCategory.setCategoryValue(caseCategoriesEntity.getCaseCategoryValue());
+                caseCategories.add(caseCategory);
+            }
+        }
+        return caseCategories;
     }
 }

@@ -98,7 +98,7 @@ jms:
       topic-name: ${HMC_SERVICE_BUS_TOPIC}
 
 access-control:
-  enabled: ${HMC_ACCESS_CONTROL_ENABLED:true}
+  enabled: ${HMC_ACCESS_CONTROL_ENABLED:false}
 
 role:
   assignment:
