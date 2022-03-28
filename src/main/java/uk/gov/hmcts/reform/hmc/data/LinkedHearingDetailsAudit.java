@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.data;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.Column;

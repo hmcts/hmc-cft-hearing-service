@@ -15,6 +15,9 @@ import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
+import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
@@ -64,12 +67,24 @@ class LinkedHearingGroupServiceTest {
     @Mock
     LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
 
+    @Mock
+    LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper;
+
+    @Mock
+    LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
+
+    @Mock
+    HearingMapper hearingMapper;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         service = new LinkedHearingGroupServiceImpl(linkedGroupDetailsRepository, hearingRepository,
                                                     linkedHearingDetailsAuditRepository,
-                                                    linkedGroupDetailsAuditRepository);
+                                                    linkedGroupDetailsAuditRepository,
+                                                    linkedGroupDetailsAuditMapper,
+                                                    linkedHearingDetailsAuditMapper,
+                                                    hearingMapper);
     }
 
     @Nested

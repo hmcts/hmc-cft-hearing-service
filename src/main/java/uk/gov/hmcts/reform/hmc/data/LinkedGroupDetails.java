@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.data;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;

@@ -54,4 +54,5 @@ public class HearingEntity {
     public Integer getLatestRequestVersion() {
         return getCaseHearingRequest().getVersionNumber();
     }
+
 }

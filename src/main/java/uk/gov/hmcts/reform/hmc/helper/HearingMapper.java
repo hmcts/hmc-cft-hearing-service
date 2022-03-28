@@ -55,5 +55,10 @@ public class HearingMapper {
         caseHearingRequestMapper.mapCaseCategories(caseDetails.getCaseCategories(), caseHearingRequestEntity);
     }
 
+    public HearingEntity setHearingForLinkedHearing(HearingEntity hearingEntity) {
+        hearingEntity.setLinkedGroupDetails(null);
+        hearingEntity.setLinkedOrder(null);
+        return hearingEntity;
+    }
 }
 
