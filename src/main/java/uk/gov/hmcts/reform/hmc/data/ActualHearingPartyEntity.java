@@ -5,6 +5,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -45,11 +46,11 @@ public class ActualHearingPartyEntity {
     @JoinColumn(name = "actual_hearing_day_id")
     private ActualHearingDayEntity actualHearingDay;
 
-    @OneToMany(mappedBy = "actualHearingParty")
+    @OneToMany(mappedBy = "actualHearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ActualPartyRelationshipDetailEntity> actualPartyRelationshipDetail;
 
-    @OneToMany(mappedBy = "actualHearingParty")
+    @OneToMany(mappedBy = "actualHearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ActualAttendeeIndividualDetailEntity> actualAttendeeIndividualDetail;
 }

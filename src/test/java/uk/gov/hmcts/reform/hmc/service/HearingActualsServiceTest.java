@@ -9,7 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.HearingActualsMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -42,13 +44,18 @@ class HearingActualsServiceTest {
     private HearingHelper hearingHelper;
     @Mock
     private HearingEntity hearingEntity;
+    @Mock
+    private ActualHearingRepository actualHearingRepository;
+    @Mock
+    private HearingActualsMapper hearingActualsMapper;
 
     @InjectMocks
     private HearingActualsServiceImpl hearingActualsService;
 
     @BeforeEach
     public void setUp() {
-        hearingActualsService = new HearingActualsServiceImpl(hearingRepository, hearingHelper);
+        hearingActualsService = new HearingActualsServiceImpl(hearingRepository, actualHearingRepository, hearingHelper,
+                                                              hearingActualsMapper);
     }
 
     @Test

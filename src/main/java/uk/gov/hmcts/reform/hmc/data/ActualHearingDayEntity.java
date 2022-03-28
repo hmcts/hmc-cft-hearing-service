@@ -7,6 +7,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,11 +48,11 @@ public class ActualHearingDayEntity {
     @JoinColumn(name = "actual_hearing_id")
     private ActualHearingEntity actualHearing;
 
-    @OneToMany(mappedBy = "actualHearingDay")
+    @OneToMany(mappedBy = "actualHearingDay", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ActualHearingPartyEntity> actualHearingParty;
 
-    @OneToMany(mappedBy = "actualHearingDay")
+    @OneToMany(mappedBy = "actualHearingDay", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ActualHearingDayPausesEntity> actualHearingDayPauses;
 }

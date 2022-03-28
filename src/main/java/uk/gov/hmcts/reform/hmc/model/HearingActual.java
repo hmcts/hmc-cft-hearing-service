@@ -6,15 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import javax.validation.Valid;
 
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class HearingActual {
 
+    @Valid
     @JsonProperty("hearingOutcome")
     private HearingActualsOutcome hearingOutcome;
 
+    @Valid
     @JsonProperty("actualHearingDays")
     private List<ActualHearingDay> actualHearingDays;
 

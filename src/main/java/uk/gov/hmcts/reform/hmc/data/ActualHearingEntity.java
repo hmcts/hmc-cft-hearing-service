@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -58,7 +59,7 @@ public class ActualHearingEntity {
     @JoinColumn(name = "hearing_response_id")
     private HearingResponseEntity hearingResponse;
 
-    @OneToMany(mappedBy = "actualHearing")
+    @OneToMany(mappedBy = "actualHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ActualHearingDayEntity> actualHearingDay;
 }

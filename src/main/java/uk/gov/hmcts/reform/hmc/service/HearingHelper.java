@@ -26,6 +26,18 @@ public class HearingHelper extends HearingIdValidator {
 
     public LocalDateTime getLowestStartDateOfMostRecentHearingResponse(HearingEntity hearing) {
 
+        HearingResponseEntity mostRecentLatestVersionHearingResponse = getLatestVersionHearingResponse(hearing);
+
+        Optional<HearingDayDetailsEntity> hearingDayDetailsOpt = mostRecentLatestVersionHearingResponse
+            .getHearingDayDetails().stream()
+            .min(Comparator.comparing(HearingDayDetailsEntity::getStartDateTime));
+        if (hearingDayDetailsOpt.isEmpty()) {
+            throw new BadRequestException(INVALID_HEARING_STATE);
+        }
+        return hearingDayDetailsOpt.get().getStartDateTime();
+    }
+
+    public HearingResponseEntity getLatestVersionHearingResponse(HearingEntity hearing) {
         List<HearingResponseEntity> latestVersionHearingResponses = getLatestVersionHearingResponses(hearing);
 
         Optional<HearingResponseEntity> mostRecentLatestVersionHearingResponseOpt = latestVersionHearingResponses
@@ -33,14 +45,7 @@ public class HearingHelper extends HearingIdValidator {
         if (mostRecentLatestVersionHearingResponseOpt.isEmpty()) {
             throw new BadRequestException(INVALID_HEARING_STATE);
         }
-
-        Optional<HearingDayDetailsEntity> hearingDayDetailsOpt = mostRecentLatestVersionHearingResponseOpt.get()
-            .getHearingDayDetails().stream()
-            .min(Comparator.comparing(HearingDayDetailsEntity::getStartDateTime));
-        if (hearingDayDetailsOpt.isEmpty()) {
-            throw new BadRequestException(INVALID_HEARING_STATE);
-        }
-        return hearingDayDetailsOpt.get().getStartDateTime();
+        return mostRecentLatestVersionHearingResponseOpt.get();
     }
 
     private List<HearingResponseEntity> getLatestVersionHearingResponses(HearingEntity hearing) {
