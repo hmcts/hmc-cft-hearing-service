@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import org.hibernate.annotations.Type;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -35,8 +36,8 @@ public class LinkedGroupDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "link_type", nullable = false)
-    @Type(type = "uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType")
-    private String linkType;
+    @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
+    private LinkType linkType;
 
     @Column(name = "reason_for_link", nullable = false)
     private String reasonForLink;
