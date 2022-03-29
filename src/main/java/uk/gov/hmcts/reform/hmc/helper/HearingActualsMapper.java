@@ -59,6 +59,9 @@ public class HearingActualsMapper {
 
     private List<ActualHearingDayPausesEntity> toActualHearingDayPausesEntities(
         List<ActualHearingDayPauseDayTime> dayPauseDayTimes, ActualHearingDayEntity dayEntity) {
+        if (dayPauseDayTimes == null || dayPauseDayTimes.isEmpty()) {
+            return List.of();
+        }
         return dayPauseDayTimes.stream()
             .map(dayPauseDayTime -> toActualHearingDayPausesEntity(dayPauseDayTime, dayEntity))
             .collect(Collectors.toList());

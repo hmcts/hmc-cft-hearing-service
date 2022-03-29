@@ -6,6 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class TestFixtures {
+
+    private TestFixtures() {
+    }
+
     public static String fromFileAsString(final String filePath) {
         StringBuilder json = new StringBuilder();
         try (final InputStreamReader inputStreamReader = new InputStreamReader(getInputStream(filePath));
