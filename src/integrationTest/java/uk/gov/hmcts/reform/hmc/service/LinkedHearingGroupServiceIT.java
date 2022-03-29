@@ -16,11 +16,13 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 
 import java.util.Optional;
+import javax.persistence.EntityManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 class LinkedHearingGroupServiceIT extends BaseTest {
 
@@ -34,10 +36,13 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     private LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
 
     @Autowired
-    private  HearingRepository hearingRepository;
+    private HearingRepository hearingRepository;
 
     @Autowired
     private LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
@@ -89,13 +94,14 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_LinkedGroupDetailsAudit() {
         linkedHearingGroupService.deleteLinkedHearingGroup(7600000000L);
-        Optional<LinkedGroupDetailsAudit> linkedGroupDetailsAudit = linkedGroupDetailsAuditRepository
-            .findById(1L);
-        assertTrue(linkedGroupDetailsAudit.isPresent());
-        assertEquals("ACTIVE", linkedGroupDetailsAudit.get().getStatus());
-        assertEquals(1, linkedGroupDetailsAudit.get().getLinkedGroupVersion());
-        assertEquals(7600000000L, linkedGroupDetailsAudit.get().getLinkedGroup().getLinkedGroupId());
-        assertEquals("good reason", linkedGroupDetailsAudit.get().getReasonForLink());
+        LinkedGroupDetailsAudit entity = (LinkedGroupDetailsAudit) entityManager
+            .createNativeQuery("select * from linked_group_details_audit where "
+                                   + "linked_group_id=7600000000", LinkedGroupDetailsAudit.class)
+            .getSingleResult();
+        assertEquals("ACTIVE", entity.getStatus());
+        assertEquals(1, entity.getLinkedGroupVersion());
+        assertEquals(7600000000L, entity.getLinkedGroup().getLinkedGroupId());
+        assertEquals("good reason", entity.getReasonForLink());
     }
 
     @Test
@@ -107,14 +113,14 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         Long versionNumber = linkedGroupDetails.get().getLinkedGroupLatestVersion();
 
         linkedHearingGroupService.deleteLinkedHearingGroup(7600000000L);
-
-        Optional<LinkedHearingDetailsAudit> linkedHearingDetailsAudit = linkedHearingDetailsAuditRepository
-            .findById(1L);
-        assertTrue(linkedHearingDetailsAudit.isPresent());
-        assertEquals(versionNumber, linkedHearingDetailsAudit.get().getLinkedGroupVersion());
-        assertEquals(2000000005L, linkedHearingDetailsAudit.get().getHearing().getId());
-        assertEquals(7600000000L, linkedHearingDetailsAudit.get().getLinkedGroup().getLinkedGroupId());
-        assertEquals(linkedOrder, linkedHearingDetailsAudit.get().getLinkedOrder());
+        LinkedHearingDetailsAudit entity = (LinkedHearingDetailsAudit) entityManager
+            .createNativeQuery("select * from linked_hearing_details_audit where "
+                                   + "hearing_id=2000000005", LinkedHearingDetailsAudit.class)
+            .getSingleResult();
+        assertEquals(versionNumber, entity.getLinkedGroupVersion());
+        assertEquals(2000000005L, entity.getHearing().getId());
+        assertEquals(7600000000L, entity.getLinkedGroup().getLinkedGroupId());
+        assertEquals(linkedOrder, entity.getLinkedOrder());
     }
 
     @Test
