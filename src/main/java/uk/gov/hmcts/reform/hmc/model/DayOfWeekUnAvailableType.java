@@ -19,7 +19,7 @@ public enum DayOfWeekUnAvailableType {
 
     public static DayOfWeekUnAvailableType getByLabel(String label) {
         DayOfWeekUnAvailableType dowUnavailable = Arrays.stream(DayOfWeekUnAvailableType.values())
-            .filter(eachDowUnavailable -> eachDowUnavailable.toString().toLowerCase(Locale.ROOT)
+            .filter(eachDowUnavailable -> eachDowUnavailable.getLabel().toString().toLowerCase(Locale.ROOT)
                 .equals(label.toLowerCase(Locale.ROOT))).findAny().orElse(null);
         return dowUnavailable;
     }

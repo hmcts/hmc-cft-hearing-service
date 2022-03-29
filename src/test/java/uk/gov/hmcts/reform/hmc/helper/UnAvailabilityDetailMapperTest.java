@@ -118,7 +118,7 @@ class UnAvailabilityDetailMapperTest {
         List<UnavailabilityDow> dowList = new ArrayList<>();
         UnavailabilityDow unavailabilityDow1 = new UnavailabilityDow();
         unavailabilityDow1.setDow("Monday");
-        unavailabilityDow1.setDowUnavailabilityType("ALL");
+        unavailabilityDow1.setDowUnavailabilityType("All Day");
         dowList.add(unavailabilityDow1);
 
         UnavailabilityDow unavailabilityDow2 = new UnavailabilityDow();
