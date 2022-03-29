@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
+import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -41,7 +43,10 @@ class LinkHearingGroupServiceTest {
     private LinkedHearingGroupServiceImpl linkedHearingGroupService;
 
     @Mock
-    HearingRepository hearingRepository;
+    private HearingRepository hearingRepository;
+
+    @Mock
+    private LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
     HearingIdValidator hearingIdValidator;
 
@@ -51,6 +56,7 @@ class LinkHearingGroupServiceTest {
         hearingIdValidator = new HearingIdValidator(hearingRepository);
         linkedHearingGroupService =
             new LinkedHearingGroupServiceImpl(
+                linkedGroupDetailsRepository,
                 hearingIdValidator,
                 hearingRepository
             );
@@ -158,7 +164,7 @@ class LinkHearingGroupServiceTest {
                 200L,
                 "requestId",
                 "requestname",
-                "linkTYpe",
+                "Ordered",
                 "status",
                 "resaon",
                 "comments",
@@ -518,7 +524,7 @@ class LinkHearingGroupServiceTest {
                                                         String comments, LocalDateTime date) {
         LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
         linkedGroupDetails.setLinkedGroupId(linkGroupId);
-        linkedGroupDetails.setLinkType(linkType);
+        linkedGroupDetails.setLinkType(LinkType.getByLabel(linkType));
         linkedGroupDetails.setLinkedComments(comments);
         linkedGroupDetails.setRequestDateTime(date);
         linkedGroupDetails.setReasonForLink(reason);

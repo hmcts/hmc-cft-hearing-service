@@ -65,12 +65,12 @@ class CaseHearingRequestRepositoryTest {
         assertAll(
             () -> assertEquals(2, entities.size()),
             () -> assertEquals("12345", entities.get(0).getCaseReference()),
-            () -> assertEquals("ABA1", entities.get(0).getHmctsServiceID()),
+            () -> assertEquals("ABA1", entities.get(0).getHmctsServiceCode()),
             () -> assertEquals("HEARING_REQUESTED", entities.get(0).getHearing().getStatus()),
             () -> assertEquals(2000000000L, entities.get(0).getHearing().getId()),
             () -> assertEquals(1, entities.get(0).getHearing().getHearingResponses().size()),
             () -> assertEquals("4567", entities.get(1).getCaseReference()),
-            () -> assertEquals("ABA1", entities.get(1).getHmctsServiceID()),
+            () -> assertEquals("ABA1", entities.get(1).getHmctsServiceCode()),
             () -> assertEquals("HEARING_UPDATED", entities.get(1).getHearing().getStatus()),
             () -> assertEquals(2000000001L, entities.get(1).getHearing().getId()),
             () -> verify(caseHearingRequestRepository, times(1))
@@ -85,7 +85,7 @@ class CaseHearingRequestRepositoryTest {
         List<CaseHearingRequestEntity> entities = caseHearingRequestRepository.getHearingDetails(any());
         assertAll(
             () -> assertEquals("12345", entities.get(0).getCaseReference()),
-            () -> assertEquals("ABA1", entities.get(0).getHmctsServiceID()),
+            () -> assertEquals("ABA1", entities.get(0).getHmctsServiceCode()),
             () -> assertEquals(2000000000L, entities.get(0).getHearing().getId()),
             () -> assertEquals(1, entities.get(0).getHearing().getHearingResponses().size()),
             () -> verify(caseHearingRequestRepository, times(1)).getHearingDetails(any())

@@ -383,7 +383,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     public HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
         hearingIdValidator.validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
-        validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
         validateDeleteHearingStatus(hearingId);
         updateCancellationReasons(hearingId, deleteRequest.getCancellationReasonCode());
         HearingEntity savedEntity = updateHearingStatusAndVersionNumber(
