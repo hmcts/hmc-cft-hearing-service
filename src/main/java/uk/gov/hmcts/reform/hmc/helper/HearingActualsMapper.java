@@ -87,23 +87,36 @@ public class HearingActualsMapper {
                                                                 ActualHearingDayEntity dayEntity) {
         ActualHearingPartyEntity partyEntity = new ActualHearingPartyEntity();
 
-        partyEntity.setPartyId(actualHearingDayParty.getActualPartyId());
+        setOrGeneratePartyId(actualHearingDayParty, partyEntity);
         partyEntity.setActualPartyRoleType(actualHearingDayParty.getPartyRole());
         partyEntity.setDidNotAttendFlag(actualHearingDayParty.getDidNotAttendFlag() != null
                                             ? actualHearingDayParty.getDidNotAttendFlag() : false);
         partyEntity.setActualAttendeeIndividualDetail(createIndividualDetail(actualHearingDayParty, partyEntity));
-        partyEntity.setActualPartyRelationshipDetail(createActualPartyRelationshipDetailEntity(partyEntity));
-        partyEntity.setActualAttendeeIndividualDetail(List.of());
-        partyEntity.setActualPartyRelationshipDetail(List.of());
+        if (actualHearingDayParty.getRepresentedParty() != null) {
+            partyEntity.setActualPartyRelationshipDetail(
+                createActualPartyRelationshipDetailEntity(partyEntity, actualHearingDayParty.getRepresentedParty()));
+        }
         partyEntity.setActualHearingDay(dayEntity);
         return partyEntity;
     }
 
+    private void setOrGeneratePartyId(ActualHearingDayParties actualHearingDayParty, ActualHearingPartyEntity partyEntity) {
+        if (actualHearingDayParty.getActualPartyId() == null) {
+            if (actualHearingDayParty.getIndividualDetails() != null) {
+                partyEntity.setPartyId(String.valueOf(actualHearingDayParty.getIndividualDetails().hashCode()));
+            } else if (actualHearingDayParty.getOrganisationDetails() != null) {
+                partyEntity.setPartyId(String.valueOf(actualHearingDayParty.getOrganisationDetails().hashCode()));
+            }
+        } else {
+            partyEntity.setPartyId(actualHearingDayParty.getActualPartyId());
+        }
+    }
+
     private List<ActualPartyRelationshipDetailEntity> createActualPartyRelationshipDetailEntity(
-        ActualHearingPartyEntity partyEntity) {
+        ActualHearingPartyEntity partyEntity, String representedPartyId) {
         ActualPartyRelationshipDetailEntity partyRelationshipDetailEntity = new ActualPartyRelationshipDetailEntity();
         partyRelationshipDetailEntity.setActualHearingParty(partyEntity);
-        partyRelationshipDetailEntity.setTargetActualPartyId(partyEntity.getActualPartyId());
+        partyRelationshipDetailEntity.setTargetActualPartyId(Long.parseLong(representedPartyId));
         return List.of(partyRelationshipDetailEntity);
     }
 
