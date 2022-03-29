@@ -30,63 +30,69 @@ public class HearingActualsMapper {
             request.getHearingOutcome().getHearingResult()));
         actualHearing.setHearingResultReasonType(request.getHearingOutcome().getHearingResultReasonType());
         actualHearing.setHearingResultDate(request.getHearingOutcome().getHearingResultDate().atStartOfDay());
-        actualHearing.setActualHearingDay(toActualHearingDayEntities(request.getActualHearingDays()));
+        actualHearing.setActualHearingDay(toActualHearingDayEntities(request.getActualHearingDays(), actualHearing));
 
         return actualHearing;
     }
 
-    private List<ActualHearingDayEntity> toActualHearingDayEntities(List<ActualHearingDay> actualHearingDay) {
+    private List<ActualHearingDayEntity> toActualHearingDayEntities(List<ActualHearingDay> actualHearingDay,
+                                                                   ActualHearingEntity actualHearing) {
         return actualHearingDay.stream()
-            .map(this::toActualHearingDayEntity)
+            .map((ActualHearingDay day) -> toActualHearingDayEntity(day, actualHearing))
             .collect(Collectors.toList());
     }
 
-    private ActualHearingDayEntity toActualHearingDayEntity(ActualHearingDay actualHearingDay) {
+    private ActualHearingDayEntity toActualHearingDayEntity(ActualHearingDay actualHearingDay,
+                                                            ActualHearingEntity actualHearing) {
         ActualHearingDayEntity actualHearingDayEntity = new ActualHearingDayEntity();
 
         actualHearingDayEntity.setHearingDate(actualHearingDay.getHearingDate());
         actualHearingDayEntity.setStartDateTime(actualHearingDay.getHearingStartTime());
         actualHearingDayEntity.setEndDateTime(actualHearingDay.getHearingEndTime());
         actualHearingDayEntity.setActualHearingDayPauses(
-            toActualHearingDayPausesEntities(actualHearingDay.getPauseDateTimes()));
+            toActualHearingDayPausesEntities(actualHearingDay.getPauseDateTimes(), actualHearingDayEntity));
         actualHearingDayEntity.setActualHearingParty(
-            toActualHearingPartyEntities(actualHearingDay.getActualDayParties()));
-
+            toActualHearingPartyEntities(actualHearingDay.getActualDayParties(), actualHearingDayEntity));
+        actualHearingDayEntity.setActualHearing(actualHearing);
         return actualHearingDayEntity;
     }
 
     private List<ActualHearingDayPausesEntity> toActualHearingDayPausesEntities(
-        List<ActualHearingDayPauseDayTime> actualHearingDayPauseDayTimes) {
-        return actualHearingDayPauseDayTimes.stream()
-            .map(this::toActualHearingDayPausesEntity)
+        List<ActualHearingDayPauseDayTime> dayPauseDayTimes, ActualHearingDayEntity dayEntity) {
+        return dayPauseDayTimes.stream()
+            .map(dayPauseDayTime -> toActualHearingDayPausesEntity(dayPauseDayTime, dayEntity))
             .collect(Collectors.toList());
     }
 
-    private ActualHearingDayPausesEntity toActualHearingDayPausesEntity(ActualHearingDayPauseDayTime dayPauseDayTime) {
+    private ActualHearingDayPausesEntity toActualHearingDayPausesEntity(ActualHearingDayPauseDayTime dayPauseDayTime,
+                                                                        ActualHearingDayEntity dayEntity) {
         ActualHearingDayPausesEntity dayPausesEntity = new ActualHearingDayPausesEntity();
         dayPausesEntity.setPauseDateTime(dayPauseDayTime.getPauseStartTime());
         dayPausesEntity.setResumeDateTime(dayPauseDayTime.getPauseEndTime());
+        dayPausesEntity.setActualHearingDay(dayEntity);
         return dayPausesEntity;
     }
 
     private List<ActualHearingPartyEntity> toActualHearingPartyEntities(
-        List<ActualHearingDayParties> actualDayParties) {
+        List<ActualHearingDayParties> actualDayParties, ActualHearingDayEntity dayEntity) {
         return actualDayParties.stream()
-            .map(this::toActualHearingPartyEntity)
+            .map(actualHearingDayParty -> toActualHearingPartyEntity(actualHearingDayParty, dayEntity))
             .collect(Collectors.toList());
     }
 
-    private ActualHearingPartyEntity toActualHearingPartyEntity(ActualHearingDayParties actualHearingDayParty) {
+    private ActualHearingPartyEntity toActualHearingPartyEntity(ActualHearingDayParties actualHearingDayParty,
+                                                                ActualHearingDayEntity dayEntity) {
         ActualHearingPartyEntity partyEntity = new ActualHearingPartyEntity();
-        if (actualHearingDayParty.getActualPartyId() != null) {
-            partyEntity.setActualPartyId(actualHearingDayParty.getActualPartyId());
-        }
+
+        partyEntity.setPartyId(actualHearingDayParty.getActualPartyId());
         partyEntity.setActualPartyRoleType(actualHearingDayParty.getPartyRole());
         partyEntity.setDidNotAttendFlag(actualHearingDayParty.getDidNotAttendFlag() != null
                                             ? actualHearingDayParty.getDidNotAttendFlag() : false);
-        partyEntity.setActualAttendeeIndividualDetail(createIndividualDetail(actualHearingDayParty));
+        partyEntity.setActualAttendeeIndividualDetail(createIndividualDetail(actualHearingDayParty, partyEntity));
         partyEntity.setActualPartyRelationshipDetail(createActualPartyRelationshipDetailEntity(partyEntity));
-
+        partyEntity.setActualAttendeeIndividualDetail(List.of());
+        partyEntity.setActualPartyRelationshipDetail(List.of());
+        partyEntity.setActualHearingDay(dayEntity);
         return partyEntity;
     }
 
@@ -99,7 +105,7 @@ public class HearingActualsMapper {
     }
 
     private List<ActualAttendeeIndividualDetailEntity> createIndividualDetail(
-        ActualHearingDayParties actualHearingDayParty) {
+        ActualHearingDayParties actualHearingDayParty, ActualHearingPartyEntity partyEntity) {
         ActualAttendeeIndividualDetailEntity individualDetailEntity = new ActualAttendeeIndividualDetailEntity();
 
         ActualHearingDayPartyDetail individualDetails = actualHearingDayParty.getIndividualDetails();
@@ -112,6 +118,7 @@ public class HearingActualsMapper {
             individualDetailEntity.setPartyOrganisationName(organisationDetails.getName());
         }
         individualDetailEntity.setPartyActualSubChannelType(actualHearingDayParty.getPartyChannelSubType());
+        individualDetailEntity.setActualHearingParty(partyEntity);
 
         return List.of(individualDetailEntity);
     }

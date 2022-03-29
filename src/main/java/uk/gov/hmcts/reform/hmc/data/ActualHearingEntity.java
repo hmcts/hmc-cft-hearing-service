@@ -6,6 +6,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -20,17 +21,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Table(name = "actual_hearing")
 @Entity
 @Data
-@SecondaryTable(name = "HEARING_RESPONSE",
-    pkJoinColumns = {
-        @PrimaryKeyJoinColumn(name = "hearing_response_id")})
-public class ActualHearingEntity {
+public class ActualHearingEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -55,7 +52,7 @@ public class ActualHearingEntity {
     @Column(name = "hearing_result_date", nullable = false)
     private LocalDateTime hearingResultDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "hearing_response_id")
     private HearingResponseEntity hearingResponse;
 

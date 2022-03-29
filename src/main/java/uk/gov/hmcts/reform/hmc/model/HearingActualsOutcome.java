@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -13,7 +14,7 @@ import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
-public class HearingActualsOutcome {
+public class HearingActualsOutcome implements Serializable {
 
     @NotEmpty(message = ValidationError.HA_OUTCOME_TYPE_NOT_EMPTY)
     @Size(max = 40, message = ValidationError.HA_OUTCOME_TYPE_MAX_LENGTH)

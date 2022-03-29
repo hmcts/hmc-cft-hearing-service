@@ -6,7 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.HearingActualsMapper;
@@ -28,6 +30,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.actualHearingDay;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingActualsOutcome;
@@ -36,7 +39,8 @@ import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingActualsOutcome;
 class HearingActualsServiceTest {
     public static final String VALID_HEARING_STAUS = "UPDATE_REQUESTED";
     public static final long INVALID_HEARING_ID = 1000000000L;
-    public static final long HEARING_ID = 2000000000L;
+    public static final Long HEARING_ID = 2000000000L;
+    public static final long HEARING_ACTUALS_ID_TO_DELETE = 5678L;
 
     @Mock
     private HearingRepository hearingRepository;
@@ -60,12 +64,30 @@ class HearingActualsServiceTest {
 
     @Test
     void shouldUpdateHearingActuals() {
-        given(hearingEntity.getStatus()).willReturn(VALID_HEARING_STAUS);
         given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearingEntity));
+        given(hearingEntity.getStatus()).willReturn(VALID_HEARING_STAUS);
         given(hearingHelper.getLowestStartDateOfMostRecentHearingResponse(hearingEntity))
             .willReturn(LocalDateTime.of(LocalDate.of(2022, 1, 28), LocalTime.MIN));
+
+        HearingResponseEntity hearingResponseEntityMock = mock(HearingResponseEntity.class);
+        given(hearingHelper.getLatestVersionHearingResponse(hearingEntity)).willReturn(hearingResponseEntityMock);
+
+        // mock delete actuals
+        ActualHearingEntity actualHearingEntityMock = mock(ActualHearingEntity.class);
+        given(actualHearingEntityMock.getActualHearingId()).willReturn(HEARING_ACTUALS_ID_TO_DELETE);
+        given(actualHearingRepository.findByHearingResponse(hearingResponseEntityMock))
+            .willReturn(Optional.of(actualHearingEntityMock));
+
+        // mock insert
+        ActualHearingEntity actualHearingMock = mock(ActualHearingEntity.class);
         HearingActual hearingActual = TestingUtil.hearingActual();
+        given(hearingActualsMapper.toActualHearingEntity(hearingActual)).willReturn(actualHearingMock);
+
         hearingActualsService.updateHearingActuals(HEARING_ID, hearingActual);
+
+        verify(hearingHelper).isValidFormat(HEARING_ID.toString());
+        verify(actualHearingRepository).deleteById(HEARING_ACTUALS_ID_TO_DELETE);
+        verify(actualHearingRepository).saveAndFlush(actualHearingMock);
     }
 
     @Test

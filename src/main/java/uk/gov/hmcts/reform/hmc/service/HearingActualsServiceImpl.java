@@ -73,9 +73,11 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     }
 
     private void insertNewHearingActuals(HearingResponseEntity latestVersionHearingResponse, HearingActual request) {
-        ActualHearingEntity actualHearing = hearingActualsMapper.toActualHearingEntity(request);
+
+        ActualHearingEntity actualHearing = hearingActualsMapper
+            .toActualHearingEntity(request);
         actualHearing.setHearingResponse(latestVersionHearingResponse);
-        actualHearingRepository.save(actualHearing);
+        actualHearingRepository.saveAndFlush(actualHearing);
     }
 
     private void validateRequestPayload(HearingActual request, HearingEntity hearing) {

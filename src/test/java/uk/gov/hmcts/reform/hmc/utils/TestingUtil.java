@@ -415,13 +415,13 @@ public class TestingUtil {
         )));
 
         actualHearingDay.setActualDayParties(List.of(
-            actualHearingParty(123L, "43333", actualHearingPartyDetails("WitnessForeName1", "WitnessLastName1"),
+            actualHearingParty("123", "43333", actualHearingPartyDetails("WitnessForeName1", "WitnessLastName1"),
                                "claiming party", false)
         ));
         return actualHearingDay;
     }
 
-    private static ActualHearingDayParties actualHearingParty(Long partyId,
+    private static ActualHearingDayParties actualHearingParty(String partyId,
                                                               String partyRole,
                                                               ActualHearingDayPartyDetail partyDetail,
                                                               String partyChannelSubType,

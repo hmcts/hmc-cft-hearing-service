@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.hmc.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 @Repository
-public interface ActualHearingRepository extends CrudRepository<ActualHearingEntity, Long> {
+public interface ActualHearingRepository extends JpaRepository<ActualHearingEntity, Long> {
 
     Optional<ActualHearingEntity> findByHearingResponse(HearingResponseEntity hearingResponse);
 }

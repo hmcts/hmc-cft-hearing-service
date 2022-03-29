@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.hmc.BaseTest;
+import uk.gov.hmcts.reform.hmc.TestFixtures;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
@@ -32,19 +33,20 @@ class HearingActualsManagementControllerIT extends BaseTest {
 
     private static final String url = "/hearingActuals";
 
-    private static final String INSERT_HEARING_ACTUALS_DATA_SCRIPT = "classpath:sql/insert-hearings-actuals.sql";
+    private static final String INSERT_HEARINGS_RESPONSE_SCRIPT = "classpath:sql/insert-hearings-with-response.sql";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
     @Nested
     @DisplayName("PutHearingActuals")
     class PutHearingActuals {
         // https://tools.hmcts.net/jira/browse/HMAN-80
-        // AC-01
+        // HMAN-80 AC-01
         @Test
         void shouldReturn404_WhenHearingIdDoesNotExist() throws Exception {
             mockMvc.perform(put(url + "/2990000001")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .content(objectMapper.writeValueAsString(TestingUtil.hearingActual())))
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
                 .andExpect(status().is(404))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors", hasItem("001 No such id: 2990000001")))
@@ -55,42 +57,45 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn400_WhenHearingIdIsInvalid() throws Exception {
             mockMvc.perform(put(url + "/1000000000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .content(objectMapper.writeValueAsString(TestingUtil.hearingActual())))
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors", hasItem("Invalid hearing Id")))
                 .andReturn();
         }
 
-        // AC-02
+        // HMAN-80 AC-02
         @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS_DATA_SCRIPT})
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
         void shouldReturn400_WhenHearingHasInvalidStatusOfHearingRequested() throws Exception {
             mockMvc.perform(put(url + "/2000000000") // status HEARING_REQUESTED
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .content(objectMapper.writeValueAsString(TestingUtil.hearingActual())))
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors", hasItem(("002 invalid status HEARING_REQUESTED"))))
                 .andReturn();
         }
 
-        // AC-03
+        // HMAN-80 AC-03
         @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS_DATA_SCRIPT})
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
         void shouldReturn400_WhenHearingHasInvalidStatusOfAwaitingListing() throws Exception {
             mockMvc.perform(put(url + "/2000000200") // status AWAITING_LISTING
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .content(objectMapper.writeValueAsString(TestingUtil.hearingActual())))
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors", hasItem(("002 invalid status AWAITING_LISTING"))))
                 .andReturn();
         }
 
-        // AC-04
+        // HMAN-80 AC-04
         @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS_DATA_SCRIPT})
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
         void shouldReturn400_WhenSuppliedHearingActualPayloadContainsDuplicateHearingDates() throws Exception {
             mockMvc.perform(put(url + "/2000000100")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -102,9 +107,9 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andReturn();
         }
 
-        // AC-05
+        // HMAN-80 AC-05
         @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS_DATA_SCRIPT})
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
         void shouldReturn400_WhenSuppliedHearingActualPayloadContainsDuplicateHearingDates1() throws Exception {
             mockMvc.perform(put(url + "/2000000100")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -116,9 +121,9 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andReturn();
         }
 
-        // AC-06
+        // HMAN-80 AC-06
         @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS_DATA_SCRIPT})
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
         void shouldReturn400_WhenSuppliedHearingDatesBeforeFirstPlannedHearingDate() throws Exception {
             mockMvc.perform(put(url + "/2000000302")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -132,9 +137,9 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andReturn();
         }
 
-        // AC-07
+        // HMAN-80 AC-07
         @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS_DATA_SCRIPT})
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
         void shouldReturn400_WhenSuppliedHearingHasHearingResultOfAdjournedWithoutHearingResultReasonType()
             throws Exception {
             mockMvc.perform(put(url + "/2000001000")
@@ -148,9 +153,10 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andReturn();
         }
 
-        // AC-08
+        // https://tools.hmcts.net/jira/browse/HHMAN-80 AC-08
+        // https://tools.hmcts.net/jira/browse/HMAN-82 AC01
         @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS_DATA_SCRIPT})
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
         void shouldReturn200_WhenSuppliedValidPayloadForHearingStatusOfListed()
             throws Exception {
             mockMvc.perform(put(url + "/2000001000") // LISTED
@@ -163,9 +169,9 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andReturn();
         }
 
-        // AC-09
+        // HMAN-80 AC-09
         @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS_DATA_SCRIPT})
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
         void shouldReturn200_WhenSuppliedValidPayloadForHearingStatusOfUpdateRequested()
             throws Exception {
             mockMvc.perform(put(url + "/2000001100") // UPDATE_REQUESTED
@@ -178,9 +184,9 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andReturn();
         }
 
-        // AC-10
+        // HMAN-80 AC-10
         @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS_DATA_SCRIPT})
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
         void shouldReturn200_WhenSuppliedValidPayloadForHearingStatusOfUpdateSubmitted()
             throws Exception {
             mockMvc.perform(put(url + "/2000001200") // UPDATE_SUBMITTED
@@ -193,9 +199,9 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andReturn();
         }
 
-        // AC-11
+        // HMAN-80 AC-11
         @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS_DATA_SCRIPT})
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
         void shouldReturn400_WhenSuppliedHearingHasHearingResultOfCancelledWithoutHearingResultReasonType()
             throws Exception {
             mockMvc.perform(put(url + "/2000001000")

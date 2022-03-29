@@ -4,6 +4,7 @@ import lombok.Data;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,17 +18,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Table(name = "actual_hearing_day")
 @Entity
 @Data
-@SecondaryTable(name = "ACTUAL_HEARING",
-    pkJoinColumns = {
-        @PrimaryKeyJoinColumn(name = "actual_hearing_id")})
-public class ActualHearingDayEntity {
+public class ActualHearingDayEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
