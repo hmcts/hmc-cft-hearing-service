@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
-import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
@@ -64,10 +63,6 @@ class LinkHearingGroupServiceTest {
     @Mock
     private LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
 
-    @Mock
-    private HearingMapper hearingMapper;
-
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -78,8 +73,7 @@ class LinkHearingGroupServiceTest {
                 linkedHearingDetailsAuditRepository,
                 linkedGroupDetailsAuditRepository,
                 linkedGroupDetailsAuditMapper,
-                linkedHearingDetailsAuditMapper,
-                hearingMapper
+                linkedHearingDetailsAuditMapper
             );
     }
 

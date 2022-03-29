@@ -17,6 +17,8 @@ public class LinkedHearingDetailsAuditMapper {
                                                                   .getLinkedGroupLatestVersion());
         linkedHearingDetailsAuditEntity.setHearing(hearingEntity);
         linkedHearingDetailsAuditEntity.setLinkedOrder(hearingEntity.getLinkedOrder());
+        linkedHearingDetailsAuditEntity.getHearing().setLinkedGroupDetails(null);
+        linkedHearingDetailsAuditEntity.getHearing().setLinkedOrder(null);
         return linkedHearingDetailsAuditEntity;
     }
 }

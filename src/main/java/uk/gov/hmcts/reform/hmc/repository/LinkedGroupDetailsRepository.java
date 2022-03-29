@@ -10,7 +10,4 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 @Repository
 public interface LinkedGroupDetailsRepository extends CrudRepository<LinkedGroupDetails, Long> {
 
-    // TODO: implement DB query - https://tools.hmcts.net/jira/browse/HMAN-96
-    default void deleteHearingGroup(Long hearingGroupId) {
-    }
 }

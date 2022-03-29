@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
-import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -75,9 +74,6 @@ class LinkedHearingGroupServiceTest {
     @Mock
     LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
 
-    @Mock
-    HearingMapper hearingMapper;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -85,8 +81,7 @@ class LinkedHearingGroupServiceTest {
                                                     linkedHearingDetailsAuditRepository,
                                                     linkedGroupDetailsAuditRepository,
                                                     linkedGroupDetailsAuditMapper,
-                                                    linkedHearingDetailsAuditMapper,
-                                                    hearingMapper);
+                                                    linkedHearingDetailsAuditMapper);
     }
 
     @Nested
@@ -133,7 +128,6 @@ class LinkedHearingGroupServiceTest {
 
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(linkedGroupDetailsRepository, times(1)).deleteHearingGroup(HEARING_GROUP_ID);
         }
 
         @Test
@@ -145,7 +139,6 @@ class LinkedHearingGroupServiceTest {
             assertEquals("No hearing group found for reference: " + HEARING_GROUP_ID, exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
-            verify(linkedGroupDetailsRepository, never()).deleteHearingGroup(anyLong());
         }
 
         @Test
@@ -160,7 +153,6 @@ class LinkedHearingGroupServiceTest {
             assertEquals("007 group is in a PENDING state", exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
-            verify(linkedGroupDetailsRepository, never()).deleteHearingGroup(anyLong());
         }
 
         @Test
@@ -175,7 +167,6 @@ class LinkedHearingGroupServiceTest {
             assertEquals("007 group is in a ERROR state", exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
-            verify(linkedGroupDetailsRepository, never()).deleteHearingGroup(anyLong());
         }
 
         @Test
@@ -218,7 +209,6 @@ class LinkedHearingGroupServiceTest {
                          exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(linkedGroupDetailsRepository, never()).deleteHearingGroup(anyLong());
         }
 
         @Test
@@ -246,7 +236,6 @@ class LinkedHearingGroupServiceTest {
                          exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(linkedGroupDetailsRepository, never()).deleteHearingGroup(anyLong());
         }
 
         @Test
@@ -273,7 +262,6 @@ class LinkedHearingGroupServiceTest {
                          exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(linkedGroupDetailsRepository, never()).deleteHearingGroup(anyLong());
         }
 
         @Test
@@ -313,7 +301,6 @@ class LinkedHearingGroupServiceTest {
 
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(linkedGroupDetailsRepository, times(1)).deleteHearingGroup(HEARING_GROUP_ID);
         }
 
         @Test
@@ -342,7 +329,6 @@ class LinkedHearingGroupServiceTest {
 
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(linkedGroupDetailsRepository, times(1)).deleteHearingGroup(HEARING_GROUP_ID);
         }
 
         private HearingResponseEntity createHearingResponseEntityWithHearingDays(
