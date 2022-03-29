@@ -58,7 +58,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         this.hearingIdValidator = hearingIdValidator;
         this.hearingRepository = hearingRepository;
         this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
-        }
+    }
 
     @Override
     public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
