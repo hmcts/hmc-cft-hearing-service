@@ -51,7 +51,6 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setCaseRestrictedFlag(caseDetails.getCaseRestrictedFlag());
         caseHearingRequestEntity.setCaseSlaStartDate(caseDetails.getCaseSlaStartDate());
         caseHearingRequestEntity.setVersionNumber(VERSION_NUMBER);
-        caseHearingRequestEntity.setInterpreterBookingRequiredFlag(caseDetails.getCaseInterpreterRequiredFlag());
         caseHearingRequestEntity.setListingComments(hearingDetails.getListingComments());
         caseHearingRequestEntity.setRequester(hearingDetails.getHearingRequester());
         caseHearingRequestEntity.setHearingWindowStartDateRange(hearingDetails.getHearingWindow()
