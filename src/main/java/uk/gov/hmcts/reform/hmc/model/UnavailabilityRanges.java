@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
-import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 
 import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
@@ -20,6 +19,5 @@ public class UnavailabilityRanges {
     private LocalDate unavailableToDate;
 
     @JsonProperty("unavailabilityType")
-    @EnumPattern(enumClass = DayOfWeekUnAvailableType.class, fieldName = "dowUnavailabilityType")
     private String unavailabilityType;
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnavailable;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_DOW_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_RANGE_TYPE;
 
@@ -37,7 +39,43 @@ class UnAvailabilityDetailMapperTest {
     }
 
     @Test
-    void modelToEntityTest_RangeDetails() {
+    void shouldThrowErrorWhenUnavailabilityTypeIsEmpty() {
+        UnAvailabilityDetailMapper mapper = new UnAvailabilityDetailMapper();
+        List<UnavailabilityRanges> rangeDetails = getUnAvailabilityRangeDetails("");
+        PartyDetails partyDetail = new PartyDetails();
+        partyDetail.setUnavailabilityRanges(rangeDetails);
+        HearingPartyEntity hearingPartyEntity = new HearingPartyEntity();
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            mapper.modelToEntity(partyDetail, hearingPartyEntity));
+        assertEquals("unsupported type for unavailability type", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowErrorWhenUnavailabilityTypeIsNull() {
+        UnAvailabilityDetailMapper mapper = new UnAvailabilityDetailMapper();
+        List<UnavailabilityRanges> rangeDetails = getUnAvailabilityRangeDetails(null);
+        PartyDetails partyDetail = new PartyDetails();
+        partyDetail.setUnavailabilityRanges(rangeDetails);
+        HearingPartyEntity hearingPartyEntity = new HearingPartyEntity();
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            mapper.modelToEntity(partyDetail, hearingPartyEntity));
+        assertEquals("unsupported type for unavailability type", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowErrorWhenUnavailabilityTypeIsInvalid() {
+        UnAvailabilityDetailMapper mapper = new UnAvailabilityDetailMapper();
+        List<UnavailabilityRanges> rangeDetails = getUnAvailabilityRangeDetails("random");
+        PartyDetails partyDetail = new PartyDetails();
+        partyDetail.setUnavailabilityRanges(rangeDetails);
+        HearingPartyEntity hearingPartyEntity = new HearingPartyEntity();
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            mapper.modelToEntity(partyDetail, hearingPartyEntity));
+        assertEquals("unsupported type for unavailability type", exception.getMessage());
+    }
+
+    @Test
+    void modelToEntityTest_RangeDetailsEmpty() {
         UnAvailabilityDetailMapper mapper = new UnAvailabilityDetailMapper();
         List<UnavailabilityRanges> rangeDetails = getUnAvailabilityRangeDetails();
         PartyDetails partyDetail = new PartyDetails();
@@ -102,6 +140,23 @@ class UnAvailabilityDetailMapperTest {
         unavailabilityRanges1.setUnavailableToDate(LocalDate.parse("2020-09-10"));
         unavailabilityRanges1.setUnavailableFromDate(LocalDate.parse("2021-10-10"));
         unavailabilityRanges1.setUnavailabilityType(DayOfWeekUnAvailableType.ALL.label);
+
+        UnavailabilityRanges unavailabilityRanges2 = new UnavailabilityRanges();
+        unavailabilityRanges2.setUnavailableToDate(LocalDate.parse("2022-10-15"));
+        unavailabilityRanges2.setUnavailableFromDate(LocalDate.parse("2023-10-20"));
+        unavailabilityRanges2.setUnavailabilityType(DayOfWeekUnAvailableType.AM.label);
+
+        List<UnavailabilityRanges> ranges = new ArrayList<>();
+        ranges.add(unavailabilityRanges1);
+        ranges.add(unavailabilityRanges2);
+        return ranges;
+    }
+
+    private List<UnavailabilityRanges> getUnAvailabilityRangeDetails(String value) {
+        UnavailabilityRanges unavailabilityRanges1 = new UnavailabilityRanges();
+        unavailabilityRanges1.setUnavailableToDate(LocalDate.parse("2020-09-10"));
+        unavailabilityRanges1.setUnavailableFromDate(LocalDate.parse("2021-10-10"));
+        unavailabilityRanges1.setUnavailabilityType(value);
 
         UnavailabilityRanges unavailabilityRanges2 = new UnavailabilityRanges();
         unavailabilityRanges2.setUnavailableToDate(LocalDate.parse("2022-10-15"));
