@@ -73,19 +73,6 @@ class LinkedHearingGroupServiceIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
-    void testDeleteLinkedHearingGroup_LinkedGroupDetailsAudit() {
-        linkedHearingGroupService.deleteLinkedHearingGroup(7600000000L);
-        Optional<LinkedGroupDetailsAudit> linkedGroupDetailsAudit = linkedGroupDetailsAuditRepository
-            .findById(1L);
-        assertTrue(linkedGroupDetailsAudit.isPresent());
-        assertEquals("ACTIVE", linkedGroupDetailsAudit.get().getStatus());
-        assertEquals(1, linkedGroupDetailsAudit.get().getLinkedGroupVersion());
-        assertEquals(7600000000L, linkedGroupDetailsAudit.get().getLinkedGroup().getLinkedGroupId());
-        assertEquals("good reason", linkedGroupDetailsAudit.get().getReasonForLink());
-    }
-
-    @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_LinkedHearingDetails() {
         Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2000000005L);
         linkedHearingGroupService.deleteLinkedHearingGroup(7600000000L);
