@@ -20,7 +20,7 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
         getHearingsResponse.setCaseRef(caseRef);
         if (!entities.isEmpty()) {
-            getHearingsResponse.setHmctsServiceCode(entities.get(0).getHmctsServiceID());
+            getHearingsResponse.setHmctsServiceCode(entities.get(0).getHmctsServiceCode());
             setCaseHearings(entities, getHearingsResponse);
         } else {
             getHearingsResponse.setCaseHearings(new ArrayList<>());
