@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class LinkedHearingGroupControllerIT extends BaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(LinkedHearingGroupControllerIT.class);
+
+    public static String ERROR_PATH_ERROR = "$.errors";
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -41,8 +44,8 @@ class LinkedHearingGroupControllerIT extends BaseTest {
     private static final String url = "/linkedHearingGroup";
 
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
-
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-caseHearings_LinkedHearings.sql";
+    private static final String INSERT_LINKED_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-linked-hearings.sql";
 
     @Nested
     @DisplayName("PostLinkedHearingGroup")
@@ -304,6 +307,73 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(201))
+                .andReturn();
+        }
+    }
+
+    @Nested
+    @DisplayName("DeleteLinkedHearingGroup")
+    class DeleteLinkedHearingGroup {
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+        void shouldReturn404_WhenHearingGroupDoesNotExist() throws Exception {
+            mockMvc.perform(delete(url + "/7600000123")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(404))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+        void shouldReturn400_WhenHearingGroupStatusIsPending() throws Exception {
+            mockMvc.perform(delete(url + "/7600000501")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath(ERROR_PATH_ERROR).value("007 group is in a PENDING state"))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+        void shouldReturn400_WhenHearingGroupStatusIsError() throws Exception {
+            mockMvc.perform(delete(url + "/7600000502")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath(ERROR_PATH_ERROR).value("007 group is in a ERROR state"))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+        void shouldReturn400_WhenHearingGroupHearingResponseStartDateIsInThePastForHearingStatusHearingRequested()
+            throws Exception {
+            mockMvc.perform(delete(url + "/7600000300")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath(ERROR_PATH_ERROR)
+                               .value("008 Invalid state for unlinking hearing request 2000000301"))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+        void shouldReturn400_WhenHearingGroupHearingResponseStartDateIsInThePastForHearingStatusUpdateRequested()
+            throws Exception {
+            mockMvc.perform(delete(url + "/7600000301")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath(ERROR_PATH_ERROR)
+                               .value("008 Invalid state for unlinking hearing request 2000000302"))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+        void shouldReturn200_WhenHearingGroupExists() throws Exception {
+            mockMvc.perform(delete(url + "/7600000000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200))
                 .andReturn();
         }
     }
