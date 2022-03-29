@@ -236,8 +236,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void updateStatus(Long hearingId) {
-        ActualHearingEntity actualHearingEntity = getActualHearing(hearingId).get();
-        HearingEntity hearingEntity = hearingRepository.findById(hearingId).get();
+        ActualHearingEntity actualHearingEntity = getActualHearing(hearingId)
+            .orElseThrow(() -> new BadRequestException(HEARING_ACTUALS_MISSING_HEARING_OUTCOME));
+        HearingEntity hearingEntity = hearingRepository.findById(hearingId)
+            .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
         hearingEntity.setStatus(actualHearingEntity.getHearingResultType().getLabel());
         hearingRepository.save(hearingEntity);
     }
@@ -487,7 +489,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         String status = getStatus(hearingId);
         boolean isValidStatus = DeleteHearingStatus.isValidHearingActuals(status);
         LocalDate minStartDate = hearingIdValidator
-            .filterHearingResponses(hearingRepository.findById(hearingId).get());
+            .filterHearingResponses(hearingRepository.findById(hearingId)
+                                        .orElseThrow(() -> new HearingNotFoundException(hearingId,
+                                                                                        HEARING_ID_NOT_FOUND)));
         LocalDate now = LocalDate.now();
         if (isValidStatus && (minStartDate.isBefore(now) || minStartDate.equals(now))) {
             throw new BadRequestException(errorMessage);
@@ -516,7 +520,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private Optional<ActualHearingEntity> getActualHearing(Long hearingId) {
         Optional<HearingResponseEntity> hearingResponseEntity = hearingIdValidator
-            .getHearingResponse(hearingRepository.findById(hearingId).get());
+            .getHearingResponse(hearingRepository.findById(hearingId)
+                                    .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND)));
         if (hearingResponseEntity.isPresent()) {
             return actualHearingRepository.findByHearingResponse(hearingResponseEntity.get());
         }
