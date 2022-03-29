@@ -6,6 +6,8 @@ import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
+import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -81,6 +83,38 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertNull(hearingEntityAfterDelete.get().getLinkedOrder());
         assertEquals(7600000000L, hearingEntityBeforeDelete.get().getLinkedGroupDetails().getLinkedGroupId());
         assertNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+    void testDeleteLinkedHearingGroup_LinkedGroupDetailsAudit() {
+        linkedHearingGroupService.deleteLinkedHearingGroup(7600000000L);
+        Optional<LinkedGroupDetailsAudit> linkedGroupDetailsAudit = linkedGroupDetailsAuditRepository
+            .findById(1L);
+        assertTrue(linkedGroupDetailsAudit.isPresent());
+        assertEquals("ACTIVE", linkedGroupDetailsAudit.get().getStatus());
+        assertEquals(1, linkedGroupDetailsAudit.get().getLinkedGroupVersion());
+        assertEquals(7600000000L, linkedGroupDetailsAudit.get().getLinkedGroup().getLinkedGroupId());
+        assertEquals("good reason", linkedGroupDetailsAudit.get().getReasonForLink());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+    void testDeleteLinkedHearingGroup_LinkedHearingDetailsAudit() {
+        Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2000000005L);
+        final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
+        Optional<LinkedGroupDetails> linkedGroupDetails = linkedGroupDetailsRepository.findById(7600000000L);
+        Long versionNumber = linkedGroupDetails.get().getLinkedGroupLatestVersion();
+
+        linkedHearingGroupService.deleteLinkedHearingGroup(7600000000L);
+
+        Optional<LinkedHearingDetailsAudit> linkedHearingDetailsAudit = linkedHearingDetailsAuditRepository
+            .findById(1L);
+        assertTrue(linkedHearingDetailsAudit.isPresent());
+        assertEquals(versionNumber, linkedHearingDetailsAudit.get().getLinkedGroupVersion());
+        assertEquals(2000000005L, linkedHearingDetailsAudit.get().getHearing().getId());
+        assertEquals(7600000000L, linkedHearingDetailsAudit.get().getLinkedGroup().getLinkedGroupId());
+        assertEquals(linkedOrder, linkedHearingDetailsAudit.get().getLinkedOrder());
     }
 
     @Test
