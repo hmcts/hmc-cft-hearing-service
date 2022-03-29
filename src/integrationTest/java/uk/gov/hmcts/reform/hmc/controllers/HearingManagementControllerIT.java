@@ -181,7 +181,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     private static final String INSERT_DATA_SCRIPT = "classpath:sql/insert-hearing.sql";
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
-    private static final String INSERT_CASE_HEARING_ACTUAL_HEARING_SCRIPT = "classpath:sql/insert-caseHearings_actualhearings.sql";
+    private static final String CASE_HEARING_ACTUAL_HEARING = "classpath:sql/insert-caseHearings_actualhearings.sql";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-caseHearings_request.sql";
@@ -1039,7 +1039,7 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_ACTUAL_HEARING_SCRIPT})
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenHearingIdNotAvailableHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000001")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -1050,7 +1050,7 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_ACTUAL_HEARING_SCRIPT})
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenHearingIdIsNotValidHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/30000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -1061,7 +1061,7 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_ACTUAL_HEARING_SCRIPT})
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenHearingMinStartDateIsBeforeTodayHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000009")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -1072,7 +1072,7 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_ACTUAL_HEARING_SCRIPT})
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenActualHearingMissingForHearingResponseHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000012")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -1084,7 +1084,7 @@ class HearingManagementControllerIT extends BaseTest {
 
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_ACTUAL_HEARING_SCRIPT})
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenActualHearingDayMissingForResultTypeResponseHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000013")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -1095,7 +1095,7 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_ACTUAL_HEARING_SCRIPT})
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenActualHearingDayExistsForCanceledResultTypeResponseHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000014")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -1106,7 +1106,7 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_ACTUAL_HEARING_SCRIPT})
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldUpdateHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
