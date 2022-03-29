@@ -22,8 +22,11 @@ class GetHearingsResponseMapperTest {
         GetHearingsResponseMapper getHearingsResponseMapper = new GetHearingsResponseMapper();
         GetHearingsResponse response = getHearingsResponseMapper.toHearingsResponse(validCaseRef, entities);
         assertEquals(validCaseRef, response.getCaseRef());
-        assertEquals("ABA1", response.getHmctsServiceId());
+        assertEquals("ABA1", response.getHmctsServiceCode());
         assertEquals(1, response.getCaseHearings().size());
+        assertEquals(true, response.getCaseHearings().get(0).getHearingIsLinkedFlag());
+        assertEquals("1", response.getCaseHearings().get(0).getHearingGroupRequestId());
+        assertEquals("venue1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getHearingVenueId());
         assertEquals(2000000000L, response.getCaseHearings().get(0).getHearingId());
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
         assertEquals("venue1", response.getCaseHearings().get(0)
@@ -43,7 +46,7 @@ class GetHearingsResponseMapperTest {
         GetHearingsResponseMapper getHearingsResponseMapper = new GetHearingsResponseMapper();
         GetHearingsResponse response = getHearingsResponseMapper.toHearingsResponse(validCaseRef, entities);
         assertEquals(validCaseRef, response.getCaseRef());
-        assertEquals("ABA1", response.getHmctsServiceId());
+        assertEquals("ABA1", response.getHmctsServiceCode());
         assertEquals(1, response.getCaseHearings().size());
         assertEquals(2000000000L, response.getCaseHearings().get(0).getHearingId());
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
@@ -64,7 +67,7 @@ class GetHearingsResponseMapperTest {
         GetHearingsResponseMapper getHearingsResponseMapper = new GetHearingsResponseMapper();
         GetHearingsResponse response = getHearingsResponseMapper.toHearingsResponse(validCaseRef, entities);
         assertEquals(validCaseRef, response.getCaseRef());
-        assertEquals("ABA1", response.getHmctsServiceId());
+        assertEquals("ABA1", response.getHmctsServiceCode());
         assertEquals(1, response.getCaseHearings().size());
         assertEquals(2000000000L, response.getCaseHearings().get(0).getHearingId());
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
@@ -85,7 +88,7 @@ class GetHearingsResponseMapperTest {
         GetHearingsResponseMapper getHearingsResponseMapper = new GetHearingsResponseMapper();
         GetHearingsResponse response = getHearingsResponseMapper.toHearingsResponse(validCaseRef, entities);
         assertEquals(validCaseRef, response.getCaseRef());
-        assertEquals("ABA1", response.getHmctsServiceId());
+        assertEquals("ABA1", response.getHmctsServiceCode());
         assertEquals(1, response.getCaseHearings().size());
         assertEquals(2000000000L, response.getCaseHearings().get(0).getHearingId());
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
@@ -103,7 +106,7 @@ class GetHearingsResponseMapperTest {
         GetHearingsResponseMapper getHearingsResponseMapper = new GetHearingsResponseMapper();
         GetHearingsResponse response = getHearingsResponseMapper.toHearingsResponse(validCaseRef, new ArrayList<>());
         assertEquals(validCaseRef, response.getCaseRef());
-        assertNull(response.getHmctsServiceId());
+        assertNull(response.getHmctsServiceCode());
         assertEquals(0, response.getCaseHearings().size());
     }
 }

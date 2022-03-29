@@ -3,9 +3,8 @@ package uk.gov.hmcts.reform.hmc.helper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
@@ -35,7 +34,6 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
             CaseHearing caseHearing = getCaseHearing(entity);
             List<HearingResponseEntity> hearingResponses = getHearingResponseEntities(entity, caseHearing);
             setHearingDaySchedule(caseHearingList, caseHearing, hearingResponses);
-            setHearingIsLinkedFlag(entity, caseHearing);
             setHearingGroupRequestId(entity, caseHearing);
         }
         getHearingsResponse.setCaseHearings(caseHearingList);
@@ -74,6 +72,7 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         caseHearing.setHearingRequestDateTime(entity.getHearingRequestReceivedDateTime());
         caseHearing.setHearingType(entity.getHearingType());
         caseHearing.setHmcStatus(entity.getHearing().getStatus());
+        caseHearing.setHearingIsLinkedFlag(entity.getHearing().getIsLinkedFlag());
         return caseHearing;
     }
 
@@ -86,14 +85,11 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         }
     }
 
-    private void setHearingIsLinkedFlag(CaseHearingRequestEntity entity, CaseHearing caseHearing) {
-        HearingEntity hearing = entity.getHearing();
-        caseHearing.setHearingIsLinkedFlag(hearing.getIsLinkedFlag());
-    }
 
     private void setHearingGroupRequestId(CaseHearingRequestEntity entity, CaseHearing caseHearing) {
         HearingEntity hearing = entity.getHearing();
-        LinkedGroupDetails linkedGroupDetails = hearing.getLinkedGroupDetails();
-        caseHearing.setHearingGroupRequestId(linkedGroupDetails.getLinkedGroupId().toString());
+        if (hearing.getLinkedGroupDetails() != null) {
+            caseHearing.setHearingGroupRequestId(hearing.getLinkedGroupDetails().getLinkedGroupId().toString());
+        }
     }
 }

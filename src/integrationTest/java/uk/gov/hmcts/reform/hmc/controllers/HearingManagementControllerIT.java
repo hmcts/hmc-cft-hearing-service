@@ -597,7 +597,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("HEARING_UPDATED"))
             .andExpect(jsonPath("$.caseHearings[1].hmcStatus").value("HEARING_REQUESTED"))
             .andExpect(jsonPath("$.caseHearings[2].hmcStatus").value("HEARING_REQUESTED"))
-            .andExpect(jsonPath("$.hmctsServiceID").value("ABA1"))
+            .andExpect(jsonPath("$.hmctsServiceCode").value("ABA1"))
             .andReturn();
     }
 
@@ -614,7 +614,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.caseHearings[1].hearingID").value("2000000000"))
             .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("HEARING_REQUESTED"))
             .andExpect(jsonPath("$.caseHearings[1].hmcStatus").value("HEARING_REQUESTED"))
-            .andExpect(jsonPath("$.hmctsServiceID").value("ABA1"))
+            .andExpect(jsonPath("$.hmctsServiceCode").value("ABA1"))
             .andReturn();
     }
 

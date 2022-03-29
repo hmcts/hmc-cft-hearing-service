@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.IndividualDetailEntity;
+import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
 import uk.gov.hmcts.reform.hmc.data.OrganisationDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
@@ -318,7 +319,7 @@ public class TestingUtil {
     public static GetHearingsResponse getHearingsResponseWhenDataIsPresent(String caseRef) {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
         getHearingsResponse.setCaseRef(caseRef);
-        getHearingsResponse.setHmctsServiceId("AB1A");
+        getHearingsResponse.setHmctsServiceCode("AB1A");
         CaseHearing caseHearing = new CaseHearing();
         caseHearing.setHearingId(2000000000L);
         caseHearing.setHearingRequestDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
@@ -353,6 +354,8 @@ public class TestingUtil {
         hearingEntity.setId(2000000000L);
         entity.setCaseHearingID(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
+        hearingEntity.setIsLinkedFlag(true);
+        hearingEntity.setLinkedGroupDetails(getLinkedGroupDetails());
         entity.setHearing(hearingEntity);
         entity.setHmctsServiceCode("ABA1");
         entity.setCaseReference("12345");
@@ -364,6 +367,14 @@ public class TestingUtil {
         return entity;
     }
 
+    public static LinkedGroupDetails getLinkedGroupDetails() {
+        LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
+        linkedGroupDetails.setLinkedGroupId(1L);
+        linkedGroupDetails.setRequestId("requestId");
+        linkedGroupDetails.setLinkedComments("linkComments");
+        linkedGroupDetails.setRequestName("requestName");
+        return linkedGroupDetails;
+    }
 
     public static List<NonStandardDurationsEntity> getNonStandardDurationEntities() {
         NonStandardDurationsEntity nonStandardDurationsEntity = new NonStandardDurationsEntity();
