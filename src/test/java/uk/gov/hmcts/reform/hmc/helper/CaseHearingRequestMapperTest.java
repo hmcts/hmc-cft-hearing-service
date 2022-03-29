@@ -33,7 +33,7 @@ class CaseHearingRequestMapperTest {
         assertEquals(Boolean.TRUE, entity.getPrivateHearingRequiredFlag());
         assertNull(entity.getLeadJudgeContractType());
         assertNull(entity.getFirstDateTimeOfHearingMustBe());
-        assertEquals("ABA1", entity.getHmctsServiceID());
+        assertEquals("ABA1", entity.getHmctsServiceCode());
         assertEquals("1111222233334444", entity.getCaseReference());
         assertEquals(LocalDateTime.parse("2021-08-10T12:20:00"), entity.getHearingRequestReceivedDateTime());
         assertNull(entity.getExternalCaseReference());
@@ -46,7 +46,6 @@ class CaseHearingRequestMapperTest {
         assertEquals(Boolean.FALSE, entity.getCaseRestrictedFlag());
         assertEquals(1, entity.getVersionNumber());
         assertNull(entity.getInterpreterBookingRequiredFlag());
-        assertEquals(Boolean.FALSE, entity.getIsLinkedFlag());
         assertNull(entity.getListingComments());
         assertNull(entity.getRequester());
         assertEquals(LocalDate.parse("2017-03-01"), entity.getHearingWindowStartDateRange());

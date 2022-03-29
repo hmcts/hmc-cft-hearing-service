@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
@@ -44,6 +44,7 @@ import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +54,8 @@ import javax.transaction.Transactional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
@@ -71,12 +71,11 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 @Service
 @Component
 @Slf4j
-public class HearingManagementServiceImpl implements HearingManagementService {
+public class HearingManagementServiceImpl extends HearingIdValidator implements HearingManagementService {
 
     private final DataStoreRepository dataStoreRepository;
     private final RoleAssignmentService roleAssignmentService;
     private final SecurityUtils securityUtils;
-    private final HearingRepository hearingRepository;
     private final HearingMapper hearingMapper;
     private final CancellationReasonsRepository cancellationReasonsRepository;
     private final GetHearingsResponseMapper getHearingsResponseMapper;
@@ -87,6 +86,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final ObjectMapperService objectMapperService;
     private final HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
     private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
+    private final ApplicationParams applicationParams;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -102,11 +102,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
                                         ObjectMapperService objectMapperService,
                                         HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper,
-                                        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration) {
+                                        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration,
+                                        ApplicationParams applicationParams) {
+        super(hearingRepository);
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
-        this.hearingRepository = hearingRepository;
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.cancellationReasonsRepository = cancellationReasonsRepository;
@@ -117,20 +118,21 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
         this.messageSenderToQueueConfiguration = messageSenderToQueueConfiguration;
+        this.applicationParams = applicationParams;
     }
 
     @Override
     public ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid) {
         isValidFormat(hearingId.toString());
         if (!hearingRepository.existsById(hearingId)) {
-            throw new HearingNotFoundException(hearingId);
+            throw new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND);
         } else if (!isValid) {
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
             if (hearingEntity.isPresent()) {
                 return ResponseEntity.ok(getHearingResponseMapper
                                              .toHearingResponse(hearingEntity.get()));
             } else {
-                throw new HearingNotFoundException(hearingId);
+                throw new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND);
             }
         } else {
             return ResponseEntity.noContent().header("Content-Length", "0").build();
@@ -150,7 +152,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     public HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
         validateHearingRequest(hearingRequest);
-        validateHearingId(hearingId);
+        validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
         validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
         validateHearingStatusForUpdate(hearingId);
 
@@ -278,6 +280,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     public void verifyAccess(String caseReference) {
+        if (!applicationParams.isAccessControlEnabled()) {
+            return;
+        }
         RoleAssignments roleAssignments = roleAssignmentService.getRoleAssignments(securityUtils.getUserId());
         if (roleAssignments.getRoleAssignments().isEmpty()) {
             throw new ResourceNotFoundException(String.format(ROLE_ASSIGNMENTS_NOT_FOUND, securityUtils.getUserId()));
@@ -334,8 +339,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     @Override
     public HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
-        validateHearingId(hearingId);
-        validateVersionNumber(hearingId, deleteRequest.getVersionNumber());
+        validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
         validateDeleteHearingStatus(hearingId);
         updateCancellationReasons(hearingId, deleteRequest.getCancellationReasonCode());
         HearingEntity savedEntity = updateHearingStatusAndVersionNumber(
@@ -412,25 +416,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private Integer getVersionNumber(Long hearingId) {
         return caseHearingRequestRepository.getVersionNumber(hearingId);
-    }
-
-    private void validateHearingId(Long hearingId) {
-        if (hearingId == null) {
-            throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
-        } else {
-            String hearingIdStr = String.valueOf(hearingId);
-            isValidFormat(hearingIdStr);
-            if (!hearingRepository.existsById(hearingId)) {
-                throw new HearingNotFoundException(hearingId);
-            }
-        }
-    }
-
-    private void isValidFormat(String hearingIdStr) {
-        if (hearingIdStr.length() != HEARING_ID_MAX_LENGTH || !StringUtils.isNumeric(hearingIdStr)
-            || hearingIdStr.charAt(0) != '2') {
-            throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
-        }
     }
 
     @Override

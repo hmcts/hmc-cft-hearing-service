@@ -118,8 +118,8 @@ public final class ValidationError {
     public static final String INVALID_UNAVAILABILITY_RANGES_DETAILS = "Unavailability range details should be present";
     public static final String INVALID_RELATED_PARTY_DETAILS = "Related Party details are not present";
     public static final String INVALID_CANCELLATION_REASON_CODE = "Cancellation Reason code details are not present";
-    public static final String CANCELLATION_REASON_CODE_MAX_LENGTH_MSG = "Non standard hearing duration "
-        + "reasons length cannot be greater than 100 characters";
+    public static final String CANCELLATION_REASON_CODE_MAX_LENGTH_MSG = "Cancellation Reason code "
+        + "length cannot be greater than 100 characters";
     public static final String INVALID_VERSION_NUMBER = "Invalid version number";
     public static final String INVALID_HEARING_ID_DETAILS = "Invalid hearing Id";
     public static final String CASE_NOT_FOUND = "Case could not be found";
@@ -131,5 +131,25 @@ public final class ValidationError {
     public static final String CATEGORY_VALUE_EMPTY = "Category value must be present";
     public static final String PARTY_TYPE_EMPTY = "Party type must be present";
     public static final String PARTY_ROLE_EMPTY = "Party role must be present";
+
+    public static final String HEARING_ID_NOT_FOUND = "No hearing found for reference: %s";
+    public static final String HEARING_GROUP_ID_NOT_FOUND = "No hearing group found for reference: %s";
+    public static final String INVALID_DELETE_HEARING_GROUP_STATUS = "007 group is in a %s state";
+    public static final String INVALID_DELETE_HEARING_GROUP_HEARING_STATUS = "008 Invalid state for unlinking hearing"
+        + " request %s";
+    public static final String PARTIES_NOTIFIED_ID_NOT_FOUND = "001 No such id: %s";
+    public static final String PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH = "002 No such response version";
+    public static final String PARTIES_NOTIFIED_ALREADY_SET = "003 Already set";
+
+    public static final String HEARING_ID_LENGTH = "Hearing id cannot be greater than 30 " + CHARACTERS_LONG;
+    public static final String HEARING_ID_EMPTY = "Hearing id can not be null or empty";
+    public static final String GROUP_REASON_LENGTH = "Group reason cannot be greater than 8 " + CHARACTERS_LONG;
+    public static final String GROUP_NAME_LENGTH = "Group name cannot be greater than 255 " + CHARACTERS_LONG;
+    public static final String GROUP_COMMENTS_LENGTH = "Group comments cannot be greater than 4000 " + CHARACTERS_LONG;
+    public static final String GROUP_LINK_TYPE_EMPTY = "Group link type can not be null or empty";
+    public static final String GROUP_REASON_EMPTY = "Group reason can not be null or empty";
+    public static final String GROUP_DETAILS = "Group details are required";
+    public static final String HEARINGS_IN_GROUP = "Linked hearing details are required";
+    public static final String HEARINGS_IN_GROUP_SIZE = "001 Insufficient requestIds";
 
 }

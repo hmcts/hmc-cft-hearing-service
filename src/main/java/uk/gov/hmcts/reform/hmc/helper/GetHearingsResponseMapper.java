@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
@@ -17,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class GetHearingsResponseMapper {
+public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
 
     public GetHearingsResponse toHearingsResponse(String caseRef, List<CaseHearingRequestEntity> entities) {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();

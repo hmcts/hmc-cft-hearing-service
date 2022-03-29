@@ -20,3 +20,5 @@ DELETE FROM hearing_response;
 DELETE FROM cancellation_reasons;
 DELETE FROM case_hearing_request;
 DELETE FROM hearing;
+DELETE FROM linked_group_details;
+DELETE FROM linked_group_details_audit;
