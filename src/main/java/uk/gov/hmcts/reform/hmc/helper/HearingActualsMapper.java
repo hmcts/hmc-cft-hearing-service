@@ -100,7 +100,8 @@ public class HearingActualsMapper {
         return partyEntity;
     }
 
-    private void setOrGeneratePartyId(ActualHearingDayParties actualHearingDayParty, ActualHearingPartyEntity partyEntity) {
+    private void setOrGeneratePartyId(ActualHearingDayParties actualHearingDayParty,
+                                      ActualHearingPartyEntity partyEntity) {
         if (actualHearingDayParty.getActualPartyId() == null) {
             if (actualHearingDayParty.getIndividualDetails() != null) {
                 partyEntity.setPartyId(String.valueOf(actualHearingDayParty.getIndividualDetails().hashCode()));
