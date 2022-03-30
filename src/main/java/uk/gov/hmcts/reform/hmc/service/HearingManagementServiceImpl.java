@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +32,6 @@ import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
-import uk.gov.hmcts.reform.hmc.model.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
@@ -138,17 +136,6 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
             }
         } else {
             return ResponseEntity.noContent().header("Content-Length", "0").build();
-        }
-    }
-
-    @Override
-    public ResponseEntity<HearingActualResponse> getHearingActuals(Long hearingId) {
-        validateHearingId(hearingId,HEARING_ID_NOT_FOUND);
-        val hearingEntity = hearingRepository.findById(hearingId);
-        if (hearingEntity.isPresent()) {
-            return ResponseEntity.ok(getHearingsResponseMapper.toHearingActualResponse(hearingEntity.get()));
-        } else {
-            throw new HearingNotFoundException(hearingId,HEARING_ID_NOT_FOUND);
         }
     }
 

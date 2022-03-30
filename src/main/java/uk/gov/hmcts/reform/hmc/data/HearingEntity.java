@@ -2,7 +2,10 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.TreeMap;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +20,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 @Table(name = "hearing")
 @Entity
@@ -53,5 +59,37 @@ public class HearingEntity {
 
     public Integer getLatestRequestVersion() {
         return getCaseHearingRequest().getVersionNumber();
+    }
+
+    /**
+     * Gets the most recent hearing response associated with the latest request.
+     */
+    public Optional<HearingResponseEntity> getHearingResponseForLatestRequest() {
+        String latestRequestVersion = getLatestRequestVersion().toString();
+        return hasHearingResponses() ? getHearingResponses().stream()
+            .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
+            .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp))
+            :  Optional.empty();
+    }
+
+    /**
+     * Gets the *latest* hearing response - note that this will not necessarily be associated with the latest request.
+     */
+    public Optional<HearingResponseEntity> getLatestHearingResponse() {
+        return hasHearingResponses() ? getHearingResponses().stream()
+            .collect(groupingBy(HearingResponseEntity::getRequestVersion, TreeMap::new, toList()))
+            .lastEntry()
+            .getValue()
+            .stream()
+            .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp))
+            : Optional.empty();
+    }
+
+    public Integer getNextRequestVersion() {
+        return getLatestRequestVersion() + 1;
+    }
+
+    private boolean hasHearingResponses() {
+        return getHearingResponses() != null && !getHearingResponses().isEmpty();
     }
 }

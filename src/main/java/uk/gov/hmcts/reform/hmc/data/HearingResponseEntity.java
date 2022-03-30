@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
@@ -64,4 +65,7 @@ public class HearingResponseEntity {
     @Column(name = "service_data", columnDefinition = "jsonb")
     @Convert(converter = JsonDataConverter.class)
     private JsonNode serviceData;
+
+    @OneToOne(mappedBy = "hearing", fetch = FetchType.EAGER)
+    private ActualHearingEntity actualHearingEntity;
 }

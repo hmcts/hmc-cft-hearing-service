@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.hmc.model;
+package uk.gov.hmcts.reform.hmc.model.hearingactuals;
 
 import lombok.Data;
 import lombok.Getter;

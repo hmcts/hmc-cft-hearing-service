@@ -1,11 +1,10 @@
-package uk.gov.hmcts.reform.hmc.model;
+package uk.gov.hmcts.reform.hmc.model.hearingactuals;
 
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
+import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 
 @NoArgsConstructor
 @Data
@@ -15,5 +14,5 @@ public class HearingActualResponse {
     private String hmcStatus;
     private CaseDetails caseDetails;
     private HearingPlanned hearingPlanned;
-    private List<HearingActual> hearingActuals;
+    private HearingActual hearingActuals;
 }
