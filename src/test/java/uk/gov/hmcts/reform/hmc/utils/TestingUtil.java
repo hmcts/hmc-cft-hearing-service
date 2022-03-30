@@ -76,6 +76,7 @@ public class TestingUtil {
         hearingDetails.setDuration(0);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
+        hearingDetails.setHearingIsLinkedFlag(Boolean.TRUE);
         HearingLocation location1 = new HearingLocation();
         location1.setLocationId("COURT");
         location1.setLocationType("Location type");
@@ -235,6 +236,7 @@ public class TestingUtil {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(1L);
         hearingEntity.setStatus(HEARING_STATUS);
+        hearingEntity.setIsLinkedFlag(Boolean.TRUE);
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
         return hearingEntity;
@@ -327,6 +329,7 @@ public class TestingUtil {
         caseHearing.setLastResponseReceivedDateTime(LocalDateTime.parse("2020-08-10T12:20:00"));
         caseHearing.setListAssistCaseStatus("EXCEPTION");
         caseHearing.setHearingListingStatus("listingStatus");
+        caseHearing.setHearingIsLinkedFlag(Boolean.TRUE);
         HearingDaySchedule schedule = new HearingDaySchedule();
         schedule.setHearingStartDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         schedule.setHearingEndDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
@@ -351,6 +354,7 @@ public class TestingUtil {
         CaseHearingRequestEntity entity = new CaseHearingRequestEntity();
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(2000000000L);
+        hearingEntity.setIsLinkedFlag(Boolean.TRUE);
         entity.setCaseHearingID(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
         entity.setHearing(hearingEntity);
