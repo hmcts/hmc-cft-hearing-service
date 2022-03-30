@@ -268,8 +268,8 @@ class HearingManagementServiceTest {
             createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
             createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
             createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-            createHearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
-            createHearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
+            createHearingRequest.getHearingDetails().getHearingWindow().setDateRangeStart(null);
+            createHearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(null);
             createHearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(createHearingRequest));
@@ -309,9 +309,11 @@ class HearingManagementServiceTest {
 
         @Test
         void shouldPassWithHearing_Case_Request_Party_Details_Valid() {
+            HearingDetails hearingDetails = TestingUtil.hearingDetails();
+            hearingDetails.setHearingIsLinkedFlag(Boolean.FALSE);
             CreateHearingRequest createHearingRequest = new CreateHearingRequest();
             createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
-            createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+            createHearingRequest.setHearingDetails(hearingDetails);
             createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
             createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
             createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
@@ -1108,7 +1110,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             List<PartyDetails> partyDetailsList = new ArrayList<>();
@@ -1126,7 +1128,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             OrganisationDetails organisationDetails = new OrganisationDetails();
@@ -1148,7 +1150,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             IndividualDetails individualDetails = new IndividualDetails();
@@ -1171,7 +1173,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             IndividualDetails individualDetails = new IndividualDetails();
@@ -1194,7 +1196,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             IndividualDetails individualDetails = new IndividualDetails();

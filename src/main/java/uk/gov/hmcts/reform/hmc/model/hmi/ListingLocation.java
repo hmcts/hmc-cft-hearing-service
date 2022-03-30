@@ -12,4 +12,6 @@ public class ListingLocation {
     private String locationType;
 
     private String locationId;
+
+    private String locationReferenceType;
 }

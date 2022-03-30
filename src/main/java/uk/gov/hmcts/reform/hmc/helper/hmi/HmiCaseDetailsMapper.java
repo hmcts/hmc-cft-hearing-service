@@ -5,6 +5,10 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiCaseDetails;
 
+import static java.lang.Boolean.TRUE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.NOT_REQUIRED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUIRED;
+
 @Component
 public class HmiCaseDetailsMapper {
 
@@ -15,7 +19,7 @@ public class HmiCaseDetailsMapper {
         this.caseClassificationsMapper = caseClassificationsMapper;
     }
 
-    public HmiCaseDetails getCaseDetails(CaseDetails caseDetails, Long hearingId) {
+    public HmiCaseDetails getCaseDetails(CaseDetails caseDetails, Long hearingId, Boolean isLinkedFlag) {
         return HmiCaseDetails.builder()
             .caseClassifications(caseClassificationsMapper.getCaseClassifications(caseDetails))
             .caseIdHmcts(caseDetails.getCaseRef())
@@ -26,6 +30,7 @@ public class HmiCaseDetailsMapper {
             .caseRegistered(caseDetails.getCaseSlaStartDate())
             .caseInterpreterRequiredFlag(caseDetails.getCaseInterpreterRequiredFlag())
             .caseRestrictedFlag(caseDetails.getCaseRestrictedFlag())
+            .linkedHearingGroupStatus(isLinkedFlag == TRUE ? REQUIRED : NOT_REQUIRED)
             .build();
     }
 }
