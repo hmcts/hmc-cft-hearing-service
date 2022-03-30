@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
@@ -218,6 +219,7 @@ class HearingManagementControllerTest {
             GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, null);
             verify(hearingManagementService, times(1)).getHearings(any(), any());
             assertEquals(hearingRequest.getCaseRef(), validCaseRef);
+            assertTrue(hearingRequest.getCaseHearings().get(0).getHearingIsLinkedFlag());
         }
 
         @Test
@@ -230,6 +232,7 @@ class HearingManagementControllerTest {
             GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, status);
             verify(hearingManagementService, times(1)).getHearings(any(), any());
             assertEquals(hearingRequest.getCaseRef(), validCaseRef);
+            assertTrue(hearingRequest.getCaseHearings().get(0).getHearingIsLinkedFlag());
         }
     }
 

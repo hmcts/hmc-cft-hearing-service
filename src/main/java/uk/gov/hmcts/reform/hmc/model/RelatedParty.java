@@ -12,11 +12,11 @@ import javax.validation.constraints.Size;
 public class RelatedParty {
 
     @NotEmpty(message = ValidationError.RELATED_PARTY_EMPTY)
-    @Size(max = 2000, message = ValidationError.RELATED_PARTY_MAX_LENGTH)
+    @Size(max = 15, message = ValidationError.RELATED_PARTY_MAX_LENGTH)
     private String relatedPartyID;
 
     @NotEmpty(message = ValidationError.RELATIONSHIP_TYPE_EMPTY)
-    @Size(max = 2000, message = ValidationError.RELATIONSHIP_TYPE_MAX_LENGTH)
+    @Size(max = 10, message = ValidationError.RELATIONSHIP_TYPE_MAX_LENGTH)
     private String relationshipType;
 
 }
