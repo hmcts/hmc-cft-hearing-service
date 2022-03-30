@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import java.util.List;
 import javax.persistence.Column;
@@ -45,11 +43,10 @@ public class ActualHearingPartyEntity {
     @JoinColumn(name = "actual_hearing_day_id")
     private ActualHearingDayEntity actualHearingDay;
 
-    @OneToMany(mappedBy = "actualHearingParty")
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "actualHearingParty", fetch = FetchType.LAZY)
     private List<ActualPartyRelationshipDetailEntity> actualPartyRelationshipDetail;
 
-    @OneToMany(mappedBy = "actualHearingParty")
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "actualHearingParty", fetch = FetchType.LAZY)
     private List<ActualAttendeeIndividualDetailEntity> actualAttendeeIndividualDetail;
+
 }

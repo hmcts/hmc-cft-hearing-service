@@ -43,4 +43,5 @@ public class ActualAttendeeIndividualDetailEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actual_party_id")
     private ActualHearingPartyEntity actualHearingParty;
+
 }

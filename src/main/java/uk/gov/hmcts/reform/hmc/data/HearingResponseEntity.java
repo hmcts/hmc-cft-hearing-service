@@ -66,6 +66,6 @@ public class HearingResponseEntity {
     @Convert(converter = JsonDataConverter.class)
     private JsonNode serviceData;
 
-    @OneToOne(mappedBy = "hearing", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "hearingResponse", fetch = FetchType.EAGER)
     private ActualHearingEntity actualHearingEntity;
 }

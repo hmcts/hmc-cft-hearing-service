@@ -2,11 +2,9 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import lombok.val;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayPausesEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingPartyEntity;
-import uk.gov.hmcts.reform.hmc.data.ActualPartyRelationshipDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
@@ -59,13 +57,13 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             hearingOutcome.setHearingResultDate(hearingResponse
                                                     .getActualHearingEntity().getHearingResultDate().toLocalDate());
             hearingActual.setHearingOutcome(hearingOutcome);
-            getActualHearingDays(hearingResponse);
+            getActualHearingDays(hearingResponse, hearingActual);
         }
         response.setHearingActuals(hearingActual);
 
     }
 
-    private void getActualHearingDays(HearingResponseEntity hearingResponse) {
+    private void getActualHearingDays(HearingResponseEntity hearingResponse, HearingActual hearingActual) {
         List<ActualHearingDays> actualHearingDays = new ArrayList<>();
         for (ActualHearingDayEntity actualHearingDayEntity :
             hearingResponse.getActualHearingEntity().getActualHearingDay()) {
@@ -73,54 +71,56 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             actualHearingDay.setHearingDate(actualHearingDayEntity.getHearingDate());
             actualHearingDay.setHearingStartTime(actualHearingDayEntity.getStartDateTime());
             actualHearingDay.setHearingEndTime(actualHearingDayEntity.getEndDateTime());
-
-            getPauseDateTimes(actualHearingDayEntity);
-            getActualDayParties(actualHearingDayEntity);
-
+            setPauseDateTimes(actualHearingDayEntity, actualHearingDay);
+            setActualDayParties(actualHearingDayEntity, actualHearingDay);
             actualHearingDays.add(actualHearingDay);
         }
+        hearingActual.setActualHearingDays(actualHearingDays);
     }
 
-    private void getActualDayParties(ActualHearingDayEntity actualHearingDayEntity) {
+    private void setActualDayParties(ActualHearingDayEntity actualHearingDayEntity,
+                                     ActualHearingDays actualHearingDay) {
         List<ActualDayParty> actualDayParties = new ArrayList<>();
         for (ActualHearingPartyEntity actualHearingPartyEntity : actualHearingDayEntity.getActualHearingParty()) {
             ActualDayParty actualDayParty = new ActualDayParty();
             actualDayParty.setActualPartyId(actualHearingPartyEntity.getActualPartyId().intValue());
             actualDayParty.setPartyRole(actualHearingPartyEntity.getActualPartyRoleType());
             actualDayParty.setDidNotAttendFlag(actualHearingPartyEntity.getDidNotAttendFlag());
-            for (ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity
-                : actualHearingPartyEntity.getActualPartyRelationshipDetail()) {
-                if (actualHearingPartyEntity.getActualPartyId()
-                    .equals(actualPartyRelationshipDetailEntity.getActualPartyRelationshipId())) {
-                    actualDayParty.setRepresentedParty(actualPartyRelationshipDetailEntity
-                                                           .getTargetActualPartyId().toString());
-                }
-            }
-
-            for (ActualAttendeeIndividualDetailEntity individualDetailEntity
-                : actualHearingPartyEntity.getActualAttendeeIndividualDetail()) {
-                actualDayParty.setPartyChannelSubType(individualDetailEntity.getPartyActualSubChannelType());
-                List<IndividualDetails> individualDetailsList = new ArrayList<>();
-                List<OrganisationDetails> organisationDetailsList = new ArrayList<>();
-                if (PartyType.IND.getLabel().equals(actualHearingPartyEntity.getActualPartyRoleType())) {
-                    IndividualDetails individualDetails = new IndividualDetails();
-                    individualDetails.setFirstName(individualDetailEntity.getFirstName());
-                    individualDetails.setLastName(individualDetailEntity.getLastName());
-                    individualDetailsList.add(individualDetails);
-
-                } else {
-                    OrganisationDetails organisationDetails = new OrganisationDetails();
-                    organisationDetails.setName(individualDetailEntity.getPartyOrganisationName());
-                    organisationDetailsList.add(organisationDetails);
-                }
-                actualDayParty.setActualIndividualDetails(individualDetailsList);
-                actualDayParty.setActualOrganisationDetails(organisationDetailsList);
-            }
+            //            for (ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity
+            //                : actualHearingPartyEntity.getActualPartyRelationshipDetail()) {
+            //                if (actualHearingPartyEntity.getActualPartyId()
+            //                    .equals(actualPartyRelationshipDetailEntity.getActualPartyRelationshipId())) {
+            //                    actualDayParty.setRepresentedParty(actualPartyRelationshipDetailEntity
+            //                                                           .getTargetActualPartyId().toString());
+            //                }
+            //            }
+            //
+            //            for (ActualAttendeeIndividualDetailEntity individualDetailEntity
+            //                : actualHearingPartyEntity.getActualAttendeeIndividualDetail()) {
+            //                actualDayParty.setPartyChannelSubType
+            //                (individualDetailEntity.getPartyActualSubChannelType());
+            //                List<IndividualDetails> individualDetailsList = new ArrayList<>();
+            //                List<OrganisationDetails> organisationDetailsList = new ArrayList<>();
+            //                if (PartyType.IND.getLabel().equals(actualHearingPartyEntity.getActualPartyRoleType())) {
+            //                    IndividualDetails individualDetails = new IndividualDetails();
+            //                    individualDetails.setFirstName(individualDetailEntity.getFirstName());
+            //                    individualDetails.setLastName(individualDetailEntity.getLastName());
+            //                    individualDetailsList.add(individualDetails);
+            //
+            //                } else {
+            //                    OrganisationDetails organisationDetails = new OrganisationDetails();
+            //                    organisationDetails.setName(individualDetailEntity.getPartyOrganisationName());
+            //                    organisationDetailsList.add(organisationDetails);
+            //                }
+            //                actualDayParty.setActualIndividualDetails(individualDetailsList);
+            //                actualDayParty.setActualOrganisationDetails(organisationDetailsList);
+            //            }
             actualDayParties.add(actualDayParty);
         }
+        actualHearingDay.setActualDayParties(actualDayParties);
     }
 
-    private void getPauseDateTimes(ActualHearingDayEntity actualHearingDayEntity) {
+    private void setPauseDateTimes(ActualHearingDayEntity actualHearingDayEntity, ActualHearingDays actualHearingDay) {
         List<PauseDateTimes> pauseDateTimes = new ArrayList<>();
         for (ActualHearingDayPausesEntity actualHearingDayPauseEntity
             : actualHearingDayEntity.getActualHearingDayPauses()) {
@@ -129,6 +129,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             pauseDateTime.setPauseStartTime(actualHearingDayPauseEntity.getPauseDateTime());
             pauseDateTimes.add(pauseDateTime);
         }
+        actualHearingDay.setPauseDateTimes(pauseDateTimes);
     }
 
     private void setHearingPlanned(HearingEntity hearingEntity, HearingActualResponse response) {
