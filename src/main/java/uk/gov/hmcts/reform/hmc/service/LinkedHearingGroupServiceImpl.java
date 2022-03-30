@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
@@ -36,7 +35,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_
 @Service
 @Component
 @Slf4j
-@Transactional
 public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implements LinkedHearingGroupService {
 
     private static final List<String> invalidDeleteGroupStatuses = Arrays.asList("PENDING", "ERROR");
