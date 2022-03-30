@@ -93,7 +93,6 @@ public class BasePactTesting {
     protected DeleteHearingRequest generateDeleteHearingRequest() {
         DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
         deleteHearingRequest.setCancellationReasonCode("1XXX1");
-        deleteHearingRequest.setVersionNumber(2);
         return deleteHearingRequest;
     }
 
@@ -104,7 +103,6 @@ public class BasePactTesting {
      */
     protected DeleteHearingRequest generateInvalidDeleteHearingRequest() {
         DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
-        deleteHearingRequest.setCancellationReasonCode("1XXX1");
         return deleteHearingRequest;
     }
 
