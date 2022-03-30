@@ -347,7 +347,8 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
                 hearingEntity.getCaseHearingRequest().getHearingWindowStartDateRange());
             hearingWindow.setDateRangeEnd(
                 hearingEntity.getCaseHearingRequest().getHearingWindowEndDateRange());
-            hearingWindow.setFirstDateTimeMustBe(hearingEntity.getCaseHearingRequest().getFirstDateTimeOfHearingMustBe());
+            hearingWindow.setFirstDateTimeMustBe(
+                    hearingEntity.getCaseHearingRequest().getFirstDateTimeOfHearingMustBe());
         }
         return hearingWindow;
     }
