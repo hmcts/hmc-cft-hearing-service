@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 
-@Transactional(propagation = Propagation.REQUIRES_NEW)
+@Transactional(propagation = Propagation.REQUIRED)
 @Repository
 public interface LinkedGroupDetailsRepository extends CrudRepository<LinkedGroupDetails, Long> {
 
@@ -16,4 +16,8 @@ public interface LinkedGroupDetailsRepository extends CrudRepository<LinkedGroup
 
     @Query("from LinkedGroupDetails lgd WHERE lgd.requestId = :requestId ")
     LinkedGroupDetails getLinkedGroupDetailsByRequestId(String requestId);
+
+    // TODO: implement DB query - https://tools.hmcts.net/jira/browse/HMAN-96
+    default void deleteHearingGroup(Long hearingGroupId) {
+    }
 }

@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -42,13 +43,17 @@ class LinkHearingGroupServiceTest {
     private LinkedHearingGroupServiceImpl linkedHearingGroupService;
 
     @Mock
-    HearingRepository hearingRepository;
+    private HearingRepository hearingRepository;
+
+    @Mock
+    private LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         linkedHearingGroupService =
             new LinkedHearingGroupServiceImpl(
+                linkedGroupDetailsRepository,
                 hearingRepository
             );
     }

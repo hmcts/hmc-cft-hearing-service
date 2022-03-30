@@ -23,3 +23,4 @@ DELETE FROM linked_hearing_details_audit;
 DELETE FROM hearing;
 DELETE FROM linked_group_details_audit;
 DELETE FROM linked_group_details;
+DELETE FROM linked_group_details_audit;

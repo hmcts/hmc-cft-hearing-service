@@ -7,10 +7,15 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 
-@Transactional(propagation = Propagation.REQUIRES_NEW)
+import java.util.List;
+
+@Transactional(propagation = Propagation.REQUIRED)
 @Repository
 public interface HearingRepository extends CrudRepository<HearingEntity, Long> {
 
     @Query("SELECT status from HearingEntity where id = :hearingId")
     String getStatus(Long hearingId);
+
+    @Query("FROM HearingEntity he WHERE he.linkedGroupDetails.linkedGroupId = :linkedGroupId")
+    List<HearingEntity> findByLinkedGroupId(Long linkedGroupId);
 }

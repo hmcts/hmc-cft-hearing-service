@@ -133,6 +133,10 @@ public final class ValidationError {
     public static final String PARTY_ROLE_EMPTY = "Party role must be present";
 
     public static final String HEARING_ID_NOT_FOUND = "No hearing found for reference: %s";
+    public static final String HEARING_GROUP_ID_NOT_FOUND = "No hearing group found for reference: %s";
+    public static final String INVALID_DELETE_HEARING_GROUP_STATUS = "007 group is in a %s state";
+    public static final String INVALID_DELETE_HEARING_GROUP_HEARING_STATUS = "008 Invalid state for unlinking hearing"
+        + " request %s";
     public static final String PARTIES_NOTIFIED_ID_NOT_FOUND = "001 No such id: %s";
     public static final String PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH = "002 No such response version";
     public static final String PARTIES_NOTIFIED_ALREADY_SET = "003 Already set";
