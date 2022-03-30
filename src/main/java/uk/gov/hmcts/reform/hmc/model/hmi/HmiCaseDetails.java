@@ -42,4 +42,6 @@ public class HmiCaseDetails {
 
     private Boolean caseAdditionalSecurityFlag;
 
+    private String linkedHearingGroupStatus;
+
 }

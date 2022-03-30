@@ -268,8 +268,8 @@ class HearingManagementServiceTest {
             createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
             createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
             createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-            createHearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
-            createHearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
+            createHearingRequest.getHearingDetails().getHearingWindow().setDateRangeStart(null);
+            createHearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(null);
             createHearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(createHearingRequest));
@@ -309,9 +309,11 @@ class HearingManagementServiceTest {
 
         @Test
         void shouldPassWithHearing_Case_Request_Party_Details_Valid() {
+            HearingDetails hearingDetails = TestingUtil.hearingDetails();
+            hearingDetails.setHearingIsLinkedFlag(Boolean.FALSE);
             CreateHearingRequest createHearingRequest = new CreateHearingRequest();
             createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
-            createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+            createHearingRequest.setHearingDetails(hearingDetails);
             createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
             createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
             createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
@@ -908,7 +910,6 @@ class HearingManagementServiceTest {
             CaseHearingRequestEntity entity = TestingUtil.caseHearingRequestEntity();
             final int versionNumber = entity.getVersionNumber();
             entity.setCaseHearingID(1L);
-            when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(versionNumber);
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingRepository.getStatus(hearingId)).thenReturn("UPDATE_SUBMITTED");
             HearingEntity hearingEntity = generateHearingEntity(
@@ -926,7 +927,6 @@ class HearingManagementServiceTest {
             assertEquals(CANCELLATION_REQUESTED, hearingResponse.getStatus());
             assertNotNull(hearingResponse.getHearingRequestId());
             verify(hearingRepository).existsById(hearingId);
-            verify(caseHearingRequestRepository).getVersionNumber(hearingId);
         }
 
         @Test
@@ -938,7 +938,6 @@ class HearingManagementServiceTest {
                 1
             );
             final int versionNumber = hearingEntity.getCaseHearingRequest().getVersionNumber();
-            when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(1);
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingRepository.getStatus(hearingId)).thenReturn("UPDATE_SUBMITTED");
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
@@ -948,15 +947,12 @@ class HearingManagementServiceTest {
             assertEquals(CANCELLATION_REQUESTED, hearingResponse.getStatus());
             assertEquals(versionNumber + 1, hearingResponse.getVersionNumber());
             verify(hearingRepository).existsById(hearingId);
-            verify(caseHearingRequestRepository).getVersionNumber(hearingId);
         }
 
         @Test
         void deleteHearingRequestShouldFailWithInvalidStatus() {
             final long hearingId = 2000000000L;
             DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
-            final int versionNumber = deleteHearingRequest.getVersionNumber();
-            when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(versionNumber);
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingRepository.getStatus(hearingId)).thenReturn("UPDATE_NOT_SUBMITTED");
 
@@ -964,18 +960,6 @@ class HearingManagementServiceTest {
                 hearingManagementService.deleteHearingRequest(hearingId, deleteHearingRequest));
             assertEquals(INVALID_DELETE_HEARING_STATUS, exception.getMessage());
             verify(hearingRepository).existsById(hearingId);
-            verify(caseHearingRequestRepository).getVersionNumber(hearingId);
-        }
-
-        @Test
-        void testExpectedException_DeleteHearing_VersionNumber_Not_Equal_To_DB_VersionNumber() {
-            final long hearingId = 2000000000L;
-            when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(2);
-            when(hearingRepository.existsById(hearingId)).thenReturn(true);
-            DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
-            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .deleteHearingRequest(hearingId, deleteHearingRequest));
-            assertEquals(INVALID_VERSION_NUMBER, exception.getMessage());
         }
 
         @Test
@@ -1016,9 +1000,7 @@ class HearingManagementServiceTest {
         void deleteHearingShouldIncrementVersionNumber() {
             final long hearingId = 2000000000L;
             DeleteHearingRequest hearingRequest = TestingUtil.deleteHearingRequest();
-            final int versionNumber = hearingRequest.getVersionNumber();
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
-            when(caseHearingRequestRepository.getVersionNumber(hearingId)).thenReturn(versionNumber);
             when(hearingRepository.getStatus(hearingId)).thenReturn(DeleteHearingStatus.UPDATE_REQUESTED.name());
             HearingEntity hearingEntity = generateHearingEntity(
                 hearingId,
@@ -1031,7 +1013,7 @@ class HearingManagementServiceTest {
             HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
                 hearingId, hearingRequest);
             // Check that version number has been incremented
-            assertEquals((versionNumber + 1), hearingResponse.getVersionNumber());
+            assertNotNull(hearingResponse.getVersionNumber());
         }
     }
 
@@ -1128,7 +1110,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             List<PartyDetails> partyDetailsList = new ArrayList<>();
@@ -1146,7 +1128,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             OrganisationDetails organisationDetails = new OrganisationDetails();
@@ -1168,7 +1150,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             IndividualDetails individualDetails = new IndividualDetails();
@@ -1191,7 +1173,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             IndividualDetails individualDetails = new IndividualDetails();
@@ -1214,7 +1196,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             IndividualDetails individualDetails = new IndividualDetails();

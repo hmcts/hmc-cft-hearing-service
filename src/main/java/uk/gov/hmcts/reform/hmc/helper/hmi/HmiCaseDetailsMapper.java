@@ -9,6 +9,9 @@ import uk.gov.hmcts.reform.hmc.model.hmi.HmiCaseDetails;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import static java.lang.Boolean.TRUE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.NOT_REQUIRED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUIRED;
 
 @Component
 public class HmiCaseDetailsMapper {
@@ -20,7 +23,7 @@ public class HmiCaseDetailsMapper {
         this.caseClassificationsMapper = caseClassificationsMapper;
     }
 
-    public HmiCaseDetails getCaseDetails(CaseDetails caseDetails, Integer versionNumber, Long hearingId) {
+    public HmiCaseDetails getCaseDetails(CaseDetails caseDetails, Integer versionNumber, Long hearingId, Boolean isLinkedFlag) {
         return HmiCaseDetails.builder()
                 .caseClassifications(caseClassificationsMapper.getCaseClassifications(caseDetails))
                 .caseIdHmcts(caseDetails.getCaseRef())
@@ -35,6 +38,7 @@ public class HmiCaseDetailsMapper {
                 .caseLinks(getCaseLinksArray(Arrays.asList(caseDetails.getCaseDeepLink())))
                 .casePublishedName(caseDetails.getPublicCaseName())
                 .caseAdditionalSecurityFlag(caseDetails.getCaseAdditionalSecurityFlag())
+                .linkedHearingGroupStatus(isLinkedFlag == TRUE ? REQUIRED : NOT_REQUIRED)
                 .build();
     }
 

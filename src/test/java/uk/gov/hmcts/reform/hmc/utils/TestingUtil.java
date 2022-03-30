@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
-import uk.gov.hmcts.reform.hmc.model.LocationId;
+import uk.gov.hmcts.reform.hmc.model.LocationType;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
@@ -70,15 +70,16 @@ public class TestingUtil {
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
-        hearingWindow.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindow.setDateRangeEnd(LocalDate.parse("2017-03-01"));
+        hearingWindow.setDateRangeStart(LocalDate.parse("2017-03-01"));
         hearingDetails.setHearingWindow(hearingWindow);
         hearingDetails.setDuration(0);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
+        hearingDetails.setHearingIsLinkedFlag(Boolean.TRUE);
         HearingLocation location1 = new HearingLocation();
-        location1.setLocationId("COURT");
-        location1.setLocationType("Location type");
+        location1.setLocationType(LocationType.CLUSTER.getLabel());
+        location1.setLocationId("Location Id");
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
@@ -107,7 +108,7 @@ public class TestingUtil {
 
     public static RequiredLocationsEntity locationEntity() {
         RequiredLocationsEntity requiredLocationsEntity = new RequiredLocationsEntity();
-        requiredLocationsEntity.setLocationId(LocationId.CLUSTER);
+        requiredLocationsEntity.setLocationLevelType(LocationType.CLUSTER);
         return requiredLocationsEntity;
     }
 
@@ -235,6 +236,7 @@ public class TestingUtil {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(1L);
         hearingEntity.setStatus(HEARING_STATUS);
+        hearingEntity.setIsLinkedFlag(Boolean.TRUE);
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
         return hearingEntity;
@@ -282,7 +284,6 @@ public class TestingUtil {
 
     public static DeleteHearingRequest deleteHearingRequest() {
         DeleteHearingRequest request = new DeleteHearingRequest();
-        request.setVersionNumber(1);
         request.setCancellationReasonCode("test");
         return request;
     }
@@ -328,6 +329,7 @@ public class TestingUtil {
         caseHearing.setLastResponseReceivedDateTime(LocalDateTime.parse("2020-08-10T12:20:00"));
         caseHearing.setListAssistCaseStatus("EXCEPTION");
         caseHearing.setHearingListingStatus("listingStatus");
+        caseHearing.setHearingIsLinkedFlag(Boolean.TRUE);
         HearingDaySchedule schedule = new HearingDaySchedule();
         schedule.setHearingStartDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         schedule.setHearingEndDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
@@ -352,6 +354,7 @@ public class TestingUtil {
         CaseHearingRequestEntity entity = new CaseHearingRequestEntity();
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(2000000000L);
+        hearingEntity.setIsLinkedFlag(Boolean.TRUE);
         entity.setCaseHearingID(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
         entity.setHearing(hearingEntity);
