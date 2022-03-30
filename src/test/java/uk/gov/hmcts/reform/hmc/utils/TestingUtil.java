@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
-import uk.gov.hmcts.reform.hmc.model.LocationId;
+import uk.gov.hmcts.reform.hmc.model.LocationType;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
@@ -70,16 +70,16 @@ public class TestingUtil {
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
-        hearingWindow.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindow.setDateRangeEnd(LocalDate.parse("2017-03-01"));
+        hearingWindow.setDateRangeStart(LocalDate.parse("2017-03-01"));
         hearingDetails.setHearingWindow(hearingWindow);
         hearingDetails.setDuration(0);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         hearingDetails.setHearingIsLinkedFlag(Boolean.TRUE);
         HearingLocation location1 = new HearingLocation();
-        location1.setLocationId("COURT");
-        location1.setLocationType("Location type");
+        location1.setLocationType(LocationType.CLUSTER.getLabel());
+        location1.setLocationId("Location Id");
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
@@ -108,7 +108,7 @@ public class TestingUtil {
 
     public static RequiredLocationsEntity locationEntity() {
         RequiredLocationsEntity requiredLocationsEntity = new RequiredLocationsEntity();
-        requiredLocationsEntity.setLocationId(LocationId.CLUSTER);
+        requiredLocationsEntity.setLocationLevelType(LocationType.CLUSTER);
         return requiredLocationsEntity;
     }
 
