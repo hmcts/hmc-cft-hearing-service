@@ -24,6 +24,11 @@ class CaseHearingRequestMapperTest {
         CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
         CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper);
         CaseHearingRequestEntity entity = caseHearingRequestMapper.modelToEntity(hearingRequest, hearingEntity);
+        assert1(entity);
+        assert2(entity);
+    }
+
+    private void assert1(CaseHearingRequestEntity entity) {
         assertEquals(Boolean.TRUE, entity.getAutoListFlag());
         assertEquals("Some hearing type", entity.getHearingType());
         assertEquals(0, entity.getRequiredDurationInMinutes());
@@ -33,13 +38,16 @@ class CaseHearingRequestMapperTest {
         assertEquals(Boolean.TRUE, entity.getPrivateHearingRequiredFlag());
         assertNull(entity.getLeadJudgeContractType());
         assertNull(entity.getFirstDateTimeOfHearingMustBe());
-        assertEquals("ABA1", entity.getHmctsServiceID());
+        assertEquals("ABA1", entity.getHmctsServiceCode());
         assertEquals("1111222233334444", entity.getCaseReference());
         assertEquals(LocalDateTime.parse("2021-08-10T12:20:00"), entity.getHearingRequestReceivedDateTime());
         assertNull(entity.getExternalCaseReference());
         assertEquals("https://www.google.com", entity.getCaseUrlContextPath());
         assertEquals("Internal case name", entity.getHmctsInternalCaseName());
         assertEquals("Public case name", entity.getPublicCaseName());
+    }
+
+    private void assert2(CaseHearingRequestEntity entity) {
         assertEquals(Boolean.FALSE, entity.getAdditionalSecurityRequiredFlag());
         assertEquals("CMLC123", entity.getOwningLocationId());
         assertEquals(Boolean.FALSE, entity.getCaseRestrictedFlag());
@@ -51,4 +59,5 @@ class CaseHearingRequestMapperTest {
         assertEquals(LocalDate.parse("2017-03-01"), entity.getHearingWindowStartDateRange());
         assertEquals(LocalDate.parse("2017-03-01"), entity.getHearingWindowEndDateRange());
     }
+
 }

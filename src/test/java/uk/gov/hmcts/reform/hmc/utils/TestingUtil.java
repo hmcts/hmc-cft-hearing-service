@@ -89,9 +89,9 @@ public class TestingUtil {
 
     public static PanelRequirements panelRequirements() {
         PanelRequirements panelRequirements = new PanelRequirements();
-        panelRequirements.setRoleType(Arrays.asList("RoleType1"));
-        panelRequirements.setAuthorisationTypes(Arrays.asList("AuthorisationType1"));
-        panelRequirements.setAuthorisationSubType(Arrays.asList("AuthorisationSubType2"));
+        panelRequirements.setRoleType(List.of("RoleType1"));
+        panelRequirements.setAuthorisationTypes(List.of("AuthorisationType1"));
+        panelRequirements.setAuthorisationSubType(List.of("AuthorisationSubType2"));
         return panelRequirements;
     }
 
@@ -176,15 +176,14 @@ public class TestingUtil {
         partyDetails2.setPartyType("IND");
         partyDetails2.setPartyRole("DEF2");
 
-        List<PartyDetails> partyDetails = Lists.newArrayList(partyDetails1, partyDetails2);
-        return partyDetails;
+        return Lists.newArrayList(partyDetails1, partyDetails2);
     }
 
     public static List<CaseCategoriesEntity> caseCategoriesEntities() {
         CaseCategoriesEntity caseCategoriesEntity = new CaseCategoriesEntity();
         caseCategoriesEntity.setCategoryType(CaseCategoryType.CASETYPE);
         caseCategoriesEntity.setCaseCategoryValue("PROBATE");
-        return Arrays.asList(caseCategoriesEntity);
+        return List.of(caseCategoriesEntity);
     }
 
     public static IndividualDetails individualDetails() {
@@ -248,7 +247,7 @@ public class TestingUtil {
         entity.setHearingType("Some hearing type");
         entity.setRequiredDurationInMinutes(10);
         entity.setHearingPriorityType("Priority type");
-        entity.setHmctsServiceID("ABA1");
+        entity.setHmctsServiceCode("ABA1");
         entity.setCaseReference("1111222233334444");
         entity.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity.setCaseUrlContextPath("https://www.google.com");
@@ -343,7 +342,7 @@ public class TestingUtil {
         List<Attendee> attendeeList = new ArrayList<>();
         attendeeList.add(attendee);
         schedule.setAttendees(attendeeList);
-        caseHearing.setHearingDaySchedule(Arrays.asList(schedule));
+        caseHearing.setHearingDaySchedule(List.of(schedule));
         List<CaseHearing> caseHearingList = new ArrayList<>();
         caseHearingList.add(caseHearing);
         getHearingsResponse.setCaseHearings(caseHearingList);
@@ -357,13 +356,13 @@ public class TestingUtil {
         entity.setCaseHearingID(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
         entity.setHearing(hearingEntity);
-        entity.setHmctsServiceID("ABA1");
+        entity.setHmctsServiceCode("ABA1");
         entity.setCaseReference("12345");
         entity.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity.setHearingType("Some hearing type");
-        entity.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntities()));
+        entity.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
         entity.getHearing().getHearingResponses().get(0)
-            .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntities()));
+            .setHearingDayDetails(List.of(hearingDayDetailsEntities()));
         return entity;
     }
 
@@ -371,7 +370,7 @@ public class TestingUtil {
     public static List<NonStandardDurationsEntity> getNonStandardDurationEntities() {
         NonStandardDurationsEntity nonStandardDurationsEntity = new NonStandardDurationsEntity();
         nonStandardDurationsEntity.setNonStandardHearingDurationReasonType("Reason");
-        return Arrays.asList(nonStandardDurationsEntity);
+        return List.of(nonStandardDurationsEntity);
     }
 
     public static List<CaseHearingRequestEntity> getCaseHearingsEntitiesWithStatus() {
@@ -388,13 +387,13 @@ public class TestingUtil {
         entity1.setCaseHearingID(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
         entity1.setHearing(hearingEntity);
-        entity1.setHmctsServiceID("ABA1");
+        entity1.setHmctsServiceCode("ABA1");
         entity1.setCaseReference("12345");
         entity1.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity1.setHearingType("Some hearing type");
-        entity1.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntities()));
+        entity1.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
         entity1.getHearing().getHearingResponses().get(0)
-            .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntities()));
+            .setHearingDayDetails(List.of(hearingDayDetailsEntities()));
         entities.add(entity1);
     }
 
@@ -405,13 +404,13 @@ public class TestingUtil {
         entity1.setCaseHearingID(2000000001L);
         hearingEntity.setStatus("HEARING_UPDATED");
         entity1.setHearing(hearingEntity);
-        entity1.setHmctsServiceID("ABA1");
+        entity1.setHmctsServiceCode("ABA1");
         entity1.setCaseReference("4567");
         entity1.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity1.setHearingType("Some hearing type");
-        entity1.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntities()));
+        entity1.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
         entity1.getHearing().getHearingResponses().get(0)
-            .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntities()));
+            .setHearingDayDetails(List.of(hearingDayDetailsEntities()));
         entities.add(entity1);
     }
 
@@ -432,8 +431,8 @@ public class TestingUtil {
         entity.setVenueId("venue1");
         entity.setRoomId("room1");
         entity.setListAssistSessionId("session1");
-        entity.setHearingAttendeeDetails(Arrays.asList(hearingAttendeeDetailsEntity()));
-        entity.setHearingDayPanel(Arrays.asList(hearingDayPanelEntities()));
+        entity.setHearingAttendeeDetails(List.of(hearingAttendeeDetailsEntity()));
+        entity.setHearingDayPanel(List.of(hearingDayPanelEntities()));
         return entity;
     }
 
@@ -462,8 +461,8 @@ public class TestingUtil {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
-        hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity()));
-        if (partyType.getLabel() == PartyType.IND.getLabel()) {
+        hearingEntity.setHearingResponses(List.of(hearingResponseEntity()));
+        if (partyType.getLabel().equals(PartyType.IND.getLabel())) {
             hearingEntity.setCaseHearingRequest(caseHearingRequestEntityWithPartyOrg());
         } else {
             hearingEntity.setCaseHearingRequest(caseHearingRequestEntityWithPartyInd());
@@ -476,11 +475,11 @@ public class TestingUtil {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
-        hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity()));
+        hearingEntity.setHearingResponses(List.of(hearingResponseEntity()));
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntityWithPartyOrg());
 
         hearingEntity.getCaseHearingRequest().setVersionNumber(1);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequest().setHearingParties(List.of(hearingPartyEntityOrg()));
         return hearingEntity;
     }
 
@@ -491,7 +490,7 @@ public class TestingUtil {
         entity.setListingStatus(ListingStatus.FIXED.name());
         entity.setListingCaseStatus(ListAssistCaseStatus.CASE_CREATED.name());
         entity.setCancellationReasonType("Cancelled Reason 1");
-        entity.setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity()));
+        entity.setHearingDayDetails(List.of(hearingDayDetailsEntity()));
         return entity;
     }
 
@@ -504,7 +503,7 @@ public class TestingUtil {
         entity.setVenueId("venueId");
 
         HearingAttendeeDetailsEntity attendee = new HearingAttendeeDetailsEntity();
-        entity.setHearingAttendeeDetails(Arrays.asList(attendee));
+        entity.setHearingAttendeeDetails(List.of(attendee));
         return entity;
     }
 
@@ -513,7 +512,7 @@ public class TestingUtil {
         entity.setPartyReference("reference");
         entity.setPartyType(PartyType.ORG);
         entity.setPartyRoleType("role");
-        entity.setUnavailabilityEntity(Arrays.asList(unavailabilityEntity()));
+        entity.setUnavailabilityEntity(List.of(unavailabilityEntity()));
         entity.setOrganisationDetailEntity(organisationDetailEntity());
 
         return entity;
@@ -524,15 +523,14 @@ public class TestingUtil {
         entity.setPartyReference("reference");
         entity.setPartyType(PartyType.IND);
         entity.setPartyRoleType("role");
-        entity.setIndividualDetailEntity(Arrays.asList(individualDetailEntity()));
-
+        entity.setIndividualDetailEntity(List.of(individualDetailEntity()));
         return entity;
     }
 
     private static CaseHearingRequestEntity caseHearingRequestEntityWithPartyOrg() {
         CaseHearingRequestEntity entity1 = new CaseHearingRequestEntity();
         entity1.setCaseHearingID(2000000000L);
-        entity1.setHmctsServiceID("ABA1");
+        entity1.setHmctsServiceCode("ABA1");
         entity1.setCaseReference("12345");
         entity1.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity1.setHearingType("Some hearing type");
@@ -544,15 +542,14 @@ public class TestingUtil {
         entity1.setCaseHearingID(2000000000L);
 
         entity1.setHearing(getCaseHearingsEntity());
-        entity1.setHmctsServiceID("ABA1");
+        entity1.setHmctsServiceCode("ABA1");
         entity1.setCaseReference("12345");
         entity1.setHearingRequestReceivedDateTime(LocalDateTime.parse("2000-08-10T12:20:00"));
         entity1.setHearingType("Some hearing type");
-        entity1.getHearing().setHearingResponses(Arrays.asList(hearingResponseEntities()));
+        entity1.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
         entity1.getHearing().getHearingResponses().get(0)
-            .setHearingDayDetails(Arrays.asList(hearingDayDetailsEntities()));
-        entity1.setHearingParties(Arrays.asList(hearingPartyEntityInd()));
-
+            .setHearingDayDetails(List.of(hearingDayDetailsEntities()));
+        entity1.setHearingParties(List.of(hearingPartyEntityInd()));
         return entity1;
     }
 }
