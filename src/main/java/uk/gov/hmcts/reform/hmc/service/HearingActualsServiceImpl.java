@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
@@ -38,6 +39,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     private static final List<String> ALLOWED_ACTUALS_STATUSES = List.of("LISTED",
                                                                          "UPDATE_REQUESTED",
                                                                          "UPDATE_SUBMITTED");
+    public static final List<String> HEARING_RESULTS_REASONS = List.of("ADJOURNED", "CANCELLED", "COMPLETED");
     public static final List<String> HEARING_RESULTS_THAT_NEED_REASON_TYPE = List.of("ADJOURNED", "CANCELLED");
 
     @Autowired
@@ -89,6 +91,9 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     }
 
     private void validateHearingResult(HearingActual request) {
+        if (!HEARING_RESULTS_REASONS.contains(request.getHearingOutcome().getHearingResult().toUpperCase())) {
+            throw new BadRequestException(HA_OUTCOME_RESULT_NOT_EMPTY);
+        }
         if (HEARING_RESULTS_THAT_NEED_REASON_TYPE.contains(request.getHearingOutcome().getHearingResult().toUpperCase())
             && StringUtils.isBlank(request.getHearingOutcome().getHearingResultReasonType())) {
             throw new BadRequestException(String.format(HEARING_ACTUALS_MISSING_RESULT_TYPE,

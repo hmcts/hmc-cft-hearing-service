@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.TestFixtures;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
+import wiremock.com.jayway.jsonpath.DocumentContext;
+import wiremock.com.jayway.jsonpath.JsonPath;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -20,6 +23,29 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_END_TIME_DATE_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_ORGANISATION_NAME_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_ORGANISATION_NAME_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PARTY_CHANNEL_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PARTY_CHANNEL_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PARTY_ID_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PARTY_ROLE_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PARTY_ROLE_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_START_TIME_DATE_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_FINAL_FLAG_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REASON_TYPE_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_TYPE_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_TYPE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.actualHearingDay;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingActualsOutcome;
 
@@ -240,6 +266,243 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                                       actualHearingDay(LocalDate.of(2022, 1, 29)))))))
                 .andExpect(status().is(400))
                 .andReturn();
+        }
+    }
+
+    @Nested
+    @DisplayName("PutHearingActualsJsr303Validation")
+    class PutHearingActualsJsr303Validation {
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingOutcomeHearingType() throws Exception {
+            verifyErrorOnMissingNode(HA_OUTCOME_TYPE_NOT_EMPTY,
+                                     "$['hearingOutcome']['hearingType']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenHearingTypeTooLong() throws Exception {
+            verifyErrorOnTooLongNodeValue(HA_OUTCOME_TYPE_MAX_LENGTH,
+                                          "$['hearingOutcome']['hearingType']",
+                                          41);
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingOutcomeFinalFlag() throws Exception {
+            verifyErrorOnMissingNode(HA_OUTCOME_FINAL_FLAG_NOT_EMPTY,
+                                     "$['hearingOutcome']['hearingFinalFlag']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingOutcomeHearingResult() throws Exception {
+            verifyErrorOnMissingNode(HA_OUTCOME_RESULT_NOT_EMPTY,
+                                     "$['hearingOutcome']['hearingResult']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenHearingResultInvalid() throws Exception {
+            verifyErrorOnTooLongNodeValue(HA_OUTCOME_RESULT_NOT_EMPTY,
+                                          "$['hearingOutcome']['hearingResult']",
+                                          5);
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenHearingResultReasonTypeTooLong() throws Exception {
+            verifyErrorOnTooLongNodeValue(HA_OUTCOME_REASON_TYPE_MAX_LENGTH,
+                                          "$['hearingOutcome']['hearingResultReasonType']",
+                                          71,
+                                          "HMAN80-ValidPayload2.json");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingOutcomeResultDate() throws Exception {
+            verifyErrorOnMissingNode(HA_OUTCOME_REQUEST_DATE_NOT_EMPTY,
+                                     "$['hearingOutcome']['hearingResultDate']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingHearingDaysHearingDate() throws Exception {
+            verifyErrorOnMissingNode(HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['hearingDate']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingHearingDaysHearingStartTime() throws Exception {
+            verifyErrorOnMissingNode(HA_HEARING_DAY_START_TIME_DATE_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['hearingStartTime']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingHearingDaysHearingEndTime() throws Exception {
+            verifyErrorOnMissingNode(HA_HEARING_DAY_END_TIME_DATE_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['hearingEndTime']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingHearingPauseStartTime() throws Exception {
+            verifyErrorOnMissingNode(HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['pauseDateTimes'][0]['pauseStartTime']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingHearingPauseEndTime() throws Exception {
+            verifyErrorOnMissingNode(HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['pauseDateTimes'][0]['pauseEndTime']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenActualPartyIdTooLong() throws Exception {
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_PARTY_ID_MAX_LENGTH,
+                                          "$['actualHearingDays'][0]['actualDayParties'][0]['actualPartyId']",
+                                          41);
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingPartyRole() throws Exception {
+            verifyErrorOnMissingNode(HA_HEARING_DAY_PARTY_ROLE_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['actualDayParties'][0]['partyRole']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenPartyRoleTooLong() throws Exception {
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_PARTY_ROLE_MAX_LENGTH,
+                                          "$['actualHearingDays'][0]['actualDayParties'][0]['partyRole']",
+                                          41);
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingPartyChannelSubType() throws Exception {
+            verifyErrorOnMissingNode(HA_HEARING_DAY_PARTY_CHANNEL_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['actualDayParties'][0]['partyChannelSubType']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenPartyChannelSubTypeTooLong() throws Exception {
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_PARTY_CHANNEL_MAX_LENGTH,
+                                          "$['actualHearingDays'][0]['actualDayParties'][0]['partyChannelSubType']",
+                                          71);
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenRepresentedPartyTooLong() throws Exception {
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH,
+                                          "$['actualHearingDays'][1]['actualDayParties'][0]"
+                                              + "['representedParty']",
+                                          41);
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingPartyIndividualFirstName() throws Exception {
+            verifyErrorOnMissingNode(HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['actualDayParties'][0]"
+                                         + "['individualDetails']['firstName']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenPartyIndividualFirstNameTooLong() throws Exception {
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_MAX_LENGTH,
+                                          "$['actualHearingDays'][0]['actualDayParties'][0]"
+                                              + "['individualDetails']['firstName']",
+                                          101);
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingPartyIndividualLastName() throws Exception {
+            verifyErrorOnMissingNode(HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['actualDayParties'][0]"
+                                         + "['individualDetails']['lastName']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenPartyIndividualLastNameTooLong() throws Exception {
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_MAX_LENGTH,
+                                          "$['actualHearingDays'][0]['actualDayParties'][0]"
+                                              + "['individualDetails']['lastName']",
+                                          101);
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenMissingPartyOrganisationName() throws Exception {
+            verifyErrorOnMissingNode(HA_HEARING_DAY_ORGANISATION_NAME_NOT_EMPTY,
+                                     "$['actualHearingDays'][1]['actualDayParties'][2]['organisationDetails']['name']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_RESPONSE_SCRIPT})
+        void shouldReturn400_WhenPartyOrganisationNameTooLong() throws Exception {
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_ORGANISATION_NAME_MAX_LENGTH,
+                                          "$['actualHearingDays'][1]['actualDayParties'][2]"
+                                              + "['organisationDetails']['name']",
+                                          201);
+        }
+
+        private void verifyErrorOnMissingNode(String expectedError, String pathToDelete) throws Exception {
+            String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
+            String preparedJson = deleteByJsonPath(json, pathToDelete);
+
+            mockMvc.perform(put(URL + "/2000001000") // LISTED
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(preparedJson))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItem((expectedError))))
+                .andReturn();
+        }
+
+        private String deleteByJsonPath(String json, String path) {
+            DocumentContext jsonContext = JsonPath.parse(json);
+            jsonContext.delete(path);
+            return jsonContext.jsonString();
+        }
+
+        private void verifyErrorOnTooLongNodeValue(String expectedError, String pathToUpdate, int length)
+            throws Exception {
+            verifyErrorOnTooLongNodeValue(expectedError, pathToUpdate, length, "HMAN80-ValidPayload4-Completed.json");
+        }
+
+        private void verifyErrorOnTooLongNodeValue(String expectedError, String pathToUpdate, int length, String file)
+            throws Exception {
+            String json = TestFixtures.fromFileAsString("hearing-actuals-payload/" + file);
+            String preparedJson = updateWithRandomStringByJsonPath(json, pathToUpdate, length);
+
+            mockMvc.perform(put(URL + "/2000001000") // LISTED
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(preparedJson))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItem((expectedError))))
+                .andReturn();
+        }
+
+        private String updateWithRandomStringByJsonPath(String json, String path, int length) {
+            DocumentContext jsonContext = JsonPath.parse(json);
+            jsonContext.set(path, randomString(length));
+            return jsonContext.jsonString();
+        }
+
+        private String randomString(int length) {
+            return RandomStringUtils.random(length);
         }
     }
 }

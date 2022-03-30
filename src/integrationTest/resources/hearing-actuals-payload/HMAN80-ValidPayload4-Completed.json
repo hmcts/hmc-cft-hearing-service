@@ -64,6 +64,15 @@
           },
           "partyChannelSubType": "SubType2",
           "didNotAttendFlag": false
+        },
+        {
+          "actualPartyId": "3",
+          "partyRole": "RoleType3",
+          "organisationDetails" : {
+            "name": "BooHaa Organisation"
+          },
+          "partyChannelSubType": "SubType2",
+          "didNotAttendFlag": false
         }
       ]
     }
