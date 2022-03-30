@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_RESULT_TYPE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS;
 
 @Service
@@ -57,7 +58,8 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     private void validateHearingResult(HearingActual request) {
         if (HEARING_RESULTS_THAT_NEED_REASON_TYPE.contains(request.getHearingOutcome().getHearingResult().toUpperCase())
             && StringUtils.isBlank(request.getHearingOutcome().getHearingResultReasonType())) {
-            throw new BadRequestException(null);
+            throw new BadRequestException(String.format(HEARING_ACTUALS_MISSING_RESULT_TYPE,
+                                                        request.getHearingOutcome().getHearingResult()));
         }
     }
 

@@ -145,6 +145,8 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                         Arrays.asList(actualHearingDay(LocalDate.of(2022, 1, 28)),
                                                       actualHearingDay(LocalDate.of(2022, 1, 29)))))))
                 .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItem(("ADJOURNED result requires a hearingResultReasonType"))))
                 .andReturn();
         }
 
