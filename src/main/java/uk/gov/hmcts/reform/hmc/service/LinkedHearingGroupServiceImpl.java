@@ -248,9 +248,7 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
     private void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings) {
         LinkedGroupDetails linkedGroupDetails = linkedGroupHearings.get(0).getLinkedGroupDetails();
         saveLinkedGroupDetailsAudit(linkedGroupDetails);
-        linkedGroupHearings.forEach(hearingEntity -> {
-            saveLinkedHearingDetailsAudit(hearingEntity);
-        });
+        linkedGroupHearings.forEach(hearingEntity -> saveLinkedHearingDetailsAudit(hearingEntity));
         saveLinkedGroupDetails(linkedGroupDetails);
         // TODO: call ListAssist - https://tools.hmcts.net/jira/browse/HMAN-97
     }
