@@ -79,8 +79,8 @@ public class RestExceptionHandlerTest extends BaseTest {
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
-        hearingWindow.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
+        hearingWindow.setDateRangeEnd(LocalDate.parse("2017-03-01"));
+        hearingWindow.setDateRangeStart(LocalDate.parse("2017-03-01"));
         hearingDetails.setHearingWindow(hearingWindow);
         hearingDetails.setDuration(0);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
@@ -91,8 +91,8 @@ public class RestExceptionHandlerTest extends BaseTest {
         panelRequirements.setAuthorisationSubType(Collections.singletonList("AuthorisationSubType2"));
         hearingDetails.setPanelRequirements(panelRequirements);
         HearingLocation location1 = new HearingLocation();
-        location1.setLocationId("court");
-        location1.setLocationType("Location type");
+        location1.setLocationType("court");
+        location1.setLocationId("Location id");
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);

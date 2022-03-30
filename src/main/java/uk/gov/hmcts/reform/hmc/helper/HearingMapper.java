@@ -39,6 +39,7 @@ public class HearingMapper {
         setCaseDetails(createHearingRequest.getCaseDetails(), caseHearingRequestEntity);
         setPartyDetails(createHearingRequest.getPartyDetails(), caseHearingRequestEntity);
         hearingEntity.setStatus(HEARING_STATUS);
+        hearingEntity.setIsLinkedFlag(createHearingRequest.getHearingDetails().getHearingIsLinkedFlag());
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
         return hearingEntity;
     }

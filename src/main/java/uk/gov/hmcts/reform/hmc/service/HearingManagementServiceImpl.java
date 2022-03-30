@@ -272,8 +272,8 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     }
 
     private void validateHearingDetails(HearingDetails hearingDetails) {
-        if (hearingDetails.getHearingWindow().getHearingWindowEndDateRange() == null
-            && hearingDetails.getHearingWindow().getHearingWindowStartDateRange() == null
+        if (hearingDetails.getHearingWindow().getDateRangeEnd() == null
+            && hearingDetails.getHearingWindow().getDateRangeStart() == null
             && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() == null) {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
         }

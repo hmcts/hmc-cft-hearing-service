@@ -120,8 +120,8 @@ class BeanValidatorTest {
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
         assertEquals(2, violations.size());
-        assertTrue(validationErrors.contains(ValidationError.LOCATION_TYPE_EMPTY));
-        assertTrue(validationErrors.contains("Unsupported type for locationId"));
+        assertTrue(validationErrors.contains(ValidationError.LOCATION_ID_EMPTY));
+        assertTrue(validationErrors.contains("Unsupported type for locationType"));
     }
 
     @Test
@@ -129,8 +129,8 @@ class BeanValidatorTest {
         HearingDetails hearingDetails = TestingUtil.hearingDetails();
         hearingDetails.setPanelRequirements(TestingUtil.panelRequirements());
         HearingLocation hearingLocation = new HearingLocation();
+        hearingLocation.setLocationType("cluster");
         hearingLocation.setLocationId("");
-        hearingLocation.setLocationId("cluster");
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(hearingLocation);
         hearingDetails.setHearingLocations(hearingLocations);
@@ -139,7 +139,7 @@ class BeanValidatorTest {
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
-        assertTrue(validationErrors.contains(ValidationError.LOCATION_TYPE_EMPTY));
+        assertTrue(validationErrors.contains(ValidationError.LOCATION_ID_EMPTY));
     }
 
     @Test

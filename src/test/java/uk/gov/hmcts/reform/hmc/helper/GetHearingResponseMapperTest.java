@@ -315,8 +315,8 @@ class GetHearingResponseMapperTest {
 
     private void assertHearingLocation(HearingLocation hearingLocation) {
         assertAll(
-            () -> assertNull(hearingLocation.getLocationType()),
-            () -> assertEquals("cluster", hearingLocation.getLocationId())
+            () -> assertNull(hearingLocation.getLocationId()),
+            () -> assertEquals("cluster", hearingLocation.getLocationType())
         );
     }
 

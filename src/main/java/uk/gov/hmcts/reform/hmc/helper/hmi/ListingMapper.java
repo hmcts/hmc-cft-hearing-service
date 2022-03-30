@@ -36,11 +36,11 @@ public class ListingMapper {
             .listingHearingChannels(preferredHearingChannels)
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
             .build();
-        if (hearingDetails.getHearingWindow().getHearingWindowStartDateRange() != null) {
-            listing.setListingStartDate(hearingDetails.getHearingWindow().getHearingWindowStartDateRange());
+        if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
+            listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
         }
-        if (hearingDetails.getHearingWindow().getHearingWindowEndDateRange() != null) {
-            listing.setListingEndDate(hearingDetails.getHearingWindow().getHearingWindowEndDateRange());
+        if (hearingDetails.getHearingWindow().getDateRangeEnd() != null) {
+            listing.setListingEndDate(hearingDetails.getHearingWindow().getDateRangeEnd());
         }
         if (hearingDetails.getPanelRequirements().getRoleType() != null && !hearingDetails
             .getPanelRequirements().getRoleType().isEmpty()) {
