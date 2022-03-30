@@ -21,7 +21,7 @@ class ListingOtherConsiderationsMapperTest {
         List<String> otherConsiderations =
                 listingOtherConsiderationsMapper.getListingOtherConsiderations(hearingInWelsh, facilityTypes);
         assertEquals(1, otherConsiderations.size());
-        assertTrue(otherConsiderations.get(0).contains("true"));
+        assertTrue(otherConsiderations.get(0).contains(listingOtherConsiderationsMapper.HEARING_IN_WELSH_VALUE));
     }
 
     @Test

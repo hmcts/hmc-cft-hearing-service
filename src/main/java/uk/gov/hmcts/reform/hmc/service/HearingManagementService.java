@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
@@ -25,9 +26,7 @@ public interface HearingManagementService {
 
     void sendResponse(String json);
 
-    void sendRequestToHmiAndQueue(CreateHearingRequest hearingRequest, Long hearingId, String messageType);
-
-    void sendRequestToHmiAndQueue(UpdateHearingRequest hearingRequest, Long hearingId, String messageType);
+    void sendRequestToHmiAndQueue(HearingRequest hearingRequest, Long hearingId, String messageType);
 
     void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest,Long hearingId, String messageType);
 

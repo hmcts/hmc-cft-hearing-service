@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
@@ -161,16 +162,9 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     }
 
     @Override
-    public void sendRequestToHmiAndQueue(CreateHearingRequest hearingRequest, Long hearingId, String messageType) {
+    public void sendRequestToHmiAndQueue(HearingRequest hearingRequest, Long hearingId, String messageType) {
         HmiSubmitHearingRequest hmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
             .mapRequest(hearingId, hearingRequest);
-        sendRequestToQueue(hmiSubmitHearingRequest, hearingId, messageType);
-    }
-
-    @Override
-    public void sendRequestToHmiAndQueue(UpdateHearingRequest hearingRequest, Long hearingId, String messageType) {
-        HmiSubmitHearingRequest hmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
-                .mapRequest(hearingId, hearingRequest);
         sendRequestToQueue(hmiSubmitHearingRequest, hearingId, messageType);
     }
 

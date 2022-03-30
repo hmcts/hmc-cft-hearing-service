@@ -10,12 +10,14 @@ import java.util.List;
 @Slf4j
 public class ListingOtherConsiderationsMapper {
 
+    public static final String HEARING_IN_WELSH_VALUE = "CY";
+
     public List<String> getListingOtherConsiderations(Boolean hearingInWelshFlag,
                                                       List<String> facilityTypes) {
 
         List<String> listOtherConsiderations = new ArrayList<>();
         if (null != hearingInWelshFlag && hearingInWelshFlag) {
-            listOtherConsiderations.add(hearingInWelshFlag.toString());
+            listOtherConsiderations.add(HEARING_IN_WELSH_VALUE);
         }
         if (null != facilityTypes) {
             listOtherConsiderations.addAll(facilityTypes);
