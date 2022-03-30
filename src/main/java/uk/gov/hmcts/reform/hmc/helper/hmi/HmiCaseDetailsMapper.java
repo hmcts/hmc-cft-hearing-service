@@ -7,8 +7,8 @@ import uk.gov.hmcts.reform.hmc.model.hmi.CaseLinks;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiCaseDetails;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
 import static java.lang.Boolean.TRUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.NOT_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUIRED;
@@ -23,7 +23,8 @@ public class HmiCaseDetailsMapper {
         this.caseClassificationsMapper = caseClassificationsMapper;
     }
 
-    public HmiCaseDetails getCaseDetails(CaseDetails caseDetails, Integer versionNumber, Long hearingId, Boolean isLinkedFlag) {
+    public HmiCaseDetails getCaseDetails(CaseDetails caseDetails, Integer versionNumber,
+                                         Long hearingId, Boolean isLinkedFlag) {
         return HmiCaseDetails.builder()
                 .caseClassifications(caseClassificationsMapper.getCaseClassifications(caseDetails))
                 .caseIdHmcts(caseDetails.getCaseRef())
@@ -35,7 +36,7 @@ public class HmiCaseDetailsMapper {
                 .caseInterpreterRequiredFlag(caseDetails.getCaseInterpreterRequiredFlag())
                 .caseRestrictedFlag(caseDetails.getCaseRestrictedFlag())
                 .caseVersionId(versionNumber)
-                .caseLinks(getCaseLinksArray(Arrays.asList(caseDetails.getCaseDeepLink())))
+                .caseLinks(getCaseLinksArray(List.of(caseDetails.getCaseDeepLink())))
                 .casePublishedName(caseDetails.getPublicCaseName())
                 .caseAdditionalSecurityFlag(caseDetails.getCaseAdditionalSecurityFlag())
                 .linkedHearingGroupStatus(isLinkedFlag == TRUE ? REQUIRED : NOT_REQUIRED)

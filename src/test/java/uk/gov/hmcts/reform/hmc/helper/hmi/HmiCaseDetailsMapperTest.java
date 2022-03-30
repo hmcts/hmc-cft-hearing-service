@@ -68,14 +68,13 @@ class HmiCaseDetailsMapperTest {
             .caseInterpreterRequiredFlag(false)
             .caseRestrictedFlag(true)
             .caseVersionId(1)
-            .caseLinks(hmiCaseDetailsMapper.getCaseLinksArray(Arrays.asList(caseDetails.getCaseDeepLink())))
+            .caseLinks(hmiCaseDetailsMapper.getCaseLinksArray(List.of(caseDetails.getCaseDeepLink())))
             .casePublishedName(caseDetails.getPublicCaseName())
             .caseAdditionalSecurityFlag(Boolean.TRUE)
-            .build();
-        HmiCaseDetails actualHmiCaseDetails = hmiCaseDetailsMapper.getCaseDetails(caseDetails, 1, hearingId);
             .linkedHearingGroupStatus(REQUIRED)
             .build();
-        HmiCaseDetails actualHmiCaseDetails = hmiCaseDetailsMapper.getCaseDetails(caseDetails, 1, hearingId, Boolean.TRUE);
+        HmiCaseDetails actualHmiCaseDetails
+                = hmiCaseDetailsMapper.getCaseDetails(caseDetails, 1, hearingId, Boolean.TRUE);
         assertEquals(expectedHmiCaseDetails, actualHmiCaseDetails);
     }
 
@@ -109,9 +108,9 @@ class HmiCaseDetailsMapperTest {
             .caseInterpreterRequiredFlag(false)
             .caseRestrictedFlag(true)
             .caseVersionId(1)
-            .caseLinks(hmiCaseDetailsMapper.getCaseLinksArray(Arrays.asList(caseDetails.getCaseDeepLink())))
+            .caseLinks(hmiCaseDetailsMapper.getCaseLinksArray(List.of(caseDetails.getCaseDeepLink())))
             .casePublishedName(caseDetails.getPublicCaseName())
-            .caseAdditionalSecurityFlag(Boolean.TRUE)
+            .caseAdditionalSecurityFlag(Boolean.FALSE)
             .linkedHearingGroupStatus(NOT_REQUIRED)
             .build();
         HmiCaseDetails actualHmiCaseDetails = hmiCaseDetailsMapper.getCaseDetails(caseDetails, 1, hearingId, FALSE);
