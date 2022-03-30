@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
+import uk.gov.hmcts.reform.hmc.client.hmi.SyncResponse;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
-import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ListAssistResponseException;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -93,6 +92,9 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
                     log.error("Violations are " + violation.getMessage());
                 }
             }
+        } else if (messageType.equals(MessageType.LA_SYNC_HEARING_RESPONSE)) {
+            SyncResponse syncResponse = objectMapper.treeToValue(message, SyncResponse.class);
+            updateHearingAndStatus(hearingId, syncResponse);
         } else if (messageType.equals(MessageType.ERROR)) {
             ErrorDetails errorResponse = objectMapper.treeToValue(message, ErrorDetails.class);
             log.debug("Successfully converted message to ErrorResponse " + errorResponse);
@@ -142,12 +144,27 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
         }
     }
 
+    @Transactional
+    private void updateHearingAndStatus(Long hearingId, SyncResponse syncResponse) {
+        Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
+        if (hearingResult.isPresent()) {
+            HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiSyncResponseToEntity(
+                syncResponse,
+                hearingResult.get()
+            );
+            HearingEntity hearingEntity = hearingRepository.save(hearingToSave);
+            HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
+            messageSenderToTopicConfiguration.sendMessage(hmcHearingResponse.toString());
+            if (hearingEntity.getStatus().equals(HearingStatus.EXCEPTION.name())) {
+                // TODO: Raise alert for Dynatrace (approach TBC)
+            }
+        }
+    }
+
     private HmcHearingResponse getHmcHearingResponse(HearingEntity hearingEntity) {
-        Optional<HearingResponseEntity> hearingResponseEntity =
-            hearingEntity.getHearingResponses()
-                .stream().max(Comparator.comparing(HearingResponseEntity::getHearingResponseId));
-        return hmiHearingResponseMapper
-            .mapEntityToHmcModel(hearingResponseEntity
-                                     .orElseThrow(() -> new BadRequestException("bad request")), hearingEntity);
+        Optional<HearingResponseEntity> hearingResponseEntity = hearingEntity.getLatestHearingResponse();
+        return hearingResponseEntity.isPresent()
+            ? hmiHearingResponseMapper.mapEntityToHmcModel(hearingResponseEntity.get(), hearingEntity)
+            : hmiHearingResponseMapper.mapEntityToHmcModel(hearingEntity);
     }
 }

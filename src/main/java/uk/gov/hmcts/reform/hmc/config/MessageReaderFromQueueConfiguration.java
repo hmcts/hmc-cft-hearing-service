@@ -48,7 +48,7 @@ public class MessageReaderFromQueueConfiguration {
         client.receiveMessages(1)
             .forEach(
                 message -> {
-                    log.info("message received with Id " + message.getMessageId()
+                    log.debug("message received with Id " + message.getMessageId()
                                  + " and message body " + message.getBody());
                     messageProcessor.processMessage(client, message);
                 });
