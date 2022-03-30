@@ -8,4 +8,5 @@ public interface LinkedHearingGroupService {
 
     void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest);
 
+    void deleteLinkedHearingGroup(Long hearingGroupId);
 }

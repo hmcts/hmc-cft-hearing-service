@@ -54,7 +54,10 @@ class LinkHearingGroupServiceTest {
     private LinkedHearingGroupServiceImpl linkedHearingGroupService;
 
     @Mock
-    HearingRepository hearingRepository;
+    private HearingRepository hearingRepository;
+
+    @Mock
+    private LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
     @Mock
     LinkedHearingDetailsRepository linkedHearingDetailsRepository;

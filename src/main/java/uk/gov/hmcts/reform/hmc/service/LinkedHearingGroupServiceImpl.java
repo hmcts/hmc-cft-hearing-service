@@ -18,7 +18,12 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_
 @Service
 @Component
 @Slf4j
+@Transactional
 public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implements LinkedHearingGroupService {
+
+    private static final List<String> invalidDeleteGroupStatuses = Arrays.asList("PENDING", "ERROR");
+
+    private final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
