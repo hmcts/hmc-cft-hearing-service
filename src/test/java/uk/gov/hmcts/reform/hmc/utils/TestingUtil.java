@@ -282,7 +282,6 @@ public class TestingUtil {
 
     public static DeleteHearingRequest deleteHearingRequest() {
         DeleteHearingRequest request = new DeleteHearingRequest();
-        request.setVersionNumber(1);
         request.setCancellationReasonCode("test");
         return request;
     }
