@@ -19,6 +19,8 @@ public final class Constants {
     public static final String REQUEST_HEARING = "REQUEST_HEARING";
     public static final String AMEND_HEARING = "AMEND_HEARING";
     public static final String DELETE_HEARING = "DELETE_HEARING";
+    public static final String REQUIRED = "Required";
+    public static final String NOT_REQUIRED = "Not Required";
     public static final Integer UN_NOTIFIED_HEARINGS_LIMIT = 1000;
     public static final Integer FIRST_PAGE = 0;
 }
