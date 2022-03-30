@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.hmc.model.hmi.CaseLinks;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiCaseDetails;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Boolean.TRUE;
@@ -36,7 +37,7 @@ public class HmiCaseDetailsMapper {
                 .caseInterpreterRequiredFlag(caseDetails.getCaseInterpreterRequiredFlag())
                 .caseRestrictedFlag(caseDetails.getCaseRestrictedFlag())
                 .caseVersionId(versionNumber)
-                .caseLinks(getCaseLinksArray(List.of(caseDetails.getCaseDeepLink())))
+                .caseLinks(getCaseLinksArray(Arrays.asList(caseDetails.getCaseDeepLink())))
                 .casePublishedName(caseDetails.getPublicCaseName())
                 .caseAdditionalSecurityFlag(caseDetails.getCaseAdditionalSecurityFlag())
                 .linkedHearingGroupStatus(isLinkedFlag == TRUE ? REQUIRED : NOT_REQUIRED)
