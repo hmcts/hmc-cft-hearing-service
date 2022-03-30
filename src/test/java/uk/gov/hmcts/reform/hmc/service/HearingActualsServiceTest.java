@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -158,7 +157,7 @@ class HearingActualsServiceTest {
                 List.of(actualHearingDay(LocalDate.of(2022, 1, 28)))
             ));
         });
-        assertNull(exception.getMessage());
+        assertEquals("ADJOURNED result requires a hearingResultReasonType", exception.getMessage());
     }
 
     @Test
@@ -175,7 +174,7 @@ class HearingActualsServiceTest {
                 List.of(actualHearingDay(LocalDate.of(2022, 1, 28)))
             ));
         });
-        assertNull(exception.getMessage());
+        assertEquals("CANCELLED result requires a hearingResultReasonType", exception.getMessage());
     }
 
     @Test
