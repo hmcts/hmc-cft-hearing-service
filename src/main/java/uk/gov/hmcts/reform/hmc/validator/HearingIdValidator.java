@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
@@ -43,4 +46,15 @@ public class HearingIdValidator {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
         }
     }
+
+    /**
+     * get Hearing.
+     *
+     * @param hearingId hearing Id
+     * @return hearing hearing
+     */
+    protected Optional<HearingEntity> getHearing(Long hearingId) {
+        return hearingRepository.findById(hearingId);
+    }
+
 }

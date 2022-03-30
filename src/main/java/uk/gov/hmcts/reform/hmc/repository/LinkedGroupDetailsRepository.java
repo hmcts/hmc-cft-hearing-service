@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 @Repository
 public interface LinkedGroupDetailsRepository extends CrudRepository<LinkedGroupDetails, Long> {
 

@@ -54,4 +54,8 @@ public class HearingEntity {
     public Integer getLatestRequestVersion() {
         return getCaseHearingRequest().getVersionNumber();
     }
+
+    public boolean hasHearingResponses() {
+        return getHearingResponses() != null && !getHearingResponses().isEmpty();
+    }
 }

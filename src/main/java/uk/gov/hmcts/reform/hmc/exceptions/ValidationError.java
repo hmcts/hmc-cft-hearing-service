@@ -160,4 +160,19 @@ public final class ValidationError {
             "List assist transaction id length cannot be greater than 40 " + CHARACTERS_LONG;
     public static final String HEARING_CANCELLATION_REASON_MAX_LENGTH =
             "Hearing cancellation reason length cannot be greater than 40 " + CHARACTERS_LONG;
+
+
+    public static final String INVALID_LINKED_GROUP_REQUEST_ID_DETAILS = "Invalid linked group id";
+    public static final String LINKED_GROUP_ID_EMPTY = "Linked group id cannot be null or empty";
+    public static final String INVALID_STATE_FOR_HEARING_REQUEST
+            = "004 Invalid state for hearing request <hearingId>";
+    public static final String INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST
+            = "008 Invalid state for unlinking hearing request <hearingId>";
+    public static final String INSUFFICIENT_REQUEST_IDS = "001 Insufficient requestIds";
+    public static final String HEARING_REQUEST_CANNOT_BE_LINKED = "002 hearing request isLinked is False";
+    public static final String INVALID_STATE_FOR_LINKED_GROUP = "007 group is in a <state> state";
+    public static final String HEARING_REQUEST_ALREADY_LINKED = "003 hearing request already in a group";
+    public static final String INVALID_HEARING_ORDER = "Hearing order must exist and be greater than 0";
+    public static final String INVALID_GROUP_LINK_TYPE = "Invalid value for GroupLinkType <linkType>";
+    public static final String HEARING_ORDER_NOT_UNIQUE = "005 Hearing Order is not unique";
 }
