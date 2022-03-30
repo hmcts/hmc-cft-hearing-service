@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.hmc.model.hmi.CaseClassification;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiCaseDetails;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
