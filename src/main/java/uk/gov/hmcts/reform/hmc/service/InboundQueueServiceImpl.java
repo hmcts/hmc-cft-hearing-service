@@ -159,7 +159,8 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
             );
             HearingEntity hearingEntity = hearingRepository.save(hearingToSave);
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
-            messageSenderToTopicConfiguration.sendMessage(hmcHearingResponse.toString());
+            messageSenderToTopicConfiguration
+                .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString());
             if (hearingEntity.getStatus().equals(HearingStatus.EXCEPTION.name())) {
                 // TODO: Raise alert for Dynatrace (approach TBC)
             }
