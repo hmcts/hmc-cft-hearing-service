@@ -23,9 +23,10 @@ public class HmiSubmitHearingRequestMapper {
 
     public HmiSubmitHearingRequest mapRequest(Long hearingId, HearingRequest hearingRequest) {
         EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest.getPartyDetails());
+        Boolean isLinkedFlag = hearingRequest.getHearingDetails().getHearingIsLinkedFlag();
 
         HmiHearingRequest hmiHearingRequest = HmiHearingRequest.builder()
-            .caseDetails(hmiCaseDetailsMapper.getCaseDetails(hearingRequest.getCaseDetails(), hearingId))
+            .caseDetails(hmiCaseDetailsMapper.getCaseDetails(hearingRequest.getCaseDetails(), hearingId, isLinkedFlag))
             .entities(entities.getEntities())
             .listing(listingMapper.getListing(hearingRequest.getHearingDetails(), entities
                 .getPreferredHearingChannels()))

@@ -41,21 +41,22 @@ class HmiSubmitHearingRequestMapperTest {
 
     @Test
     void shouldReturnSubmitHearingRequestForCreateHearingRequest() {
-        Entity entity = Entity.builder().build();
         CreateHearingRequest createHearingRequest = new CreateHearingRequest();
         CaseDetails caseDetails = new CaseDetails();
         createHearingRequest.setCaseDetails(caseDetails);
         HearingDetails hearingDetails = new HearingDetails();
+        hearingDetails.setHearingIsLinkedFlag(Boolean.TRUE);
         createHearingRequest.setHearingDetails(hearingDetails);
         PartyDetails partyDetails = new PartyDetails();
         createHearingRequest.setPartyDetails(Collections.singletonList(partyDetails));
+        Entity entity = Entity.builder().build();
         EntitiesMapperObject entities = EntitiesMapperObject.builder()
             .entities(Collections.singletonList(entity))
             .preferredHearingChannels(Collections.singletonList(PREFERRED_HEARING_CHANNEL))
             .build();
         when(entitiesMapper.getEntities(Collections.singletonList(partyDetails))).thenReturn(entities);
         HmiCaseDetails hmiCaseDetails = HmiCaseDetails.builder().build();
-        when(hmiCaseDetailsMapper.getCaseDetails(caseDetails, HEARING_ID)).thenReturn(hmiCaseDetails);
+        when(hmiCaseDetailsMapper.getCaseDetails(caseDetails, HEARING_ID, Boolean.TRUE)).thenReturn(hmiCaseDetails);
         Listing listing = Listing.builder().build();
         when(listingMapper.getListing(hearingDetails, Collections.singletonList(PREFERRED_HEARING_CHANNEL)))
             .thenReturn(listing);
@@ -88,7 +89,7 @@ class HmiSubmitHearingRequestMapperTest {
             .build();
         when(entitiesMapper.getEntities(Collections.singletonList(partyDetails))).thenReturn(entities);
         HmiCaseDetails hmiCaseDetails = HmiCaseDetails.builder().build();
-        when(hmiCaseDetailsMapper.getCaseDetails(caseDetails, HEARING_ID)).thenReturn(hmiCaseDetails);
+        when(hmiCaseDetailsMapper.getCaseDetails(caseDetails, HEARING_ID, Boolean.FALSE)).thenReturn(hmiCaseDetails);
         Listing listing = Listing.builder().build();
         when(listingMapper.getListing(hearingDetails, Collections.singletonList(PREFERRED_HEARING_CHANNEL)))
             .thenReturn(listing);

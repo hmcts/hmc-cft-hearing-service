@@ -20,7 +20,7 @@ public final class ValidationError {
     public static final String NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE = "Number of physical attendees should be "
         + " greater than or equal to 0";
     public static final String HEARING_LOCATION_EMPTY = "Hearing locations can not be empty";
-    public static final String LISTING_COMMENTS_MAX_LENGTH = "Listing comments must not be more than 5000 "
+    public static final String LISTING_COMMENTS_MAX_LENGTH = "Listing comments must not be more than 2000 "
         + CHARACTERS_LONG;
     public static final String HEARING_REQUESTER_MAX_LENGTH = "Hearing requester must not be more than 60 "
         + CHARACTERS_LONG;
@@ -29,7 +29,7 @@ public final class ValidationError {
     public static final String MEMBER_ID_EMPTY = "Member Id can not be empty";
     public static final String MEMBER_ID_MAX_LENGTH = "Member Id must not be more than 70 " + CHARACTERS_LONG;
     public static final String MEMBER_TYPE_MAX_LENGTH = "Member type must not be more than 70 " + CHARACTERS_LONG;
-    public static final String LOCATION_TYPE_EMPTY = "Location type can not be empty";
+    public static final String LOCATION_ID_EMPTY = "Location id can not be empty";
     public static final String HMCTS_SERVICE_CODE_EMPTY_INVALID = "Hmcts service code is invalid";
     public static final String CASE_REF_EMPTY = "Case ref can not be empty";
     public static final String CASE_REF_INVALID = "Case ref details is invalid";
@@ -68,10 +68,10 @@ public final class ValidationError {
     public static final String UNAVAILABLE_FROM_DATE_EMPTY = "Unavailable from date can not be empty";
     public static final String UNAVAILABLE_TO_DATE_EMPTY = "Unavailable to date can not be empty";
     public static final String RELATED_PARTY_EMPTY = "Related Party can not be empty";
-    public static final String RELATED_PARTY_MAX_LENGTH = "Related Party must not be more than 2000 "
+    public static final String RELATED_PARTY_MAX_LENGTH = "Related Party must not be more than 15 "
         + CHARACTERS_LONG;
     public static final String RELATIONSHIP_TYPE_EMPTY = "Relationship type can not be empty";
-    public static final String RELATIONSHIP_TYPE_MAX_LENGTH = "Relationship type must not be more than 2000 characters"
+    public static final String RELATIONSHIP_TYPE_MAX_LENGTH = "Relationship type must not be more than 10 characters"
         + " long";
     public static final String TITLE_EMPTY = "Title can not be empty";
     public static final String TITLE_MAX_LENGTH = "Title must not be more than 40 " + CHARACTERS_LONG;
@@ -133,6 +133,10 @@ public final class ValidationError {
     public static final String PARTY_ROLE_EMPTY = "Party role must be present";
 
     public static final String HEARING_ID_NOT_FOUND = "No hearing found for reference: %s";
+    public static final String HEARING_GROUP_ID_NOT_FOUND = "No hearing group found for reference: %s";
+    public static final String INVALID_DELETE_HEARING_GROUP_STATUS = "007 group is in a %s state";
+    public static final String INVALID_DELETE_HEARING_GROUP_HEARING_STATUS = "008 Invalid state for unlinking hearing"
+        + " request %s";
     public static final String PARTIES_NOTIFIED_ID_NOT_FOUND = "001 No such id: %s";
     public static final String PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH = "002 No such response version";
     public static final String PARTIES_NOTIFIED_ALREADY_SET = "003 Already set";

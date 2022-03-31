@@ -6,6 +6,7 @@ import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,6 +19,7 @@ public class HearingRepositoryIT extends BaseTest {
     HearingRepository hearingRepository;
 
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
+    private static final String INSERT_LINKED_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-linked-hearings.sql";
 
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
@@ -43,4 +45,14 @@ public class HearingRepositoryIT extends BaseTest {
         assertTrue(hearingResult.isEmpty());
     }
 
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+    void testFindByHearingGroupId() {
+        List<HearingEntity> hearings = hearingRepository.findByLinkedGroupId(7600000000L);
+        assertEquals(2, hearings.size());
+        assertTrue(hearings.stream().map(HearingEntity::getId)
+                       .anyMatch(h -> h.equals(2000000005L)));
+        assertTrue(hearings.stream().map(HearingEntity::getId)
+                       .anyMatch(h -> h.equals(2000000006L)));
+    }
 }
