@@ -5,6 +5,7 @@ import java.util.Arrays;
 public enum HearingCode {
     LISTED,
     PENDING_RELISTING,
+    EXCEPTION,
     CLOSED;
 
     public static boolean isValid(String status) {

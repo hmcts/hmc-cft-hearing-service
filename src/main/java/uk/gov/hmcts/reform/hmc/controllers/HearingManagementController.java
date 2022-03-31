@@ -141,5 +141,4 @@ public class HearingManagementController {
         return hearingRequest.getCaseDetails().getCaseRef();
 
     }
-
 }
