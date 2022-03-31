@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.IndividualDetailEntity;
+import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
 import uk.gov.hmcts.reform.hmc.data.OrganisationDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
@@ -199,6 +200,8 @@ public class TestingUtil {
         individualDetails.setTitle("Mr");
         individualDetails.setFirstName("firstName");
         individualDetails.setLastName("lastName");
+        individualDetails.setCustodyStatus("custodyStatus");
+        individualDetails.setOtherReasonableAdjustmentDetails("otherReason");
         List<RelatedParty> relatedParties = new ArrayList<>();
         RelatedParty relatedParty1 = new RelatedParty();
         relatedParty1.setRelatedPartyID("P1");
@@ -322,7 +325,7 @@ public class TestingUtil {
     public static GetHearingsResponse getHearingsResponseWhenDataIsPresent(String caseRef) {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
         getHearingsResponse.setCaseRef(caseRef);
-        getHearingsResponse.setHmctsServiceId("AB1A");
+        getHearingsResponse.setHmctsServiceCode("AB1A");
         CaseHearing caseHearing = new CaseHearing();
         caseHearing.setHearingId(2000000000L);
         caseHearing.setHearingRequestDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
@@ -360,6 +363,8 @@ public class TestingUtil {
         entity.setCaseHearingID(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
         entity.setVersionNumber(1);
+        hearingEntity.setIsLinkedFlag(true);
+        hearingEntity.setLinkedGroupDetails(getLinkedGroupDetails());
         entity.setHearing(hearingEntity);
         entity.setHmctsServiceCode("ABA1");
         entity.setCaseReference("12345");
@@ -370,6 +375,14 @@ public class TestingUtil {
         return entity;
     }
 
+    public static LinkedGroupDetails getLinkedGroupDetails() {
+        LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
+        linkedGroupDetails.setLinkedGroupId(1L);
+        linkedGroupDetails.setRequestId("requestId");
+        linkedGroupDetails.setLinkedComments("linkComments");
+        linkedGroupDetails.setRequestName("requestName");
+        return linkedGroupDetails;
+    }
 
     public static List<NonStandardDurationsEntity> getNonStandardDurationEntities() {
         NonStandardDurationsEntity nonStandardDurationsEntity = new NonStandardDurationsEntity();
@@ -709,9 +722,11 @@ public class TestingUtil {
         UnavailabilityRanges detail1 = new UnavailabilityRanges();
         detail1.setUnavailableFromDate(LocalDate.parse("2021-10-20"));
         detail1.setUnavailableToDate(LocalDate.parse("2021-12-31"));
+        detail1.setUnavailabilityType("All Day");
         UnavailabilityRanges detail2 = new UnavailabilityRanges();
         detail2.setUnavailableFromDate(LocalDate.parse("2030-10-20"));
         detail2.setUnavailableToDate(LocalDate.parse("2030-10-22"));
+        detail2.setUnavailabilityType("All Day");
         List<UnavailabilityRanges> unavailabilityRanges = Lists.newArrayList(detail1, detail2);
         return unavailabilityRanges;
     }
@@ -721,7 +736,7 @@ public class TestingUtil {
         detail1.setDowUnavailabilityType("PM");
         detail1.setDow("MONDAY");
         UnavailabilityDow detail2 = new UnavailabilityDow();
-        detail2.setDowUnavailabilityType("ALL");
+        detail2.setDowUnavailabilityType("All Day");
         detail2.setDow("THURSDAY");
         List<UnavailabilityDow> unavailabilityDows = Lists.newArrayList(detail1, detail2);
         return unavailabilityDows;

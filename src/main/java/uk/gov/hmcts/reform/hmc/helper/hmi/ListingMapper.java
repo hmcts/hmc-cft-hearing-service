@@ -39,6 +39,7 @@ public class ListingMapper {
             .listingJohs(listingJohsMapper.getListingJohs(hearingDetails.getPanelRequirements()))
             .listingHearingChannels(preferredHearingChannels)
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
+            .amendReasonCode(hearingDetails.getAmendReasonCode())
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
             .listingOtherConsiderations(

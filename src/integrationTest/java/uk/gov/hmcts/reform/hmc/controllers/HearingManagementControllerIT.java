@@ -75,6 +75,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_TYPE_E
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_VALUE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CFT_ORG_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CFT_ORG_ID_NULL_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CUSTODY_STATUS_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DURATION_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DURATION_MIN_VALUE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.EXTERNAL_CASE_REFERENCE_MAX_LENGTH;
@@ -122,6 +123,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NON_STANDARD_HE
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.ORGANISATION_TYPE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.ORGANISATION_TYPE_NULL_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.OTHER_REASON_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PANEL_SPECIALISMS_MAX_LENGTH_MSG;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_DETAILS_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_DETAILS_NULL_EMPTY;
@@ -587,7 +589,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("HEARING_UPDATED"))
             .andExpect(jsonPath("$.caseHearings[1].hmcStatus").value("HEARING_REQUESTED"))
             .andExpect(jsonPath("$.caseHearings[2].hmcStatus").value("HEARING_REQUESTED"))
-            .andExpect(jsonPath("$.hmctsServiceID").value("ABA1"))
+            .andExpect(jsonPath("$.hmctsServiceCode").value("ABA1"))
             .andReturn();
     }
 
@@ -604,7 +606,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.caseHearings[1].hearingID").value("2000000000"))
             .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("HEARING_REQUESTED"))
             .andExpect(jsonPath("$.caseHearings[1].hmcStatus").value("HEARING_REQUESTED"))
-            .andExpect(jsonPath("$.hmctsServiceID").value("ABA1"))
+            .andExpect(jsonPath("$.hmctsServiceCode").value("ABA1"))
             .andReturn();
     }
 
@@ -904,11 +906,11 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(16)))
+            .andExpect(jsonPath("$.errors", hasSize(15)))
             .andExpect(jsonPath("$.errors", hasItems(PARTY_DETAILS_NULL_EMPTY,
                                                      "Unsupported type for partyType", UNAVAILABLE_FROM_DATE_EMPTY,
                                                      UNAVAILABLE_TO_DATE_EMPTY, "Unsupported type for dow",
-                                                     "Unsupported type for dowUnavailabilityType", NAME_NULL_EMPTY,
+                                                     NAME_NULL_EMPTY,
                                                      ORGANISATION_TYPE_NULL_EMPTY, CFT_ORG_ID_NULL_EMPTY, TITLE_EMPTY,
                                                      FIRST_NAME_EMPTY, LAST_NAME_EMPTY, RELATED_PARTY_EMPTY,
                                                      RELATIONSHIP_TYPE_EMPTY, PARTY_ROLE_EMPTY, PARTY_TYPE_EMPTY
@@ -925,13 +927,15 @@ class HearingManagementControllerIT extends BaseTest {
         IndividualDetails individualDetails = new IndividualDetails();
         individualDetails.setTitle("a".repeat(41));
         individualDetails.setFirstName("a".repeat(101));
-        individualDetails.setLastName("a".repeat(101));
+        individualDetails.setLastName("a".repeat(731));
         individualDetails.setPreferredHearingChannel("a".repeat(71));
         individualDetails.setInterpreterLanguage("a".repeat(11));
         individualDetails.setReasonableAdjustments(Collections.singletonList("a".repeat(11)));
         individualDetails.setVulnerabilityDetails("a".repeat(257));
         individualDetails.setHearingChannelEmail("a".repeat(121));
         individualDetails.setHearingChannelPhone("a".repeat(31));
+        individualDetails.setOtherReasonableAdjustmentDetails("a".repeat(201));
+        individualDetails.setCustodyStatus("a".repeat(81));
         RelatedParty relatedParty = new RelatedParty();
         relatedParty.setRelatedPartyID("a".repeat(16));
         relatedParty.setRelationshipType("a".repeat(11));
@@ -949,7 +953,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(18)))
+            .andExpect(jsonPath("$.errors", hasSize(20)))
             .andExpect(jsonPath("$.errors", hasItems(PARTY_DETAILS_MAX_LENGTH, PARTY_ROLE_MAX_LENGTH,
                                                      TITLE_MAX_LENGTH, FIRST_NAME_MAX_LENGTH, LAST_NAME_MAX_LENGTH,
                                                      PREFERRED_HEARING_CHANNEL_MAX_LENGTH,
@@ -959,7 +963,8 @@ class HearingManagementControllerIT extends BaseTest {
                                                      HEARING_CHANNEL_PHONE_MAX_LENGTH, HEARING_CHANNEL_PHONE_INVALID,
                                                      RELATED_PARTY_MAX_LENGTH, RELATIONSHIP_TYPE_MAX_LENGTH,
                                                      NAME_MAX_LENGTH, ORGANISATION_TYPE_MAX_LENGTH,
-                                                     CFT_ORG_ID_MAX_LENGTH, HEARING_CHANNEL_EMAIL_INVALID
+                                                     CFT_ORG_ID_MAX_LENGTH, HEARING_CHANNEL_EMAIL_INVALID,
+                                                     CUSTODY_STATUS_LENGTH, OTHER_REASON_LENGTH
             )))
             .andReturn();
     }

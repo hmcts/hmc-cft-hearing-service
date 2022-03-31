@@ -1231,7 +1231,7 @@ class HearingManagementServiceTest {
             GetHearingsResponse response = hearingManagementService.getHearings("12345",
                     "HEARING_REQUESTED");
             assertEquals("12345", response.getCaseRef());
-            assertEquals("AB1A", response.getHmctsServiceId());
+            assertEquals("AB1A", response.getHmctsServiceCode());
             assertEquals(1, response.getCaseHearings().size());
             assertEquals(2000000000L, response.getCaseHearings().get(0).getHearingId());
             assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
@@ -1250,7 +1250,7 @@ class HearingManagementServiceTest {
                 .willReturn(TestingUtil.getHearingsResponseWhenNoData("12345"));
             GetHearingsResponse response = hearingManagementService.getHearings("12345", null);
             assertEquals("12345", response.getCaseRef());
-            assertNull(response.getHmctsServiceId());
+            assertNull(response.getHmctsServiceCode());
             assertEquals(0, response.getCaseHearings().size());
         }
 
@@ -1263,7 +1263,7 @@ class HearingManagementServiceTest {
             GetHearingsResponse response = hearingManagementService.getHearings("12345",
                     "InvalidStatus");
             assertEquals("12345", response.getCaseRef());
-            assertNull(response.getHmctsServiceId());
+            assertNull(response.getHmctsServiceCode());
             assertEquals(0, response.getCaseHearings().size());
         }
     }

@@ -235,7 +235,7 @@ class HearingManagementServiceIT extends BaseTest {
 
     void testGetHearings_WithValidCaseRef_assertPt1(GetHearingsResponse response) {
         assertEquals("9372710950276233", response.getCaseRef());
-        assertEquals("ABA1", response.getHmctsServiceId());
+        assertEquals("ABA1", response.getHmctsServiceCode());
         assertEquals(3, response.getCaseHearings().size());
         assertEquals(2000000010L, response.getCaseHearings().get(0).getHearingId());
         assertEquals(2000000009L, response.getCaseHearings().get(1).getHearingId());
@@ -314,7 +314,7 @@ class HearingManagementServiceIT extends BaseTest {
 
     void testGetHearings_WithValidCaseRefAndStatus_assertPart1(GetHearingsResponse response) {
         assertEquals("9372710950276233", response.getCaseRef());
-        assertEquals("ABA1", response.getHmctsServiceId());
+        assertEquals("ABA1", response.getHmctsServiceCode());
         assertEquals(2, response.getCaseHearings().size());
         assertEquals(2000000009L, response.getCaseHearings().get(0).getHearingId());
         assertEquals(2000000000L, response.getCaseHearings().get(1).getHearingId());
@@ -370,7 +370,7 @@ class HearingManagementServiceIT extends BaseTest {
     void testGetHearings_WithInValidCaseRef() {
         GetHearingsResponse response = hearingManagementService.getHearings("9372710950276234", "");
         assertEquals("9372710950276234", response.getCaseRef());
-        assertNull(response.getHmctsServiceId());
+        assertNull(response.getHmctsServiceCode());
         assertEquals(0, response.getCaseHearings().size());
     }
 
@@ -379,7 +379,7 @@ class HearingManagementServiceIT extends BaseTest {
     void testGetHearings_WithInValidCaseRefAndValidStatus() {
         GetHearingsResponse response = hearingManagementService.getHearings("9372710950276234", "HEARING_REQUESTED");
         assertEquals("9372710950276234", response.getCaseRef());
-        assertNull(response.getHmctsServiceId());
+        assertNull(response.getHmctsServiceCode());
         assertEquals(0, response.getCaseHearings().size());
     }
 
