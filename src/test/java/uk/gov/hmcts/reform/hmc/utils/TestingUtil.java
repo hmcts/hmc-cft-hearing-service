@@ -556,10 +556,11 @@ public class TestingUtil {
         return entity;
     }
 
-    public static ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity() {
+    public static ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity(ActualHearingPartyEntity actualHearingPartyEntity) {
         ActualPartyRelationshipDetailEntity entity = new ActualPartyRelationshipDetailEntity();
         entity.setActualPartyRelationshipId(1L);
         entity.setTargetActualPartyId(1L);
+        entity.setActualHearingParty(actualHearingPartyEntity);
         return entity;
     }
 
@@ -583,10 +584,11 @@ public class TestingUtil {
     public static ActualHearingPartyEntity actualHearingPartyEntity(PartyType partyType) {
         ActualHearingPartyEntity entity = new ActualHearingPartyEntity();
         entity.setActualPartyId(1L);
+        entity.setPartyId("1");
         entity.setActualPartyRoleType("roleType");
         entity.setDidNotAttendFlag(false);
         entity.setActualAttendeeIndividualDetail(Arrays.asList(actualAttendeeIndividualDetailEntity(partyType)));
-        entity.setActualPartyRelationshipDetail(Arrays.asList(actualPartyRelationshipDetailEntity()));
+        entity.setActualPartyRelationshipDetail(Arrays.asList(actualPartyRelationshipDetailEntity(entity)));
         return entity;
     }
 
