@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc.domain.model.enums;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.base.Enums;
+
 import java.util.Arrays;
 
 public enum DeleteHearingStatus {
@@ -14,7 +16,7 @@ public enum DeleteHearingStatus {
     }
 
     public static boolean isValidHearingActuals(String status) {
-        DeleteHearingStatus deleteHearingStatus = getDeleteHearingStatus(status);
+        DeleteHearingStatus deleteHearingStatus = Enums.getIfPresent(DeleteHearingStatus.class, status).orNull();
         if (deleteHearingStatus == null) {
             return false;
         }
@@ -25,14 +27,6 @@ public enum DeleteHearingStatus {
                 return true;
             default:
                 return false;
-        }
-    }
-
-    private static DeleteHearingStatus getDeleteHearingStatus(String status) {
-        try {
-            return valueOf(status);
-        } catch (IllegalArgumentException ie) {
-            return null;
         }
     }
 }
