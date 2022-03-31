@@ -48,5 +48,11 @@ public class Listing {
     private List<ListingLocation> listingLocations;
 
     private String amendReasonCode;
+  
+    private List<String> listingJohTickets;
+
+    private List<String> listingJohSpecialisms;
+
+    private List<String> listingOtherConsiderations;
 
 }
