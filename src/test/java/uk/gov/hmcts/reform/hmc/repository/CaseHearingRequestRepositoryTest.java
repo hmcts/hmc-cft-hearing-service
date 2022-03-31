@@ -115,4 +115,26 @@ class CaseHearingRequestRepositoryTest {
         );
     }
 
+    @Test
+    void testGetHmctsServiceCodeisValid() {
+        Long expectedCount = 1L;
+        doReturn(1L).when(caseHearingRequestRepository).getHmctsServiceCodeCount(any());
+        Long count = caseHearingRequestRepository.getHmctsServiceCodeCount(any());
+        assertAll(
+            () -> assertThat(count, is(expectedCount)),
+            () -> verify(caseHearingRequestRepository, times(1)).getHmctsServiceCodeCount(any())
+        );
+    }
+
+    @Test
+    void testGetHmctsServiceCodeisInvalid() {
+        Long expectedCount = 0L;
+        doReturn(0L).when(caseHearingRequestRepository).getHmctsServiceCodeCount(any());
+        Long count = caseHearingRequestRepository.getHmctsServiceCodeCount(any());
+        assertAll(
+            () -> assertThat(count, is(expectedCount)),
+            () -> verify(caseHearingRequestRepository, times(1)).getHmctsServiceCodeCount(any())
+        );
+    }
+
 }

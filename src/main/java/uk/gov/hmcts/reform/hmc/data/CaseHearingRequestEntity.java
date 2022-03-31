@@ -114,6 +114,9 @@ public class CaseHearingRequestEntity {
     @Column(name = "request_timestamp", nullable = false)
     private LocalDateTime requestTimeStamp;
 
+    @Column(name = "amend_reason_code")
+    private String amendReasonCode;
+
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;

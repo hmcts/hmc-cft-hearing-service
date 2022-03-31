@@ -198,7 +198,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     private List<HearingResponseEntity> getLatestVersionHearingResponses(HearingEntity hearing) {
-        Optional<Map.Entry<String, List<HearingResponseEntity>>> max = hearing.getHearingResponses().stream()
+        Optional<Map.Entry<Integer, List<HearingResponseEntity>>> max = hearing.getHearingResponses().stream()
             .collect(groupingBy(HearingResponseEntity::getRequestVersion))
             .entrySet()
             .stream()

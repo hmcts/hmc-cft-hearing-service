@@ -82,10 +82,10 @@ class LinkedHearingGroupServiceTest {
             hearing1.setStatus(HEARING_STATUS);
             hearing1.setIsLinkedFlag(true);
             hearing1.setHearingResponses(List.of(
-                createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
+                createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 ),
-                createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
+                createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE,
                                                                    START_DATE_TIME_IN_THE_FUTURE)
                 )));
@@ -96,7 +96,7 @@ class LinkedHearingGroupServiceTest {
             hearing2.setStatus(HEARING_STATUS);
             hearing2.setIsLinkedFlag(true);
             hearing2.setHearingResponses(List.of(
-                createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
+                createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
 
@@ -162,10 +162,10 @@ class LinkedHearingGroupServiceTest {
             hearing1.setStatus(HEARING_STATUS);
             hearing1.setIsLinkedFlag(true);
             hearing1.setHearingResponses(List.of(
-                createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
+                createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 ),
-                createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
+                createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE,
                                                                    START_DATE_TIME_IN_THE_FUTURE)
                 )));
@@ -175,11 +175,11 @@ class LinkedHearingGroupServiceTest {
             hearing2.setStatus(HEARING_STATUS);
             hearing2.setIsLinkedFlag(true);
             hearing2.setHearingResponses(List.of(
-                createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
+                createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE,
                                                                    START_DATE_TIME_IN_THE_PAST)
                 ),
-                createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
+                createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
@@ -206,7 +206,7 @@ class LinkedHearingGroupServiceTest {
             hearing.setStatus(HEARING_STATUS_UPDATE_REQUESTED);
             hearing.setIsLinkedFlag(true);
             hearing.setHearingResponses(List.of(
-                createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
+                createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE,
                                                                    START_DATE_TIME_IN_THE_PAST)
                 )));
@@ -234,7 +234,7 @@ class LinkedHearingGroupServiceTest {
             hearing.setStatus(FOR_DELETE_INVALID_HEARING_STATUS);
             hearing.setIsLinkedFlag(true);
             hearing.setHearingResponses(List.of(
-                createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
+                createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
@@ -261,10 +261,10 @@ class LinkedHearingGroupServiceTest {
             hearing1.setStatus(HEARING_STATUS);
             hearing1.setIsLinkedFlag(true);
             hearing1.setHearingResponses(List.of(
-                createHearingResponseEntityWithHearingDays("2", HEARING_RESPONSE_DATE_TIME,
+                createHearingResponseEntityWithHearingDays(2, HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 ),
-                createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
+                createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
                                                            // should not fail as will get filtered out
                                                            List.of(START_DATE_TIME_IN_THE_PAST,
                                                                    START_DATE_TIME_IN_THE_FUTURE)
@@ -275,7 +275,7 @@ class LinkedHearingGroupServiceTest {
             hearing2.setStatus(HEARING_STATUS);
             hearing2.setIsLinkedFlag(true);
             hearing2.setHearingResponses(List.of(
-                createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
+                createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
@@ -300,11 +300,11 @@ class LinkedHearingGroupServiceTest {
             hearing.setStatus(HEARING_STATUS);
             hearing.setIsLinkedFlag(true);
             hearing.setHearingResponses(List.of(
-                createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME.minusDays(1),
+                createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME.minusDays(1),
                                                            // should not fail as will get filtered out
                                                            List.of(START_DATE_TIME_IN_THE_PAST)
                 ),
-                createHearingResponseEntityWithHearingDays("1", HEARING_RESPONSE_DATE_TIME,
+                createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
@@ -322,7 +322,7 @@ class LinkedHearingGroupServiceTest {
         }
 
         private HearingResponseEntity createHearingResponseEntityWithHearingDays(
-            String requestVersion,
+            Integer requestVersion,
             LocalDateTime requestTimestamp,
             List<LocalDateTime> hearingDaysStartDateTime) {
 

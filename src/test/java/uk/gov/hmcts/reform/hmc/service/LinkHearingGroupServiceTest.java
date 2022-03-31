@@ -505,7 +505,7 @@ class LinkHearingGroupServiceTest {
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingResponseEntity.setHearingDayDetails(hearingDayDetailsEntities);
         hearingResponseEntity.setHearing(hearingEntity);
-        hearingResponseEntity.setResponseVersion(versionNumber.toString());
+        hearingResponseEntity.setResponseVersion(versionNumber);
         hearingResponseEntity.setRequestTimeStamp(requestTimestamp);
 
         hearingEntity.setHearingResponses(List.of(hearingResponseEntity));

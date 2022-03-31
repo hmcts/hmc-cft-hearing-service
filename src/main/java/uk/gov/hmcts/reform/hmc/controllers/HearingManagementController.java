@@ -71,7 +71,7 @@ public class HearingManagementController {
         hearingManagementService.verifyAccess(getCaseRef(createHearingRequest));
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
         hearingManagementService.sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest,
-                                                          REQUEST_HEARING
+                REQUEST_HEARING
         );
         return hearingResponse;
     }
@@ -155,7 +155,5 @@ public class HearingManagementController {
             return null;
         }
         return hearingRequest.getCaseDetails().getCaseRef();
-
     }
-
 }
