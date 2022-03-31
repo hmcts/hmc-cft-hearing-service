@@ -80,7 +80,7 @@ class HmiHearingResponseMapperTest {
                 response.getHearingResponses().get(1).getRequestTimeStamp(),
                 is(LocalDateTime.parse("2021-08-10T12:20:00"))
             ),
-            () -> assertThat(response.getHearingResponses().get(1).getRequestVersion(), is("1")),
+            () -> assertThat(response.getHearingResponses().get(1).getRequestVersion(), is(1)),
             () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is(ListingStatus.DRAFT.name())),
             () -> assertThat(response.getHearingResponses().get(1).getCancellationReasonType(), is("reason")),
             () -> assertThat(response.getHearingResponses().get(1).getTranslatorRequired(), is(true)),
@@ -128,7 +128,7 @@ class HmiHearingResponseMapperTest {
                 response.getHearingResponses().get(1).getRequestTimeStamp(),
                 is(LocalDateTime.parse("2021-08-10T12:20:00"))
             ),
-            () -> assertThat(response.getHearingResponses().get(1).getRequestVersion(), is("1")),
+            () -> assertThat(response.getHearingResponses().get(1).getRequestVersion(), is(1)),
             () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is(ListingStatus.DRAFT.name())),
             () -> assertThat(response.getHearingResponses().get(1).getCancellationReasonType(), is("reason")),
             () -> assertThat(response.getHearingResponses().get(1).getTranslatorRequired(), is(true)),

@@ -16,11 +16,11 @@ import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
-import uk.gov.hmcts.reform.hmc.exceptions.ListAssistResponseException;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.Map;
@@ -44,6 +44,7 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
     private HearingRepository hearingRepository;
     private final HmiHearingResponseMapper hmiHearingResponseMapper;
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
+    private final ObjectMapperService objectMapperService;
     private static final String HEARING_ID = "hearing_id";
     public static final String UNSUPPORTED_HEARING_STATUS = "Hearing has unsupported value for hearing status";
     public static final String MISSING_HEARING_ID = "Message is missing custom header hearing_id";
@@ -51,12 +52,14 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
     public InboundQueueServiceImpl(ObjectMapper objectMapper,
                                    HearingRepository hearingRepository,
                                    HmiHearingResponseMapper hmiHearingResponseMapper,
-                                   MessageSenderToTopicConfiguration messageSenderToTopicConfiguration) {
+                                   MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
+                                   ObjectMapperService objectMapperService) {
         super(hearingRepository);
         this.objectMapper = objectMapper;
         this.hearingRepository = hearingRepository;
         this.hmiHearingResponseMapper = hmiHearingResponseMapper;
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
+        this.objectMapperService = objectMapperService;
     }
 
     @Override
@@ -113,15 +116,16 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
             );
             hearingRepository.save(hearingToSave);
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingToSave);
-            messageSenderToTopicConfiguration.sendMessage(hmcHearingResponse.toString());
+            messageSenderToTopicConfiguration
+                .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString());
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
-                //Service bus sessionhas to completed first else it will try to re process the message
+                //Service bus session has to completed first else it will try to re process the message
                 client.complete(message);
-                throw new ListAssistResponseException(
-                    hearingId,
-                    errorDetails.getErrorCode() + " "
-                        + errorDetails.getErrorDescription()
-                );
+                //                throw new ListAssistResponseException(
+                //                    hearingId,
+                //                    errorDetails.getErrorCode() + " "
+                //                        + errorDetails.getErrorDescription()
+                //                );
             }
         }
     }
@@ -139,7 +143,8 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
             if (hearingEntity.isPresent()) {
                 HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity.get());
-                messageSenderToTopicConfiguration.sendMessage(hmcHearingResponse.toString());
+                messageSenderToTopicConfiguration
+                    .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString());
             }
         }
     }

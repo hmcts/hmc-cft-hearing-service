@@ -163,8 +163,8 @@ public class BasePactTesting {
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         HearingLocation location1 = new HearingLocation();
-        location1.setLocationId("court");
-        location1.setLocationType("Location type");
+        location1.setLocationType("court");
+        location1.setLocationId("Location id");
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
@@ -198,8 +198,8 @@ public class BasePactTesting {
             hearingWindow.setFirstDateTimeMustBe(LocalDateTime.now());
         } else {
             logger.info("using hearing window date range");
-            hearingWindow.setHearingWindowStartDateRange(LocalDate.now());
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeStart(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
         }
         return hearingWindow;
     }

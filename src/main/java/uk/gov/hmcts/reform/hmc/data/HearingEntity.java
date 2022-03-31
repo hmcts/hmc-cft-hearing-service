@@ -90,7 +90,7 @@ public class HearingEntity {
      * Gets the most recent hearing response associated with the latest request.
      */
     public Optional<HearingResponseEntity> getHearingResponseForLatestRequest() {
-        String latestRequestVersion = getLatestRequestVersion().toString();
+        Integer latestRequestVersion = getLatestRequestVersion();
         return hasHearingResponses() ? getHearingResponses().stream()
             .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
             .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp))
@@ -114,7 +114,7 @@ public class HearingEntity {
         return getLatestRequestVersion() + 1;
     }
 
-    private boolean hasHearingResponses() {
+    public boolean hasHearingResponses() {
         return getHearingResponses() != null && !getHearingResponses().isEmpty();
     }
 }

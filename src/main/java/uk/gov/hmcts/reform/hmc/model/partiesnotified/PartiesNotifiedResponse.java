@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PartiesNotifiedResponse {
 
-    private String responseVersion;
+    private Integer responseVersion;
 
     private LocalDateTime responseReceivedDateTime;
 
-    private String requestVersion;
+    private Integer requestVersion;
 
     private LocalDateTime partiesNotified;
 

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -13,8 +12,6 @@ import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
-import uk.gov.hmcts.reform.hmc.model.CaseCategory;
-import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
@@ -55,42 +52,6 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         requestDetails.setTimestamp(caseHearingRequestEntity.getHearingRequestReceivedDateTime());
         requestDetails.setVersionNumber(caseHearingRequestEntity.getVersionNumber());
         return requestDetails;
-    }
-
-    private CaseDetails setCaseDetails(HearingEntity hearingEntity) {
-        CaseDetails caseDetails = new CaseDetails();
-        CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
-        caseDetails.setHmctsServiceCode(caseHearingRequestEntity.getHmctsServiceCode());
-        caseDetails.setCaseRef(caseHearingRequestEntity.getCaseReference());
-        caseDetails.setExternalCaseReference(caseHearingRequestEntity.getExternalCaseReference());
-        caseDetails.setCaseDeepLink(caseHearingRequestEntity.getCaseUrlContextPath());
-        caseDetails.setHmctsInternalCaseName(caseHearingRequestEntity.getHmctsInternalCaseName());
-        caseDetails.setPublicCaseName(caseHearingRequestEntity.getPublicCaseName());
-        caseDetails.setCaseAdditionalSecurityFlag(
-            caseHearingRequestEntity.getAdditionalSecurityRequiredFlag());
-        caseDetails.setCaseInterpreterRequiredFlag(
-            caseHearingRequestEntity.getInterpreterBookingRequiredFlag());
-        caseDetails.setCaseCategories(setCaseCategories(hearingEntity));
-        caseDetails.setCaseManagementLocationCode(caseHearingRequestEntity.getOwningLocationId());
-        caseDetails.setCaseRestrictedFlag(caseHearingRequestEntity.getCaseRestrictedFlag());
-        caseDetails.setCaseSlaStartDate(caseHearingRequestEntity.getCaseSlaStartDate());
-        return caseDetails;
-    }
-
-    private ArrayList<CaseCategory> setCaseCategories(HearingEntity hearingEntity) {
-        ArrayList<CaseCategory> caseCategories = new ArrayList<>();
-        CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
-        if (null != caseHearingRequestEntity.getCaseCategories()
-                && !caseHearingRequestEntity.getCaseCategories().isEmpty()) {
-            for (CaseCategoriesEntity caseCategoriesEntity :
-                    caseHearingRequestEntity.getCaseCategories()) {
-                CaseCategory caseCategory = new CaseCategory();
-                caseCategory.setCategoryType(caseCategoriesEntity.getCategoryType().getLabel());
-                caseCategory.setCategoryValue(caseCategoriesEntity.getCaseCategoryValue());
-                caseCategories.add(caseCategory);
-            }
-        }
-        return caseCategories;
     }
 
     private ArrayList<PartyDetails> setPartyDetails(HearingEntity hearingEntity) {
@@ -296,8 +257,8 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             for (RequiredLocationsEntity requiredLocationsEntity
                     : caseHearingRequestEntity.getRequiredLocations()) {
                 HearingLocation hearingLocation = new HearingLocation();
-                hearingLocation.setLocationId(requiredLocationsEntity.getLocationId().getLabel());
-                hearingLocation.setLocationType(requiredLocationsEntity.getLocationLevelType());
+                hearingLocation.setLocationId(requiredLocationsEntity.getLocationId());
+                hearingLocation.setLocationType(requiredLocationsEntity.getLocationLevelType().getLabel());
                 hearingLocations.add(hearingLocation);
             }
         }
@@ -307,9 +268,9 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
     private HearingWindow setHearingWindow(HearingEntity hearingEntity) {
         HearingWindow hearingWindow = new HearingWindow();
         CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
-        hearingWindow.setHearingWindowStartDateRange(
+        hearingWindow.setDateRangeStart(
             caseHearingRequestEntity.getHearingWindowStartDateRange());
-        hearingWindow.setHearingWindowEndDateRange(
+        hearingWindow.setDateRangeEnd(
             caseHearingRequestEntity.getHearingWindowEndDateRange());
         hearingWindow.setFirstDateTimeMustBe(caseHearingRequestEntity.getFirstDateTimeOfHearingMustBe());
         return hearingWindow;

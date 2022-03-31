@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnavailable;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
-import uk.gov.hmcts.reform.hmc.model.LocationId;
+import uk.gov.hmcts.reform.hmc.model.LocationType;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_TYPE_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LOCATION_ID_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_ROLE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_TYPE_EMPTY;
 
@@ -51,54 +52,62 @@ class EnumPatternValidatorTest {
     }
 
     @Test
-    void whenInvalidLocationIdIsNull() {
-        HearingLocation location = getHearingLocation();
-        location.setLocationId(null);
+    void whenInvalidLocationTypeIsNull() {
+        HearingLocation location = new HearingLocation();
+        location.setLocationId("Id");
+        location.setLocationType(null);
         Set<ConstraintViolation<HearingLocation>> violations = validator.validate(location);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for locationId", validationErrors.get(0));
+        assertEquals("Unsupported type for locationType", validationErrors.get(0));
     }
 
-    private HearingLocation getHearingLocation() {
+    @Test
+    void whenInvalidLocationTypeIsEmpty() {
         HearingLocation location = new HearingLocation();
-        location.setLocationType("LocType");
-        return location;
+        location.setLocationId("Id");
+        location.setLocationType("");
+        Set<ConstraintViolation<HearingLocation>> violations = validator.validate(location);
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
+        assertEquals("Unsupported type for locationType", validationErrors.get(0));
     }
 
     @Test
     void whenInvalidLocationIdIsEmpty() {
         HearingLocation location = new HearingLocation();
         location.setLocationId("");
-        location.setLocationType("LocType");
+        location.setLocationType(LocationType.CLUSTER.toString());
         Set<ConstraintViolation<HearingLocation>> violations = validator.validate(location);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for locationId", validationErrors.get(0));
+        assertEquals(LOCATION_ID_EMPTY, validationErrors.get(0));
     }
 
     @Test
-    void whenInvalidLocationId() {
+    void whenInvalidLocationType() {
         HearingLocation location = new HearingLocation();
         location.setLocationId("Loc");
-        location.setLocationType("LocType");
+        location.setLocationType("Loc");
         Set<ConstraintViolation<HearingLocation>> violations = validator.validate(location);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for locationId", validationErrors.get(0));
+        assertEquals("Unsupported type for locationType", validationErrors.get(0));
     }
 
     @Test
-    void whenValidLocationId() {
+    void whenValidLocationType() {
         HearingLocation location = new HearingLocation();
-        location.setLocationId(LocationId.COURT.toString());
-        location.setLocationType("LocType");
+        location.setLocationType(LocationType.COURT.toString());
+        location.setLocationId("LocType");
         Set<ConstraintViolation<HearingLocation>> violations = validator.validate(location);
         assertTrue(violations.isEmpty());
     }
@@ -335,51 +344,6 @@ class EnumPatternValidatorTest {
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertEquals("Unsupported type for dow", validationErrors.get(0));
     }
-
-    @Test
-    void whenInValidDowUnavailabilityType() {
-        UnavailabilityDow unavailabilityDow = getDow();
-        unavailabilityDow.setDowUnavailabilityType("dow");
-        Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
-        assertFalse(violations.isEmpty());
-        assertEquals(1, violations.size());
-        List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for dowUnavailabilityType", validationErrors.get(0));
-    }
-
-    private UnavailabilityDow getDow() {
-        UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-        unavailabilityDow.setDow(DayOfWeekUnavailable.MONDAY.toString());
-        return unavailabilityDow;
-    }
-
-    @Test
-    void whenInValidDowUnavailabilityTypeIsNull() {
-        UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-        unavailabilityDow.setDowUnavailabilityType(null);
-        unavailabilityDow.setDow(DayOfWeekUnavailable.MONDAY.toString());
-        Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
-        assertFalse(violations.isEmpty());
-        assertEquals(1, violations.size());
-        List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for dowUnavailabilityType", validationErrors.get(0));
-    }
-
-    @Test
-    void whenInValidDowUnavailabilityTypeIsEmpty() {
-        UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-        unavailabilityDow.setDowUnavailabilityType("");
-        unavailabilityDow.setDow(DayOfWeekUnavailable.MONDAY.toString());
-        Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
-        assertFalse(violations.isEmpty());
-        assertEquals(1, violations.size());
-        List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for dowUnavailabilityType", validationErrors.get(0));
-    }
-
 
     @Test
     void whenValidUnavailabilityDowUnavailabilityType() {

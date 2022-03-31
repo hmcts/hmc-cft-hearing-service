@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
@@ -19,7 +20,7 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
         getHearingsResponse.setCaseRef(caseRef);
         if (!entities.isEmpty()) {
-            getHearingsResponse.setHmctsServiceId(entities.get(0).getHmctsServiceCode());
+            getHearingsResponse.setHmctsServiceCode(entities.get(0).getHmctsServiceCode());
             setCaseHearings(entities, getHearingsResponse);
         } else {
             getHearingsResponse.setCaseHearings(new ArrayList<>());
@@ -35,6 +36,7 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
             Optional<HearingResponseEntity> latestHearingResponseOpt = getLatestHearingResponse(entity, caseHearing);
             latestHearingResponseOpt.ifPresent(latestHearingResponse ->
                 setHearingDaySchedule(caseHearing, latestHearingResponse));
+            setHearingGroupRequestId(entity, caseHearing);
             caseHearingList.add(caseHearing);
         }
         getHearingsResponse.setCaseHearings(caseHearingList);
@@ -50,6 +52,7 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
                 HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
                 setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
                 setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
+                hearingDaySchedule.setHearingVenueId(detailEntity.getVenueId());
                 scheduleList.add(hearingDaySchedule);
             }
         }
@@ -70,6 +73,7 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         caseHearing.setHearingRequestDateTime(entity.getHearingRequestReceivedDateTime());
         caseHearing.setHearingType(entity.getHearingType());
         caseHearing.setHmcStatus(entity.getHearing().getStatus());
+        caseHearing.setHearingIsLinkedFlag(entity.getHearing().getIsLinkedFlag());
         return caseHearing;
     }
 
@@ -80,4 +84,10 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         caseHearing.setListAssistCaseStatus(hearingResponseEntity.getListingCaseStatus());
     }
 
+    private void setHearingGroupRequestId(CaseHearingRequestEntity entity, CaseHearing caseHearing) {
+        HearingEntity hearing = entity.getHearing();
+        if (hearing.getLinkedGroupDetails() != null) {
+            caseHearing.setHearingGroupRequestId(hearing.getLinkedGroupDetails().getLinkedGroupId().toString());
+        }
+    }
 }

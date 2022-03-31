@@ -112,6 +112,9 @@ public class CaseHearingRequestEntity {
     @Column(name = "hearing_request_received_date_time", nullable = false)
     private LocalDateTime hearingRequestReceivedDateTime;
 
+    @Column(name = "amend_reason_code")
+    private String amendReasonCode;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
