@@ -72,11 +72,7 @@ class LinkHearingGroupControllerTest {
 
             LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService);
             controller.validateLinkHearing(hearingLinkGroupRequest);
-            try {
-                verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
+            verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest);
         }
 
         @Test
@@ -94,11 +90,7 @@ class LinkHearingGroupControllerTest {
 
             LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService);
             controller.validateLinkHearing(hearingLinkGroupRequest);
-            try {
-                verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
+            verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest);
         }
     }
 

@@ -1,12 +1,9 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -40,26 +37,8 @@ public class LinkHearingGroupController {
         @ApiResponse(code = 400, message = "004 invalid state of hearing for request"),
         @ApiResponse(code = 400, message = "005 Hearing Order is not unique")
     })
-    public void validateLinkHearing(@RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest)
-        throws JsonProcessingException {
-        try {
-            linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @DeleteMapping(path = "/linkedHearingGroup/{id}", consumes = APPLICATION_JSON_VALUE,
-        produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Hearing group deletion processed"),
-        @ApiResponse(code = 400, message = "Invalid hearing group details found"),
-        @ApiResponse(code = 404, message = "Hearing Group id not found"),
-        @ApiResponse(code = 500, message = "Error occurred on the server")
-    })
-    public void deleteHearingGroup(@PathVariable("id") Long hearingGroupId) {
-        linkedHearingGroupService.deleteLinkedHearingGroup(hearingGroupId);
+    public void validateLinkHearing(@RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
+        linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
     }
 
 }
