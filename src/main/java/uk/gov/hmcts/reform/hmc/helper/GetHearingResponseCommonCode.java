@@ -1,9 +1,13 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.model.Attendee;
+import uk.gov.hmcts.reform.hmc.model.CaseCategory;
+import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 
 import java.util.ArrayList;
@@ -40,6 +44,41 @@ public class GetHearingResponseCommonCode {
         } else {
             hearingDaySchedule.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
         }
+    }
+
+
+    protected CaseDetails setCaseDetails(HearingEntity hearingEntity) {
+        CaseDetails caseDetails = new CaseDetails();
+        caseDetails.setHmctsServiceCode(hearingEntity.getCaseHearingRequest().getHmctsServiceCode());
+        caseDetails.setCaseRef(hearingEntity.getCaseHearingRequest().getCaseReference());
+        caseDetails.setExternalCaseReference(hearingEntity.getCaseHearingRequest().getExternalCaseReference());
+        caseDetails.setCaseDeepLink(hearingEntity.getCaseHearingRequest().getCaseUrlContextPath());
+        caseDetails.setHmctsInternalCaseName(hearingEntity.getCaseHearingRequest().getHmctsInternalCaseName());
+        caseDetails.setPublicCaseName(hearingEntity.getCaseHearingRequest().getPublicCaseName());
+        caseDetails.setCaseAdditionalSecurityFlag(
+            hearingEntity.getCaseHearingRequest().getAdditionalSecurityRequiredFlag());
+        caseDetails.setCaseInterpreterRequiredFlag(
+            hearingEntity.getCaseHearingRequest().getInterpreterBookingRequiredFlag());
+        caseDetails.setCaseCategories(setCaseCategories(hearingEntity));
+        caseDetails.setCaseManagementLocationCode(hearingEntity.getCaseHearingRequest().getOwningLocationId());
+        caseDetails.setCaseRestrictedFlag(hearingEntity.getCaseHearingRequest().getCaseRestrictedFlag());
+        caseDetails.setCaseSlaStartDate(hearingEntity.getCaseHearingRequest().getCaseSlaStartDate());
+        return caseDetails;
+    }
+
+    private ArrayList<CaseCategory> setCaseCategories(HearingEntity hearingEntity) {
+        ArrayList<CaseCategory> caseCategories = new ArrayList<>();
+        if (null != hearingEntity.getCaseHearingRequest().getCaseCategories()
+            && !hearingEntity.getCaseHearingRequest().getCaseCategories().isEmpty()) {
+            for (CaseCategoriesEntity caseCategoriesEntity :
+                hearingEntity.getCaseHearingRequest().getCaseCategories()) {
+                CaseCategory caseCategory = new CaseCategory();
+                caseCategory.setCategoryType(caseCategoriesEntity.getCategoryType().getLabel());
+                caseCategory.setCategoryValue(caseCategoriesEntity.getCaseCategoryValue());
+                caseCategories.add(caseCategory);
+            }
+        }
+        return caseCategories;
     }
 
 }

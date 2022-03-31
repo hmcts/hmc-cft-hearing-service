@@ -85,7 +85,6 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         }
     }
 
-
     private void setHearingGroupRequestId(CaseHearingRequestEntity entity, CaseHearing caseHearing) {
         HearingEntity hearing = entity.getHearing();
         if (hearing.getLinkedGroupDetails() != null) {
