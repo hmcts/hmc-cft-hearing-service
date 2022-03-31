@@ -7,6 +7,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -49,14 +50,14 @@ public class HearingResponseEntity {
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
 
-    @OneToMany(mappedBy = "hearingResponse")
+    @OneToMany(mappedBy = "hearingResponse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingDayDetailsEntity> hearingDayDetails;
 
     @Column(name = "request_version", nullable = false)
     private String requestVersion;
 
-    @Column(name = "response_version", nullable = false)
+    @Column(name = "response_version")
     private String responseVersion;
 
     @Column(name = "parties_notified_datetime")
@@ -68,4 +69,13 @@ public class HearingResponseEntity {
 
     @OneToOne(mappedBy = "hearingResponse", fetch = FetchType.EAGER)
     private ActualHearingEntity actualHearingEntity;
+
+    @Column(name = "cancellation_reason_type")
+    private String cancellationReasonType;
+
+    @Column(name = "translator_required")
+    private Boolean translatorRequired;
+
+    @Column(name = "listing_transaction_id")
+    private String listingTransactionId;
 }
