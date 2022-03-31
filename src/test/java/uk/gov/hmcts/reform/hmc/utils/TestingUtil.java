@@ -556,7 +556,8 @@ public class TestingUtil {
         return entity;
     }
 
-    public static ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity(ActualHearingPartyEntity actualHearingPartyEntity) {
+    public static ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity(
+        ActualHearingPartyEntity actualHearingPartyEntity) {
         ActualPartyRelationshipDetailEntity entity = new ActualPartyRelationshipDetailEntity();
         entity.setActualPartyRelationshipId(1L);
         entity.setTargetActualPartyId(1L);
