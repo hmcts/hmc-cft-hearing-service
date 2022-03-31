@@ -215,38 +215,4 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         }
         return individualDetailsArrayList;
     }
-
-    private CaseDetails setCaseDetails(HearingEntity hearingEntity) {
-        CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setHmctsServiceCode(hearingEntity.getCaseHearingRequest().getHmctsServiceCode());
-        caseDetails.setCaseRef(hearingEntity.getCaseHearingRequest().getCaseReference());
-        caseDetails.setExternalCaseReference(hearingEntity.getCaseHearingRequest().getExternalCaseReference());
-        caseDetails.setCaseDeepLink(hearingEntity.getCaseHearingRequest().getCaseUrlContextPath());
-        caseDetails.setHmctsInternalCaseName(hearingEntity.getCaseHearingRequest().getHmctsInternalCaseName());
-        caseDetails.setPublicCaseName(hearingEntity.getCaseHearingRequest().getPublicCaseName());
-        caseDetails.setCaseAdditionalSecurityFlag(
-            hearingEntity.getCaseHearingRequest().getAdditionalSecurityRequiredFlag());
-        caseDetails.setCaseInterpreterRequiredFlag(
-            hearingEntity.getCaseHearingRequest().getInterpreterBookingRequiredFlag());
-        caseDetails.setCaseCategories(setCaseCategories(hearingEntity));
-        caseDetails.setCaseManagementLocationCode(hearingEntity.getCaseHearingRequest().getOwningLocationId());
-        caseDetails.setCaseRestrictedFlag(hearingEntity.getCaseHearingRequest().getCaseRestrictedFlag());
-        caseDetails.setCaseSlaStartDate(hearingEntity.getCaseHearingRequest().getCaseSlaStartDate());
-        return caseDetails;
-    }
-
-    private ArrayList<CaseCategory> setCaseCategories(HearingEntity hearingEntity) {
-        ArrayList<CaseCategory> caseCategories = new ArrayList<>();
-        if (null != hearingEntity.getCaseHearingRequest().getCaseCategories()
-            && !hearingEntity.getCaseHearingRequest().getCaseCategories().isEmpty()) {
-            for (CaseCategoriesEntity caseCategoriesEntity :
-                hearingEntity.getCaseHearingRequest().getCaseCategories()) {
-                CaseCategory caseCategory = new CaseCategory();
-                caseCategory.setCategoryType(caseCategoriesEntity.getCategoryType().getLabel());
-                caseCategory.setCategoryValue(caseCategoriesEntity.getCaseCategoryValue());
-                caseCategories.add(caseCategory);
-            }
-        }
-        return caseCategories;
-    }
 }
