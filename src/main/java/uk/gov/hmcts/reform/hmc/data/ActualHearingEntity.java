@@ -6,30 +6,26 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Table(name = "actual_hearing")
 @Entity
 @Data
-@SecondaryTable(name = "HEARING_RESPONSE",
-    pkJoinColumns = {
-        @PrimaryKeyJoinColumn(name = "hearing_response_id")})
-public class ActualHearingEntity {
+public class ActualHearingEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -52,13 +48,13 @@ public class ActualHearingEntity {
     private String hearingResultReasonType;
 
     @Column(name = "hearing_result_date", nullable = false)
-    private LocalDateTime hearingResultDate;
+    private LocalDate hearingResultDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "hearing_response_id")
     private HearingResponseEntity hearingResponse;
 
-    @OneToMany(mappedBy = "actualHearing")
+    @OneToMany(mappedBy = "actualHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ActualHearingDayEntity> actualHearingDay;
 }

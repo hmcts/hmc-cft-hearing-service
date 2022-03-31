@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
-import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 
 import java.util.List;
 
@@ -20,6 +18,6 @@ public class ActualDayParty {
     private String partyChannelSubType;
     private Boolean didNotAttendFlag;
     private String representedParty;
-    private List<IndividualDetails> actualIndividualDetails;
-    private List<OrganisationDetails> actualOrganisationDetails;
+    private List<ActualIndividualDetails> actualIndividualDetails;
+    private List<ActualOrganisationDetails> actualOrganisationDetails;
 }

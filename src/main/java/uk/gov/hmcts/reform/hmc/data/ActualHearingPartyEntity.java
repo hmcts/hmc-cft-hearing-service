@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,17 +14,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Table(name = "actual_hearing_party")
 @Entity
 @Data
-@SecondaryTable(name = "ACTUAL_HEARING_DAY",
-    pkJoinColumns = {
-        @PrimaryKeyJoinColumn(name = "actual_hearing_day_id")})
-public class ActualHearingPartyEntity {
+public class ActualHearingPartyEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -43,10 +40,10 @@ public class ActualHearingPartyEntity {
     @JoinColumn(name = "actual_hearing_day_id")
     private ActualHearingDayEntity actualHearingDay;
 
-    @OneToMany(mappedBy = "actualHearingParty", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "actualHearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<ActualPartyRelationshipDetailEntity> actualPartyRelationshipDetail;
 
-    @OneToMany(mappedBy = "actualHearingParty", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "actualHearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<ActualAttendeeIndividualDetailEntity> actualAttendeeIndividualDetail;
 
 }

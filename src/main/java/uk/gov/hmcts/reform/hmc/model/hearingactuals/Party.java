@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.hmc.model.hearingactuals;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
-import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 
 import java.util.List;
 
