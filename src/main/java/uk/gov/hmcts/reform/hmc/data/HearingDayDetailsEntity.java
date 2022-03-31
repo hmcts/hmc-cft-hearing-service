@@ -6,8 +6,10 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,7 +40,7 @@ public class HearingDayDetailsEntity {
     @Column(name = "end_date_time", nullable = false)
     private LocalDateTime endDateTime;
 
-    @Column(name = "list_assist_session_id", nullable = false)
+    @Column(name = "list_assist_session_id")
     private String listAssistSessionId;
 
     @Column(name = "venue_id", nullable = false)
@@ -47,15 +49,15 @@ public class HearingDayDetailsEntity {
     @Column(name = "room_id", nullable = false)
     private String roomId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hearing_response_id")
     private HearingResponseEntity hearingResponse;
 
-    @OneToMany(mappedBy = "hearingDayDetails")
+    @OneToMany(mappedBy = "hearingDayDetails", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingDayPanelEntity> hearingDayPanel;
 
-    @OneToMany(mappedBy = "hearingDayDetails")
+    @OneToMany(mappedBy = "hearingDayDetails", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingAttendeeDetailsEntity> hearingAttendeeDetails;
 

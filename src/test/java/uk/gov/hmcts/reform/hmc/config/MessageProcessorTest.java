@@ -56,29 +56,28 @@ class MessageProcessorTest {
     void shouldInitiateHearingResponseRequest() throws JsonProcessingException {
         Map<String, Object> applicationProperties = new HashMap<>();
         applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+        applicationProperties.put("HEARING_ID", "20000000000");
         when(message.getApplicationProperties()).thenReturn(applicationProperties);
         when(message.getBody()).thenReturn(BinaryData.fromString("{ \"test\": \"name\"}"));
-        BinaryData jsonMessage = BinaryData.fromString("{ \"test\": \"name\"}");
         messageProcessor.processMessage(client, message);
-        verify(inboundQueueService).processMessage(any(), any());
+        verify(inboundQueueService).processMessage(any(), any(), any(), any());
     }
 
     @Test
     void shouldInitiateErrorResponseRequest() throws JsonProcessingException {
         Map<String, Object> applicationProperties = new HashMap<>();
-        applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
+        applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
         when(message.getApplicationProperties()).thenReturn(applicationProperties);
         when(message.getBody()).thenReturn(BinaryData.fromString("{ \"test\": \"name\"}"));
-        BinaryData jsonMessage = BinaryData.fromString("{ \"test\": \"name\"}");
         messageProcessor.processMessage(client, message);
-        verify(inboundQueueService).processMessage(any(), any());
+        verify(inboundQueueService).processMessage(any(), any(), any(), any());
     }
 
     @Test
     void shouldThrowErrorWhenMessageTypeIsNull() {
         Map<String, Object> applicationProperties = new HashMap<>();
         JsonNode anyData = OBJECT_MAPPER.convertValue("test data", JsonNode.class);
-        assertThatThrownBy(() -> messageProcessor.processMessage(anyData, applicationProperties))
+        assertThatThrownBy(() -> messageProcessor.processMessage(anyData, applicationProperties, client, message))
             .isInstanceOf(MalformedMessageException.class)
             .hasMessageContaining(MISSING_MESSAGE_TYPE);
     }
@@ -87,7 +86,7 @@ class MessageProcessorTest {
     void shouldThrowErrorWhenNoMessageType() {
         Map<String, Object> applicationProperties = new HashMap<>();
         JsonNode anyData = OBJECT_MAPPER.convertValue("test data", JsonNode.class);
-        assertThatThrownBy(() -> messageProcessor.processMessage(anyData, applicationProperties))
+        assertThatThrownBy(() -> messageProcessor.processMessage(anyData, applicationProperties, client, message))
             .isInstanceOf(MalformedMessageException.class)
             .hasMessageContaining(MISSING_MESSAGE_TYPE);
     }

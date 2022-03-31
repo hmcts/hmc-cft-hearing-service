@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -54,9 +55,15 @@ public class Hearing {
 
     private HearingRoom hearingRoom;
 
-    private HearingAttendee hearingAttendee;
+    private String hearingVhStatus;
 
-    private HearingJoh hearingJoh;
+    private String hearingVhId;
+
+    private String hearingVhGroupId;
+
+    private ArrayList<HearingAttendee> hearingAttendee;
+
+    private ArrayList<HearingJoh> hearingJoh;
 
     private JsonNode hearingSession;
 }
