@@ -37,6 +37,7 @@
     <cve>CVE-2021-22118</cve>
     <cve>CVE-2021-43797</cve>
     <cve>CVE-2020-36518</cve>
+    <cve>CVE-2022-21724</cve>
   </suppress>
   <suppress until="2022-04-25">
     <notes><![CDATA[
