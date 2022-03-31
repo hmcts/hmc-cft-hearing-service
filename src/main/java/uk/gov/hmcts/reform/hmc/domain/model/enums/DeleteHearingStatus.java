@@ -14,7 +14,10 @@ public enum DeleteHearingStatus {
     }
 
     public static boolean isValidHearingActuals(String status) {
-        DeleteHearingStatus deleteHearingStatus = valueOf(status);
+        DeleteHearingStatus deleteHearingStatus = getDeleteHearingStatus(status);
+        if (deleteHearingStatus == null) {
+            return false;
+        }
         switch (deleteHearingStatus) {
             case LISTED:
             case UPDATE_REQUESTED:
@@ -22,6 +25,14 @@ public enum DeleteHearingStatus {
                 return true;
             default:
                 return false;
+        }
+    }
+
+    private static DeleteHearingStatus getDeleteHearingStatus(String status) {
+        try {
+            return valueOf(status);
+        } catch (IllegalArgumentException ie) {
+            return null;
         }
     }
 }

@@ -134,13 +134,12 @@ public class HearingManagementController {
         return hearingResponse;
     }
 
-    @PostMapping(path = "/hearingActualsCompletion/{id}",
-        consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(path = "/hearingActualsCompletion/{id}")
+    @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success (with no content)"),
         @ApiResponse(code = 404, message = "001 No such id"),
-        @ApiResponse(code = 400, message        = "Invalid hearing details found"),
+        @ApiResponse(code = 400, message = "Invalid hearing details found"),
         @ApiResponse(code = 400, message = "002 invalid status"),
         @ApiResponse(code = 400, message = "003 missing hearing day actuals"),
         @ApiResponse(code = 400, message = "004 unexpected hearing day actuals"),
