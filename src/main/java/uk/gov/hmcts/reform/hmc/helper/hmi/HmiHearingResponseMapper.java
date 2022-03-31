@@ -61,7 +61,7 @@ public class HmiHearingResponseMapper {
         HmcHearingResponse hmcHearingResponse = new HmcHearingResponse();
         hmcHearingResponse.setHearingID(hearing.getId().toString());
         CaseHearingRequestEntity matchingCaseHearingRequestEntity = hearing
-            .getCaseHearingRequest(Integer.parseInt(hearingResponseEntity.getRequestVersion()));
+            .getCaseHearingRequest(hearingResponseEntity.getRequestVersion());
         hmcHearingResponse.setCaseRef(matchingCaseHearingRequestEntity.getCaseReference());
         hmcHearingResponse.setHmctsServiceCode(matchingCaseHearingRequestEntity.getHmctsServiceCode());
 
@@ -128,7 +128,7 @@ public class HmiHearingResponseMapper {
         hearingResponseEntity.setHearing(hearing);
         hearingResponseEntity.setListingTransactionId(hearingResponse.getMeta().getTransactionIdCaseHQ());
         hearingResponseEntity.setRequestTimeStamp(hearingResponse.getMeta().getTimestamp());
-        hearingResponseEntity.setRequestVersion(hearingResponse.getHearing().getHearingCaseVersionId().toString());
+        hearingResponseEntity.setRequestVersion(hearingResponse.getHearing().getHearingCaseVersionId());
         hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode().name());
         hearingResponseEntity.setCancellationReasonType(hearingResponse.getHearing().getHearingCancellationReason());
         hearingResponseEntity.setTranslatorRequired(hearingResponse.getHearing().getHearingTranslatorRequired());

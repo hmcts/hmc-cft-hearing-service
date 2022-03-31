@@ -34,6 +34,8 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
 
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-caseHearings_request.sql";
 
+    private static final String UN_NOTIFIED_HEARINGS_DATA_SCRIPT = "classpath:sql/unNotified-hearings-request.sql";
+
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testGetVersionNumber_HearingIdIsValid() {
@@ -128,4 +130,19 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
         CaseHearingRequestEntity caseHearing = caseHearingRequestRepository.getCaseHearing(2200000000L);
         assertNull(caseHearing);
     }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
+    void testGetHmctsServiceIdNotInDb() {
+        Long results = caseHearingRequestRepository.getHmctsServiceCodeCount("AA12");
+        assertEquals(0L, results);
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
+    void testGetHmctsServiceIdIsValid() {
+        Long results = caseHearingRequestRepository.getHmctsServiceCodeCount("ACA2");
+        assertEquals(2L, results);
+    }
+
 }

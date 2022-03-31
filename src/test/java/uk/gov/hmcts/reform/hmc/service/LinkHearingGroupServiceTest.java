@@ -500,7 +500,7 @@ class LinkHearingGroupServiceTest {
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingResponseEntity.setHearingDayDetails(hearingDayDetailsEntities);
         hearingResponseEntity.setHearing(hearingEntity);
-        hearingResponseEntity.setRequestVersion(versionNumber.toString());
+        hearingResponseEntity.setRequestVersion(versionNumber);
         hearingResponseEntity.setRequestTimeStamp(requestTimestamp);
 
         hearingEntity.setHearingResponses(List.of(hearingResponseEntity));

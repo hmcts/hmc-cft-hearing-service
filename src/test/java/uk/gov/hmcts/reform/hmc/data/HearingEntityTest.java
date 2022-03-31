@@ -132,9 +132,9 @@ class HearingEntityTest {
             CaseHearingRequestEntity caseHearingRequest1 = caseHearingRequest(1);
             CaseHearingRequestEntity caseHearingRequest2 = caseHearingRequest(2);
             hearing.setCaseHearingRequests(List.of(caseHearingRequest1, caseHearingRequest2));
-            HearingResponseEntity hearingResponse1 = hearingResponse("1", 2000);
-            HearingResponseEntity hearingResponse2 = hearingResponse("2", 2002);
-            HearingResponseEntity hearingResponse3 = hearingResponse("2", 2004);
+            HearingResponseEntity hearingResponse1 = hearingResponse(1, 2000);
+            HearingResponseEntity hearingResponse2 = hearingResponse(2, 2002);
+            HearingResponseEntity hearingResponse3 = hearingResponse(2, 2004);
             hearing.setHearingResponses(List.of(hearingResponse1, hearingResponse2, hearingResponse3));
 
             Optional<HearingResponseEntity> latestResponse = hearing.getHearingResponseForLatestRequest();
@@ -149,7 +149,7 @@ class HearingEntityTest {
             CaseHearingRequestEntity caseHearingRequest1 = caseHearingRequest(1);
             CaseHearingRequestEntity caseHearingRequest2 = caseHearingRequest(2);
             hearing.setCaseHearingRequests(List.of(caseHearingRequest1, caseHearingRequest2));
-            HearingResponseEntity hearingResponse1 = hearingResponse("1", 2000);
+            HearingResponseEntity hearingResponse1 = hearingResponse(1, 2000);
             hearing.setHearingResponses(List.of(hearingResponse1));
 
             Optional<HearingResponseEntity> latestResponse = hearing.getHearingResponseForLatestRequest();
@@ -164,9 +164,9 @@ class HearingEntityTest {
         @Test
         void shouldGetLatestHearingResponse() {
             HearingEntity hearing = new HearingEntity();
-            HearingResponseEntity hearingResponse1 = hearingResponse("1", 2000);
-            HearingResponseEntity hearingResponse2 = hearingResponse("2", 2002);
-            HearingResponseEntity hearingResponse3 = hearingResponse("2", 2004);
+            HearingResponseEntity hearingResponse1 = hearingResponse(1, 2000);
+            HearingResponseEntity hearingResponse2 = hearingResponse(2, 2002);
+            HearingResponseEntity hearingResponse3 = hearingResponse(2, 2004);
             hearing.setHearingResponses(List.of(hearingResponse1, hearingResponse2, hearingResponse3));
 
             Optional<HearingResponseEntity> latestResponse = hearing.getLatestHearingResponse();
@@ -191,7 +191,7 @@ class HearingEntityTest {
         return caseHearingRequest;
     }
 
-    private HearingResponseEntity hearingResponse(String requestVersion, int timestampYear) {
+    private HearingResponseEntity hearingResponse(int requestVersion, int timestampYear) {
         HearingResponseEntity hearingResponse = new HearingResponseEntity();
         hearingResponse.setRequestVersion(requestVersion);
         hearingResponse.setRequestTimeStamp(LocalDateTime.of(timestampYear, 1, 1, 12, 0));
