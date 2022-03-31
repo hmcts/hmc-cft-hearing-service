@@ -131,6 +131,9 @@ public final class ValidationError {
     public static final String CATEGORY_VALUE_EMPTY = "Category value must be present";
     public static final String PARTY_TYPE_EMPTY = "Party type must be present";
     public static final String PARTY_ROLE_EMPTY = "Party role must be present";
+    public static final String HMCTS_SERVICE_CODE_EMPTY = "Hmcts service code can not be empty";
+    public static final String HEARING_START_DATE_FROM = "Hearing start date from can not be empty";
+    public static final String INVALID_HMCTS_SERVICE_CODE = "Invalid hmcts service code";
 
     public static final String HEARING_ID_NOT_FOUND = "No hearing found for reference: %s";
     public static final String HEARING_GROUP_ID_NOT_FOUND = "No hearing group found for reference: %s";

@@ -50,6 +50,7 @@ import uk.gov.hmcts.reform.hmc.model.UpdateRequestDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -609,7 +610,7 @@ public class TestingUtil {
         HearingResponseEntity entity = new HearingResponseEntity();
         entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00"));
         entity.setHearingResponseId(2L);
-        entity.setRequestVersion("10");
+        entity.setRequestVersion(10);
         entity.setListingStatus("listingStatus");
         entity.setListingCaseStatus("Case_listingStatus");
         entity.setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity()));
@@ -675,6 +676,11 @@ public class TestingUtil {
         entity1.setHearingParties(Arrays.asList(hearingPartyEntityInd()));
 
         return entity1;
+    }
+
+    public static LocalDateTime convertDateTime(String dateStr) {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.parse(dateStr, format);
     }
 }
 

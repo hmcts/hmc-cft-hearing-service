@@ -67,7 +67,7 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingResponseRepository.getHearingResponse(2000000000L))
                 .thenReturn(generateHearingResponseEntity(2000000000L,
-                                                          "1", null
+                                                          1, null
                 ));
 
             partiesNotifiedService.getPartiesNotified(2000000000L, 1, partiesNotified);
@@ -95,7 +95,7 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingResponseRepository.getHearingResponse(2000000000L))
                 .thenReturn(generateHearingResponseEntity(2000000000L,
-                                                          "14", null
+                                                          14, null
                 ));
 
             Exception exception = assertThrows(PartiesNotifiedNotFoundException.class, () ->
@@ -121,7 +121,7 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingResponseRepository.getHearingResponse(2000000000L))
                 .thenReturn(generateHearingResponseEntity(2000000000L,
-                                                          "1", LocalDateTime.now()
+                                                          1, LocalDateTime.now()
                 ));
 
             Exception exception = assertThrows(PartiesNotifiedBadRequestException.class, () ->
@@ -190,7 +190,7 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
     }
 
     private HearingResponseEntity generateHearingResponseEntity(Long hearingId,
-                                                                String responseVersion,
+                                                                Integer responseVersion,
                                                                 LocalDateTime dateTime) {
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingResponseEntity.setResponseVersion(responseVersion);
