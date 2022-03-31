@@ -13,11 +13,15 @@ public class ListingMapper {
 
     private final ListingJohsMapper listingJohsMapper;
     private final ListingLocationsMapper listingLocationsMapper;
+    private final ListingOtherConsiderationsMapper listingOtherConsiderationsMapper;
 
     @Autowired
-    public ListingMapper(ListingJohsMapper listingJohsMapper, ListingLocationsMapper listingLocationsMapper) {
+    public ListingMapper(ListingJohsMapper listingJohsMapper,
+                         ListingLocationsMapper listingLocationsMapper,
+                         ListingOtherConsiderationsMapper listingOtherConsiderationsMapper) {
         this.listingJohsMapper = listingJohsMapper;
         this.listingLocationsMapper = listingLocationsMapper;
+        this.listingOtherConsiderationsMapper = listingOtherConsiderationsMapper;
     }
 
     public Listing getListing(HearingDetails hearingDetails, List<String> preferredHearingChannels) {
@@ -35,6 +39,13 @@ public class ListingMapper {
             .listingJohs(listingJohsMapper.getListingJohs(hearingDetails.getPanelRequirements()))
             .listingHearingChannels(preferredHearingChannels)
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
+            .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
+            .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
+            .listingOtherConsiderations(
+                    listingOtherConsiderationsMapper.getListingOtherConsiderations(
+                            hearingDetails.getHearingInWelshFlag(),
+                            hearingDetails.getFacilitiesRequired())
+                    )
             .build();
         if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
             listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
