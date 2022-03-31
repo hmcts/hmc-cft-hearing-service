@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
@@ -8,7 +7,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.IndividualDetailEntity;
-import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
@@ -33,21 +31,12 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
-
-    private LinkedHearingDetailsRepository linkedHearingDetailsRepository;
-
-    @Autowired
-    public GetHearingResponseMapper(LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
-        this.linkedHearingDetailsRepository = linkedHearingDetailsRepository;
-    }
-
 
     public GetHearingResponse toHearingResponse(HearingEntity hearingEntity) {
         GetHearingResponse getHearingResponse = new GetHearingResponse();
@@ -62,7 +51,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
     private RequestDetails setRequestDetails(HearingEntity hearingEntity) {
         RequestDetails requestDetails = new RequestDetails();
         requestDetails.setHearingRequestId(hearingEntity.getId().toString());
-        requestDetails.setHearingGroupRequestId(getRequestId(hearingEntity.getId()));
+        requestDetails.setHearingGroupRequestId(getRequestId(hearingEntity));
         requestDetails.setStatus(hearingEntity.getStatus());
         if (null != hearingEntity.getCaseHearingRequest()) {
             requestDetails.setTimestamp(hearingEntity.getCaseHearingRequest().getHearingRequestReceivedDateTime());
@@ -71,11 +60,9 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         return requestDetails;
     }
 
-    private String getRequestId(Long hearingId) {
-        LinkedHearingDetailsAudit linkedHearingDetails =
-                linkedHearingDetailsRepository.getLinkedHearingDetailsByHearingId(hearingId);
-        if (null != linkedHearingDetails && null != linkedHearingDetails.getLinkedGroup()) {
-            return linkedHearingDetails.getLinkedGroup().getRequestId();
+    private String getRequestId(HearingEntity hearingEntity) {
+        if (null != hearingEntity && null != hearingEntity.getLinkedGroupDetails()) {
+            return hearingEntity.getLinkedGroupDetails().getRequestId();
         }
         return null;
     }
