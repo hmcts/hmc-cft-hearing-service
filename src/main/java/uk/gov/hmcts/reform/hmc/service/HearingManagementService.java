@@ -25,7 +25,7 @@ public interface HearingManagementService {
 
     void sendResponse(String json);
 
-    void sendRequestToHmiAndQueue(HearingRequest hearingRequest, Long hearingId, String messageType);
+    void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest, String messageType);
 
     void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest,Long hearingId, String messageType);
 

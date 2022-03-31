@@ -162,7 +162,7 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     }
 
     @Override
-    public void sendRequestToHmiAndQueue(HearingRequest hearingRequest, Long hearingId, String messageType) {
+    public void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest, String messageType) {
         HmiSubmitHearingRequest hmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
             .mapRequest(hearingId, hearingRequest);
         sendRequestToQueue(hmiSubmitHearingRequest, hearingId, messageType);
