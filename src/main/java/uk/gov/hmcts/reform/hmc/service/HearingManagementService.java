@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 
 public interface HearingManagementService {
 
@@ -30,7 +29,4 @@ public interface HearingManagementService {
 
     void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest,Long hearingId, String messageType);
 
-    HmiSubmitHearingRequest test(Long hearingId, CreateHearingRequest hearingRequest);
-
-    HmiSubmitHearingRequest test(Long hearingId, UpdateHearingRequest hearingRequest);
 }

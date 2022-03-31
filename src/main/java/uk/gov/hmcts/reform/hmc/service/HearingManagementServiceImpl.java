@@ -347,16 +347,6 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
         return getSaveHearingResponseDetails(savedEntity);
     }
 
-    @Override
-    public HmiSubmitHearingRequest test(Long hearingId, CreateHearingRequest hearingRequest) {
-        return hmiSubmitHearingRequestMapper.mapRequest(hearingId, hearingRequest);
-    }
-
-    @Override
-    public HmiSubmitHearingRequest test(Long hearingId, UpdateHearingRequest hearingRequest) {
-        return hmiSubmitHearingRequestMapper.mapRequest(hearingId, hearingRequest);
-    }
-
     private HearingEntity updateHearingStatusAndVersionNumber(Long hearingId, String newStatus) {
 
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
