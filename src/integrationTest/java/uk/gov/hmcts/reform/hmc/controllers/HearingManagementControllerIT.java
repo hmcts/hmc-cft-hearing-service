@@ -1104,8 +1104,19 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
-    void shouldReturn404WhenHearingMinStartDateIsBeforeTodayHearingCompletion() throws Exception {
+    void shouldReturn404WhenHearingStatusIsNotVaidHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000009")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem((HEARING_ACTUALS_INVALID_STATUS))))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
+    void shouldReturn404WhenHearingStatusListedAndMinStartDateIsBeforeTodayHearingCompletion() throws Exception {
+        mockMvc.perform(post(hearingCompletion + "/2000000010")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.errors", hasSize(1)))

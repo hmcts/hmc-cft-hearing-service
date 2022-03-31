@@ -1566,11 +1566,27 @@ class HearingManagementServiceTest {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
             final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
-            when(hearingRepository.getStatus(hearingId)).thenReturn(PutHearingStatus.UPDATE_REQUESTED.name());
-            HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.UPDATE_REQUESTED.name(),
+            when(hearingRepository.getStatus(hearingId)).thenReturn(PutHearingStatus.AWAITING_LISTING.name());
+            HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.AWAITING_LISTING.name(),
                                                                 versionNumber
             );
-            addHearingResponses(hearingEntity, 1, true, 1, false);
+            addHearingResponses(hearingEntity, 1, true, 1, 0);
+            when(hearingRepository.existsById(hearingId)).thenReturn(true);
+            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .hearingCompletion(hearingId));
+            assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
+        }
+
+        @Test
+        void shouldThrowErrorWhenHearingStatusIsListedAndMinStartDateIsBeforeNow() {
+            final long hearingId = 2000000000L;
+            UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+            final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+            when(hearingRepository.getStatus(hearingId)).thenReturn(PutHearingStatus.LISTED.name());
+            HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.LISTED.name(),
+                                                                versionNumber
+            );
+            addHearingResponses(hearingEntity, 1, true, 1, -1);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
@@ -1587,7 +1603,7 @@ class HearingManagementServiceTest {
             HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.LISTED.name(),
                                                                 versionNumber
             );
-            addHearingResponses(hearingEntity, 1, true, 1, true);
+            addHearingResponses(hearingEntity, 1, true, 1, 1);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
@@ -1608,7 +1624,7 @@ class HearingManagementServiceTest {
             HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.LISTED.name(),
                                                                 versionNumber
             );
-            addHearingResponses(hearingEntity, 1, true, 1, true);
+            addHearingResponses(hearingEntity, 1, true, 1, 1);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
@@ -1631,7 +1647,7 @@ class HearingManagementServiceTest {
             HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.LISTED.name(),
                                                                 versionNumber
             );
-            addHearingResponses(hearingEntity, 1, true, 1, true);
+            addHearingResponses(hearingEntity, 1, true, 1, 1);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
@@ -1655,7 +1671,7 @@ class HearingManagementServiceTest {
             HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.LISTED.name(),
                                                                 versionNumber
             );
-            addHearingResponses(hearingEntity, 1, true, 1, true);
+            addHearingResponses(hearingEntity, 1, true, 1, 1);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
@@ -1709,7 +1725,7 @@ class HearingManagementServiceTest {
                                      int noOfResponses,
                                      boolean addHearingDayDetails,
                                      int noOfHearingDayDetails,
-                                     boolean futureStartDate) {
+                                     int noOfDays) {
         List<HearingResponseEntity> responseEntities = new ArrayList<>();
         for (int i = 0; i < noOfResponses; i++) {
             HearingResponseEntity responseEntity = new HearingResponseEntity();
@@ -1717,7 +1733,7 @@ class HearingManagementServiceTest {
             responseEntity.setRequestTimeStamp(LocalDateTime.now());
             responseEntities.add(responseEntity);
             if (addHearingDayDetails) {
-                addHearingDayDetails(responseEntity, noOfHearingDayDetails, futureStartDate);
+                addHearingDayDetails(responseEntity, noOfHearingDayDetails, noOfDays);
             }
         }
         hearingEntity.setHearingResponses(responseEntities);
@@ -1725,14 +1741,12 @@ class HearingManagementServiceTest {
 
     private void addHearingDayDetails(HearingResponseEntity responseEntity,
                                       int noOfHearingDayDetails,
-                                      boolean futureStartDate) {
+                                      int noOfDays) {
         List<HearingDayDetailsEntity> hearingDayDetails = new ArrayList<>();
         for (int i = 0; i < noOfHearingDayDetails; i++) {
             HearingDayDetailsEntity entity = new HearingDayDetailsEntity();
             LocalDateTime startDate = LocalDateTime.now();
-            if (futureStartDate) {
-                startDate = startDate.plusDays(1);
-            }
+            startDate = startDate.plusDays(noOfDays);
             entity.setStartDateTime(startDate);
             hearingDayDetails.add(entity);
         }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.base.Enums;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -487,13 +488,18 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private void validateHearingActualsStatus(Long hearingId, String errorMessage) {
         String status = getStatus(hearingId);
-        boolean isValidStatus = DeleteHearingStatus.isValidHearingActuals(status);
+        DeleteHearingStatus deleteHearingStatus = Enums.getIfPresent(DeleteHearingStatus.class, status).orNull();
+
+        if (DeleteHearingStatus.AWAITING_LISTING == deleteHearingStatus
+            || DeleteHearingStatus.HEARING_REQUESTED == deleteHearingStatus) {
+            throw new BadRequestException(errorMessage);
+        }
         LocalDate minStartDate = hearingIdValidator
             .filterHearingResponses(hearingRepository.findById(hearingId)
                                         .orElseThrow(() -> new HearingNotFoundException(hearingId,
                                                                                         HEARING_ID_NOT_FOUND)));
         LocalDate now = LocalDate.now();
-        if (isValidStatus && (minStartDate.isBefore(now) || minStartDate.equals(now))) {
+        if (DeleteHearingStatus.LISTED == deleteHearingStatus && (minStartDate.isBefore(now))) {
             throw new BadRequestException(errorMessage);
         }
     }
