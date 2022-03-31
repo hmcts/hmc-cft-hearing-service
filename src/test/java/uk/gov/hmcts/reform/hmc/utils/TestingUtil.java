@@ -610,7 +610,7 @@ public class TestingUtil {
         HearingResponseEntity entity = new HearingResponseEntity();
         entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00"));
         entity.setHearingResponseId(2L);
-        entity.setRequestVersion("10");
+        entity.setRequestVersion(10);
         entity.setListingStatus("listingStatus");
         entity.setListingCaseStatus("Case_listingStatus");
         entity.setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity()));
