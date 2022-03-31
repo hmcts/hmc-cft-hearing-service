@@ -1,6 +1,12 @@
 package uk.gov.hmcts.reform.hmc.utils;
 
 import org.assertj.core.util.Lists;
+import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
+import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
+import uk.gov.hmcts.reform.hmc.data.ActualHearingDayPausesEntity;
+import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
+import uk.gov.hmcts.reform.hmc.data.ActualHearingPartyEntity;
+import uk.gov.hmcts.reform.hmc.data.ActualPartyRelationshipDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
@@ -29,6 +35,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.LocationType;
@@ -484,10 +491,125 @@ public class TestingUtil {
         return hearingEntity;
     }
 
+    public static HearingEntity getHearingsEntityForHearingActuals(String status) {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(2000000000L);
+        hearingEntity.setStatus(status);
+        hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity()));
+        hearingEntity.setCaseHearingRequest(caseHearingRequestEntityWithPartyOrg());
+
+        hearingEntity.getCaseHearingRequest().setVersionNumber(1);
+        hearingEntity.getCaseHearingRequest().setHearingType("hearingType");
+        hearingEntity.getCaseHearingRequest().setHmctsServiceCode("serviceCode");
+        hearingEntity.getCaseHearingRequest().setCaseReference("caseRef");
+        hearingEntity.getCaseHearingRequest().setExternalCaseReference("extCaseRef");
+        hearingEntity.getCaseHearingRequest().setCaseUrlContextPath("contextPath");
+        hearingEntity.getCaseHearingRequest().setHmctsInternalCaseName("caseName");
+        hearingEntity.getCaseHearingRequest().setPublicCaseName("publicCaseName");
+        hearingEntity.getCaseHearingRequest().setAdditionalSecurityRequiredFlag(true);
+        hearingEntity.getCaseHearingRequest().setInterpreterBookingRequiredFlag(true);
+        hearingEntity.getCaseHearingRequest().setOwningLocationId("locationId");
+        hearingEntity.getCaseHearingRequest().setCaseRestrictedFlag(true);
+        hearingEntity.getCaseHearingRequest().setCaseSlaStartDate(LocalDate.of(2000, 01, 01));
+        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequest().setCaseCategories(caseCategoriesEntities());
+
+        hearingEntity.getHearingResponses().get(0).setActualHearingEntity(actualHearingEntity(PartyType.ORG));
+        return hearingEntity;
+    }
+
+    public static HearingEntity getHearingsEntityForHearingActualsIndividual() {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(2000000000L);
+        hearingEntity.setStatus("HEARING_REQUESTED");
+        hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity()));
+        hearingEntity.setCaseHearingRequest(caseHearingRequestEntityWithPartyInd());
+
+        hearingEntity.getCaseHearingRequest().setVersionNumber(1);
+        hearingEntity.getCaseHearingRequest().setHearingType("hearingType");
+        hearingEntity.getCaseHearingRequest().setHmctsServiceCode("serviceCode");
+        hearingEntity.getCaseHearingRequest().setCaseReference("caseRef");
+        hearingEntity.getCaseHearingRequest().setExternalCaseReference("extCaseRef");
+        hearingEntity.getCaseHearingRequest().setCaseUrlContextPath("contextPath");
+        hearingEntity.getCaseHearingRequest().setHmctsInternalCaseName("caseName");
+        hearingEntity.getCaseHearingRequest().setPublicCaseName("publicCaseName");
+        hearingEntity.getCaseHearingRequest().setAdditionalSecurityRequiredFlag(true);
+        hearingEntity.getCaseHearingRequest().setInterpreterBookingRequiredFlag(true);
+        hearingEntity.getCaseHearingRequest().setOwningLocationId("locationId");
+        hearingEntity.getCaseHearingRequest().setCaseRestrictedFlag(true);
+        hearingEntity.getCaseHearingRequest().setCaseSlaStartDate(LocalDate.of(2000, 01, 01));
+        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(hearingPartyEntityInd()));
+        hearingEntity.getCaseHearingRequest().setCaseCategories(caseCategoriesEntities());
+
+        hearingEntity.getHearingResponses().get(0).setActualHearingEntity(actualHearingEntity(PartyType.IND));
+        return hearingEntity;
+    }
+
+    public static ActualHearingEntity actualHearingEntity(PartyType partyType) {
+        ActualHearingEntity entity = new ActualHearingEntity();
+        entity.setActualHearingType("hearingType");
+        entity.setHearingResultType(HearingResultType.ADJOURNED);
+        entity.setHearingResultReasonType("resultReason");
+        entity.setHearingResultDate(LocalDate.of(2000, 01, 01));
+        entity.setActualHearingDay(Arrays.asList(actualHearingDayEntity(partyType)));
+        entity.setActualHearingIsFinalFlag(true);
+        return entity;
+    }
+
+    public static ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity(
+        ActualHearingPartyEntity actualHearingPartyEntity) {
+        ActualPartyRelationshipDetailEntity entity = new ActualPartyRelationshipDetailEntity();
+        entity.setActualPartyRelationshipId(1L);
+        entity.setTargetActualPartyId(1L);
+        entity.setActualHearingParty(actualHearingPartyEntity);
+        return entity;
+    }
+
+    public static ActualHearingDayEntity actualHearingDayEntity(PartyType partyType) {
+        ActualHearingDayEntity entity = new ActualHearingDayEntity();
+        entity.setHearingDate(LocalDate.of(2000, 01, 01));
+        entity.setStartDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        entity.setEndDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        entity.setActualHearingDayPauses(Arrays.asList(actualHearingDayPausesEntity()));
+        entity.setActualHearingParty(Arrays.asList(actualHearingPartyEntity(partyType)));
+        return entity;
+    }
+
+    public static ActualHearingDayPausesEntity actualHearingDayPausesEntity() {
+        ActualHearingDayPausesEntity entity = new ActualHearingDayPausesEntity();
+        entity.setPauseDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        entity.setResumeDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        return entity;
+    }
+
+    public static ActualHearingPartyEntity actualHearingPartyEntity(PartyType partyType) {
+        ActualHearingPartyEntity entity = new ActualHearingPartyEntity();
+        entity.setActualPartyId(1L);
+        entity.setPartyId("1");
+        entity.setActualPartyRoleType("roleType");
+        entity.setDidNotAttendFlag(false);
+        entity.setActualAttendeeIndividualDetail(Arrays.asList(actualAttendeeIndividualDetailEntity(partyType)));
+        entity.setActualPartyRelationshipDetail(Arrays.asList(actualPartyRelationshipDetailEntity(entity)));
+        return entity;
+    }
+
+    public static ActualAttendeeIndividualDetailEntity actualAttendeeIndividualDetailEntity(PartyType partyType) {
+        ActualAttendeeIndividualDetailEntity entity = new ActualAttendeeIndividualDetailEntity();
+        if (PartyType.IND.equals(partyType)) {
+            entity.setFirstName("firstName");
+            entity.setLastName("lastName");
+        } else {
+            entity.setPartyOrganisationName("partyOrgName");
+        }
+        entity.setPartyActualSubChannelType("partySubChannel");
+        return entity;
+    }
+
     public static HearingResponseEntity hearingResponseEntity() {
         HearingResponseEntity entity = new HearingResponseEntity();
         entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00"));
         entity.setHearingResponseId(2L);
+        entity.setRequestVersion("10");
         entity.setListingStatus("listingStatus");
         entity.setListingCaseStatus("Case_listingStatus");
         entity.setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity()));

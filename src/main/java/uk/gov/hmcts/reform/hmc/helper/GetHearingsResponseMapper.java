@@ -81,5 +81,4 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
             caseHearing.setListAssistCaseStatus(hearingResponseEntity.getListingCaseStatus());
         }
     }
-
 }
