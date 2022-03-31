@@ -68,7 +68,7 @@ class GetHearingActualsResponseMapperTest {
             .get(0).getActualDayParties().get(0).getActualIndividualDetails().get(0).getLastName());
     }
 
-    private void assertCommonFields( HearingActualResponse response) {
+    private void assertCommonFields(HearingActualResponse response) {
         assertEquals("HEARING_REQUESTED", response.getHmcStatus());
         assertEquals("serviceCode", response.getCaseDetails().getHmctsServiceCode());
         assertEquals("caseRef", response.getCaseDetails().getCaseRef());
