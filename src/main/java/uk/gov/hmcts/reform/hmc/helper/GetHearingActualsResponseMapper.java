@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import lombok.val;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayPausesEntity;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.hmc.model.hearingactuals.PlannedHearingDays;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCode {
@@ -51,10 +53,13 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             case "UPDATE_REQUESTED":
             case "UPDATE_SUBMITTED":
                 hearingStatus = hearingEntity.getStatus();
-                if (hearingEntity.hasHearingResponses()) {
-                    if (hearingEntity.getLatestHearingResponse().get().hasHearingDayDetails()) {
-                        HearingDayDetailsEntity hearingDayDetailsEntity =
-                            hearingEntity.getLatestHearingResponse().get().getEarliestHearingDayDetails().get();
+                Optional<HearingResponseEntity> hearingResponse = hearingEntity.getLatestHearingResponse();
+                if (hearingEntity.hasHearingResponses() && hearingResponse.isPresent()) {
+                    HearingResponseEntity latestHearingResponse = hearingResponse.get();
+                    Optional<HearingDayDetailsEntity> hearingDayDetails =
+                        latestHearingResponse.getEarliestHearingDayDetails();
+                    if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
+                        HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
                         if (LocalDate.now().isAfter(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
                             return "AWAITING LISTING";
                         }
