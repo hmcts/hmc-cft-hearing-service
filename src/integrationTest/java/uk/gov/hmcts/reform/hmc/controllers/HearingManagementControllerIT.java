@@ -116,7 +116,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LAST_NAME_EMPTY
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LAST_NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LISTING_COMMENTS_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LOCATION_TYPE_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LOCATION_ID_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MEMBER_ID_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MEMBER_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MEMBER_TYPE_MAX_LENGTH;
@@ -802,12 +802,12 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().setHearingPriorityType("a".repeat(61));
         hearingRequest.getHearingDetails().setNumberOfPhysicalAttendees(-1);
         HearingLocation hearingLocation = new HearingLocation();
-        hearingLocation.setLocationId("invalid enum");
+        hearingLocation.setLocationType("invalid enum");
         List<HearingLocation> hearingLocationList = Collections.singletonList(hearingLocation);
         hearingRequest.getHearingDetails().setHearingLocations(hearingLocationList);
         List<String> facilitiesRequiredList = Collections.singletonList("a".repeat(71));
         hearingRequest.getHearingDetails().setFacilitiesRequired(facilitiesRequiredList);
-        hearingRequest.getHearingDetails().setListingComments("a".repeat(5001));
+        hearingRequest.getHearingDetails().setListingComments("a".repeat(2001));
         hearingRequest.getHearingDetails().setHearingRequester("a".repeat(61));
         hearingRequest.getHearingDetails().setLeadJudgeContractType("a".repeat(71));
         PanelRequirements panelRequirements = new PanelRequirements();
@@ -835,7 +835,7 @@ class HearingManagementControllerIT extends BaseTest {
                                                      NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE,
                                                      FACILITIES_REQUIRED_MAX_LENGTH_MSG, LISTING_COMMENTS_MAX_LENGTH,
                                                      HEARING_REQUESTER_MAX_LENGTH, LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH,
-                                                     LOCATION_TYPE_EMPTY, "Unsupported type for locationId",
+                                                     LOCATION_ID_EMPTY, "Unsupported type for locationType",
                                                      ROLE_TYPE_MAX_LENGTH_MSG, AUTHORISATION_TYPE_MAX_LENGTH_MSG,
                                                      AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG,
                                                      PANEL_SPECIALISMS_MAX_LENGTH_MSG, MEMBER_ID_EMPTY,
@@ -949,8 +949,8 @@ class HearingManagementControllerIT extends BaseTest {
         individualDetails.setHearingChannelEmail("a".repeat(121));
         individualDetails.setHearingChannelPhone("a".repeat(31));
         RelatedParty relatedParty = new RelatedParty();
-        relatedParty.setRelatedPartyID("a".repeat(2001));
-        relatedParty.setRelationshipType("a".repeat(2001));
+        relatedParty.setRelatedPartyID("a".repeat(16));
+        relatedParty.setRelationshipType("a".repeat(11));
         individualDetails.setRelatedParties(Collections.singletonList(relatedParty));
         OrganisationDetails organisationDetails = new OrganisationDetails();
         organisationDetails.setName("a".repeat(2001));
@@ -984,8 +984,8 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn400WhenHearingWindowFieldsAreNull() throws Exception {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
-        hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
-        hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
+        hearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(null);
+        hearingRequest.getHearingDetails().getHearingWindow().setDateRangeStart(null);
         hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
         mockMvc.perform(put(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -1035,6 +1035,48 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.errors", hasSize(1)))
             .andExpect(jsonPath("$.errors", hasItem((INVALID_PUT_HEARING_STATUS))))
+            .andReturn();
+    }
+
+
+    @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void shouldReturn201_WhenHearingRequestHasValidData() throws Exception {
+        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
+        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getHearingDetails().setListingComments("a".repeat(2000));
+        createHearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
+            .get(0).setRelatedPartyID("a".repeat(15));
+        createHearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
+            .get(0).setRelationshipType("a".repeat(10));
+        stubSuccessfullyValidateHearingObject(createHearingRequest);
+        RoleAssignmentResource resource = new RoleAssignmentResource();
+        resource.setRoleName(ROLE_NAME);
+        resource.setRoleType(ROLE_TYPE);
+        RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
+        attributesResource.setCaseType(Optional.of(CASE_TYPE));
+        attributesResource.setJurisdiction(Optional.of(JURISDICTION));
+        resource.setAttributes(attributesResource);
+        List<RoleAssignmentResource> roleAssignmentList = new ArrayList<>();
+        roleAssignmentList.add(resource);
+        RoleAssignmentResponse response = new RoleAssignmentResponse();
+        response.setRoleAssignments(roleAssignmentList);
+        stubReturn200RoleAssignments(USER_ID, response);
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
+        mockMvc.perform(post(url)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(createHearingRequest)))
+            .andExpect(status().is(201))
             .andReturn();
     }
 

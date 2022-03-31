@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class HearingWindow {
 
-    private LocalDate hearingWindowStartDateRange;
+    private LocalDate dateRangeStart;
 
-    private LocalDate hearingWindowEndDateRange;
+    private LocalDate dateRangeEnd;
 
     private LocalDateTime firstDateTimeMustBe;
 }

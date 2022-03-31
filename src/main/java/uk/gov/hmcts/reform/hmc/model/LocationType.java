@@ -6,19 +6,19 @@ import java.util.Arrays;
 import java.util.Locale;
 
 @Getter
-public enum LocationId {
+public enum LocationType {
     COURT("court"),
     CLUSTER("cluster"),
     REGION("region");
 
     public final String label;
 
-    LocationId(String label) {
+    LocationType(String label) {
         this.label = label;
     }
 
-    public static LocationId getByLabel(String label) {
-        LocationId location = Arrays.stream(LocationId.values())
+    public static LocationType getByLabel(String label) {
+        LocationType location = Arrays.stream(LocationType.values())
             .filter(eachLocation -> eachLocation.toString().toLowerCase(Locale.ROOT)
                 .equals(label.toLowerCase(Locale.ROOT))).findAny().orElse(null);
         return location;
