@@ -2,27 +2,19 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
-import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
-import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
-import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
-import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
-import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
@@ -41,12 +33,10 @@ import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
-import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -64,18 +54,12 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_VERSION_NUMBER;
-import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
-import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
-import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
 
 @Service
 @Component
 @Slf4j
 public class HearingManagementServiceImpl extends HearingIdValidator implements HearingManagementService {
 
-    private final DataStoreRepository dataStoreRepository;
-    private final RoleAssignmentService roleAssignmentService;
-    private final SecurityUtils securityUtils;
     private final HearingMapper hearingMapper;
     private final CancellationReasonsRepository cancellationReasonsRepository;
     private final GetHearingsResponseMapper getHearingsResponseMapper;
@@ -86,13 +70,9 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
     private final ObjectMapperService objectMapperService;
     private final HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
     private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
-    private final ApplicationParams applicationParams;
 
     @Autowired
-    public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
-                                        @Qualifier("defaultDataStoreRepository")
-                                            DataStoreRepository dataStoreRepository,
-                                        HearingRepository hearingRepository,
+    public HearingManagementServiceImpl(HearingRepository hearingRepository,
                                         HearingMapper hearingMapper,
                                         CaseHearingRequestRepository caseHearingRequestRepository,
                                         CancellationReasonsRepository cancellationReasonsRepository,
@@ -105,9 +85,6 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
                                         MessageSenderToQueueConfiguration messageSenderToQueueConfiguration,
                                         ApplicationParams applicationParams) {
         super(hearingRepository);
-        this.dataStoreRepository = dataStoreRepository;
-        this.roleAssignmentService = roleAssignmentService;
-        this.securityUtils = securityUtils;
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.cancellationReasonsRepository = cancellationReasonsRepository;
@@ -118,7 +95,6 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
         this.messageSenderToQueueConfiguration = messageSenderToQueueConfiguration;
-        this.applicationParams = applicationParams;
     }
 
     @Override
@@ -276,64 +252,6 @@ public class HearingManagementServiceImpl extends HearingIdValidator implements 
             && hearingDetails.getHearingWindow().getDateRangeStart() == null
             && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() == null) {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
-        }
-    }
-
-    public void verifyAccess(String caseReference) {
-        if (!applicationParams.isAccessControlEnabled()) {
-            return;
-        }
-        RoleAssignments roleAssignments = roleAssignmentService.getRoleAssignments(securityUtils.getUserId());
-        if (roleAssignments.getRoleAssignments().isEmpty()) {
-            throw new ResourceNotFoundException(String.format(ROLE_ASSIGNMENTS_NOT_FOUND, securityUtils.getUserId()));
-        }
-        List<RoleAssignment> filteredRoleAssignments = new ArrayList<>();
-        for (RoleAssignment roleAssignment : roleAssignments.getRoleAssignments()) {
-            if (roleAssignment.getRoleName().equalsIgnoreCase("Hearing Manage")
-                && roleAssignment.getRoleType().equalsIgnoreCase(
-                "ORGANISATION")) {
-                filteredRoleAssignments.add(roleAssignment);
-            }
-        }
-        if (filteredRoleAssignments.isEmpty()) {
-            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ROLE);
-        } else {
-            DataStoreCaseDetails caseDetails;
-            caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
-            if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
-                throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
-            }
-        }
-    }
-
-    @SuppressWarnings("java:S2789")
-    private boolean checkRoleAssignmentMatchesCaseDetails(DataStoreCaseDetails caseDetails,
-                                                          List<RoleAssignment> roleAssignments) {
-        for (RoleAssignment roleAssignment : roleAssignments) {
-            RoleAssignmentAttributes attributes = roleAssignment.getAttributes();
-            if (attributes.getJurisdiction() == null) {
-                return ifJurisdictionIsNullOrEmpty(attributes, caseDetails);
-            } else if (attributes.getJurisdiction().isEmpty()) {
-                return ifJurisdictionIsNullOrEmpty(attributes, caseDetails);
-            } else if (attributes.getJurisdiction().equals(Optional.of(caseDetails.getJurisdiction()))) {
-                return true;
-            } else if (attributes.getCaseType() != null && attributes.getCaseType().isPresent() && attributes
-                .getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))) {
-                return true;
-            }
-
-        }
-        return false;
-    }
-
-    @SuppressWarnings("java:S2789")
-    private boolean ifJurisdictionIsNullOrEmpty(RoleAssignmentAttributes attributes, DataStoreCaseDetails caseDetails) {
-        if (attributes.getCaseType() == null) {
-            return true;
-        } else if (attributes.getCaseType().isEmpty()) {
-            return true;
-        } else {
-            return attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()));
         }
     }
 
