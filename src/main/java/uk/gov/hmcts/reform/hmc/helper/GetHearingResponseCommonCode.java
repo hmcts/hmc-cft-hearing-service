@@ -46,7 +46,6 @@ public class GetHearingResponseCommonCode {
         }
     }
 
-
     protected CaseDetails setCaseDetails(HearingEntity hearingEntity) {
         CaseDetails caseDetails = new CaseDetails();
         caseDetails.setHmctsServiceCode(hearingEntity.getCaseHearingRequest().getHmctsServiceCode());
@@ -68,10 +67,11 @@ public class GetHearingResponseCommonCode {
 
     private ArrayList<CaseCategory> setCaseCategories(HearingEntity hearingEntity) {
         ArrayList<CaseCategory> caseCategories = new ArrayList<>();
-        if (null != hearingEntity.getCaseHearingRequest().getCaseCategories()
-            && !hearingEntity.getCaseHearingRequest().getCaseCategories().isEmpty()) {
+        if (null != hearingEntity.getCaseHearingRequest()
+                && null != hearingEntity.getCaseHearingRequest().getCaseCategories()
+                && !hearingEntity.getCaseHearingRequest().getCaseCategories().isEmpty()) {
             for (CaseCategoriesEntity caseCategoriesEntity :
-                hearingEntity.getCaseHearingRequest().getCaseCategories()) {
+                    hearingEntity.getCaseHearingRequest().getCaseCategories()) {
                 CaseCategory caseCategory = new CaseCategory();
                 caseCategory.setCategoryType(caseCategoriesEntity.getCategoryType().getLabel());
                 caseCategory.setCategoryValue(caseCategoriesEntity.getCaseCategoryValue());
