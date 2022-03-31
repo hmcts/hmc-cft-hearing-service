@@ -491,10 +491,10 @@ public class TestingUtil {
         return hearingEntity;
     }
 
-    public static HearingEntity getHearingsEntityForHearingActuals() {
+    public static HearingEntity getHearingsEntityForHearingActuals(String status) {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(2000000000L);
-        hearingEntity.setStatus("HEARING_REQUESTED");
+        hearingEntity.setStatus(status);
         hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity()));
         hearingEntity.setCaseHearingRequest(caseHearingRequestEntityWithPartyOrg());
 

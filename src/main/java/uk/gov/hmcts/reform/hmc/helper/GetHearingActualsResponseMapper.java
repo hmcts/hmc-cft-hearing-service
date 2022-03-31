@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.hmc.model.hearingactuals.Party;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.PauseDateTimes;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.PlannedHearingDays;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,12 +36,35 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
 
     public HearingActualResponse toHearingActualResponse(HearingEntity hearingEntity) {
         val response = new HearingActualResponse();
-        response.setHmcStatus(hearingEntity.getStatus());
+        response.setHmcStatus(getHearingStatus(hearingEntity));
         response.setCaseDetails(setCaseDetails(hearingEntity));
         response.getCaseDetails().setRequestTimeStamp(hearingEntity.getCaseHearingRequest().getRequestTimeStamp());
         setHearingPlanned(hearingEntity, response);
         setHearingActuals(hearingEntity, response);
         return response;
+    }
+
+    private String getHearingStatus(HearingEntity hearingEntity) {
+        String hearingStatus = null;
+        switch (hearingEntity.getStatus()) {
+            case "LISTED":
+            case "UPDATE_REQUESTED":
+            case "UPDATE_SUBMITTED":
+                hearingStatus = hearingEntity.getStatus();
+                if (hearingEntity.hasHearingResponses()) {
+                    if (hearingEntity.getLatestHearingResponse().get().hasHearingDayDetails()) {
+                        HearingDayDetailsEntity hearingDayDetailsEntity =
+                            hearingEntity.getLatestHearingResponse().get().getEarliestHearingDayDetails().get();
+                        if (LocalDate.now().isAfter(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
+                            return "AWAITING LISTING";
+                        }
+                    }
+                }
+                break;
+            default:
+                hearingStatus = hearingEntity.getStatus();
+        }
+        return hearingStatus;
     }
 
     private void setHearingActuals(HearingEntity hearingEntity, HearingActualResponse response) {

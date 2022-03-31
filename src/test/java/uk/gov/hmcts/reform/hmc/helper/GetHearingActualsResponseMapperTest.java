@@ -24,7 +24,8 @@ class GetHearingActualsResponseMapperTest {
     void toHearingsResponseWhenDataIsPresentForOrgDetails() {
         GetHearingActualsResponseMapper getHearingsResponseMapper = new GetHearingActualsResponseMapper();
         HearingActualResponse response =
-            getHearingsResponseMapper.toHearingActualResponse(TestingUtil.getHearingsEntityForHearingActuals());
+            getHearingsResponseMapper.toHearingActualResponse(
+                TestingUtil.getHearingsEntityForHearingActuals("HEARING_REQUESTED"));
 
         assertCommonFields(response);
         assertEquals("name",
@@ -36,6 +37,26 @@ class GetHearingActualsResponseMapperTest {
         assertEquals("partyOrgName",
                      response.getHearingActuals().getActualHearingDays().get(0)
                          .getActualDayParties().get(0).getActualOrganisationDetails().get(0).getName());
+    }
+
+    @Test
+    void checkHearingStatusWhenStatusIsHearingRequested() {
+        GetHearingActualsResponseMapper getHearingsResponseMapper = new GetHearingActualsResponseMapper();
+        HearingActualResponse response =
+            getHearingsResponseMapper.toHearingActualResponse(
+                TestingUtil.getHearingsEntityForHearingActuals("HEARING_REQUESTED"));
+
+        assertEquals("HEARING_REQUESTED", response.getHmcStatus());
+    }
+
+    @Test
+    void checkHearingStatusWhenStatusIsHearingListed() {
+        GetHearingActualsResponseMapper getHearingsResponseMapper = new GetHearingActualsResponseMapper();
+        HearingActualResponse response =
+            getHearingsResponseMapper.toHearingActualResponse(
+                TestingUtil.getHearingsEntityForHearingActuals("LISTED"));
+
+        assertEquals("AWAITING LISTING", response.getHmcStatus());
     }
 
     @Test
