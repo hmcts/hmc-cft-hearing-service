@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.COURT;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.EPIMS;
 
 @ExtendWith(MockitoExtension.class)
 class ListingMapperTest {
@@ -47,8 +49,8 @@ class ListingMapperTest {
         LocalDateTime localDateTime = LocalDateTime.now();
         HearingWindow hearingWindow = new HearingWindow();
         hearingWindow.setFirstDateTimeMustBe(localDateTime);
-        hearingWindow.setHearingWindowStartDateRange(localDateTime.minusDays(1).toLocalDate());
-        hearingWindow.setHearingWindowEndDateRange(localDateTime.plusDays(1).toLocalDate());
+        hearingWindow.setDateRangeStart(localDateTime.minusDays(1).toLocalDate());
+        hearingWindow.setDateRangeEnd(localDateTime.plusDays(1).toLocalDate());
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingPriorityType(HEARING_PRIORITY_TYPE);
@@ -66,6 +68,9 @@ class ListingMapperTest {
         panelRequirements.setRoleType(Collections.singletonList(ROLE_TYPE));
         hearingDetails.setPanelRequirements(panelRequirements);
         ListingLocation listingLocation = ListingLocation.builder().build();
+        listingLocation.setLocationId("court Id");
+        listingLocation.setLocationType(COURT);
+        listingLocation.setLocationReferenceType(EPIMS);
         when(listingLocationsMapper.getListingLocations(any())).thenReturn(Collections.singletonList(listingLocation));
         HearingLocation hearingLocation = new HearingLocation();
         hearingDetails.setHearingLocations(Collections.singletonList(hearingLocation));
@@ -94,6 +99,9 @@ class ListingMapperTest {
         assertEquals(localDateTime.plusDays(1).toLocalDate(), listing.getListingEndDate());
         assertEquals(1, listing.getListingJohTiers().size());
         assertEquals(ROLE_TYPE, listing.getListingJohTiers().get(0));
+        assertEquals("court Id", listing.getListingLocations().get(0).getLocationId());
+        assertEquals(EPIMS, listing.getListingLocations().get(0).getLocationReferenceType());
+        assertEquals(COURT, listing.getListingLocations().get(0).getLocationType());
     }
 
     @Test
@@ -101,8 +109,8 @@ class ListingMapperTest {
         LocalDateTime localDateTime = LocalDateTime.now();
         HearingWindow hearingWindow = new HearingWindow();
         hearingWindow.setFirstDateTimeMustBe(localDateTime);
-        hearingWindow.setHearingWindowStartDateRange(null);
-        hearingWindow.setHearingWindowEndDateRange(null);
+        hearingWindow.setDateRangeStart(null);
+        hearingWindow.setDateRangeEnd(null);
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingPriorityType(HEARING_PRIORITY_TYPE);
@@ -152,8 +160,8 @@ class ListingMapperTest {
         LocalDateTime localDateTime = LocalDateTime.now();
         HearingWindow hearingWindow = new HearingWindow();
         hearingWindow.setFirstDateTimeMustBe(localDateTime);
-        hearingWindow.setHearingWindowStartDateRange(null);
-        hearingWindow.setHearingWindowEndDateRange(null);
+        hearingWindow.setDateRangeStart(null);
+        hearingWindow.setDateRangeEnd(null);
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingPriorityType(HEARING_PRIORITY_TYPE);

@@ -6,7 +6,10 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -15,6 +18,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -44,18 +48,18 @@ public class HearingResponseEntity {
     @Column(name = "listing_case_status", nullable = false)
     private String listingCaseStatus;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
 
-    @OneToMany(mappedBy = "hearingResponse")
+    @OneToMany(mappedBy = "hearingResponse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingDayDetailsEntity> hearingDayDetails;
 
     @Column(name = "request_version", nullable = false)
     private String requestVersion;
 
-    @Column(name = "response_version", nullable = false)
+    @Column(name = "response_version")
     private String responseVersion;
 
     @Column(name = "parties_notified_datetime")
@@ -64,4 +68,25 @@ public class HearingResponseEntity {
     @Column(name = "service_data", columnDefinition = "jsonb")
     @Convert(converter = JsonDataConverter.class)
     private JsonNode serviceData;
+
+    @OneToOne(mappedBy = "hearingResponse", fetch = FetchType.EAGER)
+    private ActualHearingEntity actualHearingEntity;
+
+    @Column(name = "cancellation_reason_type")
+    private String cancellationReasonType;
+
+    @Column(name = "translator_required")
+    private Boolean translatorRequired;
+
+    @Column(name = "listing_transaction_id")
+    private String listingTransactionId;
+
+    public Optional<HearingDayDetailsEntity> getEarliestHearingDayDetails() {
+        return getHearingDayDetails().stream()
+            .min(Comparator.comparing(HearingDayDetailsEntity::getStartDateTime));
+    }
+
+    public boolean hasHearingDayDetails() {
+        return getHearingDayDetails() != null && !getHearingDayDetails().isEmpty();
+    }
 }

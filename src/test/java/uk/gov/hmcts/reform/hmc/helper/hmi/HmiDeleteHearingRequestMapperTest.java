@@ -20,7 +20,6 @@ class HmiDeleteHearingRequestMapperTest {
     void shouldReturnHmiDeleteHearingRequestForDeleteHearingRequest() {
         DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
         deleteHearingRequest.setCancellationReasonCode("AMADEUPONE");
-        deleteHearingRequest.setVersionNumber(23);
 
         CancellationReason cancellationReason = new CancellationReason();
         cancellationReason.setCancellationReasonCode(deleteHearingRequest.getCancellationReasonCode());

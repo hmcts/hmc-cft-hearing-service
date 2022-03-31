@@ -54,9 +54,9 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setListingComments(hearingDetails.getListingComments());
         caseHearingRequestEntity.setRequester(hearingDetails.getHearingRequester());
         caseHearingRequestEntity.setHearingWindowStartDateRange(hearingDetails.getHearingWindow()
-                                                                    .getHearingWindowStartDateRange());
+                                                                    .getDateRangeStart());
         caseHearingRequestEntity.setHearingWindowEndDateRange(hearingDetails.getHearingWindow()
-                                                                  .getHearingWindowEndDateRange());
+                                                                  .getDateRangeEnd());
         caseHearingRequestEntity.setRequestTimeStamp(createHearingRequest.getRequestDetails().getRequestTimeStamp());
         caseHearingRequestEntity.setHearing(hearingEntity);
         caseHearingRequestEntity.setAmendReasonCode(hearingDetails.getAmendReasonCode());
