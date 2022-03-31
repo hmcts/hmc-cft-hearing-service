@@ -14,7 +14,6 @@ public class UnavailabilityDow {
     private String dow;
 
     @JsonProperty("DOWUnavailabilityType")
-    @EnumPattern(enumClass = DayOfWeekUnAvailableType.class, fieldName = "dowUnavailabilityType")
     private String dowUnavailabilityType;
 
 }

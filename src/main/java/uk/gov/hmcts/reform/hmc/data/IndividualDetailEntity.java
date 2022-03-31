@@ -59,4 +59,10 @@ public class IndividualDetailEntity {
     @JoinColumn(name = "tech_party_id")
     private HearingPartyEntity hearingParty;
 
+    @Column(name = "other_reasonable_adjustment_details")
+    private String otherReasonableAdjustmentDetails;
+
+    @Column(name = "custody_status")
+    private String custodyStatus;
+
 }
