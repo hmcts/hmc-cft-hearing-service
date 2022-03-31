@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
@@ -39,8 +40,13 @@ public class LinkHearingGroupController {
         @ApiResponse(code = 400, message = "004 invalid state of hearing for request"),
         @ApiResponse(code = 400, message = "005 Hearing Order is not unique")
     })
-    public void validateLinkHearing(@RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
-        linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
+    public void validateLinkHearing(@RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest)
+        throws JsonProcessingException {
+        try {
+            linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     @DeleteMapping(path = "/linkedHearingGroup/{id}", consumes = APPLICATION_JSON_VALUE,

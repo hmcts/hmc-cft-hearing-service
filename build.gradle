@@ -417,6 +417,10 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.11.1'
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.1.0'
 
+  testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.11.1'
+  testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
+  testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.9'
+
   contractTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
   contractTestCompile group: 'io.rest-assured', name: 'json-path', version: versions.restAssured
   contractTestCompile group: 'io.rest-assured', name: 'xml-path', version: versions.restAssured
