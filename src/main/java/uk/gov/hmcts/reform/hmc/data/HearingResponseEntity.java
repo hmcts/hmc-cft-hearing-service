@@ -18,6 +18,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -47,7 +48,7 @@ public class HearingResponseEntity {
     @Column(name = "listing_case_status", nullable = false)
     private String listingCaseStatus;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
 
@@ -68,6 +69,9 @@ public class HearingResponseEntity {
     @Convert(converter = JsonDataConverter.class)
     private JsonNode serviceData;
 
+    @OneToOne(mappedBy = "hearingResponse", fetch = FetchType.EAGER)
+    private ActualHearingEntity actualHearingEntity;
+
     @Column(name = "cancellation_reason_type")
     private String cancellationReasonType;
 
@@ -80,5 +84,9 @@ public class HearingResponseEntity {
     public Optional<HearingDayDetailsEntity> getEarliestHearingDayDetails() {
         return getHearingDayDetails().stream()
             .min(Comparator.comparing(HearingDayDetailsEntity::getStartDateTime));
+    }
+
+    public boolean hasHearingDayDetails() {
+        return getHearingDayDetails() != null && !getHearingDayDetails().isEmpty();
     }
 }

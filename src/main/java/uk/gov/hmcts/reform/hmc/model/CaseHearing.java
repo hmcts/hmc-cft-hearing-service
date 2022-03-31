@@ -46,4 +46,7 @@ public class CaseHearing {
 
     @NotNull
     private List<HearingDaySchedule> hearingDaySchedule;
+
+    private Boolean hearingIsLinkedFlag;
+
 }

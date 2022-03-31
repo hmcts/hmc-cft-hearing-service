@@ -20,7 +20,7 @@ INSERT INTO panel_user_requirements(case_hearing_id, judicial_user_id, user_type
 
 INSERT INTO required_facilities(case_hearing_id, facility_type, id) VALUES (100, 'facility1', 1);
 
-INSERT INTO required_locations(case_hearing_id, location_level_type, location_id, id) VALUES (100, 'LOC1', 'CLUSTER', 1);
+INSERT INTO required_locations(case_hearing_id, location_level_type, location_id, id) VALUES (100, 'COURT', 'CLUSTER', 1);
 
 INSERT INTO hearing_party(case_hearing_id, tech_party_id, party_reference, party_type, party_role_type) VALUES (100, 1, 'p1_1', 'IND', 'DEF');
 INSERT INTO hearing_party(case_hearing_id, tech_party_id, party_reference, party_type, party_role_type) VALUES (100, 2, 'p2', 'IND', 'DEF');

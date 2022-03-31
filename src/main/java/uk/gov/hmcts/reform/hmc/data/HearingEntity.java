@@ -114,7 +114,7 @@ public class HearingEntity {
         return getLatestRequestVersion() + 1;
     }
 
-    private boolean hasHearingResponses() {
+    public boolean hasHearingResponses() {
         return getHearingResponses() != null && !getHearingResponses().isEmpty();
     }
 }

@@ -72,6 +72,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -82,7 +83,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.UPDATE_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
@@ -260,8 +263,8 @@ class HearingManagementServiceTest {
             hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
             hearingRequest.setCaseDetails(TestingUtil.caseDetails());
             hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-            hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowStartDateRange(null);
-            hearingRequest.getHearingDetails().getHearingWindow().setHearingWindowEndDateRange(null);
+            hearingRequest.getHearingDetails().getHearingWindow().setDateRangeStart(null);
+            hearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(null);
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest));
@@ -282,6 +285,80 @@ class HearingManagementServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest));
             assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
+        }
+
+        @Test
+        void shouldPassWithHearing_Case_Request_Details_Valid() {
+            HearingRequest hearingRequest = new HearingRequest();
+            hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+            hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+            hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any()))
+                .willReturn(TestingUtil.hearingEntity());
+            given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
+            assertEquals(VERSION_NUMBER, response.getVersionNumber());
+            assertEquals(POST_HEARING_STATUS, response.getStatus());
+            assertNotNull(response.getHearingRequestId());
+        }
+
+        @Test
+        void shouldPassWithHearing_Case_Request_Party_Details_Valid() {
+            HearingDetails hearingDetails = TestingUtil.hearingDetails();
+            hearingDetails.setHearingIsLinkedFlag(Boolean.FALSE);
+            HearingRequest hearingRequest = new HearingRequest();
+            hearingRequest.setHearingDetails(hearingDetails);
+            hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+            hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+            hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+            hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+            hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any()))
+                .willReturn(TestingUtil.hearingEntity());
+            given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
+            assertEquals(VERSION_NUMBER, response.getVersionNumber());
+            assertEquals(POST_HEARING_STATUS, response.getStatus());
+            assertNotNull(response.getHearingRequestId());
+
+        }
+
+        @Test
+        void shouldPassWithRelatedParty_Details_Present() {
+            HearingRequest hearingRequest = new HearingRequest();
+            hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+            hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+            hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+            hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+            hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+            hearingRequest.getPartyDetails().get(1).setIndividualDetails(
+                TestingUtil.individualWithoutRelatedPartyDetails());
+            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any()))
+                .willReturn(TestingUtil.hearingEntity());
+            given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
+            assertEquals(VERSION_NUMBER, response.getVersionNumber());
+            assertEquals(POST_HEARING_STATUS, response.getStatus());
+            assertNotNull(response.getHearingRequestId());
+
+        }
+
+        @Test
+        void shouldPassWithRelatedParty_Details_Not_Present() {
+            HearingRequest hearingRequest = new HearingRequest();
+            hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+            hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+            hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+            hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+            hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+            hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any()))
+                .willReturn(TestingUtil.hearingEntity());
+            given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
+            assertEquals(VERSION_NUMBER, response.getVersionNumber());
+            assertEquals(POST_HEARING_STATUS, response.getStatus());
+            assertNotNull(response.getHearingRequestId());
         }
 
         @Test
@@ -1002,7 +1079,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             List<PartyDetails> partyDetailsList = new ArrayList<>();
@@ -1020,7 +1097,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             OrganisationDetails organisationDetails = new OrganisationDetails();
@@ -1042,7 +1119,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             IndividualDetails individualDetails = new IndividualDetails();
@@ -1065,7 +1142,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             IndividualDetails individualDetails = new IndividualDetails();
@@ -1088,7 +1165,7 @@ class HearingManagementServiceTest {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
             HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             IndividualDetails individualDetails = new IndividualDetails();
@@ -1151,7 +1228,8 @@ class HearingManagementServiceTest {
                 .thenReturn(entities);
             given(getHearingsResponseMapper.toHearingsResponse("12345", entities))
                 .willReturn(TestingUtil.getHearingsResponseWhenDataIsPresent("12345"));
-            GetHearingsResponse response = hearingManagementService.getHearings("12345", "HEARING_REQUESTED");
+            GetHearingsResponse response = hearingManagementService.getHearings("12345",
+                    "HEARING_REQUESTED");
             assertEquals("12345", response.getCaseRef());
             assertEquals("AB1A", response.getHmctsServiceId());
             assertEquals(1, response.getCaseHearings().size());
@@ -1182,7 +1260,8 @@ class HearingManagementServiceTest {
                 .thenReturn(null);
             given(getHearingsResponseMapper.toHearingsResponse("12345", null))
                 .willReturn(TestingUtil.getHearingsResponseWhenNoData("12345"));
-            GetHearingsResponse response = hearingManagementService.getHearings("12345", "InvalidStatus");
+            GetHearingsResponse response = hearingManagementService.getHearings("12345",
+                    "InvalidStatus");
             assertEquals("12345", response.getCaseRef());
             assertNull(response.getHmctsServiceId());
             assertEquals(0, response.getCaseHearings().size());
@@ -1309,11 +1388,13 @@ class HearingManagementServiceTest {
             hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
             HmiSubmitHearingRequest hmiSubmitHearingRequest = getHmiSubmitHearingRequest();
-            when(hmiSubmitHearingRequestMapper.mapRequest(1L, hearingRequest)).thenReturn(hmiSubmitHearingRequest);
+            when(hmiSubmitHearingRequestMapper.mapRequest(1L, hearingRequest))
+                    .thenReturn(hmiSubmitHearingRequest);
             when(objectMapperService.convertObjectToJsonNode(hmiSubmitHearingRequest)).thenReturn(jsonNode);
             doNothing().when(messageSenderToQueueConfiguration).sendMessageToQueue(any(), anyLong(), anyString());
             hearingManagementService.sendRequestToHmiAndQueue(1L, hearingRequest, AMEND_HEARING);
-            verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+            verify(hmiSubmitHearingRequestMapper, times(1))
+                    .mapRequest(1L, hearingRequest);
         }
 
         @Test
@@ -1321,11 +1402,13 @@ class HearingManagementServiceTest {
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
             hearingRequest.setPartyDetails(TestingUtil.partyDetails());
             HmiSubmitHearingRequest hmiSubmitHearingRequest = getHmiSubmitHearingRequest();
-            when(hmiSubmitHearingRequestMapper.mapRequest(1L, hearingRequest)).thenReturn(hmiSubmitHearingRequest);
+            when(hmiSubmitHearingRequestMapper.mapRequest(1L, hearingRequest))
+                    .thenReturn(hmiSubmitHearingRequest);
             when(objectMapperService.convertObjectToJsonNode(hmiSubmitHearingRequest)).thenReturn(jsonNode);
             doNothing().when(messageSenderToQueueConfiguration).sendMessageToQueue(any(), anyLong(), anyString());
             hearingManagementService.sendRequestToHmiAndQueue(1L, hearingRequest, AMEND_HEARING);
-            verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+            verify(hmiSubmitHearingRequestMapper, times(1))
+                    .mapRequest(1L, hearingRequest);
         }
 
         @Test
@@ -1335,11 +1418,13 @@ class HearingManagementServiceTest {
             hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
             HmiSubmitHearingRequest hmiSubmitHearingRequest = getHmiSubmitHearingRequest();
-            when(hmiSubmitHearingRequestMapper.mapRequest(1L, hearingRequest)).thenReturn(hmiSubmitHearingRequest);
+            when(hmiSubmitHearingRequestMapper.mapRequest(1L, hearingRequest))
+                    .thenReturn(hmiSubmitHearingRequest);
             when(objectMapperService.convertObjectToJsonNode(hmiSubmitHearingRequest)).thenReturn(jsonNode);
             doNothing().when(messageSenderToQueueConfiguration).sendMessageToQueue(any(), anyLong(), anyString());
             hearingManagementService.sendRequestToHmiAndQueue(1L, hearingRequest, AMEND_HEARING);
-            verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+            verify(hmiSubmitHearingRequestMapper, times(1))
+                    .mapRequest(1L, hearingRequest);
         }
 
         @Test
@@ -1349,11 +1434,13 @@ class HearingManagementServiceTest {
             hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
             hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
             HmiSubmitHearingRequest hmiSubmitHearingRequest = getHmiSubmitHearingRequest();
-            when(hmiSubmitHearingRequestMapper.mapRequest(1L, hearingRequest)).thenReturn(hmiSubmitHearingRequest);
+            when(hmiSubmitHearingRequestMapper.mapRequest(1L, hearingRequest))
+                    .thenReturn(hmiSubmitHearingRequest);
             when(objectMapperService.convertObjectToJsonNode(hmiSubmitHearingRequest)).thenReturn(jsonNode);
             doNothing().when(messageSenderToQueueConfiguration).sendMessageToQueue(any(), anyLong(), anyString());
             hearingManagementService.sendRequestToHmiAndQueue(1L, hearingRequest, AMEND_HEARING);
-            verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+            verify(hmiSubmitHearingRequestMapper, times(1))
+                    .mapRequest(1L, hearingRequest);
         }
 
         @Test
@@ -1364,11 +1451,13 @@ class HearingManagementServiceTest {
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil
                                                                              .individualWithoutRelatedPartyDetails());
             HmiSubmitHearingRequest hmiSubmitHearingRequest = getHmiSubmitHearingRequest();
-            when(hmiSubmitHearingRequestMapper.mapRequest(1L, hearingRequest)).thenReturn(hmiSubmitHearingRequest);
+            when(hmiSubmitHearingRequestMapper.mapRequest(1L, hearingRequest))
+                    .thenReturn(hmiSubmitHearingRequest);
             when(objectMapperService.convertObjectToJsonNode(hmiSubmitHearingRequest)).thenReturn(jsonNode);
             doNothing().when(messageSenderToQueueConfiguration).sendMessageToQueue(any(), anyLong(), anyString());
             hearingManagementService.sendRequestToHmiAndQueue(1L, hearingRequest, AMEND_HEARING);
-            verify(hmiSubmitHearingRequestMapper, times(1)).mapRequest(1L, hearingRequest);
+            verify(hmiSubmitHearingRequestMapper, times(1))
+                    .mapRequest(1L, hearingRequest);
         }
 
     }

@@ -1,4 +1,4 @@
-insert into linked_group_details(linked_group_id, request_id, request_date_time, link_type, reason_for_link, status, linked_group_latest_version) values (1, 'id', '2020-08-10 11:20:00', 'Ordered', 'reason for link', 'HEARING_REQUESTED', 10 );
+insert into linked_group_details(linked_group_id, request_id, request_date_time, link_type, reason_for_link, status, linked_group_latest_version) values (1, 'id', '2020-08-10 11:20:00', 'ORDERED', 'reason for link', 'HEARING_REQUESTED', 10 );
 
 insert into hearing ( hearing_id, status, is_linked_flag) values ('2000000000', 'HEARING_REQUESTED', false);
 insert into hearing ( hearing_id, status, is_linked_flag, linked_group_id) values ('2000000010', 'HEARING_UPDATED', true, 1);
