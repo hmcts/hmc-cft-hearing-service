@@ -20,7 +20,7 @@ public final class ValidationError {
     public static final String NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE = "Number of physical attendees should be "
         + " greater than or equal to 0";
     public static final String HEARING_LOCATION_EMPTY = "Hearing locations can not be empty";
-    public static final String LISTING_COMMENTS_MAX_LENGTH = "Listing comments must not be more than 5000 "
+    public static final String LISTING_COMMENTS_MAX_LENGTH = "Listing comments must not be more than 2000 "
         + CHARACTERS_LONG;
     public static final String HEARING_REQUESTER_MAX_LENGTH = "Hearing requester must not be more than 60 "
         + CHARACTERS_LONG;
@@ -29,7 +29,7 @@ public final class ValidationError {
     public static final String MEMBER_ID_EMPTY = "Member Id can not be empty";
     public static final String MEMBER_ID_MAX_LENGTH = "Member Id must not be more than 70 " + CHARACTERS_LONG;
     public static final String MEMBER_TYPE_MAX_LENGTH = "Member type must not be more than 70 " + CHARACTERS_LONG;
-    public static final String LOCATION_TYPE_EMPTY = "Location type can not be empty";
+    public static final String LOCATION_ID_EMPTY = "Location id can not be empty";
     public static final String HMCTS_SERVICE_CODE_EMPTY_INVALID = "Hmcts service code is invalid";
     public static final String CASE_REF_EMPTY = "Case ref can not be empty";
     public static final String CASE_REF_INVALID = "Case ref details is invalid";
@@ -68,10 +68,10 @@ public final class ValidationError {
     public static final String UNAVAILABLE_FROM_DATE_EMPTY = "Unavailable from date can not be empty";
     public static final String UNAVAILABLE_TO_DATE_EMPTY = "Unavailable to date can not be empty";
     public static final String RELATED_PARTY_EMPTY = "Related Party can not be empty";
-    public static final String RELATED_PARTY_MAX_LENGTH = "Related Party must not be more than 2000 "
+    public static final String RELATED_PARTY_MAX_LENGTH = "Related Party must not be more than 15 "
         + CHARACTERS_LONG;
     public static final String RELATIONSHIP_TYPE_EMPTY = "Relationship type can not be empty";
-    public static final String RELATIONSHIP_TYPE_MAX_LENGTH = "Relationship type must not be more than 2000 characters"
+    public static final String RELATIONSHIP_TYPE_MAX_LENGTH = "Relationship type must not be more than 10 characters"
         + " long";
     public static final String TITLE_EMPTY = "Title can not be empty";
     public static final String TITLE_MAX_LENGTH = "Title must not be more than 40 " + CHARACTERS_LONG;
@@ -154,5 +154,36 @@ public final class ValidationError {
     public static final String GROUP_DETAILS = "Group details are required";
     public static final String HEARINGS_IN_GROUP = "Linked hearing details are required";
     public static final String HEARINGS_IN_GROUP_SIZE = "001 Insufficient requestIds";
+
+
+    public static final String VENUE_LOCATION_CODE_NULL = "Venue location code can not be null or empty";
+    public static final String VENUE_LOCATION_CODE_LENGTH = "Venue location code must not be more than 30 "
+        + CHARACTERS_LONG;
+    public static final String TRANSACTION_ID_CASE_HQ_NULL = "Transaction Id Case Hq can not be null or empty";
+    public static final String TRANSACTION_ID_CASE_HQ_LENGTH = "Transaction Id Case Hq must not be more than 60 "
+        + CHARACTERS_LONG;
+    public static final String TRANSACTION_ID_CASE_HQ_EMPTY = "Timestamp Id Case Hq can not be null or empty";
+    public static final String HEARING_STATUS_CODE_NULL = "Hearing status code can not be null or empty";
+    public static final String HEARING_STATUS_CODE_LENGTH = "Hearing status code must not be more than 30 "
+        + CHARACTERS_LONG;
+    public static final String HEARING_ROOM_NAME_LENGTH = "Hearing room name must not be more than 70 "
+        + CHARACTERS_LONG;
+    public static final String HEARING_JOH_CODE_LENGTH = "Hearing joh code must not be more than 30 "
+        + CHARACTERS_LONG;
+    public static final String HEARING_CODE_NULL = "Hearing code can not be null or empty";
+    public static final String HEARING_ATTENDEE_ENTITY_ID_LENGTH =
+        "Hearing attendee entity id must not be more than 40 " + CHARACTERS_LONG;
+    public static final String HEARING_CASE_VERSION_ID_NULL = "Hearing case version id can not be null or empty";
+    public static final String HEARING_CASE_STATUS_NULL = "Hearing case status not be null or empty";
+    public static final String HEARING_CANCELLATION_REASON_LENGTH =
+        "Hearing cancellation reason must not be more than 70 " + CHARACTERS_LONG;
+
+    public static final String HEARING_RESPONSE_DATETIME_NULL = "Hearing response received date "
+        + "time can not be null or empty";
+    public static final String HEARING_BROADCAST_DATETIME_NULL = "Hearing response broadcast date "
+        + "time can not be null or empty";
+    public static final String HMCTS_STATUS_NULL = "HMCTS status can not be null or empty";
+    public static final String HMCTS_STATUS_LENGTH = "HMCTS status must not be more than 100 " + CHARACTERS_LONG;
+    public static final String LISTING_STATUS_NULL = "Listing status can not be null or empty";
 
 }
