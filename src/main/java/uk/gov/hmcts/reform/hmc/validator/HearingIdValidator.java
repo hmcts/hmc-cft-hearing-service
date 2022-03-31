@@ -71,7 +71,7 @@ public class HearingIdValidator {
     }
 
     public Optional<HearingResponseEntity> getHearingResponse(HearingEntity hearingEntity) {
-        String version = hearingEntity.getLatestRequestVersion().toString();
+        Integer version = hearingEntity.getLatestRequestVersion();
         Optional<HearingResponseEntity> hearingResponse = hearingEntity
             .getHearingResponses().stream().filter(hearingResponseEntity ->
                                                        hearingResponseEntity.getResponseVersion().equals(version))

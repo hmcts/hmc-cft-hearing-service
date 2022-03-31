@@ -1586,6 +1586,7 @@ class HearingManagementServiceTest {
             );
             addHearingResponses(hearingEntity, 1, true, 1, 0);
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
+            when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .hearingCompletion(hearingId));
             assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
@@ -1743,7 +1744,7 @@ class HearingManagementServiceTest {
         List<HearingResponseEntity> responseEntities = new ArrayList<>();
         for (int i = 0; i < noOfResponses; i++) {
             HearingResponseEntity responseEntity = new HearingResponseEntity();
-            responseEntity.setResponseVersion(String.valueOf(hearingEntity.getLatestRequestVersion()));
+            responseEntity.setResponseVersion(hearingEntity.getLatestRequestVersion());
             responseEntity.setRequestTimeStamp(LocalDateTime.now());
             responseEntities.add(responseEntity);
             if (addHearingDayDetails) {

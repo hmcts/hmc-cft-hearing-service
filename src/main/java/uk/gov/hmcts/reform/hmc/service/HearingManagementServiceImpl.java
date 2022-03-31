@@ -489,18 +489,18 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private void validateHearingActualsStatus(Long hearingId, String errorMessage) {
         String status = getStatus(hearingId);
         DeleteHearingStatus deleteHearingStatus = Enums.getIfPresent(DeleteHearingStatus.class, status).orNull();
-
-        if (DeleteHearingStatus.AWAITING_LISTING == deleteHearingStatus
-            || DeleteHearingStatus.HEARING_REQUESTED == deleteHearingStatus) {
-            throw new BadRequestException(errorMessage);
-        }
-        LocalDate minStartDate = hearingIdValidator
-            .filterHearingResponses(hearingRepository.findById(hearingId)
-                                        .orElseThrow(() -> new HearingNotFoundException(hearingId,
-                                                                                        HEARING_ID_NOT_FOUND)));
-        LocalDate now = LocalDate.now();
-        if (DeleteHearingStatus.LISTED == deleteHearingStatus && (minStartDate.isBefore(now))) {
-            throw new BadRequestException(errorMessage);
+        if (deleteHearingStatus != null) {
+            boolean isValidStatus = DeleteHearingStatus.isValidHearingActuals(deleteHearingStatus);
+            LocalDate minStartDate = hearingIdValidator
+                .filterHearingResponses(hearingRepository.findById(hearingId)
+                                            .orElseThrow(() -> new HearingNotFoundException(
+                                                hearingId,
+                                                HEARING_ID_NOT_FOUND
+                                            )));
+            LocalDate now = LocalDate.now();
+            if (!(isValidStatus && minStartDate.isAfter(now))) {
+                throw new BadRequestException(errorMessage);
+            }
         }
     }
 
