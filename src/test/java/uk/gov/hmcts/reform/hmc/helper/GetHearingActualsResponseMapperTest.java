@@ -82,7 +82,6 @@ class GetHearingActualsResponseMapperTest {
         assertEquals("HEARING_REQUESTED", response.getHmcStatus());
         assertEquals("serviceCode", response.getCaseDetails().getHmctsServiceCode());
         assertEquals("caseRef", response.getCaseDetails().getCaseRef());
-        assertEquals(null, response.getCaseDetails().getRequestTimeStamp());
         assertEquals("extCaseRef", response.getCaseDetails().getExternalCaseReference());
         assertEquals("contextPath", response.getCaseDetails().getCaseDeepLink());
         assertEquals("caseName", response.getCaseDetails().getHmctsInternalCaseName());

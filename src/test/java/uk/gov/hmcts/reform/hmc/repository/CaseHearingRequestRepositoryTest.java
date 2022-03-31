@@ -35,22 +35,22 @@ class CaseHearingRequestRepositoryTest {
     @Test
     void testGetVersionNumber() {
         Integer expectedVersionNumber = 1;
-        doReturn(1).when(caseHearingRequestRepository).getVersionNumber(any());
-        Integer versionNumber = caseHearingRequestRepository.getVersionNumber(any());
+        doReturn(1).when(caseHearingRequestRepository).getLatestVersionNumber(any());
+        Integer versionNumber = caseHearingRequestRepository.getLatestVersionNumber(any());
         assertAll(
             () -> assertThat(versionNumber, is(expectedVersionNumber)),
-            () -> verify(caseHearingRequestRepository, times(1)).getVersionNumber(any())
+            () -> verify(caseHearingRequestRepository, times(1)).getLatestVersionNumber(any())
         );
     }
 
     @Test
     void testGetVersionNumber_IsInvalid() {
         Integer expectedVersionNumber = 1;
-        doReturn(2).when(caseHearingRequestRepository).getVersionNumber(any());
-        Integer versionNumber = caseHearingRequestRepository.getVersionNumber(any());
+        doReturn(2).when(caseHearingRequestRepository).getLatestVersionNumber(any());
+        Integer versionNumber = caseHearingRequestRepository.getLatestVersionNumber(any());
         assertAll(
             () -> assertNotEquals(versionNumber, expectedVersionNumber),
-            () -> verify(caseHearingRequestRepository, times(1)).getVersionNumber(any())
+            () -> verify(caseHearingRequestRepository, times(1)).getLatestVersionNumber(any())
         );
     }
 
