@@ -286,8 +286,8 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             for (RequiredLocationsEntity requiredLocationsEntity
                     : hearingEntity.getCaseHearingRequest().getRequiredLocations()) {
                 HearingLocation hearingLocation = new HearingLocation();
-                hearingLocation.setLocationId(requiredLocationsEntity.getLocationId().getLabel());
-                hearingLocation.setLocationType(requiredLocationsEntity.getLocationLevelType());
+                hearingLocation.setLocationId(requiredLocationsEntity.getLocationId());
+                hearingLocation.setLocationType(requiredLocationsEntity.getLocationLevelType().getLabel());
                 hearingLocations.add(hearingLocation);
             }
         }
@@ -296,9 +296,9 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
 
     private HearingWindow setHearingWindow(HearingEntity hearingEntity) {
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setHearingWindowStartDateRange(
+        hearingWindow.setDateRangeStart(
             hearingEntity.getCaseHearingRequest().getHearingWindowStartDateRange());
-        hearingWindow.setHearingWindowEndDateRange(
+        hearingWindow.setDateRangeEnd(
             hearingEntity.getCaseHearingRequest().getHearingWindowEndDateRange());
         hearingWindow.setFirstDateTimeMustBe(hearingEntity.getCaseHearingRequest().getFirstDateTimeOfHearingMustBe());
         return hearingWindow;

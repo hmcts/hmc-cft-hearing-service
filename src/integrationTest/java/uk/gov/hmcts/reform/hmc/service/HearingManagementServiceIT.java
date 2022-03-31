@@ -17,9 +17,11 @@ import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
@@ -237,6 +239,9 @@ class HearingManagementServiceIT extends BaseTest {
             .getHearingDaySchedule().get(0).getHearingRoomId());
         assertEquals("room1-1", response.getCaseHearings().get(2)
             .getHearingDaySchedule().get(0).getHearingRoomId());
+        assertTrue(response.getCaseHearings().get(0).getHearingIsLinkedFlag());
+        assertFalse(response.getCaseHearings().get(1).getHearingIsLinkedFlag());
+        assertTrue(response.getCaseHearings().get(2).getHearingIsLinkedFlag());
     }
 
     void testGetHearings_WithValidCaseRef_assertPt2(GetHearingsResponse response) {
@@ -320,6 +325,8 @@ class HearingManagementServiceIT extends BaseTest {
             .getHearingDaySchedule().get(0).getAttendees().size());
         assertEquals(2, response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getAttendees().size());
+        assertFalse(response.getCaseHearings().get(0).getHearingIsLinkedFlag());
+        assertTrue(response.getCaseHearings().get(1).getHearingIsLinkedFlag());
     }
 
     void testGetHearings_WithValidCaseRefAndStatus_assertPart2(GetHearingsResponse response) {

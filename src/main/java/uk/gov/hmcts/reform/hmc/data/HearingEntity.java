@@ -35,10 +35,16 @@ public class HearingEntity {
     @Column(name = "status", nullable = false)
     private String status;
 
+    @Column(name = "error_code")
+    private Integer errorCode;
+
+    @Column(name = "error_description")
+    private String errorDescription;
+
     @OneToOne(mappedBy = "hearing", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private CaseHearingRequestEntity caseHearingRequest;
 
-    @OneToMany(mappedBy = "hearing", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "hearing", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<HearingResponseEntity> hearingResponses;
 
     @ManyToOne(fetch = FetchType.LAZY)
