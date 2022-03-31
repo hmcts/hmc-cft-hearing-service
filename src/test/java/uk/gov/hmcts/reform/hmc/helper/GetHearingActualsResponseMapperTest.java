@@ -2,24 +2,18 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
-import uk.gov.hmcts.reform.hmc.repository.HearingAttendeeDetailsRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 class GetHearingActualsResponseMapperTest {
 
-    @Mock
-    private HearingAttendeeDetailsRepository hearingAttendeeDetailsRepository;
 
     @BeforeEach
     void setUp() {
@@ -28,9 +22,7 @@ class GetHearingActualsResponseMapperTest {
 
     @Test
     void toHearingsResponseWhenDataIsPresentForOrgDetails() {
-        when(hearingAttendeeDetailsRepository.getHearingAttendeeByPartyId(any())).thenReturn("something");
-        GetHearingActualsResponseMapper getHearingsResponseMapper =
-            new GetHearingActualsResponseMapper(hearingAttendeeDetailsRepository);
+        GetHearingActualsResponseMapper getHearingsResponseMapper = new GetHearingActualsResponseMapper();
         HearingActualResponse response =
             getHearingsResponseMapper.toHearingActualResponse(TestingUtil.getHearingsEntityForHearingActuals());
 
@@ -48,10 +40,7 @@ class GetHearingActualsResponseMapperTest {
 
     @Test
     void toHearingsResponseWhenDataIsPresentForIndividualDetails() {
-        when(hearingAttendeeDetailsRepository.getHearingAttendeeByPartyId(any())).thenReturn("something");
-
-        GetHearingActualsResponseMapper getHearingsResponseMapper =
-            new GetHearingActualsResponseMapper(hearingAttendeeDetailsRepository);
+        GetHearingActualsResponseMapper getHearingsResponseMapper = new GetHearingActualsResponseMapper();
         HearingActualResponse response =
             getHearingsResponseMapper.toHearingActualResponse(TestingUtil
                                                                   .getHearingsEntityForHearingActualsIndividual());

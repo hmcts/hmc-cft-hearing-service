@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
@@ -27,7 +26,6 @@ import uk.gov.hmcts.reform.hmc.model.hearingactuals.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.Party;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.PauseDateTimes;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.PlannedHearingDays;
-import uk.gov.hmcts.reform.hmc.repository.HearingAttendeeDetailsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,17 +33,11 @@ import java.util.List;
 @Component
 public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCode {
 
-    private final HearingAttendeeDetailsRepository hearingAttendeeDetailsRepository;
-
-    @Autowired
-    public GetHearingActualsResponseMapper(HearingAttendeeDetailsRepository hearingAttendeeDetailsRepository) {
-        this.hearingAttendeeDetailsRepository = hearingAttendeeDetailsRepository;
-    }
-
     public HearingActualResponse toHearingActualResponse(HearingEntity hearingEntity) {
         val response = new HearingActualResponse();
         response.setHmcStatus(hearingEntity.getStatus());
         response.setCaseDetails(setCaseDetails(hearingEntity));
+        response.getCaseDetails().setRequestTimeStamp(hearingEntity.getCaseHearingRequest().getRequestTimeStamp());
         setHearingPlanned(hearingEntity, response);
         setHearingActuals(hearingEntity, response);
         return response;
@@ -172,12 +164,12 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
 
         ArrayList<Party> partyDetailsList = new ArrayList<>();
         for (HearingPartyEntity hearingPartyEntity : hearingEntity.getCaseHearingRequest().getHearingParties()) {
-            String partySubChannel
-                = hearingAttendeeDetailsRepository.getHearingAttendeeByPartyId(hearingPartyEntity.getPartyReference());
+
             Party partyDetails = new Party();
             partyDetails.setPartyID(hearingPartyEntity.getPartyReference());
             partyDetails.setPartyRole(hearingPartyEntity.getPartyRoleType());
-            partyDetails.setPartyChannelSubType(partySubChannel);
+            //TBD separate ticket to be raised for subChannel
+            partyDetails.setPartyChannelSubType(null);
             if (PartyType.IND.getLabel().equals(hearingPartyEntity.getPartyType().getLabel())) {
                 partyDetails.setIndividualDetails(setIndividualDetails(hearingPartyEntity));
             } else {
