@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import lombok.val;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayPausesEntity;
