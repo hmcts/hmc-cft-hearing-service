@@ -60,7 +60,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
                     if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
                         HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
                         if (LocalDate.now().isAfter(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
-                            return "AWAITING LISTING";
+                            return "AWAITING_ACTUALS";
                         }
                     }
                 }

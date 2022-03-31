@@ -56,7 +56,7 @@ class GetHearingActualsResponseMapperTest {
             getHearingsResponseMapper.toHearingActualResponse(
                 TestingUtil.getHearingsEntityForHearingActuals("LISTED"));
 
-        assertEquals("AWAITING LISTING", response.getHmcStatus());
+        assertEquals("AWAITING_ACTUALS", response.getHmcStatus());
     }
 
     @Test
