@@ -453,8 +453,8 @@ class LinkedHearingValidatorTest {
                 null
             );
             // set the hearing window to prior to current date - invalid
-            hearingEntity.getCaseHearingRequest().setHearingWindowStartDateRange(LocalDate.now().minusDays(2));
-            hearingEntity.getCaseHearingRequest().setHearingWindowEndDateRange(LocalDate.now().plusDays(1));
+            hearingEntity.getCaseHearingRequests().get(0).setHearingWindowStartDateRange(LocalDate.now().minusDays(2));
+            hearingEntity.getCaseHearingRequests().get(0).setHearingWindowEndDateRange(LocalDate.now().plusDays(1));
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
@@ -720,12 +720,12 @@ class LinkedHearingValidatorTest {
         caseHearingRequestEntity.setHearingWindowEndDateRange(LocalDate.now().plusDays(4));
         caseHearingRequestEntity.setVersionNumber(versionNumber);
 
-        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
+        hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
 
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingResponseEntity.setHearingDayDetails(hearingDayDetailsEntities);
         hearingResponseEntity.setHearing(hearingEntity);
-        hearingResponseEntity.setResponseVersion(versionNumber.toString());
+        hearingResponseEntity.setRequestVersion(versionNumber);
         hearingResponseEntity.setRequestTimeStamp(requestTimestamp);
 
         hearingEntity.setHearingResponses(List.of(hearingResponseEntity));
@@ -748,7 +748,7 @@ class LinkedHearingValidatorTest {
         caseHearingRequestEntity.setHearingWindowEndDateRange(LocalDate.now().plusDays(4));
         caseHearingRequestEntity.setVersionNumber(versionNumber);
 
-        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
+        hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
         return hearingEntity;
     }
 

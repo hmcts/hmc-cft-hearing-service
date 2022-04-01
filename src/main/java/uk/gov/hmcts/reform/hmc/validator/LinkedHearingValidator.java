@@ -20,10 +20,8 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ORDER_NOT_UNIQUE;
@@ -256,12 +254,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
 
     protected LocalDate filterHearingResponses(HearingEntity hearingEntity) {
         log.debug("hearing id: {}", hearingEntity.getId());
-        String version = hearingEntity.getLatestRequestVersion().toString();
-        Optional<HearingResponseEntity> hearingResponse = hearingEntity
-                .getHearingResponses().stream().filter(hearingResponseEntity ->
-                        hearingResponseEntity.getResponseVersion().equals(version))
-                .collect(Collectors.toList()).stream()
-                .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
+        Optional<HearingResponseEntity> hearingResponse = hearingEntity.getHearingResponseForLatestRequest();
         if (log.isDebugEnabled()) {
             if (hearingResponse.isPresent()) {
                 log.debug("hearing response: {} : {}",
@@ -280,8 +273,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
     }
 
     protected LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
-        Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getHearingDayDetails()
-                .stream().min(Comparator.comparing(HearingDayDetailsEntity::getStartDateTime));
+        Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getEarliestHearingDayDetails();
         if (log.isDebugEnabled()) {
             if (hearingDayDetails.isPresent()) {
                 log.debug("hearing day details: {} : {}",

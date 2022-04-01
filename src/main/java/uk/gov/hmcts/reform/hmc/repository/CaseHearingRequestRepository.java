@@ -13,8 +13,8 @@ import java.util.List;
 @Repository
 public interface CaseHearingRequestRepository extends CrudRepository<CaseHearingRequestEntity, Long> {
 
-    @Query("SELECT versionNumber from CaseHearingRequestEntity where hearing.id = :hearingId")
-    Integer getVersionNumber(Long hearingId);
+    @Query("SELECT max(versionNumber) from CaseHearingRequestEntity where hearing.id = :hearingId")
+    Integer getLatestVersionNumber(Long hearingId);
 
     @Query("SELECT caseHearingID from CaseHearingRequestEntity where hearing.id = :hearingId")
     Long getCaseHearingId(Long hearingId);
@@ -28,4 +28,7 @@ public interface CaseHearingRequestRepository extends CrudRepository<CaseHearing
 
     @Query("from CaseHearingRequestEntity where hearing.id = :hearingId")
     CaseHearingRequestEntity getCaseHearing(Long hearingId);
+
+    @Query("select count(hmctsServiceCode) from CaseHearingRequestEntity where hmctsServiceCode = :hmctsServiceCode")
+    Long getHmctsServiceCodeCount(String hmctsServiceCode);
 }

@@ -20,6 +20,8 @@ public class EntitySubTypeMapper {
             .entityClassCode(PERSON_CLASS_CODE)
             .entitySensitiveClient(individualDetails.getVulnerableFlag())
             .entityAlertMessage(individualDetails.getVulnerabilityDetails())
+            .entitySpecialNeedsOther(individualDetails.getOtherReasonableAdjustmentDetails())
+            .entityCustodyStatus(individualDetails.getCustodyStatus())
             .build();
     }
 

@@ -381,51 +381,6 @@ class EnumPatternValidatorTest {
     }
 
     @Test
-    void whenInValidDowUnavailabilityType() {
-        UnavailabilityDow unavailabilityDow = getDow();
-        unavailabilityDow.setDowUnavailabilityType("dow");
-        Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
-        assertFalse(violations.isEmpty());
-        assertEquals(1, violations.size());
-        List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for dowUnavailabilityType", validationErrors.get(0));
-    }
-
-    private UnavailabilityDow getDow() {
-        UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-        unavailabilityDow.setDow(DayOfWeekUnavailable.MONDAY.toString());
-        return unavailabilityDow;
-    }
-
-    @Test
-    void whenInValidDowUnavailabilityTypeIsNull() {
-        UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-        unavailabilityDow.setDowUnavailabilityType(null);
-        unavailabilityDow.setDow(DayOfWeekUnavailable.MONDAY.toString());
-        Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
-        assertFalse(violations.isEmpty());
-        assertEquals(1, violations.size());
-        List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for dowUnavailabilityType", validationErrors.get(0));
-    }
-
-    @Test
-    void whenInValidDowUnavailabilityTypeIsEmpty() {
-        UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-        unavailabilityDow.setDowUnavailabilityType("");
-        unavailabilityDow.setDow(DayOfWeekUnavailable.MONDAY.toString());
-        Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
-        assertFalse(violations.isEmpty());
-        assertEquals(1, violations.size());
-        List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for dowUnavailabilityType", validationErrors.get(0));
-    }
-
-
-    @Test
     void whenValidUnavailabilityDowUnavailabilityType() {
         UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
         unavailabilityDow.setDowUnavailabilityType(DayOfWeekUnAvailableType.ALL.toString());

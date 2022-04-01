@@ -19,6 +19,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -74,11 +75,6 @@ public class CaseHearingRequestEntity {
     @Column(name = "case_reference", nullable = false)
     private String caseReference;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @Column(name = "hearing_request_received_date_time", nullable = false)
-    private LocalDateTime hearingRequestReceivedDateTime;
-
     @Column(name = "external_case_reference")
     private String externalCaseReference;
 
@@ -127,12 +123,15 @@ public class CaseHearingRequestEntity {
     @Column(name = "hearing_window_end_date_range")
     private LocalDate hearingWindowEndDateRange;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @Column(name = "request_timestamp", nullable = false)
-    private LocalDateTime requestTimeStamp;
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @Column(name = "hearing_request_received_date_time", nullable = false)
+    private LocalDateTime hearingRequestReceivedDateTime;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @Column(name = "amend_reason_code")
+    private String amendReasonCode;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
 

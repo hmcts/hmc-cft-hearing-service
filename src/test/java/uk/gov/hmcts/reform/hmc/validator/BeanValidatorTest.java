@@ -8,12 +8,13 @@ import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
+import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -166,7 +167,6 @@ class BeanValidatorTest {
         CaseDetails caseDetails = new CaseDetails();
         caseDetails.setHmctsServiceCode("");
         caseDetails.setCaseRef("");
-        caseDetails.setRequestTimeStamp(null);
         caseDetails.setExternalCaseReference("externalCaseReferenceexternalCaseReferenceexternalCaseReferenceexternal"
                                                  + "CaseReference");
         caseDetails.setCaseDeepLink("abc");
@@ -180,10 +180,9 @@ class BeanValidatorTest {
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
-        assertEquals(13, violations.size());
+        assertEquals(12, violations.size());
         assertTrue(validationErrors.contains(ValidationError.HMCTS_SERVICE_CODE_EMPTY_INVALID));
         assertTrue(validationErrors.contains(ValidationError.CASE_REF_EMPTY));
-        assertTrue(validationErrors.contains(ValidationError.REQUEST_TIMESTAMP_EMPTY));
         assertTrue(validationErrors.contains(ValidationError.EXTERNAL_CASE_REFERENCE_MAX_LENGTH));
         assertTrue(validationErrors.contains(ValidationError.CASE_DEEP_LINK_INVALID));
         assertTrue(validationErrors.contains(ValidationError.HMCTS_INTERNAL_CASE_NAME_EMPTY));
@@ -212,12 +211,14 @@ class BeanValidatorTest {
     }
 
     @Test
-    void shouldHave_NoRequestDetailsViolations() {
+    void shouldFailAsRequestDetailsVersionNumberNotPresent() {
         RequestDetails requestDetails = TestingUtil.requestDetails();
         Set<ConstraintViolation<RequestDetails>> violations = validator.validate(requestDetails);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertTrue(violations.isEmpty());
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+        assertTrue(validationErrors.contains(ValidationError.VERSION_NUMBER_NULL_EMPTY));
     }
 
     @Test
@@ -253,24 +254,12 @@ class BeanValidatorTest {
     }
 
     @Test
-    void shouldHave_RequestDetailsViolations() {
-        RequestDetails requestDetails = new RequestDetails();
-        requestDetails.setRequestTimeStamp(null);
-        Set<ConstraintViolation<RequestDetails>> violations = validator.validate(requestDetails);
-        List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertFalse(violations.isEmpty());
-        assertEquals(1, violations.size());
-        assertTrue(validationErrors.contains(ValidationError.REQUEST_TIMESTAMP_NULL_EMPTY));
-    }
-
-    @Test
     void shouldFailAsRequestDetailsNotPresent() {
-        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
-        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        Set<ConstraintViolation<CreateHearingRequest>> violations = validator.validate(createHearingRequest);
+        UpdateHearingRequest hearingRequest = new UpdateHearingRequest();
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        Set<ConstraintViolation<HearingRequest>> violations = validator.validate(hearingRequest);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
@@ -280,10 +269,9 @@ class BeanValidatorTest {
 
     @Test
     void shouldFailAsHearingDetailsNotPresent() {
-        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
-        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        Set<ConstraintViolation<CreateHearingRequest>> violations = validator.validate(createHearingRequest);
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        Set<ConstraintViolation<HearingRequest>> violations = validator.validate(hearingRequest);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
@@ -293,13 +281,12 @@ class BeanValidatorTest {
 
     @Test
     void shouldFailAsCaseDetailsCaseCategoriesNotPresent() {
-        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
-        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        createHearingRequest.getCaseDetails().setCaseCategories(new ArrayList<>());
-        Set<ConstraintViolation<CreateHearingRequest>> violations = validator.validate(createHearingRequest);
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingRequest.getCaseDetails().setCaseCategories(new ArrayList<>());
+        Set<ConstraintViolation<HearingRequest>> violations = validator.validate(hearingRequest);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
@@ -309,11 +296,10 @@ class BeanValidatorTest {
 
     @Test
     void shouldFailAsPanelRequirementsNotPresent() {
-        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
-        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        Set<ConstraintViolation<CreateHearingRequest>> violations = validator.validate(createHearingRequest);
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        Set<ConstraintViolation<HearingRequest>> violations = validator.validate(hearingRequest);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
@@ -323,11 +309,10 @@ class BeanValidatorTest {
 
     @Test
     void shouldFailAsCaseDetailsNotPresent() {
-        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
-        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        Set<ConstraintViolation<CreateHearingRequest>> violations = validator.validate(createHearingRequest);
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        Set<ConstraintViolation<HearingRequest>> violations = validator.validate(hearingRequest);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
@@ -338,13 +323,12 @@ class BeanValidatorTest {
 
     @Test
     void shouldFailAsHearingLocationsNotPresent() {
-        CreateHearingRequest createHearingRequest = new CreateHearingRequest();
-        createHearingRequest.setRequestDetails(TestingUtil.requestDetails());
-        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        createHearingRequest.getHearingDetails().setHearingLocations(new ArrayList<>());
-        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        Set<ConstraintViolation<CreateHearingRequest>> violations = validator.validate(createHearingRequest);
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingRequest.getHearingDetails().setHearingLocations(new ArrayList<>());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        Set<ConstraintViolation<HearingRequest>> violations = validator.validate(hearingRequest);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());

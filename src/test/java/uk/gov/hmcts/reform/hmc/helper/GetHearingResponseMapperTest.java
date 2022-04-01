@@ -47,7 +47,8 @@ class GetHearingResponseMapperTest {
     @Test
     void toHearingsResponseWhenDataIsPresentForOrg() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
 
@@ -56,9 +57,9 @@ class GetHearingResponseMapperTest {
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
         assertPartyDetails(response.getPartyDetails().get(0), "ORG");
-        assertHearingResponse(response.getHearingResponse().get(0));
-        assertHearingDaySchedule(response.getHearingResponse().get(0).getHearingDaySchedule().get(0));
-        assertAttendees(response.getHearingResponse().get(0).getHearingDaySchedule().get(0).getAttendees().get(0));
+        assertHearingResponse(response.getHearingResponse());
+        assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
+        assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
         assertUnavailability(
             response.getPartyDetails().get(0).getUnavailabilityRanges().get(0),
             response.getPartyDetails().get(0).getUnavailabilityDow().get(0)
@@ -69,7 +70,8 @@ class GetHearingResponseMapperTest {
     @Test
     void toHearingsResponseWhenDataIsPresentForInd() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.IND);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityInd()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityInd()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
 
@@ -78,28 +80,29 @@ class GetHearingResponseMapperTest {
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
         assertPartyDetails(response.getPartyDetails().get(0), "IND");
-        assertHearingResponse(response.getHearingResponse().get(0));
-        assertHearingDaySchedule(response.getHearingResponse().get(0).getHearingDaySchedule().get(0));
-        assertAttendees(response.getHearingResponse().get(0).getHearingDaySchedule().get(0).getAttendees().get(0));
+        assertHearingResponse(response.getHearingResponse());
+        assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
+        assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
         assertIndividualDetails(response.getPartyDetails().get(0).getIndividualDetails());
     }
 
     @Test
     void toHearingsResponseWhenDataIsPresentWithCaseCategories() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
-        hearingEntity.getCaseHearingRequest().setCaseCategories(TestingUtil.caseCategoriesEntities());
+        hearingEntity.getCaseHearingRequests().get(0).setCaseCategories(TestingUtil.caseCategoriesEntities());
 
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
         assertPartyDetails(response.getPartyDetails().get(0), "ORG");
-        assertHearingResponse(response.getHearingResponse().get(0));
-        assertHearingDaySchedule(response.getHearingResponse().get(0).getHearingDaySchedule().get(0));
-        assertAttendees(response.getHearingResponse().get(0).getHearingDaySchedule().get(0).getAttendees().get(0));
+        assertHearingResponse(response.getHearingResponse());
+        assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
+        assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
         assertUnavailability(
             response.getPartyDetails().get(0).getUnavailabilityRanges().get(0),
             response.getPartyDetails().get(0).getUnavailabilityDow().get(0)
@@ -110,19 +113,21 @@ class GetHearingResponseMapperTest {
     @Test
     void toHearingsResponseWhenDataIsPresentWithHearingPriority() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
-        hearingEntity.getCaseHearingRequest().setNonStandardDurations(TestingUtil.getNonStandardDurationEntities());
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setNonStandardDurations(TestingUtil.getNonStandardDurationEntities());
 
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
         assertPartyDetails(response.getPartyDetails().get(0), "ORG");
-        assertHearingResponse(response.getHearingResponse().get(0));
-        assertHearingDaySchedule(response.getHearingResponse().get(0).getHearingDaySchedule().get(0));
-        assertAttendees(response.getHearingResponse().get(0).getHearingDaySchedule().get(0).getAttendees().get(0));
+        assertHearingResponse(response.getHearingResponse());
+        assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
+        assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
         assertUnavailability(
             response.getPartyDetails().get(0).getUnavailabilityRanges().get(0),
             response.getPartyDetails().get(0).getUnavailabilityDow().get(0)
@@ -133,10 +138,11 @@ class GetHearingResponseMapperTest {
     @Test
     void toHearingsResponseWhenDataIsPresentWithPanelRequirements() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
-        hearingEntity.getCaseHearingRequest()
+        hearingEntity.getCaseHearingRequests().get(0)
             .setPanelRequirements(Arrays.asList(TestingUtil.panelRequirementsEntity()));
 
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
@@ -144,9 +150,9 @@ class GetHearingResponseMapperTest {
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
         assertPartyDetails(response.getPartyDetails().get(0), "ORG");
-        assertHearingResponse(response.getHearingResponse().get(0));
-        assertHearingDaySchedule(response.getHearingResponse().get(0).getHearingDaySchedule().get(0));
-        assertAttendees(response.getHearingResponse().get(0).getHearingDaySchedule().get(0).getAttendees().get(0));
+        assertHearingResponse(response.getHearingResponse());
+        assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
+        assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
         assertUnavailability(
             response.getPartyDetails().get(0).getUnavailabilityRanges().get(0),
             response.getPartyDetails().get(0).getUnavailabilityDow().get(0)
@@ -157,18 +163,21 @@ class GetHearingResponseMapperTest {
     @Test
     void toHearingsResponseWhenDataIsPresentWithFacilityType() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
-        hearingEntity.getCaseHearingRequest().setRequiredFacilities(Arrays.asList(TestingUtil.facilityEntity()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setRequiredFacilities(Arrays.asList(TestingUtil.facilityEntity()));
+
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
         assertPartyDetails(response.getPartyDetails().get(0), "ORG");
-        assertHearingResponse(response.getHearingResponse().get(0));
-        assertHearingDaySchedule(response.getHearingResponse().get(0).getHearingDaySchedule().get(0));
-        assertAttendees(response.getHearingResponse().get(0).getHearingDaySchedule().get(0).getAttendees().get(0));
+        assertHearingResponse(response.getHearingResponse());
+        assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
+        assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
         assertUnavailability(
             response.getPartyDetails().get(0).getUnavailabilityRanges().get(0),
             response.getPartyDetails().get(0).getUnavailabilityDow().get(0)
@@ -180,19 +189,20 @@ class GetHearingResponseMapperTest {
     @Test
     void toHearingsResponseWhenDataIsPresentWithHearingLocations() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
-        hearingEntity.getCaseHearingRequest().setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
-        hearingEntity.getCaseHearingRequest().setRequiredLocations(Arrays.asList(TestingUtil.locationEntity()));
+        hearingEntity.getCaseHearingRequests().get(0).setRequiredLocations(Arrays.asList(TestingUtil.locationEntity()));
 
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
         assertPartyDetails(response.getPartyDetails().get(0), "ORG");
-        assertHearingResponse(response.getHearingResponse().get(0));
-        assertHearingDaySchedule(response.getHearingResponse().get(0).getHearingDaySchedule().get(0));
-        assertAttendees(response.getHearingResponse().get(0).getHearingDaySchedule().get(0).getAttendees().get(0));
+        assertHearingResponse(response.getHearingResponse());
+        assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
+        assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
         assertUnavailability(
             response.getPartyDetails().get(0).getUnavailabilityRanges().get(0),
             response.getPartyDetails().get(0).getUnavailabilityDow().get(0)
@@ -276,7 +286,7 @@ class GetHearingResponseMapperTest {
                 LocalDate.of(2020, 12, 20),
                 unavailabilityRanges.getUnavailableFromDate()
             ),
-            () -> assertEquals("ALL", unavailabilityDow.getDowUnavailabilityType()),
+            () -> assertEquals("All Day", unavailabilityDow.getDowUnavailabilityType()),
             () -> assertEquals("Friday", unavailabilityDow.getDow())
         );
     }

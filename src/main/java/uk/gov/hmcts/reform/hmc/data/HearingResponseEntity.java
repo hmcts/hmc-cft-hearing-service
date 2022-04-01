@@ -66,10 +66,10 @@ public class HearingResponseEntity {
     private List<HearingDayDetailsEntity> hearingDayDetails;
 
     @Column(name = "request_version", nullable = false)
-    private String requestVersion;
+    private Integer requestVersion;
 
-    @Column(name = "response_version")
-    private String responseVersion;
+    @Column(name = "response_version", nullable = false)
+    private Integer responseVersion;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
