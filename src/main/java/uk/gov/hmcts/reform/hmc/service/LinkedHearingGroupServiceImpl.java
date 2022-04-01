@@ -180,7 +180,7 @@ public class LinkedHearingGroupServiceImpl extends HearingIdValidator implements
     private void validateUnlinkingHearingsWillNotHaveStartDateInThePast(List<HearingEntity> linkedHearings) {
 
         linkedHearings.stream()
-            .filter(h -> h.hasHearingResponses())
+            .filter(HearingEntity::hasHearingResponses)
             .forEach(hearing -> {
                 List<HearingResponseEntity> latestVersionHearingResponses = getLatestVersionHearingResponses(hearing);
 
