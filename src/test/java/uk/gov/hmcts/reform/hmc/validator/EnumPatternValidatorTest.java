@@ -348,7 +348,7 @@ class EnumPatternValidatorTest {
         assertTrue(violations.isEmpty());
     }
 
-    private HearingLocation generateLocation(String id, String type){
+    private HearingLocation generateLocation(String id, String type) {
         HearingLocation location = new HearingLocation();
         location.setLocationId(id);
         location.setLocationType(type);
