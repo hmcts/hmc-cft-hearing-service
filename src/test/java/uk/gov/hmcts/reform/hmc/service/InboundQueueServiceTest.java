@@ -417,6 +417,7 @@ class InboundQueueServiceTest {
         entity.setId(hearingId);
 
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
+        hearingResponseEntity.setRequestVersion(1);
         entity.setHearingResponses(List.of(hearingResponseEntity));
         return entity;
     }

@@ -1,5 +1,11 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -58,6 +64,8 @@ public class CaseHearingRequestEntity {
     @Column(name = "lead_judge_contract_type")
     private String leadJudgeContractType;
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @Column(name = "first_date_time_of_hearing_must_be")
     private LocalDateTime firstDateTimeOfHearingMustBe;
 
@@ -88,6 +96,8 @@ public class CaseHearingRequestEntity {
     @Column(name = "case_restricted_flag", nullable = false)
     private Boolean caseRestrictedFlag;
 
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @Column(name = "case_sla_start_date", nullable = false)
     private LocalDate caseSlaStartDate;
 
@@ -103,12 +113,18 @@ public class CaseHearingRequestEntity {
     @Column(name = "requester")
     private String requester;
 
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @Column(name = "hearing_window_start_date_range")
     private LocalDate hearingWindowStartDateRange;
 
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @Column(name = "hearing_window_end_date_range")
     private LocalDate hearingWindowEndDateRange;
 
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @Column(name = "hearing_request_received_date_time", nullable = false)
     private LocalDateTime hearingRequestReceivedDateTime;
 
