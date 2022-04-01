@@ -80,4 +80,14 @@ public class HearingIdValidator {
 
         return hearingResponse;
     }
+
+    /**
+     * get Hearing.
+     *
+     * @param hearingId hearing Id
+     * @return hearing hearing
+     */
+    public Optional<HearingEntity> getHearing(Long hearingId) {
+        return hearingRepository.findById(hearingId);
+    }
 }

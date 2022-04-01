@@ -1,7 +1,13 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
@@ -18,6 +24,7 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
@@ -28,8 +35,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-
+@ExtendWith(MockitoExtension.class)
 class GetHearingResponseMapperTest {
+
+    @InjectMocks
+    private GetHearingResponseMapper getHearingResponseMapper;
+
+    @Mock
+    private LinkedHearingDetailsRepository linkedHearingDetailsRepository;
 
     @Test
     void toHearingsResponseWhenDataIsPresentForOrg() {
@@ -39,8 +52,6 @@ class GetHearingResponseMapperTest {
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
 
-
-        GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
@@ -64,8 +75,6 @@ class GetHearingResponseMapperTest {
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
 
-
-        GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
@@ -75,7 +84,6 @@ class GetHearingResponseMapperTest {
         assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
         assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
         assertIndividualDetails(response.getPartyDetails().get(0).getIndividualDetails());
-
     }
 
     @Test
@@ -87,7 +95,6 @@ class GetHearingResponseMapperTest {
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
         hearingEntity.getCaseHearingRequests().get(0).setCaseCategories(TestingUtil.caseCategoriesEntities());
 
-        GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
@@ -113,7 +120,6 @@ class GetHearingResponseMapperTest {
         hearingEntity.getCaseHearingRequests().get(0)
             .setNonStandardDurations(TestingUtil.getNonStandardDurationEntities());
 
-        GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
@@ -139,7 +145,6 @@ class GetHearingResponseMapperTest {
         hearingEntity.getCaseHearingRequests().get(0)
             .setPanelRequirements(Arrays.asList(TestingUtil.panelRequirementsEntity()));
 
-        GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
@@ -165,7 +170,6 @@ class GetHearingResponseMapperTest {
         hearingEntity.getCaseHearingRequests().get(0)
             .setRequiredFacilities(Arrays.asList(TestingUtil.facilityEntity()));
 
-        GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
@@ -181,6 +185,7 @@ class GetHearingResponseMapperTest {
         assertFacility(response.getHearingDetails().getFacilitiesRequired());
     }
 
+
     @Test
     void toHearingsResponseWhenDataIsPresentWithHearingLocations() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
@@ -190,7 +195,6 @@ class GetHearingResponseMapperTest {
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
         hearingEntity.getCaseHearingRequests().get(0).setRequiredLocations(Arrays.asList(TestingUtil.locationEntity()));
 
-        GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
@@ -205,7 +209,6 @@ class GetHearingResponseMapperTest {
         );
         assertHearingLocation(response.getHearingDetails().getHearingLocations().get(0));
     }
-
 
     private void assertRequestDetails(RequestDetails requestDetails) {
         assertAll(
@@ -237,9 +240,10 @@ class GetHearingResponseMapperTest {
 
     private void assertHearingResponse(HearingResponse hearingResponse) {
         assertAll(
-            () -> assertEquals("Case_listingStatus", hearingResponse.getLaCaseStatus()),
-            () -> assertEquals("listingStatus", hearingResponse.getListingStatus()),
-            () -> assertEquals(2, hearingResponse.getResponseVersion())
+            () -> assertEquals(ListAssistCaseStatus.CASE_CREATED.label, hearingResponse.getLaCaseStatus()),
+            () -> assertEquals(ListingStatus.FIXED.label, hearingResponse.getListingStatus()),
+            () -> assertEquals(2, hearingResponse.getResponseVersion()),
+            () -> assertEquals("Cancelled Reason 1", hearingResponse.getHearingCancellationReason())
         );
     }
 
@@ -315,7 +319,7 @@ class GetHearingResponseMapperTest {
 
     private void assertFacility(List<String> facilityType) {
         assertAll(
-            () -> assertEquals(facilityType.get(0), "RoleType1")
+            () -> assertEquals("RoleType1", facilityType.get(0))
         );
     }
 

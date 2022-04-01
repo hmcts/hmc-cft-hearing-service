@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
-import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,13 +49,13 @@ class LinkedHearingGroupServiceTest {
     public static final LocalDateTime HEARING_RESPONSE_DATE_TIME = LocalDateTime.now();
 
     @Mock
+    LinkedHearingDetailsRepository linkedHearingDetailsRepository;
+
+    @Mock
     LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
     @Mock
     HearingRepository hearingRepository;
-
-    @Mock
-    HearingIdValidator hearingIdValidator;
 
     @InjectMocks
     private LinkedHearingGroupServiceImpl service;
@@ -63,9 +63,8 @@ class LinkedHearingGroupServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        service = new LinkedHearingGroupServiceImpl(linkedGroupDetailsRepository,
-                                                    hearingIdValidator,
-                                                    hearingRepository);
+        service = new LinkedHearingGroupServiceImpl(hearingRepository,
+                linkedGroupDetailsRepository, linkedHearingDetailsRepository);
     }
 
     @Nested
@@ -73,7 +72,7 @@ class LinkedHearingGroupServiceTest {
     class DeleteHearingGroup {
 
         @Test
-        public void shouldDeleteHearingGroupDetails() {
+        void shouldDeleteHearingGroupDetails() {
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
             HearingEntity hearing1 = new HearingEntity();
@@ -113,7 +112,7 @@ class LinkedHearingGroupServiceTest {
         }
 
         @Test
-        public void shouldReturn404ErrorWhenNonExistentHearingGroup() {
+        void shouldReturn404ErrorWhenNonExistentHearingGroup() {
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.empty());
 
             Exception exception = assertThrows(LinkedHearingGroupNotFoundException.class, () ->
@@ -125,7 +124,7 @@ class LinkedHearingGroupServiceTest {
         }
 
         @Test
-        public void shouldReturn400ErrorWhenGroupDetailsHasStatusPENDING() {
+        void shouldReturn400ErrorWhenGroupDetailsHasStatusPENDING() {
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "PENDING");
 
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
@@ -140,7 +139,7 @@ class LinkedHearingGroupServiceTest {
         }
 
         @Test
-        public void shouldReturn400ErrorWhenGroupDetailsHasStatusERROR() {
+        void shouldReturn400ErrorWhenGroupDetailsHasStatusERROR() {
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ERROR");
 
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
@@ -155,7 +154,7 @@ class LinkedHearingGroupServiceTest {
         }
 
         @Test
-        public void shouldReturn400ErrorWhenHearingStatusIsHEARING_REQUESTEDButPlannedHearingDateInThePast() {
+        void shouldReturn400ErrorWhenHearingStatusIsHEARING_REQUESTEDButPlannedHearingDateInThePast() {
 
             HearingEntity hearing1 = new HearingEntity();
             hearing1.setId(HEARING_ID1);
@@ -199,7 +198,7 @@ class LinkedHearingGroupServiceTest {
         }
 
         @Test
-        public void shouldReturn400ErrorWhenHearingStatusIsUPDATE_REQUESTEDButPlannedHearingDateInThePast() {
+        void shouldReturn400ErrorWhenHearingStatusIsUPDATE_REQUESTEDButPlannedHearingDateInThePast() {
 
             HearingEntity hearing = new HearingEntity();
             hearing.setId(HEARING_ID1);
@@ -227,7 +226,7 @@ class LinkedHearingGroupServiceTest {
         }
 
         @Test
-        public void shouldReturn400ErrorWhenHearingStatusIsInvalidForUnlinking() {
+        void shouldReturn400ErrorWhenHearingStatusIsInvalidForUnlinking() {
 
             HearingEntity hearing = new HearingEntity();
             hearing.setId(HEARING_ID1);
@@ -254,7 +253,7 @@ class LinkedHearingGroupServiceTest {
         }
 
         @Test
-        public void shouldDeleteHearingGroupDetailsFilteringOutInvalidMultipleResponseHearingVersions() {
+        void shouldDeleteHearingGroupDetailsFilteringOutInvalidMultipleResponseHearingVersions() {
 
             HearingEntity hearing1 = new HearingEntity();
             hearing1.setId(HEARING_ID1);
@@ -293,7 +292,7 @@ class LinkedHearingGroupServiceTest {
         }
 
         @Test
-        public void shouldDeleteHearingGroupDetailsFilteringOutHearingResponsesWithNonRecentTimestampForSameVersion() {
+        void shouldDeleteHearingGroupDetailsFilteringOutHearingResponsesWithNonRecentTimestampForSameVersion() {
 
             HearingEntity hearing = new HearingEntity();
             hearing.setId(HEARING_ID1);
