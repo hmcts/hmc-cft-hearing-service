@@ -39,7 +39,6 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         val response = new HearingActualResponse();
         response.setHmcStatus(getHearingStatus(hearingEntity));
         response.setCaseDetails(setCaseDetails(hearingEntity));
-        response.getCaseDetails().setRequestTimeStamp(hearingEntity.getCaseHearingRequest().getRequestTimeStamp());
         setHearingPlanned(hearingEntity, response);
         setHearingActuals(hearingEntity, response);
         return response;
@@ -53,7 +52,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             case "UPDATE_SUBMITTED":
                 hearingStatus = hearingEntity.getStatus();
                 Optional<HearingResponseEntity> hearingResponse = hearingEntity.getLatestHearingResponse();
-                if (hearingEntity.hasHearingResponses() && hearingResponse.isPresent()) {
+                if (hearingResponse.isPresent()) {
                     HearingResponseEntity latestHearingResponse = hearingResponse.get();
                     Optional<HearingDayDetailsEntity> hearingDayDetails =
                         latestHearingResponse.getEarliestHearingDayDetails();
@@ -161,7 +160,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
     }
 
     private void setHearingPlanned(HearingEntity hearingEntity, HearingActualResponse response) {
-        val caseHearingRequestEntity = hearingEntity.getCaseHearingRequest();
+        val caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
         val hearingPlanned = new HearingPlanned();
         hearingPlanned.setPlannedHearingType(caseHearingRequestEntity.getHearingType());
         hearingPlanned.setPlannedHearingDays(getPlannedHearingDays(hearingEntity));
@@ -191,7 +190,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
     private ArrayList<Party> setPartyDetails(HearingEntity hearingEntity) {
 
         ArrayList<Party> partyDetailsList = new ArrayList<>();
-        for (HearingPartyEntity hearingPartyEntity : hearingEntity.getCaseHearingRequest().getHearingParties()) {
+        for (HearingPartyEntity hearingPartyEntity : hearingEntity.getLatestCaseHearingRequest().getHearingParties()) {
 
             Party partyDetails = new Party();
             partyDetails.setPartyID(hearingPartyEntity.getPartyReference());

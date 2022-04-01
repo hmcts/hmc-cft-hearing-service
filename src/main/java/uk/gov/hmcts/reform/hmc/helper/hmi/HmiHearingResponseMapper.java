@@ -6,7 +6,9 @@ import uk.gov.hmcts.reform.hmc.client.hmi.HearingAttendee;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingCode;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingJoh;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
+import uk.gov.hmcts.reform.hmc.client.hmi.SyncResponse;
 import uk.gov.hmcts.reform.hmc.client.hmi.VenueLocationReference;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
@@ -23,7 +25,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_LISTING;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.LISTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl.UNSUPPORTED_HEARING_STATUS;
 
 @Component
@@ -48,6 +54,16 @@ public class HmiHearingResponseMapper {
         return hearingEntity;
     }
 
+    public HearingEntity mapHmiSyncResponseToEntity(SyncResponse syncResponse, HearingEntity hearingEntity) {
+        if (!syncResponse.isSuccess()) {
+            hearingEntity.setErrorCode(syncResponse.getListAssistErrorCode());
+            hearingEntity.setErrorDescription(syncResponse.getListAssistErrorDescription());
+            hearingEntity.setStatus(EXCEPTION.name());
+        } else {
+            hearingEntity.setStatus(getHearingStatusForSyncResponse(hearingEntity).name());
+        }
+        return hearingEntity;
+    }
 
     public HearingEntity mapHmiHearingErrorToEntity(ErrorDetails hearing, HearingEntity hearingEntity) {
         hearingEntity.setErrorCode(hearing.getErrorCode());
@@ -59,8 +75,10 @@ public class HmiHearingResponseMapper {
     public HmcHearingResponse mapEntityToHmcModel(HearingResponseEntity hearingResponseEntity, HearingEntity hearing) {
         HmcHearingResponse hmcHearingResponse = new HmcHearingResponse();
         hmcHearingResponse.setHearingID(hearing.getId().toString());
-        hmcHearingResponse.setCaseRef(hearing.getCaseHearingRequest().getCaseReference());
-        hmcHearingResponse.setHmctsServiceCode(hearing.getCaseHearingRequest().getHmctsServiceCode());
+        CaseHearingRequestEntity matchingCaseHearingRequestEntity = hearing
+            .getCaseHearingRequest(hearingResponseEntity.getRequestVersion());
+        hmcHearingResponse.setCaseRef(matchingCaseHearingRequestEntity.getCaseReference());
+        hmcHearingResponse.setHmctsServiceCode(matchingCaseHearingRequestEntity.getHmctsServiceCode());
 
         //There is currently only support for one hearingDayDetail to be provided in HearingResponse From ListAssist
         HmcHearingUpdate hmcHearingUpdate = new HmcHearingUpdate();
@@ -77,6 +95,22 @@ public class HmiHearingResponseMapper {
                     hmcHearingUpdate.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
                 }
             }
+        }
+        hmcHearingResponse.setHearingUpdate(hmcHearingUpdate);
+        return hmcHearingResponse;
+    }
+
+    public HmcHearingResponse mapEntityToHmcModel(HearingEntity hearing) {
+        HmcHearingResponse hmcHearingResponse = new HmcHearingResponse();
+        hmcHearingResponse.setHearingID(hearing.getId().toString());
+        CaseHearingRequestEntity matchingCaseHearingRequestEntity = hearing.getLatestCaseHearingRequest();
+        hmcHearingResponse.setCaseRef(matchingCaseHearingRequestEntity.getCaseReference());
+        hmcHearingResponse.setHmctsServiceCode(matchingCaseHearingRequestEntity.getHmctsServiceCode());
+
+        HmcHearingUpdate hmcHearingUpdate = new HmcHearingUpdate();
+        hmcHearingUpdate.setHmcStatus(hearing.getStatus());
+        if (HearingStatus.valueOf(hearing.getStatus()) != EXCEPTION) {
+            hmcHearingUpdate.setHearingEventBroadcastDateTime(LocalDateTime.now(Clock.systemUTC()));
         }
         hmcHearingResponse.setHearingUpdate(hmcHearingUpdate);
         return hmcHearingResponse;
@@ -144,9 +178,9 @@ public class HmiHearingResponseMapper {
                 postStatus = EXCEPTION;
                 break;
             case LISTED:
-                int currentVersion = hearingEntity.getCaseHearingRequest().getVersionNumber();
                 int hearingVersion = hearing.getHearing().getHearingCaseVersionId();
-                postStatus = getHearingStatusWhenLaStatusIsListed(currentStatus, hearingVersion, currentVersion);
+                postStatus = getHearingStatusWhenLaStatusIsListed(currentStatus, hearingVersion,
+                                                                  hearingEntity.getLatestRequestVersion());
                 break;
             case PENDING_RELISTING:
                 postStatus = currentStatus;
@@ -160,6 +194,29 @@ public class HmiHearingResponseMapper {
         return postStatus;
     }
 
+    public HearingStatus getHearingStatusForSyncResponse(HearingEntity hearingEntity) {
+        HearingStatus currentStatus = HearingStatus.valueOf(hearingEntity.getStatus());
+        HearingStatus postStatus = null;
+
+        switch (currentStatus) {
+            case HEARING_REQUESTED:
+                postStatus = AWAITING_LISTING;
+                break;
+            case UPDATE_REQUESTED:
+            case UPDATE_SUBMITTED:
+                postStatus = UPDATE_SUBMITTED;
+                break;
+            case CANCELLATION_REQUESTED:
+                postStatus = CANCELLATION_SUBMITTED;
+                break;
+            case CANCELLED:
+                postStatus = EXCEPTION;
+                break;
+            default:
+                postStatus = currentStatus;
+        }
+        return postStatus;
+    }
 
     private HearingStatus getHearingStatusWhenLaStatusIsListed(HearingStatus currentStatus,
                                                                int hearingVersion,

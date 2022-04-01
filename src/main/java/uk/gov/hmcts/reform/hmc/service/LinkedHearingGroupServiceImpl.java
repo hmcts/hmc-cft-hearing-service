@@ -155,6 +155,11 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         }
     }
 
+    private LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
+        return hearingResponse.getEarliestHearingDayDetails()
+            .orElseThrow(() -> new BadRequestException("bad request")).getStartDateTime().toLocalDate();
+    }
+
     private void validateHearingGroupStatus(LinkedGroupDetails linkedGroupDetails) {
         String groupStatus = linkedGroupDetails.getStatus();
         if (invalidDeleteGroupStatuses.stream().anyMatch(e -> e.equals(groupStatus))) {

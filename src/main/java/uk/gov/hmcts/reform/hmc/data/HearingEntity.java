@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +20,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
@@ -47,8 +50,9 @@ public class HearingEntity {
     @Column(name = "error_description")
     private String errorDescription;
 
-    @OneToOne(mappedBy = "hearing", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private CaseHearingRequestEntity caseHearingRequest;
+    @OneToMany(mappedBy = "hearing", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<CaseHearingRequestEntity> caseHearingRequests = new ArrayList<>();
 
     @OneToMany(mappedBy = "hearing", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<HearingResponseEntity> hearingResponses;
@@ -63,8 +67,23 @@ public class HearingEntity {
     @Column(name = "is_linked_flag")
     private Boolean isLinkedFlag;
 
+    public CaseHearingRequestEntity getLatestCaseHearingRequest() {
+        return getCaseHearingRequests().stream()
+            .max(Comparator.comparingInt(CaseHearingRequestEntity::getVersionNumber))
+            .orElseThrow(() -> new ResourceNotFoundException("Cannot find latest case "
+                + "hearing request for hearing " + id));
+    }
+
+    public CaseHearingRequestEntity getCaseHearingRequest(int version) {
+        return getCaseHearingRequests().stream()
+            .filter(caseHearingRequestEntity -> version == caseHearingRequestEntity.getVersionNumber())
+            .findFirst()
+            .orElseThrow(() -> new ResourceNotFoundException("Cannot find request version " + version
+                                                                 + " for hearing " + id));
+    }
+
     public Integer getLatestRequestVersion() {
-        return getCaseHearingRequest().getVersionNumber();
+        return getLatestCaseHearingRequest().getVersionNumber();
     }
 
     /**

@@ -286,9 +286,14 @@ class HmiHearingResponseMapperTest {
 
         @Test
         void shouldGetPostStateOfUpdateRequestedWhenLaStateIsListedAndCurrentIsUpdateRequestedAndVersionIsNotEqual() {
+            HearingEntity hearingEntity = generateHearingEntity("UPDATE_REQUESTED", 11);
+            CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
+            caseHearingRequestEntity.setVersionNumber(1);
+            hearingEntity.getCaseHearingRequests().add(caseHearingRequestEntity);
+
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
                 generateHmiHearing("random", HearingCode.LISTED, 1, ListingStatus.DRAFT),
-                generateHearingEntity("UPDATE_REQUESTED", 11)
+                hearingEntity
             );
             assertEquals(response.getStatus(), UPDATE_REQUESTED.name());
         }
@@ -304,9 +309,14 @@ class HmiHearingResponseMapperTest {
 
         @Test
         void shouldGetPostStateOfCancellationRequestedWhenLaStateIsListedAndCurrentIsCancellationRequested() {
+            HearingEntity hearingEntity = generateHearingEntity("CANCELLATION_REQUESTED", 11);
+            CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
+            caseHearingRequestEntity.setVersionNumber(1);
+            hearingEntity.getCaseHearingRequests().add(caseHearingRequestEntity);
+
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
                 generateHmiHearing("random", HearingCode.LISTED, 1, ListingStatus.DRAFT),
-                generateHearingEntity("CANCELLATION_REQUESTED", 11)
+                hearingEntity
             );
             assertEquals(response.getStatus(), CANCELLATION_REQUESTED.name());
         }
@@ -367,7 +377,7 @@ class HmiHearingResponseMapperTest {
         HearingEntity hearingEntity = new HearingEntity();
         CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         caseHearingRequestEntity.setVersionNumber(version);
-        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
+        hearingEntity.setCaseHearingRequests(Lists.newArrayList(caseHearingRequestEntity));
 
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingEntity.setHearingResponses(Lists.newArrayList(hearingResponseEntity));

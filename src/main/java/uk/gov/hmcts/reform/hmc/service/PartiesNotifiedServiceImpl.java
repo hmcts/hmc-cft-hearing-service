@@ -40,9 +40,9 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
     public void getPartiesNotified(Long hearingId, int responseVersion, PartiesNotified partiesNotified) {
         hearingIdValidator.validateHearingId(hearingId, PARTIES_NOTIFIED_ID_NOT_FOUND);
         HearingResponseEntity hearingResponseEntity = hearingResponseRepository.getHearingResponse(hearingId);
-        if (Integer.valueOf(hearingResponseEntity.getResponseVersion()) != responseVersion) {
+        if (hearingResponseEntity.getResponseVersion() != responseVersion) {
             throw new PartiesNotifiedNotFoundException(PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH);
-        } else if (Integer.valueOf(hearingResponseEntity.getResponseVersion()).equals(responseVersion)
+        } else if (hearingResponseEntity.getResponseVersion().equals(responseVersion)
             && hearingResponseEntity.getPartiesNotifiedDateTime() != null) {
             throw new PartiesNotifiedBadRequestException(PARTIES_NOTIFIED_ALREADY_SET);
         } else {

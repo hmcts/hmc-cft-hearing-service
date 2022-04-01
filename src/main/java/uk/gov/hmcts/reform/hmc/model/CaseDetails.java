@@ -7,7 +7,6 @@ import org.hibernate.validator.constraints.URL;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -26,9 +25,6 @@ public class CaseDetails {
     @NotEmpty(message = ValidationError.CASE_REF_EMPTY)
     @Pattern(regexp = "^\\d{16}$", message = ValidationError.CASE_REF_INVALID)
     private String caseRef;
-
-    @NotNull(message = ValidationError.REQUEST_TIMESTAMP_EMPTY)
-    private LocalDateTime requestTimeStamp;
 
     @Size(max = 70, message = ValidationError.EXTERNAL_CASE_REFERENCE_MAX_LENGTH)
     private String externalCaseReference;
