@@ -47,7 +47,6 @@ public class GetHearingResponseCommonCode {
         }
     }
 
-
     protected CaseDetails setCaseDetails(HearingEntity hearingEntity) {
         CaseDetails caseDetails = new CaseDetails();
         CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();

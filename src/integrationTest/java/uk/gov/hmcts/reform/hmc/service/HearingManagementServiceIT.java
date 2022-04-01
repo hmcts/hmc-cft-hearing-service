@@ -7,6 +7,8 @@ import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
@@ -249,8 +251,8 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals(2, response.getCaseHearings().get(0).getResponseVersion());
         assertEquals(3, response.getCaseHearings().get(1).getResponseVersion());
         assertEquals(1, response.getCaseHearings().get(2).getResponseVersion());
-        assertEquals("listingStatus3-1", response.getCaseHearings().get(1).getHearingListingStatus());
-        assertEquals("caselistingStatus3-1", response.getCaseHearings().get(1).getListAssistCaseStatus());
+        assertEquals(ListingStatus.FIXED.name(), response.getCaseHearings().get(1).getHearingListingStatus());
+        assertEquals(ListAssistCaseStatus.LISTED.name(), response.getCaseHearings().get(1).getListAssistCaseStatus());
         assertEquals(1, response.getCaseHearings().get(1).getHearingDaySchedule().size());
         assertEquals("session1-2", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getListAssistSessionId());
@@ -324,8 +326,9 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("HEARING_REQUESTED", response.getCaseHearings().get(0).getHmcStatus());
         assertEquals(3, response.getCaseHearings().get(0).getResponseVersion());
         assertEquals(1, response.getCaseHearings().get(1).getResponseVersion());
-        assertEquals("listingStatus3-1", response.getCaseHearings().get(0).getHearingListingStatus());
-        assertEquals("caselistingStatus3-1", response.getCaseHearings().get(0).getListAssistCaseStatus());
+        assertEquals(ListingStatus.FIXED.name(), response.getCaseHearings().get(0).getHearingListingStatus());
+        assertEquals(ListAssistCaseStatus.LISTED.name(),
+                response.getCaseHearings().get(0).getListAssistCaseStatus());
         assertEquals(2, response.getCaseHearings().get(1).getHearingDaySchedule().size());
         assertEquals("session1-1", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getListAssistSessionId());
