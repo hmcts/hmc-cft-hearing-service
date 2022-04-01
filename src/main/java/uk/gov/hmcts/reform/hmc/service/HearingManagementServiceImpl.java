@@ -498,7 +498,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                                 HEARING_ID_NOT_FOUND
                                             )));
             LocalDate now = LocalDate.now();
-            if (!(isValidStatus && minStartDate.isAfter(now))) {
+            boolean isMinStartDatePast = minStartDate.isBefore(now) || minStartDate.equals(now);
+            if (!(isValidStatus && isMinStartDatePast)) {
                 throw new BadRequestException(errorMessage);
             }
         }

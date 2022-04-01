@@ -1601,7 +1601,7 @@ class HearingManagementServiceTest {
             HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.LISTED.name(),
                                                                 versionNumber
             );
-            addHearingResponses(hearingEntity, 1, true, 1, -1);
+            addHearingResponses(hearingEntity, 1, true, 1, 1);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
@@ -1618,7 +1618,7 @@ class HearingManagementServiceTest {
             HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.LISTED.name(),
                                                                 versionNumber
             );
-            addHearingResponses(hearingEntity, 1, true, 1, 1);
+            addHearingResponses(hearingEntity, 1, true, 1, -1);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
@@ -1639,7 +1639,7 @@ class HearingManagementServiceTest {
             HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.LISTED.name(),
                                                                 versionNumber
             );
-            addHearingResponses(hearingEntity, 1, true, 1, 1);
+            addHearingResponses(hearingEntity, 1, true, 1, -1);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
@@ -1662,7 +1662,7 @@ class HearingManagementServiceTest {
             HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.LISTED.name(),
                                                                 versionNumber
             );
-            addHearingResponses(hearingEntity, 1, true, 1, 1);
+            addHearingResponses(hearingEntity, 1, true, 1, -1);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
@@ -1686,7 +1686,7 @@ class HearingManagementServiceTest {
             HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.LISTED.name(),
                                                                 versionNumber
             );
-            addHearingResponses(hearingEntity, 1, true, 1, 1);
+            addHearingResponses(hearingEntity, 1, true, 1, -1);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
