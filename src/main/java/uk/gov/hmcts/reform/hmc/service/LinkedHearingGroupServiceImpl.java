@@ -132,11 +132,11 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     }
 
     private List<HearingResponseEntity> getLatestVersionHearingResponses(HearingEntity hearing) {
-        Optional<Map.Entry<String, List<HearingResponseEntity>>> max = hearing.getHearingResponses().stream()
-                .collect(groupingBy(HearingResponseEntity::getRequestVersion))
-                .entrySet()
-                .stream()
-                .max(Map.Entry.comparingByKey());
+        Optional<Map.Entry<Integer, List<HearingResponseEntity>>> max = hearing.getHearingResponses().stream()
+            .collect(groupingBy(HearingResponseEntity::getRequestVersion))
+            .entrySet()
+            .stream()
+            .max(Map.Entry.comparingByKey());
 
         return max.isPresent() ? max.get().getValue() : List.of();
     }

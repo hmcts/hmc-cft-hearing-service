@@ -19,6 +19,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -132,7 +133,13 @@ public class CaseHearingRequestEntity {
     @Column(name = "request_timestamp", nullable = false)
     private LocalDateTime requestTimeStamp;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @Column(name = "hearing_request_received_date_time", nullable = false)
+    private LocalDateTime hearingRequestReceivedDateTime;
+
+    @Column(name = "amend_reason_code")
+    private String amendReasonCode;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
 

@@ -28,6 +28,8 @@ class IndividualDetailMapperTest {
         assertNull(entities.get(0).getChannelType());
         assertEquals("lastName", entities.get(0).getLastName());
         assertEquals("firstName", entities.get(0).getFirstName());
+        assertEquals("custodyStatus", entities.get(0).getCustodyStatus());
+        assertEquals("otherReason", entities.get(0).getOtherReasonableAdjustmentDetails());
         assertEquals("Mr", entities.get(0).getTitle());
 
         assertEquals("P2", entities.get(1).getRelatedPartyID());
@@ -39,6 +41,8 @@ class IndividualDetailMapperTest {
         assertEquals("lastName", entities.get(1).getLastName());
         assertEquals("firstName", entities.get(1).getFirstName());
         assertEquals("Mr", entities.get(1).getTitle());
+        assertEquals("custodyStatus", entities.get(1).getCustodyStatus());
+        assertEquals("otherReason", entities.get(1).getOtherReasonableAdjustmentDetails());
     }
 
     @Test
