@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingActualsResponseMapper;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.Optional;
 
@@ -33,6 +34,8 @@ class HearingActualsServiceTest {
     @Mock
     HearingRepository hearingRepository;
 
+    HearingIdValidator hearingIdValidator;
+
     @Mock
     GetHearingActualsResponseMapper getHearingActualsResponseMapper;
 
@@ -42,10 +45,12 @@ class HearingActualsServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        hearingIdValidator = new HearingIdValidator(hearingRepository);
         hearingActualsService =
             new HearingActualsServiceImpl(
                 hearingRepository,
-                getHearingActualsResponseMapper
+                getHearingActualsResponseMapper,
+                hearingIdValidator
             );
     }
 

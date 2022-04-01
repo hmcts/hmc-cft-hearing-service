@@ -28,4 +28,6 @@ public interface HearingManagementService {
 
     void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest,Long hearingId, String messageType);
 
+    ResponseEntity hearingCompletion(Long hearingId);
+
 }

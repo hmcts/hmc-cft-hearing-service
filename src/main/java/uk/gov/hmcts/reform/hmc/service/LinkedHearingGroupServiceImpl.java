@@ -38,12 +38,14 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_
 public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implements LinkedHearingGroupService {
 
     private static final List<String> invalidDeleteGroupStatuses = Arrays.asList("PENDING", "ERROR");
+    private HearingRepository hearingRepository;
 
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
                                          LinkedGroupDetailsRepository linkedGroupDetailsRepository,
                                          LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
         super(hearingRepository, linkedGroupDetailsRepository, linkedHearingDetailsRepository);
+        this.hearingRepository = hearingRepository;
     }
 
     @Override

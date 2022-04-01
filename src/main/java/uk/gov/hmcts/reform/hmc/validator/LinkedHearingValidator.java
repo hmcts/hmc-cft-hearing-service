@@ -252,7 +252,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
         return Collections.frequency(list, value);
     }
 
-    protected LocalDate filterHearingResponses(HearingEntity hearingEntity) {
+    public LocalDate filterHearingResponses(HearingEntity hearingEntity) {
         log.debug("hearing id: {}", hearingEntity.getId());
         Optional<HearingResponseEntity> hearingResponse = hearingEntity.getHearingResponseForLatestRequest();
         if (log.isDebugEnabled()) {
@@ -272,7 +272,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
                         + " no lowest date for given version"))));
     }
 
-    protected LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
+    public LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
         Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getEarliestHearingDayDetails();
         if (log.isDebugEnabled()) {
             if (hearingDayDetails.isPresent()) {
