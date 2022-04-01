@@ -39,4 +39,6 @@ public class PartyDetails {
 
     @Valid
     private List<UnavailabilityRanges> unavailabilityRanges;
+
+    private String partyChannelSubType;
 }

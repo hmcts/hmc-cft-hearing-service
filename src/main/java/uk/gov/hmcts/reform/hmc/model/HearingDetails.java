@@ -53,7 +53,7 @@ public class HearingDetails {
 
     private List<@Size(max = 70, message = FACILITIES_REQUIRED_MAX_LENGTH_MSG) String> facilitiesRequired;
 
-    @Size(max = 5000, message = ValidationError.LISTING_COMMENTS_MAX_LENGTH)
+    @Size(max = 2000, message = ValidationError.LISTING_COMMENTS_MAX_LENGTH)
     private String listingComments;
 
     @Size(max = 60, message = ValidationError.HEARING_REQUESTER_MAX_LENGTH)
@@ -69,5 +69,8 @@ public class HearingDetails {
     private PanelRequirements panelRequirements;
 
     private Boolean hearingIsLinkedFlag = false;
+
+    @Size(max = 70, message = ValidationError.LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH)
+    private String amendReasonCode;
 
 }

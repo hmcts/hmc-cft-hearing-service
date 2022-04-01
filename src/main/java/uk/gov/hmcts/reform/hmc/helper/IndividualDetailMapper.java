@@ -41,5 +41,7 @@ public class IndividualDetailMapper {
         individualEntity.setLastName(individualDetail.getLastName());
         individualEntity.setFirstName(individualDetail.getFirstName());
         individualEntity.setTitle(individualDetail.getTitle());
+        individualEntity.setCustodyStatus(individualDetail.getCustodyStatus());
+        individualEntity.setOtherReasonableAdjustmentDetails(individualDetail.getOtherReasonableAdjustmentDetails());
     }
 }

@@ -1,0 +1,12 @@
+ALTER TABLE public.case_hearing_request ALTER COLUMN auto_list_flag DROP NOT NULL;
+ALTER TABLE public.case_hearing_request ALTER COLUMN hearing_type DROP NOT NULL;
+ALTER TABLE public.case_hearing_request ALTER COLUMN required_duration_in_minutes DROP NOT NULL;
+ALTER TABLE public.case_hearing_request ALTER COLUMN hearing_priority_type DROP NOT NULL;
+ALTER TABLE public.case_hearing_request ALTER COLUMN hmcts_service_code DROP NOT NULL;
+ALTER TABLE public.case_hearing_request ALTER COLUMN case_reference DROP NOT NULL;
+ALTER TABLE public.case_hearing_request ALTER COLUMN case_url_context_path DROP NOT NULL;
+ALTER TABLE public.case_hearing_request ALTER COLUMN hmcts_internal_case_name DROP NOT NULL;
+ALTER TABLE public.case_hearing_request ALTER COLUMN public_case_name DROP NOT NULL;
+ALTER TABLE public.case_hearing_request ALTER COLUMN owning_location_id DROP NOT NULL;
+ALTER TABLE public.case_hearing_request ALTER COLUMN case_restricted_flag DROP NOT NULL;
+ALTER TABLE public.case_hearing_request ALTER COLUMN case_sla_start_date DROP NOT NULL;
