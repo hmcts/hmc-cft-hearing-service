@@ -53,9 +53,7 @@ class EnumPatternValidatorTest {
 
     @Test
     void whenInvalidLocationTypeIsNull() {
-        HearingLocation location = new HearingLocation();
-        location.setLocationId("Id");
-        location.setLocationType(null);
+        HearingLocation location = generateLocation("id", null);
         Set<ConstraintViolation<HearingLocation>> violations = validator.validate(location);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -66,9 +64,7 @@ class EnumPatternValidatorTest {
 
     @Test
     void whenInvalidLocationTypeIsEmpty() {
-        HearingLocation location = new HearingLocation();
-        location.setLocationId("Id");
-        location.setLocationType("");
+        HearingLocation location = generateLocation("id", "");
         Set<ConstraintViolation<HearingLocation>> violations = validator.validate(location);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -79,9 +75,7 @@ class EnumPatternValidatorTest {
 
     @Test
     void whenInvalidLocationIdIsEmpty() {
-        HearingLocation location = new HearingLocation();
-        location.setLocationId("");
-        location.setLocationType(LocationType.CLUSTER.toString());
+        HearingLocation location = generateLocation("", LocationType.CLUSTER.toString());
         Set<ConstraintViolation<HearingLocation>> violations = validator.validate(location);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -352,6 +346,13 @@ class EnumPatternValidatorTest {
         unavailabilityDow.setDow(DayOfWeekUnavailable.FRIDAY.toString());
         Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
         assertTrue(violations.isEmpty());
+    }
+
+    private HearingLocation generateLocation(String id, String type){
+        HearingLocation location = new HearingLocation();
+        location.setLocationId(id);
+        location.setLocationType(type);
+        return location;
     }
 
 }

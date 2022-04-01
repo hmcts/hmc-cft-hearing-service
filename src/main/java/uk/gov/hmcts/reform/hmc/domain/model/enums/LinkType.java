@@ -14,9 +14,8 @@ public enum LinkType {
     }
 
     public static LinkType getByLabel(String value) {
-        LinkType linkType = Arrays.stream(LinkType.values())
+        return Arrays.stream(LinkType.values())
             .filter(eachLinkType -> eachLinkType.label.toLowerCase(Locale.ROOT)
                 .equals(value.toLowerCase(Locale.ROOT))).findAny().orElse(null);
-        return linkType;
     }
 }

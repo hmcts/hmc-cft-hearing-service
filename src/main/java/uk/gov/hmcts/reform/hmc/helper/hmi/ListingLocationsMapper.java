@@ -12,7 +12,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.CASE_HQ;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CLUSTER;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.COURT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.EPIMS;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.Region;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.REGION;
 
 @Component
 public class ListingLocationsMapper {
@@ -39,7 +39,7 @@ public class ListingLocationsMapper {
     }
 
     private String getLocationType(String locationTypeInput) {
-        String locationType = Region;
+        String locationType = REGION;
         if (LocationType.COURT.equals(LocationType.getByLabel(locationTypeInput))) {
             locationType = COURT;
         } else if (LocationType.CLUSTER.equals(LocationType.getByLabel(locationTypeInput))) {

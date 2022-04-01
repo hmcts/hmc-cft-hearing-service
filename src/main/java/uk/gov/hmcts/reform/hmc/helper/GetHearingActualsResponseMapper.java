@@ -211,9 +211,9 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
     private OrganisationDetails setOrganisationDetails(HearingPartyEntity hearingPartyEntity) {
         OrganisationDetails organisationDetails = new OrganisationDetails();
         if (hearingPartyEntity.getOrganisationDetailEntity() != null) {
-            organisationDetails.setName(hearingPartyEntity.getOrganisationDetailEntity().getOrganisationName());
             organisationDetails.setCftOrganisationID(
                 hearingPartyEntity.getOrganisationDetailEntity().getHmctsOrganisationReference());
+            organisationDetails.setName(hearingPartyEntity.getOrganisationDetailEntity().getOrganisationName());
         }
         return organisationDetails;
     }
@@ -223,9 +223,9 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         if (hearingPartyEntity.getIndividualDetailEntity() != null) {
             for (IndividualDetailEntity individualDetailEntity : hearingPartyEntity.getIndividualDetailEntity()) {
                 IndividualDetails individualDetails = new IndividualDetails();
-                individualDetails.setTitle(individualDetailEntity.getTitle());
                 individualDetails.setFirstName(individualDetailEntity.getFirstName());
                 individualDetails.setLastName(individualDetailEntity.getLastName());
+                individualDetails.setTitle(individualDetailEntity.getTitle());
                 individualDetailsArrayList.add(individualDetails);
             }
         }

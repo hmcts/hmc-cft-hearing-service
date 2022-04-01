@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -39,6 +41,8 @@ public class UnNotifiedHearingServiceTest {
     @Mock
     HearingResponseRepository hearingResponseRepository;
 
+    LocalDateTime startFrom = LocalDateTime.of(2019, 1, 10, 11, 20, 00);
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -49,30 +53,19 @@ public class UnNotifiedHearingServiceTest {
     @Nested
     @DisplayName("GetUnNotifiedHearings")
     class GetUnNotifiedHearings {
-        @Test
-        void shouldFailWithInvalidHmctsServiceCode() {
-            LocalDateTime startFrom = LocalDateTime.of(2019, 1, 10, 11, 20, 00);
-
+        @ParameterizedTest
+        @ValueSource(strings = {"AA", ""})
+        void shouldFailWithInvalidHmctsServiceCode(String arg) {
             Exception exception = assertThrows(BadRequestException.class, () ->
-                unNotifiedHearingService.getUnNotifiedHearings("AA", startFrom, null));
+                unNotifiedHearingService.getUnNotifiedHearings(arg, startFrom, null));
             assertEquals(INVALID_HMCTS_SERVICE_CODE, exception.getMessage());
         }
+
 
         @Test
         void shouldFailWithNullHmctsServiceCode() {
-            LocalDateTime startFrom = LocalDateTime.of(2019, 1, 10, 11, 20, 00);
-
             Exception exception = assertThrows(BadRequestException.class, () ->
                 unNotifiedHearingService.getUnNotifiedHearings(null, startFrom, null));
-            assertEquals(INVALID_HMCTS_SERVICE_CODE, exception.getMessage());
-        }
-
-        @Test
-        void shouldFailWithEmptyHmctsServiceCode() {
-            LocalDateTime startFrom = LocalDateTime.of(2019, 1, 10, 11, 20, 00);
-
-            Exception exception = assertThrows(BadRequestException.class, () ->
-                unNotifiedHearingService.getUnNotifiedHearings("", startFrom, null));
             assertEquals(INVALID_HMCTS_SERVICE_CODE, exception.getMessage());
         }
 

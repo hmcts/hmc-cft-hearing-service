@@ -341,7 +341,7 @@ class InboundQueueServiceTest {
         }
 
         @Test
-        @Disabled
+        @Disabled("to be defined how we are throwing error")
         void shouldProcessErrorResponseWithNoIssues() throws JsonProcessingException {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);

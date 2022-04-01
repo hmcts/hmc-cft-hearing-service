@@ -21,7 +21,7 @@ public final class Constants {
     public static final String DELETE_HEARING = "DELETE_HEARING";
     public static final String CASE_HQ = "CASEHQ";
     public static final String EPIMS = "EPIMS";
-    public static final String Region = "Region";
+    public static final String REGION = "Region";
     public static final String COURT = "Court";
     public static final String CLUSTER = "Cluster";
     public static final String REQUIRED = "Required";

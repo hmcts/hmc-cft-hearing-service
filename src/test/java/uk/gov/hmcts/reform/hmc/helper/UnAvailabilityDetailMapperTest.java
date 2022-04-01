@@ -1,8 +1,13 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import uk.gov.hmcts.reform.hmc.client.hmi.HearingCode;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnavailable;
@@ -19,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_DOW_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_RANGE_TYPE;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.LISTED;
 
 class UnAvailabilityDetailMapperTest {
 
@@ -38,10 +44,11 @@ class UnAvailabilityDetailMapperTest {
         assertEquals(DayOfWeekUnAvailableType.PM, entities.get(2).getDayOfWeekUnavailableType());
     }
 
-    @Test
-    void shouldThrowErrorWhenUnavailabilityTypeIsEmpty() {
+    @ParameterizedTest
+    @ValueSource(strings = {"", "random"})
+    void shouldThrowErrorWhenUnavailabilityTypeIs(String arg) {
         UnAvailabilityDetailMapper mapper = new UnAvailabilityDetailMapper();
-        List<UnavailabilityRanges> rangeDetails = getUnAvailabilityRangeDetails("");
+        List<UnavailabilityRanges> rangeDetails = getUnAvailabilityRangeDetails(arg);
         PartyDetails partyDetail = new PartyDetails();
         partyDetail.setUnavailabilityRanges(rangeDetails);
         HearingPartyEntity hearingPartyEntity = new HearingPartyEntity();
@@ -54,18 +61,6 @@ class UnAvailabilityDetailMapperTest {
     void shouldThrowErrorWhenUnavailabilityTypeIsNull() {
         UnAvailabilityDetailMapper mapper = new UnAvailabilityDetailMapper();
         List<UnavailabilityRanges> rangeDetails = getUnAvailabilityRangeDetails(null);
-        PartyDetails partyDetail = new PartyDetails();
-        partyDetail.setUnavailabilityRanges(rangeDetails);
-        HearingPartyEntity hearingPartyEntity = new HearingPartyEntity();
-        Exception exception = assertThrows(BadRequestException.class, () ->
-            mapper.modelToEntity(partyDetail, hearingPartyEntity));
-        assertEquals("unsupported type for unavailability type", exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowErrorWhenUnavailabilityTypeIsInvalid() {
-        UnAvailabilityDetailMapper mapper = new UnAvailabilityDetailMapper();
-        List<UnavailabilityRanges> rangeDetails = getUnAvailabilityRangeDetails("random");
         PartyDetails partyDetail = new PartyDetails();
         partyDetail.setUnavailabilityRanges(rangeDetails);
         HearingPartyEntity hearingPartyEntity = new HearingPartyEntity();
