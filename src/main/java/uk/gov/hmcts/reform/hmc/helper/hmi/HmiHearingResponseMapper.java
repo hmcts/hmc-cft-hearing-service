@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.hmc.client.hmi.HearingCode;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingJoh;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.client.hmi.VenueLocationReference;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
@@ -59,8 +60,10 @@ public class HmiHearingResponseMapper {
     public HmcHearingResponse mapEntityToHmcModel(HearingResponseEntity hearingResponseEntity, HearingEntity hearing) {
         HmcHearingResponse hmcHearingResponse = new HmcHearingResponse();
         hmcHearingResponse.setHearingID(hearing.getId().toString());
-        hmcHearingResponse.setCaseRef(hearing.getCaseHearingRequest().getCaseReference());
-        hmcHearingResponse.setHmctsServiceCode(hearing.getCaseHearingRequest().getHmctsServiceCode());
+        CaseHearingRequestEntity matchingCaseHearingRequestEntity = hearing
+            .getCaseHearingRequest(hearingResponseEntity.getRequestVersion());
+        hmcHearingResponse.setCaseRef(matchingCaseHearingRequestEntity.getCaseReference());
+        hmcHearingResponse.setHmctsServiceCode(matchingCaseHearingRequestEntity.getHmctsServiceCode());
 
         //There is currently only support for one hearingDayDetail to be provided in HearingResponse From ListAssist
         HmcHearingUpdate hmcHearingUpdate = new HmcHearingUpdate();
@@ -125,7 +128,7 @@ public class HmiHearingResponseMapper {
         hearingResponseEntity.setHearing(hearing);
         hearingResponseEntity.setListingTransactionId(hearingResponse.getMeta().getTransactionIdCaseHQ());
         hearingResponseEntity.setRequestTimeStamp(hearingResponse.getMeta().getTimestamp());
-        hearingResponseEntity.setRequestVersion(hearingResponse.getHearing().getHearingCaseVersionId().toString());
+        hearingResponseEntity.setRequestVersion(hearingResponse.getHearing().getHearingCaseVersionId());
         hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode().name());
         hearingResponseEntity.setCancellationReasonType(hearingResponse.getHearing().getHearingCancellationReason());
         hearingResponseEntity.setTranslatorRequired(hearingResponse.getHearing().getHearingTranslatorRequired());
@@ -144,9 +147,9 @@ public class HmiHearingResponseMapper {
                 postStatus = EXCEPTION;
                 break;
             case LISTED:
-                int currentVersion = hearingEntity.getCaseHearingRequest().getVersionNumber();
                 int hearingVersion = hearing.getHearing().getHearingCaseVersionId();
-                postStatus = getHearingStatusWhenLaStatusIsListed(currentStatus, hearingVersion, currentVersion);
+                postStatus = getHearingStatusWhenLaStatusIsListed(currentStatus, hearingVersion,
+                                                                  hearingEntity.getLatestRequestVersion());
                 break;
             case PENDING_RELISTING:
                 postStatus = currentStatus;

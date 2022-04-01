@@ -5,13 +5,14 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 
 import java.util.List;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 
 @Component
 public class HearingMapper {
@@ -31,16 +32,28 @@ public class HearingMapper {
         this.hearingDetailsMapper = hearingDetailsMapper;
     }
 
-    public HearingEntity modelToEntity(CreateHearingRequest createHearingRequest) {
-        final HearingEntity hearingEntity = new HearingEntity();
+    public HearingEntity modelToEntity(HearingRequest hearingRequest,
+                                       HearingEntity hearingEntity,
+                                       Integer requestVersion,
+                                       String status) {
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
-                createHearingRequest, hearingEntity);
-        setHearingDetails(createHearingRequest.getHearingDetails(), caseHearingRequestEntity);
-        setCaseDetails(createHearingRequest.getCaseDetails(), caseHearingRequestEntity);
-        setPartyDetails(createHearingRequest.getPartyDetails(), caseHearingRequestEntity);
-        hearingEntity.setStatus(HEARING_STATUS);
-        hearingEntity.setIsLinkedFlag(createHearingRequest.getHearingDetails().getHearingIsLinkedFlag());
-        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
+            hearingRequest, hearingEntity, requestVersion);
+        setHearingDetails(hearingRequest.getHearingDetails(), caseHearingRequestEntity);
+        setCaseDetails(hearingRequest.getCaseDetails(), caseHearingRequestEntity);
+        setPartyDetails(hearingRequest.getPartyDetails(), caseHearingRequestEntity);
+        hearingEntity.setStatus(status);
+        hearingEntity.setIsLinkedFlag(hearingRequest.getHearingDetails().getHearingIsLinkedFlag());
+        hearingEntity.getCaseHearingRequests().add(caseHearingRequestEntity);
+        return hearingEntity;
+    }
+
+    public HearingEntity modelToEntity(DeleteHearingRequest hearingRequest,
+                                       HearingEntity hearingEntity,
+                                       Integer requestVersion) {
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
+            hearingRequest, hearingEntity, requestVersion);
+        hearingEntity.setStatus(CANCELLATION_REQUESTED);
+        hearingEntity.getCaseHearingRequests().add(caseHearingRequestEntity);
         return hearingEntity;
     }
 

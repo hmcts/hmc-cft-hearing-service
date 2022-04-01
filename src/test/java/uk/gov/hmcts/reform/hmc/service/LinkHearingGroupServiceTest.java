@@ -515,12 +515,12 @@ class LinkHearingGroupServiceTest {
         caseHearingRequestEntity.setHearingRequestReceivedDateTime(LocalDateTime.now());
         caseHearingRequestEntity.setVersionNumber(versionNumber);
 
-        hearingEntity.setCaseHearingRequest(caseHearingRequestEntity);
+        hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
 
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingResponseEntity.setHearingDayDetails(hearingDayDetailsEntities);
         hearingResponseEntity.setHearing(hearingEntity);
-        hearingResponseEntity.setResponseVersion(versionNumber.toString());
+        hearingResponseEntity.setRequestVersion(versionNumber);
         hearingResponseEntity.setRequestTimeStamp(requestTimestamp);
 
         hearingEntity.setHearingResponses(List.of(hearingResponseEntity));

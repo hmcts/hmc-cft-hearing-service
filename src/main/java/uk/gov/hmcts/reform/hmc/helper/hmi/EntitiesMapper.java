@@ -42,7 +42,7 @@ public class EntitiesMapper {
                         .entitySubType(entitySubTypeMapper.getPersonEntitySubType(party.getIndividualDetails()))
                         .entityHearingChannel(party.getIndividualDetails().getPreferredHearingChannel())
                         .entityCommunications(communicationsMapper.getCommunications(party))
-                        .entitySpecialMeasures(party.getIndividualDetails().getReasonableAdjustments())
+                        .entityOtherConsiderations(party.getIndividualDetails().getReasonableAdjustments())
                         .entityUnavailableDays(unavailableDaysMapper.getUnavailableDays(party.getUnavailabilityDow()))
                         .entityUnavailableDates(unavailableDatesMapper
                                                     .getUnavailableDates(party.getUnavailabilityRanges()))

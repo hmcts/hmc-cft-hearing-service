@@ -150,7 +150,7 @@ class EntitiesMapperTest {
         assertEquals(entitySubTypePerson, entities.get(0).getEntitySubType());
         assertEquals(PREFERRED_HEARING_CHANNEL, entities.get(0).getEntityHearingChannel());
         assertEquals(entityCommunication, entities.get(0).getEntityCommunications().get(0));
-        assertEquals(ADJUSTMENTS, entities.get(0).getEntitySpecialMeasures().get(0));
+        assertEquals(ADJUSTMENTS, entities.get(0).getEntityOtherConsiderations().get(0));
         assertEquals(entityUnavailableDay, entities.get(0).getEntityUnavailableDays().get(0));
         assertEquals(entityUnavailableDate, entities.get(0).getEntityUnavailableDates().get(0));
         assertEquals(relatedEntity, entities.get(0).getEntityRelatedEntities().get(0));

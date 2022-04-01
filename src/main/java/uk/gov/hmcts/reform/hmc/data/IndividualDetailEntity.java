@@ -9,7 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
@@ -55,8 +55,14 @@ public class IndividualDetailEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tech_party_id")
     private HearingPartyEntity hearingParty;
+
+    @Column(name = "other_reasonable_adjustment_details")
+    private String otherReasonableAdjustmentDetails;
+
+    @Column(name = "custody_status")
+    private String custodyStatus;
 
 }

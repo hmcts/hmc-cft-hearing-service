@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.model.hmi.CaseClassification;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiCaseDetails;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,6 +47,9 @@ class HmiCaseDetailsMapperTest {
         caseDetails.setCaseInterpreterRequiredFlag(false);
         caseDetails.setCaseRestrictedFlag(true);
         caseDetails.setHmctsServiceCode(SERVICE_CODE);
+        caseDetails.setCaseDeepLink("wow.woweee.com/boo");
+        caseDetails.setPublicCaseName("this is the business");
+        caseDetails.setCaseAdditionalSecurityFlag(Boolean.TRUE);
         CaseClassification caseClassification = CaseClassification.builder()
             .caseClassificationService(SERVICE_CODE)
             .caseClassificationType("CategoryValue1")
@@ -63,9 +67,14 @@ class HmiCaseDetailsMapperTest {
             .caseRegistered(localDate)
             .caseInterpreterRequiredFlag(false)
             .caseRestrictedFlag(true)
+            .caseVersionId(1)
+            .caseLinks(hmiCaseDetailsMapper.getCaseLinksArray(Arrays.asList(caseDetails.getCaseDeepLink())))
+            .casePublishedName(caseDetails.getPublicCaseName())
+            .caseAdditionalSecurityFlag(Boolean.TRUE)
             .linkedHearingGroupStatus(REQUIRED)
             .build();
-        HmiCaseDetails actualHmiCaseDetails = hmiCaseDetailsMapper.getCaseDetails(caseDetails, hearingId, Boolean.TRUE);
+        HmiCaseDetails actualHmiCaseDetails
+                = hmiCaseDetailsMapper.getCaseDetails(caseDetails, 1, hearingId, Boolean.TRUE);
         assertEquals(expectedHmiCaseDetails, actualHmiCaseDetails);
     }
 
@@ -81,6 +90,7 @@ class HmiCaseDetailsMapperTest {
         caseDetails.setCaseInterpreterRequiredFlag(false);
         caseDetails.setCaseRestrictedFlag(true);
         caseDetails.setHmctsServiceCode(SERVICE_CODE);
+        caseDetails.setCaseDeepLink("wow.woweee.wow/wow");
         CaseClassification caseClassification = CaseClassification.builder()
             .caseClassificationService(SERVICE_CODE)
             .caseClassificationType("CategoryValue1")
@@ -98,9 +108,13 @@ class HmiCaseDetailsMapperTest {
             .caseRegistered(localDate)
             .caseInterpreterRequiredFlag(false)
             .caseRestrictedFlag(true)
+            .caseVersionId(1)
+            .caseLinks(hmiCaseDetailsMapper.getCaseLinksArray(Arrays.asList(caseDetails.getCaseDeepLink())))
+            .casePublishedName(caseDetails.getPublicCaseName())
+            .caseAdditionalSecurityFlag(Boolean.FALSE)
             .linkedHearingGroupStatus(NOT_REQUIRED)
             .build();
-        HmiCaseDetails actualHmiCaseDetails = hmiCaseDetailsMapper.getCaseDetails(caseDetails, hearingId, FALSE);
+        HmiCaseDetails actualHmiCaseDetails = hmiCaseDetailsMapper.getCaseDetails(caseDetails, 1, hearingId, FALSE);
         assertEquals(expectedHmiCaseDetails, actualHmiCaseDetails);
     }
 }

@@ -29,5 +29,5 @@ public class Entity {
 
     private List<RelatedEntity> entityRelatedEntities;
 
-    private List<String> entitySpecialMeasures;
+    private List<String> entityOtherConsiderations;
 }

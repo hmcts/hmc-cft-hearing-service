@@ -34,7 +34,6 @@ public final class ValidationError {
     public static final String CASE_REF_EMPTY = "Case ref can not be empty";
     public static final String CASE_REF_INVALID = "Case ref details is invalid";
     public static final String CASE_REF_INVALID_LENGTH = "Case ref has invalid length";
-    public static final String REQUEST_TIMESTAMP_EMPTY = "Request time stamp can not be empty";
     public static final String EXTERNAL_CASE_REFERENCE_MAX_LENGTH = "External case reference must not be more than 70 "
         + CHARACTERS_LONG;
     public static final String CASE_DEEP_LINK_EMPTY = "Case deep link can not be empty";
@@ -78,7 +77,7 @@ public final class ValidationError {
     public static final String FIRST_NAME_EMPTY = "First name can not be empty";
     public static final String FIRST_NAME_MAX_LENGTH = "First name must not be more than 100 " + CHARACTERS_LONG;
     public static final String LAST_NAME_EMPTY = "Last name can not be empty";
-    public static final String LAST_NAME_MAX_LENGTH = "Last name must not be more than 100 " + CHARACTERS_LONG;
+    public static final String LAST_NAME_MAX_LENGTH = "Last name must not be more than 730 " + CHARACTERS_LONG;
     public static final String PREFERRED_HEARING_CHANNEL_MAX_LENGTH = "Preferred hearing channel must not be more than "
         + "70 " + CHARACTERS_LONG;
     public static final String INTERPRETER_LANGUAGE_MAX_LENGTH = "Interpreter language must not be more than 10 "
@@ -110,7 +109,6 @@ public final class ValidationError {
     public static final String INVALID_CASE_CATEGORIES = "Case categories are required";
     public static final String CASE_CATEGORY_EMPTY = "Case category can not be empty";
     public static final String CASE_RESTRICTED_FLAG_NULL_EMPTY = "Case restricted flag can not be empty";
-    public static final String REQUEST_TIMESTAMP_NULL_EMPTY = "Request time stamp can not be empty";
     public static final String INVALID_HEARING_REQUEST_DETAILS = "Invalid details";
     public static final String INVALID_ORG_INDIVIDUAL_DETAILS = "Either Individual or Organisation details should "
         + "be present";
@@ -131,6 +129,9 @@ public final class ValidationError {
     public static final String CATEGORY_VALUE_EMPTY = "Category value must be present";
     public static final String PARTY_TYPE_EMPTY = "Party type must be present";
     public static final String PARTY_ROLE_EMPTY = "Party role must be present";
+    public static final String HMCTS_SERVICE_CODE_EMPTY = "Hmcts service code can not be empty";
+    public static final String HEARING_START_DATE_FROM = "Hearing start date from can not be empty";
+    public static final String INVALID_HMCTS_SERVICE_CODE = "Invalid hmcts service code";
 
     public static final String HEARING_ID_NOT_FOUND = "No hearing found for reference: %s";
     public static final String HEARING_GROUP_ID_NOT_FOUND = "No hearing group found for reference: %s";
@@ -141,6 +142,9 @@ public final class ValidationError {
     public static final String PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH = "002 No such response version";
     public static final String PARTIES_NOTIFIED_ALREADY_SET = "003 Already set";
 
+    public static final String OTHER_REASON_LENGTH = "Other reasonable adjustment details cannot be greater than 200 "
+        + CHARACTERS_LONG;
+    public static final String CUSTODY_STATUS_LENGTH = "Custody status cannot be greater than 80 " + CHARACTERS_LONG;
     public static final String HEARING_ID_LENGTH = "Hearing id cannot be greater than 30 " + CHARACTERS_LONG;
     public static final String HEARING_ID_EMPTY = "Hearing id can not be null or empty";
     public static final String GROUP_REASON_LENGTH = "Group reason cannot be greater than 8 " + CHARACTERS_LONG;
