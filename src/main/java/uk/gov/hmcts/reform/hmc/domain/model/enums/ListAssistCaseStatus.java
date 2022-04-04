@@ -3,25 +3,33 @@ package uk.gov.hmcts.reform.hmc.domain.model.enums;
 import java.util.Arrays;
 import java.util.Locale;
 
-public enum ListingStatus {
-    DRAFT("Draft"),
-    FIXED("Fixed"),
-    PROVISIONAL("Provisional");
+public enum ListAssistCaseStatus {
+    AWAITING_LISTING("Awaiting Listing"),
+    CASE_CLOSED("Case Closed"),
+    CASE_CREATED("Case Created"),
+    HEARING_COMPLETED("Hearing Completed"),
+    LISTED("Listed"),
+    PENDING_RELISTING("Pending Relisting");
 
     public final String label;
 
-    ListingStatus(String label) {
+    ListAssistCaseStatus(String label) {
         this.label = label;
     }
 
-    public static ListingStatus getByLabel(String label) {
-        return Arrays.stream(ListingStatus.values())
-                .filter(eachStatus -> eachStatus.toString().toLowerCase(Locale.ROOT)
+    public static ListAssistCaseStatus getByLabel(String label) {
+        return Arrays.stream(ListAssistCaseStatus.values())
+                .filter(eachStatus -> eachStatus.label.toLowerCase(Locale.ROOT)
                         .equals(label.toLowerCase(Locale.ROOT))).findAny().orElse(null);
     }
 
-    public static ListingStatus getByName(String name) {
-        return Arrays.stream(ListingStatus.values())
+    public static String getLabel(String name) {
+        ListAssistCaseStatus status = getByName(name);
+        return null == status ? null : status.label;
+    }
+
+    public static ListAssistCaseStatus getByName(String name) {
+        return Arrays.stream(ListAssistCaseStatus.values())
                 .filter(eachStatus -> eachStatus.name().toLowerCase(Locale.ROOT)
                         .equals(name.toLowerCase(Locale.ROOT))).findAny().orElse(null);
     }
@@ -35,11 +43,6 @@ public enum ListingStatus {
     public static boolean isValidName(String name) {
         return Arrays.stream(values())
                 .anyMatch(eachStatus -> eachStatus.name().equals(name));
-    }
-
-    public static String getLabel(String name) {
-        ListingStatus status =  getByName(name);
-        return null == status ? null : status.label;
     }
 
 }

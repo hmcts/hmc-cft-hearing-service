@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
-import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -60,9 +59,6 @@ class LinkHearingGroupServiceTest {
     HearingRepository hearingRepository;
 
     @Mock
-    LinkedHearingDetailsRepository linkedHearingDetailsRepository;
-
-    @Mock
     LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
     @BeforeEach
@@ -81,7 +77,7 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldFailWithHearingNotFound() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                    LinkType.ORDERED.label, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
@@ -104,7 +100,7 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldFailWithInsufficientRequestIds() throws JsonProcessingException {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                    LinkType.ORDERED.label, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000000", 2);
@@ -129,7 +125,7 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldFailWithHearingRequestIsLinkedIsFalse() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                    LinkType.ORDERED.label, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
@@ -226,7 +222,7 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldFailWithInvalidState() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                    LinkType.ORDERED.label, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
@@ -322,7 +318,8 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldFailWithHearingOrderIsNotUnique() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                    LinkType.ORDERED.label, "reason"
+
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
@@ -356,7 +353,7 @@ class LinkHearingGroupServiceTest {
         @Test
         void shouldFailWithNoHearingOrderWhenLinkTypeIsOrdered() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                    LinkType.ORDERED.label, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails = new LinkHearingDetails();
             hearingDetails.setHearingId("2000000000");
@@ -466,7 +463,7 @@ class LinkHearingGroupServiceTest {
             final Long hearingId1 = 2000000000L;
             final Long hearingId2 = 2000000002L;
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                    LinkType.ORDERED.label, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
             LinkHearingDetails hearingDetails1 = generateHearingDetails(hearingId1.toString(), 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails(hearingId2.toString(), 2);
@@ -501,6 +498,7 @@ class LinkHearingGroupServiceTest {
                     )
             );
 
+            logger.info("hearingLinkGroupRequest : {}", hearingLinkGroupRequest);
             linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
             verify(hearingRepository).existsById(hearingId1);
             verify(hearingRepository, times(2)).findById(hearingId1);

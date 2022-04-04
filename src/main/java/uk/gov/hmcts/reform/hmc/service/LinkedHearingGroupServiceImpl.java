@@ -5,6 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -26,6 +31,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
                                          LinkedGroupDetailsRepository linkedGroupDetailsRepository) {
         super(hearingRepository, linkedGroupDetailsRepository);
+
     }
 
     @Override
@@ -48,12 +54,5 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         deleteFromLinkedGroupDetails(linkedGroupHearings, hearingGroupId);
     }
 
-    private void validateHearingLinkGroupRequestForUpdate(String requestId,
-                                                          HearingLinkGroupRequest hearingLinkGroupRequest) {
-        validateRequestId(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
-        validateHearingLinkGroupRequest(hearingLinkGroupRequest, requestId);
-        List<LinkHearingDetails> linkedHearingDetailsListPayload = hearingLinkGroupRequest.getHearingsInGroup();
-        validateLinkedHearingsForUpdate(requestId, linkedHearingDetailsListPayload);
-    }
 
 }

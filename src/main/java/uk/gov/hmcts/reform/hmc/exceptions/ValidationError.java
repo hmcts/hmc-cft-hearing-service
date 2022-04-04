@@ -159,6 +159,22 @@ public final class ValidationError {
     public static final String HEARINGS_IN_GROUP = "Linked hearing details are required";
     public static final String HEARINGS_IN_GROUP_SIZE = "001 Insufficient requestIds";
 
+    public static final String HEARING_ACTUALS_ID_NOT_FOUND = "001 No such id: %s";
+    public static final String HEARING_ACTUALS_INVALID_STATUS = "002 invalid status";
+    public static final String HEARING_ACTUALS_MISSING_HEARING_OUTCOME = "005 missing hearing outcome";
+    public static final String HEARING_ACTUALS_MISSING_HEARING_DAY = "003 missing hearing day actuals";
+    public static final String HEARING_ACTUALS_UN_EXPRECTED = "004 unexpected hearing day actuals";
+
+    public static final String HEARING_REQUEST_ID_MAX_LENGTH =
+            "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
+    public static final String HEARING_GROUP_REQUEST_ID_MAX_LENGTH =
+            "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
+    public static final String LIST_ASSIST_TRANSACTION_ID_MAX_LENGTH =
+            "List assist transaction id length cannot be greater than 40 " + CHARACTERS_LONG;
+    public static final String HEARING_CANCELLATION_REASON_MAX_LENGTH =
+            "Hearing cancellation reason length cannot be greater than 40 " + CHARACTERS_LONG;
+
+
     public static final String INVALID_LINKED_GROUP_REQUEST_ID_DETAILS = "Invalid linked group id";
     public static final String LINKED_GROUP_ID_EMPTY = "Linked group id cannot be null or empty";
     public static final String INVALID_STATE_FOR_HEARING_REQUEST

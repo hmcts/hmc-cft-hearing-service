@@ -5,8 +5,9 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
@@ -130,9 +131,9 @@ public class LinkedHearingValidator extends HearingIdValidator {
      * @return errorMessages error messages
      */
     protected final List<String> validateObsoleteLinkedHearings(
-            List<HearingEntity> obsoleteLinkedHearings) {
-        List<String> errorMessages = new ArrayList<>();
-        obsoleteLinkedHearings.forEach(e -> {
+        List<HearingEntity> obsoleteLinkedHearings) {
+          List<String> errorMessages = new ArrayList<>();
+          obsoleteLinkedHearings.forEach(e -> {
             if (!PutHearingStatus.isValid((e.getStatus()))) {
                 errorMessages.add(INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST
                         .replace(HEARING_ID_PLACEHOLDER, e.getId().toString()));
@@ -195,13 +196,15 @@ public class LinkedHearingValidator extends HearingIdValidator {
         }
     }
 
-    protected void checkValidStateForHearingRequest(Optional<HearingEntity> hearing,
-                                                  LinkHearingDetails details) {
-        if (hearing.isEmpty()
-                || !PutHearingStatus.isValid(hearing.get().getStatus())
-                || filterHearingResponses(hearing.get()).isBefore(LocalDate.now())) {
+
+    protected void checkValidStateForHearingRequest(Optional<HearingEntity> hearingEntity,
+                                                    LinkHearingDetails details) {
+        if (hearingEntity.isEmpty()
+            || !PutHearingStatus.isValid(hearingEntity.get().getStatus())
+            || (hearingEntity.get().hasHearingResponses()
+            && filterHearingResponses(hearingEntity.get()).isBefore(LocalDate.now()))) {
             throw new BadRequestException(
-                    INVALID_STATE_FOR_HEARING_REQUEST.replace(HEARING_ID_PLACEHOLDER, details.getHearingId()));
+                INVALID_STATE_FOR_HEARING_REQUEST.replace(HEARING_ID_PLACEHOLDER, details.getHearingId()));
         }
     }
 
@@ -246,34 +249,6 @@ public class LinkedHearingValidator extends HearingIdValidator {
         List<String> list = new ArrayList<>();
         hearingDetails.forEach(lo -> list.add(lo.getHearingId()));
         return Collections.frequency(list, value);
-    }
-
-    protected LocalDate filterHearingResponses(HearingEntity hearingEntity) {
-        Optional<HearingResponseEntity> hearingResponse = hearingEntity.getHearingResponseForLatestRequest();
-        if (hearingResponse.isPresent()) {
-            log.info("hearing Response: {},{}", hearingResponse.get().getHearingResponseId(),
-                    hearingResponse.get().getRequestTimeStamp());
-        } else {
-            log.info("No hearing response found");
-        }
-        return getLowestDate(hearingResponse.orElseThrow(() ->
-                new BadRequestException(INVALID_STATE_FOR_HEARING_REQUEST
-                        .replace(HEARING_ID_PLACEHOLDER, hearingEntity.getId().toString()))));
-    }
-
-    protected LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
-        Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getEarliestHearingDayDetails();
-        if (log.isDebugEnabled()) {
-            if (hearingDayDetails.isPresent()) {
-                log.debug("hearingDayDetails: {}, startDateTime: {}", hearingDayDetails.get().getHearingDayId(),
-                        hearingDayDetails.get().getStartDateTime());
-            } else {
-                log.debug("hearingDayDetails not present");
-            }
-        }
-        return hearingDayDetails.orElseThrow(() -> new BadRequestException(
-                INVALID_STATE_FOR_HEARING_REQUEST.replace(HEARING_ID_PLACEHOLDER, "? hearingDay details")))
-                .getStartDateTime().toLocalDate();
     }
 
     protected void validateHearingGroup(Long hearingGroupId) {
@@ -352,6 +327,45 @@ public class LinkedHearingValidator extends HearingIdValidator {
         linkedGroupDetailsRepository.deleteHearingGroup(hearingGroupId);
         // TODO: call ListAssist - https://tools.hmcts.net/jira/browse/HMAN-97
     }
+      
+    public LocalDate filterHearingResponses(HearingEntity hearingEntity) {
+        log.debug("hearing id: {}", hearingEntity.getId());
+        Optional<HearingResponseEntity> hearingResponse = hearingEntity.getHearingResponseForLatestRequest();
+        if (log.isDebugEnabled()) {
+            if (hearingResponse.isPresent()) {
+                log.debug("hearing response: {} : {}",
+                        hearingResponse.get().getHearingResponseId(),
+                        hearingResponse.get().getRequestTimeStamp());
+            } else {
+                log.debug("No hearing response found");
+            }
+        }
 
+        return getLowestDate(hearingResponse.orElseThrow(() ->
+                new BadRequestException(
+                        INVALID_STATE_FOR_HEARING_REQUEST
+                                .replace(HEARING_ID_PLACEHOLDER, hearingEntity.getId()
+                        + " no lowest date for given version"))));
+    }
+
+    public LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
+        Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getEarliestHearingDayDetails();
+        if (log.isDebugEnabled()) {
+            if (hearingDayDetails.isPresent()) {
+                log.debug("hearing day details: {} : {}",
+                        hearingDayDetails.get().getHearingDayId(),
+                        hearingDayDetails.get().getStartDateTime());
+            } else {
+                log.debug("No hearing day details found");
+            }
+        }
+
+        return hearingDayDetails
+                .orElseThrow(() -> new BadRequestException(
+                        INVALID_STATE_FOR_HEARING_REQUEST
+                                .replace(HEARING_ID_PLACEHOLDER, hearingResponse.getHearing().getId().toString())
+                                + " valid hearingDayDetails not found"))
+                .getStartDateTime().toLocalDate();
+    }
 
 }
