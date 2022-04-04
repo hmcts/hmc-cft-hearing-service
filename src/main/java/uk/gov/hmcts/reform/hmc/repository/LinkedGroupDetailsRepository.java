@@ -17,4 +17,9 @@ public interface LinkedGroupDetailsRepository extends CrudRepository<LinkedGroup
     @Query("from LinkedGroupDetails lgd WHERE lgd.requestId = :requestId ")
     LinkedGroupDetails getLinkedGroupDetailsByRequestId(String requestId);
 
+    @Query("UPDATE LinkedGroupDetails lgd SET lgd.status = 'ERROR' WHERE lgd.requestId = :requestId ")
+    void updateLinkedGroupDetailsStatus(String requestId);
+
+    @Query("DELETE FROM LinkedGroupDetails lgd WHERE lgd.requestId = :requestId ")
+    void deleteLinkedGroupDetailsStatus(String requestId);
 }

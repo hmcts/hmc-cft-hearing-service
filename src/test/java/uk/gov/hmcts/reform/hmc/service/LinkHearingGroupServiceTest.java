@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
+import uk.gov.hmcts.reform.hmc.repository.DefaultFutureHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
@@ -78,6 +79,9 @@ class LinkHearingGroupServiceTest {
     @Mock
     private LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
 
+    @Mock
+    private DefaultFutureHearingRepository futureHearingRepository;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -87,7 +91,8 @@ class LinkHearingGroupServiceTest {
                                               linkedHearingDetailsAuditRepository,
                                               linkedGroupDetailsAuditRepository,
                                               linkedGroupDetailsAuditMapper,
-                                              linkedHearingDetailsAuditMapper);
+                                              linkedHearingDetailsAuditMapper,
+                                              futureHearingRepository);
     }
 
     @Nested

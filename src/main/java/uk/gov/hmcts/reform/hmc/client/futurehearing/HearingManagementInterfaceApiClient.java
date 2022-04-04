@@ -1,6 +1,12 @@
 package uk.gov.hmcts.reform.hmc.client.futurehearing;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @FeignClient(
     name = "hearing-management-interface-api",
@@ -10,6 +16,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 @SuppressWarnings("checkstyle:abbreviationaswordinname")
 public interface HearingManagementInterfaceApiClient {
 
-    String HEARINGS_URL = "/resources/linked-hearing-group";
+    String DELETE_HEARINGS_URL = "/resources/linked-hearing-group/{groupClientReference}";
 
+    @DeleteMapping(value = DELETE_HEARINGS_URL, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    HearingManagementInterfaceResponse deleteLinkedHearingGroup(@RequestHeader(AUTHORIZATION) String token,
+                                                                @PathVariable("groupClientReference")
+                                                                    String requestId);
 }

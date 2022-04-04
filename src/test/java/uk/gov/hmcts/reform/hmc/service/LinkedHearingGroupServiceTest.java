@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.client.futurehearing.HearingManagementInterfaceResponse;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
+import uk.gov.hmcts.reform.hmc.repository.DefaultFutureHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
@@ -53,6 +55,7 @@ class LinkedHearingGroupServiceTest {
     public static final LocalDateTime START_DATE_TIME_IN_THE_PAST =
         LocalDateTime.of(2000, 10, 1, 1, 1);
     public static final LocalDateTime HEARING_RESPONSE_DATE_TIME = LocalDateTime.now();
+    public static final String REQUEST_ID = "23456";
 
     @Mock
     LinkedHearingDetailsRepository linkedHearingDetailsRepository;
@@ -78,6 +81,10 @@ class LinkedHearingGroupServiceTest {
     @Mock
     LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
 
+    @Mock
+    DefaultFutureHearingRepository futureHearingRepository;
+
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -86,7 +93,8 @@ class LinkedHearingGroupServiceTest {
                                                     linkedHearingDetailsAuditRepository,
                                                     linkedGroupDetailsAuditRepository,
                                                     linkedGroupDetailsAuditMapper,
-                                                    linkedHearingDetailsAuditMapper);
+                                                    linkedHearingDetailsAuditMapper,
+                                                    futureHearingRepository);
     }
 
     @Nested
@@ -129,7 +137,9 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(List.of(hearing1, hearing2));
             given(linkedGroupDetailsAuditMapper.modelToEntity(groupDetails))
                 .willReturn(groupDetailsAudit);
-
+            HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
+                200, "Success");
+            given(futureHearingRepository.deleteLinkedHearingGroup(REQUEST_ID)).willReturn(response);
             service.deleteLinkedHearingGroup(HEARING_GROUP_ID);
 
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
@@ -303,7 +313,9 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(Optional.of(groupDetails));
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing1, hearing2));
-
+            HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
+                200, "Success");
+            given(futureHearingRepository.deleteLinkedHearingGroup(REQUEST_ID)).willReturn(response);
             service.deleteLinkedHearingGroup(HEARING_GROUP_ID);
 
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
@@ -331,7 +343,9 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(Optional.of(groupDetails));
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
-
+            HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
+                200, "Success");
+            given(futureHearingRepository.deleteLinkedHearingGroup(REQUEST_ID)).willReturn(response);
             service.deleteLinkedHearingGroup(HEARING_GROUP_ID);
 
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
@@ -363,6 +377,7 @@ class LinkedHearingGroupServiceTest {
             groupDetails.setLinkedGroupId(hearingGroupId);
             groupDetails.setStatus(groupStatus);
             groupDetails.setLinkedGroupLatestVersion(1L);
+            groupDetails.setRequestId(REQUEST_ID);
             return groupDetails;
         }
 
@@ -376,5 +391,12 @@ class LinkedHearingGroupServiceTest {
             return groupDetailsAudit;
         }
 
+    }
+
+    private HearingManagementInterfaceResponse getHearingResponseFromListAssist(Integer errorCode, String description) {
+        HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
+        response.setResponseCode(errorCode);
+        response.setDescription(description);
+        return response;
     }
 }
