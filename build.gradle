@@ -231,7 +231,7 @@ def versions = [
   serviceAuthVersion: '4.0.3'
 ]
 
-ext['spring-framework.version'] = '5.3.15'
+ext['spring-framework.version'] = '5.3.18'
 ext['log4j2.version'] = '2.17.1'
 
 // before committing a change, make sure task still works
