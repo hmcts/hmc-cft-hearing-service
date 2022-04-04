@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.exceptions;
 
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,17 +15,17 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.validation.ConstraintViolationException;
-import javax.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 @Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+    static final String BAD_REQUEST_EXCEPTION = "BadRequestException";
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
         MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         String[] errors = ex.getBindingResult().getFieldErrors().stream()
-            .map(e -> e.getDefaultMessage())
+            .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .toArray(String[]::new);
         log.debug("MethodArgumentNotValidException:{}", ex.getLocalizedMessage());
         return toResponseEntity(status, errors);
@@ -32,13 +33,19 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     protected ResponseEntity<Object> handleBadRequestException(BadRequestException ex) {
-        log.debug("BadRequestException:{}", ex.getLocalizedMessage());
+        log.debug(BAD_REQUEST_EXCEPTION + ": {}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<Object> handleBadRequestException(IllegalArgumentException ex) {
+        log.debug("IllegalArgumentException: {}", ex.getLocalizedMessage());
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(InvalidRoleAssignmentException.class)
     protected ResponseEntity<Object> handleBadRequestException(InvalidRoleAssignmentException ex) {
-        log.debug("InvalidRoleAssignmentException:{}", ex.getLocalizedMessage());
+        log.debug("InvalidRoleAssignmentException: {}", ex.getLocalizedMessage());
         return toResponseEntity(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
@@ -56,7 +63,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ServiceException.class)
     protected ResponseEntity<Object> handleServiceException(ServiceException ex) {
-        log.debug("BadRequestException:{}", ex.getLocalizedMessage());
+        log.debug(BAD_REQUEST_EXCEPTION + ": {}", ex.getLocalizedMessage());
         return toResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
@@ -89,10 +96,21 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<Object> handleConstraintViolationException(Exception ex) {
-        log.debug("BadRequestException:{}", ex.getLocalizedMessage());
+        log.debug(BAD_REQUEST_EXCEPTION + ":{}", ex.getLocalizedMessage());
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(LinkedGroupNotFoundException.class)
+    protected ResponseEntity<Object> handleLinkedGroupNotFoundException(Exception ex) {
+        log.debug(BAD_REQUEST_EXCEPTION + ":{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(LinkedHearingNotValidForUnlinkingException.class)
+    protected ResponseEntity<Object> handleLinkedHearingNotValidForUnlinkingException(Exception ex) {
+        log.debug(BAD_REQUEST_EXCEPTION + ":{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
 
     private ResponseEntity<Object> toResponseEntity(HttpStatus status, String... errors) {
         var apiError = new ApiError(status, errors == null ? null : List.of(errors));

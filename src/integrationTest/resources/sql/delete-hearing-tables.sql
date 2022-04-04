@@ -1,3 +1,9 @@
+DELETE FROM actual_party_relationship_detail;
+DELETE FROM actual_attendee_individual_detail;
+DELETE FROM actual_hearing_party;
+DELETE FROM actual_hearing_day_pauses;
+DELETE FROM actual_hearing_day;
+DELETE FROM actual_hearing;
 DELETE FROM non_standard_durations;
 DELETE FROM required_locations;
 DELETE FROM required_facilities;
@@ -25,7 +31,7 @@ DELETE FROM actual_hearing;
 DELETE FROM hearing_response;
 DELETE FROM cancellation_reasons;
 DELETE FROM case_hearing_request;
-DELETE FROM linked_group_details_audit;
 DELETE FROM linked_hearing_details_audit;
+DELETE FROM linked_group_details_audit;
 DELETE FROM hearing;
 DELETE FROM linked_group_details;

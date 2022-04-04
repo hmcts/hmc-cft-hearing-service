@@ -156,6 +156,35 @@ public final class ValidationError {
     public static final String HEARINGS_IN_GROUP = "Linked hearing details are required";
     public static final String HEARINGS_IN_GROUP_SIZE = "001 Insufficient requestIds";
 
+    public static final String HEARING_ACTUALS_ID_NOT_FOUND = "001 No such id: %s";
+    public static final String HEARING_ACTUALS_INVALID_STATUS = "002 invalid status";
+    public static final String HEARING_ACTUALS_MISSING_HEARING_OUTCOME = "005 missing hearing outcome";
+    public static final String HEARING_ACTUALS_MISSING_HEARING_DAY = "003 missing hearing day actuals";
+    public static final String HEARING_ACTUALS_UN_EXPRECTED = "004 unexpected hearing day actuals";
+
+    public static final String HEARING_REQUEST_ID_MAX_LENGTH =
+            "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
+    public static final String HEARING_GROUP_REQUEST_ID_MAX_LENGTH =
+            "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
+    public static final String LIST_ASSIST_TRANSACTION_ID_MAX_LENGTH =
+            "List assist transaction id length cannot be greater than 40 " + CHARACTERS_LONG;
+    public static final String HEARING_CANCELLATION_REASON_MAX_LENGTH =
+            "Hearing cancellation reason length cannot be greater than 40 " + CHARACTERS_LONG;
+
+
+    public static final String INVALID_LINKED_GROUP_REQUEST_ID_DETAILS = "Invalid linked group id";
+    public static final String LINKED_GROUP_ID_EMPTY = "Linked group id cannot be null or empty";
+    public static final String INVALID_STATE_FOR_HEARING_REQUEST
+            = "004 Invalid state for hearing request <hearingId>";
+    public static final String INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST
+            = "008 Invalid state for unlinking hearing request <hearingId>";
+    public static final String INSUFFICIENT_REQUEST_IDS = "001 Insufficient requestIds";
+    public static final String HEARING_REQUEST_CANNOT_BE_LINKED = "002 hearing request isLinked is False";
+    public static final String INVALID_STATE_FOR_LINKED_GROUP = "007 group is in a <state> state";
+    public static final String HEARING_REQUEST_ALREADY_LINKED = "003 hearing request already in a group";
+    public static final String INVALID_HEARING_ORDER = "Hearing order must exist and be greater than 0";
+    public static final String INVALID_GROUP_LINK_TYPE = "Invalid value for GroupLinkType <linkType>";
+    public static final String HEARING_ORDER_NOT_UNIQUE = "005 Hearing Order is not unique";
 
     public static final String VENUE_LOCATION_CODE_NULL = "Venue location code can not be null or empty";
     public static final String VENUE_LOCATION_CODE_LENGTH = "Venue location code must not be more than 30 "

@@ -17,21 +17,25 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_
 @Service
 @Component
 @Slf4j
-public class HearingActualsServiceImpl extends HearingIdValidator implements HearingActualsService {
+public class HearingActualsServiceImpl implements HearingActualsService {
 
 
+    private HearingRepository hearingRepository;
     private final GetHearingActualsResponseMapper getHearingActualsResponseMapper;
+    private HearingIdValidator hearingIdValidator;
 
     @Autowired
     public HearingActualsServiceImpl(HearingRepository hearingRepository,
-                                     GetHearingActualsResponseMapper getHearingActualsResponseMapper) {
-        super(hearingRepository);
+                                     GetHearingActualsResponseMapper getHearingActualsResponseMapper,
+                                     HearingIdValidator hearingIdValidator) {
+        this.hearingRepository = hearingRepository;
         this.getHearingActualsResponseMapper = getHearingActualsResponseMapper;
+        this.hearingIdValidator = hearingIdValidator;
     }
 
     @Override
     public ResponseEntity<HearingActualResponse> getHearingActuals(Long hearingId) {
-        validateHearingId(hearingId,HEARING_ID_NOT_FOUND);
+        hearingIdValidator.validateHearingId(hearingId,HEARING_ID_NOT_FOUND);
         val hearingEntity = hearingRepository.findById(hearingId);
         if (hearingEntity.isPresent()) {
             return ResponseEntity.ok(getHearingActualsResponseMapper.toHearingActualResponse(hearingEntity.get()));
