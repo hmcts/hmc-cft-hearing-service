@@ -43,7 +43,6 @@ public class LinkHearingGroupController {
         @ApiResponse(code = 400, message = "005 Hearing Order is not unique")
     })
     public void validateLinkHearing(@RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
-        accessControlService.verifyCaseAccess(null);
         linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
     }
 

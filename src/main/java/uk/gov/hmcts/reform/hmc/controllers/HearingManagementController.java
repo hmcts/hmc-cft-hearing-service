@@ -90,7 +90,7 @@ public class HearingManagementController {
     })
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
                                          @RequestBody @Valid DeleteHearingRequest deleteRequest) {
-        accessControlService.verifyCaseAccess(null);
+        accessControlService.verifyHearingCaseAccess(hearingId);
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
             hearingId, deleteRequest);
         hearingManagementService.sendRequestToHmiAndQueue(deleteRequest, hearingId, DELETE_HEARING);
@@ -121,7 +121,7 @@ public class HearingManagementController {
                                                String ccdCaseRef,
                                            @RequestParam(required = false)
                                                String status) {
-        accessControlService.verifyCaseAccess(null);
+        accessControlService.verifyCaseAccess(ccdCaseRef);
         return hearingManagementService.getHearings(ccdCaseRef, status);
     }
 
@@ -135,7 +135,7 @@ public class HearingManagementController {
     })
     public HearingResponse updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
                                          @PathVariable("id") Long hearingId) {
-        accessControlService.verifyCaseAccess(null);
+        accessControlService.verifyHearingCaseAccess(hearingId);
         HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
         hearingManagementService.sendRequestToHmiAndQueue(hearingId, hearingRequest, AMEND_HEARING);
         return hearingResponse;

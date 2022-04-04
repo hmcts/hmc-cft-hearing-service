@@ -36,7 +36,6 @@ public class LinkedHearingGroupController {
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
     public void deleteHearingGroup(@PathVariable("id") Long hearingGroupId) {
-        accessControlService.verifyCaseAccess(null);
         linkedHearingGroupService.deleteLinkedHearingGroup(hearingGroupId);
     }
 }

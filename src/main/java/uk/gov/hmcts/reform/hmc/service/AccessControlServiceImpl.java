@@ -5,12 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 
 import java.util.List;
@@ -28,6 +30,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     private RoleAssignmentService roleAssignmentService;
     private SecurityUtils securityUtils;
     private DataStoreRepository dataStoreRepository;
+    private CaseHearingRequestRepository caseHearingRequestRepository;
 
     private static final List<String> HMC_ROLE_NAMES = Lists.newArrayList("hearing-manager",
                                                                           "hearing-viewer",
@@ -36,10 +39,12 @@ public class AccessControlServiceImpl implements AccessControlService {
     public AccessControlServiceImpl(RoleAssignmentService roleAssignmentService,
                                     SecurityUtils securityUtils,
                                     @Qualifier("defaultDataStoreRepository")
-                                        DataStoreRepository dataStoreRepository) {
+                                        DataStoreRepository dataStoreRepository,
+                                    CaseHearingRequestRepository caseHearingRequestRepository) {
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
         this.dataStoreRepository = dataStoreRepository;
+        this.caseHearingRequestRepository = caseHearingRequestRepository;
     }
 
 
@@ -56,6 +61,14 @@ public class AccessControlServiceImpl implements AccessControlService {
         DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
         if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
             throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
+        }
+    }
+
+    @Override
+    public void verifyHearingCaseAccess(Long hearingId) {
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository.getCaseHearing(hearingId);
+        if (caseHearingRequestEntity != null) {
+            verifyCaseAccess(caseHearingRequestEntity.getCaseReference());
         }
     }
 

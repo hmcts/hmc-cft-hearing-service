@@ -4,4 +4,6 @@ public interface AccessControlService {
 
     void verifyCaseAccess(String caseReference);
 
+    void verifyHearingCaseAccess(Long hearingId);
+
 }
