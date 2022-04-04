@@ -19,10 +19,9 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
-import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -60,22 +59,19 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
                                          LinkedGroupDetailsRepository linkedGroupDetailsRepository,
-                                         LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
-        super(hearingRepository, linkedGroupDetailsRepository, linkedHearingDetailsRepository);
-        this.hearingRepository = hearingRepository;
-    public LinkedHearingGroupServiceImpl(LinkedGroupDetailsRepository linkedGroupDetailsRepository,
-                                         HearingRepository hearingRepository,
+                                         LinkedHearingDetailsRepository linkedHearingDetailsRepository,
                                          LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository,
                                          LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository,
                                          LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper,
                                          LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper) {
-        super(hearingRepository);
-        this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
+        super(hearingRepository, linkedGroupDetailsRepository, linkedHearingDetailsRepository);
+        this.hearingRepository = hearingRepository;
         this.linkedHearingDetailsAuditRepository = linkedHearingDetailsAuditRepository;
         this.linkedGroupDetailsAuditRepository = linkedGroupDetailsAuditRepository;
         this.linkedGroupDetailsAuditMapper = linkedGroupDetailsAuditMapper;
         this.linkedHearingDetailsAuditMapper = linkedHearingDetailsAuditMapper;
     }
+
 
     @Override
     public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {

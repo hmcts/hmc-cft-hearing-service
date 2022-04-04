@@ -32,8 +32,8 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -82,17 +82,12 @@ class LinkHearingGroupServiceTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         linkedHearingGroupService =
-            new LinkedHearingGroupServiceImpl(
-                hearingRepository,
-                    linkedGroupDetailsRepository,
-                        linkedHearingDetailsRepository
-                linkedGroupDetailsRepository,
-                hearingRepository,
-                linkedHearingDetailsAuditRepository,
-                linkedGroupDetailsAuditRepository,
-                linkedGroupDetailsAuditMapper,
-                linkedHearingDetailsAuditMapper
-            );
+            new LinkedHearingGroupServiceImpl(hearingRepository,
+                                              linkedGroupDetailsRepository, linkedHearingDetailsRepository,
+                                              linkedHearingDetailsAuditRepository,
+                                              linkedGroupDetailsAuditRepository,
+                                              linkedGroupDetailsAuditMapper,
+                                              linkedHearingDetailsAuditMapper);
     }
 
     @Nested
