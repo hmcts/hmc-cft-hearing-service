@@ -6,6 +6,7 @@ public final class ValidationError {
     }
 
     private static final String CHARACTERS_LONG = "characters long";
+    public static final String HEARING_ID_PLACEHOLDER = "<hearingId>";
     public static final String AUTO_LIST_FLAG_NULL_EMPTY = "Auto list flag can not be null or empty";
     public static final String HEARING_TYPE_NULL_EMPTY = "Hearing type can not be null or empty";
     public static final String HEARING_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;

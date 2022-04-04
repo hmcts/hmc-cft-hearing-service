@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
-import java.util.Arrays;
 import java.util.List;
 import javax.transaction.Transactional;
 
@@ -22,10 +21,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_
 @Slf4j
 @Transactional
 public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implements LinkedHearingGroupService {
-
-    private static final List<String> invalidDeleteGroupStatuses = Arrays.asList("PENDING", "ERROR");
-
-    private final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
@@ -60,3 +55,5 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         List<LinkHearingDetails> linkedHearingDetailsListPayload = hearingLinkGroupRequest.getHearingsInGroup();
         validateLinkedHearingsForUpdate(requestId, linkedHearingDetailsListPayload);
     }
+
+}

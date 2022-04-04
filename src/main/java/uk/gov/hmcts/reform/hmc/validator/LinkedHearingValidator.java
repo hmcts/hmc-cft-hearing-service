@@ -5,31 +5,40 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
-import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingNotValidForUnlinkingException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+import static java.util.stream.Collectors.groupingBy;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_GROUP_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_PLACEHOLDER;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ORDER_NOT_UNIQUE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_REQUEST_ALREADY_LINKED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_REQUEST_CANNOT_BE_LINKED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INSUFFICIENT_REQUEST_IDS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_GROUP_LINK_TYPE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ORDER;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_HEARING_REQUEST;
@@ -40,16 +49,14 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LINKED_GROUP_ID
 @Slf4j
 public class LinkedHearingValidator extends HearingIdValidator {
 
+    private static final List<String> invalidDeleteGroupStatuses = Arrays.asList("PENDING", "ERROR");
+
     protected final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
-    protected final LinkedHearingDetailsRepository linkedHearingDetailsRepository;
-    private static final String HEARING_ID_PLACEHOLDER = "<hearingId>";
 
     public LinkedHearingValidator(HearingRepository hearingRepository,
-                                  LinkedGroupDetailsRepository linkedGroupDetailsRepository,
-                                  LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
+                                  LinkedGroupDetailsRepository linkedGroupDetailsRepository) {
         super(hearingRepository);
         this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
-        this.linkedHearingDetailsRepository = linkedHearingDetailsRepository;
     }
 
     /**
@@ -75,11 +82,11 @@ public class LinkedHearingValidator extends HearingIdValidator {
     protected final void validateLinkedHearingsForUpdate(String requestId,
                                                          List<LinkHearingDetails> linkHearingDetailsListPayload) {
         // get existing data linkedHearingDetails
-        List<LinkedHearingDetailsAudit> linkedHearingDetailsListExisting
-                = linkedHearingDetailsRepository.getLinkedHearingDetailsByRequestId(requestId);
+        List<HearingEntity> linkedHearingDetailsListExisting
+                = hearingRepository.findByRequestId(requestId);
 
         // get obsolete linkedHearingDetails
-        List<LinkedHearingDetailsAudit> linkedHearingDetailsListObsolete =
+        List<HearingEntity> linkedHearingDetailsListObsolete =
                 extractObsoleteLinkedHearings(linkHearingDetailsListPayload, linkedHearingDetailsListExisting);
 
         // validate and get errors, if any, for obsolete linkedHearingDetails
@@ -98,17 +105,17 @@ public class LinkedHearingValidator extends HearingIdValidator {
      * @param hearingDetailsListExisting existing in db LinkedHearingDetails
      * @return obsoleteLinkedHearingDetails the obsolete LinkedHearingDetails
      */
-    protected final List<LinkedHearingDetailsAudit> extractObsoleteLinkedHearings(
+    protected final List<HearingEntity> extractObsoleteLinkedHearings(
             List<LinkHearingDetails> hearingDetailsListPayload,
-            List<LinkedHearingDetailsAudit> hearingDetailsListExisting) {
+            List<HearingEntity> hearingDetailsListExisting) {
         // build list of hearing ids
         List<String> payloadHearingIds = new ArrayList<>();
         hearingDetailsListPayload.forEach(e -> payloadHearingIds.add(e.getHearingId()));
 
         // deduce obsolete Linked Hearing Details
-        List<LinkedHearingDetailsAudit> obsoleteLinkedHearingDetails = new ArrayList<>();
+        List<HearingEntity> obsoleteLinkedHearingDetails = new ArrayList<>();
         hearingDetailsListExisting.forEach(e -> {
-            if (!payloadHearingIds.contains(e.getHearing().getId().toString())) {
+            if (!payloadHearingIds.contains(e.getId().toString())) {
                 obsoleteLinkedHearingDetails.add(e);
             }
         });
@@ -123,12 +130,12 @@ public class LinkedHearingValidator extends HearingIdValidator {
      * @return errorMessages error messages
      */
     protected final List<String> validateObsoleteLinkedHearings(
-            List<LinkedHearingDetailsAudit> obsoleteLinkedHearings) {
+            List<HearingEntity> obsoleteLinkedHearings) {
         List<String> errorMessages = new ArrayList<>();
         obsoleteLinkedHearings.forEach(e -> {
-            if (!PutHearingStatus.isValid((e.getHearing().getStatus()))) {
+            if (!PutHearingStatus.isValid((e.getStatus()))) {
                 errorMessages.add(INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST
-                        .replace(HEARING_ID_PLACEHOLDER, e.getHearing().getId().toString()));
+                        .replace(HEARING_ID_PLACEHOLDER, e.getId().toString()));
             }
         });
         return errorMessages;
@@ -178,33 +185,21 @@ public class LinkedHearingValidator extends HearingIdValidator {
 
     protected void checkHearingRequestIsNotInAnotherGroup(LinkHearingDetails details,
                                                         String requestId) {
-        log.info("requestId:{}, hearingId: {}", requestId, details.getHearingId());
-        LinkedHearingDetailsAudit linkedHearingDetails =
-                linkedHearingDetailsRepository.getLinkedHearingDetailsByHearingId(
-                        Long.parseLong(details.getHearingId()));
-        if (null != linkedHearingDetails) {
-            if (log.isDebugEnabled()) {
-                log.debug("requestId:{}", requestId);
-                log.debug("linkedHearingDetails:{}", linkedHearingDetails);
-                log.debug("linkedHearingDetails.getLinkedGroup():{}", linkedHearingDetails.getLinkedGroup());
-                if (null != requestId) {
-                    log.debug("linkedGroupDetailsById:{}",
-                            linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId));
-                }
-            }
-            if ((null == requestId && linkedHearingDetails.getLinkedGroup() != null)
-                    || (null != requestId && !linkedHearingDetails.getLinkedGroup()
-                    .equals(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId)))) {
-                throw new BadRequestException(HEARING_REQUEST_ALREADY_LINKED);
-            }
+        Optional<HearingEntity> hearing =
+                hearingRepository.findById(Long.parseLong(details.getHearingId()));
+        if (hearing.isPresent()
+            && ((null == requestId && hearing.get().getLinkedGroupDetails() != null)
+            || (null != requestId && !hearing.get().getLinkedGroupDetails().getRequestId()
+                    .equals(requestId)))) {
+            throw new BadRequestException(HEARING_REQUEST_ALREADY_LINKED);
         }
     }
 
-    protected void checkValidStateForHearingRequest(Optional<HearingEntity> hearingEntity,
+    protected void checkValidStateForHearingRequest(Optional<HearingEntity> hearing,
                                                   LinkHearingDetails details) {
-        if (hearingEntity.isEmpty()
-                || !PutHearingStatus.isValid(hearingEntity.get().getStatus())
-                || filterHearingResponses(hearingEntity.get()).isBefore(LocalDate.now())) {
+        if (hearing.isEmpty()
+                || !PutHearingStatus.isValid(hearing.get().getStatus())
+                || filterHearingResponses(hearing.get()).isBefore(LocalDate.now())) {
             throw new BadRequestException(
                     INVALID_STATE_FOR_HEARING_REQUEST.replace(HEARING_ID_PLACEHOLDER, details.getHearingId()));
         }
@@ -254,48 +249,109 @@ public class LinkedHearingValidator extends HearingIdValidator {
     }
 
     protected LocalDate filterHearingResponses(HearingEntity hearingEntity) {
-        log.debug("hearing id: {}", hearingEntity.getId());
-        String version = hearingEntity.getLatestRequestVersion().toString();
-        Optional<HearingResponseEntity> hearingResponse = hearingEntity
-                .getHearingResponses().stream().filter(hearingResponseEntity ->
-                        hearingResponseEntity.getResponseVersion().equals(version))
-                .collect(Collectors.toList()).stream()
-                .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
-        if (log.isDebugEnabled()) {
-            if (hearingResponse.isPresent()) {
-                log.debug("hearing response: {} : {}",
-                        hearingResponse.get().getHearingResponseId(),
-                        hearingResponse.get().getRequestTimeStamp());
-            } else {
-                log.debug("No hearing response found");
-            }
+        Optional<HearingResponseEntity> hearingResponse = hearingEntity.getHearingResponseForLatestRequest();
+        if (hearingResponse.isPresent()) {
+            log.info("hearing Response: {},{}", hearingResponse.get().getHearingResponseId(),
+                    hearingResponse.get().getRequestTimeStamp());
+        } else {
+            log.info("No hearing response found");
         }
-
         return getLowestDate(hearingResponse.orElseThrow(() ->
-                new BadRequestException(
-                        INVALID_STATE_FOR_HEARING_REQUEST
-                                .replace(HEARING_ID_PLACEHOLDER, hearingEntity.getId()
-                        + " no lowest date for given version"))));
+                new BadRequestException(INVALID_STATE_FOR_HEARING_REQUEST
+                        .replace(HEARING_ID_PLACEHOLDER, hearingEntity.getId().toString()))));
     }
 
     protected LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
-        Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getHearingDayDetails()
-                .stream().min(Comparator.comparing(HearingDayDetailsEntity::getStartDateTime));
+        Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getEarliestHearingDayDetails();
         if (log.isDebugEnabled()) {
             if (hearingDayDetails.isPresent()) {
-                log.debug("hearing day details: {} : {}",
-                        hearingDayDetails.get().getHearingDayId(),
+                log.debug("hearingDayDetails: {}, startDateTime: {}", hearingDayDetails.get().getHearingDayId(),
                         hearingDayDetails.get().getStartDateTime());
             } else {
-                log.debug("No hearing day details found");
+                log.debug("hearingDayDetails not present");
             }
         }
-
-        return hearingDayDetails
-                .orElseThrow(() -> new BadRequestException(
-                        INVALID_STATE_FOR_HEARING_REQUEST
-                                .replace(HEARING_ID_PLACEHOLDER, hearingResponse.getHearing().getId().toString())
-                                + " valid hearingDayDetails not found"))
+        return hearingDayDetails.orElseThrow(() -> new BadRequestException(
+                INVALID_STATE_FOR_HEARING_REQUEST.replace(HEARING_ID_PLACEHOLDER, "? hearingDay details")))
                 .getStartDateTime().toLocalDate();
     }
+
+    protected void validateHearingGroup(Long hearingGroupId) {
+        Optional<LinkedGroupDetails> linkedGroupDetailsOptional = linkedGroupDetailsRepository.findById(hearingGroupId);
+        validateHearingGroupPresent(hearingGroupId, linkedGroupDetailsOptional);
+        validateHearingGroupStatus(linkedGroupDetailsOptional);
+    }
+
+    protected void validateHearingGroupPresent(Long hearingGroupId, Optional<LinkedGroupDetails> linkedGroupDetails) {
+        if (linkedGroupDetails.isEmpty()) {
+            throw new LinkedHearingGroupNotFoundException(hearingGroupId, HEARING_GROUP_ID_NOT_FOUND);
+        }
+    }
+
+    protected void validateHearingGroupStatus(Optional<LinkedGroupDetails> linkedGroupDetails) {
+        String groupStatus = null;
+        if (linkedGroupDetails.isPresent()) {
+            groupStatus = linkedGroupDetails.get().getStatus();
+        }
+        if (linkedGroupDetails.isEmpty()
+            || invalidDeleteGroupStatuses.stream().anyMatch(e -> e.equals(linkedGroupDetails.get().getStatus()))) {
+            throw new BadRequestException(format(INVALID_DELETE_HEARING_GROUP_STATUS, groupStatus));
+        }
+    }
+
+    protected void validateUnlinkingHearingsStatus(List<HearingEntity> hearings) {
+        List<HearingEntity> unlinkInvalidStatusHearings = hearings.stream()
+                .filter(h -> !DeleteHearingStatus.isValid(h.getStatus()))
+                .collect(Collectors.toList());
+
+        if (!unlinkInvalidStatusHearings.isEmpty()) {
+            throw new BadRequestException(
+                    format(INVALID_DELETE_HEARING_GROUP_HEARING_STATUS, unlinkInvalidStatusHearings.get(0).getId()));
+        }
+    }
+
+    protected void validateUnlinkingHearingsWillNotHaveStartDateInThePast(List<HearingEntity> hearings) {
+        hearings.stream()
+                .filter(h -> !h.getHearingResponses().isEmpty())
+                .forEach(hearing -> {
+                    List<HearingResponseEntity> latestVersionHearingResponses
+                            = getLatestVersionHearingResponses(hearing);
+
+                    Optional<HearingResponseEntity> mostRecentLatestVersionHearingResponse
+                            = latestVersionHearingResponses
+                            .stream().max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
+
+                    boolean hasHearingDateInThePast = mostRecentLatestVersionHearingResponse.isPresent()
+                            && mostRecentLatestVersionHearingResponse.get()
+                            .getHearingDayDetails().stream()
+                            .anyMatch(dayTime -> dayTime.getStartDateTime().isBefore(LocalDateTime.now()));
+
+                    if (hasHearingDateInThePast) {
+                        throw new BadRequestException(format(
+                                INVALID_DELETE_HEARING_GROUP_HEARING_STATUS,
+                                hearing.getId()
+                        ));
+                    }
+                });
+    }
+
+    protected List<HearingResponseEntity> getLatestVersionHearingResponses(HearingEntity hearing) {
+        Optional<Map.Entry<Integer, List<HearingResponseEntity>>> max = hearing.getHearingResponses().stream()
+                .collect(groupingBy(HearingResponseEntity::getRequestVersion))
+                .entrySet()
+                .stream()
+                .max(Map.Entry.comparingByKey());
+
+        return max.isPresent() ? max.get().getValue() : List.of();
+    }
+
+    protected void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings, Long hearingGroupId) {
+        linkedGroupHearings.forEach(hearingEntity -> {
+            // TODO: unlink hearingEntity from the group and persist - https://tools.hmcts.net/jira/browse/HMAN-96
+        });
+        linkedGroupDetailsRepository.deleteHearingGroup(hearingGroupId);
+        // TODO: call ListAssist - https://tools.hmcts.net/jira/browse/HMAN-97
+    }
+
+
 }
