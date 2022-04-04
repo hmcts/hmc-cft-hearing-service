@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
+import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_MISSING_REQUIRED;
 
 @Service
@@ -32,6 +34,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     private SecurityUtils securityUtils;
     private DataStoreRepository dataStoreRepository;
     private CaseHearingRequestRepository caseHearingRequestRepository;
+    private HearingRepository hearingRepository;
 
     public static final String HEARNING_MANAGER = "hearing-manager";
     public static final String HEARNING_VIEWER = "hearing-viewer";
@@ -45,11 +48,13 @@ public class AccessControlServiceImpl implements AccessControlService {
                                     SecurityUtils securityUtils,
                                     @Qualifier("defaultDataStoreRepository")
                                         DataStoreRepository dataStoreRepository,
-                                    CaseHearingRequestRepository caseHearingRequestRepository) {
+                                    CaseHearingRequestRepository caseHearingRequestRepository,
+                                    HearingRepository hearingRepository) {
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
         this.dataStoreRepository = dataStoreRepository;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
+        this.hearingRepository = hearingRepository;
     }
 
 
@@ -72,6 +77,14 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
     }
 
+    @Override
+    public void verifyHearingCaseAccess(Long hearingId, List<String> requiredRoles) {
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository.getCaseHearing(hearingId);
+        if (caseHearingRequestEntity != null) {
+            verifyCaseAccess(caseHearingRequestEntity.getCaseReference(), requiredRoles);
+        }
+    }
+
     private void verifyRequiredRolesExists(List<String> requiredRoles, List<RoleAssignment> filteredRoleAssignments) {
         boolean containsRequiredRoles = filteredRoleAssignments.stream()
             .anyMatch(roleAssignment -> requiredRoles.contains(roleAssignment.getRoleName()));
@@ -81,11 +94,12 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
     }
 
-    @Override
-    public void verifyHearingCaseAccess(Long hearingId, List<String> requiredRoles) {
-        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository.getCaseHearing(hearingId);
-        if (caseHearingRequestEntity != null) {
-            verifyCaseAccess(caseHearingRequestEntity.getCaseReference(), requiredRoles);
+    private void verifyHearingStatus(List<RoleAssignment> filteredRoleAssignments, Long hearingId) {
+        String status = hearingRepository.getStatus(hearingId);
+        if (filteredRoleAssignments.size() == 1
+            && filteredRoleAssignments.contains(LISTED_HEARING_VIEWER)
+            && "LISTED".equals(status)) {
+            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_STATUS);
         }
     }
 
@@ -97,7 +111,6 @@ public class AccessControlServiceImpl implements AccessControlService {
             .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("java:S2789")
     private boolean checkRoleAssignmentMatchesCaseDetails(DataStoreCaseDetails caseDetails,
                                                           List<RoleAssignment> roleAssignments) {
         return roleAssignments.stream()
