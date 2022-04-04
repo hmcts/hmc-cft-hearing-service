@@ -34,4 +34,14 @@ public class HmiCaseDetails {
 
     private Boolean caseRestrictedFlag;
 
+    private Integer caseVersionId;
+
+    private List<CaseLinks> caseLinks;
+
+    private String casePublishedName;
+
+    private Boolean caseAdditionalSecurityFlag;
+
+    private String linkedHearingGroupStatus;
+
 }

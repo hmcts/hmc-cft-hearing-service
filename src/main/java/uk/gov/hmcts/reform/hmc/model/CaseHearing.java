@@ -46,4 +46,10 @@ public class CaseHearing {
 
     @NotNull
     private List<HearingDaySchedule> hearingDaySchedule;
+
+    @Size(max = 30)
+    private String hearingGroupRequestId;
+
+    private Boolean hearingIsLinkedFlag;
+
 }

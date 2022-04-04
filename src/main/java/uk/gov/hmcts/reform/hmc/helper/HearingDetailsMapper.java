@@ -69,7 +69,7 @@ public class HearingDetailsMapper {
         if (hearingDetails.getPanelRequirements().getRoleType() != null) {
             setPanelRequirements(hearingDetails.getPanelRequirements().getRoleType(), caseHearingRequestEntity);
         }
-        setPanelAutorisationRequirements(hearingDetails.getPanelRequirements(), caseHearingRequestEntity);
+        setPanelAuthorisationRequirements(hearingDetails.getPanelRequirements(), caseHearingRequestEntity);
         if (hearingDetails.getPanelRequirements().getPanelSpecialisms() != null) {
             setPanelSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms(), caseHearingRequestEntity);
         }
@@ -94,8 +94,8 @@ public class HearingDetailsMapper {
         caseHearingRequestEntity.setPanelSpecialisms(panelSpecialismsEntities);
     }
 
-    private void setPanelAutorisationRequirements(PanelRequirements panelRequirements,
-                                                  CaseHearingRequestEntity caseHearingRequestEntity) {
+    private void setPanelAuthorisationRequirements(PanelRequirements panelRequirements,
+                                                   CaseHearingRequestEntity caseHearingRequestEntity) {
         final List<PanelAuthorisationRequirementsEntity> panelRequirementsEntities =
             panelAuthorisationRequirementsMapper.modelToEntity(panelRequirements, caseHearingRequestEntity);
         caseHearingRequestEntity.setPanelAuthorisationRequirements(panelRequirementsEntities);

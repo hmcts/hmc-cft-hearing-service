@@ -26,7 +26,7 @@ public class IndividualDetails {
     private String firstName;
 
     @NotNull(message = ValidationError.LAST_NAME_EMPTY)
-    @Size(max = 100, message = ValidationError.LAST_NAME_MAX_LENGTH)
+    @Size(max = 730, message = ValidationError.LAST_NAME_MAX_LENGTH)
     private String lastName;
 
     @Size(max = 70, message = ValidationError.PREFERRED_HEARING_CHANNEL_MAX_LENGTH)
@@ -53,5 +53,11 @@ public class IndividualDetails {
 
     @Valid
     private List<RelatedParty> relatedParties;
+
+    @Size(max = 80, message = ValidationError.OTHER_REASON_LENGTH)
+    private String custodyStatus;
+
+    @Size(max = 200, message = ValidationError.CUSTODY_STATUS_LENGTH)
+    private String otherReasonableAdjustmentDetails;
 
 }

@@ -42,13 +42,13 @@ class HearingHelperTest {
         HearingDayDetailsEntity day1 = hearingDayDetailsEntity(LocalDateTime.parse("2020-08-13T12:20:00"));
         HearingDayDetailsEntity day2 = hearingDayDetailsEntity(LocalDateTime.parse("2020-08-14T12:30:00"));
         List<HearingDayDetailsEntity> hearingDayDetails = List.of(day1, day2);
-        HearingResponseEntity hearingResponse1 = hearingResponseEntity("1", "2",
+        HearingResponseEntity hearingResponse1 = hearingResponseEntity(1, 2,
                                                                        LocalDateTime.parse("2020-08-12T12:20:00"),
                                                                        hearingDayDetails);
-        HearingResponseEntity hearingResponse2 = hearingResponseEntity("2", "2",
+        HearingResponseEntity hearingResponse2 = hearingResponseEntity(2, 2,
                                                                        LocalDateTime.parse("2020-08-11T12:20:00"),
                                                                        List.of());
-        HearingResponseEntity hearingResponse3 = hearingResponseEntity("3", "1",
+        HearingResponseEntity hearingResponse3 = hearingResponseEntity(3, 1,
                                                                        LocalDateTime.parse("2020-08-10T12:20:00"),
                                                                        List.of());
         HearingEntity hearing = new HearingEntity();
@@ -75,10 +75,10 @@ class HearingHelperTest {
     @Test
     void shouldThrowErrorWhenNoHearingDayDetailsFound() {
         List<HearingDayDetailsEntity> hearingDayDetails = List.of();
-        HearingResponseEntity hearingResponse1 = hearingResponseEntity("1", "2",
+        HearingResponseEntity hearingResponse1 = hearingResponseEntity(1, 2,
                                                                        LocalDateTime.parse("2020-08-12T12:20:00"),
                                                                        hearingDayDetails);
-        HearingResponseEntity hearingResponse2 = hearingResponseEntity("3", "1",
+        HearingResponseEntity hearingResponse2 = hearingResponseEntity(3, 1,
                                                                        LocalDateTime.parse("2020-08-10T12:20:00"),
                                                                        List.of());
         HearingEntity hearing = new HearingEntity();

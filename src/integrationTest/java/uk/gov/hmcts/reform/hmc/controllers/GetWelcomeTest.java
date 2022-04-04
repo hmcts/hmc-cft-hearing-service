@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
+import uk.gov.hmcts.reform.hmc.service.UnNotifiedHearingService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -28,6 +29,9 @@ class GetWelcomeTest extends BaseTest {
 
     @MockBean
     private ApplicationParams applicationParams;
+
+    @MockBean
+    private UnNotifiedHearingService unNotifiedHearingService;
 
     @DisplayName("Should welcome upon root request with 200 response code")
     @Test
