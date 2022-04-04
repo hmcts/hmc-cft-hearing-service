@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.hmi.EntityUnavailableDate;
 
@@ -19,6 +20,7 @@ class UnavailableDatesMapperTest {
         UnavailabilityRanges unavailabilityRanges = new UnavailabilityRanges();
         unavailabilityRanges.setUnavailableToDate(localDate);
         unavailabilityRanges.setUnavailableFromDate(localDate.minusDays(2L));
+        unavailabilityRanges.setUnavailabilityType(DayOfWeekUnAvailableType.AM.label);
         UnavailabilityRanges unavailabilityRangesTwo = new UnavailabilityRanges();
         unavailabilityRangesTwo.setUnavailableToDate(localDate);
         unavailabilityRangesTwo.setUnavailableFromDate(localDate.minusDays(3L));
@@ -30,6 +32,7 @@ class UnavailableDatesMapperTest {
         EntityUnavailableDate entityUnavailableDate = EntityUnavailableDate.builder()
             .unavailableEndDate(localDate)
             .unavailableStartDate(localDate.minusDays(2L))
+            .unavailableType(DayOfWeekUnAvailableType.AM.label)
             .build();
         EntityUnavailableDate entityUnavailableDateTwo = EntityUnavailableDate.builder()
             .unavailableEndDate(localDate)

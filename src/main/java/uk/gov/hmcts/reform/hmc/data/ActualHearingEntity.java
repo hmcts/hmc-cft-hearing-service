@@ -7,7 +7,7 @@ import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -48,7 +48,7 @@ public class ActualHearingEntity implements Serializable {
     private String hearingResultReasonType;
 
     @Column(name = "hearing_result_date", nullable = false)
-    private LocalDateTime hearingResultDate;
+    private LocalDate hearingResultDate;
 
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "hearing_response_id")

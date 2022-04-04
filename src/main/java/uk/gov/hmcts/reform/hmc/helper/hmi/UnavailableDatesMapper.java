@@ -17,6 +17,7 @@ public class UnavailableDatesMapper {
                 EntityUnavailableDate entityUnavailableDates = EntityUnavailableDate.builder()
                     .unavailableStartDate(unavailableRange.getUnavailableFromDate())
                     .unavailableEndDate(unavailableRange.getUnavailableToDate())
+                    .unavailableType(unavailableRange.getUnavailabilityType())
                     .build();
                 unavailableDates.add(entityUnavailableDates);
             }

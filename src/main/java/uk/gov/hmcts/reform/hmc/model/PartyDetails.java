@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class PartyDetails {
 
     @NotEmpty(message = ValidationError.PARTY_DETAILS_NULL_EMPTY)
@@ -39,4 +41,6 @@ public class PartyDetails {
 
     @Valid
     private List<UnavailabilityRanges> unavailabilityRanges;
+
+    private String partyChannelSubType;
 }

@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
@@ -9,11 +12,14 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.GetHearingActualsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingActualsMapper;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
+import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,13 +34,17 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_RESULT_TYPE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 
 @Service
+@Slf4j
 public class HearingActualsServiceImpl implements HearingActualsService {
     private final HearingHelper hearingHelper;
     private final HearingRepository hearingRepository;
     private final ActualHearingRepository actualHearingRepository;
     private final HearingActualsMapper hearingActualsMapper;
+    private final GetHearingActualsResponseMapper getHearingActualsResponseMapper;
+    private final HearingIdValidator hearingIdValidator;
 
     private static final List<String> ALLOWED_ACTUALS_STATUSES = List.of("LISTED",
                                                                          "UPDATE_REQUESTED",
@@ -46,11 +56,26 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     public HearingActualsServiceImpl(HearingRepository hearingRepository,
                                      ActualHearingRepository actualHearingRepository,
                                      HearingHelper hearingHelper,
-                                     HearingActualsMapper hearingActualsMapper) {
+                                     GetHearingActualsResponseMapper getHearingActualsResponseMapper,
+                                     HearingActualsMapper hearingActualsMapper,
+                                     HearingIdValidator hearingIdValidator) {
         this.hearingRepository = hearingRepository;
         this.actualHearingRepository = actualHearingRepository;
         this.hearingHelper = hearingHelper;
+        this.getHearingActualsResponseMapper = getHearingActualsResponseMapper;
+        this.hearingIdValidator = hearingIdValidator;
         this.hearingActualsMapper = hearingActualsMapper;
+    }
+
+    @Override
+    public ResponseEntity<HearingActualResponse> getHearingActuals(Long hearingId) {
+        hearingIdValidator.validateHearingId(hearingId,HEARING_ID_NOT_FOUND);
+        val hearingEntity = hearingRepository.findById(hearingId);
+        if (hearingEntity.isPresent()) {
+            return ResponseEntity.ok(getHearingActualsResponseMapper.toHearingActualResponse(hearingEntity.get()));
+        } else {
+            throw new HearingNotFoundException(hearingId,HEARING_ID_NOT_FOUND);
+        }
     }
 
     @Transactional

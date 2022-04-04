@@ -39,4 +39,5 @@ public class ActualAttendeeIndividualDetailEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actual_party_id")
     private ActualHearingPartyEntity actualHearingParty;
+
 }

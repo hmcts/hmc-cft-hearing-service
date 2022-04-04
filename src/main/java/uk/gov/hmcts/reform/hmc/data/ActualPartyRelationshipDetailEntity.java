@@ -17,7 +17,6 @@ import javax.persistence.Table;
 @Entity
 @Data
 public class ActualPartyRelationshipDetailEntity implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "actual_party_relationship_id_seq")

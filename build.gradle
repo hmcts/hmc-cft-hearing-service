@@ -209,7 +209,8 @@ sonarqube {
       "**/config/SecurityConfiguration.java," +
       "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageReaderFromQueueConfiguration.java," +
       "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageSenderToTopicConfiguration.java," +
-      "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageSenderToQueueConfiguration.java"
+      "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageSenderToQueueConfiguration.java," +
+      "**/HmiHearingResponseMapper.java,**/InboundQueueServiceImpl.java,**/SyncResponse.java"
   }
 }
 
@@ -414,6 +415,8 @@ dependencies {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
+  testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.11.1'
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.1.0'
 
   contractTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
   contractTestCompile group: 'io.rest-assured', name: 'json-path', version: versions.restAssured
@@ -427,8 +430,6 @@ dependencies {
   contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact
 
   contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-
-  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.1.0'
 
   integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers

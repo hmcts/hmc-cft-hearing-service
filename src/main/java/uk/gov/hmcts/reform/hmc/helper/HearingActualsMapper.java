@@ -29,7 +29,7 @@ public class HearingActualsMapper {
         actualHearing.setHearingResultType(HearingResultType.getByLabel(
             request.getHearingOutcome().getHearingResult()));
         actualHearing.setHearingResultReasonType(request.getHearingOutcome().getHearingResultReasonType());
-        actualHearing.setHearingResultDate(request.getHearingOutcome().getHearingResultDate().atStartOfDay());
+        actualHearing.setHearingResultDate(request.getHearingOutcome().getHearingResultDate());
         actualHearing.setActualHearingDay(toActualHearingDayEntities(request.getActualHearingDays(), actualHearing));
 
         return actualHearing;

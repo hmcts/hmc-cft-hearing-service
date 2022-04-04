@@ -12,8 +12,8 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class GetHearingsResponse {
 
-    @JsonProperty("hmctsServiceID")
-    private String hmctsServiceId;
+    @JsonProperty("hmctsServiceCode")
+    private String hmctsServiceCode;
 
     private String caseRef;
 

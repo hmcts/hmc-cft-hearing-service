@@ -49,4 +49,5 @@ public class ActualHearingPartyEntity implements Serializable {
     @OneToMany(mappedBy = "actualHearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ActualAttendeeIndividualDetailEntity> actualAttendeeIndividualDetail;
+
 }

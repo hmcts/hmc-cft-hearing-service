@@ -8,10 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
@@ -63,12 +63,11 @@ public class BasePactTesting {
      *
      * @return HearingRequest hearing request
      */
-    protected CreateHearingRequest generateHearingRequest(String caseRef) {
-        CreateHearingRequest request = new CreateHearingRequest();
+    protected HearingRequest generateHearingRequest(String caseRef) {
+        HearingRequest request = new HearingRequest();
         request.setHearingDetails(hearingDetails());
         request.setCaseDetails(caseDetails(caseRef));
         request.setPartyDetails(partyDetails1());
-        request.setRequestDetails(requestDetails());
         return request;
     }
 
@@ -77,11 +76,10 @@ public class BasePactTesting {
      *
      * @return HearingRequest hearing request
      */
-    protected CreateHearingRequest generateInvalidHearingRequest() {
-        CreateHearingRequest request = new CreateHearingRequest();
+    protected HearingRequest generateInvalidHearingRequest() {
+        HearingRequest request = new HearingRequest();
         request.setHearingDetails(hearingDetails());
         request.setPartyDetails(partyDetails2());
-        request.setRequestDetails(requestDetails());
         return request;
     }
 
@@ -111,7 +109,7 @@ public class BasePactTesting {
      *
      * @return String JSON string of hearing Request
      */
-    protected String jsonCreatedHearingResponse(CreateHearingRequest hearingRequest) {
+    protected String jsonCreatedHearingResponse(HearingRequest hearingRequest) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         String jsonString = "";
@@ -148,9 +146,7 @@ public class BasePactTesting {
      * @return requestDetails Request Details
      */
     protected RequestDetails requestDetails() {
-        RequestDetails requestDetails = new RequestDetails();
-        requestDetails.setRequestTimeStamp(LocalDateTime.now());
-        return requestDetails;
+        return new RequestDetails();
     }
 
     /**
@@ -167,8 +163,8 @@ public class BasePactTesting {
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         HearingLocation location1 = new HearingLocation();
-        location1.setLocationId("court");
-        location1.setLocationType("Location type");
+        location1.setLocationType("court");
+        location1.setLocationId("Location id");
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
@@ -202,8 +198,8 @@ public class BasePactTesting {
             hearingWindow.setFirstDateTimeMustBe(LocalDateTime.now());
         } else {
             logger.info("using hearing window date range");
-            hearingWindow.setHearingWindowStartDateRange(LocalDate.now());
-            hearingWindow.setHearingWindowEndDateRange(LocalDate.now());
+            hearingWindow.setDateRangeStart(LocalDate.now());
+            hearingWindow.setDateRangeEnd(LocalDate.now());
         }
         return hearingWindow;
     }
@@ -217,7 +213,6 @@ public class BasePactTesting {
         CaseDetails caseDetails = new CaseDetails();
         caseDetails.setHmctsServiceCode("ABBA1");
         caseDetails.setCaseRef(caseRef);
-        caseDetails.setRequestTimeStamp(LocalDateTime.now());
         caseDetails.setCaseDeepLink("https://www.google.com");
         caseDetails.setHmctsInternalCaseName("Internal case name");
         caseDetails.setPublicCaseName("Public case name");
