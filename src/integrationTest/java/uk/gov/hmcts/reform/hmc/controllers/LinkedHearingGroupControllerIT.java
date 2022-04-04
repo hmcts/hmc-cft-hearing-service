@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyDeleteLinkedHearingGroups;
 
 
 class LinkedHearingGroupControllerIT extends BaseTest {
@@ -48,6 +49,10 @@ class LinkedHearingGroupControllerIT extends BaseTest {
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-caseHearings_LinkedHearings.sql";
     private static final String INSERT_LINKED_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-linked-hearings.sql";
+
+    private static final String TOKEN = "example-token";
+    private static final String GET_TOKEN_URL = "/FH_GET_TOKEN_URL";
+    private static final String HMI_REQUEST_URL = "/resources/linked-hearing-group";
 
     @Nested
     @DisplayName("PostLinkedHearingGroup")
@@ -576,6 +581,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
         void shouldReturn200_WhenHearingGroupExists() throws Exception {
+            stubSuccessfullyDeleteLinkedHearingGroups(TOKEN, "1234");
             mockMvc.perform(delete(url + "/7600000000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(200))
