@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -126,7 +127,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         /// WHEN
         Mockito.doThrow(new InvalidRoleAssignmentException(testExceptionMessage))
             .when(accessControlService)
-            .verifyCaseAccess(anyString());
+            .verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -158,7 +159,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new CaseCouldNotBeFoundException(testExceptionMessage))
-            .when(accessControlService).verifyCaseAccess(anyString());
+            .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -174,7 +175,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         Request request = Request.create(Request.HttpMethod.GET, "url",
                                          new HashMap<>(), null, new RequestTemplate());
         Mockito.doThrow(new FeignException.NotFound(testExceptionMessage, request, null,null))
-            .when(accessControlService).verifyCaseAccess(anyString());
+            .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -191,7 +192,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new ResourceNotFoundException(testExceptionMessage))
-            .when(accessControlService).verifyCaseAccess(anyString());
+            .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -207,7 +208,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new ServiceException(testExceptionMessage))
-            .when(accessControlService).verifyCaseAccess(anyString());
+            .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)

@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
+import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_MISSING_REQUIRED;
 
 @Service
 @Slf4j
@@ -32,9 +33,13 @@ public class AccessControlServiceImpl implements AccessControlService {
     private DataStoreRepository dataStoreRepository;
     private CaseHearingRequestRepository caseHearingRequestRepository;
 
-    private static final List<String> HMC_ROLE_NAMES = Lists.newArrayList("hearing-manager",
-                                                                          "hearing-viewer",
-                                                                          "listed-hearing-viewer");
+    public static final String HEARNING_MANAGER = "hearing-manager";
+    public static final String HEARNING_VIEWER = "hearing-viewer";
+    public static final String LISTED_HEARING_VIEWER = "listed-hearing-viewer";
+
+    private static final List<String> HMC_ROLE_NAMES = Lists.newArrayList(HEARNING_MANAGER,
+                                                                          HEARNING_VIEWER,
+                                                                          LISTED_HEARING_VIEWER);
 
     public AccessControlServiceImpl(RoleAssignmentService roleAssignmentService,
                                     SecurityUtils securityUtils,
@@ -49,7 +54,7 @@ public class AccessControlServiceImpl implements AccessControlService {
 
 
     @Override
-    public void verifyCaseAccess(String caseReference) {
+    public void verifyCaseAccess(String caseReference, List<String> requiredRoles) {
         RoleAssignments roleAssignments = roleAssignmentService.getRoleAssignments(securityUtils.getUserId());
         if (roleAssignments.getRoleAssignments().isEmpty()) {
             throw new ResourceNotFoundException(String.format(ROLE_ASSIGNMENTS_NOT_FOUND, securityUtils.getUserId()));
@@ -58,6 +63,14 @@ public class AccessControlServiceImpl implements AccessControlService {
         if (filteredRoleAssignments.isEmpty()) {
             throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ROLE);
         }
+
+        boolean containsRequiredRoles = filteredRoleAssignments.stream()
+            .anyMatch(roleAssignment -> requiredRoles.contains(roleAssignment.getRoleName()));
+
+        if (!containsRequiredRoles) {
+            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_MISSING_REQUIRED);
+        }
+
         DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
         if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
             throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
@@ -65,10 +78,10 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     @Override
-    public void verifyHearingCaseAccess(Long hearingId) {
+    public void verifyHearingCaseAccess(Long hearingId, List<String> requiredRoles) {
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository.getCaseHearing(hearingId);
         if (caseHearingRequestEntity != null) {
-            verifyCaseAccess(caseHearingRequestEntity.getCaseReference());
+            verifyCaseAccess(caseHearingRequestEntity.getCaseReference(), requiredRoles);
         }
     }
 

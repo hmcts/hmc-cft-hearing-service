@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -38,6 +39,9 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALID_LENGTH;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARNING_MANAGER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARNING_VIEWER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 
 @RestController
 @Validated
@@ -62,6 +66,7 @@ public class HearingManagementController {
     public ResponseEntity<GetHearingResponse> getHearing(@PathVariable("id") Long hearingId,
                                                          @RequestParam(value = "isValid",
                                                              defaultValue = "false") boolean isValid) {
+        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARNING_MANAGER, LISTED_HEARING_VIEWER));
         return hearingManagementService.getHearingRequest(hearingId, isValid);
     }
 
@@ -72,7 +77,7 @@ public class HearingManagementController {
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
     public HearingResponse saveHearing(@RequestBody @Valid HearingRequest createHearingRequest) {
-        accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest));
+        accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARNING_MANAGER));
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
         hearingManagementService.sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest,
                 REQUEST_HEARING
@@ -90,7 +95,7 @@ public class HearingManagementController {
     })
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
                                          @RequestBody @Valid DeleteHearingRequest deleteRequest) {
-        accessControlService.verifyHearingCaseAccess(hearingId);
+        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARNING_MANAGER));
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
             hearingId, deleteRequest);
         hearingManagementService.sendRequestToHmiAndQueue(deleteRequest, hearingId, DELETE_HEARING);
@@ -121,7 +126,11 @@ public class HearingManagementController {
                                                String ccdCaseRef,
                                            @RequestParam(required = false)
                                                String status) {
-        accessControlService.verifyCaseAccess(ccdCaseRef);
+        if ("LISTED".equals(status)) {
+            accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(HEARNING_VIEWER, LISTED_HEARING_VIEWER));
+        } else {
+            accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(HEARNING_VIEWER));
+        }
         return hearingManagementService.getHearings(ccdCaseRef, status);
     }
 
@@ -135,7 +144,7 @@ public class HearingManagementController {
     })
     public HearingResponse updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
                                          @PathVariable("id") Long hearingId) {
-        accessControlService.verifyHearingCaseAccess(hearingId);
+        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARNING_MANAGER));
         HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
         hearingManagementService.sendRequestToHmiAndQueue(hearingId, hearingRequest, AMEND_HEARING);
         return hearingResponse;
@@ -154,6 +163,7 @@ public class HearingManagementController {
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
     public ResponseEntity hearingCompletion(@PathVariable("id") Long hearingId) {
+        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARNING_MANAGER));
         return hearingManagementService.hearingCompletion(hearingId);
     }
 

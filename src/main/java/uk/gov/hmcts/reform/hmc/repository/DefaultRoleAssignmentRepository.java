@@ -43,6 +43,7 @@ public class DefaultRoleAssignmentRepository implements RoleAssignmentRepository
         "User requires a Role Assignment with a role type of ORGANISATION and role name of Hearing Manage";
     public static final String ROLE_ASSIGNMENT_INVALID_ATTRIBUTES =
         "User requires a Role Assignment with attributes matching the case's jurisdiction or case type, if present";
+    public static final String ROLE_ASSIGNMENT_MISSING_REQUIRED = "Required Role Assignments are missing for Hearing";
     private static final String GZIP_POSTFIX = "--gzip";
 
     private final ApplicationParams applicationParams;
