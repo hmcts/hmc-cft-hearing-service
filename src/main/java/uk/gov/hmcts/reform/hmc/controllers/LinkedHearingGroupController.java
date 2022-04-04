@@ -21,7 +21,6 @@ public class LinkedHearingGroupController {
         this.linkedHearingGroupService = linkedHearingGroupService;
     }
 
-    @Transactional
     @DeleteMapping(path = "/linkedHearingGroup/{id}", consumes = APPLICATION_JSON_VALUE,
         produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
