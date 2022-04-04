@@ -66,7 +66,8 @@ public class HearingManagementController {
     public ResponseEntity<GetHearingResponse> getHearing(@PathVariable("id") Long hearingId,
                                                          @RequestParam(value = "isValid",
                                                              defaultValue = "false") boolean isValid) {
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARNING_MANAGER, LISTED_HEARING_VIEWER));
+        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARNING_MANAGER,
+                                                                                   LISTED_HEARING_VIEWER));
         return hearingManagementService.getHearingRequest(hearingId, isValid);
     }
 
@@ -127,7 +128,8 @@ public class HearingManagementController {
                                            @RequestParam(required = false)
                                                String status) {
         if ("LISTED".equals(status)) {
-            accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(HEARNING_VIEWER, LISTED_HEARING_VIEWER));
+            accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(HEARNING_VIEWER,
+                                                                                 LISTED_HEARING_VIEWER));
         } else {
             accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(HEARNING_VIEWER));
         }

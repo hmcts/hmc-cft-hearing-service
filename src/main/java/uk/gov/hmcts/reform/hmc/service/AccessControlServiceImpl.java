@@ -64,16 +64,20 @@ public class AccessControlServiceImpl implements AccessControlService {
             throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ROLE);
         }
 
+        verifyRequiredRolesExists(requiredRoles, filteredRoleAssignments);
+
+        DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
+        if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
+            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
+        }
+    }
+
+    private void verifyRequiredRolesExists(List<String> requiredRoles, List<RoleAssignment> filteredRoleAssignments) {
         boolean containsRequiredRoles = filteredRoleAssignments.stream()
             .anyMatch(roleAssignment -> requiredRoles.contains(roleAssignment.getRoleName()));
 
         if (!containsRequiredRoles) {
             throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_MISSING_REQUIRED);
-        }
-
-        DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
-        if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
-            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
         }
     }
 
