@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 
@@ -26,12 +28,12 @@ import javax.persistence.Table;
 public class LinkedGroupDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "linked_group_details_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "linked_group_details_id_seq")
     @Column(name = "linked_group_id")
     private Long linkedGroupId;
 
-    @Column(name = "request_id", nullable = false)
+    @Generated(GenerationTime.INSERT)
+    @Column(name = "request_id", columnDefinition = "serial", insertable = false, updatable = false)
     private String requestId;
 
     @Column(name = "request_name")

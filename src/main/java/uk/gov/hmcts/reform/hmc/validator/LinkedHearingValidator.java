@@ -300,7 +300,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
                 .getStartDateTime().toLocalDate();
     }
 
-    protected void updateHearingWithLinkGroup(HearingLinkGroupRequest hearingLinkGroupRequest) {
+    protected LinkedGroupDetails updateHearingWithLinkGroup(HearingLinkGroupRequest hearingLinkGroupRequest) {
         LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
         linkedGroupDetails.setRequestName(hearingLinkGroupRequest.getGroupDetails().getGroupName());
         linkedGroupDetails.setReasonForLink(hearingLinkGroupRequest.getGroupDetails().getGroupReason());
@@ -310,7 +310,6 @@ public class LinkedHearingValidator extends HearingIdValidator {
         linkedGroupDetails.setStatus("PENDING");
         linkedGroupDetails.setRequestDateTime(LocalDateTime.now());
         linkedGroupDetails.setLinkedGroupLatestVersion(1L);
-        linkedGroupDetails.setRequestId("string");
         LinkedGroupDetails linkedGroupDetailsSaved = linkedGroupDetailsRepository.save(linkedGroupDetails);
 
         hearingLinkGroupRequest.getHearingsInGroup()
@@ -324,5 +323,6 @@ public class LinkedHearingValidator extends HearingIdValidator {
                     hearingRepository.save(hearingToSave);
                 }
             });
+        return linkedGroupDetailsSaved;
     }
 }
