@@ -25,16 +25,16 @@ import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.ServiceException;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
+import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementServiceImpl;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,10 +54,13 @@ public class RestExceptionHandlerTest extends BaseTest {
     public static String ERROR_PATH_ERROR = "$.errors";
     public static String ERROR_PATH_STATUS = "$.status";
     public static String testExceptionMessage = "test message";
-    CreateHearingRequest validRequest;
+    HearingRequest validRequest;
 
     @MockBean
     protected HearingManagementServiceImpl service;
+
+    @MockBean
+    protected AccessControlService accessControlService;
 
     @Autowired
     protected MockMvc mockMvc;
@@ -74,7 +77,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        validRequest = new CreateHearingRequest();
+        validRequest = new HearingRequest();
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
@@ -99,7 +102,6 @@ public class RestExceptionHandlerTest extends BaseTest {
         CaseDetails caseDetails = new CaseDetails();
         caseDetails.setHmctsServiceCode("ABA1");
         caseDetails.setCaseRef("1111222233334444");
-        caseDetails.setRequestTimeStamp(LocalDateTime.parse("2021-08-10T12:20:00"));
         caseDetails.setCaseDeepLink("https://www.google.com");
         caseDetails.setHmctsInternalCaseName("Internal case name");
         caseDetails.setPublicCaseName("Public case name");
@@ -113,9 +115,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         caseCategories.add(category);
         caseDetails.setCaseCategories(caseCategories);
         RequestDetails requestDetails = new RequestDetails();
-        requestDetails.setRequestTimeStamp(LocalDateTime.now());
         validRequest.setHearingDetails(hearingDetails);
-        validRequest.setRequestDetails(requestDetails);
         validRequest.setCaseDetails(caseDetails);
     }
 
@@ -124,8 +124,9 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleInvalidRoleAssignmentException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new InvalidRoleAssignmentException(testExceptionMessage)).when(service)
-            .verifyAccess(anyString());
+        Mockito.doThrow(new InvalidRoleAssignmentException(testExceptionMessage))
+            .when(accessControlService)
+            .verifyCaseAccess(anyString());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -141,7 +142,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
-            .saveHearingRequest(any(CreateHearingRequest.class));
+            .saveHearingRequest(any(HearingRequest.class));
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -156,7 +157,8 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleCaseCouldNotBeFoundException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new CaseCouldNotBeFoundException(testExceptionMessage)).when(service).verifyAccess(anyString());
+        Mockito.doThrow(new CaseCouldNotBeFoundException(testExceptionMessage))
+            .when(accessControlService).verifyCaseAccess(anyString());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -172,7 +174,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         Request request = Request.create(Request.HttpMethod.GET, "url",
                                          new HashMap<>(), null, new RequestTemplate());
         Mockito.doThrow(new FeignException.NotFound(testExceptionMessage, request, null,null))
-            .when(service).verifyAccess(anyString());
+            .when(accessControlService).verifyCaseAccess(anyString());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -188,7 +190,8 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleResourceNotFoundException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new ResourceNotFoundException(testExceptionMessage)).when(service).verifyAccess(anyString());
+        Mockito.doThrow(new ResourceNotFoundException(testExceptionMessage))
+            .when(accessControlService).verifyCaseAccess(anyString());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -203,7 +206,8 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleServiceException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new ServiceException(testExceptionMessage)).when(service).verifyAccess(anyString());
+        Mockito.doThrow(new ServiceException(testExceptionMessage))
+            .when(accessControlService).verifyCaseAccess(anyString());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)

@@ -11,16 +11,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Table(name = "actual_hearing_day_pauses")
 @Entity
 @Data
-@SecondaryTable(name = "ACTUAL_HEARING_DAY",
-    pkJoinColumns = {
-        @PrimaryKeyJoinColumn(name = "actual_hearing_day_id")})
 public class ActualHearingDayPausesEntity {
 
     @Id

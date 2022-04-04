@@ -192,7 +192,7 @@ public class HearingResponsePactUtil {
                                        GetHearingsResponse response) {
         // append main Details object
         pactDslJsonBody
-                .stringMatcher("hmctsServiceCode", "^[a-zA-Z0-9]{1,4}$", response.getHmctsServiceId())
+                .stringMatcher("hmctsServiceCode", "^[a-zA-Z0-9]{1,4}$", response.getHmctsServiceCode())
                 .stringMatcher("caseRef", "^\\d{16}$", caseRef)
                 .object("caseHearings", addCaseHearings(response.getCaseHearings()));
     }
@@ -320,7 +320,7 @@ public class HearingResponsePactUtil {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
         getHearingsResponse.setCaseRef(caseRef);
         getHearingsResponse.setCaseHearings(generateCaseHearings());
-        getHearingsResponse.setHmctsServiceId("svc1");
+        getHearingsResponse.setHmctsServiceCode("svc1");
         return getHearingsResponse;
     }
 
@@ -335,7 +335,7 @@ public class HearingResponsePactUtil {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
         getHearingsResponse.setCaseRef(caseRef);
         getHearingsResponse.setCaseHearings(generateCaseHearings(caseStatus));
-        getHearingsResponse.setHmctsServiceId("svc1");
+        getHearingsResponse.setHmctsServiceCode("svc1");
         return getHearingsResponse;
     }
 

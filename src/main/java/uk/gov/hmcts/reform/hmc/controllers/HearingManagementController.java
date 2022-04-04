@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
@@ -71,11 +71,11 @@ public class HearingManagementController {
         @ApiResponse(code = 201, message = "Hearing Id is created"),
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
-    public HearingResponse saveHearing(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
+    public HearingResponse saveHearing(@RequestBody @Valid HearingRequest createHearingRequest) {
         accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest));
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
         hearingManagementService.sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest,
-                                                          REQUEST_HEARING
+                REQUEST_HEARING
         );
         return hearingResponse;
     }
@@ -141,12 +141,26 @@ public class HearingManagementController {
         return hearingResponse;
     }
 
-    private String getCaseRef(CreateHearingRequest hearingRequest) {
+    @PostMapping(path = "/hearingActualsCompletion/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success (with no content)"),
+        @ApiResponse(code = 404, message = "001 No such id"),
+        @ApiResponse(code = 400, message = "Invalid hearing details found"),
+        @ApiResponse(code = 400, message = "002 invalid status"),
+        @ApiResponse(code = 400, message = "003 missing hearing day actuals"),
+        @ApiResponse(code = 400, message = "004 unexpected hearing day actuals"),
+        @ApiResponse(code = 400, message = "005 missing hearing outcome"),
+        @ApiResponse(code = 500, message = "Error occurred on the server")
+    })
+    public ResponseEntity hearingCompletion(@PathVariable("id") Long hearingId) {
+        return hearingManagementService.hearingCompletion(hearingId);
+    }
+
+    private String getCaseRef(HearingRequest hearingRequest) {
         if (null == hearingRequest || null == hearingRequest.getCaseDetails()) {
             return null;
         }
         return hearingRequest.getCaseDetails().getCaseRef();
-
     }
-
 }

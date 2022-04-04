@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.hmc.domain.model.enums;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.Locale;
 
+@Getter
 public enum LinkType {
     ORDERED("Ordered"),
     SAME_SLOT("Same Slot");
@@ -14,9 +17,20 @@ public enum LinkType {
     }
 
     public static LinkType getByLabel(String value) {
-        LinkType linkType = Arrays.stream(LinkType.values())
+        return Arrays.stream(LinkType.values())
             .filter(eachLinkType -> eachLinkType.label.toLowerCase(Locale.ROOT)
                 .equals(value.toLowerCase(Locale.ROOT))).findAny().orElse(null);
-        return linkType;
     }
+
+    public static boolean isValidLabel(String label) {
+        return Arrays.stream(values())
+                .anyMatch(eachLinkType -> eachLinkType.label.toLowerCase(Locale.ROOT)
+                                .equals(label.toLowerCase(Locale.ROOT)));
+    }
+
+    public static boolean isValidName(String name) {
+        return Arrays.stream(values())
+                .anyMatch(eachLinkType -> eachLinkType.name().equals(name));
+    }
+
 }

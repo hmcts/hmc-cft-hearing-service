@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
@@ -12,8 +12,8 @@ import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
-import uk.gov.hmcts.reform.hmc.model.CaseCategory;
-import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
@@ -48,49 +49,26 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
 
     private RequestDetails setRequestDetails(HearingEntity hearingEntity) {
         RequestDetails requestDetails = new RequestDetails();
+        CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
+        requestDetails.setHearingRequestId(hearingEntity.getId().toString());
+        requestDetails.setHearingGroupRequestId(getRequestId(hearingEntity));
         requestDetails.setStatus(hearingEntity.getStatus());
-        requestDetails.setTimestamp(hearingEntity.getCaseHearingRequest().getHearingRequestReceivedDateTime());
-        requestDetails.setVersionNumber(hearingEntity.getCaseHearingRequest().getVersionNumber());
+        requestDetails.setTimestamp(caseHearingRequestEntity.getHearingRequestReceivedDateTime());
+        requestDetails.setVersionNumber(caseHearingRequestEntity.getVersionNumber());
         return requestDetails;
     }
 
-    private CaseDetails setCaseDetails(HearingEntity hearingEntity) {
-        CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setHmctsServiceCode(hearingEntity.getCaseHearingRequest().getHmctsServiceCode());
-        caseDetails.setCaseRef(hearingEntity.getCaseHearingRequest().getCaseReference());
-        caseDetails.setExternalCaseReference(hearingEntity.getCaseHearingRequest().getExternalCaseReference());
-        caseDetails.setCaseDeepLink(hearingEntity.getCaseHearingRequest().getCaseUrlContextPath());
-        caseDetails.setHmctsInternalCaseName(hearingEntity.getCaseHearingRequest().getHmctsInternalCaseName());
-        caseDetails.setPublicCaseName(hearingEntity.getCaseHearingRequest().getPublicCaseName());
-        caseDetails.setCaseAdditionalSecurityFlag(
-            hearingEntity.getCaseHearingRequest().getAdditionalSecurityRequiredFlag());
-        caseDetails.setCaseInterpreterRequiredFlag(
-            hearingEntity.getCaseHearingRequest().getInterpreterBookingRequiredFlag());
-        caseDetails.setCaseCategories(setCaseCategories(hearingEntity));
-        caseDetails.setCaseManagementLocationCode(hearingEntity.getCaseHearingRequest().getOwningLocationId());
-        caseDetails.setCaseRestrictedFlag(hearingEntity.getCaseHearingRequest().getCaseRestrictedFlag());
-        caseDetails.setCaseSlaStartDate(hearingEntity.getCaseHearingRequest().getCaseSlaStartDate());
-        return caseDetails;
-    }
-
-    private ArrayList<CaseCategory> setCaseCategories(HearingEntity hearingEntity) {
-        ArrayList<CaseCategory> caseCategories = new ArrayList<>();
-        if (null != hearingEntity.getCaseHearingRequest().getCaseCategories()
-                && !hearingEntity.getCaseHearingRequest().getCaseCategories().isEmpty()) {
-            for (CaseCategoriesEntity caseCategoriesEntity :
-                    hearingEntity.getCaseHearingRequest().getCaseCategories()) {
-                CaseCategory caseCategory = new CaseCategory();
-                caseCategory.setCategoryType(caseCategoriesEntity.getCategoryType().getLabel());
-                caseCategory.setCategoryValue(caseCategoriesEntity.getCaseCategoryValue());
-                caseCategories.add(caseCategory);
-            }
+    private String getRequestId(HearingEntity hearingEntity) {
+        if (null != hearingEntity && null != hearingEntity.getLinkedGroupDetails()) {
+            return hearingEntity.getLinkedGroupDetails().getRequestId();
         }
-        return caseCategories;
+        return null;
     }
 
     private ArrayList<PartyDetails> setPartyDetails(HearingEntity hearingEntity) {
         ArrayList<PartyDetails> partyDetailsList = new ArrayList<>();
-        for (HearingPartyEntity hearingPartyEntity : hearingEntity.getCaseHearingRequest().getHearingParties()) {
+        CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
+        for (HearingPartyEntity hearingPartyEntity : caseHearingRequestEntity.getHearingParties()) {
             PartyDetails partyDetails = new PartyDetails();
             partyDetails.setPartyID(hearingPartyEntity.getPartyReference());
             partyDetails.setPartyType(hearingPartyEntity.getPartyType().getLabel());
@@ -167,77 +145,86 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         ArrayList<IndividualDetails> individualDetailsArrayList = new ArrayList<>();
         if (hearingPartyEntity.getIndividualDetailEntity() != null) {
             for (IndividualDetailEntity individualDetailEntity : hearingPartyEntity.getIndividualDetailEntity()) {
-                IndividualDetails individualDetails = new IndividualDetails();
-                individualDetails.setTitle(individualDetailEntity.getTitle());
-                individualDetails.setFirstName(individualDetailEntity.getFirstName());
-                individualDetails.setLastName(individualDetailEntity.getLastName());
-                individualDetails.setPreferredHearingChannel(individualDetailEntity.getChannelType());
-                individualDetails.setInterpreterLanguage(individualDetailEntity.getInterpreterLanguage());
-                if (null != hearingPartyEntity.getReasonableAdjustmentsEntity()
-                        && !hearingPartyEntity.getReasonableAdjustmentsEntity().isEmpty()) {
-                    individualDetails.setReasonableAdjustments(
-                            List.of(hearingPartyEntity.getReasonableAdjustmentsEntity().get(
-                                    0).getReasonableAdjustmentCode()));
-                }
-                individualDetails.setVulnerableFlag(individualDetailEntity.getVulnerableFlag());
-                individualDetails.setVulnerabilityDetails(individualDetailEntity.getVulnerabilityDetails());
-                if (null != hearingPartyEntity.getContactDetails()
-                        && !hearingPartyEntity.getContactDetails().isEmpty()) {
-                    if (hearingPartyEntity.getContactDetails().get(0).getContactDetails().contains("@")) {
-                        individualDetails.setHearingChannelEmail(
-                                hearingPartyEntity.getContactDetails().get(0).getContactDetails());
-                    } else {
-                        individualDetails.setHearingChannelPhone(
-                                hearingPartyEntity.getContactDetails().get(0).getContactDetails());
-                    }
-                }
-                RelatedParty relatedParty = new RelatedParty();
-                relatedParty.setRelatedPartyID(individualDetailEntity.getRelatedPartyID());
-                relatedParty.setRelationshipType(individualDetailEntity.getRelatedPartyRelationshipType());
-
-                individualDetails.setRelatedParties(List.of(relatedParty));
+                IndividualDetails individualDetails = createIndividualDetail(hearingPartyEntity,
+                                                        individualDetailEntity);
                 individualDetailsArrayList.add(individualDetails);
             }
         }
         return individualDetailsArrayList;
     }
 
+    private IndividualDetails createIndividualDetail(HearingPartyEntity hearingPartyEntity,
+                                                     IndividualDetailEntity individualDetailEntity) {
 
-    private ArrayList<HearingResponse> setHearingResponse(HearingEntity hearingEntity) {
-        ArrayList<HearingResponse> hearingResponses = new ArrayList<>();
-        for (HearingResponseEntity hearingResponseEntity : hearingEntity.getHearingResponses()) {
-            HearingResponse hearingResponse = new HearingResponse();
+        IndividualDetails individualDetails = new IndividualDetails();
+        individualDetails.setTitle(individualDetailEntity.getTitle());
+        individualDetails.setFirstName(individualDetailEntity.getFirstName());
+        individualDetails.setLastName(individualDetailEntity.getLastName());
+        individualDetails.setPreferredHearingChannel(individualDetailEntity.getChannelType());
+        individualDetails.setInterpreterLanguage(individualDetailEntity.getInterpreterLanguage());
+        if (null != hearingPartyEntity.getReasonableAdjustmentsEntity()
+                && !hearingPartyEntity.getReasonableAdjustmentsEntity().isEmpty()) {
+            individualDetails.setReasonableAdjustments(
+                    List.of(hearingPartyEntity.getReasonableAdjustmentsEntity().get(0)
+                            .getReasonableAdjustmentCode()));
+        }
+        individualDetails.setVulnerableFlag(individualDetailEntity.getVulnerableFlag());
+        individualDetails.setVulnerabilityDetails(individualDetailEntity.getVulnerabilityDetails());
+        if (null != hearingPartyEntity.getContactDetails()
+                && !hearingPartyEntity.getContactDetails().isEmpty()) {
+            if (hearingPartyEntity.getContactDetails().get(0).getContactDetails().contains("@")) {
+                individualDetails.setHearingChannelEmail(
+                        hearingPartyEntity.getContactDetails().get(0).getContactDetails());
+            } else {
+                individualDetails.setHearingChannelPhone(
+                        hearingPartyEntity.getContactDetails().get(0).getContactDetails());
+            }
+        }
+        RelatedParty relatedParty = new RelatedParty();
+        relatedParty.setRelatedPartyID(individualDetailEntity.getRelatedPartyID());
+        relatedParty.setRelationshipType(individualDetailEntity.getRelatedPartyRelationshipType());
+
+        individualDetails.setRelatedParties(List.of(relatedParty));
+        return individualDetails;
+    }
+
+    private HearingResponse setHearingResponse(HearingEntity hearingEntity) {
+        HearingResponse hearingResponse = new HearingResponse();
+        Optional<HearingResponseEntity> hearingResponseEntityOpt = hearingEntity.getLatestHearingResponse();
+        hearingResponseEntityOpt.ifPresent(hearingResponseEntity -> {
             hearingResponse.setListAssistTransactionID(
-                hearingResponseEntity.getHearingResponseId());
+                 hearingResponseEntity.getListAssistTransactionId());
             hearingResponse.setReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
             hearingResponse.setResponseVersion(hearingResponseEntity.getHearingResponseId());
-            hearingResponse.setLaCaseStatus(hearingResponseEntity.getListingCaseStatus());
-            hearingResponse.setListingStatus(hearingResponseEntity.getListingStatus());
+            hearingResponse.setLaCaseStatus(ListAssistCaseStatus.getLabel(
+                    hearingResponseEntity.getListingCaseStatus()));
+            hearingResponse.setListingStatus(ListingStatus.getLabel(hearingResponseEntity.getListingStatus()));
+            hearingResponse.setHearingCancellationReason(hearingResponseEntity.getCancellationReasonType());
             setHearingDaySchedule(hearingResponse, List.of(hearingResponseEntity));
-            hearingResponses.add(hearingResponse);
-        }
-        return hearingResponses;
+        });
+        return hearingResponse;
     }
 
 
     private HearingDetails setHearingDetails(HearingEntity hearingEntity) {
         HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(hearingEntity.getCaseHearingRequest().getAutoListFlag());
-        hearingDetails.setHearingType(hearingEntity.getCaseHearingRequest().getHearingType());
+        CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
+        hearingDetails.setAutoListFlag(caseHearingRequestEntity.getAutoListFlag());
+        hearingDetails.setHearingType(caseHearingRequestEntity.getHearingType());
         hearingDetails.setHearingWindow(setHearingWindow(hearingEntity));
-        hearingDetails.setDuration(hearingEntity.getCaseHearingRequest().getRequiredDurationInMinutes());
+        hearingDetails.setDuration(caseHearingRequestEntity.getRequiredDurationInMinutes());
         hearingDetails.setNonStandardHearingDurationReasons(setHearingPriorityType(hearingEntity));
-        hearingDetails.setHearingPriorityType(hearingEntity.getCaseHearingRequest().getHearingPriorityType());
+        hearingDetails.setHearingPriorityType(caseHearingRequestEntity.getHearingPriorityType());
         hearingDetails.setNumberOfPhysicalAttendees(
-            hearingEntity.getCaseHearingRequest().getNumberOfPhysicalAttendees());
-        hearingDetails.setHearingInWelshFlag(hearingEntity.getCaseHearingRequest().getHearingInWelshFlag());
+            caseHearingRequestEntity.getNumberOfPhysicalAttendees());
+        hearingDetails.setHearingInWelshFlag(caseHearingRequestEntity.getHearingInWelshFlag());
         hearingDetails.setHearingLocations(setHearingLocations(hearingEntity));
         hearingDetails.setFacilitiesRequired(setFacilityType(hearingEntity));
-        hearingDetails.setListingComments(hearingEntity.getCaseHearingRequest().getListingComments());
-        hearingDetails.setHearingRequester(hearingEntity.getCaseHearingRequest().getRequester());
+        hearingDetails.setListingComments(caseHearingRequestEntity.getListingComments());
+        hearingDetails.setHearingRequester(caseHearingRequestEntity.getRequester());
         hearingDetails.setPrivateHearingRequiredFlag(
-            hearingEntity.getCaseHearingRequest().getPrivateHearingRequiredFlag());
-        hearingDetails.setLeadJudgeContractType(hearingEntity.getCaseHearingRequest().getLeadJudgeContractType());
+            caseHearingRequestEntity.getPrivateHearingRequiredFlag());
+        hearingDetails.setLeadJudgeContractType(caseHearingRequestEntity.getLeadJudgeContractType());
         hearingDetails.setPanelRequirements(setPanelRequirements(hearingEntity));
         hearingDetails.setHearingIsLinkedFlag(hearingEntity.getIsLinkedFlag());
         return hearingDetails;
@@ -245,10 +232,11 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
 
     private ArrayList<String> setHearingPriorityType(HearingEntity hearingEntity) {
         ArrayList<String> hearingPriorityType = new ArrayList<>();
-        if (null != hearingEntity.getCaseHearingRequest().getNonStandardDurations()
-                && !hearingEntity.getCaseHearingRequest().getNonStandardDurations().isEmpty()) {
+        CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
+        if (null != caseHearingRequestEntity.getNonStandardDurations()
+                && !caseHearingRequestEntity.getNonStandardDurations().isEmpty()) {
             for (NonStandardDurationsEntity nonStandardDurationsEntity
-                    : hearingEntity.getCaseHearingRequest().getNonStandardDurations()) {
+                    : caseHearingRequestEntity.getNonStandardDurations()) {
                 hearingPriorityType.add(nonStandardDurationsEntity.getNonStandardHearingDurationReasonType());
             }
         }
@@ -257,10 +245,11 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
 
     private PanelRequirements setPanelRequirements(HearingEntity hearingEntity) {
         PanelRequirements panelRequirement = new PanelRequirements();
-        if (null != hearingEntity.getCaseHearingRequest().getPanelRequirements()
-                && !hearingEntity.getCaseHearingRequest().getPanelRequirements().isEmpty()) {
+        CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
+        if (null != caseHearingRequestEntity.getPanelRequirements()
+                && !caseHearingRequestEntity.getPanelRequirements().isEmpty()) {
             for (PanelRequirementsEntity panelRequirementsEntity
-                    : hearingEntity.getCaseHearingRequest().getPanelRequirements()) {
+                    : caseHearingRequestEntity.getPanelRequirements()) {
                 panelRequirement.setRoleType(List.of(panelRequirementsEntity.getRoleType()));
             }
         }
@@ -269,10 +258,11 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
 
     private ArrayList<String> setFacilityType(HearingEntity hearingEntity) {
         ArrayList<String> facilityType = new ArrayList<>();
-        if (null != hearingEntity.getCaseHearingRequest().getRequiredFacilities()
-                && !hearingEntity.getCaseHearingRequest().getRequiredFacilities().isEmpty()) {
+        CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
+        if (null != caseHearingRequestEntity.getRequiredFacilities()
+                && !caseHearingRequestEntity.getRequiredFacilities().isEmpty()) {
             for (RequiredFacilitiesEntity requiredFacilitiesEntity
-                    : hearingEntity.getCaseHearingRequest().getRequiredFacilities()) {
+                    : caseHearingRequestEntity.getRequiredFacilities()) {
                 facilityType.add(requiredFacilitiesEntity.getFacilityType());
             }
         }
@@ -281,10 +271,11 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
 
     private ArrayList<HearingLocation> setHearingLocations(HearingEntity hearingEntity) {
         ArrayList<HearingLocation> hearingLocations = new ArrayList<>();
-        if (null != hearingEntity.getCaseHearingRequest().getRequiredLocations()
-                && !hearingEntity.getCaseHearingRequest().getRequiredLocations().isEmpty()) {
+        CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
+        if (null != caseHearingRequestEntity.getRequiredLocations()
+                && !caseHearingRequestEntity.getRequiredLocations().isEmpty()) {
             for (RequiredLocationsEntity requiredLocationsEntity
-                    : hearingEntity.getCaseHearingRequest().getRequiredLocations()) {
+                    : caseHearingRequestEntity.getRequiredLocations()) {
                 HearingLocation hearingLocation = new HearingLocation();
                 hearingLocation.setLocationId(requiredLocationsEntity.getLocationId());
                 hearingLocation.setLocationType(requiredLocationsEntity.getLocationLevelType().getLabel());
@@ -296,11 +287,12 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
 
     private HearingWindow setHearingWindow(HearingEntity hearingEntity) {
         HearingWindow hearingWindow = new HearingWindow();
+        CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
         hearingWindow.setDateRangeStart(
-            hearingEntity.getCaseHearingRequest().getHearingWindowStartDateRange());
+            caseHearingRequestEntity.getHearingWindowStartDateRange());
         hearingWindow.setDateRangeEnd(
-            hearingEntity.getCaseHearingRequest().getHearingWindowEndDateRange());
-        hearingWindow.setFirstDateTimeMustBe(hearingEntity.getCaseHearingRequest().getFirstDateTimeOfHearingMustBe());
+            caseHearingRequestEntity.getHearingWindowEndDateRange());
+        hearingWindow.setFirstDateTimeMustBe(caseHearingRequestEntity.getFirstDateTimeOfHearingMustBe());
         return hearingWindow;
     }
 
@@ -313,7 +305,9 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             if (null != hearingDayDetailEntities && !hearingDayDetailEntities.isEmpty()) {
                 for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
                     HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
-                    setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
+                    if (!detailEntity.getHearingDayPanel().isEmpty()) {
+                        setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
+                    }
                     setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
                     scheduleList.add(hearingDaySchedule);
                 }

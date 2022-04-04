@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
@@ -13,7 +12,7 @@ public interface HearingManagementService {
 
     ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid);
 
-    HearingResponse saveHearingRequest(CreateHearingRequest createHearingRequest);
+    HearingResponse saveHearingRequest(HearingRequest createHearingRequest);
 
     HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest);
 
@@ -26,5 +25,7 @@ public interface HearingManagementService {
     void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest, String messageType);
 
     void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest,Long hearingId, String messageType);
+
+    ResponseEntity hearingCompletion(Long hearingId);
 
 }

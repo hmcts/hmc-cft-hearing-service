@@ -17,6 +17,8 @@ class EntitySubTypeMapperTest {
     private static final String INTERPRETER_LANGUAGE = "InterpreterLanguage";
     private static final String VULNERABLE = "Vulnerable";
     private static final String ORG_NAME = "OrgName";
+    private static final String SPECIAL_NEEDS = "specialNeeds";
+    private static final String CUSTODY_STATUS = "custodyStatus";
 
     @Test
     void shouldReturnPersonEntitySubType() {
@@ -27,6 +29,8 @@ class EntitySubTypeMapperTest {
         individualDetails.setInterpreterLanguage(INTERPRETER_LANGUAGE);
         individualDetails.setVulnerableFlag(true);
         individualDetails.setVulnerabilityDetails(VULNERABLE);
+        individualDetails.setCustodyStatus(CUSTODY_STATUS);
+        individualDetails.setOtherReasonableAdjustmentDetails(SPECIAL_NEEDS);
         EntitySubType expectedEntitySubType = EntitySubType.builder()
             .entityTitle(TITLE)
             .entityFirstName(FIRST_NAME)
@@ -35,6 +39,8 @@ class EntitySubTypeMapperTest {
             .entityClassCode(PERSON_CLASS_CODE)
             .entitySensitiveClient(true)
             .entityAlertMessage(VULNERABLE)
+            .entitySpecialNeedsOther(SPECIAL_NEEDS)
+            .entityCustodyStatus(CUSTODY_STATUS)
             .build();
         EntitySubTypeMapper entitySubTypeMapper = new EntitySubTypeMapper();
         EntitySubType actualEntitySubType = entitySubTypeMapper.getPersonEntitySubType(individualDetails);

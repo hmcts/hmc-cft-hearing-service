@@ -20,9 +20,9 @@ public class MessageProcessor {
     private final ObjectMapper objectMapper;
     private final InboundQueueService inboundQueueService;
     private static final String MESSAGE_TYPE = "message_type";
-    public static final String UNSUPPORTED_MESSAGE_TYPE = "Message has unsupported value for message_type";
     public static final String MISSING_MESSAGE_TYPE = "Message is missing custom header message_type";
     public static final String MESSAGE_PARSE_ERROR = "Unable to parse incoming message with id '{}'";
+    public static final String ERROR_MESSAGE_TYPE = "Message of type error received with id '{}'";
 
     public MessageProcessor(ObjectMapper objectMapper, InboundQueueService inboundQueueService) {
         this.objectMapper = objectMapper;
@@ -34,7 +34,8 @@ public class MessageProcessor {
             log.info("Received message with id '{}'", message.getMessageId());
             processMessage(
                 convertMessage(message.getBody()),
-                message.getApplicationProperties()
+                message.getApplicationProperties(),
+                client, message
             );
             client.complete(message);
             log.info("Message with id '{}' handled successfully", message.getMessageId());
@@ -45,10 +46,11 @@ public class MessageProcessor {
         }
     }
 
-    public void processMessage(JsonNode message, Map<String, Object> applicationProperties)
+    public void processMessage(JsonNode message, Map<String, Object> applicationProperties,
+                               ServiceBusReceiverClient client, ServiceBusReceivedMessage serviceBusReceivedMessage)
         throws JsonProcessingException {
         if (applicationProperties.containsKey(MESSAGE_TYPE)) {
-            inboundQueueService.processMessage(message, applicationProperties);
+            inboundQueueService.processMessage(message, applicationProperties, client, serviceBusReceivedMessage);
         } else {
             throw new MalformedMessageException(MISSING_MESSAGE_TYPE);
         }
