@@ -19,11 +19,14 @@ public class EntitySubType {
 
     private Boolean entitySensitiveClient;
 
-    private String  entityAlertMessage;
+    private String entityAlertMessage;
 
     private String entityInterpreterLanguage;
 
     private String entityCompanyName;
 
+    private String entitySpecialNeedsOther;
+
+    private String entityCustodyStatus;
 
 }

@@ -5,7 +5,7 @@ public final class Constants {
     private Constants() {
     }
 
-    public static final String HEARING_STATUS = "HEARING_REQUESTED";
+    public static final String POST_HEARING_STATUS = "HEARING_REQUESTED";
     public static final String HEARING_STATUS_UPDATE_REQUESTED = "UPDATE_REQUESTED";
     public static final Integer VERSION_NUMBER_TO_INCREMENT = 1;
     public static final String EMAIL_TYPE = "email";
@@ -26,5 +26,7 @@ public final class Constants {
     public static final String CLUSTER = "Cluster";
     public static final String REQUIRED = "Required";
     public static final String NOT_REQUIRED = "Not Required";
+    public static final Integer UN_NOTIFIED_HEARINGS_LIMIT = 1000;
+    public static final Integer FIRST_PAGE = 0;
     public static final String PENDING = "PENDING";
 }
