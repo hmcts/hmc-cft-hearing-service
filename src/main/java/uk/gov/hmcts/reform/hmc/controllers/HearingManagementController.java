@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import javax.validation.Valid;
@@ -43,9 +44,12 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALI
 public class HearingManagementController {
 
     private final HearingManagementService hearingManagementService;
+    private final AccessControlService accessControlService;
 
-    public HearingManagementController(HearingManagementService hearingManagementService) {
+    public HearingManagementController(HearingManagementService hearingManagementService,
+                                       AccessControlService accessControlService) {
         this.hearingManagementService = hearingManagementService;
+        this.accessControlService = accessControlService;
     }
 
     @GetMapping(path = "/hearing/{id}", produces = APPLICATION_JSON_VALUE)
@@ -68,7 +72,7 @@ public class HearingManagementController {
         @ApiResponse(code = 400, message = "Invalid hearing details found")
     })
     public HearingResponse saveHearing(@RequestBody @Valid CreateHearingRequest createHearingRequest) {
-        hearingManagementService.verifyAccess(getCaseRef(createHearingRequest));
+        accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest));
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
         hearingManagementService.sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest,
                                                           REQUEST_HEARING
@@ -86,6 +90,7 @@ public class HearingManagementController {
     })
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
                                          @RequestBody @Valid DeleteHearingRequest deleteRequest) {
+        accessControlService.verifyCaseAccess(null);
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
             hearingId, deleteRequest);
         hearingManagementService.sendRequestToHmiAndQueue(deleteRequest, hearingId, DELETE_HEARING);
@@ -116,6 +121,7 @@ public class HearingManagementController {
                                                String ccdCaseRef,
                                            @RequestParam(required = false)
                                                String status) {
+        accessControlService.verifyCaseAccess(null);
         return hearingManagementService.getHearings(ccdCaseRef, status);
     }
 
@@ -129,6 +135,7 @@ public class HearingManagementController {
     })
     public HearingResponse updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
                                          @PathVariable("id") Long hearingId) {
+        accessControlService.verifyCaseAccess(null);
         HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
         hearingManagementService.sendRequestToHmiAndQueue(hearingId, hearingRequest, AMEND_HEARING);
         return hearingResponse;

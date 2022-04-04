@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
+import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
 
 import javax.validation.Valid;
@@ -21,9 +22,12 @@ public class LinkHearingGroupController {
 
 
     private final LinkedHearingGroupService linkedHearingGroupService;
+    private AccessControlService accessControlService;
 
-    public LinkHearingGroupController(LinkedHearingGroupService linkedHearingGroupService) {
+    public LinkHearingGroupController(LinkedHearingGroupService linkedHearingGroupService,
+                                      AccessControlService accessControlService) {
         this.linkedHearingGroupService = linkedHearingGroupService;
+        this.accessControlService = accessControlService;
     }
 
     @PostMapping(path = "/linkedHearingGroup", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -38,6 +42,7 @@ public class LinkHearingGroupController {
         @ApiResponse(code = 400, message = "005 Hearing Order is not unique")
     })
     public void validateLinkHearing(@RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
+        accessControlService.verifyCaseAccess(null);
         linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
     }
 

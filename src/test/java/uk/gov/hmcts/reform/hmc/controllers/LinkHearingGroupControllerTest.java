@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
+import org.hibernate.id.enhanced.AccessCallback;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
+import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
 
 import java.util.Arrays;
@@ -47,6 +49,9 @@ class LinkHearingGroupControllerTest {
     @MockBean
     private LinkedHearingGroupService linkedHearingGroupService;
 
+    @MockBean
+    private AccessControlService accessControlService;
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -70,7 +75,8 @@ class LinkHearingGroupControllerTest {
                 )
             );
 
-            LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService);
+            LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService,
+                                                                                   accessControlService);
             controller.validateLinkHearing(hearingLinkGroupRequest);
             verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest);
         }
@@ -88,7 +94,8 @@ class LinkHearingGroupControllerTest {
                 )
             );
 
-            LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService);
+            LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService,
+                                                                                   accessControlService);
             controller.validateLinkHearing(hearingLinkGroupRequest);
             verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest);
         }
