@@ -14,10 +14,7 @@ import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingActualsService;
 
-import javax.persistence.Access;
-
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARNING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARNING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 
