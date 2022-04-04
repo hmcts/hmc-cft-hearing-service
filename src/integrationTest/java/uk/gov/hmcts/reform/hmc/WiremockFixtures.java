@@ -70,6 +70,11 @@ public class WiremockFixtures {
         }
     }
 
+    public static void stubPostMethodThrowingAuthenticationError(int status, String url) {
+        stubFor(WireMock.post(urlEqualTo(url))
+                    .willReturn(okJson(TEST_BODY).withStatus(status)));
+    }
+
     public static void stubDeleteMethodThrowingError(int status, String url) {
         stubFor(WireMock.delete(urlEqualTo(url))
                     .willReturn(okJson(TEST_BODY).withStatus(status)));
