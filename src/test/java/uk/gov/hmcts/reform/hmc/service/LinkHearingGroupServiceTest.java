@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -191,10 +190,6 @@ class LinkHearingGroupServiceTest {
             );
 
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
-            LinkedHearingDetailsAudit hearingDetails1Data = new LinkedHearingDetailsAudit();
-            hearingDetails1Data.setHearing(hearingEntity);
-            hearingDetails1Data.setLinkedHearingDetailsAuditId(Long.parseLong(hearingDetails1.getHearingId()));
-            hearingDetails1Data.setLinkedGroup(groupDetailsAlternate);
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));

@@ -49,6 +49,7 @@ import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
+import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -102,6 +103,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final ActualHearingRepository actualHearingRepository;
     private final ActualHearingDayRepository actualHearingDayRepository;
     private final HearingIdValidator hearingIdValidator;
+    private final LinkedHearingValidator linkedHearingValidator;
     private final HearingRepository hearingRepository;
 
     @Autowired
@@ -120,6 +122,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         MessageSenderToQueueConfiguration messageSenderToQueueConfiguration,
                                         ApplicationParams applicationParams,
                                         HearingIdValidator hearingIdValidator,
+                                        LinkedHearingValidator linkedHearingValidator,
                                         ActualHearingRepository actualHearingRepository,
                                         ActualHearingDayRepository actualHearingDayRepository) {
         this.dataStoreRepository = dataStoreRepository;
@@ -139,6 +142,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.actualHearingDayRepository = actualHearingDayRepository;
         this.hearingRepository = hearingRepository;
         this.hearingIdValidator = hearingIdValidator;
+        this.linkedHearingValidator = linkedHearingValidator;
     }
 
     @Override
@@ -453,8 +457,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         DeleteHearingStatus deleteHearingStatus = Enums.getIfPresent(DeleteHearingStatus.class, status).orNull();
         if (deleteHearingStatus != null) {
             boolean isValidStatus = DeleteHearingStatus.isValidHearingActuals(deleteHearingStatus);
-            LocalDate minStartDate = hearingIdValidator
-                .filterHearingResponses(hearingRepository.findById(hearingId)
+            LocalDate minStartDate =
+                linkedHearingValidator.filterHearingResponses(hearingRepository.findById(hearingId)
                                             .orElseThrow(() -> new HearingNotFoundException(
                                                 hearingId,
                                                 HEARING_ID_NOT_FOUND
@@ -488,8 +492,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private Optional<ActualHearingEntity> getActualHearing(Long hearingId) {
-        Optional<HearingResponseEntity> hearingResponseEntity = hearingIdValidator
-            .getHearingResponse(hearingRepository.findById(hearingId)
+        Optional<HearingResponseEntity> hearingResponseEntity =
+            hearingIdValidator.getHearingResponse(hearingRepository.findById(hearingId)
                                     .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND)));
         if (hearingResponseEntity.isPresent()) {
             return actualHearingRepository.findByHearingResponse(hearingResponseEntity.get());

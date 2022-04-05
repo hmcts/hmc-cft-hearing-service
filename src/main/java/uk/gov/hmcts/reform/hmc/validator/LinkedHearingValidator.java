@@ -1,13 +1,14 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
-import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
@@ -42,18 +43,21 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_GROUP_LINK_TYPE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ORDER;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_LINKED_GROUP;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LINKED_GROUP_ID_EMPTY;
 
 @Slf4j
+@Component
 public class LinkedHearingValidator extends HearingIdValidator {
 
     private static final List<String> invalidDeleteGroupStatuses = Arrays.asList("PENDING", "ERROR");
 
     protected final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
+    @Autowired
     public LinkedHearingValidator(HearingRepository hearingRepository,
                                   LinkedGroupDetailsRepository linkedGroupDetailsRepository) {
         super(hearingRepository);
@@ -73,6 +77,14 @@ public class LinkedHearingValidator extends HearingIdValidator {
                 throw new LinkedGroupNotFoundException(requestId, errorMessage);
             }
         }
+    }
+
+    public void validateHearingLinkGroupRequestForUpdate(String requestId,
+                                                          HearingLinkGroupRequest hearingLinkGroupRequest) {
+        validateRequestId(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
+        validateHearingLinkGroupRequest(hearingLinkGroupRequest, requestId);
+        List<LinkHearingDetails> linkedHearingDetailsListPayload = hearingLinkGroupRequest.getHearingsInGroup();
+        validateLinkedHearingsForUpdate(requestId, linkedHearingDetailsListPayload);
     }
 
     /**
@@ -132,8 +144,8 @@ public class LinkedHearingValidator extends HearingIdValidator {
      */
     protected final List<String> validateObsoleteLinkedHearings(
         List<HearingEntity> obsoleteLinkedHearings) {
-          List<String> errorMessages = new ArrayList<>();
-          obsoleteLinkedHearings.forEach(e -> {
+        List<String> errorMessages = new ArrayList<>();
+        obsoleteLinkedHearings.forEach(e -> {
             if (!PutHearingStatus.isValid((e.getStatus()))) {
                 errorMessages.add(INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST
                         .replace(HEARING_ID_PLACEHOLDER, e.getId().toString()));
@@ -329,7 +341,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
     }
       
     public LocalDate filterHearingResponses(HearingEntity hearingEntity) {
-        log.debug("hearing id: {}", hearingEntity.getId());
+        log.info("hearing id: {}", hearingEntity.getId());
         Optional<HearingResponseEntity> hearingResponse = hearingEntity.getHearingResponseForLatestRequest();
         if (log.isDebugEnabled()) {
             if (hearingResponse.isPresent()) {

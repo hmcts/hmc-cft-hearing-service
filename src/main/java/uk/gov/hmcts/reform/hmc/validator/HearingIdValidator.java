@@ -1,16 +1,17 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
-import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
@@ -18,7 +19,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 @Component
 public class HearingIdValidator {
 
-    private final HearingRepository hearingRepository;
+    protected final HearingRepository hearingRepository;
 
     @Autowired
     public HearingIdValidator(HearingRepository hearingRepository) {
@@ -63,4 +64,12 @@ public class HearingIdValidator {
         return hearingRepository.findById(hearingId);
     }
 
+    public Optional<HearingResponseEntity> getHearingResponse(HearingEntity hearingEntity) {
+        Integer version = hearingEntity.getLatestRequestVersion();
+        return hearingEntity
+            .getHearingResponses().stream().filter(hearingResponseEntity ->
+                                                       hearingResponseEntity.getResponseVersion().equals(version))
+            .collect(Collectors.toList()).stream()
+            .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
+    }
 }
