@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDate;
@@ -41,6 +42,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_
 public class HearingActualsServiceImpl implements HearingActualsService {
     private final HearingHelper hearingHelper;
     private final HearingRepository hearingRepository;
+    private final HearingResponseRepository hearingResponseRepository;
     private final ActualHearingRepository actualHearingRepository;
     private final HearingActualsMapper hearingActualsMapper;
     private final GetHearingActualsResponseMapper getHearingActualsResponseMapper;
@@ -54,12 +56,14 @@ public class HearingActualsServiceImpl implements HearingActualsService {
 
     @Autowired
     public HearingActualsServiceImpl(HearingRepository hearingRepository,
+                                     HearingResponseRepository hearingResponseRepository,
                                      ActualHearingRepository actualHearingRepository,
                                      HearingHelper hearingHelper,
                                      GetHearingActualsResponseMapper getHearingActualsResponseMapper,
                                      HearingActualsMapper hearingActualsMapper,
                                      HearingIdValidator hearingIdValidator) {
         this.hearingRepository = hearingRepository;
+        this.hearingResponseRepository = hearingResponseRepository;
         this.actualHearingRepository = actualHearingRepository;
         this.hearingHelper = hearingHelper;
         this.getHearingActualsResponseMapper = getHearingActualsResponseMapper;
@@ -87,25 +91,20 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         validateRequestPayload(request, hearing);
 
         HearingResponseEntity latestVersionHearingResponse = hearingHelper.getLatestVersionHearingResponse(hearing);
-        deleteHearingActualsForLatestResponse(latestVersionHearingResponse);
-        insertNewHearingActuals(latestVersionHearingResponse, request);
+        upsertNewHearingActuals(latestVersionHearingResponse, request);
     }
 
-    private void deleteHearingActualsForLatestResponse(HearingResponseEntity latestVersionHearingResponse) {
-        Optional<ActualHearingEntity> actualHearingEntityOpt = actualHearingRepository
-            .findByHearingResponse(latestVersionHearingResponse);
-        if (actualHearingEntityOpt.isPresent()) {
-            ActualHearingEntity actualHearing = actualHearingEntityOpt.get();
-            actualHearingRepository.deleteById(actualHearing.getActualHearingId());
-        }
-    }
-
-    private void insertNewHearingActuals(HearingResponseEntity latestVersionHearingResponse, HearingActual request) {
-
+    private void upsertNewHearingActuals(HearingResponseEntity latestVersionHearingResponse, HearingActual request) {
         ActualHearingEntity actualHearing = hearingActualsMapper
             .toActualHearingEntity(request);
+        if (latestVersionHearingResponse.getActualHearingEntity() != null
+            && latestVersionHearingResponse.getActualHearingEntity().getActualHearingId() != null) {
+            actualHearing.setActualHearingId(latestVersionHearingResponse.getActualHearingEntity().getActualHearingId() + 1);
+        }
+        latestVersionHearingResponse.setActualHearingEntity(actualHearing);
         actualHearing.setHearingResponse(latestVersionHearingResponse);
-        actualHearingRepository.saveAndFlush(actualHearing);
+        actualHearingRepository.save(actualHearing);
+        hearingResponseRepository.save(latestVersionHearingResponse);
     }
 
     private void validateRequestPayload(HearingActual request, HearingEntity hearing) {

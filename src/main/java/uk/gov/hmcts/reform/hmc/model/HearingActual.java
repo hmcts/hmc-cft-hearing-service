@@ -22,4 +22,7 @@ public class HearingActual implements Serializable {
     @JsonProperty("actualHearingDays")
     private List<ActualHearingDay> actualHearingDays;
 
+    public List<ActualHearingDay> getActualHearingDays() {
+        return actualHearingDays == null ? List.of() : actualHearingDays;
+    }
 }

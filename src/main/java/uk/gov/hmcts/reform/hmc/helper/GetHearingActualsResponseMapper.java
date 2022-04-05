@@ -111,7 +111,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         List<ActualDayParty> actualDayParties = new ArrayList<>();
         for (ActualHearingPartyEntity actualHearingPartyEntity : actualHearingDayEntity.getActualHearingParty()) {
             ActualDayParty actualDayParty = new ActualDayParty();
-            actualDayParty.setActualPartyId(actualHearingPartyEntity.getActualPartyId().intValue());
+            actualDayParty.setActualPartyId(Integer.valueOf(actualHearingPartyEntity.getPartyId()));
             actualDayParty.setPartyRole(actualHearingPartyEntity.getActualPartyRoleType());
             actualDayParty.setDidNotAttendFlag(actualHearingPartyEntity.getDidNotAttendFlag());
             for (ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity

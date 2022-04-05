@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.hmc.helper.HearingActualsMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
@@ -46,7 +47,6 @@ class HearingActualsServiceTest {
     public static final String VALID_HEARING_STAUS = "UPDATE_REQUESTED";
     public static final long INVALID_HEARING_ID = 1000000000L;
     public static final Long HEARING_ID = 2000000000L;
-    public static final long HEARING_ACTUALS_ID_TO_DELETE = 5678L;
 
     @Mock
     private HearingRepository hearingRepository;
@@ -60,6 +60,8 @@ class HearingActualsServiceTest {
     ApplicationParams applicationParams;
 
     HearingIdValidator hearingIdValidator;
+    @Mock
+    private HearingResponseRepository hearingResponseRepository;
     @Mock
     private ActualHearingRepository actualHearingRepository;
     @Mock
@@ -75,6 +77,7 @@ class HearingActualsServiceTest {
         hearingActualsService =
             new HearingActualsServiceImpl(
                 hearingRepository,
+                hearingResponseRepository,
                 actualHearingRepository,
                 hearingHelper,
                 getHearingActualsResponseMapper,
@@ -144,12 +147,6 @@ class HearingActualsServiceTest {
         HearingResponseEntity hearingResponseEntityMock = mock(HearingResponseEntity.class);
         given(hearingHelper.getLatestVersionHearingResponse(hearingEntity)).willReturn(hearingResponseEntityMock);
 
-        // mock delete actuals
-        ActualHearingEntity actualHearingEntityMock = mock(ActualHearingEntity.class);
-        given(actualHearingEntityMock.getActualHearingId()).willReturn(HEARING_ACTUALS_ID_TO_DELETE);
-        given(actualHearingRepository.findByHearingResponse(hearingResponseEntityMock))
-            .willReturn(Optional.of(actualHearingEntityMock));
-
         // mock insert
         ActualHearingEntity actualHearingMock = mock(ActualHearingEntity.class);
         HearingActual hearingActual = TestingUtil.hearingActual();
@@ -158,8 +155,7 @@ class HearingActualsServiceTest {
         hearingActualsService.updateHearingActuals(HEARING_ID, hearingActual);
 
         verify(hearingHelper).isValidFormat(HEARING_ID.toString());
-        verify(actualHearingRepository).deleteById(HEARING_ACTUALS_ID_TO_DELETE);
-        verify(actualHearingRepository).saveAndFlush(actualHearingMock);
+        verify(hearingResponseRepository).saveAndFlush(hearingResponseEntityMock);
     }
 
     @Test

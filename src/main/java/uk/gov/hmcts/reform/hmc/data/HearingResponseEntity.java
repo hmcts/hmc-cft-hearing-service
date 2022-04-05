@@ -65,9 +65,9 @@ public class HearingResponseEntity {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingDayDetailsEntity> hearingDayDetails;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "hearing_response_id")
-    private ActualHearingEntity actualHearing;
+//    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    @JoinColumn(name = "hearing_response_id")
+//    private ActualHearingEntity actualHearing;
 
     @Column(name = "request_version", nullable = false)
     private Integer requestVersion;
@@ -84,6 +84,9 @@ public class HearingResponseEntity {
     @Convert(converter = JsonDataConverter.class)
     private JsonNode serviceData;
 
+//    @OneToOne(mappedBy = "hearingResponse", fetch = FetchType.EAGER)
+//    @OneToOne(mappedBy = "hearingResponse", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    @JoinColumn(name = "hearing_response_id")
     @OneToOne(mappedBy = "hearingResponse", fetch = FetchType.EAGER)
     private ActualHearingEntity actualHearingEntity;
 
