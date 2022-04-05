@@ -227,7 +227,7 @@ def versions = [
   springCloud     : '2020.0.1',
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.2',
-  netty           : '4.1.68.Final',
+  netty           : '4.1.75.Final',
   serviceAuthVersion: '4.0.3'
 ]
 
