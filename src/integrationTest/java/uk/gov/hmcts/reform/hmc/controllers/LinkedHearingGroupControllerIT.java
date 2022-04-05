@@ -51,8 +51,6 @@ class LinkedHearingGroupControllerIT extends BaseTest {
     private static final String INSERT_LINKED_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-linked-hearings.sql";
 
     private static final String TOKEN = "example-token";
-    private static final String GET_TOKEN_URL = "/FH_GET_TOKEN_URL";
-    private static final String HMI_REQUEST_URL = "/resources/linked-hearing-group";
 
     @Nested
     @DisplayName("PostLinkedHearingGroup")

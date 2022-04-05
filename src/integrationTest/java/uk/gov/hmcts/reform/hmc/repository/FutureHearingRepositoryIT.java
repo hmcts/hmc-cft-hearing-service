@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.hmc.repository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,6 +13,7 @@ import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.AuthenticationResponse;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.HearingManagementInterfaceResponse;
 import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,7 +28,7 @@ public class FutureHearingRepositoryIT extends BaseTest {
 
     private static final String TOKEN = "example-token";
     private static final String GET_TOKEN_URL = "/FH_GET_TOKEN_URL";
-    private static final String HMI_REQUEST_URL = "/resources/linked-hearing-group";
+    private static final String HMI_REQUEST_URL = "/resources/linkedHearingGroup";
     private static final String REQUEST_ID = "1234";
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
         .modules(new Jdk8Module())
@@ -84,16 +84,16 @@ public class FutureHearingRepositoryIT extends BaseTest {
         @Test
         void shouldSuccessfullyCreateLinkedHearingGroup() {
             stubSuccessfullyDeleteLinkedHearingGroups(TOKEN, REQUEST_ID);
-            HearingManagementInterfaceResponse response = defaultFutureHearingRepository.
-                deleteLinkedHearingGroup(REQUEST_ID);
-            assertEquals(201, response.getResponseCode());
+            HearingManagementInterfaceResponse response = defaultFutureHearingRepository
+                .deleteLinkedHearingGroup(REQUEST_ID);
+            assertEquals(200, response.getResponseCode());
         }
 
         @Test
         void shouldThrow400AuthenticationException() {
             stubDeleteMethodThrowingError(400, HMI_REQUEST_URL);
             assertThatThrownBy(() -> defaultFutureHearingRepository.deleteLinkedHearingGroup(REQUEST_ID))
-                .isInstanceOf(AuthenticationException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining(INVALID_REQUEST);
         }
 

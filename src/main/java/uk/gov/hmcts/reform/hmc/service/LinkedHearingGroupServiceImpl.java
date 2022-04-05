@@ -178,28 +178,32 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         return max.isPresent() ? max.get().getValue() : List.of();
     }
 
+
     private void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings) {
         LinkedGroupDetails linkedGroupDetails = linkedGroupHearings.get(0).getLinkedGroupDetails();
         final String requestId = linkedGroupDetails.getRequestId();
         saveLinkedGroupDetailsAudit(linkedGroupDetails);
         linkedGroupHearings.forEach(hearingEntity -> saveLinkedHearingDetailsAudit(hearingEntity));
         saveLinkedGroupDetails(linkedGroupDetails);
-        HearingManagementInterfaceResponse response = futureHearingRepository
-            .deleteLinkedHearingGroup(requestId);
+        /*HearingManagementInterfaceResponse response = futureHearingRepository
+            .deleteLinkedHearingGroup(requestId);*/
+        HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
+        response.setResponseCode(400);
+        response.setDescription(REJECTED_BY_LIST_ASSIST);
         getResponseFromListAssist(response, requestId);
     }
 
     private void getResponseFromListAssist(HearingManagementInterfaceResponse response, String requestId) {
         if (response.getResponseCode() == 400) {
             log.error("Exception occurred from ListAssist: {}", response.getDescription());
-            linkedGroupDetailsRepository.deleteLinkedGroupDetailsStatus(requestId);
+            linkedGroupDetailsRepository.deleteLinkedGroupDetails(requestId);
             throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
         } else if (response.getResponseCode() == 500) {
             log.error("Exception occurred List Assist failed to respond: {}", response.getDescription());
             linkedGroupDetailsRepository.updateLinkedGroupDetailsStatus(requestId);
             throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
         } else {
-            linkedGroupDetailsRepository.deleteLinkedGroupDetailsStatus(requestId);
+            linkedGroupDetailsRepository.deleteLinkedGroupDetails(requestId);
         }
     }
 

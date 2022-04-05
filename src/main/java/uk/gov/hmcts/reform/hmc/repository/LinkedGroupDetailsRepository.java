@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -17,9 +18,11 @@ public interface LinkedGroupDetailsRepository extends CrudRepository<LinkedGroup
     @Query("from LinkedGroupDetails lgd WHERE lgd.requestId = :requestId ")
     LinkedGroupDetails getLinkedGroupDetailsByRequestId(String requestId);
 
+    @Modifying
     @Query("UPDATE LinkedGroupDetails lgd SET lgd.status = 'ERROR' WHERE lgd.requestId = :requestId ")
     void updateLinkedGroupDetailsStatus(String requestId);
 
-    @Query("DELETE FROM LinkedGroupDetails lgd WHERE lgd.requestId = :requestId ")
-    void deleteLinkedGroupDetailsStatus(String requestId);
+    @Modifying
+    @Query("DELETE from LinkedGroupDetails lgd WHERE lgd.requestId = :requestId ")
+    void deleteLinkedGroupDetails(String requestId);
 }
