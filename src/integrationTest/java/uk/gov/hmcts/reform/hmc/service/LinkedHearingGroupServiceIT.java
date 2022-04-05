@@ -117,8 +117,8 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertThatThrownBy(() -> linkedHearingGroupService.deleteLinkedHearingGroup(7700000000L))
             .isInstanceOf(AuthenticationException.class)
             .hasMessageContaining(INVALID_REQUEST);
-        LinkedGroupDetails updatedDetails = linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(REQUEST_ID2);
-        assertEquals("ERROR", updatedDetails.getStatus());
+        LinkedGroupDetails groupDetails = linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(REQUEST_ID2);
+        assertNull(groupDetails);
         Optional<HearingEntity> hearingEntityAfterDelete = hearingRepository.findById(2100000005L);
         assertTrue(hearingEntityBeforeDelete.isPresent());
         assertTrue(hearingEntityAfterDelete.isPresent());

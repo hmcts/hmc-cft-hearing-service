@@ -88,7 +88,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     }
 
     @Override
-    @Transactional
+    //@Transactional
     public void deleteLinkedHearingGroup(Long hearingGroupId) {
 
         validateHearingGroup(hearingGroupId);
