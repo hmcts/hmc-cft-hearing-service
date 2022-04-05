@@ -94,7 +94,8 @@ public class HearingEntity {
         Integer latestRequestVersion = getLatestRequestVersion();
         if (hasHearingResponses()) {
             List<HearingResponseEntity> filteredResponses = getHearingResponses().stream()
-                    .filter(hearingResponseEntity -> null != hearingResponseEntity.getRequestVersion()
+                    .filter(hearingResponseEntity -> null != hearingResponseEntity
+                        && null != hearingResponseEntity.getRequestVersion()
                         && hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
                     .collect(Collectors.toUnmodifiableList());
             if (!filteredResponses.isEmpty()) {

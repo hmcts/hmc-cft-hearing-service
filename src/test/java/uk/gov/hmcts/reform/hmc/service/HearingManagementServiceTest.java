@@ -1576,10 +1576,9 @@ class HearingManagementServiceTest {
                                                                 versionNumber
             );
             addHearingResponses(hearingEntity, 1, true, 3, 1);
+
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
-            when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
-                .thenReturn(Optional.empty());
 
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .hearingCompletion(hearingId));
@@ -1610,7 +1609,7 @@ class HearingManagementServiceTest {
             assertEquals(HEARING_ACTUALS_MISSING_HEARING_DAY, exception.getMessage());
         }
 
-        @ Test
+        @Test
         void shouldThrowErrorWhenActualHearingDayPresentForCanceledActualHearing() {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
@@ -1619,7 +1618,7 @@ class HearingManagementServiceTest {
             HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.LISTED.name(),
                                                                 versionNumber
             );
-            addHearingResponses(hearingEntity, 1, true, 1, -1);
+            addHearingResponses(hearingEntity, 1, true, 1, 1);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
@@ -1643,9 +1642,9 @@ class HearingManagementServiceTest {
             HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.LISTED.name(),
                                                                 versionNumber
             );
-            addHearingResponses(hearingEntity, 1, true, 1, -1);
-            when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
-            when(hearingRepository.existsById(hearingId)).thenReturn(true);
+            addHearingResponses(hearingEntity, 1, true, 1, 1);
+            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.existsById(any())).thenReturn(true);
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
             when(actualHearingEntity.getHearingResultType()).thenReturn(CANCELLED);
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
@@ -1702,6 +1701,7 @@ class HearingManagementServiceTest {
         for (int i = 0; i < noOfResponses; i++) {
             HearingResponseEntity responseEntity = new HearingResponseEntity();
             responseEntity.setRequestVersion(hearingEntity.getLatestRequestVersion());
+            responseEntity.setResponseVersion(hearingEntity.getLatestRequestVersion());
             responseEntity.setRequestTimeStamp(LocalDateTime.now());
             responseEntities.add(responseEntity);
             if (addHearingDayDetails) {

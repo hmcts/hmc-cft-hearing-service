@@ -267,7 +267,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private HearingResponse getSaveHearingResponseDetails(HearingEntity savedEntity) {
-        log.debug("Hearing details saved successfully with id: {}", savedEntity.getId());
+        if (log.isDebugEnabled()) {
+            long id = 0L;
+            if (null != savedEntity && null != savedEntity.getId()) {
+                id = savedEntity.getId();
+            }
+            log.debug("Hearing details saved successfully with id: {}", id);
+        }
         CaseHearingRequestEntity latestCaseHearingRequest = savedEntity.getLatestCaseHearingRequest();
         HearingResponse hearingResponse = new HearingResponse();
         hearingResponse.setHearingRequestId(savedEntity.getId());
@@ -464,8 +470,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                                 HEARING_ID_NOT_FOUND
                                             )));
             LocalDate now = LocalDate.now();
-            boolean isMinStartDatePast = minStartDate.isBefore(now) || minStartDate.equals(now);
-            if (!(isValidStatus && isMinStartDatePast)) {
+            if (!(isValidStatus && minStartDate.isAfter(now))) {
                 throw new BadRequestException(errorMessage);
             }
         }
