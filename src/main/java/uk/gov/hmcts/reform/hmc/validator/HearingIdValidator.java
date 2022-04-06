@@ -32,7 +32,7 @@ public class HearingIdValidator {
      *
      * @param hearingId hearing id
      */
-     public void validateHearingId(Long hearingId, String errorMessage) {
+    public void validateHearingId(Long hearingId, String errorMessage) {
         if (hearingId == null) {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
         } else {
@@ -42,9 +42,6 @@ public class HearingIdValidator {
                 throw new HearingNotFoundException(hearingId, errorMessage);
             }
         }
-    }
-    public void validateHearingId(Long hearingId) {
-        validateHearingId(hearingId, null);
     }
 
     /**
