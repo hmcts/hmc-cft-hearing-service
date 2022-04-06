@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.util.List;
@@ -17,32 +16,36 @@ import javax.transaction.Transactional;
 @Component
 @Slf4j
 @Transactional
-public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implements LinkedHearingGroupService {
+public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService {
+
+    private final HearingRepository hearingRepository;
+    private final LinkedHearingValidator linkedHearingValidator;
 
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
-                                         LinkedGroupDetailsRepository linkedGroupDetailsRepository) {
-        super(hearingRepository, linkedGroupDetailsRepository);
+                                         LinkedHearingValidator linkedHearingValidator) {
+        this.hearingRepository = hearingRepository;
+        this.linkedHearingValidator = linkedHearingValidator;
     }
 
     @Override
     public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
-        validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
+        linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
     }
 
     @Override
     public void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest) {
-        validateHearingLinkGroupRequestForUpdate(requestId, hearingLinkGroupRequest);
+        linkedHearingValidator.validateHearingLinkGroupRequestForUpdate(requestId, hearingLinkGroupRequest);
     }
 
     @Override
     public void deleteLinkedHearingGroup(Long hearingGroupId) {
-        validateHearingGroup(hearingGroupId);
+        linkedHearingValidator.validateHearingGroup(hearingGroupId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(hearingGroupId);
-        validateUnlinkingHearingsStatus(linkedGroupHearings);
-        validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
+        linkedHearingValidator.validateUnlinkingHearingsStatus(linkedGroupHearings);
+        linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
 
-        deleteFromLinkedGroupDetails(linkedGroupHearings, hearingGroupId);
+        linkedHearingValidator.deleteFromLinkedGroupDetails(linkedGroupHearings, hearingGroupId);
     }
 
 }

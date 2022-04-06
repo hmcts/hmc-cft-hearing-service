@@ -57,9 +57,9 @@ import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -128,7 +128,7 @@ class HearingManagementServiceTest {
     HearingRepository hearingRepository;
 
     @Mock
-    LinkedGroupDetailsRepository linkedGroupDetailsRepository;
+    HearingIdValidator hearingIdValidator;
 
     @Mock
     CaseHearingRequestRepository caseHearingRequestRepository;
@@ -168,7 +168,7 @@ class HearingManagementServiceTest {
                 securityUtils,
                 dataStoreRepository,
                 hearingRepository,
-                linkedGroupDetailsRepository,
+                hearingIdValidator,
                 hearingMapper,
                 caseHearingRequestRepository,
                 hmiSubmitHearingRequestMapper,
@@ -1022,7 +1022,6 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenVersionNumberDoesNotMatchRequest() {
             final long hearingId = 2000000000L;
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(6);
-            when(hearingRepository.existsById(hearingId)).thenReturn(true);
             UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .updateHearingRequest(hearingId, updateHearingRequest));
@@ -1047,7 +1046,6 @@ class HearingManagementServiceTest {
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(
                 hearingRequest.getRequestDetails().getVersionNumber());
-            when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
             HearingEntity hearingEntity = generateHearingEntity(hearingId, UPDATE_REQUESTED.name(),
                                                                 hearingRequest.getRequestDetails().getVersionNumber()
@@ -1057,7 +1055,7 @@ class HearingManagementServiceTest {
 
             HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
             assertEquals(hearingResponse.getHearingRequestId(), hearingId);
-            verify(hearingRepository).existsById(hearingId);
+            verify(hearingRepository).findById(hearingId);
             verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
         }
 
@@ -1217,7 +1215,7 @@ class HearingManagementServiceTest {
 
         @Test
         void updateHearingRequestShouldThrowErrorWhenHearingIdNotPresentInDB() {
-            when(hearingRepository.existsById(2000000000L)).thenReturn(false);
+            when(hearingRepository.existsById(any())).thenReturn(false);
             UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
             Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
                 .updateHearingRequest(2000000000L, updateHearingRequest));

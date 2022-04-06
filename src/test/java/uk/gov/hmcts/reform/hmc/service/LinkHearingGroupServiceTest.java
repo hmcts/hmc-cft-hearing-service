@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
+import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -58,7 +58,7 @@ class LinkHearingGroupServiceTest {
     HearingRepository hearingRepository;
 
     @Mock
-    LinkedGroupDetailsRepository linkedGroupDetailsRepository;
+    LinkedHearingValidator linkedHearingValidator;
 
     @BeforeEach
     public void setUp() {
@@ -66,7 +66,7 @@ class LinkHearingGroupServiceTest {
         linkedHearingGroupService =
                 new LinkedHearingGroupServiceImpl(
                         hearingRepository,
-                        linkedGroupDetailsRepository
+                        linkedHearingValidator
                 );
     }
 
@@ -285,9 +285,10 @@ class LinkHearingGroupServiceTest {
             // set the hearing window to prior to current date - invalid
             hearingEntity.getLatestHearingResponse().get().getHearingDayDetails().add(
                     generateHearingDayDetailsEntity(hearingId1, LocalDateTime.now().minusDays(1)));
+            Optional<HearingEntity> optionalHearingEntity = Optional.of(hearingEntity);
 
             when(hearingRepository.existsById(any())).thenReturn(true);
-            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findById(any())).thenReturn(optionalHearingEntity);
 
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
                     LinkType.ORDERED.label, "reason"
