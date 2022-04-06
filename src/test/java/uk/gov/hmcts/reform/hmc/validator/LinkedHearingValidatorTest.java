@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
-import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingNotValidForUnlinkingException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
@@ -245,29 +244,6 @@ class LinkedHearingValidatorTest {
     @Nested
     @DisplayName("validateLinkedHearingGroup")
     class ValidateLinkedHearingGroup {
-
-        // @ Test
-        void shouldFailWithHearingNotFound() {
-            GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.ORDERED.label, "reason"
-            );
-            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
-            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
-            HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
-                groupDetails,
-                Arrays.asList(
-                    hearingDetails1,
-                    hearingDetails2
-                )
-            );
-
-            when(hearingRepository.existsById(any())).thenReturn(false);
-
-            Exception exception = assertThrows(HearingNotFoundException.class, () -> {
-                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-            });
-            assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
-        }
 
         @Test
         void shouldFailWithInsufficientRequestIds() throws JsonProcessingException {
@@ -660,6 +636,40 @@ class LinkedHearingValidatorTest {
             verify(hearingIdValidator, times(2)).getHearing(2000000002L);
         }
 
+    }
+
+    @Test
+    void shouldFailWithHearingOrderInvalidValue() {
+        GroupDetails groupDetails = generateGroupDetails("comment", "name",
+                "Ordered ONE", "reason"
+        );
+        LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
+        LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
+        HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
+                groupDetails,
+                Arrays.asList(
+                        hearingDetails1,
+                        hearingDetails2
+                )
+        );
+
+        HearingEntity hearingEntity = generateHearingEntity(
+                2000000000L,
+                PutHearingStatus.HEARING_REQUESTED.name(),
+                1,
+                true,
+                LocalDateTime.now().plusDays(1),
+                Arrays.asList(generateHearingDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
+                null
+        );
+
+        when(hearingIdValidator.getHearing(any())).thenReturn(Optional.of(hearingEntity));
+
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
+        });
+        assertTrue(exception.getMessage().startsWith("Invalid value"));
+        assertTrue(exception.getMessage().contains("for GroupLinkType"));
     }
 
     private List<HearingEntity> generateLinkedHearingDetailsListWithBadStatus(LinkedGroupDetails groupDetails) {

@@ -138,7 +138,7 @@ class LinkedHearingGroupServiceTest {
             verify(linkedGroupDetailsRepository, never()).deleteHearingGroup(anyLong());
         }
 
-        // @ Test
+        @Test
         void shouldReturn400ErrorWhenGroupDetailsHasStatusERROR() {
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ERROR");
 
@@ -225,7 +225,7 @@ class LinkedHearingGroupServiceTest {
             verify(linkedGroupDetailsRepository, never()).deleteHearingGroup(anyLong());
         }
 
-        // @Test
+        @Test
         void shouldReturn400ErrorWhenHearingStatusIsInvalidForUnlinking() {
 
             HearingEntity hearing = new HearingEntity();
