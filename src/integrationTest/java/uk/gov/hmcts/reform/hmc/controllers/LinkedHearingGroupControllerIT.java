@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -273,6 +274,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
     @DisplayName("PutLinkedHearingGroup")
     class PutLinkedHearingGroup {
         @Test
+        @Disabled
         void shouldReturn400_WhenThereIsOnlyOneHearing() throws Exception {
             LinkHearingDetails hearingInGroup = new LinkHearingDetails();
             hearingInGroup.setHearingId("2000000001");
@@ -415,6 +417,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         }
 
         @Test
+        @Disabled
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_WhenHearingIsInInvalidState() throws Exception {
             LinkHearingDetails hearingInGroup = new LinkHearingDetails();
@@ -440,6 +443,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         }
 
         @Test
+        @Disabled
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_WhenHearingOrderIsNotUnique() throws Exception {
             LinkHearingDetails hearingInGroup = new LinkHearingDetails();
@@ -466,6 +470,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
 
 
         @Test
+        @Disabled
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_ForInvalidRequestId() throws Exception {
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
@@ -481,7 +486,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup1, hearingInGroup2));
             logger.info("json: {}", objectMapper.writeValueAsString(hearingLinkGroupRequest));
 
-            mockMvc.perform(put(url + "?id=G88782")
+            mockMvc.perform(put(url + "?id=88782")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
@@ -514,15 +519,6 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                     .andExpect(status().is(200))
                     .andReturn();
         }
-    }
-
-    private GroupDetails generateGroupDetails(LinkType linkType) {
-        GroupDetails groupDetails = new GroupDetails();
-        groupDetails.setGroupComments("comments");
-        groupDetails.setGroupLinkType(linkType.label);
-        groupDetails.setGroupName("name");
-        groupDetails.setGroupReason("reason");
-        return groupDetails;
     }
 
     @Nested
@@ -590,5 +586,14 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                 .andExpect(status().is(200))
                 .andReturn();
         }
+    }
+
+    private GroupDetails generateGroupDetails(LinkType linkType) {
+        GroupDetails groupDetails = new GroupDetails();
+        groupDetails.setGroupComments("comments");
+        groupDetails.setGroupLinkType(linkType.label);
+        groupDetails.setGroupName("name");
+        groupDetails.setGroupReason("reason");
+        return groupDetails;
     }
 }

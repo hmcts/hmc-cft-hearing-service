@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
@@ -26,8 +28,12 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     }
 
     @Override
-    public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
+    public HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
         validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
+        LinkedGroupDetails linkedGroupDetails = updateHearingWithLinkGroup(hearingLinkGroupRequest);
+        HearingLinkGroupResponse hearingLinkGroupResponse = new HearingLinkGroupResponse();
+        hearingLinkGroupResponse.setHearingGroupRequestId(linkedGroupDetails.getRequestId());
+        return  hearingLinkGroupResponse;
     }
 
     @Override
@@ -44,5 +50,4 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
         deleteFromLinkedGroupDetails(linkedGroupHearings, hearingGroupId);
     }
-
 }
