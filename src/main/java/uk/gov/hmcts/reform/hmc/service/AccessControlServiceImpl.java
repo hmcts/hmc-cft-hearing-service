@@ -60,6 +60,18 @@ public class AccessControlServiceImpl implements AccessControlService {
 
     @Override
     public void verifyCaseAccess(String caseReference, List<String> requiredRoles) {
+        verifyCaseAccess(caseReference, requiredRoles, null);
+    }
+
+    @Override
+    public void verifyHearingCaseAccess(Long hearingId, List<String> requiredRoles) {
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository.getCaseHearing(hearingId);
+        if (caseHearingRequestEntity != null) {
+            verifyCaseAccess(caseHearingRequestEntity.getCaseReference(), requiredRoles, hearingId);
+        }
+    }
+
+    public void verifyCaseAccess(String caseReference, List<String> requiredRoles, Long hearingId) {
         RoleAssignments roleAssignments = roleAssignmentService.getRoleAssignments(securityUtils.getUserId());
         if (roleAssignments.getRoleAssignments().isEmpty()) {
             throw new ResourceNotFoundException(String.format(ROLE_ASSIGNMENTS_NOT_FOUND, securityUtils.getUserId()));
@@ -70,18 +82,13 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
 
         verifyRequiredRolesExists(requiredRoles, filteredRoleAssignments);
+        if (hearingId != null) {
+            verifyHearingStatus(filteredRoleAssignments, hearingId);
+        }
 
         DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
         if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
             throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
-        }
-    }
-
-    @Override
-    public void verifyHearingCaseAccess(Long hearingId, List<String> requiredRoles) {
-        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository.getCaseHearing(hearingId);
-        if (caseHearingRequestEntity != null) {
-            verifyCaseAccess(caseHearingRequestEntity.getCaseReference(), requiredRoles);
         }
     }
 
