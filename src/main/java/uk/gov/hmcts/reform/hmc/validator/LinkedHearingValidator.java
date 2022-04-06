@@ -339,9 +339,9 @@ public class LinkedHearingValidator extends HearingIdValidator {
         linkedGroupDetailsRepository.deleteHearingGroup(hearingGroupId);
         // TODO: call ListAssist - https://tools.hmcts.net/jira/browse/HMAN-97
     }
-      
+
     public LocalDate filterHearingResponses(HearingEntity hearingEntity) {
-        log.info("hearing id: {}", hearingEntity.getId());
+        log.debug("hearing id: {}", hearingEntity.getId());
         Optional<HearingResponseEntity> hearingResponse = hearingEntity.getHearingResponseForLatestRequest();
         if (log.isDebugEnabled()) {
             if (hearingResponse.isPresent()) {
@@ -352,7 +352,6 @@ public class LinkedHearingValidator extends HearingIdValidator {
                 log.debug("No hearing response found");
             }
         }
-
         return getLowestDate(hearingResponse.orElseThrow(() ->
                 new BadRequestException(
                         INVALID_STATE_FOR_HEARING_REQUEST

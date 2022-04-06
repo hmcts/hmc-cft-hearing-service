@@ -243,20 +243,6 @@ class HearingManagementControllerTest {
         }
     }
 
-    @Nested
-    @DisplayName("updateHearingCompletiong")
-    class UpdateHearingCompletiong {
-
-        @Test
-        void shouldInvokeHearingCompletion() {
-            final long hearingId = 2000000000L;
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
-            controller.hearingCompletion(hearingId);
-            InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
-            orderVerifier.verify(hearingManagementService).hearingCompletion(hearingId);
-        }
-    }
-
     /**
      * generate Hearing Response.
      * @return hearingResponse Hearing Response
