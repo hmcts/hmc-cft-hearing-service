@@ -193,7 +193,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private void getResponseFromListAssist(HearingManagementInterfaceResponse response,
                                            LinkedGroupDetails linkedGroupDetails) {
-        if (response.getResponseCode() == 400) {
+        if (response.getResponseCode() == 404) {
             log.error("Exception occurred from ListAssist: {}", response.getDescription());
             linkedGroupDetailsRepository.delete(linkedGroupDetails);
             throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
