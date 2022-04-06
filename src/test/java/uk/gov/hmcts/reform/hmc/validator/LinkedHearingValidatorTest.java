@@ -766,6 +766,15 @@ class LinkedHearingValidatorTest {
         return groupDetails;
     }
 
+    private GroupDetails generateGroupDetails(LinkType linkType) {
+        GroupDetails groupDetails = new GroupDetails();
+        groupDetails.setGroupComments("comments");
+        groupDetails.setGroupLinkType(linkType.label);
+        groupDetails.setGroupName("name");
+        groupDetails.setGroupReason("reason");
+        return groupDetails;
+    }
+
     private LinkHearingDetails generateHearingDetails(String hearingId, int order) {
         LinkHearingDetails hearingDetails = new LinkHearingDetails();
         hearingDetails.setHearingId(hearingId);
@@ -876,14 +885,4 @@ class LinkedHearingValidatorTest {
         hearing.setCaseHearingRequests(generateCaseHearingRequests(hearing));
         return hearing;
     }
-
-    private GroupDetails generateGroupDetails(LinkType linkType) {
-        GroupDetails groupDetails = new GroupDetails();
-        groupDetails.setGroupComments("comments");
-        groupDetails.setGroupLinkType(linkType.label);
-        groupDetails.setGroupName("name");
-        groupDetails.setGroupReason("reason");
-        return groupDetails;
-    }
-
 }
