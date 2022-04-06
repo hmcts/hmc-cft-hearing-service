@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.LIST_ASSIST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PENDING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_GROUP_ID_NOT_FOUND;
@@ -88,7 +90,6 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     }
 
     @Override
-    //@Transactional
     public void deleteLinkedHearingGroup(Long hearingGroupId) {
 
         validateHearingGroup(hearingGroupId);
@@ -178,39 +179,42 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         return max.isPresent() ? max.get().getValue() : List.of();
     }
 
-
+    @Transactional
     private void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings) {
         LinkedGroupDetails linkedGroupDetails = linkedGroupHearings.get(0).getLinkedGroupDetails();
         final String requestId = linkedGroupDetails.getRequestId();
         saveLinkedGroupDetailsAudit(linkedGroupDetails);
         linkedGroupHearings.forEach(hearingEntity -> saveLinkedHearingDetailsAudit(hearingEntity));
-        saveLinkedGroupDetails(linkedGroupDetails);
-        /*HearingManagementInterfaceResponse response = futureHearingRepository
-            .deleteLinkedHearingGroup(requestId);*/
-        HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
-        response.setResponseCode(400);
-        response.setDescription(REJECTED_BY_LIST_ASSIST);
-        getResponseFromListAssist(response, requestId);
+        saveLinkedGroupDetails(linkedGroupDetails, null);
+        HearingManagementInterfaceResponse response = futureHearingRepository
+            .deleteLinkedHearingGroup(requestId);
+        getResponseFromListAssist(response, linkedGroupDetails);
     }
 
-    private void getResponseFromListAssist(HearingManagementInterfaceResponse response, String requestId) {
+    private void getResponseFromListAssist(HearingManagementInterfaceResponse response,
+                                           LinkedGroupDetails linkedGroupDetails) {
         if (response.getResponseCode() == 400) {
             log.error("Exception occurred from ListAssist: {}", response.getDescription());
-            linkedGroupDetailsRepository.deleteLinkedGroupDetails(requestId);
+            linkedGroupDetailsRepository.delete(linkedGroupDetails);
             throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
         } else if (response.getResponseCode() == 500) {
             log.error("Exception occurred List Assist failed to respond: {}", response.getDescription());
-            linkedGroupDetailsRepository.updateLinkedGroupDetailsStatus(requestId);
+            saveLinkedGroupDetails(linkedGroupDetails, LIST_ASSIST);
             throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
         } else {
-            linkedGroupDetailsRepository.deleteLinkedGroupDetails(requestId);
+            linkedGroupDetailsRepository.delete(linkedGroupDetails);
         }
     }
 
-    private void saveLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails) {
-        Long versionNumber = linkedGroupDetails.getLinkedGroupLatestVersion();
-        linkedGroupDetails.setLinkedGroupLatestVersion(versionNumber + VERSION_NUMBER_TO_INCREMENT);
-        linkedGroupDetails.setStatus(PENDING);
+
+    private void saveLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails, String request) {
+        if (LIST_ASSIST.equals(request)) {
+            linkedGroupDetails.setStatus(ERROR);
+        } else {
+            Long versionNumber = linkedGroupDetails.getLinkedGroupLatestVersion();
+            linkedGroupDetails.setLinkedGroupLatestVersion(versionNumber + VERSION_NUMBER_TO_INCREMENT);
+            linkedGroupDetails.setStatus(PENDING);
+        }
         linkedGroupDetailsRepository.save(linkedGroupDetails);
     }
 

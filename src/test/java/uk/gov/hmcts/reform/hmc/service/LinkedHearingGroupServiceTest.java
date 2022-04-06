@@ -147,8 +147,7 @@ class LinkedHearingGroupServiceTest {
 
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(linkedGroupDetailsRepository, times(1))
-                .deleteLinkedGroupDetails(REQUEST_ID);
+            verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
         }
 
         @Test
@@ -328,8 +327,7 @@ class LinkedHearingGroupServiceTest {
 
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(linkedGroupDetailsRepository, times(1))
-                .deleteLinkedGroupDetails(REQUEST_ID);
+            verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
         }
 
         @Test
@@ -360,8 +358,7 @@ class LinkedHearingGroupServiceTest {
 
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(linkedGroupDetailsRepository, times(1))
-                .deleteLinkedGroupDetails(REQUEST_ID);
+            verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
         }
 
         @Test
@@ -394,8 +391,7 @@ class LinkedHearingGroupServiceTest {
             assertEquals(REJECTED_BY_LIST_ASSIST, exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(linkedGroupDetailsRepository, times(1))
-                .deleteLinkedGroupDetails(REQUEST_ID);
+            verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
         }
 
         @Test
@@ -428,8 +424,6 @@ class LinkedHearingGroupServiceTest {
             assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(linkedGroupDetailsRepository, times(1))
-                .updateLinkedGroupDetailsStatus(REQUEST_ID);
         }
 
         private HearingResponseEntity createHearingResponseEntityWithHearingDays(

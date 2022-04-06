@@ -1,0 +1,5 @@
+ALTER TABLE ONLY public.linked_group_details_audit
+DROP CONSTRAINT fk_linked_group_details_audit_linked_group_id;
+
+ALTER TABLE ONLY public.linked_hearing_details_audit
+DROP CONSTRAINT fk_linked_hearing_details_audit_linked_group_id;

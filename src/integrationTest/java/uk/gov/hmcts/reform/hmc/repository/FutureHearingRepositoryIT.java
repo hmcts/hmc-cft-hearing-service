@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.AuthenticationResponse;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.HearingManagementInterfaceResponse;
 import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
-import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -93,7 +93,7 @@ public class FutureHearingRepositoryIT extends BaseTest {
         void shouldThrow400AuthenticationException() {
             stubDeleteMethodThrowingError(400, HMI_REQUEST_URL);
             assertThatThrownBy(() -> defaultFutureHearingRepository.deleteLinkedHearingGroup(REQUEST_ID))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining(INVALID_REQUEST);
         }
 
