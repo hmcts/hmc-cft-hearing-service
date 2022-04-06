@@ -219,13 +219,6 @@ public class HearingManagementServiceImpl extends LinkedHearingValidator impleme
     }
 
     private HearingResponse getSaveHearingResponseDetails(HearingEntity savedEntity) {
-        if (log.isDebugEnabled()) {
-            long id = 0L;
-            if (null != savedEntity && null != savedEntity.getId()) {
-                id = savedEntity.getId();
-            }
-            log.debug("Hearing details saved successfully with id: {}", id);
-        }
         HearingResponse hearingResponse = new HearingResponse();
         if (null != savedEntity) {
             CaseHearingRequestEntity latestCaseHearingRequest = savedEntity.getLatestCaseHearingRequest();
