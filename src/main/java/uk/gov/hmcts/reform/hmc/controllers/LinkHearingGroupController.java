@@ -39,7 +39,8 @@ public class LinkHearingGroupController {
         @ApiResponse(code = 400, message = "004 invalid state of hearing for request"),
         @ApiResponse(code = 400, message = "005 Hearing Order is not unique")
     })
-    public HearingLinkGroupResponse validateLinkHearing(@RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
+    public HearingLinkGroupResponse validateLinkHearing(@RequestBody @Valid
+                                                                HearingLinkGroupRequest hearingLinkGroupRequest) {
         return linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
     }
 
