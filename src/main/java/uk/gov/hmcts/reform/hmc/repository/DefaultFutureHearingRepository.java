@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.hmc.repository;
 
+import feign.FeignException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.ActiveDirectoryApiClient;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.AuthenticationRequest;
@@ -36,8 +39,23 @@ public class DefaultFutureHearingRepository implements FutureHearingRepository {
     @Override
     public HearingManagementInterfaceResponse deleteLinkedHearingGroup(String requestId) {
         String authorization = retrieveAuthToken().getAccessToken();
-        return hmiClient.deleteLinkedHearingGroup(BEARER + authorization, requestId);
+        try {
+            return hmiClient.deleteLinkedHearingGroup(BEARER + authorization, requestId);
+        } catch (Exception exception) {
+            return getResponseFromListAssist(exception);
+        }
     }
 
-
+    private HearingManagementInterfaceResponse getResponseFromListAssist(Exception exception) {
+        if (exception instanceof HttpClientErrorException
+            && HttpStatus.valueOf(((HttpClientErrorException) exception).getRawStatusCode()).is4xxClientError()) {
+            Integer statusCode = ((HttpClientErrorException) exception).getRawStatusCode();
+            return new HearingManagementInterfaceResponse(statusCode, exception.getMessage());
+        } else if (exception instanceof FeignException) {
+            Integer statusCode = ((FeignException) exception).status();
+            return new HearingManagementInterfaceResponse(statusCode, exception.getMessage());
+        } else {
+            return new HearingManagementInterfaceResponse(500, exception.getMessage());
+        }
+    }
 }
