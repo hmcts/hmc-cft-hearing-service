@@ -706,7 +706,7 @@ public class TestingUtil {
         partyDetails1.setPartyType("ind");
         partyDetails1.setPartyRole("DEF");
         partyDetails1.setIndividualDetails(allIndividualDetails());
-        partyDetails1.setUnavailabilityDow(unavAilabilityDowDetails());
+        partyDetails1.setUnavailabilityDow(unavailabilityDowDetails());
         partyDetails1.setUnavailabilityRanges(unAvailabilityRanges());
 
         PartyDetails partyDetails2 = new PartyDetails();
@@ -732,13 +732,13 @@ public class TestingUtil {
         return unavailabilityRanges;
     }
 
-    private static List<UnavailabilityDow> unavAilabilityDowDetails() {
+    private static List<UnavailabilityDow> unavailabilityDowDetails() {
         UnavailabilityDow detail1 = new UnavailabilityDow();
         detail1.setDowUnavailabilityType("PM");
-        detail1.setDow("MONDAY");
+        detail1.setDow("Monday");
         UnavailabilityDow detail2 = new UnavailabilityDow();
         detail2.setDowUnavailabilityType("All Day");
-        detail2.setDow("THURSDAY");
+        detail2.setDow("Thursday");
         List<UnavailabilityDow> unavailabilityDows = Lists.newArrayList(detail1, detail2);
         return unavailabilityDows;
     }
