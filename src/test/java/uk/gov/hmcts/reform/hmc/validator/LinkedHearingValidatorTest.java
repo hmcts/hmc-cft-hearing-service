@@ -1009,27 +1009,6 @@ class LinkedHearingValidatorTest {
         verify(linkedGroupDetailsRepository, never()).deleteHearingGroup(anyLong());
     }
 
-    //    @Test
-    //    void shouldFailWithHearingNotFound() {
-    //        GroupDetails groupDetails = generateGroupDetails("comment", "name",
-    //                LinkType.ORDERED.label, "reason"
-    //        );
-    //        LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
-    //        LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
-    //        HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
-    //                groupDetails,
-    //                Arrays.asList(
-    //                        hearingDetails1,
-    //                        hearingDetails2
-    //                )
-    //        );
-    //
-    //        Exception exception = assertThrows(BadRequestException.class, () -> {
-    //            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-    //        });
-    //        assertEquals(HEARING_ID_NOT_FOUND.replace("%s", "2000000000"), exception.getMessage());
-    //    }
-
     @Test
     void shouldFailWithHearingRequestAlreadyInGroup() {
         LinkedGroupDetails groupDetails1 = generateLinkedGroupDetails(
