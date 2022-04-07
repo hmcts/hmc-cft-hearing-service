@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
@@ -131,12 +130,12 @@ public class AccessControlServiceImpl implements AccessControlService {
     @SuppressWarnings("java:S2789")
     private boolean checkJurisdiction(RoleAssignmentAttributes attributes, String jurisdiction) {
         return attributes.getJurisdiction() == null || attributes.getJurisdiction().isEmpty()
-            || attributes.getJurisdiction().get().equals(Optional.of(jurisdiction));
+            || attributes.getJurisdiction().orElse("").equals(jurisdiction);
     }
 
     @SuppressWarnings("java:S2789")
     private boolean checkCaseType(RoleAssignmentAttributes attributes, String caseType) {
         return attributes.getCaseType() == null || attributes.getCaseType().isEmpty()
-            || attributes.getCaseType().get().equals(caseType);
+            || attributes.getCaseType().orElse("").equals(caseType);
     }
 }
