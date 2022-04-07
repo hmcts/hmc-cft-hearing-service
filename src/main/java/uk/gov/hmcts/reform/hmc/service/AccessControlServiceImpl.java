@@ -106,7 +106,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     private void verifyHearingStatus(List<RoleAssignment> filteredRoleAssignments, Long hearingId) {
         String status = hearingRepository.getStatus(hearingId);
         if (filteredRoleAssignments.size() == 1
-            && filteredRoleAssignments.contains(LISTED_HEARING_VIEWER)
+            && LISTED_HEARING_VIEWER.equals(filteredRoleAssignments.get(0).getRoleName())
             && "LISTED".equals(status)) {
             throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_STATUS);
         }
@@ -128,11 +128,13 @@ public class AccessControlServiceImpl implements AccessControlService {
 
     }
 
+    @SuppressWarnings("java:S2789")
     private boolean checkJurisdiction(RoleAssignmentAttributes attributes, String jurisdiction) {
         return attributes.getJurisdiction() == null || attributes.getJurisdiction().isEmpty()
             || attributes.getJurisdiction().get().equals(Optional.of(jurisdiction));
     }
 
+    @SuppressWarnings("java:S2789")
     private boolean checkCaseType(RoleAssignmentAttributes attributes, String caseType) {
         return attributes.getCaseType() == null || attributes.getCaseType().isEmpty()
             || attributes.getCaseType().get().equals(caseType);
