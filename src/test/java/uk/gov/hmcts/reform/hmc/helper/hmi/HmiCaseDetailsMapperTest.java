@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.CaseClassification;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiCaseDetails;
+import uk.gov.hmcts.reform.hmc.model.hmi.ListingLocation;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -18,6 +19,8 @@ import static java.lang.Boolean.FALSE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.COURT;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.EPIMS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.NOT_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUIRED;
 
@@ -63,7 +66,11 @@ class HmiCaseDetailsMapperTest {
             .caseListingRequestId(hearingId.toString())
             .caseJurisdiction("AB")
             .caseTitle(CASE_NAME)
-            .caseCourt(LOCATION_CODE)
+            .caseCourt(ListingLocation.builder()
+                           .locationId(LOCATION_CODE)
+                           .locationType(COURT)
+                           .locationReferenceType(EPIMS)
+                           .build())
             .caseRegistered(localDate)
             .caseInterpreterRequiredFlag(false)
             .caseRestrictedFlag(true)
@@ -104,7 +111,11 @@ class HmiCaseDetailsMapperTest {
             .caseListingRequestId(hearingId.toString())
             .caseJurisdiction("AB")
             .caseTitle(CASE_NAME)
-            .caseCourt(LOCATION_CODE)
+            .caseCourt(ListingLocation.builder()
+                           .locationId(LOCATION_CODE)
+                           .locationType(COURT)
+                           .locationReferenceType(EPIMS)
+                           .build())
             .caseRegistered(localDate)
             .caseInterpreterRequiredFlag(false)
             .caseRestrictedFlag(true)
