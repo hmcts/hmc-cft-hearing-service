@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -16,6 +17,14 @@ public interface LinkedGroupDetailsRepository extends CrudRepository<LinkedGroup
 
     @Query("from LinkedGroupDetails lgd WHERE lgd.requestId = :requestId ")
     LinkedGroupDetails getLinkedGroupDetailsByRequestId(String requestId);
+
+    @Modifying
+    @Query("UPDATE LinkedGroupDetails lgd SET lgd.status = :status WHERE lgd.requestId = :requestId ")
+    void updateLinkedGroupDetailsStatus(String requestId, String status);
+
+    @Modifying
+    @Query("DELETE FROM LinkedGroupDetails lgd WHERE lgd.requestId = :requestId ")
+    void deleteLinkedGroupDetailsStatus(String requestId);
 
     // TODO: implement DB query - https://tools.hmcts.net/jira/browse/HMAN-96
     default void deleteHearingGroup(Long hearingGroupId) {

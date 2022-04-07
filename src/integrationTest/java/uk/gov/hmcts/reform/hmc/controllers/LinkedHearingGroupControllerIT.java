@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubPostCreateLinkHearingGroup;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 
 class LinkedHearingGroupControllerIT extends BaseTest {
 
@@ -48,6 +51,9 @@ class LinkedHearingGroupControllerIT extends BaseTest {
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-caseHearings_LinkedHearings.sql";
     private static final String INSERT_LINKED_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-linked-hearings.sql";
+
+    private static final String TOKEN = "example-token";
+    private static final String HMI_REQUEST_URL = "/resources/linked-hearing-group";
 
     @Nested
     @DisplayName("PostLinkedHearingGroup")
@@ -245,6 +251,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         }
 
         @Test
+        @Disabled
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn201_WhenRequestIsValid() throws Exception {
             LinkHearingDetails hearingInGroup = new LinkHearingDetails();
@@ -260,11 +267,65 @@ class LinkedHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setGroupDetails(groupDetails);
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
+            stubPostCreateLinkHearingGroup(200, HMI_REQUEST_URL, TOKEN);
+
             mockMvc.perform(post(url)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(201))
                 .andExpect(jsonPath("$.hearingGroupRequestId").value("1"))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        @Disabled
+        void shouldThrowExceptionWhenReceiving4xxFromListAssist() throws Exception {
+            LinkHearingDetails hearingInGroup = new LinkHearingDetails();
+            hearingInGroup.setHearingId("2000000012");
+            hearingInGroup.setHearingOrder(1);
+
+            LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
+            hearingInGroup1.setHearingId("2000000013");
+            hearingInGroup1.setHearingOrder(2);
+
+            HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+            GroupDetails groupDetails = generateGroupDetails(LinkType.ORDERED);
+            hearingLinkGroupRequest.setGroupDetails(groupDetails);
+            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
+
+            stubPostCreateLinkHearingGroup(400, HMI_REQUEST_URL, TOKEN);
+            mockMvc.perform(post(url)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem(REJECTED_BY_LIST_ASSIST)))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        @Disabled
+        void shouldThrowExceptionWhenReceiving5xxFromListAssist() throws Exception {
+            LinkHearingDetails hearingInGroup = new LinkHearingDetails();
+            hearingInGroup.setHearingId("2000000012");
+            hearingInGroup.setHearingOrder(1);
+
+            LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
+            hearingInGroup1.setHearingId("2000000013");
+            hearingInGroup1.setHearingOrder(2);
+
+            HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+            GroupDetails groupDetails = generateGroupDetails(LinkType.SAME_SLOT);
+            hearingLinkGroupRequest.setGroupDetails(groupDetails);
+            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
+
+            stubPostCreateLinkHearingGroup(500, HMI_REQUEST_URL, TOKEN);
+            mockMvc.perform(post(url)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem(LIST_ASSIST_FAILED_TO_RESPOND)))
                 .andReturn();
         }
     }
@@ -518,6 +579,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
 
     @Nested
     @DisplayName("DeleteLinkedHearingGroup")
+    @Disabled
     class DeleteLinkedHearingGroup {
 
         @Test

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import javax.transaction.Transactional;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ORDER_NOT_UNIQUE;
@@ -295,6 +296,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
                 .getStartDateTime().toLocalDate();
     }
 
+    @Transactional
     protected LinkedGroupDetails updateHearingWithLinkGroup(HearingLinkGroupRequest hearingLinkGroupRequest) {
         LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
         linkedGroupDetails.setRequestName(hearingLinkGroupRequest.getGroupDetails().getGroupName());

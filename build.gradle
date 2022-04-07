@@ -431,6 +431,11 @@ dependencies {
 
   contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.1.0'
+  testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.11.1'
+  testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
+  testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.9'
+
   integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
   integrationTestImplementation sourceSets.main.runtimeClasspath

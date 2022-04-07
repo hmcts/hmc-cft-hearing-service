@@ -16,6 +16,6 @@ public interface HearingRepository extends CrudRepository<HearingEntity, Long> {
     @Query("SELECT status from HearingEntity where id = :hearingId")
     String getStatus(Long hearingId);
 
-    @Query("FROM HearingEntity he WHERE he.linkedGroupDetails.linkedGroupId = :linkedGroupId")
+    @Query("from HearingEntity he where he.linkedGroupDetails.linkedGroupId = :linkedGroupId")
     List<HearingEntity> findByLinkedGroupId(Long linkedGroupId);
 }

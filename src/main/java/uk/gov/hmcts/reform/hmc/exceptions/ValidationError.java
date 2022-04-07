@@ -216,4 +216,7 @@ public final class ValidationError {
     public static final String HMCTS_STATUS_LENGTH = "HMCTS status must not be more than 100 " + CHARACTERS_LONG;
     public static final String LISTING_STATUS_NULL = "Listing status can not be null or empty";
 
+    public static final String REJECTED_BY_LIST_ASSIST = "005 rejected by List Assist";
+    public static final String LIST_ASSIST_FAILED_TO_RESPOND = "006 List Assist failed to respond";
+
 }
