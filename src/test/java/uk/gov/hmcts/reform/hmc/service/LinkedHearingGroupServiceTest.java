@@ -101,7 +101,7 @@ class LinkedHearingGroupServiceTest {
                                                     linkedGroupDetailsAuditRepository,
                                                     linkedGroupDetailsAuditMapper,
                                                     linkedHearingDetailsAuditMapper,
-                                                    futureHearingRepository, 
+                                                    futureHearingRepository,
                                                     transactionHandler);
     }
 
@@ -364,7 +364,7 @@ class LinkedHearingGroupServiceTest {
         }
 
         @Test
-        void shouldDeleteHearingGroupDetails_ListAssistReturns4XXError() {
+        void shouldDeleteHearingGroupDetails_ListAssistReturns4xxError() {
 
             HearingEntity hearing = new HearingEntity();
             hearing.setId(HEARING_ID1);
@@ -397,7 +397,7 @@ class LinkedHearingGroupServiceTest {
         }
 
         @Test
-        void shouldDeleteHearingGroupDetails_ListAssistReturns5XXError() {
+        void shouldDeleteHearingGroupDetails_ListAssistReturns5xxError() {
 
             HearingEntity hearing = new HearingEntity();
             hearing.setId(HEARING_ID1);
@@ -420,7 +420,6 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(List.of(hearing));
             HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 500, "006 List Assist failed to respond");
-            //stubDeleteLinkedHearingGroupsReturn5XX(TOKEN,REQUEST_ID);
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(HEARING_GROUP_ID));
             assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, exception.getMessage());

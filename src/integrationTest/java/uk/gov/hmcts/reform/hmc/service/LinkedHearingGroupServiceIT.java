@@ -1,14 +1,10 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
-import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
-import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
-import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -79,7 +75,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
-    void testDeleteLinkedHearingGroup_LinkedHearingDetails4XXError() {
+    void testDeleteLinkedHearingGroup_LinkedHearingDetails4xxError() {
         stubDeleteLinkedHearingGroupsReturn4XX(TOKEN, REQUEST_ID);
         Optional<LinkedGroupDetails> linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
             .findById(7700000000L);
@@ -93,7 +89,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
-    void testDeleteLinkedHearingGroup_LinkedHearingDetails5XXError() {
+    void testDeleteLinkedHearingGroup_LinkedHearingDetails5xxError() {
         stubDeleteLinkedHearingGroupsReturn5XX(TOKEN, REQUEST_ID);
         Optional<LinkedGroupDetails> linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
             .findById(7700000000L);
