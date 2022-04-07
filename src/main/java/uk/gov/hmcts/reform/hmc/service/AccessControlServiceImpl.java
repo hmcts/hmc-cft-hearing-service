@@ -63,14 +63,6 @@ public class AccessControlServiceImpl implements AccessControlService {
         verifyCaseAccess(caseReference, requiredRoles, null);
     }
 
-    @Override
-    public void verifyHearingCaseAccess(Long hearingId, List<String> requiredRoles) {
-        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository.getCaseHearing(hearingId);
-        if (caseHearingRequestEntity != null) {
-            verifyCaseAccess(caseHearingRequestEntity.getCaseReference(), requiredRoles, hearingId);
-        }
-    }
-
     public void verifyCaseAccess(String caseReference, List<String> requiredRoles, Long hearingId) {
         RoleAssignments roleAssignments = roleAssignmentService.getRoleAssignments(securityUtils.getUserId());
         if (roleAssignments.getRoleAssignments().isEmpty()) {
@@ -89,6 +81,14 @@ public class AccessControlServiceImpl implements AccessControlService {
         DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
         if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
             throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
+        }
+    }
+
+    @Override
+    public void verifyHearingCaseAccess(Long hearingId, List<String> requiredRoles) {
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository.getCaseHearing(hearingId);
+        if (caseHearingRequestEntity != null) {
+            verifyCaseAccess(caseHearingRequestEntity.getCaseReference(), requiredRoles, hearingId);
         }
     }
 

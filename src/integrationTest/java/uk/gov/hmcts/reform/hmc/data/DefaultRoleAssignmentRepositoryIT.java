@@ -238,7 +238,7 @@ class DefaultRoleAssignmentRepositoryIT extends BaseTest {
 
     }
 
-    private static String jsonBody(String id) {
+    public static String jsonBody(String id) {
         return "{\n"
             + "  \"roleAssignmentResponse\": [\n"
             + "    {\n"
