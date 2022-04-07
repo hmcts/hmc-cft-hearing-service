@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,6 +45,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.HEARING_REQUESTED;
@@ -226,6 +229,38 @@ class LinkedHearingValidatorTest {
                 .thenReturn(existingInDataList);
 
         linkedHearingValidation.validateLinkedHearingsForUpdate(requestId, payloadList);
+    }
+
+    @Test
+    void shouldPassWithDetailsValidForUpdateHearingWithLinkGroup() {
+        LinkHearingDetails hearingInGroup = new LinkHearingDetails();
+        hearingInGroup.setHearingId("2000000000");
+        hearingInGroup.setHearingOrder(1);
+
+        LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
+        hearingInGroup1.setHearingId("2000000002");
+        hearingInGroup1.setHearingOrder(2);
+
+        HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+        hearingLinkGroupRequest.setGroupDetails(generateGroupDetails(LinkType.SAME_SLOT));
+        hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
+
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(
+            TestingUtil.hearingEntityWithLinkDetails()));
+
+        when(hearingRepository.existsById(2000000002L)).thenReturn(true);
+        when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(
+            TestingUtil.hearingEntityWithLinkDetails()));
+
+        given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntity());
+        given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
+
+        linkedHearingValidation.updateHearingWithLinkGroup(hearingLinkGroupRequest);
+        verify(hearingRepository, times(1)).findById(2000000000L);
+        verify(hearingRepository, times(1)).findById(2000000002L);
+        verify(hearingRepository, times(2)).save(any());
+        verify(linkedGroupDetailsRepository, times(1)).save(any());
     }
 
     @Nested
@@ -694,6 +729,15 @@ class LinkedHearingValidatorTest {
         groupDetails.setGroupName(groupName);
         groupDetails.setGroupLinkType(linkTypeLabel);
         groupDetails.setGroupReason(groupReason);
+        return groupDetails;
+    }
+
+    private GroupDetails generateGroupDetails(LinkType linkType) {
+        GroupDetails groupDetails = new GroupDetails();
+        groupDetails.setGroupComments("comments");
+        groupDetails.setGroupLinkType(linkType.label);
+        groupDetails.setGroupName("name");
+        groupDetails.setGroupReason("reason");
         return groupDetails;
     }
 

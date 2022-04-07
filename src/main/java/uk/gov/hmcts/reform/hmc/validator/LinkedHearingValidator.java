@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,11 +42,13 @@ public class LinkedHearingValidator extends HearingIdValidator {
     protected final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
     protected final LinkedHearingDetailsRepository linkedHearingDetailsRepository;
     private static final String HEARING_ID_PLACEHOLDER = "<hearingId>";
+    private final HearingRepository hearingRepository;
 
     public LinkedHearingValidator(HearingRepository hearingRepository,
                                   LinkedGroupDetailsRepository linkedGroupDetailsRepository,
                                   LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
         super(hearingRepository);
+        this.hearingRepository = hearingRepository;
         this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
         this.linkedHearingDetailsRepository = linkedHearingDetailsRepository;
     }
@@ -290,5 +293,31 @@ public class LinkedHearingValidator extends HearingIdValidator {
                                 .replace(HEARING_ID_PLACEHOLDER, hearingResponse.getHearing().getId().toString())
                                 + " valid hearingDayDetails not found"))
                 .getStartDateTime().toLocalDate();
+    }
+
+    protected LinkedGroupDetails updateHearingWithLinkGroup(HearingLinkGroupRequest hearingLinkGroupRequest) {
+        LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
+        linkedGroupDetails.setRequestName(hearingLinkGroupRequest.getGroupDetails().getGroupName());
+        linkedGroupDetails.setReasonForLink(hearingLinkGroupRequest.getGroupDetails().getGroupReason());
+        linkedGroupDetails.setLinkType(LinkType.getByLabel(hearingLinkGroupRequest
+                                                               .getGroupDetails().getGroupLinkType()));
+        linkedGroupDetails.setLinkedComments(hearingLinkGroupRequest.getGroupDetails().getGroupComments());
+        linkedGroupDetails.setStatus("PENDING");
+        linkedGroupDetails.setRequestDateTime(LocalDateTime.now());
+        linkedGroupDetails.setLinkedGroupLatestVersion(1L);
+        LinkedGroupDetails linkedGroupDetailsSaved = linkedGroupDetailsRepository.save(linkedGroupDetails);
+
+        hearingLinkGroupRequest.getHearingsInGroup()
+            .forEach(linkHearingDetails -> {
+                Optional<HearingEntity> hearing = hearingRepository
+                    .findById(Long.valueOf(linkHearingDetails.getHearingId()));
+                if (hearing.isPresent()) {
+                    HearingEntity hearingToSave = hearing.get();
+                    hearingToSave.setLinkedGroupDetails(linkedGroupDetailsSaved);
+                    hearingToSave.setLinkedOrder(Long.valueOf(linkHearingDetails.getHearingOrder()));
+                    hearingRepository.save(hearingToSave);
+                }
+            });
+        return linkedGroupDetailsSaved;
     }
 }

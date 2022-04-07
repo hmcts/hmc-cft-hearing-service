@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupResponse;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
@@ -49,8 +50,13 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     }
 
     @Override
-    public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
+    public HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
         validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
+
+        LinkedGroupDetails linkedGroupDetails = updateHearingWithLinkGroup(hearingLinkGroupRequest);
+        HearingLinkGroupResponse hearingLinkGroupResponse = new HearingLinkGroupResponse();
+        hearingLinkGroupResponse.setHearingGroupRequestId(linkedGroupDetails.getRequestId());
+        return hearingLinkGroupResponse;
     }
 
     @Override
@@ -98,39 +104,39 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private void validateUnlinkingHearingsStatus(List<HearingEntity> linkedHearings) {
         List<HearingEntity> unlinkInvalidStatusHearings = linkedHearings.stream()
-                .filter(h -> !DeleteHearingStatus.isValid(h.getStatus()))
-                .collect(Collectors.toList());
+            .filter(h -> !DeleteHearingStatus.isValid(h.getStatus()))
+            .collect(Collectors.toList());
 
         if (!unlinkInvalidStatusHearings.isEmpty()) {
             throw new BadRequestException(
-                    format(INVALID_DELETE_HEARING_GROUP_HEARING_STATUS, unlinkInvalidStatusHearings.get(0).getId()));
+                format(INVALID_DELETE_HEARING_GROUP_HEARING_STATUS, unlinkInvalidStatusHearings.get(0).getId()));
         }
     }
 
     private void validateUnlinkingHearingsWillNotHaveStartDateInThePast(List<HearingEntity> linkedHearings) {
 
         linkedHearings.stream()
-                .filter(h -> h.getHearingResponses().size() > 0)
-                .forEach(hearing -> {
-                    List<HearingResponseEntity> latestVersionHearingResponses
-                            = getLatestVersionHearingResponses(hearing);
+            .filter(h -> h.getHearingResponses().size() > 0)
+            .forEach(hearing -> {
+                List<HearingResponseEntity> latestVersionHearingResponses
+                    = getLatestVersionHearingResponses(hearing);
 
-                    Optional<HearingResponseEntity> mostRecentLatestVersionHearingResponse
-                            = latestVersionHearingResponses
-                            .stream().max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
+                Optional<HearingResponseEntity> mostRecentLatestVersionHearingResponse
+                    = latestVersionHearingResponses
+                    .stream().max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
 
-                    boolean hasHearingDateInThePast = mostRecentLatestVersionHearingResponse.isPresent()
-                            && mostRecentLatestVersionHearingResponse.get()
-                            .getHearingDayDetails().stream()
-                            .anyMatch(dayTime -> dayTime.getStartDateTime().isBefore(LocalDateTime.now()));
+                boolean hasHearingDateInThePast = mostRecentLatestVersionHearingResponse.isPresent()
+                    && mostRecentLatestVersionHearingResponse.get()
+                    .getHearingDayDetails().stream()
+                    .anyMatch(dayTime -> dayTime.getStartDateTime().isBefore(LocalDateTime.now()));
 
-                    if (hasHearingDateInThePast) {
-                        throw new BadRequestException(format(
-                                INVALID_DELETE_HEARING_GROUP_HEARING_STATUS,
-                                hearing.getId()
-                        ));
-                    }
-                });
+                if (hasHearingDateInThePast) {
+                    throw new BadRequestException(format(
+                        INVALID_DELETE_HEARING_GROUP_HEARING_STATUS,
+                        hearing.getId()
+                    ));
+                }
+            });
     }
 
     private List<HearingResponseEntity> getLatestVersionHearingResponses(HearingEntity hearing) {
