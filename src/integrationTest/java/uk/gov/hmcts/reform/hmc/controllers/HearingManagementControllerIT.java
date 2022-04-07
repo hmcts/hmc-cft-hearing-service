@@ -267,18 +267,12 @@ class HearingManagementControllerIT extends BaseTest {
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         stubSuccessfullyValidateHearingObject(createHearingRequest);
-        RoleAssignmentResource resource = new RoleAssignmentResource();
-        resource.setRoleName(ROLE_NAME);
-        resource.setRoleType(ROLE_TYPE);
-        RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
-        attributesResource.setCaseType(Optional.of(CASE_TYPE));
-        attributesResource.setJurisdiction(Optional.of(JURISDICTION));
-        resource.setAttributes(attributesResource);
-        List<RoleAssignmentResource> roleAssignmentList = new ArrayList<>();
-        roleAssignmentList.add(resource);
-        RoleAssignmentResponse response = new RoleAssignmentResponse();
-        response.setRoleAssignments(roleAssignmentList);
-        stubReturn200RoleAssignments(USER_ID, response);
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
             .caseTypeId(CASE_TYPE)
             .jurisdiction(JURISDICTION)
@@ -446,18 +440,7 @@ class HearingManagementControllerIT extends BaseTest {
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         stubSuccessfullyValidateHearingObject(createHearingRequest);
-        RoleAssignmentResource resource = new RoleAssignmentResource();
-        resource.setRoleName(ROLE_NAME);
-        resource.setRoleType(ROLE_TYPE);
-        RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
-        attributesResource.setCaseType(Optional.of(CASE_TYPE));
-        attributesResource.setJurisdiction(Optional.of(JURISDICTION));
-        resource.setAttributes(attributesResource);
-        List<RoleAssignmentResource> roleAssignmentList = new ArrayList<>();
-        roleAssignmentList.add(resource);
-        RoleAssignmentResponse response = new RoleAssignmentResponse();
-        response.setRoleAssignments(roleAssignmentList);
-        stubReturn200RoleAssignments(USER_ID, response);
+        stubRoleAssignments();
         stubReturn404FromDataStore(CASE_REFERENCE);
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -696,6 +679,12 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn201WhenUpdateHearingRequestContainsValidPartyDetails() throws Exception {
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334455"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
@@ -1045,6 +1034,12 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn400WhenPartyIndividualAndOrgDetailsBothExist() throws Exception {
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
         UpdateHearingRequest request = TestingUtil.updateHearingRequest();
         request.setPartyDetails(TestingUtil.partyDetails());
         request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
@@ -1074,6 +1069,12 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
     void shouldReturn201WhenUpdateHearingRequestIsValidWith2PartyDetailsAndOrgDetail() throws Exception {
+        stubRoleAssignments();
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334466"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequestWithPartyDetails();
         mockMvc.perform(put(url + "/2000000024")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -1100,18 +1101,13 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
             .get(0).setRelationshipType("a".repeat(10));
         stubSuccessfullyValidateHearingObject(hearingRequest);
-        RoleAssignmentResource resource = new RoleAssignmentResource();
-        resource.setRoleName(ROLE_NAME);
-        resource.setRoleType(ROLE_TYPE);
-        RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
-        attributesResource.setCaseType(Optional.of(CASE_TYPE));
-        attributesResource.setJurisdiction(Optional.of(JURISDICTION));
-        resource.setAttributes(attributesResource);
-        List<RoleAssignmentResource> roleAssignmentList = new ArrayList<>();
-        roleAssignmentList.add(resource);
-        RoleAssignmentResponse response = new RoleAssignmentResponse();
-        response.setRoleAssignments(roleAssignmentList);
-        stubReturn200RoleAssignments(USER_ID, response);
+
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
             .caseTypeId(CASE_TYPE)
             .jurisdiction(JURISDICTION)
