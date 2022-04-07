@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn4XX;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn5XX;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyDeleteLinkedHearingGroups;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 
 //@Disabled("Work in development under HMAN-97")
 class LinkedHearingGroupServiceIT extends BaseTest {
@@ -54,7 +56,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     private static final String INSERT_LINKED_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-linked-hearings.sql";
 
     public static final String REQUEST_ID = "44444";
-    //public static final String REQUEST_ID2 = "12345";
+    public static final String REQUEST_ID2 = "12345";
     public static final String TOKEN = "example-token";
 
     @Test
@@ -68,12 +70,11 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     void testDeleteLinkedHearingGroup_LinkedGroupDetails() {
         stubSuccessfullyDeleteLinkedHearingGroups(TOKEN, REQUEST_ID);
         Optional<LinkedGroupDetails> linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
-            .findById(7600000000L);
+            .findById(7700000000L);
         assertTrue(linkedGroupDetailsBeforeDelete.isPresent());
-        linkedHearingGroupService.deleteLinkedHearingGroup(7600000000L);
-        Optional<LinkedGroupDetails> linkedGroupDetailsAfterDelete = linkedGroupDetailsRepository
-            .findById(7600000000L);
-        assertNull(linkedGroupDetailsAfterDelete);
+        linkedHearingGroupService.deleteLinkedHearingGroup(7700000000L);
+        Long linkedGroupId = linkedGroupDetailsRepository.isFoundForRequestId(REQUEST_ID2);
+        assertNull(linkedGroupId);
     }
 
     @Test
@@ -81,12 +82,13 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     void testDeleteLinkedHearingGroup_LinkedHearingDetails4XXError() {
         stubDeleteLinkedHearingGroupsReturn4XX(TOKEN, REQUEST_ID);
         Optional<LinkedGroupDetails> linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
-            .findById(7600000000L);
+            .findById(7700000000L);
         assertTrue(linkedGroupDetailsBeforeDelete.isPresent());
-        linkedHearingGroupService.deleteLinkedHearingGroup(7600000000L);
-        Optional<LinkedGroupDetails> linkedGroupDetailsAfterDelete = linkedGroupDetailsRepository
-            .findById(7600000000L);
-        assertNull(linkedGroupDetailsAfterDelete);
+        Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
+            .deleteLinkedHearingGroup(7700000000L));
+        assertEquals(REJECTED_BY_LIST_ASSIST, exception.getMessage());
+        Long linkedGroupId = linkedGroupDetailsRepository.isFoundForRequestId(REQUEST_ID2);
+        assertNull(linkedGroupId);
     }
 
     @Test
@@ -94,15 +96,16 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     void testDeleteLinkedHearingGroup_LinkedHearingDetails5XXError() {
         stubDeleteLinkedHearingGroupsReturn5XX(TOKEN, REQUEST_ID);
         Optional<LinkedGroupDetails> linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
-            .findById(7600000000L);
+            .findById(7700000000L);
         assertTrue(linkedGroupDetailsBeforeDelete.isPresent());
         assertEquals("ACTIVE", linkedGroupDetailsBeforeDelete.get().getStatus());
-        Exception exception = assertThrows(Exception.class, () ->
-            linkedHearingGroupService.deleteLinkedHearingGroup(7600000000L));
+        Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
+            .deleteLinkedHearingGroup(7700000000L));
+        assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, exception.getMessage());
         Optional<LinkedGroupDetails> linkedGroupDetailsAfterDelete = linkedGroupDetailsRepository
-            .findById(7600000000L);
+            .findById(7700000000L);
         assertNotNull(linkedGroupDetailsAfterDelete);
-        assertEquals("ERROR", linkedGroupDetailsAfterDelete.get().getStatus());
+        assertEquals("ERROR", linkedGroupDetailsBeforeDelete.get().getStatus());
     }
 
     @Test
