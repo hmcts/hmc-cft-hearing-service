@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.hmc.client.futurehearing.AuthenticationRequest;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.AuthenticationResponse;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.HearingManagementInterfaceApiClient;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.HearingManagementInterfaceResponse;
+import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
+import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 
 @Repository("defaultFutureHearingRepository")
 public class DefaultFutureHearingRepository implements FutureHearingRepository {
@@ -47,13 +49,8 @@ public class DefaultFutureHearingRepository implements FutureHearingRepository {
     }
 
     private HearingManagementInterfaceResponse getResponseFromListAssist(Exception exception) {
-        if (exception instanceof HttpClientErrorException
-            && HttpStatus.valueOf(((HttpClientErrorException) exception).getRawStatusCode()).is4xxClientError()) {
-            Integer statusCode = ((HttpClientErrorException) exception).getRawStatusCode();
-            return new HearingManagementInterfaceResponse(statusCode, exception.getMessage());
-        } else if (exception instanceof FeignException) {
-            Integer statusCode = ((FeignException) exception).status();
-            return new HearingManagementInterfaceResponse(statusCode, exception.getMessage());
+        if (exception instanceof AuthenticationException || exception instanceof ResourceNotFoundException) {
+            return new HearingManagementInterfaceResponse(400, exception.getMessage());
         } else {
             return new HearingManagementInterfaceResponse(500, exception.getMessage());
         }

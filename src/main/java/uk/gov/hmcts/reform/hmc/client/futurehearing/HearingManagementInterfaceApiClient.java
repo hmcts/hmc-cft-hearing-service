@@ -11,7 +11,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @FeignClient(
     name = "hearing-management-interface-api",
     url = "${fh.hmi.host}",
-    configuration = {HearingManagementInterfaceApiClientConfig.class}
+    configuration = {FutureHearingApiClientConfig.class, HearingManagementInterfaceApiClientConfig.class}
 )
 @SuppressWarnings("checkstyle:abbreviationaswordinname")
 public interface HearingManagementInterfaceApiClient {

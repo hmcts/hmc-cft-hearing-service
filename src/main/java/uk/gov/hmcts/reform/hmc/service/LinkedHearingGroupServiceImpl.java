@@ -187,7 +187,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         linkedGroupHearings.forEach(hearingEntity -> saveLinkedHearingDetailsAudit(hearingEntity));
         saveLinkedGroupDetails(linkedGroupDetails, null);
         HearingManagementInterfaceResponse response = futureHearingRepository
-            .deleteLinkedHearingGroup(requestId);
+            .deleteLinkedHearingGroup(null);
         getResponseFromListAssist(response, linkedGroupDetails);
     }
 
