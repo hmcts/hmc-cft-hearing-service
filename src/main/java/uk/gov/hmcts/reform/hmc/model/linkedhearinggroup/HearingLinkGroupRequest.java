@@ -20,7 +20,7 @@ public class HearingLinkGroupRequest {
 
     @Valid
     @NotEmpty(message = ValidationError.HEARINGS_IN_GROUP)
-    @Size(min = 2, message = ValidationError.HEARINGS_IN_GROUP_SIZE)
+    @Size(min = 2, message = ValidationError.INSUFFICIENT_REQUEST_IDS)
     private List<LinkHearingDetails> hearingsInGroup;
 
 }

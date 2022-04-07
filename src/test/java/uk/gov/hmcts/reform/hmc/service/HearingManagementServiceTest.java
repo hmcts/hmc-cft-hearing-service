@@ -18,9 +18,7 @@ import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
@@ -1403,38 +1401,5 @@ class HearingManagementServiceTest {
             .hearingRequest(hmiHearingRequest)
             .build();
         return hmiSubmitHearingRequest;
-    }
-
-    private void addHearingResponses(HearingEntity hearingEntity,
-                                     int noOfResponses,
-                                     boolean addHearingDayDetails,
-                                     int noOfHearingDayDetails,
-                                     int noOfDays) {
-        List<HearingResponseEntity> responseEntities = new ArrayList<>();
-        for (int i = 0; i < noOfResponses; i++) {
-            HearingResponseEntity responseEntity = new HearingResponseEntity();
-            responseEntity.setRequestVersion(hearingEntity.getLatestRequestVersion());
-            responseEntity.setResponseVersion(hearingEntity.getLatestRequestVersion());
-            responseEntity.setRequestTimeStamp(LocalDateTime.now());
-            responseEntities.add(responseEntity);
-            if (addHearingDayDetails) {
-                addHearingDayDetails(responseEntity, noOfHearingDayDetails, noOfDays);
-            }
-        }
-        hearingEntity.setHearingResponses(responseEntities);
-    }
-
-    private void addHearingDayDetails(HearingResponseEntity responseEntity,
-                                      int noOfHearingDayDetails,
-                                      int noOfDays) {
-        List<HearingDayDetailsEntity> hearingDayDetails = new ArrayList<>();
-        for (int i = 0; i < noOfHearingDayDetails; i++) {
-            HearingDayDetailsEntity entity = new HearingDayDetailsEntity();
-            LocalDateTime startDate = LocalDateTime.now();
-            startDate = startDate.plusDays(noOfDays);
-            entity.setStartDateTime(startDate);
-            hearingDayDetails.add(entity);
-        }
-        responseEntity.setHearingDayDetails(hearingDayDetails);
     }
 }

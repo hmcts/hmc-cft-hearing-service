@@ -67,7 +67,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
-                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.HEARINGS_IN_GROUP_SIZE
+                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.INSUFFICIENT_REQUEST_IDS
                     )))
                     .andReturn();
 
@@ -88,7 +88,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
-                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.HEARINGS_IN_GROUP_SIZE
+                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.INSUFFICIENT_REQUEST_IDS
                     )))
                     .andReturn();
 
@@ -287,7 +287,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
-                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.HEARINGS_IN_GROUP_SIZE
+                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.INSUFFICIENT_REQUEST_IDS
                     )))
                     .andReturn();
         }
@@ -307,7 +307,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
-                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.HEARINGS_IN_GROUP_SIZE
+                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.INSUFFICIENT_REQUEST_IDS
                     )))
                     .andReturn();
 

@@ -223,7 +223,7 @@ public class LinkedHearingValidator {
     public void checkHearingOrderIsUnique(HearingLinkGroupRequest hearingLinkGroupRequest,
                                            LinkHearingDetails details) {
         //hman-55 step 4.4 / hman-56 step 6.4
-        log.info(hearingLinkGroupRequest.toString());
+        log.debug(hearingLinkGroupRequest.toString());
 
         LinkType value = LinkType.getByLabel(hearingLinkGroupRequest.getGroupDetails().getGroupLinkType());
         if (value == null) {

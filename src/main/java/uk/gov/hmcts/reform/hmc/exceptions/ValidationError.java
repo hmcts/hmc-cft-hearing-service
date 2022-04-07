@@ -157,7 +157,6 @@ public final class ValidationError {
     public static final String GROUP_REASON_EMPTY = "Group reason can not be null or empty";
     public static final String GROUP_DETAILS = "Group details are required";
     public static final String HEARINGS_IN_GROUP = "Linked hearing details are required";
-    public static final String HEARINGS_IN_GROUP_SIZE = "001 Insufficient requestIds";
 
     public static final String HEARING_REQUEST_ID_MAX_LENGTH =
             "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
