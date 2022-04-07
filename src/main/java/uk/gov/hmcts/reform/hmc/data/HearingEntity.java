@@ -10,7 +10,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -92,22 +91,10 @@ public class HearingEntity {
      */
     public Optional<HearingResponseEntity> getHearingResponseForLatestRequest() {
         Integer latestRequestVersion = getLatestRequestVersion();
-        if (hasHearingResponses()) {
-            List<HearingResponseEntity> filteredResponses = getHearingResponses().stream()
-                    .filter(hearingResponseEntity -> null != hearingResponseEntity
-                        && null != hearingResponseEntity.getRequestVersion()
-                        && hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
-                    .collect(Collectors.toUnmodifiableList());
-            if (!filteredResponses.isEmpty()) {
-                if (filteredResponses.size() == 1) {
-                    return Optional.ofNullable(filteredResponses.get(0));
-                }  else {
-                    return filteredResponses.stream().max(
-                            Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
-                }
-            }
-        }
-        return Optional.empty();
+        return hasHearingResponses() ? getHearingResponses().stream()
+                .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
+                .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp))
+                :  Optional.empty();
     }
 
     /**

@@ -40,9 +40,8 @@ import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
-import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,8 +68,9 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 @Service
 @Component
 @Slf4j
-public class HearingManagementServiceImpl extends LinkedHearingValidator implements HearingManagementService {
+public class HearingManagementServiceImpl implements HearingManagementService {
 
+    private final HearingRepository hearingRepository;
     private final DataStoreRepository dataStoreRepository;
     private final RoleAssignmentService roleAssignmentService;
     private final SecurityUtils securityUtils;
@@ -84,13 +84,14 @@ public class HearingManagementServiceImpl extends LinkedHearingValidator impleme
     private final HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
     private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
     private final ApplicationParams applicationParams;
+    private final HearingIdValidator hearingIdValidator;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
                                         @Qualifier("defaultDataStoreRepository")
                                             DataStoreRepository dataStoreRepository,
                                         HearingRepository hearingRepository,
-                                        LinkedGroupDetailsRepository linkedGroupDetailsRepository,
+                                        HearingIdValidator hearingIdValidator,
                                         HearingMapper hearingMapper,
                                         CaseHearingRequestRepository caseHearingRequestRepository,
                                         HmiSubmitHearingRequestMapper hmiSubmitHearingRequestMapper,
@@ -101,7 +102,8 @@ public class HearingManagementServiceImpl extends LinkedHearingValidator impleme
                                         HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper,
                                         MessageSenderToQueueConfiguration messageSenderToQueueConfiguration,
                                         ApplicationParams applicationParams) {
-        super(hearingRepository, linkedGroupDetailsRepository);
+        this.hearingIdValidator = hearingIdValidator;
+        this.hearingRepository = hearingRepository;
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -119,7 +121,7 @@ public class HearingManagementServiceImpl extends LinkedHearingValidator impleme
 
     @Override
     public ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid) {
-        isValidFormat(hearingId.toString());
+        hearingIdValidator.isValidFormat(hearingId.toString());
         if (!hearingRepository.existsById(hearingId)) {
             throw new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND);
         } else if (!isValid) {
@@ -149,7 +151,7 @@ public class HearingManagementServiceImpl extends LinkedHearingValidator impleme
     @Transactional
     public HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
         validateHearingRequest(hearingRequest);
-        validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
+        hearingIdValidator.validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
         validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
         validateHearingStatusForUpdate(hearingId);
 
@@ -351,7 +353,7 @@ public class HearingManagementServiceImpl extends LinkedHearingValidator impleme
     @Override
     @Transactional
     public HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
-        validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
+        hearingIdValidator.validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
         validateDeleteHearingStatus(hearingId);
 
         HearingEntity existingHearing = hearingRepository.findById(hearingId)

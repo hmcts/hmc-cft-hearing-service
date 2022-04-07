@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 @Component
 public class HearingIdValidator {
 
-    protected final HearingRepository hearingRepository;
+    public final HearingRepository hearingRepository;
 
     @Autowired
     public HearingIdValidator(HearingRepository hearingRepository) {
@@ -61,9 +61,14 @@ public class HearingIdValidator {
      * @param hearingId hearing Id
      * @return hearing hearing
      */
-    protected Optional<HearingEntity> getHearing(Long hearingId) {
+    public Optional<HearingEntity> getHearing(Long hearingId) {
         return hearingRepository.findById(hearingId);
     }
+
+    public List<HearingEntity> getHearingsByRequestId(String requestId) {
+        return hearingRepository.findByRequestId(requestId);
+    }
+
 
     public Optional<HearingResponseEntity> getHearingResponse(HearingEntity hearingEntity) {
         Integer version = hearingEntity.getLatestRequestVersion();
