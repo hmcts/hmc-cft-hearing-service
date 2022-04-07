@@ -93,11 +93,13 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     private void verifyRequiredRolesExists(List<String> requiredRoles, List<RoleAssignment> filteredRoleAssignments) {
-        boolean containsRequiredRoles = filteredRoleAssignments.stream()
-            .anyMatch(roleAssignment -> requiredRoles.contains(roleAssignment.getRoleName()));
+        if (requiredRoles.size() > 0) {
+            boolean containsRequiredRoles = filteredRoleAssignments.stream()
+                .anyMatch(roleAssignment -> requiredRoles.contains(roleAssignment.getRoleName()));
 
-        if (!containsRequiredRoles) {
-            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_MISSING_REQUIRED);
+            if (!containsRequiredRoles) {
+                throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_MISSING_REQUIRED);
+            }
         }
     }
 

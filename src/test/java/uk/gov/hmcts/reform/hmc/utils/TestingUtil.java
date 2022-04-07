@@ -67,6 +67,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_DOW_TYP
 public class TestingUtil {
 
     public static final String CASE_REFERENCE = "1111222233334444";
+    public static final String INVALID_CASE_REFERENCE = "1111222233334445";
 
     private TestingUtil() {
     }
