@@ -97,11 +97,12 @@ class LinkedHearingGroupServiceIT extends BaseTest {
             .findById(7600000000L);
         assertTrue(linkedGroupDetailsBeforeDelete.isPresent());
         assertEquals("ACTIVE", linkedGroupDetailsBeforeDelete.get().getStatus());
-        linkedHearingGroupService.deleteLinkedHearingGroup(7600000000L);
+        Exception exception = assertThrows(Exception.class, () ->
+            linkedHearingGroupService.deleteLinkedHearingGroup(7600000000L));
         Optional<LinkedGroupDetails> linkedGroupDetailsAfterDelete = linkedGroupDetailsRepository
             .findById(7600000000L);
         assertNotNull(linkedGroupDetailsAfterDelete);
-        assertEquals("ERROR", linkedGroupDetailsBeforeDelete.get().getStatus());
+        assertEquals("ERROR", linkedGroupDetailsAfterDelete.get().getStatus());
     }
 
     @Test

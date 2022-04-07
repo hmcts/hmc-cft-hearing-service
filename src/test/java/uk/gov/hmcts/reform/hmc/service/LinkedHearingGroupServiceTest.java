@@ -88,6 +88,9 @@ class LinkedHearingGroupServiceTest {
     @Mock
     DefaultFutureHearingRepository futureHearingRepository;
 
+    @Mock
+    TransactionHandler transactionHandler;
+
 
     @BeforeEach
     public void setUp() {
@@ -98,7 +101,8 @@ class LinkedHearingGroupServiceTest {
                                                     linkedGroupDetailsAuditRepository,
                                                     linkedGroupDetailsAuditMapper,
                                                     linkedHearingDetailsAuditMapper,
-                                                    futureHearingRepository);
+                                                    futureHearingRepository, 
+                                                    transactionHandler);
     }
 
     @Nested

@@ -122,7 +122,7 @@ public class WiremockFixtures {
 
     public static void stubDeleteLinkedHearingGroupsReturn5XX(String token, String requestId) {
         HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
-        response.setResponseCode(400);
+        response.setResponseCode(500);
         response.setDescription(LIST_ASSIST_FAILED_TO_RESPOND);
         stubFor(WireMock.delete(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
                     .withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE))

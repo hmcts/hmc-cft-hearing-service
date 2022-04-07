@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
@@ -66,6 +67,8 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private final DefaultFutureHearingRepository futureHearingRepository;
 
+    private final TransactionHandler transactionHandler;
+
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
                                          LinkedGroupDetailsRepository linkedGroupDetailsRepository,
@@ -74,7 +77,8 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
                                          LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository,
                                          LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper,
                                          LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper,
-                                         DefaultFutureHearingRepository futureHearingRepository) {
+                                         DefaultFutureHearingRepository futureHearingRepository,
+                                         TransactionHandler transactionHandler) {
         super(hearingRepository, linkedGroupDetailsRepository, linkedHearingDetailsRepository);
         this.hearingRepository = hearingRepository;
         this.linkedHearingDetailsAuditRepository = linkedHearingDetailsAuditRepository;
@@ -82,6 +86,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         this.linkedGroupDetailsAuditMapper = linkedGroupDetailsAuditMapper;
         this.linkedHearingDetailsAuditMapper = linkedHearingDetailsAuditMapper;
         this.futureHearingRepository = futureHearingRepository;
+        this.transactionHandler = transactionHandler;
     }
 
 
@@ -91,8 +96,8 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     }
 
     @Override
+    @Transactional
     public void deleteLinkedHearingGroup(Long hearingGroupId) {
-
         validateHearingGroup(hearingGroupId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(hearingGroupId);
         validateUnlinkingHearingsStatus(linkedGroupHearings);
@@ -180,7 +185,6 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         return max.isPresent() ? max.get().getValue() : List.of();
     }
 
-    @Transactional
     private void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings) {
         LinkedGroupDetails linkedGroupDetails = linkedGroupHearings.get(0).getLinkedGroupDetails();
         final String requestId = linkedGroupDetails.getRequestId();
@@ -208,7 +212,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
             log.error(
                 "Time out exception occurred with status code:  {}",
                 ((AuthenticationException) exception).getErrorDetails().getErrorCode());
-            saveLinkedGroupDetails(linkedGroupDetails, LIST_ASSIST);
+            transactionHandler.runInNewTransaction(() -> saveLinkedGroupDetails(linkedGroupDetails, LIST_ASSIST));
             throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
         }
     }
