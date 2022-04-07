@@ -71,23 +71,27 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
     }
 
     private void setHearingActuals(HearingEntity hearingEntity, HearingActualResponse response) {
-        val hearingActual = new HearingActual();
 
         val hearingResponses = hearingEntity.getLatestHearingResponse();
         if (hearingResponses.isPresent()) {
             HearingResponseEntity hearingResponse = hearingResponses.get();
-            val hearingOutcome = new HearingOutcome();
-            hearingOutcome.setHearingType(hearingResponse.getActualHearingEntity().getActualHearingType());
-            hearingOutcome.setHearingFinalFlag(hearingResponse.getActualHearingEntity().getActualHearingIsFinalFlag());
-            hearingOutcome.setHearingResult(hearingResponse.getActualHearingEntity().getHearingResultType());
-            hearingOutcome.setHearingResultReasonType(hearingResponse
-                                                          .getActualHearingEntity().getHearingResultReasonType());
-            hearingOutcome.setHearingResultDate(hearingResponse
-                                                    .getActualHearingEntity().getHearingResultDate());
-            hearingActual.setHearingOutcome(hearingOutcome);
-            getActualHearingDays(hearingResponse, hearingActual);
+            if (hearingResponse.getActualHearingEntity() != null) {
+                val hearingOutcome = new HearingOutcome();
+                hearingOutcome.setHearingType(hearingResponse.getActualHearingEntity().getActualHearingType());
+                hearingOutcome.setHearingFinalFlag(
+                    hearingResponse.getActualHearingEntity().getActualHearingIsFinalFlag());
+                hearingOutcome.setHearingResult(hearingResponse.getActualHearingEntity().getHearingResultType());
+                hearingOutcome.setHearingResultReasonType(hearingResponse
+                                                              .getActualHearingEntity().getHearingResultReasonType());
+                hearingOutcome.setHearingResultDate(hearingResponse
+                                                        .getActualHearingEntity().getHearingResultDate());
+                val hearingActual = new HearingActual();
+                hearingActual.setHearingOutcome(hearingOutcome);
+                getActualHearingDays(hearingResponse, hearingActual);
+
+                response.setHearingActuals(hearingActual);
+            }
         }
-        response.setHearingActuals(hearingActual);
 
     }
 
