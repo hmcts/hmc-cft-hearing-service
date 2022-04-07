@@ -19,7 +19,7 @@ public interface HearingManagementInterfaceApiClient {
     String DELETE_HEARINGS_URL = "/resources/linkedHearingGroup/{groupClientReference}";
 
     @DeleteMapping(value = DELETE_HEARINGS_URL, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    HearingManagementInterfaceResponse deleteLinkedHearingGroup(@RequestHeader(AUTHORIZATION) String token,
-                                                                @PathVariable("groupClientReference")
+    void deleteLinkedHearingGroup(@RequestHeader(AUTHORIZATION) String token,
+                                      @PathVariable("groupClientReference")
                                                                     String requestId);
 }

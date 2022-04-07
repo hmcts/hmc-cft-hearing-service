@@ -11,7 +11,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.AuthenticationResponse;
-import uk.gov.hmcts.reform.hmc.client.futurehearing.HearingManagementInterfaceResponse;
 import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 
@@ -84,9 +83,7 @@ public class FutureHearingRepositoryIT extends BaseTest {
         @Test
         void shouldSuccessfullyCreateLinkedHearingGroup() {
             stubSuccessfullyDeleteLinkedHearingGroups(TOKEN, REQUEST_ID);
-            HearingManagementInterfaceResponse response = defaultFutureHearingRepository
-                .deleteLinkedHearingGroup(REQUEST_ID);
-            assertEquals(200, response.getResponseCode());
+            defaultFutureHearingRepository.deleteLinkedHearingGroup(REQUEST_ID);
         }
 
         @Test

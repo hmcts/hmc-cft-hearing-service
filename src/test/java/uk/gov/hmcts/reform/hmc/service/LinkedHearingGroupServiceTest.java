@@ -38,6 +38,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS_UPDATE_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType.ORDERED;
@@ -115,12 +116,10 @@ class LinkedHearingGroupServiceTest {
             hearing1.setIsLinkedFlag(true);
             hearing1.setHearingResponses(List.of(
                 createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
-                                                           List.of(START_DATE_TIME_IN_THE_FUTURE)
-                ),
+                                                           List.of(START_DATE_TIME_IN_THE_FUTURE)),
                 createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE,
-                                                                   START_DATE_TIME_IN_THE_FUTURE)
-                )));
+                                                                   START_DATE_TIME_IN_THE_FUTURE))));
 
             HearingEntity hearing2 = new HearingEntity();
             hearing2.setId(HEARING_ID2);
@@ -129,8 +128,7 @@ class LinkedHearingGroupServiceTest {
             hearing2.setIsLinkedFlag(true);
             hearing2.setHearingResponses(List.of(
                 createHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
-                                                           List.of(START_DATE_TIME_IN_THE_FUTURE)
-                )));
+                                                           List.of(START_DATE_TIME_IN_THE_FUTURE))));
 
             LinkedGroupDetailsAudit groupDetailsAudit = createGroupDetailsAuditEntity(HEARING_GROUP_ID,
                                                                                       "ACTIVE",groupDetails);
@@ -142,7 +140,7 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(groupDetailsAudit);
             HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 200, "Success");
-            given(futureHearingRepository.deleteLinkedHearingGroup(REQUEST_ID)).willReturn(response);
+            doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
             service.deleteLinkedHearingGroup(HEARING_GROUP_ID);
 
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
@@ -322,7 +320,7 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(List.of(hearing1, hearing2));
             HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 200, "Success");
-            given(futureHearingRepository.deleteLinkedHearingGroup(REQUEST_ID)).willReturn(response);
+            doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
             service.deleteLinkedHearingGroup(HEARING_GROUP_ID);
 
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
@@ -353,7 +351,7 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(List.of(hearing));
             HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 200, "Success");
-            given(futureHearingRepository.deleteLinkedHearingGroup(REQUEST_ID)).willReturn(response);
+            doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
             service.deleteLinkedHearingGroup(HEARING_GROUP_ID);
 
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
@@ -385,7 +383,7 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(List.of(hearing));
             HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 400, "005 rejected by List Assist");
-            given(futureHearingRepository.deleteLinkedHearingGroup(REQUEST_ID)).willReturn(response);
+            doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(HEARING_GROUP_ID));
             assertEquals(REJECTED_BY_LIST_ASSIST, exception.getMessage());
@@ -418,7 +416,7 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(List.of(hearing));
             HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 500, "006 List Assist failed to respond");
-            given(futureHearingRepository.deleteLinkedHearingGroup(REQUEST_ID)).willReturn(response);
+            doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(HEARING_GROUP_ID));
             assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, exception.getMessage());

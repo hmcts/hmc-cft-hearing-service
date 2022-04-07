@@ -5,13 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.hmc.client.futurehearing.HearingManagementInterfaceResponse;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
+import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
+import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
@@ -185,30 +186,32 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         final String requestId = linkedGroupDetails.getRequestId();
         saveLinkedGroupDetailsAudit(linkedGroupDetails);
         linkedGroupHearings.forEach(hearingEntity -> saveLinkedHearingDetailsAudit(hearingEntity));
-        saveLinkedGroupDetails(linkedGroupDetails, null);
-        HearingManagementInterfaceResponse response = futureHearingRepository
-            .deleteLinkedHearingGroup(null);
-        getResponseFromListAssist(response, linkedGroupDetails);
+        saveLinkedGroupDetails(linkedGroupDetails, requestId);
+        try {
+            futureHearingRepository.deleteLinkedHearingGroup(requestId);
+            log.info("Response received from ListAssist successfully");
+            linkedGroupDetailsRepository.delete(linkedGroupDetails);
+        } catch (Exception exception) {
+            validateListAssistException(linkedGroupDetails, exception);
+        }
+
     }
 
-    private void getResponseFromListAssist(HearingManagementInterfaceResponse response,
-                                           LinkedGroupDetails linkedGroupDetails) {
-        if (String.valueOf(response.getResponseCode()).startsWith("4")) {
-            log.error("Exception occurred from ListAssist with status code: {} {}", response.getResponseCode(),
-                      response.getDescription());
+    private void validateListAssistException(LinkedGroupDetails linkedGroupDetails, Exception exception) {
+        if (exception instanceof BadFutureHearingRequestException) {
+            log.error(
+                "Exception occurred List Assist failed to respond with status code: {}",
+                ((BadFutureHearingRequestException) exception).getErrorDetails().getErrorCode());
             linkedGroupDetailsRepository.delete(linkedGroupDetails);
             throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
-        } else if (String.valueOf(response.getResponseCode()).startsWith("5")) {
-            log.error("Exception occurred List Assist failed to respond with status code: : {} {}",
-                      response.getResponseCode(), response.getDescription());
+        } else {
+            log.error(
+                "Time out exception occurred with status code:  {}",
+                ((AuthenticationException) exception).getErrorDetails().getErrorCode());
             saveLinkedGroupDetails(linkedGroupDetails, LIST_ASSIST);
             throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
-        } else {
-            log.info("ResponseCode received from List Assist :{} ",response.getResponseCode());
-            linkedGroupDetailsRepository.delete(linkedGroupDetails);
         }
     }
-
 
     private void saveLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails, String request) {
         if (LIST_ASSIST.equals(request)) {
