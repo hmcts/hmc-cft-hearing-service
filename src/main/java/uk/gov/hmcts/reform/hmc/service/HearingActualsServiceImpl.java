@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -35,12 +34,12 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_RESULT_TYPE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 
 @Service
 @Slf4j
 public class HearingActualsServiceImpl implements HearingActualsService {
-    private final HearingHelper hearingHelper;
     private final HearingRepository hearingRepository;
     private final HearingResponseRepository hearingResponseRepository;
     private final ActualHearingRepository actualHearingRepository;
@@ -58,14 +57,12 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     public HearingActualsServiceImpl(HearingRepository hearingRepository,
                                      HearingResponseRepository hearingResponseRepository,
                                      ActualHearingRepository actualHearingRepository,
-                                     HearingHelper hearingHelper,
                                      GetHearingActualsResponseMapper getHearingActualsResponseMapper,
                                      HearingActualsMapper hearingActualsMapper,
                                      HearingIdValidator hearingIdValidator) {
         this.hearingRepository = hearingRepository;
         this.hearingResponseRepository = hearingResponseRepository;
         this.actualHearingRepository = actualHearingRepository;
-        this.hearingHelper = hearingHelper;
         this.getHearingActualsResponseMapper = getHearingActualsResponseMapper;
         this.hearingIdValidator = hearingIdValidator;
         this.hearingActualsMapper = hearingActualsMapper;
@@ -84,23 +81,22 @@ public class HearingActualsServiceImpl implements HearingActualsService {
 
     @Transactional
     public void updateHearingActuals(Long hearingId, HearingActual request) {
-        hearingHelper.isValidFormat(hearingId.toString());
+        hearingIdValidator.isValidFormat(hearingId.toString());
         HearingEntity hearing = getHearing(hearingId);
         String hearingStatus = hearing.getStatus();
         validateHearingStatusForActuals(hearingStatus);
         validateRequestPayload(request, hearing);
 
-        HearingResponseEntity latestVersionHearingResponse = hearingHelper.getLatestVersionHearingResponse(hearing);
-        upsertNewHearingActuals(latestVersionHearingResponse, request);
+        Optional<HearingResponseEntity> latestVersionHearingResponse = hearing.getHearingResponseForLatestRequest();
+        if (latestVersionHearingResponse.isEmpty()) {
+            throw new BadRequestException(String.format(HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND, hearingId));
+        }
+        upsertNewHearingActuals(latestVersionHearingResponse.get(), request);
     }
 
     private void upsertNewHearingActuals(HearingResponseEntity latestVersionHearingResponse, HearingActual request) {
         ActualHearingEntity actualHearing = hearingActualsMapper
             .toActualHearingEntity(request);
-        if (latestVersionHearingResponse.getActualHearingEntity() != null
-            && latestVersionHearingResponse.getActualHearingEntity().getActualHearingId() != null) {
-            actualHearing.setActualHearingId(latestVersionHearingResponse.getActualHearingEntity().getActualHearingId() + 1);
-        }
         latestVersionHearingResponse.setActualHearingEntity(actualHearing);
         actualHearing.setHearingResponse(latestVersionHearingResponse);
         actualHearingRepository.save(actualHearing);
@@ -126,9 +122,9 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     }
 
     private void validateHearingActualDaysNotBeforeFirstHearingDate(HearingActual request, HearingEntity hearing) {
-        LocalDateTime startDate = hearingHelper.getLowestStartDateOfMostRecentHearingResponse(hearing);
+        LocalDate minStartDate = hearingIdValidator.getLowestStartDateOfMostRecentHearingResponse(hearing);
         request.getActualHearingDays().forEach(actualHearingDay -> {
-            if (actualHearingDay.getHearingDate().isBefore(startDate.toLocalDate())) {
+            if (actualHearingDay.getHearingDate().isBefore(minStartDate)) {
                 throw new BadRequestException(HEARING_ACTUALS_HEARING_DAYS_INVALID);
             }
         });

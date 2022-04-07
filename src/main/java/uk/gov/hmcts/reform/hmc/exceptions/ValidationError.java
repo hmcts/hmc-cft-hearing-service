@@ -151,6 +151,7 @@ public final class ValidationError {
     public static final String HEARING_ACTUALS_MISSING_HEARING_OUTCOME = "005 missing hearing outcome";
     public static final String HEARING_ACTUALS_MISSING_HEARING_DAY = "003 missing hearing day actuals";
     public static final String HEARING_ACTUALS_UN_EXPRECTED = "004 unexpected hearing day actuals";
+    public static final String HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND = "No response found on the hearing %s";
 
     public static final String HA_OUTCOME_TYPE_NOT_EMPTY = "hearingType cannot be null or empty";
     public static final String HA_OUTCOME_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;

@@ -452,7 +452,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (deleteHearingStatus != null) {
             boolean isValidStatus = DeleteHearingStatus.isValidHearingActuals(deleteHearingStatus);
             LocalDate minStartDate = hearingIdValidator
-                .filterHearingResponses(hearingRepository.findById(hearingId)
+                .getLowestStartDateOfMostRecentHearingResponse(hearingRepository.findById(hearingId)
                                             .orElseThrow(() -> new HearingNotFoundException(
                                                 hearingId,
                                                 HEARING_ID_NOT_FOUND

@@ -199,22 +199,36 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingType").value("Witness Statement"))
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingFinalFlag").value("false"))
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResult").value("COMPLETED"))
-                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResultReasonType").value("Nothing more to hear"))
+                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResultReasonType")
+                               .value("Nothing more to hear"))
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResultDate").value("2022-02-01"))
 
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingDate").value("2022-01-28"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingStartTime").value("2022-01-28T10:00:00"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingEndTime").value("2022-01-28T15:00:00"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].pauseDateTimes[0].pauseStartTime").value("2022-01-28T12:00:00"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].pauseDateTimes[0].pauseEndTime").value("2022-01-28T12:30:00"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingStartTime")
+                               .value("2022-01-28T10:00:00"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingEndTime")
+                               .value("2022-01-28T15:00:00"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].pauseDateTimes[0].pauseStartTime")
+                               .value("2022-01-28T12:00:00"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].pauseDateTimes[0].pauseEndTime")
+                               .value("2022-01-28T12:30:00"))
 
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualPartyId").value("123"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyRole").value("43333"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyChannelSubType").value("claiming party"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].didNotAttendFlag").value("false"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty").value(IsNull.nullValue()))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails[0].lastName").value("WitnessLastName1"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails[0].firstName").value("WitnessForeName1"));
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualPartyId")
+                               .value("123"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyRole")
+                               .value("43333"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyChannelSubType")
+                               .value("claiming party"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].didNotAttendFlag")
+                               .value("false"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
+                               .value(IsNull.nullValue()))
+                .andExpect(jsonPath(
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails[0].lastName")
+                               .value("WitnessLastName1"))
+                .andExpect(jsonPath(
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails[0].firstName")
+                               .value("WitnessForeName1"));
 
         }
 
@@ -227,7 +241,8 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingType").value("witness hearing"))
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingFinalFlag").value("true"))
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResult").value("COMPLETED"))
-                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResultReasonType").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResultReasonType")
+                               .value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResultDate").value("2022-02-15"))
 
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays", hasSize(2)))
@@ -251,22 +266,36 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingType").value("Witness Statement"))
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingFinalFlag").value("false"))
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResult").value("COMPLETED"))
-                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResultReasonType").value("Nothing more to hear"))
+                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResultReasonType")
+                               .value("Nothing more to hear"))
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResultDate").value("2022-02-01"))
 
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingDate").value("2022-01-28"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingStartTime").value("2022-01-28T10:00:00"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingEndTime").value("2022-01-28T15:00:00"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].pauseDateTimes[0].pauseStartTime").value("2022-01-28T12:00:00"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].pauseDateTimes[0].pauseEndTime").value("2022-01-28T12:30:00"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingStartTime")
+                               .value("2022-01-28T10:00:00"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingEndTime")
+                               .value("2022-01-28T15:00:00"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].pauseDateTimes[0].pauseStartTime")
+                               .value("2022-01-28T12:00:00"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].pauseDateTimes[0].pauseEndTime")
+                               .value("2022-01-28T12:30:00"))
 
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualPartyId").value("123"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyRole").value("43333"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyChannelSubType").value("claiming party"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].didNotAttendFlag").value("false"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty").value(IsNull.nullValue()))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails[0].lastName").value("WitnessLastName1"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails[0].firstName").value("WitnessForeName1"));
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualPartyId")
+                               .value("123"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyRole")
+                               .value("43333"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyChannelSubType")
+                               .value("claiming party"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].didNotAttendFlag")
+                               .value("false"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
+                               .value(IsNull.nullValue()))
+                .andExpect(jsonPath(
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails[0].lastName")
+                               .value("WitnessLastName1"))
+                .andExpect(jsonPath(
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails[0].firstName")
+                               .value("WitnessForeName1"));
         }
 
         // https://tools.hmcts.net/jira/browse/HHMAN-80 AC-09

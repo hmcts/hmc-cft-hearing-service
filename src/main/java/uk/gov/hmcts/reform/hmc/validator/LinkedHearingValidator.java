@@ -203,7 +203,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
         if (hearingEntity.isEmpty()
             || !PutHearingStatus.isValid(hearingEntity.get().getStatus())
             || (hearingEntity.get().hasHearingResponses()
-            && filterHearingResponses(hearingEntity.get()).isBefore(LocalDate.now()))) {
+            && getLowestStartDateOfMostRecentHearingResponse(hearingEntity.get()).isBefore(LocalDate.now()))) {
             throw new BadRequestException(
                 INVALID_STATE_FOR_HEARING_REQUEST.replace(HEARING_ID_PLACEHOLDER, details.getHearingId()));
         }
@@ -252,7 +252,7 @@ public class LinkedHearingValidator extends HearingIdValidator {
         return Collections.frequency(list, value);
     }
 
-    public LocalDate filterHearingResponses(HearingEntity hearingEntity) {
+    public LocalDate getLowestStartDateOfMostRecentHearingResponse(HearingEntity hearingEntity) {
         log.debug("hearing id: {}", hearingEntity.getId());
         Optional<HearingResponseEntity> hearingResponse = hearingEntity.getHearingResponseForLatestRequest();
         if (log.isDebugEnabled()) {

@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_VALID_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 
 @Component
@@ -56,10 +57,11 @@ public class HearingIdValidator {
         }
     }
 
-    public LocalDate filterHearingResponses(HearingEntity hearingEntity) {
+    public LocalDate getLowestStartDateOfMostRecentHearingResponse(HearingEntity hearingEntity) {
         Optional<HearingResponseEntity> hearingResponse = getHearingResponse(hearingEntity);
 
-        return getLowestDate(hearingResponse.orElseThrow(() -> new BadRequestException("bad request")));
+        return getLowestDate(hearingResponse.orElseThrow(() -> new BadRequestException(
+            String.format(HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND, hearingEntity.getId()))));
     }
 
     public LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
