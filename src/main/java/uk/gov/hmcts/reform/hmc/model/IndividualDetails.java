@@ -43,13 +43,11 @@ public class IndividualDetails {
     private String vulnerabilityDetails;
 
     @Size(max = 120, message = ValidationError.HEARING_CHANNEL_EMAIL_MAX_LENGTH)
-    @Email(message = ValidationError.HEARING_CHANNEL_EMAIL_INVALID)
-    private String hearingChannelEmail;
+    private List<@Email(message = ValidationError.HEARING_CHANNEL_EMAIL_INVALID) String> hearingChannelEmail;
 
     @Size(max = 30, message = ValidationError.HEARING_CHANNEL_PHONE_MAX_LENGTH)
-    @Pattern(regexp = "^\\+?(?:[0-9] ?){6,14}[0-9]$",
-        message = ValidationError.HEARING_CHANNEL_PHONE_INVALID)
-    private String hearingChannelPhone;
+    private List<@Pattern(regexp = "^\\+?(?:[0-9] ?){6,14}[0-9]$",
+        message = ValidationError.HEARING_CHANNEL_PHONE_INVALID) String> hearingChannelPhone;
 
     @Valid
     private List<RelatedParty> relatedParties;

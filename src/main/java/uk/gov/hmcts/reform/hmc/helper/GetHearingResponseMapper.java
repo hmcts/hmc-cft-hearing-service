@@ -173,11 +173,11 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         if (null != hearingPartyEntity.getContactDetails()
                 && !hearingPartyEntity.getContactDetails().isEmpty()) {
             if (hearingPartyEntity.getContactDetails().get(0).getContactDetails().contains("@")) {
-                individualDetails.setHearingChannelEmail(
-                        hearingPartyEntity.getContactDetails().get(0).getContactDetails());
+                individualDetails.setHearingChannelEmail(List.of(
+                        hearingPartyEntity.getContactDetails().get(0).getContactDetails()));
             } else {
-                individualDetails.setHearingChannelPhone(
-                        hearingPartyEntity.getContactDetails().get(0).getContactDetails());
+                individualDetails.setHearingChannelPhone(List.of(
+                        hearingPartyEntity.getContactDetails().get(0).getContactDetails()));
             }
         }
         RelatedParty relatedParty = new RelatedParty();

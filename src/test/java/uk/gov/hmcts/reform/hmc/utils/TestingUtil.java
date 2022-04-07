@@ -275,20 +275,20 @@ public class TestingUtil {
 
     public static IndividualDetails individualContactDetails_HearingChannelEmail() {
         IndividualDetails individualDetails = new IndividualDetails();
-        individualDetails.setHearingChannelEmail("hearing.channel@email.com");
+        individualDetails.setHearingChannelEmail(List.of("hearing.channel@email.com"));
         return individualDetails;
     }
 
     public static IndividualDetails individualContactDetails_HearingChannelPhone() {
         IndividualDetails individualDetails = new IndividualDetails();
-        individualDetails.setHearingChannelPhone("01234567890");
+        individualDetails.setHearingChannelPhone(List.of("01234567890"));
         return individualDetails;
     }
 
     public static IndividualDetails individualContactDetails() {
         IndividualDetails individualDetails = new IndividualDetails();
-        individualDetails.setHearingChannelEmail("hearing.channel@email.com");
-        individualDetails.setHearingChannelPhone("01234567890");
+        individualDetails.setHearingChannelEmail(List.of("hearing.channel@email.com"));
+        individualDetails.setHearingChannelPhone(List.of("01234567890"));
         return individualDetails;
 
     }
@@ -806,8 +806,8 @@ public class TestingUtil {
         individualDetails.setReasonableAdjustments(Arrays.asList("Adjust1","Adjust2","Adjust3"));
         individualDetails.setVulnerableFlag(false);
         individualDetails.setVulnerabilityDetails("More vulnerable");
-        individualDetails.setHearingChannelPhone("01111111111");
-        individualDetails.setHearingChannelEmail("hearing.channel_udated@email.com");
+        individualDetails.setHearingChannelPhone(List.of("01111111111"));
+        individualDetails.setHearingChannelEmail(List.of("hearing.channel_udated@email.com"));
         List<RelatedParty> relatedParties = new ArrayList<>();
         RelatedParty relatedParty1 = new RelatedParty();
         relatedParty1.setRelatedPartyID("Party1");

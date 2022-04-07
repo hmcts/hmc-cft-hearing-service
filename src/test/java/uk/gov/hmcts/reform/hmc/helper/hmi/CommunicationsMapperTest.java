@@ -19,16 +19,16 @@ class CommunicationsMapperTest {
     void shouldMapWhenPartyDetailsContainsEmailAndPhone() {
         PartyDetails partyDetails = new PartyDetails();
         IndividualDetails individualDetails = new IndividualDetails();
-        individualDetails.setHearingChannelPhone("phoneNumber");
-        individualDetails.setHearingChannelEmail("email");
+        individualDetails.setHearingChannelPhone(List.of("phoneNumber"));
+        individualDetails.setHearingChannelEmail(List.of("email"));
         partyDetails.setIndividualDetails(individualDetails);
         EntityCommunication entityCommunication = EntityCommunication.builder()
             .entityCommunicationType(PHONE_TYPE)
-            .entityCommunicationDetails("phoneNumber")
+            .entityCommunicationDetails(List.of("phoneNumber"))
             .build();
         EntityCommunication entityCommunicationTwo = EntityCommunication.builder()
             .entityCommunicationType(EMAIL_TYPE)
-            .entityCommunicationDetails("email")
+            .entityCommunicationDetails(List.of("email"))
             .build();
         List<EntityCommunication> expectedCommunications = Arrays.asList(entityCommunicationTwo, entityCommunication);
         CommunicationsMapper communicationsMapper = new CommunicationsMapper();
