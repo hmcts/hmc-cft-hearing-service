@@ -23,7 +23,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 class HearingIdValidatorTest {
 
     private static final Long VALID_HEARING_ID = 2000000000L;
-    private static final Long INVALID_HEARING_ID = 1000000000L;
 
     @InjectMocks
     private HearingIdValidator hearingIdValidator;
@@ -49,9 +48,32 @@ class HearingIdValidatorTest {
     }
 
     @Test
-    void shouldFailAsInvalidHearingIdFormat() {
+    void shouldFailAsNullInvalidHearingIdFormat() {
         Exception exception = assertThrows(BadRequestException.class, () -> hearingIdValidator
-                .validateHearingId(INVALID_HEARING_ID, null));
+                .validateHearingId(null, null));
+        assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
+    }
+
+    @Test
+    void shouldFailAsMaxLengthInvalidHearingIdFormat() {
+        final Long hearingId = 1000000000000000000L;
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingIdValidator
+                .validateHearingId(hearingId, INVALID_HEARING_ID_DETAILS));
+        assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
+    }
+
+    @Test
+    void shouldFailAsWrongNumberInvalidHearingIdFormat() {
+        final Long hearingId = 1000000000L;
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingIdValidator
+                .validateHearingId(hearingId, INVALID_HEARING_ID_DETAILS));
+        assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
+    }
+
+    @Test
+    void shouldFailAsAlphamericInvalidHearingIdFormat() {
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingIdValidator
+                .isValidFormat("ABCDEFG"));
         assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
     }
 

@@ -4,15 +4,12 @@ import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.S
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
@@ -69,21 +66,4 @@ public class HearingIdValidator {
         return hearingRepository.findByRequestId(requestId);
     }
 
-
-    public Optional<HearingResponseEntity> getHearingResponse(HearingEntity hearingEntity) {
-        Integer version = hearingEntity.getLatestRequestVersion();
-        List<HearingResponseEntity> entities = hearingEntity.getHearingResponses();
-        List<HearingResponseEntity> filteredEntities = entities.stream().filter(hearingResponseEntity ->
-                        null != hearingResponseEntity
-                                && null != hearingResponseEntity.getResponseVersion()
-                                && hearingResponseEntity.getResponseVersion().equals(version))
-                .collect(Collectors.toList());
-        if (filteredEntities.size() == 1) {
-            return Optional.of(entities.get(0));
-        } else if (filteredEntities.size() > 1) {
-            return filteredEntities.stream()
-                    .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
-        }
-        return Optional.empty();
-    }
 }
