@@ -416,7 +416,7 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(List.of(hearing));
             HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 500, "006 List Assist failed to respond");
-            doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
+            //stubDeleteLinkedHearingGroupsReturn5XX(TOKEN,REQUEST_ID);
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(HEARING_GROUP_ID));
             assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, exception.getMessage());
