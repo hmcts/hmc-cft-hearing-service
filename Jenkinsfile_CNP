@@ -31,8 +31,7 @@ def secrets = [
     secret('ccd-api-gateway-oauth2-client-secret', 'OAUTH2_CLIENT_SECRET'),
     secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
     secret('definition-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
-    secret('ccd-caseworker-autotest-password', 'CCD_CASEWORKER_AUTOTEST_PASSWORD'),
-    secret('ccd-befta-caseworker-1-pwd', 'CCD-BEFTA-CASEWORKER-PASSWORD'),
+    secret('ccd-caseworker-autotest-password', 'CCD_CASEWORKER_AUTOTEST_PASSWORD')
   ],
   'hmc-${env}': [
     secret('hmc-servicebus-connection-string', 'HMC_SERVICE_BUS_CONNECTION_STRING'),
