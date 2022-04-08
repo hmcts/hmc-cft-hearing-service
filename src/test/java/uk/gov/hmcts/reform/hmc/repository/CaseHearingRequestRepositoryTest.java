@@ -7,7 +7,6 @@ import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -81,7 +80,7 @@ class CaseHearingRequestRepositoryTest {
 
     @Test
     void testGetHearingDetailsWhenStatusNotPresent() {
-        List<CaseHearingRequestEntity> expectedDetails = Arrays.asList(TestingUtil.getCaseHearingsEntities());
+        List<CaseHearingRequestEntity> expectedDetails = List.of(TestingUtil.getCaseHearingsEntities());
         doReturn(expectedDetails).when(caseHearingRequestRepository).getHearingDetails(any());
         List<CaseHearingRequestEntity> entities = caseHearingRequestRepository.getHearingDetails(any());
         assertAll(

@@ -52,7 +52,8 @@ class LinkedHearingGroupServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        service = new LinkedHearingGroupServiceImpl(hearingRepository, linkedHearingValidator);
+        service = new LinkedHearingGroupServiceImpl(hearingRepository,
+               linkedGroupDetailsRepository, linkedHearingValidator);
     }
 
     @Nested

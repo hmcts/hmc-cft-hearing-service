@@ -67,7 +67,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
-                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.INSUFFICIENT_REQUEST_IDS
+                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.HEARINGS_IN_GROUP_SIZE
                     )))
                     .andReturn();
 
@@ -88,7 +88,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
-                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.INSUFFICIENT_REQUEST_IDS
+                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.HEARINGS_IN_GROUP_SIZE
                     )))
                     .andReturn();
 
@@ -287,7 +287,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
-                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.INSUFFICIENT_REQUEST_IDS
+                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.HEARINGS_IN_GROUP_SIZE
                     )))
                     .andReturn();
         }
@@ -307,7 +307,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
-                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.INSUFFICIENT_REQUEST_IDS
+                    .andExpect(jsonPath("$.errors", hasItem(ValidationError.HEARINGS_IN_GROUP_SIZE
                     )))
                     .andReturn();
 
@@ -516,15 +516,6 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         }
     }
 
-    private GroupDetails generateGroupDetails(LinkType linkType) {
-        GroupDetails groupDetails = new GroupDetails();
-        groupDetails.setGroupComments("comments");
-        groupDetails.setGroupLinkType(linkType.label);
-        groupDetails.setGroupName("name");
-        groupDetails.setGroupReason("reason");
-        return groupDetails;
-    }
-
     @Nested
     @DisplayName("DeleteLinkedHearingGroup")
     class DeleteLinkedHearingGroup {
@@ -590,5 +581,14 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                 .andExpect(status().is(200))
                 .andReturn();
         }
+    }
+
+    private GroupDetails generateGroupDetails(LinkType linkType) {
+        GroupDetails groupDetails = new GroupDetails();
+        groupDetails.setGroupComments("comments");
+        groupDetails.setGroupLinkType(linkType.label);
+        groupDetails.setGroupName("name");
+        groupDetails.setGroupReason("reason");
+        return groupDetails;
     }
 }

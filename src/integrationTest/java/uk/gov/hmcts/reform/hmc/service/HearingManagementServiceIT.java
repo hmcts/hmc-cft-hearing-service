@@ -3,10 +3,13 @@ package uk.gov.hmcts.reform.hmc.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
@@ -49,6 +52,8 @@ class HearingManagementServiceIT extends BaseTest {
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
 
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
+
+    private static final String HEARING_COMPLETION_DATA_SCRIPT = "classpath:sql/insert-caseHearings_actualhearings.sql";
 
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-caseHearings_request.sql";
 
@@ -229,6 +234,15 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
         assertEquals(2, response.getVersionNumber());
         assertNotNull(response.getTimeStamp());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
+    void testUpdateHearingCompletion_WithValidData() {
+        ResponseEntity responseEntity = hearingManagementService.hearingCompletion(2000000000L);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        HearingEntity hearingEntity = hearingRepository.findById(2000000000L).get();
+        assertEquals("ADJOURNED", hearingEntity.getStatus());
     }
 
     @Test

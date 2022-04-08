@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
 import java.util.Optional;
@@ -30,11 +32,17 @@ class HearingIdValidatorTest {
     @Mock
     private HearingRepository hearingRepository;
 
+    @Mock
+    private ActualHearingRepository actualHearingRepository;
+
+    @Mock
+    private ActualHearingDayRepository actualHearingDayRepository;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         hearingIdValidator =
-                new HearingIdValidator(hearingRepository);
+                new HearingIdValidator(hearingRepository, actualHearingRepository, actualHearingDayRepository);
     }
 
     @Test
@@ -43,7 +51,7 @@ class HearingIdValidatorTest {
                 PutHearingStatus.HEARING_REQUESTED.name(),
                 null, 1L);
         when(hearingRepository.findById(VALID_HEARING_ID)).thenReturn(Optional.of(expectedHearing));
-        Optional<HearingEntity> hearing = hearingIdValidator.getHearing(VALID_HEARING_ID);
+        Optional<HearingEntity> hearing = hearingRepository.findById(VALID_HEARING_ID);
         assertEquals(expectedHearing, hearing.get());
     }
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.util.List;
@@ -19,12 +20,15 @@ import javax.transaction.Transactional;
 public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService {
 
     private final HearingRepository hearingRepository;
+    private final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
     private final LinkedHearingValidator linkedHearingValidator;
 
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
+                                         LinkedGroupDetailsRepository linkedGroupDetailsRepository,
                                          LinkedHearingValidator linkedHearingValidator) {
         this.hearingRepository = hearingRepository;
+        this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
         this.linkedHearingValidator = linkedHearingValidator;
     }
 
@@ -45,7 +49,15 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         linkedHearingValidator.validateUnlinkingHearingsStatus(linkedGroupHearings);
         linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
 
-        linkedHearingValidator.deleteFromLinkedGroupDetails(linkedGroupHearings, hearingGroupId);
+        deleteFromLinkedGroupDetails(linkedGroupHearings, hearingGroupId);
+    }
+
+    public void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings, Long hearingGroupId) {
+        linkedGroupHearings.forEach(hearingEntity -> {
+            // TODO: unlink hearingEntity from the group and persist - https://tools.hmcts.net/jira/browse/HMAN-96
+        });
+        linkedGroupDetailsRepository.deleteHearingGroup(hearingGroupId);
+        // TODO: call ListAssist - https://tools.hmcts.net/jira/browse/HMAN-97
     }
 
 }

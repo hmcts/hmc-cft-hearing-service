@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.base.Enums;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,12 +12,15 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingNotValidForUnlinkingException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,13 +35,12 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARINGS_IN_GROUP_SIZE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_GROUP_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_PLACEHOLDER;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ORDER_NOT_UNIQUE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_REQUEST_ALREADY_LINKED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_REQUEST_CANNOT_BE_LINKED;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INSUFFICIENT_REQUEST_IDS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_GROUP_LINK_TYPE;
@@ -55,14 +58,20 @@ public class LinkedHearingValidator {
     private static final List<String> invalidDeleteGroupStatuses = Arrays.asList("PENDING", "ERROR");
 
     protected final HearingIdValidator hearingIdValidator;
-
+    protected final HearingRepository hearingRepository;
     protected final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
+    protected final LinkedHearingDetailsRepository linkedHearingDetailsRepository;
+    private static final String HEARING_ID_PLACEHOLDER = "<hearingId>";
 
     @Autowired
-    public LinkedHearingValidator(LinkedGroupDetailsRepository linkedGroupDetailsRepository,
-                                  HearingIdValidator hearingIdValidator) {
+    public LinkedHearingValidator(HearingIdValidator hearingIdValidator,
+                                  HearingRepository hearingRepository,
+                                  LinkedGroupDetailsRepository linkedGroupDetailsRepository,
+                                  LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
+        this.hearingRepository = hearingRepository;
         this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
         this.hearingIdValidator = hearingIdValidator;
+        this.linkedHearingDetailsRepository = linkedHearingDetailsRepository;
     }
 
     /**
@@ -97,7 +106,7 @@ public class LinkedHearingValidator {
                                                          List<LinkHearingDetails> linkHearingDetailsListPayload) {
         // get existing data linkedHearingDetails
         List<HearingEntity> linkedHearingDetailsListExisting
-                = hearingIdValidator.getHearingsByRequestId(requestId);
+                = hearingRepository.findByRequestId(requestId);
 
         // get obsolete linkedHearingDetails
         List<HearingEntity> linkedHearingDetailsListObsolete =
@@ -161,7 +170,7 @@ public class LinkedHearingValidator {
             checkSufficientRequestIds(hearingLinkGroupRequest, details);
             log.debug("hearingId: {}", details.getHearingId());
             hearingIdValidator.validateHearingId(Long.valueOf(details.getHearingId()), HEARING_ID_NOT_FOUND);
-            Optional<HearingEntity> hearingEntity = hearingIdValidator.getHearing(Long.valueOf(details.getHearingId()));
+            Optional<HearingEntity> hearingEntity = hearingRepository.findById(Long.valueOf(details.getHearingId()));
 
             if (hearingEntity.isPresent()) {
                 checkHearingRequestAllowsLinking(hearingEntity);
@@ -176,7 +185,7 @@ public class LinkedHearingValidator {
                                            LinkHearingDetails details) {
         int occurrences = getIdOccurrences(hearingLinkGroupRequest.getHearingsInGroup(), details.getHearingId());
         if (occurrences > 1) {
-            throw new BadRequestException(INSUFFICIENT_REQUEST_IDS);
+            throw new BadRequestException(HEARINGS_IN_GROUP_SIZE);
         }
     }
 
@@ -199,7 +208,7 @@ public class LinkedHearingValidator {
     public void checkHearingRequestIsNotInAnotherGroup(LinkHearingDetails details,
                                                         String requestId) {
         Optional<HearingEntity> hearing =
-                hearingIdValidator.getHearing(Long.parseLong(details.getHearingId()));
+                hearingRepository.findById(Long.parseLong(details.getHearingId()));
         if (hearing.isPresent()
             && ((null == requestId && hearing.get().getLinkedGroupDetails() != null)
             || (null != requestId && !hearing.get().getLinkedGroupDetails().getRequestId()
@@ -332,14 +341,6 @@ public class LinkedHearingValidator {
         return max.isPresent() ? max.get().getValue() : List.of();
     }
 
-    public void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings, Long hearingGroupId) {
-        linkedGroupHearings.forEach(hearingEntity -> {
-            // TODO: unlink hearingEntity from the group and persist - https://tools.hmcts.net/jira/browse/HMAN-96
-        });
-        linkedGroupDetailsRepository.deleteHearingGroup(hearingGroupId);
-        // TODO: call ListAssist - https://tools.hmcts.net/jira/browse/HMAN-97
-    }
-
     public LocalDate filterHearingResponses(HearingEntity hearingEntity) {
         log.debug("hearing id: {}", hearingEntity.getId());
         Optional<HearingResponseEntity> hearingResponse = hearingEntity.getHearingResponseForLatestRequest();
@@ -377,6 +378,24 @@ public class LinkedHearingValidator {
                                 .replace(HEARING_ID_PLACEHOLDER, hearingResponse.getHearing().getId().toString())
                                 + " valid hearingDayDetails not found"))
                 .getStartDateTime().toLocalDate();
+    }
+
+    public void validateHearingActualsStatus(Long hearingId, String errorMessage) {
+        String status = hearingRepository.getStatus(hearingId);
+        DeleteHearingStatus deleteHearingStatus = Enums.getIfPresent(DeleteHearingStatus.class, status).orNull();
+        if (deleteHearingStatus != null) {
+            boolean isValidStatus = DeleteHearingStatus.isValidHearingActuals(deleteHearingStatus);
+            LocalDate minStartDate = filterHearingResponses(hearingRepository.findById(hearingId)
+                            .orElseThrow(() -> new HearingNotFoundException(
+                                    hearingId,
+                                    HEARING_ID_NOT_FOUND
+                            )));
+            LocalDate now = LocalDate.now();
+            boolean isMinStartDatePast = minStartDate.isBefore(now) || minStartDate.equals(now);
+            if (!(isValidStatus && isMinStartDatePast)) {
+                throw new BadRequestException(errorMessage);
+            }
+        }
     }
 
 }

@@ -82,6 +82,10 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.EXTERNAL_CASE_R
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.FACILITIES_REQUIRED_MAX_LENGTH_MSG;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.FIRST_NAME_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.FIRST_NAME_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_HEARING_DAY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_UN_EXPRECTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_CHANNEL_EMAIL_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_CHANNEL_EMAIL_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_CHANNEL_PHONE_INVALID;
@@ -173,9 +177,11 @@ class HearingManagementControllerIT extends BaseTest {
     public static final String ROLE_NAME = "Hearing Manage";
     public static final String ROLE_TYPE = "ORGANISATION";
     public static final String HEARING_NOT_FOUND_EXCEPTION = "No hearing found for reference: %s";
+    private static final String hearingCompletion = "/hearingActualsCompletion";
 
     private static final String INSERT_DATA_SCRIPT = "classpath:sql/insert-hearing.sql";
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
+    private static final String CASE_HEARING_ACTUAL_HEARING = "classpath:sql/insert-caseHearings_actualhearings.sql";
     private static final String UPDATE_HEARINGS_DATA_SCRIPT = "classpath:sql/update-case-hearing-request.sql";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
@@ -1027,6 +1033,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
+
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
     void shouldReturn201WhenUpdateHearingRequestIsValidWith2PartyDetailsAndOrgDetail() throws Exception {
@@ -1080,5 +1087,88 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
+    void shouldReturn404WhenHearingIdNotAvailableHearingCompletion() throws Exception {
+        mockMvc.perform(post(hearingCompletion + "/2000000001")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(404))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem(("001 No such id: 2000000001"))))
+            .andReturn();
+    }
 
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
+    void shouldReturn404WhenHearingIdIsNotValidHearingCompletion() throws Exception {
+        mockMvc.perform(post(hearingCompletion + "/30000000")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem((INVALID_HEARING_ID_DETAILS))))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
+    void shouldReturn404WhenHearingStatusIsNotVaidHearingCompletion() throws Exception {
+        mockMvc.perform(post(hearingCompletion + "/2000000009")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem((HEARING_ACTUALS_INVALID_STATUS))))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
+    void shouldReturn404WhenHearingStatusListedAndMinStartDateIsBeforeTodayHearingCompletion() throws Exception {
+        mockMvc.perform(post(hearingCompletion + "/2000000010")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
+    void shouldReturn404WhenActualHearingMissingForHearingResponseHearingCompletion() throws Exception {
+        mockMvc.perform(post(hearingCompletion + "/2000000012")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem((HEARING_ACTUALS_MISSING_HEARING_OUTCOME))))
+            .andReturn();
+    }
+
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
+    void shouldReturn404WhenActualHearingDayMissingForResultTypeResponseHearingCompletion() throws Exception {
+        mockMvc.perform(post(hearingCompletion + "/2000000013")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem((HEARING_ACTUALS_MISSING_HEARING_DAY))))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
+    void shouldReturn404WhenActualHearingDayExistsForCanceledResultTypeResponseHearingCompletion() throws Exception {
+        mockMvc.perform(post(hearingCompletion + "/2000000014")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem((HEARING_ACTUALS_UN_EXPRECTED))))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
+    void shouldUpdateHearingCompletion() throws Exception {
+        mockMvc.perform(post(hearingCompletion + "/2000000000")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
+            .andReturn();
+    }
 }
