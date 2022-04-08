@@ -158,7 +158,7 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(groupDetailsAudit);
             HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 200, "Success");
-            // doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
+            doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
             service.deleteLinkedHearingGroup(HEARING_GROUP_ID);
 
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
