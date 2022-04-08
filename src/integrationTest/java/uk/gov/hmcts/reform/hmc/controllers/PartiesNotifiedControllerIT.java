@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,15 +12,29 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
+import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
+import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
+import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignments;
+import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.CASE_TYPE;
+import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.JURISDICTION;
+import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.ROLE_TYPE;
+import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.USER_ID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 
 class PartiesNotifiedControllerIT extends BaseTest {
 
@@ -37,9 +52,39 @@ class PartiesNotifiedControllerIT extends BaseTest {
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-caseHearings_request.sql";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
+    private void stubRoleAssignments() {
+        RoleAssignmentResource resource = new RoleAssignmentResource();
+        resource.setRoleName(HEARING_MANAGER);
+        resource.setRoleType(ROLE_TYPE);
+        RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
+        attributesResource.setCaseType(Optional.of(CASE_TYPE));
+        attributesResource.setJurisdiction(Optional.of(JURISDICTION));
+        resource.setAttributes(attributesResource);
+
+        RoleAssignmentResource hearingViewer = new RoleAssignmentResource();
+        hearingViewer.setRoleName(HEARING_VIEWER);
+        hearingViewer.setRoleType(ROLE_TYPE);
+        RoleAssignmentAttributesResource hearingViewerResource = new RoleAssignmentAttributesResource();
+        hearingViewerResource.setCaseType(Optional.of(CASE_TYPE));
+        hearingViewerResource.setJurisdiction(Optional.of(JURISDICTION));
+        hearingViewer.setAttributes(hearingViewerResource);
+        List<RoleAssignmentResource> roleAssignmentList = new ArrayList<>();
+        roleAssignmentList.add(resource);
+        roleAssignmentList.add(hearingViewer);
+        RoleAssignmentResponse response = new RoleAssignmentResponse();
+        response.setRoleAssignments(roleAssignmentList);
+        stubReturn200RoleAssignments(USER_ID, response);
+    }
+
     @Nested
     @DisplayName("PutPartiesNotified")
     class PutPartiesNotified {
+
+        @BeforeEach
+        void setUp() {
+            stubRoleAssignments();
+        }
+
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn200_WhenPartiesNotifiedIsSuccess() throws Exception {
@@ -116,6 +161,12 @@ class PartiesNotifiedControllerIT extends BaseTest {
     @Nested
     @DisplayName("GetPartiesNotified")
     class GetPartiesNotified {
+
+        @BeforeEach
+        void setUp() {
+            stubRoleAssignments();
+        }
+
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn200_WhenPartiesNotifiedIsSuccess() throws Exception {
