@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
@@ -288,6 +289,10 @@ class HearingManagementControllerIT extends BaseTest {
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        UnavailabilityDow unavailabilityDowMonday = new UnavailabilityDow();
+        unavailabilityDowMonday.setDow("Monday");
+        unavailabilityDowMonday.setDowUnavailabilityType(DayOfWeekUnAvailableType.ALL.label);
+        createHearingRequest.getPartyDetails().get(0).setUnavailabilityDow(List.of(unavailabilityDowMonday));
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         stubSuccessfullyValidateHearingObject(createHearingRequest);
