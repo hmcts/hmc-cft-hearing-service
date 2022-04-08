@@ -83,7 +83,6 @@ class LinkedHearingGroupServiceIT extends BaseTest {
 
     }
 
-    @Disabled
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_LinkedHearingDetails4xxError() {
@@ -113,7 +112,6 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         validateHearingAuditDetails(linkedOrder);
     }
 
-    @Disabled
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_LinkedHearingDetails5xxError() {

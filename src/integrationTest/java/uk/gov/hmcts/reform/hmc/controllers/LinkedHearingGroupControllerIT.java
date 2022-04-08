@@ -583,8 +583,8 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
         void shouldReturn200_WhenHearingGroupExists() throws Exception {
-            stubSuccessfullyDeleteLinkedHearingGroups(TOKEN, "1234");
-            mockMvc.perform(delete(url + "/7600000000")
+            stubSuccessfullyDeleteLinkedHearingGroups(TOKEN, "12345");
+            mockMvc.perform(delete(url + "/7700000000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(200))
                 .andReturn();
@@ -593,8 +593,8 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
         void shouldReturn4xx_WhenDeleteLinkedHearing() throws Exception {
-            stubDeleteLinkedHearingGroupsReturn4XX(TOKEN, "1234");
-            mockMvc.perform(delete(url + "/7600000000")
+            stubDeleteLinkedHearingGroupsReturn4XX(TOKEN, "12345");
+            mockMvc.perform(delete(url + "/7700000000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasItem(REJECTED_BY_LIST_ASSIST)))
@@ -604,10 +604,10 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
         void shouldReturn5xx_WhenDeleteLinkedHearing() throws Exception {
-            stubDeleteLinkedHearingGroupsReturn5XX(TOKEN, "1234");
-            mockMvc.perform(delete(url + "/7600000000")
+            stubDeleteLinkedHearingGroupsReturn5XX(TOKEN, "12345");
+            mockMvc.perform(delete(url + "/7700000000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().is(500))
+                .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasItem(LIST_ASSIST_FAILED_TO_RESPOND)))
                 .andReturn();
         }
