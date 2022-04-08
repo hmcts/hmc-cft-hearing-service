@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.hmc.data.ActualHearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualPartyRelationshipDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
+import uk.gov.hmcts.reform.hmc.data.ContactDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
@@ -291,6 +292,20 @@ public class TestingUtil {
         individualDetails.setHearingChannelPhone(List.of("01234567890"));
         return individualDetails;
 
+    }
+
+    public static ContactDetailsEntity contactDetailsEntity_Email() {
+        ContactDetailsEntity contactDetailsEntity = new ContactDetailsEntity();
+        contactDetailsEntity.setContactDetails("hearing.channel@email.com");
+        contactDetailsEntity.setContactType("email");
+        return contactDetailsEntity;
+    }
+
+    public static ContactDetailsEntity contactDetailsEntity_Phone() {
+        ContactDetailsEntity contactDetailsEntity = new ContactDetailsEntity();
+        contactDetailsEntity.setContactDetails("01234567890");
+        contactDetailsEntity.setContactType("phone");
+        return contactDetailsEntity;
     }
 
     public static DeleteHearingRequest deleteHearingRequest() {
@@ -658,6 +673,7 @@ public class TestingUtil {
         entity.setPartyReference("reference");
         entity.setPartyType(PartyType.IND);
         entity.setPartyRoleType("role");
+        entity.setContactDetails(List.of(contactDetailsEntity_Email(), contactDetailsEntity_Phone()));
         entity.setIndividualDetailEntity(List.of(individualDetailEntity()));
         return entity;
     }
