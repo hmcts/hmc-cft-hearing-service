@@ -18,9 +18,6 @@
   "request": {
     "headers": {
       "_extends_": "Common_Request_Headers"
-    },
-    "pathVariables": {
-      "hearingID": "overwriteme"
     }
   },
   "expectedResponse": {

@@ -1,8 +1,8 @@
 {
-  "_guid_": "S-002.1-get-hearing",
+  "_guid_": "S-004.2-get-hearing",
   "_extends_" : "GetHearingRequestPositiveGeneric",
   "specs": [
-    "to verify versionNumber=2 and status=CANCELLATION_REQUESTED"
+    "to get hearing to show version number hasn't been incremented"
   ],
   "request": {
     "pathVariables": {
@@ -12,21 +12,16 @@
   "expectedResponse": {
     "responseCode": 200,
     "responseMessage": "OK",
-    "headers": {
-      "Content-Length": "[[ANYTHING_PRESENT]]",
-      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
-      "Date": "[[ANYTHING_PRESENT]]",
-      "Request-Context": "[[ANY_NULLABLE]]"
-    },
     "body": {
       "requestDetails": {
         "timestamp": "[[ANYTHING_PRESENT]]",
-        "status": "CANCELLATION_REQUESTED",
-        "versionNumber": 2,
+        "status": "HEARING_REQUESTED",
+        "versionNumber": 1,
         "hearingRequestID" : "[[ANYTHING_PRESENT]]"
       },
       "caseDetails": "[[ANYTHING_PRESENT]]",
       "hearingDetails" : "[[ANYTHING_PRESENT]]",
+      "partyDetails" : "[[ANYTHING_PRESENT]]",
       "hearingResponse": "[[ANYTHING_PRESENT]]"
     }
   }

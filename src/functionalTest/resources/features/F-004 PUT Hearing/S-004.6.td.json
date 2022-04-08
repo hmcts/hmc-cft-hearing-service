@@ -1,0 +1,91 @@
+{
+  "_guid_": "S-004.6",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "amend hearing",
+  "method": "PUT",
+  "uri": "/hearing/{hearingID}",
+  "s2sClientId": "xui_webapp",
+  "specs": [
+    "contains only the mandatory fields",
+    "has the 201 code",
+    "an active profile in CCD",
+    "has a versionNumber of 2",
+    "has a status of HEARING_REQUESTED"
+  ],
+  "users": {
+    "invokingUser": {
+      "username": "master.caseworker@gmail.com",
+      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
+    }
+  },
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    },
+    "pathVariables": {
+      "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    },
+    "body": {
+      "requestDetails": {
+        "requestTimeStamp": "2021-08-10T12:20:00.000Z",
+        "versionNumber": 1
+      },
+      "hearingDetails": {
+        "autolistFlag": true,
+        "hearingType": "Some hearing type",
+        "hearingWindow": {
+          "dateRangeStart": "2022-05-10",
+          "dateRangeEnd": "2023-05-10"
+        },
+        "duration": 60,
+        "hearingPriorityType": "Priority type",
+        "hearingLocations": [
+          {
+            "locationType": "court",
+            "locationId": "685391"
+          }
+        ],
+        "panelRequirements": {
+        }
+      },
+      "caseDetails": {
+        "hmctsServiceCode": "1234",
+        "caseRef": "1641911514704411",
+        "caseDeepLink": "https://www.google.com",
+        "hmctsInternalCaseName": "Internal case name",
+        "publicCaseName": "Public case name",
+        "caseCategories": [
+          {
+            "categoryType": "CASETYPE",
+            "categoryValue": "CT2"
+          }
+        ],
+        "caseManagementLocationCode": "CMLC123",
+        "caserestrictedFlag": true,
+        "caseSLAStartDate": "2021-10-10"
+      },
+      "partyDetails": [
+        {
+          "partyID": "P1",
+          "partyType": "IND",
+          "partyRole": "DEF",
+          "individualDetails": {
+            "title": "Mr",
+            "firstName": "John",
+            "lastName": "Doe"
+          }
+        }
+      ]
+    }
+  },
+  "expectedResponse": {
+    "responseCode": 201,
+    "responseMessage": "OK",
+    "body": {
+      "hearingRequestID": "[[ANYTHING_PRESENT]]",
+      "status": "HEARING_REQUESTED",
+      "timeStamp": "[[ANYTHING_PRESENT]]",
+      "versionNumber": 2
+    }
+  }
+}

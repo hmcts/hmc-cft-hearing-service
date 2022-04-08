@@ -1,23 +1,13 @@
 {
   "_guid_": "S-003.1",
-  "productName": "HMC CFT Hearing Service",
-  "operationName": "get hearing",
-  "method": "GET",
-  "uri": "/hearing/{hearingID}",
+  "_extends_" : "GetHearingRequestPositiveGeneric",
+
   "specs": [
     "has the 200 OK code",
     "an active profile in CCD"
   ],
-  "users": {
-    "invokingUser": {
-      "username": "master.caseworker@gmail.com",
-      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
-    }
-  },
+
   "request": {
-    "headers": {
-      "_extends_": "Common_Request_Headers"
-    },
     "pathVariables": {
       "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
     }
@@ -25,24 +15,93 @@
   "expectedResponse": {
     "responseCode": 200,
     "responseMessage": "OK",
-    "headers": {
-      "Content-Length": "[[ANYTHING_PRESENT]]",
-      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
-      "Date": "[[ANYTHING_PRESENT]]",
-      "Request-Context": "[[ANY_NULLABLE]]"
-    },
     "body": {
-      "_extends_" : "createHearingRequestFullData",
       "requestDetails": {
-        "timestamp": "[[ANYTHING_PRESENT]]",
-        "status": "HEARING_REQUESTED",
-        "versionNumber": 1,
-        "partiesNotified": null
+        "hearingRequestID" : "[[ANYTHING_PRESENT]]"
       },
-      "caseDetails": {
-        "caseRef": "${[scenarioContext][parentContext][CreateCase][testData][actualResponse][body][id]}"
+      "caseDetails" : {
+        "hmctsServiceCode" : "ABA1",
+        "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
+        "externalCaseReference" : "EXT/REF123",
+        "caseDeepLink" : "https://www.google.com",
+        "hmctsInternalCaseName" : "Internal case name",
+        "publicCaseName" : "Public case name",
+        "caseAdditionalSecurityFlag" : true,
+        "caseInterpreterRequiredFlag" : true,
+        "caseCategories" : [ {
+          "categoryType" : "caseType",
+          "categoryValue" : "CT2"
+        } ],
+        "caseManagementLocationCode" : "CMLC123",
+        "caserestrictedFlag" : true,
+        "caseSLAStartDate" : "2021-10-10"
       },
-      "hearingResponse": []
+      "hearingDetails" : {
+        "hearingType" : "Some hearing type",
+        "hearingWindow" : {
+          "dateRangeStart" : "2022-05-10",
+          "dateRangeEnd" : "2023-05-10",
+          "firstDateTimeMustBe" : null
+        },
+        "duration" : 60,
+        "nonStandardHearingDurationReasons" : [ "First reason", "Second reason" ],
+        "hearingPriorityType" : "Priority type",
+        "numberOfPhysicalAttendees" : 4,
+        "hearingInWelshFlag" : false,
+        "hearingLocations" : [ {
+          "locationType" : "court",
+          "locationId" : "685391"
+        } ],
+        "facilitiesRequired" : [ "First facility", "Second facility" ],
+        "listingComments" : "Some listing comments",
+        "hearingRequester" : "Some judge",
+        "privateHearingRequiredFlag" : false,
+        "leadJudgeContractType" : "AB123",
+        "panelRequirements" : {
+          "roleType" : [ "RoleType2" ],
+          "authorisationTypes" : null,
+          "authorisationSubType" : null,
+          "panelPreferences" : null,
+          "panelSpecialisms" : null
+        },
+        "hearingIsLinkedFlag" : false,
+        "autolistFlag" : true
+      },
+      "partyDetails" : [ {
+        "partyID" : "P1",
+        "partyType" : "IND",
+        "partyRole" : "DEF",
+        "individualDetails" : {
+          "title" : "Mr",
+          "firstName" : "Joe",
+          "lastName" : "Bloggs",
+          "preferredHearingChannel" : "Channel 4",
+          "interpreterLanguage" : "French",
+          "reasonableAdjustments" : [ "Ad1" ],
+          "vulnerableFlag" : true,
+          "vulnerabilityDetails" : "A bit vulnerable",
+          "hearingChannelEmail" : "hearing.channel@email.com",
+          "hearingChannelPhone" : null,
+          "relatedParties" : [ {
+            "relatedPartyID" : "P7",
+            "relationshipType" : "p7 Sibling"
+          } ],
+          "custodyStatus" : null,
+          "otherReasonableAdjustmentDetails" : null
+        },
+        "unavailabilityRanges" : [ {
+          "unavailableFromDate" : "2022-05-08",
+          "unavailableToDate" : "2022-05-09",
+          "unavailabilityType" : null
+        } ],
+        "unavailabilityDOW" : [ {
+          "DOW" : "Monday",
+          "DOWUnavailabilityType" : "AM"
+        }, {
+          "DOW" : null,
+          "DOWUnavailabilityType" : "All Day"
+        } ]
+      } ]
     }
   }
 }
