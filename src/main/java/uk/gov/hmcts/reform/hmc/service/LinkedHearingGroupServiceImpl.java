@@ -201,15 +201,15 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     }
 
     private void validateListAssistException(LinkedGroupDetails linkedGroupDetails, Exception exception) {
+        //Errors with 4xxx
         if (exception instanceof BadFutureHearingRequestException) {
-            log.error(
-                "Exception occurred List Assist failed to respond with status code: {}",
+            log.error("Exception occurred List Assist failed to respond with status code: {}",
                 ((BadFutureHearingRequestException) exception).getErrorDetails().getErrorCode());
             linkedGroupDetailsRepository.delete(linkedGroupDetails);
             throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
         } else {
-            log.error(
-                "Time out exception occurred with status code:  {}",
+            //Errors with 5xxx
+            log.error("Time out exception occurred with status code:  {}",
                 ((AuthenticationException) exception).getErrorDetails().getErrorCode());
             transactionHandler.runInNewTransaction(() -> saveLinkedGroupDetails(linkedGroupDetails, LIST_ASSIST));
             throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);

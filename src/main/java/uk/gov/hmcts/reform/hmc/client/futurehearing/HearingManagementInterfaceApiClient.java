@@ -16,7 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @SuppressWarnings("checkstyle:abbreviationaswordinname")
 public interface HearingManagementInterfaceApiClient {
 
-    String DELETE_HEARINGS_URL = "/resources/linkedHearingGroup/{groupClientReference}";
+    String DELETE_HEARINGS_URL = "/resources/linked-hearing-group/{groupClientReference}";
 
     @DeleteMapping(value = DELETE_HEARINGS_URL, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     void deleteLinkedHearingGroup(@RequestHeader(AUTHORIZATION) String token,

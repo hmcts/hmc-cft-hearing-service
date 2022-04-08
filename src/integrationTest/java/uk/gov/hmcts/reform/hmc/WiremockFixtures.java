@@ -28,6 +28,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -42,7 +43,7 @@ public class WiremockFixtures {
     private static final String SCOPE = "SCOPE";
     private static final String GRANT_TYPE = "GRANT_TYPE";
     private static final String GET_TOKEN_URL = "/FH_GET_TOKEN_URL";
-    private static final String HMI_REQUEST_URL = "/resources/linkedHearingGroup";
+    private static final String HMI_REQUEST_URL = "/resources/linked-hearing-group";
     private static final String SOURCE_SYSTEM = "SOURCE_SYSTEM";
     private static final String DESTINATION_SYSTEM = "DESTINATION_SYSTEM";
 
@@ -97,7 +98,7 @@ public class WiremockFixtures {
                     .willReturn(aResponse()
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
-                                    .withStatus(200)
+                                    .withStatus(HTTP_OK)
                     ));
     }
 
@@ -106,8 +107,8 @@ public class WiremockFixtures {
         response.setResponseCode(400);
         response.setDescription(REJECTED_BY_LIST_ASSIST);
         stubFor(WireMock.delete(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
-                    .withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Accept", equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
                     .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
                     .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
@@ -116,7 +117,7 @@ public class WiremockFixtures {
                     .willReturn(aResponse()
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
-                                    .withStatus(400)
+                                    .withStatus(HTTP_BAD_REQUEST)
                     ));
     }
 
@@ -125,8 +126,8 @@ public class WiremockFixtures {
         response.setResponseCode(500);
         response.setDescription(LIST_ASSIST_FAILED_TO_RESPOND);
         stubFor(WireMock.delete(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
-                    .withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Accept", equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
                     .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
                     .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
@@ -135,7 +136,7 @@ public class WiremockFixtures {
                     .willReturn(aResponse()
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
-                                    .withStatus(500)
+                                    .withStatus(HTTP_INTERNAL_ERROR)
                     ));
     }
 
