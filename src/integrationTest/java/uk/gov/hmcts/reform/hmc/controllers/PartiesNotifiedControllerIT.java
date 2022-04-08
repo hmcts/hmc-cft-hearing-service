@@ -110,20 +110,6 @@ class PartiesNotifiedControllerIT extends BaseTest {
         }
 
         @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-        void shouldReturn200_WhenPartiesNotifiedIsSuccess() throws Exception {
-            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
-            PartiesNotified partiesNotified = new PartiesNotified();
-            partiesNotified.setServiceData(jsonNode);
-
-            mockMvc.perform(put(url + "/2000000000" + "?version=2")
-                                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .content(objectMapper.writeValueAsString(partiesNotified)))
-                .andExpect(status().is(200))
-                .andReturn();
-        }
-
-        @Test
         void shouldReturn400_WhenHearingIdIsInValid() throws Exception {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = new PartiesNotified();
