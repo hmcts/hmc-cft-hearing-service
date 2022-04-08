@@ -51,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -531,7 +532,6 @@ class LinkHearingGroupServiceTest {
         }
 
         @Test
-        @Disabled
         void shouldPassWhenHearingOrderIsSameSlot() {
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
@@ -555,7 +555,7 @@ class LinkHearingGroupServiceTest {
             response.setResponseCode(200);
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
-            //given(futureHearingRepository.createLinkedHearingGroup(any())).willReturn(response);
+            doNothing().when(futureHearingRepository).createLinkedHearingGroup(any());
             given(hearingRepository.findByLinkedGroupId(any())).willReturn(List.of(
                 TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
 
@@ -580,7 +580,6 @@ class LinkHearingGroupServiceTest {
         }
 
         @Test
-        @Disabled
         void shouldPassWithValidLinkedHearing() {
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
@@ -599,7 +598,7 @@ class LinkHearingGroupServiceTest {
             given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
             HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
             response.setResponseCode(200);
-            //given(futureHearingRepository.createLinkedHearingGroup(any())).willReturn(response);
+            doNothing().when(futureHearingRepository).createLinkedHearingGroup(any());
             given(hearingRepository.findByLinkedGroupId(any())).willReturn(List.of(
                 TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
 
