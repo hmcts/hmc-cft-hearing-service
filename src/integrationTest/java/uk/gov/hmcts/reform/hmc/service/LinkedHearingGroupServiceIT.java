@@ -101,6 +101,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
             .deleteLinkedHearingGroup(7700000000L));
+        assertEquals(REJECTED_BY_LIST_ASSIST, exception.getMessage());
         //validating Hearing details
         Optional<HearingEntity> hearingEntityAfterDelete = hearingRepository.findById(2100000005L);
         assertTrue(hearingEntityBeforeDelete.isPresent());
@@ -109,7 +110,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertNull(hearingEntityAfterDelete.get().getLinkedOrder());
         assertEquals(7700000000L, hearingEntityBeforeDelete.get().getLinkedGroupDetails().getLinkedGroupId());
         assertNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
-        assertEquals(REJECTED_BY_LIST_ASSIST, exception.getMessage());
+
         //validating LinkedGroupDetails
         Long linkedGroupId = linkedGroupDetailsRepository.isFoundForRequestId(REQUEST_ID2);
         assertNull(linkedGroupId);

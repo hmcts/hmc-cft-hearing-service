@@ -15,7 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
-import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,8 +23,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.hmc.client.futurehearing.FutureHearingErrorDecoder.INVALID_REQUEST;
-import static uk.gov.hmcts.reform.hmc.client.futurehearing.FutureHearingErrorDecoder.INVALID_SECRET;
-import static uk.gov.hmcts.reform.hmc.client.futurehearing.FutureHearingErrorDecoder.REQUEST_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.client.futurehearing.FutureHearingErrorDecoder.SERVER_ERROR;
 
 class FutureHearingErrorDecoderTest {
@@ -32,7 +30,7 @@ class FutureHearingErrorDecoderTest {
     private String methodKey = null;
     private Response response;
     private byte[] byteArrray;
-    private String inputString = "This response message should be logged";
+    private String inputString = "Response from FH failed with error code 400 ";
     private RequestTemplate template;
 
     @InjectMocks
@@ -45,7 +43,7 @@ class FutureHearingErrorDecoderTest {
     }
 
     @Test
-    void shouldThrowAuthenticationExceptionWith400Error() {
+    void shouldThrowBadFutureHearingRequestExceptionWith400Error() {
 
         Logger logger = (Logger) LoggerFactory.getLogger(FutureHearingErrorDecoder.class);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
@@ -60,18 +58,18 @@ class FutureHearingErrorDecoderTest {
 
         Exception exception = futureHearingErrorDecoder.decode(methodKey, response);
 
-        assertThat(exception).isInstanceOf(AuthenticationException.class);
+        assertThat(exception).isInstanceOf(BadFutureHearingRequestException.class);
         assertEquals(INVALID_REQUEST, exception.getMessage());
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
         assertEquals(Level.ERROR, logsList.get(0)
             .getLevel());
-        assertEquals(inputString, logsList.get(0)
+        assertEquals("Response from FH failed with error code 400 ", logsList.get(0)
             .getMessage());
     }
 
     @Test
-    void shouldThrowAuthenticationExceptionWith401Error() {
+    void shouldThrowBadFutureHearingRequestExceptionWith401Error() {
 
         Logger logger = (Logger) LoggerFactory.getLogger(FutureHearingErrorDecoder.class);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
@@ -86,18 +84,18 @@ class FutureHearingErrorDecoderTest {
 
         Exception exception = futureHearingErrorDecoder.decode(methodKey, response);
 
-        assertThat(exception).isInstanceOf(AuthenticationException.class);
-        assertEquals(INVALID_SECRET, exception.getMessage());
+        assertThat(exception).isInstanceOf(BadFutureHearingRequestException.class);
+        assertEquals(INVALID_REQUEST, exception.getMessage());
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
         assertEquals(Level.ERROR, logsList.get(0)
             .getLevel());
-        assertEquals(inputString, logsList.get(0)
+        assertEquals("Response from FH failed with error code 401 ", logsList.get(0)
             .getMessage());
     }
 
     @Test
-    void shouldThrowResourceNotFoundExceptionWith404Error() {
+    void shouldThrowBadFutureHearingRequestExceptionWith404Error() {
 
         Logger logger = (Logger) LoggerFactory.getLogger(FutureHearingErrorDecoder.class);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
@@ -112,13 +110,13 @@ class FutureHearingErrorDecoderTest {
 
         Exception exception = futureHearingErrorDecoder.decode(methodKey, response);
 
-        assertThat(exception).isInstanceOf(ResourceNotFoundException.class);
-        assertEquals(REQUEST_NOT_FOUND, exception.getMessage());
+        assertThat(exception).isInstanceOf(BadFutureHearingRequestException.class);
+        assertEquals(INVALID_REQUEST, exception.getMessage());
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
         assertEquals(Level.ERROR, logsList.get(0)
             .getLevel());
-        assertEquals(inputString, logsList.get(0)
+        assertEquals("Response from FH failed with error code 404 ", logsList.get(0)
             .getMessage());
     }
 
@@ -144,7 +142,7 @@ class FutureHearingErrorDecoderTest {
         assertEquals(1, logsList.size());
         assertEquals(Level.ERROR, logsList.get(0)
             .getLevel());
-        assertEquals(inputString, logsList.get(0)
+        assertEquals("Response from FH failed with error code 500 ", logsList.get(0)
             .getMessage());
     }
 }

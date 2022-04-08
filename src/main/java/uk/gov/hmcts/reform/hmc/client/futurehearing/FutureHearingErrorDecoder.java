@@ -10,9 +10,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 @Slf4j
 public class FutureHearingErrorDecoder implements ErrorDecoder {
     public static final String INVALID_REQUEST = "Missing or invalid request parameters";
-    public static final String INVALID_SECRET = "Authentication error";
     public static final String SERVER_ERROR = "Server error";
-    public static final String REQUEST_NOT_FOUND = "Hearing request could not be found";
 
     @Override
     public Exception decode(String methodKey, Response response) {
