@@ -52,6 +52,11 @@ class PartiesNotifiedControllerIT extends BaseTest {
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-caseHearings_request.sql";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
+    @BeforeEach
+    void setUp() {
+        stubRoleAssignments();
+    }
+
     private void stubRoleAssignments() {
         RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(HEARING_MANAGER);
@@ -76,96 +81,76 @@ class PartiesNotifiedControllerIT extends BaseTest {
         stubReturn200RoleAssignments(USER_ID, response);
     }
 
-    @Nested
-    @DisplayName("PutPartiesNotified")
-    class PutPartiesNotifiedSuccess {
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenPartiesNotifiedIsSuccess() throws Exception {
+        JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+        PartiesNotified partiesNotified = new PartiesNotified();
+        partiesNotified.setServiceData(jsonNode);
 
-        @BeforeEach
-        void setUp() {
-            stubRoleAssignments();
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-        void shouldReturn200_WhenPartiesNotifiedIsSuccess() throws Exception {
-            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
-            PartiesNotified partiesNotified = new PartiesNotified();
-            partiesNotified.setServiceData(jsonNode);
-
-            mockMvc.perform(put(url + "/2000000000" + "?version=2")
-                                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .content(objectMapper.writeValueAsString(partiesNotified)))
-                .andExpect(status().is(200))
-                .andReturn();
-        }
+        mockMvc.perform(put(url + "/2000000000" + "?version=2")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(partiesNotified)))
+            .andExpect(status().is(200))
+            .andReturn();
     }
 
-    @Nested
-    @DisplayName("PutPartiesNotified")
-    class PutPartiesNotified {
+    @Test
+    void shouldReturn400_WhenHearingIdIsInValid() throws Exception {
+        JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+        PartiesNotified partiesNotified = new PartiesNotified();
+        partiesNotified.setServiceData(jsonNode);
 
-        @BeforeEach
-        void setUp() {
-            stubRoleAssignments();
-        }
+        mockMvc.perform(put(url + "/1000000000" + "?version=2")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(partiesNotified)))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasItem(INVALID_HEARING_ID_DETAILS)))
+            .andReturn();
+    }
 
-        @Test
-        void shouldReturn400_WhenHearingIdIsInValid() throws Exception {
-            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
-            PartiesNotified partiesNotified = new PartiesNotified();
-            partiesNotified.setServiceData(jsonNode);
+    @Test
+    void shouldReturn404_WhenHearingIdDoesNotExist() throws Exception {
+        JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+        PartiesNotified partiesNotified = new PartiesNotified();
+        partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/1000000000" + "?version=2")
-                                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .content(objectMapper.writeValueAsString(partiesNotified)))
-                .andExpect(status().is(400))
-                .andExpect(jsonPath("$.errors", hasItem(INVALID_HEARING_ID_DETAILS)))
-                .andReturn();
-        }
+        mockMvc.perform(put(url + "/2000000001" + "?version=2")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(partiesNotified)))
+            .andExpect(status().is(404))
+            .andExpect(jsonPath("$.errors", hasItem("001 No such id: 2000000001")))
+            .andReturn();
+    }
 
-        @Test
-        void shouldReturn404_WhenHearingIdDoesNotExist() throws Exception {
-            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
-            PartiesNotified partiesNotified = new PartiesNotified();
-            partiesNotified.setServiceData(jsonNode);
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn404_WhenResponseVersionDoesNotMatch() throws Exception {
+        JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+        PartiesNotified partiesNotified = new PartiesNotified();
+        partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/2000000001" + "?version=2")
-                                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .content(objectMapper.writeValueAsString(partiesNotified)))
-                .andExpect(status().is(404))
-                .andExpect(jsonPath("$.errors", hasItem("001 No such id: 2000000001")))
-                .andReturn();
-        }
+        mockMvc.perform(put(url + "/2000000000" + "?version=25")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(partiesNotified)))
+            .andExpect(status().is(404))
+            .andExpect(jsonPath("$.errors", hasItem("002 No such response version")))
+            .andReturn();
+    }
 
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-        void shouldReturn404_WhenResponseVersionDoesNotMatch() throws Exception {
-            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
-            PartiesNotified partiesNotified = new PartiesNotified();
-            partiesNotified.setServiceData(jsonNode);
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn400_WhenPartiesNotifiedIsAlreadySet() throws Exception {
+        JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+        PartiesNotified partiesNotified = new PartiesNotified();
+        partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/2000000000" + "?version=25")
-                                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .content(objectMapper.writeValueAsString(partiesNotified)))
-                .andExpect(status().is(404))
-                .andExpect(jsonPath("$.errors", hasItem("002 No such response version")))
-                .andReturn();
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-        void shouldReturn400_WhenPartiesNotifiedIsAlreadySet() throws Exception {
-            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
-            PartiesNotified partiesNotified = new PartiesNotified();
-            partiesNotified.setServiceData(jsonNode);
-
-            mockMvc.perform(put(url + "/2000000010" + "?version=2")
-                                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .content(objectMapper.writeValueAsString(partiesNotified)))
-                .andExpect(status().is(400))
-                .andExpect(jsonPath("$.errors", hasItem("003 Already set")))
-                .andReturn();
-        }
+        mockMvc.perform(put(url + "/2000000010" + "?version=2")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(partiesNotified)))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasItem("003 Already set")))
+            .andReturn();
     }
 
     @Nested
