@@ -60,6 +60,9 @@ class LinkHearingGroupServiceTest {
     LinkedHearingDetailsRepository linkedHearingDetailsRepository;
 
     @Mock
+    AccessControlService accessControlService;
+
+    @Mock
     LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
     @BeforeEach
@@ -68,8 +71,9 @@ class LinkHearingGroupServiceTest {
         linkedHearingGroupService =
             new LinkedHearingGroupServiceImpl(
                 hearingRepository,
-                    linkedGroupDetailsRepository,
-                        linkedHearingDetailsRepository
+                linkedGroupDetailsRepository,
+                linkedHearingDetailsRepository,
+                accessControlService
             );
     }
 

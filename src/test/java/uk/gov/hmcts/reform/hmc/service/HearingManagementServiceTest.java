@@ -116,7 +116,7 @@ import static uk.gov.hmcts.reform.hmc.model.HearingResultType.CANCELLED;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
-import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARNING_MANAGER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.INVALID_CASE_REFERENCE;
 
@@ -485,7 +485,7 @@ class HearingManagementServiceTest {
         void shouldVerifyAccessWhenRoleAssignmentValidAndMatchesCaseJurisdictionAndCaseTypeId() {
             stubRoleAssignments(RoleAssignmentAttributes.builder()
                                     .jurisdiction(Optional.of(JURISDICTION))
-                                    .caseType(Optional.of(CASE_TYPE)), HEARNING_MANAGER);
+                                    .caseType(Optional.of(CASE_TYPE)), HEARING_MANAGER);
             doReturn(USER_ID).when(securityUtils).getUserId();
             DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
                 .jurisdiction(JURISDICTION)
@@ -726,7 +726,7 @@ class HearingManagementServiceTest {
         void shouldThrowInvalidRoleAssignmentExceptionWhenCaseTypeIsInvalidAndJurisdictionIsEmpty() {
             stubRoleAssignments(RoleAssignmentAttributes.builder()
                                     .jurisdiction(Optional.of(JURISDICTION))
-                                    .caseType(Optional.of(CASE_TYPE)), HEARNING_MANAGER);
+                                    .caseType(Optional.of(CASE_TYPE)), HEARING_MANAGER);
             doReturn(USER_ID).when(securityUtils).getUserId();
             DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
                 .jurisdiction("Different Jurisdiction")

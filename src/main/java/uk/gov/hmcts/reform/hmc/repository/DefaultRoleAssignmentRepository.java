@@ -40,7 +40,7 @@ public class DefaultRoleAssignmentRepository implements RoleAssignmentRepository
     public static final String ROLE_ASSIGNMENT_SERVICE_ERROR =
         "Problem %s Role Assignments from Role Assignment Service because of %s";
     public static final String ROLE_ASSIGNMENT_INVALID_ROLE =
-        "User requires a Role Assignment with a role type of ORGANISATION and role name of Hearing Manage";
+        "User requires a Role Assignment with a valid organisational hearing role";
     public static final String ROLE_ASSIGNMENT_INVALID_ATTRIBUTES =
         "User requires a Role Assignment with attributes matching the case's jurisdiction or case type, if present";
     public static final String ROLE_ASSIGNMENT_MISSING_REQUIRED = "Required Role Assignments are missing for Hearing";

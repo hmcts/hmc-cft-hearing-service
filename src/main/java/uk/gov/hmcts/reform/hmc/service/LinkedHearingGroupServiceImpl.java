@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,13 +40,16 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private static final List<String> invalidDeleteGroupStatuses = Arrays.asList("PENDING", "ERROR");
     private HearingRepository hearingRepository;
+    private AccessControlService accessControlService;
 
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
                                          LinkedGroupDetailsRepository linkedGroupDetailsRepository,
-                                         LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
+                                         LinkedHearingDetailsRepository linkedHearingDetailsRepository,
+                                         AccessControlService accessControlService) {
         super(hearingRepository, linkedGroupDetailsRepository, linkedHearingDetailsRepository);
         this.hearingRepository = hearingRepository;
+        this.accessControlService = accessControlService;
     }
 
     @Override
@@ -58,6 +62,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
         validateHearingGroup(hearingGroupId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(hearingGroupId);
+        verifyAccess(linkedGroupHearings);
         validateUnlinkingHearingsStatus(linkedGroupHearings);
         validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
 
@@ -67,6 +72,12 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     @Override
     public void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest) {
         validateHearingLinkGroupRequestForUpdate(requestId, hearingLinkGroupRequest);
+    }
+
+    private void verifyAccess(List<HearingEntity> linkedGroupHearings) {
+        linkedGroupHearings.stream()
+            .forEach(hearingEntity -> accessControlService
+                .verifyAccess(hearingEntity.getId(), Lists.newArrayList()));
     }
 
     private void validateHearingLinkGroupRequestForUpdate(String requestId,

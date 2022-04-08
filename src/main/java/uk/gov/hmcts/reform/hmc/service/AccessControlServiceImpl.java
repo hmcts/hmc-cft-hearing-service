@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
@@ -29,19 +30,20 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 @Slf4j
 public class AccessControlServiceImpl implements AccessControlService {
 
-    private RoleAssignmentService roleAssignmentService;
-    private SecurityUtils securityUtils;
-    private DataStoreRepository dataStoreRepository;
-    private CaseHearingRequestRepository caseHearingRequestRepository;
-    private HearingRepository hearingRepository;
+    private final RoleAssignmentService roleAssignmentService;
+    private final SecurityUtils securityUtils;
+    private final DataStoreRepository dataStoreRepository;
+    private final CaseHearingRequestRepository caseHearingRequestRepository;
+    private final HearingRepository hearingRepository;
 
-    public static final String HEARNING_MANAGER = "hearing-manager";
-    public static final String HEARNING_VIEWER = "hearing-viewer";
+    public static final String HEARING_MANAGER = "hearing-manager";
+    public static final String HEARING_VIEWER = "hearing-viewer";
     public static final String LISTED_HEARING_VIEWER = "listed-hearing-viewer";
 
-    private static final List<String> HMC_ROLE_NAMES = Lists.newArrayList(HEARNING_MANAGER,
-                                                                          HEARNING_VIEWER,
-                                                                          LISTED_HEARING_VIEWER);
+    private static final List<String> HMC_ROLE_NAMES = Lists.newArrayList(
+        HEARING_MANAGER,
+        HEARING_VIEWER,
+        LISTED_HEARING_VIEWER);
 
     public AccessControlServiceImpl(RoleAssignmentService roleAssignmentService,
                                     SecurityUtils securityUtils,
@@ -56,6 +58,10 @@ public class AccessControlServiceImpl implements AccessControlService {
         this.hearingRepository = hearingRepository;
     }
 
+    @Override
+    public void verifyAccess(Long hearingId, List<String> requiredRoles) {
+        verifyRoleAccess(requiredRoles, hearingId);
+    }
 
     @Override
     public void verifyCaseAccess(String caseReference, List<String> requiredRoles) {
@@ -63,6 +69,15 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     public void verifyCaseAccess(String caseReference, List<String> requiredRoles, Long hearingId) {
+        List<RoleAssignment> filteredRoleAssignments = verifyRoleAccess(requiredRoles, hearingId);
+
+        DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
+        if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
+            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
+        }
+    }
+
+    private List<RoleAssignment> verifyRoleAccess(List<String> requiredRoles, Long hearingId) {
         RoleAssignments roleAssignments = roleAssignmentService.getRoleAssignments(securityUtils.getUserId());
         if (roleAssignments.getRoleAssignments().isEmpty()) {
             throw new ResourceNotFoundException(String.format(ROLE_ASSIGNMENTS_NOT_FOUND, securityUtils.getUserId()));
@@ -73,14 +88,8 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
 
         verifyRequiredRolesExists(requiredRoles, filteredRoleAssignments);
-        if (hearingId != null) {
-            verifyHearingStatus(filteredRoleAssignments, hearingId);
-        }
-
-        DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
-        if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
-            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
-        }
+        verifyHearingStatus(filteredRoleAssignments, hearingId);
+        return filteredRoleAssignments;
     }
 
     @Override
@@ -92,7 +101,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     private void verifyRequiredRolesExists(List<String> requiredRoles, List<RoleAssignment> filteredRoleAssignments) {
-        if (requiredRoles.size() > 0) {
+        if (!requiredRoles.isEmpty()) {
             boolean containsRequiredRoles = filteredRoleAssignments.stream()
                 .anyMatch(roleAssignment -> requiredRoles.contains(roleAssignment.getRoleName()));
 
@@ -103,11 +112,13 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     private void verifyHearingStatus(List<RoleAssignment> filteredRoleAssignments, Long hearingId) {
-        String status = hearingRepository.getStatus(hearingId);
-        if (filteredRoleAssignments.size() == 1
-            && LISTED_HEARING_VIEWER.equals(filteredRoleAssignments.get(0).getRoleName())
-            && "LISTED".equals(status)) {
-            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_STATUS);
+        if (hearingId != null) {
+            String status = hearingRepository.getStatus(hearingId);
+            if (filteredRoleAssignments.size() == 1
+                && LISTED_HEARING_VIEWER.equals(filteredRoleAssignments.get(0).getRoleName())
+                && HearingStatus.LISTED.name().equals(status)) {
+                throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_STATUS);
+            }
         }
     }
 

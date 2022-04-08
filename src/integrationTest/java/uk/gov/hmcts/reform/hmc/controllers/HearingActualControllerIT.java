@@ -33,8 +33,8 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignme
 import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.CASE_TYPE;
 import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.JURISDICTION;
 import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.USER_ID;
-import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARNING_MANAGER;
-import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARNING_VIEWER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 
 
 class HearingActualControllerIT extends BaseTest {
@@ -97,7 +97,7 @@ class HearingActualControllerIT extends BaseTest {
 
         private void stubRoleAssignments() {
             RoleAssignmentResource resource = new RoleAssignmentResource();
-            resource.setRoleName(HEARNING_MANAGER);
+            resource.setRoleName(HEARING_MANAGER);
             resource.setRoleType(ROLE_TYPE);
             RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
             attributesResource.setCaseType(Optional.of(CASE_TYPE));
@@ -105,7 +105,7 @@ class HearingActualControllerIT extends BaseTest {
             resource.setAttributes(attributesResource);
 
             RoleAssignmentResource hearingViewer = new RoleAssignmentResource();
-            hearingViewer.setRoleName(HEARNING_VIEWER);
+            hearingViewer.setRoleName(HEARING_VIEWER);
             hearingViewer.setRoleType(ROLE_TYPE);
             RoleAssignmentAttributesResource hearingViewerResource = new RoleAssignmentAttributesResource();
             hearingViewerResource.setCaseType(Optional.of(CASE_TYPE));

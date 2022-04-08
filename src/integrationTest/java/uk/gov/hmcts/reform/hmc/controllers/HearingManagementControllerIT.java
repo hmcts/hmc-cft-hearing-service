@@ -156,8 +156,8 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.VULNERABLE_DETA
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
-import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARNING_MANAGER;
-import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARNING_VIEWER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
 
 class HearingManagementControllerIT extends BaseTest {
@@ -474,7 +474,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     private void stubRoleAssignments() {
         RoleAssignmentResource resource = new RoleAssignmentResource();
-        resource.setRoleName(HEARNING_MANAGER);
+        resource.setRoleName(HEARING_MANAGER);
         resource.setRoleType(ROLE_TYPE);
         RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
         attributesResource.setCaseType(Optional.of(CASE_TYPE));
@@ -482,7 +482,7 @@ class HearingManagementControllerIT extends BaseTest {
         resource.setAttributes(attributesResource);
 
         RoleAssignmentResource hearingViewer = new RoleAssignmentResource();
-        hearingViewer.setRoleName(HEARNING_VIEWER);
+        hearingViewer.setRoleName(HEARING_VIEWER);
         hearingViewer.setRoleType(ROLE_TYPE);
         RoleAssignmentAttributesResource hearingViewerResource = new RoleAssignmentAttributesResource();
         hearingViewerResource.setCaseType(Optional.of(CASE_TYPE));

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
 import javax.validation.Valid;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 
 @RestController
 @Validated
@@ -43,6 +45,7 @@ public class LinkHearingGroupController {
         @ApiResponse(code = 400, message = "005 Hearing Order is not unique")
     })
     public void validateLinkHearing(@RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
+        verifyAccess(hearingLinkGroupRequest);
         linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
     }
 
@@ -60,6 +63,16 @@ public class LinkHearingGroupController {
     })
     public void updateHearing(@RequestParam("id") String requestId,
                               @RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
+        verifyAccess(hearingLinkGroupRequest);
         linkedHearingGroupService.updateLinkHearing(requestId, hearingLinkGroupRequest);
+    }
+
+    private void verifyAccess(HearingLinkGroupRequest request) {
+        request.getHearingsInGroup().stream()
+            .map(hearingGroup -> hearingGroup.getHearingId())
+            .forEach(hearingId -> accessControlService.verifyAccess(
+                Long.valueOf(hearingId),
+                Lists.newArrayList(HEARING_MANAGER)
+            ));
     }
 }
