@@ -223,7 +223,7 @@ CREATE TABLE public.organisation_detail (
                       tech_party_id bigint not null,
                       organisation_name varchar(2000) not null,
                       organisation_type_code varchar(60) not null,
-                      hmcts_organisation_reference varchar(60) not null
+                      hmcts_organisation_reference varchar(60)
 );
 
 ALTER TABLE ONLY public.organisation_detail
