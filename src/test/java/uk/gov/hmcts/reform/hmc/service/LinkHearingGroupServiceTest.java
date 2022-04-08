@@ -11,11 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.HearingManagementInterfaceResponse;
+import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -24,6 +26,8 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
+import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
+import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
@@ -50,6 +54,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.client.futurehearing.FutureHearingErrorDecoder.INVALID_REQUEST;
+import static uk.gov.hmcts.reform.hmc.client.futurehearing.FutureHearingErrorDecoder.SERVER_ERROR;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.HEARING_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
@@ -433,7 +439,6 @@ class LinkHearingGroupServiceTest {
         }
 
         @Test
-        @Disabled
         void shouldFailBecauseOfError4xxFromListAssist() {
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
@@ -452,19 +457,20 @@ class LinkHearingGroupServiceTest {
             when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
             given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntityWithLinkDetails());
             given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
-
-            HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
-            response.setResponseCode(400);
-            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
-            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
-            //given(futureHearingRepository.createLinkedHearingGroup(any())).willReturn(response);
-            given(hearingRepository.findByLinkedGroupId(any())).willReturn(
+            given(hearingRepository.findByLinkedGroupId(1L)).willReturn(
                 List.of(TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
+
+            ErrorDetails errorDetails = new ErrorDetails();
+            errorDetails.setErrorCode(400);
+            Mockito.doThrow(new BadFutureHearingRequestException(INVALID_REQUEST, errorDetails))
+                .when(futureHearingRepository).createLinkedHearingGroup(any());
 
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
                                                              LinkType.SAME_SLOT.label, "reason"
             );
 
+            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
+            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
                 groupDetails,
                 Arrays.asList(
@@ -479,7 +485,6 @@ class LinkHearingGroupServiceTest {
         }
 
         @Test
-        @Disabled
         void shouldFailBecauseOfError5xxFromListAssist() {
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
@@ -498,19 +503,20 @@ class LinkHearingGroupServiceTest {
             when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
             given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntityWithLinkDetails());
             given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
-
-            HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
-            response.setResponseCode(500);
-            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
-            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
-            // given(futureHearingRepository.createLinkedHearingGroup(any())).willReturn(response);
             given(hearingRepository.findByLinkedGroupId(any())).willReturn(List.of(
                 TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
+
+            ErrorDetails errorDetails = new ErrorDetails();
+            errorDetails.setErrorCode(500);
+            Mockito.doThrow(new AuthenticationException(SERVER_ERROR, errorDetails))
+                .when(futureHearingRepository).createLinkedHearingGroup(any());
 
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
                                                              LinkType.SAME_SLOT.label, "reason"
             );
 
+            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
+            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
                 groupDetails,
                 Arrays.asList(

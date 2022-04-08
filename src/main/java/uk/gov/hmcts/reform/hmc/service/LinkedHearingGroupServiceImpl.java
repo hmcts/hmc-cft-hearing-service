@@ -64,6 +64,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         super(hearingRepository, linkedGroupDetailsRepository, linkedHearingDetailsRepository);
         this.futureHearingRepository = futureHearingRepository;
         this.objectMapperService = objectMapperService;
+        this.hearingRepository = hearingRepository;
     }
 
     @Override

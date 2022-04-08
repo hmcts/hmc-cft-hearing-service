@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.hmc.repository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubPostCreateLinkHearingGroup;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubPostMethodThrowingAuthenticationError;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyReturnToken;
 import static uk.gov.hmcts.reform.hmc.client.futurehearing.FutureHearingErrorDecoder.INVALID_REQUEST;
@@ -73,19 +71,6 @@ public class FutureHearingRepositoryIT extends BaseTest {
             assertThatThrownBy(() -> defaultFutureHearingRepository.retrieveAuthToken())
                 .isInstanceOf(AuthenticationException.class)
                 .hasMessageContaining(SERVER_ERROR);
-        }
-    }
-
-    @Nested
-    @DisplayName("Create Linked Hearing Group")
-    class CreateLinkedHearingGroup {
-        @Test
-        @Disabled
-        void shouldSuccessfullyCreateLinkedHearingGroup() {
-            stubPostCreateLinkHearingGroup(200, HMI_REQUEST_URL, TOKEN);
-            //HearingManagementInterfaceResponse response =
-            // defaultFutureHearingRepository.createLinkedHearingGroup(data);
-            //assertEquals(200, response.getResponseCode());
         }
     }
 }

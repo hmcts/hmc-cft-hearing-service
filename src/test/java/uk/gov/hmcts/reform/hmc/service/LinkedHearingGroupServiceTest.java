@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -79,7 +78,6 @@ class LinkedHearingGroupServiceTest {
 
     @Nested
     @DisplayName("deleteHearingGroup")
-    @Disabled
     class DeleteHearingGroup {
 
         @Test

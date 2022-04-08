@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,9 +17,11 @@ import uk.gov.hmcts.reform.hmc.client.futurehearing.HearingManagementInterfaceRe
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 
-public class FutureHearingRepositoryTest {
+class FutureHearingRepositoryTest {
 
     private AuthenticationResponse response;
     private String requestString;
@@ -61,16 +62,14 @@ public class FutureHearingRepositoryTest {
     }
 
     @Test
-    @Disabled
     void shouldSuccessfullyCreateLinkHearingRequest() {
         HearingManagementInterfaceResponse expectedResponse = new HearingManagementInterfaceResponse();
         expectedResponse.setResponseCode(200);
         response.setAccessToken("test-token");
         given(activeDirectoryApiClient.authenticate(requestString)).willReturn(response);
         JsonNode anyData = OBJECT_MAPPER.convertValue("test data", JsonNode.class);
-        //        given(hmiClient.createLinkedHearingGroup("Bearer test-token", anyData))
-        //            .willReturn(expectedResponse);
-        //        HearingManagementInterfaceResponse actualResponse = repository.createLinkedHearingGroup(anyData);
-        //        assertEquals(expectedResponse, actualResponse);
+        repository.createLinkedHearingGroup(anyData);
+        verify(hmiClient, times(1))
+            .createLinkedHearingGroup("Bearer " + response.getAccessToken(), anyData);
     }
 }

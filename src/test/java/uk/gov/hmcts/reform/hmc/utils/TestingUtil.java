@@ -271,6 +271,7 @@ public class TestingUtil {
 
     public static LinkedGroupDetails linkedGroupDetailsEntity() {
         LinkedGroupDetails entity = new LinkedGroupDetails();
+        entity.setLinkedGroupId(1L);
         entity.setRequestName("RequestName");
         entity.setReasonForLink("ReasonForLink");
         entity.setLinkType(LinkType.ORDERED);
