@@ -4,6 +4,7 @@
   "operationName": "amend hearing",
   "method": "PUT",
   "uri": "/hearing/{hearingID}",
+  "s2sClientId": "xui_webapp",
   "specs": [
   ],
   "users": {

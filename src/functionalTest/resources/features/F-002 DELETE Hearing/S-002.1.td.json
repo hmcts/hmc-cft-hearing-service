@@ -4,6 +4,7 @@
   "operationName": "delete hearing",
   "method": "DELETE",
   "uri": "/hearing/{hearingID}",
+  "s2sClientId": "xui_webapp",
   "specs": [
     "has the 200 OK code",
     "has a versionNumber of 2",
@@ -41,11 +42,7 @@
       "hearingRequestID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}",
       "status": "CANCELLATION_REQUESTED",
       "timeStamp": "[[ANYTHING_PRESENT]]",
-      "versionNumber": 2,
-      "responseVersion": null,
-      "requestVersion": null,
-      "partiesNotified": null,
-      "serviceData": null
+      "versionNumber": 2
     }
   }
 }

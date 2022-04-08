@@ -4,6 +4,7 @@
   "operationName": "create hearing",
   "method": "POST",
   "uri": "/hearing",
+  "s2sClientId": "xui_webapp",
   "specs": [
     "has the 200 OK code",
     "an active profile in CCD",
@@ -23,7 +24,6 @@
       "_extends_": "Common_Request_Headers"
     },
     "body": {
-
     }
   },
   "expectedResponse": {

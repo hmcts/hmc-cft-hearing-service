@@ -13,11 +13,7 @@
       "hearingRequestID": "[[ANYTHING_PRESENT]]",
       "status": "CANCELLATION_REQUESTED",
       "timeStamp": "[[ANYTHING_PRESENT]]",
-      "versionNumber": 2,
-      "responseVersion": null,
-      "requestVersion": null,
-      "partiesNotified": null,
-      "serviceData": null
+      "versionNumber": 2
     }
   }
 }

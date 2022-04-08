@@ -14,12 +14,10 @@
       "requestDetails": {
         "timestamp": "[[ANYTHING_PRESENT]]",
         "status": "HEARING_REQUESTED",
-        "versionNumber": "1",
-        "partiesNotified": "[[ANYTHING_PRESENT]]"
+        "versionNumber": "1"
       },
       "caseDetails": "[[ANYTHING_PRESENT]]",
       "hearingDetails" : "[[ANYTHING_PRESENT]]",
-      "partyDetails" : "[[ANYTHING_PRESENT]]",
       "hearingResponse": "[[ANYTHING_PRESENT]]"
     }
   }

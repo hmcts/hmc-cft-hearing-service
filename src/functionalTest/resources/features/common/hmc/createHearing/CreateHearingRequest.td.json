@@ -24,11 +24,7 @@
       "hearingRequestID": "[[ANYTHING_PRESENT]]",
       "status": "HEARING_REQUESTED",
       "timeStamp": "[[ANYTHING_PRESENT]]",
-      "versionNumber": 1,
-      "responseVersion": null,
-      "requestVersion": null,
-      "partiesNotified": null,
-      "serviceData": null
+      "versionNumber": 1
     }
   }
 }

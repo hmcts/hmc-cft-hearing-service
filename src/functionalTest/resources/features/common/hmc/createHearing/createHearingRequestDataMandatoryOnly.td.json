@@ -1,5 +1,6 @@
 {
   "_guid_" : "createHearingRequestDataMandatoryOnly",
+
   "requestDetails" : {
     "requestTimeStamp":"2021-08-10T12:20:00.000Z"
   },
@@ -7,15 +8,15 @@
     "autolistFlag": true,
     "hearingType": "Some hearing type",
     "hearingWindow": {
-      "hearingWindowStartDateRange": "2021-11-01",
-      "hearingWindowEndDateRange": "2021-11-12"
+      "dateRangeStart": "2022-05-10",
+      "dateRangeEnd": "2023-05-10"
     },
     "duration": 60,
     "hearingPriorityType": "Priority type",
     "hearingLocations": [
       {
-        "locationType": "Location type",
-        "locationId": "COURT"
+        "locationType": "court",
+        "locationId": "685391"
       }
     ],
     "panelRequirements": {

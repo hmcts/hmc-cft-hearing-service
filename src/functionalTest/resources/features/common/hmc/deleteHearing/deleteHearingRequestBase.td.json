@@ -4,6 +4,7 @@
   "operationName": "delete hearing",
   "method": "DELETE",
   "uri": "/hearing/{hearingID}",
+  "s2sClientId": "xui_webapp",
   "specs": [
     "has the 200 OK code",
     "to delete a hearing request",

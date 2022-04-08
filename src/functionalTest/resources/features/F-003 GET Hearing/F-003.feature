@@ -6,7 +6,7 @@ Feature: Get hearing request
     Given a user with [an active profile in CCD]
     And a case that has just been created as in [CreateCase],
 
-    @S-003.1
+    @S-003.1 @ignore
 #      TODO CHECK HOW DIFFERENCE RESPONSE SHOULD BE TO INPUT DATA FROM CREATE HEARING
   Scenario: successfully get hearing request
     Given a successful call [to create a hearing request] as in [CreateHearingRequest]
