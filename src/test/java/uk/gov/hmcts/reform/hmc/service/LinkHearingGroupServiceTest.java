@@ -27,9 +27,12 @@ import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDate;
@@ -42,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.HEARING_REQUESTED;
@@ -55,9 +59,6 @@ class LinkHearingGroupServiceTest {
     private LinkedHearingGroupServiceImpl linkedHearingGroupService;
 
     @Mock
-    private LinkedHearingValidator linkedHearingValidator;
-
-    @Mock
     HearingRepository hearingRepository;
 
     @Mock
@@ -66,9 +67,23 @@ class LinkHearingGroupServiceTest {
     @Mock
     LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
+    @Mock
+    ActualHearingRepository actualHearingRepository;
+
+    @Mock
+    ActualHearingDayRepository actualHearingDayRepository;
+
+    HearingIdValidator hearingIdValidator;
+
+    LinkedHearingValidator linkedHearingValidator;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        hearingIdValidator = new HearingIdValidator(hearingRepository, actualHearingRepository,
+                actualHearingDayRepository);
+        linkedHearingValidator = new LinkedHearingValidator(hearingIdValidator, hearingRepository,
+                linkedGroupDetailsRepository, linkedHearingDetailsRepository);
         linkedHearingGroupService =
             new LinkedHearingGroupServiceImpl(
                 hearingRepository,
@@ -204,8 +219,6 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
-            when(linkedHearingDetailsRepository.getLinkedHearingDetailsByHearingId(any()))
-                    .thenReturn(hearingDetails1Data);
 
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
                     LinkType.ORDERED.label, "reason"
@@ -451,9 +464,9 @@ class LinkHearingGroupServiceTest {
 
             linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
-            verify(hearingRepository).findById(2000000000L);
+            verify(hearingRepository, times(2)).findById(2000000000L);
             verify(hearingRepository).existsById(2000000002L);
-            verify(hearingRepository).findById(2000000002L);
+            verify(hearingRepository, times(2)).findById(2000000002L);
         }
 
         @Test
@@ -487,9 +500,9 @@ class LinkHearingGroupServiceTest {
             logger.info("hearingLinkGroupRequest : {}", hearingLinkGroupRequest);
             linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
-            verify(hearingRepository).findById(2000000000L);
+            verify(hearingRepository, times(2)).findById(2000000000L);
             verify(hearingRepository).existsById(2000000002L);
-            verify(hearingRepository).findById(2000000002L);
+            verify(hearingRepository, times(2)).findById(2000000002L);
         }
     }
 

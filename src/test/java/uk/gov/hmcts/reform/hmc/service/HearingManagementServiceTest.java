@@ -1703,6 +1703,7 @@ class HearingManagementServiceTest {
         List<HearingResponseEntity> responseEntities = new ArrayList<>();
         for (int i = 0; i < noOfResponses; i++) {
             HearingResponseEntity responseEntity = new HearingResponseEntity();
+            responseEntity.setRequestVersion(hearingEntity.getLatestRequestVersion());
             responseEntity.setResponseVersion(hearingEntity.getLatestRequestVersion());
             responseEntity.setRequestTimeStamp(LocalDateTime.now());
             responseEntities.add(responseEntity);
