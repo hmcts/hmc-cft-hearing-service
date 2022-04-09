@@ -771,36 +771,6 @@ class LinkedHearingValidatorTest {
         });
         assertEquals("001 Insufficient requestIds", exception.getMessage());
     }
-    //
-    //        @Test
-    //        void shouldReturn400ErrorWhenHearingStatusIsInvalidForUnlinking() {
-    //            final Long HEARING_ID1 = 2000000000L;
-    //            final Long HEARING_GROUP_ID = 1L;
-    //            final LocalDateTime START_DATE_TIME_IN_THE_FUTURE = LocalDateTime.now().plusMonths(5);
-    //            final LocalDateTime HEARING_RESPONSE_DATE_TIME = LocalDateTime.now();
-    //            HearingEntity hearing = new HearingEntity();
-    //            hearing.setId(HEARING_ID1);
-    //            hearing.setStatus(FOR_DELETE_INVALID_HEARING_STATUS);
-    //            hearing.setIsLinkedFlag(true);
-    //            hearing.setHearingResponses(Arrays.asList(
-    //                    generateHearingResponseEntityWithHearingDays(1, HEARING_RESPONSE_DATE_TIME,
-    //                            List.of(START_DATE_TIME_IN_THE_FUTURE)
-    //                    )));
-    //            LinkedGroupDetails groupDetails = generateLinkedGroupDetails(HEARING_GROUP_ID, "ACTIVE");
-    //
-    //            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
-    //                    .willReturn(Optional.of(groupDetails));
-    //            given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
-    //                    .willReturn(List.of(hearing));
-    //
-    //            Exception exception = assertThrows(BadRequestException.class, () ->
-    //                    linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null));
-    //            assertEquals("008 Invalid state for unlinking hearing request " + HEARING_ID1,
-    //                    exception.getMessage());
-    //            verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
-    //            verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-    //            verify(linkedGroupDetailsRepository, never()).deleteHearingGroup(anyLong());
-    //        }
 
     @Test
     void shouldFailWithInvalidState() {
