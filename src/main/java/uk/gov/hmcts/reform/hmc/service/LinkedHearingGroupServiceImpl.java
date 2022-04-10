@@ -95,7 +95,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     }
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor = {BadRequestException.class})
     public void deleteLinkedHearingGroup(Long hearingGroupId) {
         validateHearingGroup(hearingGroupId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(hearingGroupId);
@@ -211,7 +211,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
             //Errors with 5xxx
             log.error("Time out exception occurred with status code:  {}",
                 ((AuthenticationException) exception).getErrorDetails().getErrorCode());
-            transactionHandler.runInNewTransaction(() -> saveLinkedGroupDetails(linkedGroupDetails, LIST_ASSIST));
+            saveLinkedGroupDetails(linkedGroupDetails, LIST_ASSIST);
             throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
         }
     }
