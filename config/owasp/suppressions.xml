@@ -30,6 +30,7 @@
     <cve>CVE-2020-36518</cve>
     <cve>CVE-2022-21724</cve>
     <cve>CVE-2022-22965</cve>
+    <cve>CVE-2022-22950</cve>
   </suppress>
   <suppress until="2022-04-25">
     <notes>
