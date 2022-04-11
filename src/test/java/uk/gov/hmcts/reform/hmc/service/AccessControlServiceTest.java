@@ -1,0 +1,150 @@
+package uk.gov.hmcts.reform.hmc.service;
+
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
+import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
+import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
+import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
+import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
+import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
+import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_STATUS;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
+
+@ExtendWith(MockitoExtension.class)
+class AccessControlServiceTest {
+
+    public static final String USER_ID = "UserId";
+    public static final String ROLE_TYPE = "ORGANISATION";
+    public static final String JURISDICTION = "Jurisdiction1";
+    public static final String CASE_TYPE = "CaseType1";
+    public static final String ROLE_NAME = "hearing-manager";
+
+    private AccessControlServiceImpl accessControlService;
+
+    @Mock
+    RoleAssignmentService roleAssignmentService;
+
+    @Mock
+    SecurityUtils securityUtils;
+
+    @Mock
+    DataStoreRepository dataStoreRepository;
+
+    @Mock
+    CaseHearingRequestRepository caseHearingRequestRepository;
+
+    @Mock
+    HearingRepository hearingRepository;
+
+    @BeforeEach
+    void setUp() {
+        doReturn(USER_ID).when(securityUtils).getUserId();
+        accessControlService = new AccessControlServiceImpl(
+            roleAssignmentService,
+            securityUtils,
+            dataStoreRepository,
+            caseHearingRequestRepository,
+            hearingRepository
+        );
+    }
+
+    private void stubRoleAssignments(RoleAssignmentAttributes.RoleAssignmentAttributesBuilder builder,
+                                     String hearningManager) {
+        RoleAssignmentAttributes roleAssignmentAttributes = builder
+            .build();
+        RoleAssignment roleAssignment = RoleAssignment.builder()
+            .roleName(hearningManager)
+            .roleType(ROLE_TYPE)
+            .attributes(roleAssignmentAttributes)
+            .build();
+        List<RoleAssignment> roleAssignmentList = new ArrayList<>();
+        roleAssignmentList.add(roleAssignment);
+        RoleAssignments roleAssignments = RoleAssignments.builder()
+            .roleAssignments(roleAssignmentList)
+            .build();
+        doReturn(roleAssignments).when(roleAssignmentService).getRoleAssignments(USER_ID);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenStatusIsNotListed() {
+        stubRoleAssignments(RoleAssignmentAttributes.builder()
+                                .jurisdiction(Optional.of(JURISDICTION))
+                                .caseType(Optional.of(CASE_TYPE)), LISTED_HEARING_VIEWER);
+        when(hearingRepository.getStatus(anyLong())).thenReturn(HearingStatus.UPDATE_REQUESTED.name());
+        Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> accessControlService
+            .verifyAccess(1234L, Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER)));
+        assertEquals(ROLE_ASSIGNMENT_INVALID_STATUS, exception.getMessage());
+    }
+
+    @Test
+    void shouldNotThrowExceptionWhenStatusIsListed() {
+        stubRoleAssignments(RoleAssignmentAttributes.builder()
+                                .jurisdiction(Optional.of(JURISDICTION))
+                                .caseType(Optional.of(CASE_TYPE)), LISTED_HEARING_VIEWER);
+        when(hearingRepository.getStatus(anyLong())).thenReturn(HearingStatus.LISTED.name());
+        accessControlService.verifyAccess(1234L, Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenStatusNotListedForACaseType() {
+        stubRoleAssignments(RoleAssignmentAttributes.builder()
+                                .jurisdiction(Optional.of(JURISDICTION))
+                                .caseType(Optional.of(CASE_TYPE)), LISTED_HEARING_VIEWER);
+        when(hearingRepository.getStatus(anyLong())).thenReturn(HearingStatus.HEARING_REQUESTED.name());
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        when(dataStoreRepository.findCaseByCaseIdUsingExternalApi(anyString())).thenReturn(caseDetails);
+
+        Exception exception = assertThrows(
+            InvalidRoleAssignmentException.class,
+            () -> accessControlService.verifyCaseAccess(
+                "1234",
+                Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER),
+                12345L
+            )
+        );
+        assertEquals(ROLE_ASSIGNMENT_INVALID_STATUS, exception.getMessage());
+    }
+
+    @Test
+    void shouldNotThrowExceptionWhenStatusListedForACaseType() {
+        stubRoleAssignments(RoleAssignmentAttributes.builder()
+                                .jurisdiction(Optional.of(JURISDICTION))
+                                .caseType(Optional.of(CASE_TYPE)), LISTED_HEARING_VIEWER);
+        when(hearingRepository.getStatus(anyLong())).thenReturn(HearingStatus.LISTED.name());
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        when(dataStoreRepository.findCaseByCaseIdUsingExternalApi(anyString())).thenReturn(caseDetails);
+
+        accessControlService.verifyCaseAccess(
+            "1234",
+            Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER),
+            12345L
+        );
+    }
+}
