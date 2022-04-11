@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_VALUE_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_LOCATION_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_DETAILS_NULL_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_ROLE_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_ROLE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_TYPE_EMPTY;
 
 
@@ -505,6 +506,39 @@ class BeanValidatorTest {
         });
         assertEquals(1, violations.size());
         assertTrue(validationErrors.contains(PARTY_ROLE_EMPTY));
+    }
+
+    @Test
+    void whenValidPartyRoleIs40Characters() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID("XXX1");
+        partyDetails.setPartyType(PartyType.IND.getLabel());
+        partyDetails.setPartyRole("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN");
+        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
+        assertTrue(violations.isEmpty());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertEquals(0, violations.size());
+    }
+
+    @Test
+    void whenInvalidPartyRoleIs41Characters() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID("XXX1");
+        partyDetails.setPartyType(PartyType.IND.getLabel());
+        partyDetails.setPartyRole("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNO");
+        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
+        assertFalse(violations.isEmpty());
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> {
+            validationErrors.add(e.getMessage());
+            logger.info(e.getMessage());
+        });
+        assertEquals(1, violations.size());
+        assertTrue(validationErrors.contains(PARTY_ROLE_MAX_LENGTH));
     }
 
 }
