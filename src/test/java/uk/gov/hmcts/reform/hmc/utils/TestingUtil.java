@@ -156,25 +156,6 @@ public class TestingUtil {
         return individualDetailEntity;
     }
 
-    public static CaseDetails caseDetails() {
-        CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setHmctsServiceCode("ABA1");
-        caseDetails.setCaseRef(CASE_REFERENCE);
-        caseDetails.setCaseDeepLink("https://www.google.com");
-        caseDetails.setHmctsInternalCaseName("Internal case name");
-        caseDetails.setPublicCaseName("Public case name");
-        caseDetails.setCaseManagementLocationCode("CMLC123");
-        caseDetails.setCaseRestrictedFlag(false);
-        caseDetails.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));
-        CaseCategory category = new CaseCategory();
-        category.setCategoryType("CASETYPE");
-        category.setCategoryValue("PROBATE");
-        List<CaseCategory> caseCategories = new ArrayList<>();
-        caseCategories.add(category);
-        caseDetails.setCaseCategories(caseCategories);
-        return caseDetails;
-    }
-
     public static List<PartyDetails> partyDetails() {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
@@ -299,6 +280,17 @@ public class TestingUtil {
         return request;
     }
 
+    public static UpdateHearingRequest updateHearingRequest(int version) {
+        UpdateHearingRequest request = new UpdateHearingRequest();
+        request.setHearingDetails(hearingDetails());
+        request.setCaseDetails(caseDetails());
+        request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        RequestDetails requestDetails = new RequestDetails();
+        requestDetails.setVersionNumber(version);
+        request.setRequestDetails(requestDetails);
+        return request;
+    }
+
     public static UpdateHearingRequest updateHearingRequest() {
         return updateHearingRequest(1);
     }
@@ -306,6 +298,35 @@ public class TestingUtil {
     public static UpdateHearingRequest validUpdateHearingRequest() {
         UpdateHearingRequest request = new UpdateHearingRequest();
         request.setHearingDetails(hearingDetails());
+        CaseDetails caseDetails = getValidCaseDetails();
+        request.setCaseDetails(caseDetails);
+        request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        RequestDetails requestDetails = new RequestDetails();
+        requestDetails.setVersionNumber(1);
+        request.setRequestDetails(requestDetails);
+        return request;
+    }
+
+    public static CaseDetails caseDetails() {
+        CaseDetails caseDetails = new CaseDetails();
+        caseDetails.setHmctsServiceCode("ABA1");
+        caseDetails.setCaseRef(CASE_REFERENCE);
+        caseDetails.setCaseDeepLink("https://www.google.com");
+        caseDetails.setHmctsInternalCaseName("Internal case name");
+        caseDetails.setPublicCaseName("Public case name");
+        caseDetails.setCaseManagementLocationCode("CMLC123");
+        caseDetails.setCaseRestrictedFlag(false);
+        caseDetails.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));
+        CaseCategory category = new CaseCategory();
+        category.setCategoryType("CASETYPE");
+        category.setCategoryValue("PROBATE");
+        List<CaseCategory> caseCategories = new ArrayList<>();
+        caseCategories.add(category);
+        caseDetails.setCaseCategories(caseCategories);
+        return caseDetails;
+    }
+
+    public static CaseDetails getValidCaseDetails() {
 
         CaseDetails caseDetails = new CaseDetails();
         caseDetails.setHmctsServiceCode("ABA1");
@@ -327,24 +348,7 @@ public class TestingUtil {
         caseCategories.add(category);
         caseCategories.add(categorySubType);
         caseDetails.setCaseCategories(caseCategories);
-
-        request.setCaseDetails( caseDetails);
-        request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        RequestDetails requestDetails = new RequestDetails();
-        requestDetails.setVersionNumber(1);
-        request.setRequestDetails(requestDetails);
-        return request;
-    }
-
-    public static UpdateHearingRequest updateHearingRequest(int version) {
-        UpdateHearingRequest request = new UpdateHearingRequest();
-        request.setHearingDetails(hearingDetails());
-        request.setCaseDetails(caseDetails());
-        request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        RequestDetails requestDetails = new RequestDetails();
-        requestDetails.setVersionNumber(version);
-        request.setRequestDetails(requestDetails);
-        return request;
+        return caseDetails;
     }
 
     public static HearingResponse deleteHearingResponse() {
@@ -727,7 +731,7 @@ public class TestingUtil {
         UpdateHearingRequest request = new UpdateHearingRequest();
         request.setRequestDetails(requestDetails);
         request.setHearingDetails(hearingDetailsWithAllFields());
-        request.setCaseDetails(caseDetails());
+        request.setCaseDetails(getValidCaseDetails());
         request.setPartyDetails(partyDetailsWith2Parties());
 
         return request;
