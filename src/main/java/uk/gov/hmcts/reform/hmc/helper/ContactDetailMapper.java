@@ -18,26 +18,16 @@ public class ContactDetailMapper {
                                                     HearingPartyEntity hearingPartyEntity) {
         List<ContactDetailsEntity> contactDetailsEntities = new ArrayList<>();
         if (individualDetails.getHearingChannelEmail() != null) {
-            contactDetailsEntities.addAll(
-                createContactDetailEntities(individualDetails.getHearingChannelEmail(), hearingPartyEntity, EMAIL_TYPE)
-            );
+            final ContactDetailsEntity contactDetailsEntity = new ContactDetailsEntity();
+            contactDetailsEntity.setContactDetails(individualDetails.getHearingChannelEmail());
+            contactDetailsEntity.setContactType(EMAIL_TYPE);
+            contactDetailsEntity.setHearingParty(hearingPartyEntity);
+            contactDetailsEntities.add(contactDetailsEntity);
         }
         if (individualDetails.getHearingChannelPhone() != null) {
-            contactDetailsEntities.addAll(
-                createContactDetailEntities(individualDetails.getHearingChannelPhone(), hearingPartyEntity, PHONE_TYPE)
-            );
-        }
-        return contactDetailsEntities;
-    }
-
-    private List<ContactDetailsEntity> createContactDetailEntities(List<String> contactDetails,
-                                                                   HearingPartyEntity hearingPartyEntity,
-                                                                   String contactType) {
-        List<ContactDetailsEntity> contactDetailsEntities = new ArrayList<>();
-        for (String contactDetail : contactDetails) {
             final ContactDetailsEntity contactDetailsEntity = new ContactDetailsEntity();
-            contactDetailsEntity.setContactDetails(contactDetail);
-            contactDetailsEntity.setContactType(contactType);
+            contactDetailsEntity.setContactDetails(individualDetails.getHearingChannelPhone());
+            contactDetailsEntity.setContactType(PHONE_TYPE);
             contactDetailsEntity.setHearingParty(hearingPartyEntity);
             contactDetailsEntities.add(contactDetailsEntity);
         }

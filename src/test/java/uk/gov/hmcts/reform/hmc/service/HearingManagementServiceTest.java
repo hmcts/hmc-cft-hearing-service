@@ -1151,7 +1151,7 @@ class HearingManagementServiceTest {
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             IndividualDetails individualDetails = new IndividualDetails();
-            individualDetails.setHearingChannelEmail(List.of("email"));
+            individualDetails.setHearingChannelEmail("email");
             partyDetails.setIndividualDetails(individualDetails);
             List<UnavailabilityDow> unavailabilityDowList = new ArrayList<>();
             partyDetails.setUnavailabilityDow(unavailabilityDowList);
@@ -1174,7 +1174,7 @@ class HearingManagementServiceTest {
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             IndividualDetails individualDetails = new IndividualDetails();
-            individualDetails.setHearingChannelEmail(List.of("email"));
+            individualDetails.setHearingChannelEmail("email");
             partyDetails.setIndividualDetails(individualDetails);
             List<UnavailabilityRanges> unavailabilityRanges = new ArrayList<>();
             partyDetails.setUnavailabilityRanges(unavailabilityRanges);
@@ -1197,7 +1197,7 @@ class HearingManagementServiceTest {
             hearingDetails.setHearingWindow(hearingWindow);
             PartyDetails partyDetails = new PartyDetails();
             IndividualDetails individualDetails = new IndividualDetails();
-            individualDetails.setHearingChannelEmail(List.of("email"));
+            individualDetails.setHearingChannelEmail("email");
             List<RelatedParty> relatedParties = new ArrayList<>();
             individualDetails.setRelatedParties(relatedParties);
             partyDetails.setIndividualDetails(individualDetails);

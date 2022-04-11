@@ -307,9 +307,7 @@ class GetHearingResponseMapperTest {
             () -> assertEquals("channelType", individualDetails.getPreferredHearingChannel()),
             () -> assertEquals("english", individualDetails.getInterpreterLanguage()),
             () -> assertEquals(true, individualDetails.getVulnerableFlag()),
-            () -> assertEquals("details", individualDetails.getVulnerabilityDetails()),
-            () -> assertEquals("01234567890", individualDetails.getHearingChannelPhone().get(0)),
-            () -> assertEquals("hearing.channel@email.com", individualDetails.getHearingChannelEmail().get(0))
+            () -> assertEquals("details", individualDetails.getVulnerabilityDetails())
         );
     }
 

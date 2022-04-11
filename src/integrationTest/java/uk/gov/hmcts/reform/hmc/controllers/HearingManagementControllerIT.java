@@ -938,8 +938,8 @@ class HearingManagementControllerIT extends BaseTest {
         individualDetails.setInterpreterLanguage("a".repeat(11));
         individualDetails.setReasonableAdjustments(Collections.singletonList("a".repeat(11)));
         individualDetails.setVulnerabilityDetails("a".repeat(257));
-        individualDetails.setHearingChannelEmail(List.of("a".repeat(121)));
-        individualDetails.setHearingChannelPhone(List.of("a".repeat(31)));
+        individualDetails.setHearingChannelEmail("a".repeat(121));
+        individualDetails.setHearingChannelPhone("a".repeat(31));
         individualDetails.setOtherReasonableAdjustmentDetails("a".repeat(201));
         individualDetails.setCustodyStatus("a".repeat(81));
         RelatedParty relatedParty = new RelatedParty();
