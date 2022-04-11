@@ -9,7 +9,11 @@ import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.IndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
+import uk.gov.hmcts.reform.hmc.data.PanelAuthorisationRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
+import uk.gov.hmcts.reform.hmc.data.PanelSpecialismsEntity;
+import uk.gov.hmcts.reform.hmc.data.PanelUserRequirementsEntity;
+import uk.gov.hmcts.reform.hmc.data.ReasonableAdjustmentsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
@@ -22,6 +26,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
+import uk.gov.hmcts.reform.hmc.model.PanelPreference;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
@@ -34,6 +39,10 @@ import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static uk.gov.hmcts.reform.hmc.constants.Constants.EMAIL_TYPE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_DOW_TYPE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_RANGE_TYPE;
 
 @Component
 public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
@@ -91,8 +100,12 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         if (null != hearingPartyEntity.getUnavailabilityEntity()
                 && !hearingPartyEntity.getUnavailabilityEntity().isEmpty()) {
             for (UnavailabilityEntity unavailabilityEntity : hearingPartyEntity.getUnavailabilityEntity()) {
-                addUnavailabilityDow(unavailabilityEntity, unavailabilityDowArrayList);
-                addUnavailabilityRange(unavailabilityEntity, unavailabilityRangesArrayList);
+                if (unavailabilityEntity.getUnAvailabilityType().equalsIgnoreCase(UNAVAILABILITY_DOW_TYPE)) {
+                    addUnavailabilityDow(unavailabilityEntity, unavailabilityDowArrayList);
+                }
+                if (unavailabilityEntity.getUnAvailabilityType().equalsIgnoreCase(UNAVAILABILITY_RANGE_TYPE)) {
+                    addUnavailabilityRange(unavailabilityEntity, unavailabilityRangesArrayList);
+                }
             }
         }
         partyDetails.setUnavailabilityDow(unavailabilityDowArrayList);
@@ -101,33 +114,32 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
 
     private void addUnavailabilityDow(UnavailabilityEntity unavailabilityEntity,
                                       ArrayList<UnavailabilityDow> unavailabilityDowArrayList) {
-        if (null != unavailabilityEntity.getDayOfWeekUnavailableType()
-                || null != unavailabilityEntity.getDayOfWeekUnavailable()) {
-            UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
-            if (null != unavailabilityEntity.getDayOfWeekUnavailableType()) {
-                unavailabilityDow.setDowUnavailabilityType(
-                        unavailabilityEntity.getDayOfWeekUnavailableType().getLabel());
-            }
-            if (null != unavailabilityEntity.getDayOfWeekUnavailable()) {
-                unavailabilityDow.setDow(
-                        unavailabilityEntity.getDayOfWeekUnavailable().getLabel());
-            }
-            unavailabilityDowArrayList.add(unavailabilityDow);
+        UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
+        if (null != unavailabilityEntity.getDayOfWeekUnavailableType()) {
+            unavailabilityDow.setDowUnavailabilityType(
+                    unavailabilityEntity.getDayOfWeekUnavailableType().getLabel());
         }
+        if (null != unavailabilityEntity.getDayOfWeekUnavailable()) {
+            unavailabilityDow.setDow(
+                    unavailabilityEntity.getDayOfWeekUnavailable().getLabel());
+        }
+        unavailabilityDowArrayList.add(unavailabilityDow);
     }
 
     private void addUnavailabilityRange(UnavailabilityEntity unavailabilityEntity,
                                         ArrayList<UnavailabilityRanges> unavailabilityRangesArrayList) {
-        if (null != unavailabilityEntity.getStartDate() || null != unavailabilityEntity.getEndDate()) {
-            UnavailabilityRanges unavailabilityRanges = new UnavailabilityRanges();
-            if (null != unavailabilityEntity.getEndDate()) {
-                unavailabilityRanges.setUnavailableToDate(unavailabilityEntity.getEndDate());
-            }
-            if (null != unavailabilityEntity.getStartDate()) {
-                unavailabilityRanges.setUnavailableFromDate(unavailabilityEntity.getStartDate());
-            }
-            unavailabilityRangesArrayList.add(unavailabilityRanges);
+        UnavailabilityRanges unavailabilityRanges = new UnavailabilityRanges();
+        if (null != unavailabilityEntity.getEndDate()) {
+            unavailabilityRanges.setUnavailableToDate(unavailabilityEntity.getEndDate());
         }
+        if (null != unavailabilityEntity.getStartDate()) {
+            unavailabilityRanges.setUnavailableFromDate(unavailabilityEntity.getStartDate());
+        }
+        if (null != unavailabilityEntity.getUnAvailabilityType()) {
+            unavailabilityRanges.setUnavailabilityType(unavailabilityEntity.getDayOfWeekUnavailableType().getLabel());
+        }
+
+        unavailabilityRangesArrayList.add(unavailabilityRanges);
     }
 
     private OrganisationDetails setOrganisationDetails(HearingPartyEntity hearingPartyEntity) {
@@ -163,14 +175,9 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         individualDetails.setLastName(individualDetailEntity.getLastName());
         individualDetails.setPreferredHearingChannel(individualDetailEntity.getChannelType());
         individualDetails.setInterpreterLanguage(individualDetailEntity.getInterpreterLanguage());
-        if (null != hearingPartyEntity.getReasonableAdjustmentsEntity()
-                && !hearingPartyEntity.getReasonableAdjustmentsEntity().isEmpty()) {
-            individualDetails.setReasonableAdjustments(
-                    List.of(hearingPartyEntity.getReasonableAdjustmentsEntity().get(0)
-                            .getReasonableAdjustmentCode()));
-        }
         individualDetails.setVulnerableFlag(individualDetailEntity.getVulnerableFlag());
         individualDetails.setVulnerabilityDetails(individualDetailEntity.getVulnerabilityDetails());
+        setReasonableAdjustments(hearingPartyEntity,individualDetails);
         updateContactDetails(hearingPartyEntity, individualDetails);
         RelatedParty relatedParty = new RelatedParty();
         relatedParty.setRelatedPartyID(individualDetailEntity.getRelatedPartyID());
@@ -186,7 +193,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         if (null != hearingPartyEntity.getContactDetails()
             && !hearingPartyEntity.getContactDetails().isEmpty()) {
             for (ContactDetailsEntity contactDetailsEntity : hearingPartyEntity.getContactDetails()) {
-                if (contactDetailsEntity.getContactDetails().contains("@")) {
+                if (contactDetailsEntity.getContactType().equalsIgnoreCase(EMAIL_TYPE)) {
                     emails.add(contactDetailsEntity.getContactDetails());
                 } else {
                     phoneNumbers.add(contactDetailsEntity.getContactDetails());
@@ -255,14 +262,97 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
     private PanelRequirements setPanelRequirements(HearingEntity hearingEntity) {
         PanelRequirements panelRequirement = new PanelRequirements();
         CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
+
+        setRoleTypes(caseHearingRequestEntity,panelRequirement);
+        setPanelPreferences(caseHearingRequestEntity,panelRequirement);
+        setPanelSpecialisms(caseHearingRequestEntity,panelRequirement);
+        setAuthorisationTypes(caseHearingRequestEntity,panelRequirement);
+        return panelRequirement;
+    }
+
+    private void setRoleTypes(CaseHearingRequestEntity caseHearingRequestEntity,
+                                           PanelRequirements panelRequirement) {
+        ArrayList<String> roleTypes = new ArrayList<>();
         if (null != caseHearingRequestEntity.getPanelRequirements()
-                && !caseHearingRequestEntity.getPanelRequirements().isEmpty()) {
+            && !caseHearingRequestEntity.getPanelRequirements().isEmpty()) {
             for (PanelRequirementsEntity panelRequirementsEntity
                     : caseHearingRequestEntity.getPanelRequirements()) {
-                panelRequirement.setRoleType(List.of(panelRequirementsEntity.getRoleType()));
+                roleTypes.add(panelRequirementsEntity.getRoleType());
             }
         }
-        return panelRequirement;
+        panelRequirement.setRoleType(roleTypes);
+    }
+
+    private void setPanelPreferences(CaseHearingRequestEntity caseHearingRequestEntity,
+                                     PanelRequirements panelRequirement) {
+        ArrayList<PanelPreference> panelPreferences = new ArrayList<>();
+        if (null != caseHearingRequestEntity.getPanelUserRequirements()
+            && !caseHearingRequestEntity.getPanelUserRequirements().isEmpty()) {
+            for (PanelUserRequirementsEntity panelUserRequirements
+                : caseHearingRequestEntity.getPanelUserRequirements()) {
+                PanelPreference panelPreference = new PanelPreference();
+                if (panelUserRequirements.getJudicialUserId() != null) {
+                    panelPreference.setMemberID(panelUserRequirements.getJudicialUserId());
+                }
+                if (panelUserRequirements.getUserType() != null) {
+                    panelPreference.setMemberType(panelUserRequirements.getUserType());
+                }
+                if (panelUserRequirements.getRequirementType() != null) {
+                    panelPreference.setRequirementType(panelUserRequirements.getRequirementType().getLabel());
+                }
+                panelPreferences.add(panelPreference);
+            }
+        }
+        panelRequirement.setPanelPreferences(panelPreferences);
+    }
+
+    private void setPanelSpecialisms(CaseHearingRequestEntity caseHearingRequestEntity,
+                                     PanelRequirements panelRequirement) {
+        ArrayList<String> panelSpecialisms = new ArrayList<>();
+        if (null != caseHearingRequestEntity.getPanelSpecialisms()
+            && !caseHearingRequestEntity.getPanelSpecialisms().isEmpty()) {
+            for (PanelSpecialismsEntity panelRequirementsEntity
+                    : caseHearingRequestEntity.getPanelSpecialisms()) {
+                panelSpecialisms.add(panelRequirementsEntity.getSpecialismType());
+            }
+        }
+        panelRequirement.setPanelSpecialisms(panelSpecialisms);
+    }
+
+    private void setAuthorisationTypes(CaseHearingRequestEntity caseHearingRequestEntity,
+                                 PanelRequirements panelRequirement) {
+        ArrayList<String> authorisationTypes = new ArrayList<>();
+        ArrayList<String> authorisationSubType = new ArrayList<>();
+        if (null != caseHearingRequestEntity.getPanelAuthorisationRequirements()
+            && !caseHearingRequestEntity.getPanelAuthorisationRequirements().isEmpty()) {
+            for (PanelAuthorisationRequirementsEntity panelAuthorisationRequirements
+                    : caseHearingRequestEntity.getPanelAuthorisationRequirements()) {
+                if (panelAuthorisationRequirements.getAuthorisationType() != null) {
+                    authorisationTypes.add(panelAuthorisationRequirements.getAuthorisationType());
+                }
+            }
+            for (PanelAuthorisationRequirementsEntity panelRequirementsEntity
+                : caseHearingRequestEntity.getPanelAuthorisationRequirements()) {
+                if (panelRequirementsEntity.getAuthorisationSubType() != null) {
+                    authorisationSubType.add(panelRequirementsEntity.getAuthorisationSubType());
+                }
+            }
+        }
+        panelRequirement.setAuthorisationTypes(authorisationTypes);
+        panelRequirement.setAuthorisationSubType(authorisationSubType);
+    }
+
+    private void setReasonableAdjustments(HearingPartyEntity hearingPartyEntity,
+                                          IndividualDetails individualDetails) {
+        List<String> reasonableAdjustmentCodeList = new ArrayList<>();
+        if (hearingPartyEntity.getReasonableAdjustmentsEntity() != null
+            && !hearingPartyEntity.getReasonableAdjustmentsEntity().isEmpty()) {
+            for (ReasonableAdjustmentsEntity reasonableAdjustments
+                : hearingPartyEntity.getReasonableAdjustmentsEntity()) {
+                reasonableAdjustmentCodeList.add(reasonableAdjustments.getReasonableAdjustmentCode());
+            }
+        }
+        individualDetails.setReasonableAdjustments(reasonableAdjustmentCodeList);
     }
 
     private ArrayList<String> setFacilityType(HearingEntity hearingEntity) {
