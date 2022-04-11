@@ -196,12 +196,13 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
             log.info("Response received from ListAssist successfully");
             linkedGroupDetailsRepository.delete(linkedGroupDetails);
         } catch (Exception exception) {
-            validateListAssistException(linkedGroupDetails, exception);
+            processResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails, exception);
         }
 
     }
 
-    private void validateListAssistException(LinkedGroupDetails linkedGroupDetails, Exception exception) {
+    private void processResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails,
+                                                                     Exception exception) {
         //Errors with 4xxx
         if (exception instanceof BadFutureHearingRequestException) {
             log.error("Exception occurred List Assist failed to respond with status code: {}",
