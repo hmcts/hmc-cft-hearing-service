@@ -292,6 +292,9 @@ class GetHearingResponseMapperTest {
                 LocalDate.of(2020, 12, 20),
                 unavailabilityRanges.getUnavailableFromDate()
             ),
+            () -> assertEquals("All Day",
+                unavailabilityRanges.getUnavailabilityType()
+            ),
             () -> assertEquals("All Day", unavailabilityDow.getDowUnavailabilityType()),
             () -> assertEquals("Friday", unavailabilityDow.getDow())
         );
@@ -314,6 +317,8 @@ class GetHearingResponseMapperTest {
             () -> assertEquals("english", individualDetails.getInterpreterLanguage()),
             () -> assertEquals(true, individualDetails.getVulnerableFlag()),
             () -> assertEquals("details", individualDetails.getVulnerabilityDetails()),
+            () -> assertEquals("01234567890", individualDetails.getHearingChannelPhone().get(0)),
+            () -> assertEquals("hearing.channel@email.com", individualDetails.getHearingChannelEmail().get(0)),
             () -> assertEquals("First reason", individualDetails.getReasonableAdjustments().get(0))
         );
     }
