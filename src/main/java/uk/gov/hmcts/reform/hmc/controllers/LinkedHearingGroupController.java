@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -17,12 +16,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class LinkedHearingGroupController {
 
     private LinkedHearingGroupService linkedHearingGroupService;
-    private AccessControlService accessControlService;
 
-    public LinkedHearingGroupController(LinkedHearingGroupService linkedHearingGroupService,
-                                        AccessControlService accessControlService) {
+    public LinkedHearingGroupController(LinkedHearingGroupService linkedHearingGroupService) {
         this.linkedHearingGroupService = linkedHearingGroupService;
-        this.accessControlService = accessControlService;
     }
 
     @Transactional
