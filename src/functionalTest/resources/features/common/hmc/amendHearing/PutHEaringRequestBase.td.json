@@ -122,8 +122,8 @@
             ],
             "vulnerableFlag": true,
             "vulnerabilityDetails": "A bit vulnerable",
-            "hearingChannelEmail": "hearing.channel@email.com",
-            "hearingChannelPhone": "01234567890",
+            "hearingChannelEmail": ["hearing.channel@email.com"],
+            "hearingChannelPhone": ["01234567890"],
             "relatedParties": [
               {
                 "relatedPartyID": "P7",

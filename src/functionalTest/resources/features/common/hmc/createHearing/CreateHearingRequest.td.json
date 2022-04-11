@@ -2,9 +2,7 @@
   "_guid_": "CreateHearingRequest",
   "_extends_" : "CreateHearingRequestBase",
   "specs": [
-
     "to create a hearing request"
-
   ],
   "request": {
     "body": {

@@ -1,0 +1,48 @@
+{
+  "_guid_": "S-005.2",
+  "_extends_" : "F-005_TestBase",
+
+  "specs": [
+    "has the 200 OK code",
+    "an active profile in CCD",
+    "has 200 status code",
+    "contains only the hearing with HEARING_REQUESTED status"
+  ],
+
+  "request": {
+    "pathVariables": {
+      "caseref": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
+    },
+    "queryParams": {
+      "status": "HEARING_REQUESTED"
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 200,
+    "responseMessage": "OK",
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    },
+    "body" : {
+      "caseRef" : "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
+      "caseHearings" : [ {
+        "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
+        "hearingType" : "Some hearing type",
+        "hmcStatus" : "HEARING_REQUESTED",
+        "lastResponseReceivedDateTime" : null,
+        "responseVersion" : null,
+        "hearingListingStatus" : null,
+        "listAssistCaseStatus" : null,
+        "hearingDaySchedule" : null,
+        "hearingGroupRequestId" : null,
+        "hearingIsLinkedFlag" : false,
+        "hearingID" : "[[ANY_NUMBER_NOT_NULLABLE]]"
+      } ],
+      "hmctsServiceCode" : "[[ANYTHING_PRESENT]]"
+    }
+  }
+}

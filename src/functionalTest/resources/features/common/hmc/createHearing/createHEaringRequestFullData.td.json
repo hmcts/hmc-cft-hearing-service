@@ -74,8 +74,8 @@
       "reasonableAdjustments" : [ "Ad1", "Adjust2" ],
       "vulnerableFlag" : true,
       "vulnerabilityDetails" : "A bit vulnerable",
-      "hearingChannelEmail" : "hearing.channel@email.com",
-      "hearingChannelPhone" : "01234567890",
+      "hearingChannelEmail": ["hearing.channel@email.com"],
+      "hearingChannelPhone": ["01234567890"],
       "relatedParties" : [ {
         "relatedPartyID" : "P7",
         "relationshipType" : "p7 Sibling"
