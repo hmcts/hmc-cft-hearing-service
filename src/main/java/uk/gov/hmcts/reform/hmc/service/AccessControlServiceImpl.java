@@ -128,6 +128,7 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
     }
 
+    @SuppressWarnings("java:S2789")
     private boolean verifyCaseType(RoleAssignment roleAssignment, String caseTypeId) {
         Optional<String> roleCaseType = roleAssignment.getAttributes().getCaseType();
         if (roleCaseType == null
