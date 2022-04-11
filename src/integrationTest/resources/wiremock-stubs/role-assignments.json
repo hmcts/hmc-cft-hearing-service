@@ -21,7 +21,7 @@
           "roleCategory": "JUDICIAL",
           "readOnly": false,
           "beginTime": "2021-01-01T00:00:00Z",
-          "endTime": "2022-01-01T00:00:00Z",
+          "endTime": "2024-01-01T00:00:00Z",
           "created": "2020-12-23T06:37:58.096065Z",
           "attributes": {},
           "authorisations": []
@@ -37,7 +37,7 @@
           "roleCategory": "JUDICIAL",
           "readOnly": false,
           "beginTime": "2021-02-01T00:00:00Z",
-          "endTime": "2022-01-01T00:00:00Z",
+          "endTime": "2024-01-01T00:00:00Z",
           "created": "2020-12-23T06:37:58.096065Z",
           "attributes": {},
           "authorisations": []
@@ -53,7 +53,7 @@
           "roleCategory": "JUDICIAL",
           "readOnly": false,
           "beginTime": "2021-01-01T00:00:00Z",
-          "endTime": "2022-01-01T00:00:00Z",
+          "endTime": "2024-01-01T00:00:00Z",
           "created": "2020-12-23T06:37:58.096065Z",
           "attributes": {},
           "authorisations": []
