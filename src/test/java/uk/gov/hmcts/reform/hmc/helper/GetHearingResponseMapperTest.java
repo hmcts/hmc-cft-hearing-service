@@ -319,7 +319,9 @@ class GetHearingResponseMapperTest {
             () -> assertEquals("details", individualDetails.getVulnerabilityDetails()),
             () -> assertEquals("01234567890", individualDetails.getHearingChannelPhone().get(0)),
             () -> assertEquals("hearing.channel@email.com", individualDetails.getHearingChannelEmail().get(0)),
-            () -> assertEquals("First reason", individualDetails.getReasonableAdjustments().get(0))
+            () -> assertEquals("First reason", individualDetails.getReasonableAdjustments().get(0)),
+            () -> assertEquals("custodyStatus", individualDetails.getCustodyStatus()),
+            () -> assertEquals("otherReason", individualDetails.getOtherReasonableAdjustmentDetails())
         );
     }
 

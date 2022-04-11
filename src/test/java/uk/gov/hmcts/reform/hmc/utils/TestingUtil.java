@@ -197,6 +197,8 @@ public class TestingUtil {
         individualDetailEntity.setRelatedPartyRelationshipType("relationshipType");
         individualDetailEntity.setRelatedPartyID("id");
         individualDetailEntity.setVulnerabilityDetails("details");
+        individualDetailEntity.setCustodyStatus("custodyStatus");
+        individualDetailEntity.setOtherReasonableAdjustmentDetails("otherReason");
         return individualDetailEntity;
     }
 

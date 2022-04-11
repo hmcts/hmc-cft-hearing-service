@@ -177,6 +177,9 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         individualDetails.setInterpreterLanguage(individualDetailEntity.getInterpreterLanguage());
         individualDetails.setVulnerableFlag(individualDetailEntity.getVulnerableFlag());
         individualDetails.setVulnerabilityDetails(individualDetailEntity.getVulnerabilityDetails());
+        individualDetails.setCustodyStatus(individualDetailEntity.getCustodyStatus());
+        individualDetails.setOtherReasonableAdjustmentDetails(
+            individualDetailEntity.getOtherReasonableAdjustmentDetails());
         setReasonableAdjustments(hearingPartyEntity,individualDetails);
         updateContactDetails(hearingPartyEntity, individualDetails);
         RelatedParty relatedParty = new RelatedParty();
