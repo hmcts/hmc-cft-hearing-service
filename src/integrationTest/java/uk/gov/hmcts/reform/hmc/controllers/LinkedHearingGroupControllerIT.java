@@ -277,7 +277,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-        void shouldThrowExceptionWhenReceiving4xxFromListAssist() throws Exception {
+        void shouldReturn400_WhenReceiving4xxFromListAssist() throws Exception {
             LinkHearingDetails hearingInGroup = new LinkHearingDetails();
             hearingInGroup.setHearingId("2000000012");
             hearingInGroup.setHearingOrder(1);
@@ -302,7 +302,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-        void shouldThrowExceptionWhenReceiving5xxFromListAssist() throws Exception {
+        void shouldReturn400_WhenReceiving5xxFromListAssist() throws Exception {
             LinkHearingDetails hearingInGroup = new LinkHearingDetails();
             hearingInGroup.setHearingId("2000000012");
             hearingInGroup.setHearingOrder(1);
