@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
@@ -60,7 +61,8 @@ public class AccessControlServiceImpl implements AccessControlService {
 
     @Override
     public void verifyAccess(Long hearingId, List<String> requiredRoles) {
-        verifyRoleAccess(requiredRoles, hearingId);
+        List<RoleAssignment> filteredRoleAssignments = verifyRoleAccess(requiredRoles, hearingId);
+        verifyHearingStatus(filteredRoleAssignments, null, hearingId);
     }
 
     @Override
@@ -75,6 +77,7 @@ public class AccessControlServiceImpl implements AccessControlService {
         if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
             throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
         }
+        verifyHearingStatus(filteredRoleAssignments, caseDetails.getCaseTypeId(), hearingId);
     }
 
     private List<RoleAssignment> verifyRoleAccess(List<String> requiredRoles, Long hearingId) {
@@ -88,7 +91,6 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
 
         verifyRequiredRolesExists(requiredRoles, filteredRoleAssignments);
-        verifyHearingStatus(filteredRoleAssignments, hearingId);
         return filteredRoleAssignments;
     }
 
@@ -111,15 +113,29 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
     }
 
-    private void verifyHearingStatus(List<RoleAssignment> filteredRoleAssignments, Long hearingId) {
+    private void verifyHearingStatus(List<RoleAssignment> filteredRoleAssignments,
+                                     String caseTypeId,
+                                     Long hearingId) {
         if (hearingId != null) {
             String status = hearingRepository.getStatus(hearingId);
-            if (filteredRoleAssignments.size() == 1
-                && LISTED_HEARING_VIEWER.equals(filteredRoleAssignments.get(0).getRoleName())
+            if (filteredRoleAssignments
+                .stream()
+                .filter(roleAssignment -> verifyCaseType(roleAssignment, caseTypeId))
+                .allMatch(roleAssignment -> LISTED_HEARING_VIEWER.equals(roleAssignment.getRoleName()))
                 && HearingStatus.LISTED.name().equals(status)) {
                 throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_STATUS);
             }
         }
+    }
+
+    private boolean verifyCaseType(RoleAssignment roleAssignment, String caseTypeId) {
+        Optional<String> roleCaseType = roleAssignment.getAttributes().getCaseType();
+        if (roleCaseType == null
+            || roleCaseType.isEmpty()
+            || caseTypeId == null) {
+            return true;
+        }
+        return roleCaseType.orElse("").equals(caseTypeId);
     }
 
     private List<RoleAssignment> filterRoleAssignments(RoleAssignments roleAssignments) {
