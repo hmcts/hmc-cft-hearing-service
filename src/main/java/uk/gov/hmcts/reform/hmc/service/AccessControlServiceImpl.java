@@ -122,7 +122,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 .stream()
                 .filter(roleAssignment -> verifyCaseType(roleAssignment, caseTypeId))
                 .allMatch(roleAssignment -> LISTED_HEARING_VIEWER.equals(roleAssignment.getRoleName()))
-                && HearingStatus.LISTED.name().equals(status)) {
+                && !HearingStatus.LISTED.name().equals(status)) {
                 throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_STATUS);
             }
         }
