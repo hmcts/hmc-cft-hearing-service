@@ -1138,46 +1138,6 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(DELETE_HEARING_DATA_SCRIPT)
-    void shouldReturn201_WhenHearingRequestHasValidDataOrgIdNull() throws Exception {
-        HearingRequest hearingRequest = new HearingRequest();
-        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-        hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
-        hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetailsIdNull());
-        hearingRequest.getHearingDetails().setListingComments("a".repeat(2000));
-        hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
-            .get(0).setRelatedPartyID("a".repeat(15));
-        hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
-            .get(0).setRelationshipType("a".repeat(10));
-        stubSuccessfullyValidateHearingObject(hearingRequest);
-        RoleAssignmentResource resource = new RoleAssignmentResource();
-        resource.setRoleName(ROLE_NAME);
-        resource.setRoleType(ROLE_TYPE);
-        RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
-        attributesResource.setCaseType(Optional.of(CASE_TYPE));
-        attributesResource.setJurisdiction(Optional.of(JURISDICTION));
-        resource.setAttributes(attributesResource);
-        List<RoleAssignmentResource> roleAssignmentList = new ArrayList<>();
-        roleAssignmentList.add(resource);
-        RoleAssignmentResponse response = new RoleAssignmentResponse();
-        response.setRoleAssignments(roleAssignmentList);
-        stubReturn200RoleAssignments(USER_ID, response);
-        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
-            .caseTypeId(CASE_TYPE)
-            .jurisdiction(JURISDICTION)
-            .build();
-        stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
-        mockMvc.perform(post(url)
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingRequest)))
-            .andExpect(status().is(201))
-            .andReturn();
-    }
-
-    @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenHearingIdNotAvailableHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000001")

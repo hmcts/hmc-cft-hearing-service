@@ -298,11 +298,6 @@ class HearingManagementControllerTest {
         }
     }
 
-    /**
-     * generate Hearing Response.
-     *
-     * @return hearingResponse Hearing Response
-     */
     private HearingResponse generateHearingResponse() {
         final long hearingId = 2000000000L;
         HearingResponse hearingResponse = new HearingResponse();
@@ -312,11 +307,6 @@ class HearingManagementControllerTest {
         return hearingResponse;
     }
 
-    /**
-     * generate Create Hearing Request.
-     *
-     * @return hearingRequest Create Hearing Request
-     */
     private HearingRequest generateHearingRequest(boolean isCftOrganisationIdNull) {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());

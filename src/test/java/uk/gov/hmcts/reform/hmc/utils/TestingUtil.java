@@ -249,6 +249,7 @@ public class TestingUtil {
         OrganisationDetails organisationDetails = new OrganisationDetails();
         organisationDetails.setName("name");
         organisationDetails.setOrganisationType("type");
+        organisationDetails.setCftOrganisationID(null);
         return organisationDetails;
     }
 

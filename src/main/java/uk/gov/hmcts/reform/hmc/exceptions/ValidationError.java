@@ -61,7 +61,6 @@ public final class ValidationError {
     public static final String ORGANISATION_TYPE_NULL_EMPTY = "Organisation type can not be empty";
     public static final String ORGANISATION_TYPE_MAX_LENGTH = "Organisation type must not be more than 60 "
         + CHARACTERS_LONG;
-    public static final String CFT_ORG_ID_NULL_EMPTY = "CFT organisation id can not be empty";
     public static final String CFT_ORG_ID_MAX_LENGTH = "CFT organisation id must not be more than 60 "
         + CHARACTERS_LONG;
     public static final String UNAVAILABLE_FROM_DATE_EMPTY = "Unavailable from date can not be empty";
