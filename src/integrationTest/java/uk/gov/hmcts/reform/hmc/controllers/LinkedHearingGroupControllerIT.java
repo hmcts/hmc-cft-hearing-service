@@ -271,7 +271,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(201))
-                .andExpect(jsonPath("$.hearingGroupRequestId").value("1"))
+                .andExpect(jsonPath("$.hearingGroupRequestId").exists())
                 .andReturn();
         }
 
