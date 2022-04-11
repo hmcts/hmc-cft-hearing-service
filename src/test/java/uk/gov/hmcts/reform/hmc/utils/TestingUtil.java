@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.hmc.data.ActualHearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualPartyRelationshipDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
+import uk.gov.hmcts.reform.hmc.data.ContactDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
@@ -282,22 +283,36 @@ public class TestingUtil {
 
     public static IndividualDetails individualContactDetails_HearingChannelEmail() {
         IndividualDetails individualDetails = new IndividualDetails();
-        individualDetails.setHearingChannelEmail("hearing.channel@email.com");
+        individualDetails.setHearingChannelEmail(List.of("hearing.channel@email.com"));
         return individualDetails;
     }
 
     public static IndividualDetails individualContactDetails_HearingChannelPhone() {
         IndividualDetails individualDetails = new IndividualDetails();
-        individualDetails.setHearingChannelPhone("01234567890");
+        individualDetails.setHearingChannelPhone(List.of("01234567890"));
         return individualDetails;
     }
 
     public static IndividualDetails individualContactDetails() {
         IndividualDetails individualDetails = new IndividualDetails();
-        individualDetails.setHearingChannelEmail("hearing.channel@email.com");
-        individualDetails.setHearingChannelPhone("01234567890");
+        individualDetails.setHearingChannelEmail(List.of("hearing.channel@email.com"));
+        individualDetails.setHearingChannelPhone(List.of("01234567890"));
         return individualDetails;
 
+    }
+
+    public static ContactDetailsEntity contactDetailsEntity_Email() {
+        ContactDetailsEntity contactDetailsEntity = new ContactDetailsEntity();
+        contactDetailsEntity.setContactDetails("hearing.channel@email.com");
+        contactDetailsEntity.setContactType("email");
+        return contactDetailsEntity;
+    }
+
+    public static ContactDetailsEntity contactDetailsEntity_Phone() {
+        ContactDetailsEntity contactDetailsEntity = new ContactDetailsEntity();
+        contactDetailsEntity.setContactDetails("01234567890");
+        contactDetailsEntity.setContactType("phone");
+        return contactDetailsEntity;
     }
 
     public static DeleteHearingRequest deleteHearingRequest() {
@@ -665,6 +680,7 @@ public class TestingUtil {
         entity.setPartyReference("reference");
         entity.setPartyType(PartyType.IND);
         entity.setPartyRoleType("role");
+        entity.setContactDetails(List.of(contactDetailsEntity_Email(), contactDetailsEntity_Phone()));
         entity.setIndividualDetailEntity(List.of(individualDetailEntity()));
         return entity;
     }
@@ -818,8 +834,8 @@ public class TestingUtil {
         individualDetails.setReasonableAdjustments(Arrays.asList("Adjust1", "Adjust2", "Adjust3"));
         individualDetails.setVulnerableFlag(false);
         individualDetails.setVulnerabilityDetails("More vulnerable");
-        individualDetails.setHearingChannelPhone("01111111111");
-        individualDetails.setHearingChannelEmail("hearing.channel_udated@email.com");
+        individualDetails.setHearingChannelPhone(List.of("01111111111"));
+        individualDetails.setHearingChannelEmail(List.of("hearing.channel_udated@email.com"));
         List<RelatedParty> relatedParties = new ArrayList<>();
         RelatedParty relatedParty1 = new RelatedParty();
         relatedParty1.setRelatedPartyID("Party1");
