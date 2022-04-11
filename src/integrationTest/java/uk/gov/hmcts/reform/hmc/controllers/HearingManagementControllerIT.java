@@ -469,8 +469,23 @@ class HearingManagementControllerIT extends BaseTest {
         HearingRequest createHearingRequest = new HearingRequest();
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+
+        CaseDetails caseDetailsIN = TestingUtil.caseDetails();
+        CaseCategory category = new CaseCategory();
+        category.setCategoryType("caseType");
+        category.setCategoryValue("PROBATE");
+
+        CaseCategory categorySubType = new CaseCategory();
+        categorySubType.setCategoryType("caseSubType");
+        categorySubType.setCategoryValue("PROBATE");
+        List<CaseCategory> caseCategories = new ArrayList<>();
+        caseCategories.add(category);
+        caseCategories.add(categorySubType);
+        caseDetailsIN.setCaseCategories(caseCategories);
+        createHearingRequest.setCaseDetails(caseDetailsIN);
+        createHearingRequest.setCaseDetails(caseDetailsIN);
         stubSuccessfullyValidateHearingObject(createHearingRequest);
+
         RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(ROLE_NAME);
         resource.setRoleType(ROLE_TYPE);
@@ -654,7 +669,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn201WhenUpdateHearingRequestIsValid() throws Exception {
         mockMvc.perform(put(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(TestingUtil.updateHearingRequest())))
+                            .content(objectMapper.writeValueAsString(TestingUtil.validUpdateHearingRequest())))
             .andExpect(status().is(201))
             .andExpect(jsonPath("$.hearingRequestID").value("2000000000"))
             .andExpect(jsonPath("$.timeStamp").value(IsNull.notNullValue()))
