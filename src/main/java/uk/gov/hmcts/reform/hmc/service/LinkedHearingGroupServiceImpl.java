@@ -97,6 +97,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     @Override
     @Transactional(noRollbackFor = {BadRequestException.class})
     public void deleteLinkedHearingGroup(Long hearingGroupId) {
+
         validateHearingGroup(hearingGroupId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(hearingGroupId);
         validateUnlinkingHearingsStatus(linkedGroupHearings);
@@ -139,39 +140,39 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private void validateUnlinkingHearingsStatus(List<HearingEntity> linkedHearings) {
         List<HearingEntity> unlinkInvalidStatusHearings = linkedHearings.stream()
-            .filter(h -> !DeleteHearingStatus.isValid(h.getStatus()))
-            .collect(Collectors.toList());
+                .filter(h -> !DeleteHearingStatus.isValid(h.getStatus()))
+                .collect(Collectors.toList());
 
         if (!unlinkInvalidStatusHearings.isEmpty()) {
             throw new BadRequestException(
-                format(INVALID_DELETE_HEARING_GROUP_HEARING_STATUS, unlinkInvalidStatusHearings.get(0).getId()));
+                    format(INVALID_DELETE_HEARING_GROUP_HEARING_STATUS, unlinkInvalidStatusHearings.get(0).getId()));
         }
     }
 
     private void validateUnlinkingHearingsWillNotHaveStartDateInThePast(List<HearingEntity> linkedHearings) {
 
         linkedHearings.stream()
-            .filter(h -> h.getHearingResponses().size() > 0)
-            .forEach(hearing -> {
-                List<HearingResponseEntity> latestVersionHearingResponses
-                    = getLatestVersionHearingResponses(hearing);
+                .filter(h -> h.getHearingResponses().size() > 0)
+                .forEach(hearing -> {
+                    List<HearingResponseEntity> latestVersionHearingResponses
+                            = getLatestVersionHearingResponses(hearing);
 
-                Optional<HearingResponseEntity> mostRecentLatestVersionHearingResponse
-                    = latestVersionHearingResponses
-                    .stream().max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
+                    Optional<HearingResponseEntity> mostRecentLatestVersionHearingResponse
+                            = latestVersionHearingResponses
+                            .stream().max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
 
-                boolean hasHearingDateInThePast = mostRecentLatestVersionHearingResponse.isPresent()
-                    && mostRecentLatestVersionHearingResponse.get()
-                    .getHearingDayDetails().stream()
-                    .anyMatch(dayTime -> dayTime.getStartDateTime().isBefore(LocalDateTime.now()));
+                    boolean hasHearingDateInThePast = mostRecentLatestVersionHearingResponse.isPresent()
+                            && mostRecentLatestVersionHearingResponse.get()
+                            .getHearingDayDetails().stream()
+                            .anyMatch(dayTime -> dayTime.getStartDateTime().isBefore(LocalDateTime.now()));
 
-                if (hasHearingDateInThePast) {
-                    throw new BadRequestException(format(
-                        INVALID_DELETE_HEARING_GROUP_HEARING_STATUS,
-                        hearing.getId()
-                    ));
-                }
-            });
+                    if (hasHearingDateInThePast) {
+                        throw new BadRequestException(format(
+                                INVALID_DELETE_HEARING_GROUP_HEARING_STATUS,
+                                hearing.getId()
+                        ));
+                    }
+                });
     }
 
     private List<HearingResponseEntity> getLatestVersionHearingResponses(HearingEntity hearing) {

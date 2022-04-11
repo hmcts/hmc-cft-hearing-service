@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn3XX;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn404;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn4XX;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn5XX;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyDeleteLinkedHearingGroups;
@@ -84,8 +86,70 @@ class LinkedHearingGroupServiceIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+    void testDeleteLinkedHearingGroup_LinkedHearingDetails3xxError() {
+        stubDeleteLinkedHearingGroupsReturn3XX(TOKEN, REQUEST_ID2);
+        Optional<LinkedGroupDetails> linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
+            .findById(7700000000L);
+        assertTrue(linkedGroupDetailsBeforeDelete.isPresent());
+        assertEquals("ACTIVE", linkedGroupDetailsBeforeDelete.get().getStatus());
+        Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2100000005L);
+        final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
+        Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
+            .deleteLinkedHearingGroup(7700000000L));
+        assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, exception.getMessage());
+
+        //validating Hearing details
+        Optional<HearingEntity> hearingEntityAfterDelete = hearingRepository.findById(2100000005L);
+        assertTrue(hearingEntityBeforeDelete.isPresent());
+        assertTrue(hearingEntityAfterDelete.isPresent());
+        assertEquals(1, hearingEntityBeforeDelete.get().getLinkedOrder());
+        assertNull(hearingEntityAfterDelete.get().getLinkedOrder());
+        assertEquals(7700000000L, hearingEntityBeforeDelete.get().getLinkedGroupDetails().getLinkedGroupId());
+        assertNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
+
+        //validating LinkedGroupDetails
+        Optional<LinkedGroupDetails> linkedGroupDetailsAfterDelete = linkedGroupDetailsRepository
+            .findById(7700000000L);
+        assertNotNull(linkedGroupDetailsAfterDelete);
+        assertEquals("ERROR", linkedGroupDetailsAfterDelete.get().getStatus());
+        //checking Audit tables
+        validateLinkedGroupAuditDetails();
+        validateHearingAuditDetails(linkedOrder);
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_LinkedHearingDetails4xxError() {
         stubDeleteLinkedHearingGroupsReturn4XX(TOKEN, REQUEST_ID2);
+        Optional<LinkedGroupDetails> linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
+            .findById(7700000000L);
+        assertTrue(linkedGroupDetailsBeforeDelete.isPresent());
+        Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2100000005L);
+        final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
+        Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
+            .deleteLinkedHearingGroup(7700000000L));
+        assertEquals(REJECTED_BY_LIST_ASSIST, exception.getMessage());
+        //validating Hearing details
+        Optional<HearingEntity> hearingEntityAfterDelete = hearingRepository.findById(2100000005L);
+        assertTrue(hearingEntityBeforeDelete.isPresent());
+        assertTrue(hearingEntityAfterDelete.isPresent());
+        assertEquals(1, hearingEntityBeforeDelete.get().getLinkedOrder());
+        assertNull(hearingEntityAfterDelete.get().getLinkedOrder());
+        assertEquals(7700000000L, hearingEntityBeforeDelete.get().getLinkedGroupDetails().getLinkedGroupId());
+        assertNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
+
+        //validating LinkedGroupDetails
+        Long linkedGroupId = linkedGroupDetailsRepository.isFoundForRequestId(REQUEST_ID2);
+        assertNull(linkedGroupId);
+        //checking Audit tables
+        validateLinkedGroupAuditDetails();
+        validateHearingAuditDetails(linkedOrder);
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+    void testDeleteLinkedHearingGroup_LinkedHearingDetails404Error() {
+        stubDeleteLinkedHearingGroupsReturn404(TOKEN, REQUEST_ID2);
         Optional<LinkedGroupDetails> linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
             .findById(7700000000L);
         assertTrue(linkedGroupDetailsBeforeDelete.isPresent());

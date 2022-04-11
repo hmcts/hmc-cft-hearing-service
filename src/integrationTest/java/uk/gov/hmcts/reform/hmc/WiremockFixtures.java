@@ -30,6 +30,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -130,6 +131,44 @@ public class WiremockFixtures {
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
                                     .withStatus(HTTP_BAD_REQUEST)
+                    ));
+    }
+
+    public static void stubDeleteLinkedHearingGroupsReturn404(String token, String requestId) {
+        HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
+        response.setResponseCode(404);
+        response.setDescription(REJECTED_BY_LIST_ASSIST);
+        stubFor(WireMock.delete(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
+                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
+                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
+                                                                   + "{2}:[0-9]{2}.[0-9]{6}Z"))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(response))
+                                    .withStatus(HTTP_NOT_FOUND)
+                    ));
+    }
+
+    public static void stubDeleteLinkedHearingGroupsReturn3XX(String token, String requestId) {
+        HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
+        response.setResponseCode(500);
+        response.setDescription(LIST_ASSIST_FAILED_TO_RESPOND);
+        stubFor(WireMock.delete(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
+                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
+                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
+                                                                   + "{2}:[0-9]{2}.[0-9]{6}Z"))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(response))
+                                    .withStatus(HTTP_MULT_CHOICE)
                     ));
     }
 
