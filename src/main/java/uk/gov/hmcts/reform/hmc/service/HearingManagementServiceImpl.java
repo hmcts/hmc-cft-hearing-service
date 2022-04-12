@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import com.microsoft.applicationinsights.core.dependencies.google.common.base.Enums;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -49,6 +50,7 @@ import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
+import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -103,6 +105,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final ActualHearingDayRepository actualHearingDayRepository;
     private final HearingIdValidator hearingIdValidator;
     private final HearingRepository hearingRepository;
+    private final LinkedHearingValidator linkedHearingValidator;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -121,7 +124,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         ApplicationParams applicationParams,
                                         HearingIdValidator hearingIdValidator,
                                         ActualHearingRepository actualHearingRepository,
-                                        ActualHearingDayRepository actualHearingDayRepository) {
+                                        ActualHearingDayRepository actualHearingDayRepository,
+                                        LinkedHearingValidator linkedHearingValidator) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -139,6 +143,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.actualHearingDayRepository = actualHearingDayRepository;
         this.hearingRepository = hearingRepository;
         this.hearingIdValidator = hearingIdValidator;
+        this.linkedHearingValidator = linkedHearingValidator;
     }
 
     @Override
@@ -200,9 +205,18 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private void validateHearingStatusForUpdate(Long hearingId) {
         String status = getStatus(hearingId);
-        if (!PutHearingStatus.isValid(status)) {
+        if (!PutHearingStatus.isValid(status) || validatePlannedStartDate(hearingId)) {
             throw new BadRequestException(INVALID_PUT_HEARING_STATUS);
         }
+    }
+
+    private boolean validatePlannedStartDate(Long hearingId) {
+        val existingHearing = hearingRepository.findById(hearingId)
+            .orElseThrow(() -> new HearingNotFoundException(
+                hearingId,
+                HEARING_ID_NOT_FOUND
+            ));
+        return linkedHearingValidator.filterHearingResponses(existingHearing).isBefore(LocalDate.now());
     }
 
     /**

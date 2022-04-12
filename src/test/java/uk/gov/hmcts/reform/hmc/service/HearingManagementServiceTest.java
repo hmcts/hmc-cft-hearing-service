@@ -66,6 +66,7 @@ import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
+import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -172,6 +173,9 @@ class HearingManagementServiceTest {
     ActualHearingDayRepository actualHearingDayRepository;
 
     @Mock
+    LinkedHearingValidator linkedHearingValidator;
+
+    @Mock
     ApplicationParams applicationParams;
 
     JsonNode jsonNode = mock(JsonNode.class);
@@ -198,8 +202,8 @@ class HearingManagementServiceTest {
                 applicationParams,
                 hearingIdValidator,
                 actualHearingRepository,
-                actualHearingDayRepository
-            );
+                actualHearingDayRepository,
+                    linkedHearingValidator);
     }
 
     public static final String JURISDICTION = "Jurisdiction1";
@@ -1023,6 +1027,7 @@ class HearingManagementServiceTest {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
             final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+            when(linkedHearingValidator.filterHearingResponses(any())).thenReturn(LocalDate.now());
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
@@ -1065,6 +1070,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldPassWhenDbStatusMatchWithExpectedState() {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+            when(linkedHearingValidator.filterHearingResponses(any())).thenReturn(LocalDate.now());
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(
                 hearingRequest.getRequestDetails().getVersionNumber());
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
