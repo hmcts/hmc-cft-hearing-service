@@ -14,10 +14,15 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkedHearingGroupResponses;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
@@ -30,6 +35,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -39,6 +45,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS_UPDATE_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType.ORDERED;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
@@ -374,6 +381,64 @@ class LinkedHearingGroupServiceTest {
             groupDetailsAudit.setLinkType(ORDERED);
             groupDetailsAudit.setStatus(groupStatus);
             return groupDetailsAudit;
+        }
+
+    }
+
+    @Nested
+    @DisplayName("getHearingGroup")
+    class GetHearingGroup {
+        public static final String INVALID_REQUEST_NAME = "Invalid Name";
+        public static final String VALID_REQUEST_ID = "Request Name";
+
+        @Test
+        void shouldGetLinkedHearingGroupDetails() {
+            LinkedGroupDetails linkedGroupDetails =
+                generateLinkedGroupDetails(HEARING_GROUP_ID);
+            HearingEntity hearing1 = generateHearingEntity(HEARING_ID1,linkedGroupDetails);
+            HearingEntity hearing2 = generateHearingEntity(HEARING_ID2,linkedGroupDetails);
+
+            given(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(VALID_REQUEST_ID))
+                .willReturn(linkedGroupDetails);
+            given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
+                .willReturn(List.of(hearing1, hearing2));
+
+            LinkedHearingGroupResponses linkedHearingGroupResponses =
+                service.getLinkedHearingGroupDetails(VALID_REQUEST_ID);
+            GroupDetails returnedGroupDetails = linkedHearingGroupResponses.getGroupDetails();
+            assertFalse(
+                returnedGroupDetails != null
+                    && returnedGroupDetails.getGroupName().isEmpty()
+                    && returnedGroupDetails.getGroupComments().isEmpty());
+        }
+
+        @Test
+        void shouldReturn404ErrorWhenRequestIdIsNotFound() {
+            Exception exception = assertThrows(LinkedGroupNotFoundException.class, () ->
+                service.getLinkedHearingGroupDetails(INVALID_REQUEST_NAME));
+            assertEquals(INVALID_LINKED_GROUP_REQUEST_ID_DETAILS,exception.getMessage());
+        }
+
+        private LinkedGroupDetails generateLinkedGroupDetails(Long hearingGroupId) {
+            LinkedGroupDetails groupDetails = new LinkedGroupDetails();
+            groupDetails.setLinkedGroupId(hearingGroupId);
+            groupDetails.setLinkType(LinkType.ORDERED);
+            groupDetails.setReasonForLink("reason for link");
+            groupDetails.setRequestDateTime(LocalDateTime.now());
+            groupDetails.setRequestId("2B");
+            groupDetails.setRequestName(VALID_REQUEST_ID);
+            groupDetails.setStatus(PutHearingStatus.HEARING_REQUESTED.name());
+            return groupDetails;
+        }
+
+        private HearingEntity generateHearingEntity(Long hearingId, LinkedGroupDetails groupDetails) {
+            HearingEntity hearing = new HearingEntity();
+            hearing.setId(hearingId);
+            hearing.setLinkedGroupDetails(groupDetails);
+            hearing.setStatus("ACTIVE");
+            hearing.setIsLinkedFlag(true);
+            hearing.setLinkedOrder(1L);
+            return hearing;
         }
 
     }

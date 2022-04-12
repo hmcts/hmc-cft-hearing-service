@@ -21,7 +21,9 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -579,6 +581,38 @@ class LinkedHearingGroupControllerIT extends BaseTest {
             mockMvc.perform(delete(url + "/7600000000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(200))
+                .andReturn();
+        }
+    }
+
+    @Nested
+    @DisplayName("GetLinkedHearingGroup")
+    class GetLinkedHearingGroup {
+
+        @Test
+        void shouldReturn404_WhenLinkedHearingIdDoesNotExist() throws Exception {
+            mockMvc.perform(get(url + "/7600000001")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(400))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+        void shouldReturn200WhenLinkedHearingGroupExists() throws Exception {
+            mockMvc.perform(get(url + "/Request Id")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.groupDetails").exists())
+                .andExpect(jsonPath("$..groupDetails.groupName").value("A request name"))
+                .andExpect(jsonPath("$.groupDetails.groupReason").value("good reason"))
+                .andExpect(jsonPath("$.groupDetails.groupLinkType").value("Ordered"))
+                .andExpect(jsonPath("$.groupDetails.groupComments").value("An added comment"))
+                .andExpect(jsonPath("$.hearingsInGroup",hasSize(2)))
+                .andExpect(jsonPath("$.hearingsInGroup[0].hearingId").value("2000000303"))
+                .andExpect(jsonPath("$.hearingsInGroup[0].hearingOrder").value("2"))
+                .andExpect(jsonPath("$.hearingsInGroup[1].hearingId").value("2000000304"))
+                .andExpect(jsonPath("$.hearingsInGroup[1].hearingOrder").value("1"))
                 .andReturn();
         }
     }
