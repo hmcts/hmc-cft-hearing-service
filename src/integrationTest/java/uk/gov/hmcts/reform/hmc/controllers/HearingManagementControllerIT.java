@@ -320,7 +320,7 @@ class HearingManagementControllerIT extends BaseTest {
         HearingRequest createHearingRequest = new HearingRequest();
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setCaseDetails(TestingUtil.getValidCaseDetails());
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetailsIdNull());
