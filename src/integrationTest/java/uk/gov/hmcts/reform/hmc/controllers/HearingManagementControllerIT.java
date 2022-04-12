@@ -83,7 +83,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.FACILITIES_REQU
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.FIRST_NAME_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.FIRST_NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_HEARING_DAY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_UN_EXPRECTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_CHANNEL_EMAIL_INVALID;
@@ -587,6 +586,7 @@ class HearingManagementControllerIT extends BaseTest {
 
 
     @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForValidCaseRefLuhn() throws Exception {
         mockMvc.perform(get("/hearings/9372710950276233")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -1156,12 +1156,19 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
-    void shouldReturn404WhenActualHearingDayMissingForResultTypeResponseHearingCompletion() throws Exception {
+    void shouldReturn200WhenActualHearingDayMissingForResultTypeAdjourned() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000013")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(1)))
-            .andExpect(jsonPath("$.errors", hasItem((HEARING_ACTUALS_MISSING_HEARING_DAY))))
+            .andExpect(status().is(200))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
+    void shouldReturn200WhenActualHearingDayMissingForResultTypeCompleted() throws Exception {
+        mockMvc.perform(post(hearingCompletion + "/2000000015")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
             .andReturn();
     }
 

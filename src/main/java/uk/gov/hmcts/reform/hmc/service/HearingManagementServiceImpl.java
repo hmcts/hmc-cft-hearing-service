@@ -73,9 +73,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_VERSION_NUMBER;
-import static uk.gov.hmcts.reform.hmc.model.HearingResultType.ADJOURNED;
 import static uk.gov.hmcts.reform.hmc.model.HearingResultType.CANCELLED;
-import static uk.gov.hmcts.reform.hmc.model.HearingResultType.COMPLETED;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
@@ -469,19 +467,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         Optional<ActualHearingEntity> entity = getActualHearing(hearingId);
         if (entity.isEmpty()) {
             throw new BadRequestException(errorMessage);
-        }
-    }
-
-    private void validateHearingResultType(Long hearingId, String errorMessage) {
-        Optional<ActualHearingEntity> entity = getActualHearing(hearingId);
-        if (entity.isPresent()) {
-            HearingResultType hearingResultType = entity.get().getHearingResultType();
-
-            if ((hearingResultType.getLabel().equals(COMPLETED.getLabel())
-                || hearingResultType.getLabel().equals(ADJOURNED.getLabel()))
-                && actualHearingDayRepository.findByActualHearing(entity.get()).isEmpty()) {
-                throw new BadRequestException(errorMessage);
-            }
         }
     }
 
