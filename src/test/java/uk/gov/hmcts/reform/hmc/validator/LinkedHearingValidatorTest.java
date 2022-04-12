@@ -1009,7 +1009,6 @@ class LinkedHearingValidatorTest {
         assertEquals("No hearing" + " group found for reference: " + hearingGroupId, exception.getMessage());
         verify(linkedGroupDetailsRepository, times(1)).findById(hearingGroupId);
         verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
-        verify(linkedGroupDetailsRepository, never()).deleteHearingGroup(anyLong());
     }
 
     @Test
