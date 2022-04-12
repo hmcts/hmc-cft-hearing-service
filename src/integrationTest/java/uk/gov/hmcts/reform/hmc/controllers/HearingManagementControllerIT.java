@@ -253,7 +253,7 @@ class HearingManagementControllerIT extends BaseTest {
         HearingRequest createHearingRequest = new HearingRequest();
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setCaseDetails(TestingUtil.getValidCaseDetails());
         stubSuccessfullyValidateHearingObject(createHearingRequest);
         RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(ROLE_NAME);
@@ -285,7 +285,7 @@ class HearingManagementControllerIT extends BaseTest {
         HearingRequest createHearingRequest = new HearingRequest();
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setCaseDetails(TestingUtil.getValidCaseDetails());
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
@@ -503,8 +503,21 @@ class HearingManagementControllerIT extends BaseTest {
         HearingRequest createHearingRequest = new HearingRequest();
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        final CaseDetails caseDetailsIN = TestingUtil.caseDetails();
+        final CaseCategory category = new CaseCategory();
+        category.setCategoryType("caseType");
+        category.setCategoryValue("PROBATE");
+        final CaseCategory categorySubType = new CaseCategory();
+        categorySubType.setCategoryType("caseSubType");
+        categorySubType.setCategoryValue("PROBATE");
+        List<CaseCategory> caseCategories = new ArrayList<>();
+        caseCategories.add(category);
+        caseCategories.add(categorySubType);
+        caseDetailsIN.setCaseCategories(caseCategories);
+        createHearingRequest.setCaseDetails(caseDetailsIN);
+        createHearingRequest.setCaseDetails(caseDetailsIN);
         stubSuccessfullyValidateHearingObject(createHearingRequest);
+
         RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(ROLE_NAME);
         resource.setRoleType(ROLE_TYPE);
@@ -688,7 +701,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn201WhenUpdateHearingRequestIsValid() throws Exception {
         mockMvc.perform(put(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(TestingUtil.updateHearingRequest())))
+                            .content(objectMapper.writeValueAsString(TestingUtil.validUpdateHearingRequest())))
             .andExpect(status().is(201))
             .andExpect(jsonPath("$.hearingRequestID").value("2000000000"))
             .andExpect(jsonPath("$.timeStamp").value(IsNull.notNullValue()))
@@ -698,7 +711,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn201WhenUpdateHearingRequestContainsValidPartyDetails() throws Exception {
-        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        UpdateHearingRequest hearingRequest = TestingUtil.validUpdateHearingRequest();
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
@@ -1103,7 +1116,7 @@ class HearingManagementControllerIT extends BaseTest {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingRequest.setCaseDetails(TestingUtil.getValidCaseDetails());
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());

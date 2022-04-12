@@ -4,16 +4,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
+import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
+import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
@@ -27,6 +34,8 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.PENDING;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_GROUP_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_STATUS;
@@ -40,13 +49,30 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     private static final List<String> invalidDeleteGroupStatuses = Arrays.asList("PENDING", "ERROR");
     private HearingRepository hearingRepository;
 
+    private final LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
+
+    private final LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
+
+    private final LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper;
+
+    private final LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
+
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
                                          LinkedGroupDetailsRepository linkedGroupDetailsRepository,
-                                         LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
+                                         LinkedHearingDetailsRepository linkedHearingDetailsRepository,
+                                         LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository,
+                                         LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository,
+                                         LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper,
+                                         LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper) {
         super(hearingRepository, linkedGroupDetailsRepository, linkedHearingDetailsRepository);
         this.hearingRepository = hearingRepository;
+        this.linkedHearingDetailsAuditRepository = linkedHearingDetailsAuditRepository;
+        this.linkedGroupDetailsAuditRepository = linkedGroupDetailsAuditRepository;
+        this.linkedGroupDetailsAuditMapper = linkedGroupDetailsAuditMapper;
+        this.linkedHearingDetailsAuditMapper = linkedHearingDetailsAuditMapper;
     }
+
 
     @Override
     public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
@@ -54,6 +80,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     }
 
     @Override
+    @Transactional
     public void deleteLinkedHearingGroup(Long hearingGroupId) {
 
         validateHearingGroup(hearingGroupId);
@@ -61,7 +88,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         validateUnlinkingHearingsStatus(linkedGroupHearings);
         validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
 
-        deleteFromLinkedGroupDetails(linkedGroupHearings, hearingGroupId);
+        deleteFromLinkedGroupDetails(linkedGroupHearings);
     }
 
     @Override
@@ -143,11 +170,31 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         return max.isPresent() ? max.get().getValue() : List.of();
     }
 
-    private void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings, Long hearingGroupId) {
-        linkedGroupHearings.forEach(hearingEntity -> {
-            // TODO: unlink hearingEntity from the group and persist - https://tools.hmcts.net/jira/browse/HMAN-96
-        });
-        linkedGroupDetailsRepository.deleteHearingGroup(hearingGroupId);
+    private void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings) {
+        LinkedGroupDetails linkedGroupDetails = linkedGroupHearings.get(0).getLinkedGroupDetails();
+        saveLinkedGroupDetailsAudit(linkedGroupDetails);
+        linkedGroupHearings.forEach(hearingEntity -> saveLinkedHearingDetailsAudit(hearingEntity));
+        saveLinkedGroupDetails(linkedGroupDetails);
         // TODO: call ListAssist - https://tools.hmcts.net/jira/browse/HMAN-97
     }
+
+    private void saveLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails) {
+        Long versionNumber = linkedGroupDetails.getLinkedGroupLatestVersion();
+        linkedGroupDetails.setLinkedGroupLatestVersion(versionNumber + VERSION_NUMBER_TO_INCREMENT);
+        linkedGroupDetails.setStatus(PENDING);
+        linkedGroupDetailsRepository.save(linkedGroupDetails);
+    }
+
+    private void saveLinkedGroupDetailsAudit(LinkedGroupDetails linkedGroupDetails) {
+        LinkedGroupDetailsAudit linkedGroupDetailsAudit = linkedGroupDetailsAuditMapper
+            .modelToEntity(linkedGroupDetails);
+        linkedGroupDetailsAuditRepository.save(linkedGroupDetailsAudit);
+    }
+
+    private void saveLinkedHearingDetailsAudit(HearingEntity hearingEntity) {
+        LinkedHearingDetailsAudit linkedHearingDetailsAuditEntity = linkedHearingDetailsAuditMapper
+            .modelToEntity(hearingEntity);
+        linkedHearingDetailsAuditRepository.save(linkedHearingDetailsAuditEntity);
+    }
+
 }
