@@ -516,12 +516,6 @@ class BeanValidatorTest {
         partyDetails.setPartyRole("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN");
         Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
         assertTrue(violations.isEmpty());
-        List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> {
-            validationErrors.add(e.getMessage());
-            logger.info(e.getMessage());
-        });
-        assertEquals(0, violations.size());
     }
 
     @Test
@@ -531,14 +525,10 @@ class BeanValidatorTest {
         partyDetails.setPartyType(PartyType.IND.getLabel());
         partyDetails.setPartyRole("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNO");
         Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
-        assertFalse(violations.isEmpty());
-        List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> {
-            validationErrors.add(e.getMessage());
-            logger.info(e.getMessage());
-        });
         assertEquals(1, violations.size());
-        assertTrue(validationErrors.contains(PARTY_ROLE_MAX_LENGTH));
+        assertTrue(violations.stream()
+                       .map(ConstraintViolation::getMessage)
+                       .anyMatch(msg -> msg.equals(PARTY_ROLE_MAX_LENGTH)));
     }
 
 }
