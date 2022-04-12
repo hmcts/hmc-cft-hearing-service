@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
+import uk.gov.hmcts.reform.hmc.data.ContactDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
@@ -170,22 +171,30 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         }
         individualDetails.setVulnerableFlag(individualDetailEntity.getVulnerableFlag());
         individualDetails.setVulnerabilityDetails(individualDetailEntity.getVulnerabilityDetails());
-        if (null != hearingPartyEntity.getContactDetails()
-                && !hearingPartyEntity.getContactDetails().isEmpty()) {
-            if (hearingPartyEntity.getContactDetails().get(0).getContactDetails().contains("@")) {
-                individualDetails.setHearingChannelEmail(
-                        hearingPartyEntity.getContactDetails().get(0).getContactDetails());
-            } else {
-                individualDetails.setHearingChannelPhone(
-                        hearingPartyEntity.getContactDetails().get(0).getContactDetails());
-            }
-        }
+        updateContactDetails(hearingPartyEntity, individualDetails);
         RelatedParty relatedParty = new RelatedParty();
         relatedParty.setRelatedPartyID(individualDetailEntity.getRelatedPartyID());
         relatedParty.setRelationshipType(individualDetailEntity.getRelatedPartyRelationshipType());
 
         individualDetails.setRelatedParties(List.of(relatedParty));
         return individualDetails;
+    }
+
+    private void updateContactDetails(HearingPartyEntity hearingPartyEntity, IndividualDetails individualDetails) {
+        List<String> emails = new ArrayList<>();
+        List<String> phoneNumbers = new ArrayList<>();
+        if (null != hearingPartyEntity.getContactDetails()
+            && !hearingPartyEntity.getContactDetails().isEmpty()) {
+            for (ContactDetailsEntity contactDetailsEntity : hearingPartyEntity.getContactDetails()) {
+                if (contactDetailsEntity.getContactDetails().contains("@")) {
+                    emails.add(contactDetailsEntity.getContactDetails());
+                } else {
+                    phoneNumbers.add(contactDetailsEntity.getContactDetails());
+                }
+            }
+        }
+        individualDetails.setHearingChannelEmail(emails);
+        individualDetails.setHearingChannelPhone(phoneNumbers);
     }
 
     private HearingResponse setHearingResponse(HearingEntity hearingEntity) {

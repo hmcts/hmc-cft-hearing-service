@@ -329,7 +329,7 @@ public class BasePactTesting {
         individualDetails.setTitle("Master");
         individualDetails.setFirstName("Harry");
         individualDetails.setLastName("Styles");
-        individualDetails.setHearingChannelEmail("harry.styles.neveragin@gmailsss.com");
+        individualDetails.setHearingChannelEmail(List.of("harry.styles.neveragin@gmailsss.com"));
         individualDetails.setInterpreterLanguage("German");
         individualDetails.setPreferredHearingChannel("CBeebies");
         individualDetails.setReasonableAdjustments(createReasonableAdjustments());

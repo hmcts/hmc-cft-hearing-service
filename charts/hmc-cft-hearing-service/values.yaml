@@ -34,7 +34,6 @@ java:
     OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-{{ .Values.global.environment }}.internal:8443/openam/oauth2/hmcts
     IDAM_API_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
     S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,am_role_assignment_service
     HTTP_CLIENT_CONNECTION_TIMEOUT: '10000'
     HTTP_CLIENT_READ_TIMEOUT: '60000'
     HTTP_CLIENT_MAX_TOTAL: '200'
