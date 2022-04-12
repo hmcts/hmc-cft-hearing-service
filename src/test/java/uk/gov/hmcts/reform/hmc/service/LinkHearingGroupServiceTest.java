@@ -24,11 +24,15 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
+import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 
 import java.time.LocalDate;
@@ -62,15 +66,28 @@ class LinkHearingGroupServiceTest {
     @Mock
     LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
+    @Mock
+    private LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
+
+    @Mock
+    private LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
+
+    @Mock
+    private LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper;
+
+    @Mock
+    private LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         linkedHearingGroupService =
-            new LinkedHearingGroupServiceImpl(
-                hearingRepository,
-                    linkedGroupDetailsRepository,
-                        linkedHearingDetailsRepository
-            );
+            new LinkedHearingGroupServiceImpl(hearingRepository,
+                                              linkedGroupDetailsRepository, linkedHearingDetailsRepository,
+                                              linkedHearingDetailsAuditRepository,
+                                              linkedGroupDetailsAuditRepository,
+                                              linkedGroupDetailsAuditMapper,
+                                              linkedHearingDetailsAuditMapper);
     }
 
     @Nested
