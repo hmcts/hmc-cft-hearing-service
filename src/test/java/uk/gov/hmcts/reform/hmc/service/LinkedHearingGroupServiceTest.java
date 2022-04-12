@@ -94,10 +94,6 @@ class LinkedHearingGroupServiceTest {
     @Mock
     DefaultFutureHearingRepository futureHearingRepository;
 
-    @Mock
-    TransactionHandler transactionHandler;
-
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -107,8 +103,7 @@ class LinkedHearingGroupServiceTest {
                                                     linkedGroupDetailsAuditRepository,
                                                     linkedGroupDetailsAuditMapper,
                                                     linkedHearingDetailsAuditMapper,
-                                                    futureHearingRepository,
-                                                    transactionHandler
+                                                    futureHearingRepository
         );
     }
 

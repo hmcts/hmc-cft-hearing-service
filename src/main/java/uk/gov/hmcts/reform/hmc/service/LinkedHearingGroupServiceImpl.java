@@ -66,8 +66,6 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private final DefaultFutureHearingRepository futureHearingRepository;
 
-    private final TransactionHandler transactionHandler;
-
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
                                          LinkedGroupDetailsRepository linkedGroupDetailsRepository,
@@ -76,8 +74,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
                                          LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository,
                                          LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper,
                                          LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper,
-                                         DefaultFutureHearingRepository futureHearingRepository,
-                                         TransactionHandler transactionHandler) {
+                                         DefaultFutureHearingRepository futureHearingRepository) {
         super(hearingRepository, linkedGroupDetailsRepository, linkedHearingDetailsRepository);
         this.hearingRepository = hearingRepository;
         this.linkedHearingDetailsAuditRepository = linkedHearingDetailsAuditRepository;
@@ -85,7 +82,6 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         this.linkedGroupDetailsAuditMapper = linkedGroupDetailsAuditMapper;
         this.linkedHearingDetailsAuditMapper = linkedHearingDetailsAuditMapper;
         this.futureHearingRepository = futureHearingRepository;
-        this.transactionHandler = transactionHandler;
     }
 
 
@@ -193,7 +189,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         saveLinkedGroupDetails(linkedGroupDetails, requestId);
         try {
             futureHearingRepository.deleteLinkedHearingGroup(requestId);
-            log.info("Response received from ListAssist successfully");
+            log.debug("Response received from ListAssist successfully");
             linkedGroupDetailsRepository.delete(linkedGroupDetails);
         } catch (Exception exception) {
             processResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails, exception);
