@@ -24,13 +24,17 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
+import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
@@ -73,10 +77,22 @@ class LinkHearingGroupServiceTest {
     @Mock
     ActualHearingDayRepository actualHearingDayRepository;
 
+    @Mock
+    LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
+
+    @Mock
+    private LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
+
+    @Mock
+    private LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper;
+
+    @Mock
+    private LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
+
     HearingIdValidator hearingIdValidator;
 
     LinkedHearingValidator linkedHearingValidator;
-
+  
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -85,11 +101,13 @@ class LinkHearingGroupServiceTest {
         linkedHearingValidator = new LinkedHearingValidator(hearingIdValidator, hearingRepository,
                 linkedGroupDetailsRepository, linkedHearingDetailsRepository);
         linkedHearingGroupService =
-            new LinkedHearingGroupServiceImpl(
-                hearingRepository,
-                    linkedGroupDetailsRepository,
-                    linkedHearingValidator
-            );
+            new LinkedHearingGroupServiceImpl(hearingRepository,
+                                              linkedGroupDetailsRepository, 
+                                              linkedHearingValidator,
+                                              linkedHearingDetailsAuditRepository,
+                                              linkedGroupDetailsAuditRepository,
+                                              linkedGroupDetailsAuditMapper,
+                                              linkedHearingDetailsAuditMapper);
     }
 
     @Nested

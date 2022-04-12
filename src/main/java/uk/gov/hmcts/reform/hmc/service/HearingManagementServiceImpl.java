@@ -55,7 +55,7 @@ import javax.transaction.Transactional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_HEARING_DAY;
@@ -255,7 +255,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private HearingEntity saveHearingDetails(HearingRequest createHearingRequest) {
         HearingEntity hearingEntity = hearingMapper
-            .modelToEntity(createHearingRequest, new HearingEntity(), VERSION_NUMBER, POST_HEARING_STATUS);
+            .modelToEntity(createHearingRequest, new HearingEntity(), VERSION_NUMBER_TO_INCREMENT, POST_HEARING_STATUS);
         return hearingRepository.save(hearingEntity);
     }
 

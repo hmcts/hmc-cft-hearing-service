@@ -4,14 +4,27 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
+import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
+import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
+import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
+import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.util.List;
 import javax.transaction.Transactional;
+
+import static uk.gov.hmcts.reform.hmc.constants.Constants.PENDING;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 
 @Service
 @Component
@@ -22,15 +35,28 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     private final HearingRepository hearingRepository;
     private final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
     private final LinkedHearingValidator linkedHearingValidator;
+    private final LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
+    private final LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
+    private final LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper;
+    private final LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
 
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
                                          LinkedGroupDetailsRepository linkedGroupDetailsRepository,
-                                         LinkedHearingValidator linkedHearingValidator) {
-        this.hearingRepository = hearingRepository;
+                                         LinkedHearingValidator linkedHearingValidator,
+                                         LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository,
+                                         LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository,
+                                         LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper,
+                                         LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper) {
         this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
         this.linkedHearingValidator = linkedHearingValidator;
+        this.hearingRepository = hearingRepository;
+        this.linkedHearingDetailsAuditRepository = linkedHearingDetailsAuditRepository;
+        this.linkedGroupDetailsAuditRepository = linkedGroupDetailsAuditRepository;
+        this.linkedGroupDetailsAuditMapper = linkedGroupDetailsAuditMapper;
+        this.linkedHearingDetailsAuditMapper = linkedHearingDetailsAuditMapper;
     }
+
 
     @Override
     public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
@@ -43,6 +69,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Override
+    @Transactional
     public void deleteLinkedHearingGroup(Long hearingGroupId) {
         linkedHearingValidator.validateHearingGroup(hearingGroupId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(hearingGroupId);
@@ -52,12 +79,32 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         deleteFromLinkedGroupDetails(linkedGroupHearings, hearingGroupId);
     }
 
-    public void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings, Long hearingGroupId) {
-        linkedGroupHearings.forEach(hearingEntity -> {
-            // TODO: unlink hearingEntity from the group and persist - https://tools.hmcts.net/jira/browse/HMAN-96
-        });
-        linkedGroupDetailsRepository.deleteHearingGroup(hearingGroupId);
+    private void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings) {
+        LinkedGroupDetails linkedGroupDetails = linkedGroupHearings.get(0).getLinkedGroupDetails();
+        saveLinkedGroupDetailsAudit(linkedGroupDetails);
+        linkedGroupHearings.forEach(hearingEntity -> saveLinkedHearingDetailsAudit(hearingEntity));
+        saveLinkedGroupDetails(linkedGroupDetails);
         // TODO: call ListAssist - https://tools.hmcts.net/jira/browse/HMAN-97
     }
+
+    private void saveLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails) {
+        Long versionNumber = linkedGroupDetails.getLinkedGroupLatestVersion();
+        linkedGroupDetails.setLinkedGroupLatestVersion(versionNumber + VERSION_NUMBER_TO_INCREMENT);
+        linkedGroupDetails.setStatus(PENDING);
+        linkedGroupDetailsRepository.save(linkedGroupDetails);
+    }
+
+    private void saveLinkedGroupDetailsAudit(LinkedGroupDetails linkedGroupDetails) {
+        LinkedGroupDetailsAudit linkedGroupDetailsAudit = linkedGroupDetailsAuditMapper
+            .modelToEntity(linkedGroupDetails);
+        linkedGroupDetailsAuditRepository.save(linkedGroupDetailsAudit);
+    }
+
+    private void saveLinkedHearingDetailsAudit(HearingEntity hearingEntity) {
+        LinkedHearingDetailsAudit linkedHearingDetailsAuditEntity = linkedHearingDetailsAuditMapper
+            .modelToEntity(hearingEntity);
+        linkedHearingDetailsAuditRepository.save(linkedHearingDetailsAuditEntity);
+    }
+
 
 }
