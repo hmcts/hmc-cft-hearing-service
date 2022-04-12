@@ -61,7 +61,6 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_HEARING_DAY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_UN_EXPRECTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
@@ -228,7 +227,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         hearingIdValidator.validateHearingId(hearingId, HEARING_ACTUALS_ID_NOT_FOUND);
         validateHearingActualsStatus(hearingId, HEARING_ACTUALS_INVALID_STATUS);
         validateHearingOutcomeInformation(hearingId, HEARING_ACTUALS_MISSING_HEARING_OUTCOME);
-        validateHearingResultType(hearingId, HEARING_ACTUALS_MISSING_HEARING_DAY);
         validateCancelHearingResultType(hearingId, HEARING_ACTUALS_UN_EXPRECTED);
         updateStatus(hearingId);
         return ResponseEntity.status(HttpStatus.OK).build();

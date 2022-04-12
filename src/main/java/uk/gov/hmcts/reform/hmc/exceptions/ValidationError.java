@@ -159,7 +159,6 @@ public final class ValidationError {
     public static final String HEARING_ACTUALS_ID_NOT_FOUND = "001 No such id: %s";
     public static final String HEARING_ACTUALS_INVALID_STATUS = "002 invalid status";
     public static final String HEARING_ACTUALS_MISSING_HEARING_OUTCOME = "005 missing hearing outcome";
-    public static final String HEARING_ACTUALS_MISSING_HEARING_DAY = "003 missing hearing day actuals";
     public static final String HEARING_ACTUALS_UN_EXPRECTED = "004 unexpected hearing day actuals";
 
     public static final String HEARING_REQUEST_ID_MAX_LENGTH =
