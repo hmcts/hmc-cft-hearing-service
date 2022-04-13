@@ -508,15 +508,14 @@ class LinkedHearingGroupServiceTest {
         ErrorDetails errorDetails = new ErrorDetails();
         errorDetails.setErrorCode(400);
         BadFutureHearingRequestException badFutureHearingRequestException = new BadFutureHearingRequestException(
-            INVALID_REQUEST, errorDetails);
+            INVALID_REQUEST);
         doThrow(badFutureHearingRequestException).when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
     }
 
     private void listAssistThrows5xxError() {
         ErrorDetails errorDetails = new ErrorDetails();
         errorDetails.setErrorCode(500);
-        FutureHearingServerException futureHearingServerException = new FutureHearingServerException(
-            SERVER_ERROR, errorDetails);
+        FutureHearingServerException futureHearingServerException = new FutureHearingServerException(SERVER_ERROR);
         doThrow(futureHearingServerException).when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
     }
 }

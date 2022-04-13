@@ -191,27 +191,21 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
             log.debug("Response received from ListAssist successfully");
             linkedGroupDetailsRepository.delete(linkedGroupDetails);
         } catch (BadFutureHearingRequestException requestException) {
-            process400ResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails, requestException);
+            process400ResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails);
         } catch (FutureHearingServerException serverException) {
-            process500ResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails, serverException);
+            process500ResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails);
         }
 
     }
 
-    private void process500ResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails,
-                                                                        FutureHearingServerException exception) {
-
-        log.error("Time out exception occurred with status code:  {}", exception.getErrorDetails().getErrorCode());
+    private void process500ResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails) {
         linkedGroupDetails.setStatus(ERROR);
         linkedGroupDetailsRepository.save(linkedGroupDetails);
         throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
 
     }
 
-    private void process400ResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails,
-                                                                        BadFutureHearingRequestException exception) {
-        log.error("Exception occurred List Assist failed to respond with status code: {}",
-            exception.getErrorDetails().getErrorCode());
+    private void process400ResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails) {
         linkedGroupDetailsRepository.delete(linkedGroupDetails);
         throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
     }

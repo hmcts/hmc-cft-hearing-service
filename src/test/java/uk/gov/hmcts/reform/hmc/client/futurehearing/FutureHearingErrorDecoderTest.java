@@ -31,6 +31,10 @@ class FutureHearingErrorDecoderTest {
     private Response response;
     private byte[] byteArrray;
     private String inputString = "Response from FH failed with error code 400 ";
+    private static final String INPUT_STRING = "{\n"
+        + "    \"statusCode\": \"400\",\n"
+        + "    \"message\": \"Resource not found\"\n"
+        + "}";
     private RequestTemplate template;
 
     @InjectMocks
@@ -39,7 +43,7 @@ class FutureHearingErrorDecoderTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        byteArrray = inputString.getBytes();
+        byteArrray = INPUT_STRING.getBytes();
     }
 
     @Test
