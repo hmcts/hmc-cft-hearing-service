@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 
@@ -22,11 +21,11 @@ public class FutureHearingErrorDecoder implements ErrorDecoder {
 
     @Override
     public Exception decode(String methodKey, Response response) {
-        ErrorDetails errorDetails = getResponseBody(response, ErrorDetails.class)
+        FutureHearingErrorDetails errorDetails = getResponseBody(response, FutureHearingErrorDetails.class)
             .orElseThrow(() -> new BadFutureHearingRequestException(INVALID_REQUEST));
         log.error(String.format("Response from FH failed with error code %s, error message '%s'",
-                                errorDetails.getErrorCode(),
-                                errorDetails.getErrorDescription()));
+                                errorDetails.getStatusCode(),
+                                errorDetails.getMessage()));
 
         if (String.valueOf(response.status()).startsWith("4")) {
             return new BadFutureHearingRequestException(INVALID_REQUEST);
