@@ -12,4 +12,8 @@ public class LinkedHearingGroupResponse {
     private Long hearingId;
 
     private Long hearingOrder;
+
+    private String caseRef;
+
+    private String hmctsInternalCaseName;
 }

@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
@@ -394,8 +395,15 @@ class LinkedHearingGroupServiceTest {
         void shouldGetLinkedHearingGroupDetails() {
             LinkedGroupDetails linkedGroupDetails =
                 generateLinkedGroupDetails(HEARING_GROUP_ID);
+
+            CaseHearingRequestEntity caseHearingRequest = new CaseHearingRequestEntity();
+            caseHearingRequest.setVersionNumber(1);
+            caseHearingRequest.setCaseReference("122211123211");
+            caseHearingRequest.setHmctsInternalCaseName("Some internal Code");
             HearingEntity hearing1 = generateHearingEntity(HEARING_ID1,linkedGroupDetails);
             HearingEntity hearing2 = generateHearingEntity(HEARING_ID2,linkedGroupDetails);
+            hearing1.setCaseHearingRequests(List.of(caseHearingRequest));
+            hearing2.setCaseHearingRequests(List.of(caseHearingRequest));
 
             given(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(VALID_REQUEST_ID))
                 .willReturn(linkedGroupDetails);

@@ -611,8 +611,12 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.hearingsInGroup",hasSize(5)))
                 .andExpect(jsonPath("$.hearingsInGroup[3].hearingId").value("2000000015"))
                 .andExpect(jsonPath("$.hearingsInGroup[3].hearingOrder").value("2"))
+                .andExpect(jsonPath("$.hearingsInGroup[3].caseRef").value("9372710950276233"))
+                .andExpect(jsonPath("$.hearingsInGroup[3].hmctsInternalCaseName").value("Internal case name"))
                 .andExpect(jsonPath("$.hearingsInGroup[4].hearingId").value("2000000016"))
                 .andExpect(jsonPath("$.hearingsInGroup[4].hearingOrder").value("1"))
+                .andExpect(jsonPath("$.hearingsInGroup[4].caseRef").value("9372710950276233"))
+                .andExpect(jsonPath("$.hearingsInGroup[4].hmctsInternalCaseName").value("Internal case name"))
                 .andReturn();
         }
     }

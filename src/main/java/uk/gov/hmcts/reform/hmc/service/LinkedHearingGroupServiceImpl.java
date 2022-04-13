@@ -139,6 +139,8 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
             LinkedHearingGroupResponse response = new LinkedHearingGroupResponse();
             response.setHearingId(hearing.getId());
             response.setHearingOrder(hearing.getLinkedOrder());
+            response.setCaseRef(hearing.getLatestCaseHearingRequest().getCaseReference());
+            response.setHmctsInternalCaseName(hearing.getLatestCaseHearingRequest().getHmctsInternalCaseName());
             hearingsInGroup.add(response);
         });
 
