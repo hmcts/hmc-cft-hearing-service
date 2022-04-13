@@ -24,6 +24,14 @@ java:
           alias: HMC_QUEUE_CONNECTION_STRING
         - name: hmc-outbound-queue-connection-string
           alias: HMC_OUTBOUND_QUEUE_CONNECTION_STRING
+        - name: ClientId
+          alias: CLIENT_ID
+        - name: ClientSecret
+          alias: CLIENT_SECRET
+        - name: Scope
+          alias: SCOPE
+        - name: fh-get-token-url
+          alias: FH_GET_TOKEN_URL
   environment:
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified&sslmode=require&gssEncMode=disable"
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft-{{ .Values.global.environment }}
