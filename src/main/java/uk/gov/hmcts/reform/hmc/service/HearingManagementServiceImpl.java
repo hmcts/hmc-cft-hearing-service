@@ -216,7 +216,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                 hearingId,
                 HEARING_ID_NOT_FOUND
             ));
-        return linkedHearingValidator.filterHearingResponses(existingHearing).isBefore(LocalDate.now());
+        if (existingHearing.hasHearingResponses()) {
+            return linkedHearingValidator.filterHearingResponses(existingHearing).isBefore(LocalDate.now());
+        }
+        return false;
     }
 
     /**

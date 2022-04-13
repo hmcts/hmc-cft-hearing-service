@@ -87,6 +87,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -1027,7 +1028,7 @@ class HearingManagementServiceTest {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
             final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
-            when(linkedHearingValidator.filterHearingResponses(any())).thenReturn(LocalDate.now());
+            lenient().when(linkedHearingValidator.filterHearingResponses(any())).thenReturn(LocalDate.now());
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
@@ -1070,7 +1071,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldPassWhenDbStatusMatchWithExpectedState() {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
-            when(linkedHearingValidator.filterHearingResponses(any())).thenReturn(LocalDate.now());
+            lenient().when(linkedHearingValidator.filterHearingResponses(any())).thenReturn(LocalDate.now());
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(
                 hearingRequest.getRequestDetails().getVersionNumber());
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
