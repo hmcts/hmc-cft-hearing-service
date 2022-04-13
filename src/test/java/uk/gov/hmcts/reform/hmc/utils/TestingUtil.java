@@ -226,6 +226,14 @@ public class TestingUtil {
         return organisationDetails;
     }
 
+    public static OrganisationDetails organisationDetailsIdNull() {
+        OrganisationDetails organisationDetails = new OrganisationDetails();
+        organisationDetails.setName("name");
+        organisationDetails.setOrganisationType("type");
+        organisationDetails.setCftOrganisationID(null);
+        return organisationDetails;
+    }
+
     public static HearingEntity hearingEntity() {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(1L);
@@ -741,19 +749,20 @@ public class TestingUtil {
         return entity1;
     }
 
-    public static UpdateHearingRequest updateHearingRequestWithPartyDetails() {
+    public static UpdateHearingRequest updateHearingRequestWithPartyDetails(boolean isCftOrganisationIdNull) {
         RequestDetails requestDetails = new RequestDetails();
         requestDetails.setVersionNumber(1);
         UpdateHearingRequest request = new UpdateHearingRequest();
         request.setRequestDetails(requestDetails);
         request.setHearingDetails(hearingDetailsWithAllFields());
         request.setCaseDetails(getValidCaseDetails());
-        request.setPartyDetails(partyDetailsWith2Parties());
+        request.setPartyDetails(partyDetailsWith2Parties(isCftOrganisationIdNull));
 
         return request;
     }
 
-    private static List<PartyDetails> partyDetailsWith2Parties() {
+
+    private static List<PartyDetails> partyDetailsWith2Parties(boolean isCftOrganisationIdNull) {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
         partyDetails1.setPartyType("ind");
@@ -766,7 +775,11 @@ public class TestingUtil {
         partyDetails2.setPartyID("P2");
         partyDetails2.setPartyType("IND");
         partyDetails2.setPartyRole("DEF2");
-        partyDetails2.setOrganisationDetails(organisationDetails());
+        if (isCftOrganisationIdNull) {
+            partyDetails2.setOrganisationDetails(organisationDetailsIdNull());
+        } else {
+            partyDetails2.setOrganisationDetails(organisationDetails());
+        }
 
         List<PartyDetails> partyDetails = Lists.newArrayList(partyDetails1, partyDetails2);
         return partyDetails;
@@ -830,9 +843,9 @@ public class TestingUtil {
 
     public static PanelRequirements panelRequirementsList() {
         PanelRequirements panelRequirements = new PanelRequirements();
-        panelRequirements.setRoleType(Arrays.asList("RoleType1","RoleType2"));
-        panelRequirements.setAuthorisationTypes(Arrays.asList("AuthorisationType1","AuthorisationType2"));
-        panelRequirements.setAuthorisationSubType(Arrays.asList("AuthorisationSubType2","AuthorisationSubType2"));
+        panelRequirements.setRoleType(Arrays.asList("RoleType1", "RoleType2"));
+        panelRequirements.setAuthorisationTypes(Arrays.asList("AuthorisationType1", "AuthorisationType2"));
+        panelRequirements.setAuthorisationSubType(Arrays.asList("AuthorisationSubType2", "AuthorisationSubType2"));
         return panelRequirements;
     }
 
@@ -856,7 +869,7 @@ public class TestingUtil {
         individualDetails.setLastName("Jason");
         individualDetails.setPreferredHearingChannel("channel 5");
         individualDetails.setInterpreterLanguage("French");
-        individualDetails.setReasonableAdjustments(Arrays.asList("Adjust1","Adjust2","Adjust3"));
+        individualDetails.setReasonableAdjustments(Arrays.asList("Adjust1", "Adjust2", "Adjust3"));
         individualDetails.setVulnerableFlag(false);
         individualDetails.setVulnerabilityDetails("More vulnerable");
         individualDetails.setHearingChannelPhone(List.of("01111111111"));
