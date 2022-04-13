@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.LIST_ASSIST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PENDING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_GROUP_ID_NOT_FOUND;
@@ -136,39 +135,39 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private void validateUnlinkingHearingsStatus(List<HearingEntity> linkedHearings) {
         List<HearingEntity> unlinkInvalidStatusHearings = linkedHearings.stream()
-                .filter(h -> !DeleteHearingStatus.isValid(h.getStatus()))
-                .collect(Collectors.toList());
+            .filter(h -> !DeleteHearingStatus.isValid(h.getStatus()))
+            .collect(Collectors.toList());
 
         if (!unlinkInvalidStatusHearings.isEmpty()) {
             throw new BadRequestException(
-                    format(INVALID_DELETE_HEARING_GROUP_HEARING_STATUS, unlinkInvalidStatusHearings.get(0).getId()));
+                format(INVALID_DELETE_HEARING_GROUP_HEARING_STATUS, unlinkInvalidStatusHearings.get(0).getId()));
         }
     }
 
     private void validateUnlinkingHearingsWillNotHaveStartDateInThePast(List<HearingEntity> linkedHearings) {
 
         linkedHearings.stream()
-                .filter(h -> h.getHearingResponses().size() > 0)
-                .forEach(hearing -> {
-                    List<HearingResponseEntity> latestVersionHearingResponses
-                            = getLatestVersionHearingResponses(hearing);
+            .filter(h -> h.getHearingResponses().size() > 0)
+            .forEach(hearing -> {
+                List<HearingResponseEntity> latestVersionHearingResponses
+                    = getLatestVersionHearingResponses(hearing);
 
-                    Optional<HearingResponseEntity> mostRecentLatestVersionHearingResponse
-                            = latestVersionHearingResponses
-                            .stream().max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
+                Optional<HearingResponseEntity> mostRecentLatestVersionHearingResponse
+                    = latestVersionHearingResponses
+                    .stream().max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
 
-                    boolean hasHearingDateInThePast = mostRecentLatestVersionHearingResponse.isPresent()
-                            && mostRecentLatestVersionHearingResponse.get()
-                            .getHearingDayDetails().stream()
-                            .anyMatch(dayTime -> dayTime.getStartDateTime().isBefore(LocalDateTime.now()));
+                boolean hasHearingDateInThePast = mostRecentLatestVersionHearingResponse.isPresent()
+                    && mostRecentLatestVersionHearingResponse.get()
+                    .getHearingDayDetails().stream()
+                    .anyMatch(dayTime -> dayTime.getStartDateTime().isBefore(LocalDateTime.now()));
 
-                    if (hasHearingDateInThePast) {
-                        throw new BadRequestException(format(
-                                INVALID_DELETE_HEARING_GROUP_HEARING_STATUS,
-                                hearing.getId()
-                        ));
-                    }
-                });
+                if (hasHearingDateInThePast) {
+                    throw new BadRequestException(format(
+                        INVALID_DELETE_HEARING_GROUP_HEARING_STATUS,
+                        hearing.getId()
+                    ));
+                }
+            });
     }
 
     private List<HearingResponseEntity> getLatestVersionHearingResponses(HearingEntity hearing) {
@@ -186,7 +185,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         final String requestId = linkedGroupDetails.getRequestId();
         saveLinkedGroupDetailsAudit(linkedGroupDetails);
         linkedGroupHearings.forEach(hearingEntity -> saveLinkedHearingDetailsAudit(hearingEntity));
-        saveLinkedGroupDetails(linkedGroupDetails, requestId);
+        saveLinkedGroupDetails(linkedGroupDetails);
         try {
             futureHearingRepository.deleteLinkedHearingGroup(requestId);
             log.debug("Response received from ListAssist successfully");
@@ -203,7 +202,8 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
                                                                         FutureHearingServerException exception) {
 
         log.error("Time out exception occurred with status code:  {}", exception.getErrorDetails().getErrorCode());
-        saveLinkedGroupDetails(linkedGroupDetails, LIST_ASSIST);
+        linkedGroupDetails.setStatus(ERROR);
+        linkedGroupDetailsRepository.save(linkedGroupDetails);
         throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
 
     }
@@ -211,19 +211,15 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     private void process400ResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails,
                                                                         BadFutureHearingRequestException exception) {
         log.error("Exception occurred List Assist failed to respond with status code: {}",
-                  exception.getErrorDetails().getErrorCode());
+            exception.getErrorDetails().getErrorCode());
         linkedGroupDetailsRepository.delete(linkedGroupDetails);
         throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
     }
 
-    private void saveLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails, String request) {
-        if (LIST_ASSIST.equals(request)) {
-            linkedGroupDetails.setStatus(ERROR);
-        } else {
-            Long versionNumber = linkedGroupDetails.getLinkedGroupLatestVersion();
-            linkedGroupDetails.setLinkedGroupLatestVersion(versionNumber + VERSION_NUMBER_TO_INCREMENT);
-            linkedGroupDetails.setStatus(PENDING);
-        }
+    private void saveLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails) {
+        Long versionNumber = linkedGroupDetails.getLinkedGroupLatestVersion();
+        linkedGroupDetails.setLinkedGroupLatestVersion(versionNumber + VERSION_NUMBER_TO_INCREMENT);
+        linkedGroupDetails.setStatus(PENDING);
         linkedGroupDetailsRepository.save(linkedGroupDetails);
     }
 
