@@ -114,31 +114,24 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private LinkedHearingGroupResponses getLinkedHearingGroupDetails(LinkedGroupDetails linkedGroupDetails) {
         LinkedHearingGroupResponses responses = new LinkedHearingGroupResponses();
-        setGroupDetails(linkedGroupDetails,responses);
-        setHearingsInGroup(linkedGroupDetails.getLinkedGroupId(),responses);
+
+        responses.setGroupDetails(getGroupDetails(linkedGroupDetails));
+        responses.setHearingsInGroup(getHearingsInGroup(linkedGroupDetails.getLinkedGroupId()));
 
         return responses;
     }
 
-    private void setGroupDetails(LinkedGroupDetails linkedGroupDetails,
-                                 LinkedHearingGroupResponses responses) {
+    private GroupDetails getGroupDetails(LinkedGroupDetails linkedGroupDetails) {
         GroupDetails groupDetails = new GroupDetails();
-        if (linkedGroupDetails.getRequestName() != null) {
-            groupDetails.setGroupName(linkedGroupDetails.getRequestName());
-        }
-        if (linkedGroupDetails.getReasonForLink() != null) {
-            groupDetails.setGroupReason(linkedGroupDetails.getReasonForLink());
-        }
-        if (linkedGroupDetails.getLinkedComments() != null) {
-            groupDetails.setGroupComments(linkedGroupDetails.getLinkedComments());
-        }
+        groupDetails.setGroupName(linkedGroupDetails.getRequestName());
+        groupDetails.setGroupReason(linkedGroupDetails.getReasonForLink());
+        groupDetails.setGroupComments(linkedGroupDetails.getLinkedComments());
         groupDetails.setGroupLinkType(linkedGroupDetails.getLinkType().label);
 
-        responses.setGroupDetails(groupDetails);
+        return groupDetails;
     }
 
-    private void setHearingsInGroup(Long hearingGroupId,
-                               LinkedHearingGroupResponses responses) {
+    private List<LinkedHearingGroupResponse> getHearingsInGroup(Long hearingGroupId) {
         List<HearingEntity> linkedGroupHearings =
             hearingRepository.findByLinkedGroupId(hearingGroupId);
         List<LinkedHearingGroupResponse> hearingsInGroup = new ArrayList<>();
@@ -149,7 +142,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
             hearingsInGroup.add(response);
         });
 
-        responses.setHearingsInGroup(hearingsInGroup);
+        return hearingsInGroup;
     }
 
     private void validateHearingLinkGroupRequestForUpdate(String requestId,

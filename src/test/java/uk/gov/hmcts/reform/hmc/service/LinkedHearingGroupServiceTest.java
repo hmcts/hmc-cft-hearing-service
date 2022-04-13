@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
@@ -35,7 +34,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -405,15 +404,17 @@ class LinkedHearingGroupServiceTest {
 
             LinkedHearingGroupResponses linkedHearingGroupResponses =
                 service.getLinkedHearingGroupDetails(VALID_REQUEST_ID);
+
             GroupDetails returnedGroupDetails = linkedHearingGroupResponses.getGroupDetails();
-            assertFalse(
-                returnedGroupDetails != null
-                    && returnedGroupDetails.getGroupName().isEmpty()
-                    && returnedGroupDetails.getGroupComments().isEmpty());
+            assertNotNull(returnedGroupDetails);
+            assertEquals(VALID_REQUEST_ID, returnedGroupDetails.getGroupName());
+            assertEquals("reason for link", returnedGroupDetails.getGroupReason());
+            assertEquals(returnedGroupDetails.getGroupLinkType(), ORDERED.label);
+            assertEquals("Example comment", returnedGroupDetails.getGroupComments());
         }
 
         @Test
-        void shouldReturn404ErrorWhenRequestIdIsNotFound() {
+        void shouldReturnErrorWhenRequestIdIsNotFound() {
             Exception exception = assertThrows(LinkedGroupNotFoundException.class, () ->
                 service.getLinkedHearingGroupDetails(INVALID_REQUEST_NAME));
             assertEquals(INVALID_LINKED_GROUP_REQUEST_ID_DETAILS,exception.getMessage());
@@ -422,11 +423,12 @@ class LinkedHearingGroupServiceTest {
         private LinkedGroupDetails generateLinkedGroupDetails(Long hearingGroupId) {
             LinkedGroupDetails groupDetails = new LinkedGroupDetails();
             groupDetails.setLinkedGroupId(hearingGroupId);
-            groupDetails.setLinkType(LinkType.ORDERED);
-            groupDetails.setReasonForLink("reason for link");
-            groupDetails.setRequestDateTime(LocalDateTime.now());
             groupDetails.setRequestId("2B");
             groupDetails.setRequestName(VALID_REQUEST_ID);
+            groupDetails.setReasonForLink("reason for link");
+            groupDetails.setLinkType(ORDERED);
+            groupDetails.setLinkedComments("Example comment");
+
             groupDetails.setStatus(PutHearingStatus.HEARING_REQUESTED.name());
             return groupDetails;
         }

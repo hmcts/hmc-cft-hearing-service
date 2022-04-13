@@ -25,11 +25,7 @@ INSERT INTO hearing_day_details(hearing_day_id, hearing_response_id, start_date_
 VALUES (3, '2', '2920-01-10 11:20:00', '2020-08-10 11:20:00', 'session1-2', 'venue1-2', 'room1-2');
 
 INSERT INTO linked_group_details (linked_group_id, status, link_type, request_id, request_date_time, reason_for_link, linked_group_latest_version) VALUES ('7600000301', 'ACTIVE', 'ORDERED', '44444', '2021-08-10 11:20:00', 'good reason', '1');
-INSERT INTO linked_group_details (linked_group_id, status, link_type, request_id, request_date_time, reason_for_link, linked_group_latest_version, linked_comments, request_name)
-VALUES ('7600000302', 'ACTIVE', 'ORDERED', 'Request Id', '2021-08-10 11:20:00', 'good reason', '1', 'An added comment', 'A request name');
 INSERT INTO hearing (hearing_id, is_linked_flag, linked_group_id, linked_order, status) VALUES ('2000000302', 't', '7600000301', '2', 'UPDATE_REQUESTED');
-INSERT INTO hearing (hearing_id, is_linked_flag, linked_group_id, linked_order, status) VALUES ('2000000303', 't', '7600000302', '2', 'UPDATE_REQUESTED');
-INSERT INTO hearing (hearing_id, is_linked_flag, linked_group_id, linked_order, status) VALUES ('2000000304', 't', '7600000302', '1', 'HEARING_REQUESTED');
 
 INSERT INTO hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version)
 VALUES (3, '2000000302', '2021-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '2', '1');
