@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
@@ -287,6 +288,10 @@ class HearingManagementControllerIT extends BaseTest {
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         createHearingRequest.setCaseDetails(TestingUtil.getValidCaseDetails());
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        UnavailabilityDow unavailabilityDowMonday = new UnavailabilityDow();
+        unavailabilityDowMonday.setDow("Monday");
+        unavailabilityDowMonday.setDowUnavailabilityType(DayOfWeekUnAvailableType.ALL.label);
+        createHearingRequest.getPartyDetails().get(0).setUnavailabilityDow(List.of(unavailabilityDowMonday));
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         stubSuccessfullyValidateHearingObject(createHearingRequest);
@@ -999,14 +1004,19 @@ class HearingManagementControllerIT extends BaseTest {
         organisationDetails.setCftOrganisationID("a".repeat(61));
         partyDetails.setIndividualDetails(individualDetails);
         partyDetails.setOrganisationDetails(organisationDetails);
+        UnavailabilityDow unavailabilityDowMonday = new UnavailabilityDow();
+        unavailabilityDowMonday.setDow("MONDAY");
+        partyDetails.setUnavailabilityDow(List.of(unavailabilityDowMonday));
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         hearingRequest.setPartyDetails(Collections.singletonList(partyDetails));
+
+        final String unexpectedTypeForDow = "Unsupported type for dow";
         logger.info("request body: {}", objectMapper.writeValueAsString(hearingRequest));
         mockMvc.perform(put(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(20)))
+            .andExpect(jsonPath("$.errors", hasSize(21)))
             .andExpect(jsonPath("$.errors", hasItems(PARTY_DETAILS_MAX_LENGTH, PARTY_ROLE_MAX_LENGTH,
                                                      TITLE_MAX_LENGTH, FIRST_NAME_MAX_LENGTH, LAST_NAME_MAX_LENGTH,
                                                      PREFERRED_HEARING_CHANNEL_MAX_LENGTH,
@@ -1017,7 +1027,7 @@ class HearingManagementControllerIT extends BaseTest {
                                                      RELATED_PARTY_MAX_LENGTH, RELATIONSHIP_TYPE_MAX_LENGTH,
                                                      NAME_MAX_LENGTH, ORGANISATION_TYPE_MAX_LENGTH,
                                                      CFT_ORG_ID_MAX_LENGTH, HEARING_CHANNEL_EMAIL_INVALID,
-                                                     CUSTODY_STATUS_LENGTH, OTHER_REASON_LENGTH
+                                                     CUSTODY_STATUS_LENGTH, OTHER_REASON_LENGTH, unexpectedTypeForDow
             )))
             .andReturn();
     }
