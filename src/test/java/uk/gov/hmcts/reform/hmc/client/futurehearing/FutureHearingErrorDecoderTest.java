@@ -30,12 +30,7 @@ class FutureHearingErrorDecoderTest {
     private String methodKey = null;
     private Response response;
     private byte[] byteArray;
-    private static final String INPUT_STRING = "{\n"
-        + "    \"statusCode\": \"400\",\n"
-        + "    \"message\": \"Resource not found\"\n"
-        + "}";
-    private static final String EXPECTED_ERROR = "Response from FH failed with error code 400,"
-        + " error message 'Resource not found'";
+    private static final String INPUT_STRING = "{\"statusCode\":\"400\",\"message\":\"Resource not found\"}";
     private RequestTemplate template;
 
     @InjectMocks
@@ -68,7 +63,8 @@ class FutureHearingErrorDecoderTest {
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
         assertEquals(Level.ERROR, logsList.get(0).getLevel());
-        assertEquals(EXPECTED_ERROR, logsList.get(0).getMessage());
+        assertEquals("Response from FH failed with error code 400, "
+            + "error message " + INPUT_STRING, logsList.get(0).getMessage());
     }
 
     @Test
@@ -92,7 +88,8 @@ class FutureHearingErrorDecoderTest {
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
         assertEquals(Level.ERROR, logsList.get(0).getLevel());
-        assertEquals(EXPECTED_ERROR, logsList.get(0).getMessage());
+        assertEquals("Response from FH failed with error code 401, "
+            + "error message " + INPUT_STRING, logsList.get(0).getMessage());
     }
 
     @Test
@@ -116,7 +113,8 @@ class FutureHearingErrorDecoderTest {
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
         assertEquals(Level.ERROR, logsList.get(0).getLevel());
-        assertEquals(EXPECTED_ERROR, logsList.get(0).getMessage());
+        assertEquals("Response from FH failed with error code 404, "
+            + "error message " + INPUT_STRING, logsList.get(0).getMessage());
     }
 
     @Test
@@ -140,6 +138,7 @@ class FutureHearingErrorDecoderTest {
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
         assertEquals(Level.ERROR, logsList.get(0).getLevel());
-        assertEquals(EXPECTED_ERROR, logsList.get(0).getMessage());
+        assertEquals("Response from FH failed with error code 500, "
+                         + "error message " + INPUT_STRING, logsList.get(0).getMessage());
     }
 }

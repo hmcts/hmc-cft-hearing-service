@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.client.futurehearing;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +9,6 @@ import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -21,12 +19,13 @@ public class FutureHearingErrorDecoder implements ErrorDecoder {
 
     @Override
     public Exception decode(String methodKey, Response response) {
-        FutureHearingErrorDetails errorDetails = getResponseBody(response, FutureHearingErrorDetails.class)
-            .orElseThrow(() -> new BadFutureHearingRequestException(INVALID_REQUEST));
-        log.error(String.format("Response from FH failed with error code %s, error message '%s'",
-                                errorDetails.getStatusCode(),
-                                errorDetails.getMessage()));
-
+        try {
+            String responseBody = getResponseBody(response);
+            log.error(String.format("Response from FH failed with error code %s, error message %s",
+                                    response.status(), responseBody));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (String.valueOf(response.status()).startsWith("4")) {
             return new BadFutureHearingRequestException(INVALID_REQUEST);
         } else {
@@ -34,13 +33,8 @@ public class FutureHearingErrorDecoder implements ErrorDecoder {
         }
     }
 
-    private <T> Optional<T> getResponseBody(Response response, Class<T> klass) {
-        try {
-            String bodyJson = new BufferedReader(new InputStreamReader(response.body().asInputStream()))
-                .lines().parallel().collect(Collectors.joining("\n"));
-            return Optional.ofNullable(new ObjectMapper().readValue(bodyJson, klass));
-        } catch (IOException e) {
-            return Optional.empty();
-        }
+    private String getResponseBody(Response response) throws IOException {
+        return new BufferedReader(new InputStreamReader(response.body().asInputStream()))
+            .lines().parallel().collect(Collectors.joining("\n"));
     }
 }
