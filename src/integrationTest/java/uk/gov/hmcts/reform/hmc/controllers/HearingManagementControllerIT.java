@@ -980,7 +980,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn400WhenPartyDetailsInvalid() throws Exception {
         PartyDetails partyDetails = new PartyDetails();
         partyDetails.setPartyID("a".repeat(41));
-        partyDetails.setPartyRole("a".repeat(7));
+        partyDetails.setPartyRole("a".repeat(41));
         partyDetails.setPartyType("IND");
         IndividualDetails individualDetails = new IndividualDetails();
         individualDetails.setTitle("a".repeat(41));
