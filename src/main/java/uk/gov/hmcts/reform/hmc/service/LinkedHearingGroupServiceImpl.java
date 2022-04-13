@@ -126,11 +126,13 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         if (linkedGroupDetails.getRequestName() != null) {
             groupDetails.setGroupName(linkedGroupDetails.getRequestName());
         }
-        groupDetails.setGroupReason(linkedGroupDetails.getReasonForLink());
-        groupDetails.setGroupLinkType(linkedGroupDetails.getLinkType().label);
+        if (linkedGroupDetails.getReasonForLink() != null) {
+            groupDetails.setGroupReason(linkedGroupDetails.getReasonForLink());
+        }
         if (linkedGroupDetails.getLinkedComments() != null) {
             groupDetails.setGroupComments(linkedGroupDetails.getLinkedComments());
         }
+        groupDetails.setGroupLinkType(linkedGroupDetails.getLinkType().label);
 
         responses.setGroupDetails(groupDetails);
     }
