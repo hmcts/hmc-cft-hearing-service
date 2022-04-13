@@ -4,11 +4,11 @@ import lombok.Getter;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 
 @Getter
-public class AuthenticationException extends RuntimeException {
+public class FutureHearingServerException extends RuntimeException {
 
     private final ErrorDetails errorDetails;
 
-    public AuthenticationException(String message, ErrorDetails errorDetails) {
+    public FutureHearingServerException(String message, ErrorDetails errorDetails) {
         super(message);
         this.errorDetails = errorDetails;
     }

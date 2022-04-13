@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.hmc.client.futurehearing;
+package uk.gov.hmcts.reform.hmc.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

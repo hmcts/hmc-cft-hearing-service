@@ -11,9 +11,9 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
-import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
@@ -191,27 +191,29 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
             futureHearingRepository.deleteLinkedHearingGroup(requestId);
             log.debug("Response received from ListAssist successfully");
             linkedGroupDetailsRepository.delete(linkedGroupDetails);
-        } catch (Exception exception) {
-            processResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails, exception);
+        } catch (BadFutureHearingRequestException requestException) {
+            process400ResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails, requestException);
+        } catch (FutureHearingServerException serverException) {
+            process500ResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails, serverException);
         }
 
     }
 
-    private void processResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails,
-                                                                     Exception exception) {
-        //Errors with 4xxx
-        if (exception instanceof BadFutureHearingRequestException) {
-            log.error("Exception occurred List Assist failed to respond with status code: {}",
-                ((BadFutureHearingRequestException) exception).getErrorDetails().getErrorCode());
-            linkedGroupDetailsRepository.delete(linkedGroupDetails);
-            throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
-        } else {
-            //Errors with 5xxx
-            log.error("Time out exception occurred with status code:  {}",
-                ((AuthenticationException) exception).getErrorDetails().getErrorCode());
-            saveLinkedGroupDetails(linkedGroupDetails, LIST_ASSIST);
-            throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
-        }
+    private void process500ResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails,
+                                                                        FutureHearingServerException exception) {
+
+        log.error("Time out exception occurred with status code:  {}", exception.getErrorDetails().getErrorCode());
+        saveLinkedGroupDetails(linkedGroupDetails, LIST_ASSIST);
+        throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
+
+    }
+
+    private void process400ResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails,
+                                                                        BadFutureHearingRequestException exception) {
+        log.error("Exception occurred List Assist failed to respond with status code: {}",
+                  exception.getErrorDetails().getErrorCode());
+        linkedGroupDetailsRepository.delete(linkedGroupDetails);
+        throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
     }
 
     private void saveLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails, String request) {

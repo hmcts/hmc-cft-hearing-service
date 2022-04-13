@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
-import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteMethodThrowingError;
@@ -56,7 +56,7 @@ public class FutureHearingRepositoryIT extends BaseTest {
         void shouldThrow500AuthenticationException() {
             stubDeleteMethodThrowingError(500, HMI_REQUEST_URL + "/" + REQUEST_ID);
             assertThatThrownBy(() -> defaultFutureHearingRepository.deleteLinkedHearingGroup(REQUEST_ID))
-                .isInstanceOf(AuthenticationException.class)
+                .isInstanceOf(FutureHearingServerException.class)
                 .hasMessageContaining(SERVER_ERROR);
         }
     }

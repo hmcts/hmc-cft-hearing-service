@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.LoggerFactory;
-import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 
 import java.util.Collections;
 import java.util.List;
@@ -136,7 +136,7 @@ class FutureHearingErrorDecoderTest {
 
         Exception exception = futureHearingErrorDecoder.decode(methodKey, response);
 
-        assertThat(exception).isInstanceOf(AuthenticationException.class);
+        assertThat(exception).isInstanceOf(FutureHearingServerException.class);
         assertEquals(SERVER_ERROR, exception.getMessage());
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());

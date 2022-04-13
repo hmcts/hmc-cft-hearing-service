@@ -4,8 +4,8 @@ import feign.Response;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
-import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 
 @Slf4j
 public class FutureHearingErrorDecoder implements ErrorDecoder {
@@ -23,7 +23,7 @@ public class FutureHearingErrorDecoder implements ErrorDecoder {
         if (String.valueOf(response.status()).startsWith("4")) {
             return new BadFutureHearingRequestException(INVALID_REQUEST, errorDetails);
         } else {
-            return new AuthenticationException(SERVER_ERROR, errorDetails);
+            return new FutureHearingServerException(SERVER_ERROR, errorDetails);
         }
     }
 }
