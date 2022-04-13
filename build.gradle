@@ -479,6 +479,7 @@ pact {
 }
 
 bootWithCCD {
+    authMode = uk.gov.hmcts.rse.AuthMode.Local
   environment("RSE_LIB_ADDITIONAL_DATABASES", "hmc");
   environment("CFT_HEARING_SERVICE_DB_USERNAME", "postgres")
   environment("CFT_HEARING_SERVICE_DB_PASSWORD", "postgres")
@@ -487,4 +488,11 @@ bootWithCCD {
   environment("COMPOSE_PROFILES", "localAuth")
   environment("RSE_LIB_AUTH-MODE", "localAuth")
   environment("S2S_URL", "http://localhost:8489")
+    environment 'HMC_SERVICE_BUS_CONNECTION_STRING',""
+    environment 'HMC_OUTBOUND_QUEUE_CONNECTION_STRING',""
+    environment 'HMC_OUTBOUND_SERVICE_BUS_QUEUE',""
+    environment 'HMC_QUEUE_CONNECTION_STRING',""
+    environment 'HMC_QUEUE_NAME',""
+    environment 'HMC_SERVICE_BUS_QUEUE',""
+    environment 'HMC_SERVICE_BUS_TOPIC',""
 }
