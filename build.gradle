@@ -344,7 +344,11 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
 
+  implementation (group: 'org.glassfish.web', name: 'el-impl', version: '2.2.1-b05') {
+    exclude group: 'javax.el', module: 'el-api'
+  }
   implementation group: 'org.glassfish', name: 'jakarta.el', version: '4.0.2'
+  implementation group: 'javax.el', name: 'javax.el-api', version: '3.0.1-b06'
 
   compile group: 'org.apache.logging.log4j', name: 'log4j-api'
   compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j'
