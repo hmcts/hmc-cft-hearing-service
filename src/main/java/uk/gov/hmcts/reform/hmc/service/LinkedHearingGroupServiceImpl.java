@@ -160,7 +160,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         for (HearingEntity hearingEntity : currentHearings) {
             if (hearingLinkGroupRequest.getHearingsInGroup()
                 .stream().noneMatch(linkHearingDetails ->
-                                        linkHearingDetails.getHearingId().equals(hearingEntity.getId()))) {
+                                        Long.valueOf(linkHearingDetails.getHearingId()).equals(hearingEntity.getId()))) {
                 hearingEntity.setLinkedOrder(null);
                 hearingEntity.setLinkedGroupDetails(null);
                 hearingRepository.save(hearingEntity);
