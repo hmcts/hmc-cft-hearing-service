@@ -196,7 +196,7 @@ class LinkedHearingValidatorTest {
     @Test
     void shouldFailWithObsoleteDetailsNotValidForUnlinking() {
         final String requestId = "78176";
-        final String requestName = "Find obsolete details ARE NOT not valid for unlinking";
+        final String requestName = "Find obsolete details ARE NOT valid for unlinking";
         LinkedGroupDetails groupDetails = generateLinkedGroupDetails(1L, "G112",
                 "Group 112", LinkType.ORDERED.label, "ACTIVE", "Reason1",
                 "Comments 1", LocalDateTime.now().minusDays(1));
@@ -228,6 +228,43 @@ class LinkedHearingValidatorTest {
     }
 
     @Test
+    void shouldFailWithObsoleteDetailsInvalidForUnlinkingBecauseHearingInPast() {
+        final String requestId = "181896";
+        final String requestName = "Find obsolete details ARE NOT valid for unlinking";
+        LinkedGroupDetails groupDetails = generateLinkedGroupDetails(1L, "G112",
+                "Group 112", LinkType.ORDERED.label, "ACTIVE", "Reason1",
+                "Comments 1", LocalDateTime.now().minusDays(1));
+        HearingEntity hearing9 = generateHearing(2000000009L, PutHearingStatus.LISTED.name(),
+                groupDetails, 1L);
+        HearingEntity hearing8 = generateHearing(2000000008L, PutHearingStatus.LISTED.name(),
+                groupDetails, 2L);
+        HearingEntity hearing7 = generateHearing(2000000007L, PutHearingStatus.LISTED.name(),
+                groupDetails, 3L);
+        hearing9.setHearingResponses(Arrays.asList(
+                generateHearingResponseEntityWithHearingDays(1, LocalDateTime.now().minusDays(7),
+                        List.of(LocalDateTime.now().minusMonths(4)
+                        ))));
+
+        List<HearingEntity> existingInDataList = new ArrayList<>();
+        existingInDataList.add(hearing9);
+
+        List<LinkHearingDetails> payloadList = new ArrayList<>();
+        payloadList.add(new LinkHearingDetails(
+                "2000000007",
+                1));
+        payloadList.add(new LinkHearingDetails(
+                "2000000008",
+                2));
+
+        when(hearingRepository.findByRequestId(requestId)).thenReturn(existingInDataList);
+
+        Exception exception = assertThrows(BadRequestException.class, () ->
+                linkedHearingValidator.validateLinkedHearingsForUpdate(requestId, payloadList));
+        final String expectedErrorMessage = "008 Invalid state for unlinking hearing request 2000000009";
+        assertEquals(expectedErrorMessage, exception.getMessage());
+    }
+
+    @Test
     void shouldPassWithObsoleteDetailsValidForUnlinking() {
         final String requestId = "181896";
         final String requestName = "Find obsolete details ARE valid for unlinking";
@@ -236,6 +273,11 @@ class LinkedHearingValidatorTest {
                 "Comments 1", LocalDateTime.now().minusDays(1));
         HearingEntity hearing9 = generateHearing(20000000009L, PutHearingStatus.LISTED.name(),
                 groupDetails, 2L);
+        hearing9.setHearingResponses(Arrays.asList(
+                generateHearingResponseEntityWithHearingDays(1, LocalDateTime.now().plusDays(7),
+                        List.of(LocalDateTime.now().plusMonths(4)
+                        ))));
+
         List<HearingEntity> existingInDataList =
                 generateValidLinkedHearingDetailsList(groupDetails);
 
@@ -1234,6 +1276,7 @@ class LinkedHearingValidatorTest {
         hearing.setId(id);
         hearing.setStatus(status);
         hearing.setLinkedGroupDetails(groupDetails);
+        hearing.setHearingResponses(new ArrayList<>());
         if (null == groupDetails) {
             hearing.setIsLinkedFlag(true);
         }
