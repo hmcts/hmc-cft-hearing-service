@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_DETAILS_DURATION;
+
 @Component
 public class ListingMapper {
 
@@ -30,7 +32,7 @@ public class ListingMapper {
             .listingAutoCreateFlag(hearingDetails.getAutoListFlag())
             .listingPriority(hearingDetails.getHearingPriorityType())
             .listingType(hearingDetails.getHearingType())
-            .listingDuration(hearingDetails.getDuration())
+            //.listingDuration(hearingDetails.getDuration())
             .listingDate(hearingDetails.getHearingWindow().getFirstDateTimeMustBe())
             .listingNumberAttendees(hearingDetails.getNumberOfPhysicalAttendees())
             .listingComments(hearingDetails.getListingComments())
@@ -43,10 +45,11 @@ public class ListingMapper {
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
             .listingOtherConsiderations(
-                    listingOtherConsiderationsMapper.getListingOtherConsiderations(
-                            hearingDetails.getHearingInWelshFlag(),
-                            hearingDetails.getFacilitiesRequired())
-                    )
+                listingOtherConsiderationsMapper.getListingOtherConsiderations(
+                    hearingDetails.getHearingInWelshFlag(),
+                    hearingDetails.getFacilitiesRequired()
+                )
+            )
             .build();
         if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
             listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
@@ -58,6 +61,11 @@ public class ListingMapper {
             .getPanelRequirements().getRoleType().isEmpty()) {
             listing.setListingJohTiers(new ArrayList<>(hearingDetails.getPanelRequirements()
                                                            .getRoleType()));
+        }
+        if (hearingDetails.getDuration() < HEARING_DETAILS_DURATION) {
+            listing.setListingDuration(hearingDetails.getDuration());
+        } else {
+            listing.setListingDuration(HEARING_DETAILS_DURATION);
         }
         return listing;
     }
