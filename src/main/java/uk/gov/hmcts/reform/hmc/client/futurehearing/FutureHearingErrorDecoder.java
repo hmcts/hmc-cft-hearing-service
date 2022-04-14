@@ -24,7 +24,7 @@ public class FutureHearingErrorDecoder implements ErrorDecoder {
             log.error(String.format("Response from FH failed with error code %s, error message %s",
                                     response.status(), responseBody));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error while reading the response:{}", e.getMessage());
         }
         if (String.valueOf(response.status()).startsWith("4")) {
             return new BadFutureHearingRequestException(INVALID_REQUEST);
