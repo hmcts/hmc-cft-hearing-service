@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn4XX;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn5XX;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubPutUpdateLinkHearingGroup;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyDeleteLinkedHearingGroups;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
@@ -514,12 +515,65 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                     hearingInGroup1, hearingInGroup2));
 
             logger.info(objectMapper.writeValueAsString(hearingLinkGroupRequest));
-
+            stubPutUpdateLinkHearingGroup(200, "2", TOKEN);
             mockMvc.perform(put(url + "?id=2")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(200))
                     .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldReturn400_WhenReceiving4xxFromListAssist() throws Exception {
+            LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
+            hearingInGroup1.setHearingId("2000000007");
+            hearingInGroup1.setHearingOrder(1);
+            LinkHearingDetails hearingInGroup2 = new LinkHearingDetails();
+            hearingInGroup2.setHearingId("2000000008");
+            hearingInGroup2.setHearingOrder(2);
+
+            HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+            GroupDetails groupDetails = generateGroupDetails(LinkType.SAME_SLOT);
+            hearingLinkGroupRequest.setGroupDetails(groupDetails);
+            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(
+                hearingInGroup1, hearingInGroup2));
+
+            logger.info(objectMapper.writeValueAsString(hearingLinkGroupRequest));
+            stubPutUpdateLinkHearingGroup(400, "2", TOKEN);
+            mockMvc.perform(put(url + "?id=2")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem(REJECTED_BY_LIST_ASSIST)))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldReturn400_WhenReceiving5xxFromListAssist() throws Exception {
+            LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
+            hearingInGroup1.setHearingId("2000000007");
+            hearingInGroup1.setHearingOrder(1);
+            LinkHearingDetails hearingInGroup2 = new LinkHearingDetails();
+            hearingInGroup2.setHearingId("2000000008");
+            hearingInGroup2.setHearingOrder(2);
+
+            HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+            GroupDetails groupDetails = generateGroupDetails(LinkType.SAME_SLOT);
+            hearingLinkGroupRequest.setGroupDetails(groupDetails);
+            hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(
+                hearingInGroup1, hearingInGroup2));
+
+            logger.info(objectMapper.writeValueAsString(hearingLinkGroupRequest));
+            stubPutUpdateLinkHearingGroup(500, "2", TOKEN);
+
+            mockMvc.perform(put(url + "?id=2")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem(LIST_ASSIST_FAILED_TO_RESPOND)))
+                .andReturn();
         }
     }
 

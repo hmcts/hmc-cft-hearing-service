@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -85,6 +86,9 @@ class LinkHearingGroupServiceTest {
     @Mock
     private TransactionHandler transactionHandler;
 
+    @Mock
+    ObjectMapperService objectMapper;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -96,7 +100,8 @@ class LinkHearingGroupServiceTest {
                                               linkedGroupDetailsAuditMapper,
                                               linkedHearingDetailsAuditMapper,
                                               futureHearingRepository,
-                                              transactionHandler);
+                                              transactionHandler,
+                                              objectMapper);
     }
 
     @Nested

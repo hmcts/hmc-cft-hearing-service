@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.repository;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.ActiveDirectoryApiClient;
@@ -36,5 +37,11 @@ public class DefaultFutureHearingRepository implements FutureHearingRepository {
     public void deleteLinkedHearingGroup(String requestId) {
         String authorization = retrieveAuthToken().getAccessToken();
         hmiClient.deleteLinkedHearingGroup(BEARER + authorization, requestId);
+    }
+
+    @Override
+    public void updateLinkedHearingGroup(String requestId, JsonNode data) {
+        String authorization = retrieveAuthToken().getAccessToken();
+        hmiClient.updateLinkedHearingGroup(BEARER + authorization, requestId, data);
     }
 }

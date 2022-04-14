@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -97,6 +98,9 @@ class LinkedHearingGroupServiceTest {
     @Mock
     TransactionHandler transactionHandler;
 
+    @Mock
+    ObjectMapperService objectMapper;
+
 
     @BeforeEach
     public void setUp() {
@@ -108,7 +112,8 @@ class LinkedHearingGroupServiceTest {
                                                     linkedGroupDetailsAuditMapper,
                                                     linkedHearingDetailsAuditMapper,
                                                     futureHearingRepository,
-                                                    transactionHandler
+                                                    transactionHandler,
+                                                    objectMapper
         );
     }
 
