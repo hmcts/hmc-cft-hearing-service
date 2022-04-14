@@ -11,8 +11,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.AuthenticationResponse;
-import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -69,7 +69,7 @@ public class FutureHearingRepositoryIT extends BaseTest {
         void shouldThrow500AuthenticationException() {
             stubPostMethodThrowingAuthenticationError(500, GET_TOKEN_URL);
             assertThatThrownBy(() -> defaultFutureHearingRepository.retrieveAuthToken())
-                .isInstanceOf(AuthenticationException.class)
+                .isInstanceOf(FutureHearingServerException.class)
                 .hasMessageContaining(SERVER_ERROR);
         }
     }

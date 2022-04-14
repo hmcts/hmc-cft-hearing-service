@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
@@ -25,9 +24,9 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
-import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
@@ -51,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -460,10 +460,8 @@ class LinkHearingGroupServiceTest {
             given(hearingRepository.findByLinkedGroupId(1L)).willReturn(
                 List.of(TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
 
-            ErrorDetails errorDetails = new ErrorDetails();
-            errorDetails.setErrorCode(400);
-            Mockito.doThrow(new BadFutureHearingRequestException(INVALID_REQUEST, errorDetails))
-                .when(futureHearingRepository).createLinkedHearingGroup(any());
+
+            listAssistThrows4xxError();
 
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
                                                              LinkType.SAME_SLOT.label, "reason"
@@ -506,11 +504,7 @@ class LinkHearingGroupServiceTest {
             given(hearingRepository.findByLinkedGroupId(any())).willReturn(List.of(
                 TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
 
-            ErrorDetails errorDetails = new ErrorDetails();
-            errorDetails.setErrorCode(500);
-            Mockito.doThrow(new AuthenticationException(SERVER_ERROR, errorDetails))
-                .when(futureHearingRepository).createLinkedHearingGroup(any());
-
+            listAssistThrows5xxError();
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
                                                              LinkType.SAME_SLOT.label, "reason"
             );
@@ -701,6 +695,28 @@ class LinkHearingGroupServiceTest {
         linkedGroupDetails.setRequestName(requestName);
 
         return linkedGroupDetails;
+    }
+
+    private void listAssistThrows4xxError() {
+        ErrorDetails errorDetails = new ErrorDetails();
+        errorDetails.setErrorCode(400);
+        BadFutureHearingRequestException badFutureHearingRequestException = new BadFutureHearingRequestException(
+            INVALID_REQUEST);
+        doThrow(badFutureHearingRequestException).when(futureHearingRepository).createLinkedHearingGroup(any());
+    }
+
+    private void listAssistThrows5xxError() {
+        ErrorDetails errorDetails = new ErrorDetails();
+        errorDetails.setErrorCode(500);
+        FutureHearingServerException futureHearingServerException = new FutureHearingServerException(SERVER_ERROR);
+        doThrow(futureHearingServerException).when(futureHearingRepository).createLinkedHearingGroup(any());
+    }
+
+    private HearingManagementInterfaceResponse getHearingResponseFromListAssist(Integer errorCode, String description) {
+        HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
+        response.setResponseCode(errorCode);
+        response.setDescription(description);
+        return response;
     }
 
 }
