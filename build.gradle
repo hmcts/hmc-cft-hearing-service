@@ -10,6 +10,7 @@ plugins {
   id 'uk.gov.hmcts.java' version '0.12.2'
   id 'com.github.spacialcircumstances.gradle-cucumber-reporting' version '0.1.23'
   id 'au.com.dius.pact' version '4.1.7'
+  id 'com.github.hmcts.rse-cft-lib' version '0.15.64'
 }
 
 ext['diuspactproviderVersion'] = '4.2.14'
@@ -23,6 +24,7 @@ targetCompatibility = 11
 configurations {
   contractTestCompile.extendsFrom(testCompile)
   contractTestRuntime.extendsFrom(testRuntime)
+  cftlibRuntimeClasspath.extendsFrom(runtimeClasspath)
 }
 
 sourceSets {
@@ -335,18 +337,18 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
-
-  // CVE-2021-28170
-  implementation group: 'org.glassfish.web', name: 'el-impl', version: '2.2.1-b05'
-  implementation group: 'org.glassfish', name: 'jakarta.el', version: '4.0.1'
-  implementation 'javax.el:javax.el-api:3.0.1-b06'
-
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
+
+  implementation (group: 'org.glassfish.web', name: 'el-impl', version: '2.2.1-b05') {
+    exclude group: 'javax.el', module: 'el-api'
+  }
+  implementation group: 'org.glassfish', name: 'jakarta.el', version: '4.0.2'
+  implementation group: 'javax.el', name: 'javax.el-api', version: '3.0.1-b06'
 
   compile group: 'org.apache.logging.log4j', name: 'log4j-api'
   compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j'
@@ -447,6 +449,7 @@ dependencies {
 
   runtime group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
 
+  cftlibImplementation group: 'org.springframework.boot', name: 'spring-boot-devtools'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.hmc.Application'
@@ -472,4 +475,49 @@ pact {
     tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
     version = '0.0.1'
   }
+}
+
+task loadEnvSecrets() {
+  doLast {
+    if (!project.file('./.demo-env').exists()) {
+      new ByteArrayOutputStream().withStream { os ->
+        exec {
+          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'hmc-demo', '-o', 'tsv', '--query', 'value', '--name', 'hmc-local-env-config'
+          standardOutput = os
+        }
+        project.file('./.demo-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
+      }
+    }
+  }
+}
+
+task reloadEnvSecrets(dependsOn: [loadEnvSecrets]) {
+  doFirst {
+    if (project.file('./.demo-env').exists()) {
+      project.file('./.demo-env').delete()
+    }
+  }
+}
+
+bootWithCCD {
+  dependsOn(loadEnvSecrets)
+
+  doFirst() {
+    project.file('./.demo-env').readLines().each() {
+      def index = it.indexOf("=")
+      def key = it.substring(0, index)
+      def value = it.substring(index + 1)
+      environment(key, value)
+    }
+  }
+
+  authMode = uk.gov.hmcts.rse.AuthMode.Local
+
+  environment("RSE_LIB_ADDITIONAL_DATABASES", "hmc");
+  environment("CFT_HEARING_SERVICE_DB_USERNAME", "postgres")
+  environment("CFT_HEARING_SERVICE_DB_PASSWORD", "postgres")
+  environment("CFT_HEARING_SERVICE_DB_PORT", "6432")
+  environment("CFT_HEARING_SERVICE_DB_NAME", "hmc")
+  environment("S2S_URL", "http://localhost:8489")
+  environment("HMC_ACCESS_CONTROL_ENABLED", "false")
 }
