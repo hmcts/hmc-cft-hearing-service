@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
-import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
@@ -333,28 +332,9 @@ public class BasePactTesting {
         individualDetails.setInterpreterLanguage("German");
         individualDetails.setPreferredHearingChannel("CBeebies");
         individualDetails.setReasonableAdjustments(createReasonableAdjustments());
-        individualDetails.setRelatedParties(createRelatedParties());
         individualDetails.setVulnerableFlag(false);
         individualDetails.setVulnerabilityDetails("Vulnerability details 1");
         return individualDetails;
-    }
-
-    /**
-     * create Related Parties.
-     * @return List>RelatedParties>
-     */
-    private List<RelatedParty> createRelatedParties() {
-        RelatedParty relatedParty1 = new RelatedParty();
-        relatedParty1.setRelatedPartyID("relatedParty1111");
-        relatedParty1.setRelationshipType("Family");
-        RelatedParty relatedParty2 = new RelatedParty();
-        relatedParty2.setRelatedPartyID("relatedParty3333");
-        relatedParty2.setRelationshipType("Blood Brother");
-
-        List<RelatedParty> relatedParties = new ArrayList<>();
-        relatedParties.add(relatedParty1);
-        relatedParties.add(relatedParty2);
-        return relatedParties;
     }
 
     /**

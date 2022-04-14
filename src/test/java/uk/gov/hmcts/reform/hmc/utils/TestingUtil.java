@@ -48,7 +48,6 @@ import uk.gov.hmcts.reform.hmc.model.PanelPreference;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
-import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
@@ -151,8 +150,6 @@ public class TestingUtil {
         individualDetailEntity.setChannelType("channelType");
         individualDetailEntity.setInterpreterLanguage("english");
         individualDetailEntity.setVulnerableFlag(true);
-        individualDetailEntity.setRelatedPartyRelationshipType("relationshipType");
-        individualDetailEntity.setRelatedPartyID("id");
         individualDetailEntity.setVulnerabilityDetails("details");
         return individualDetailEntity;
     }
@@ -185,16 +182,6 @@ public class TestingUtil {
         individualDetails.setLastName("lastName");
         individualDetails.setCustodyStatus("custodyStatus");
         individualDetails.setOtherReasonableAdjustmentDetails("otherReason");
-        List<RelatedParty> relatedParties = new ArrayList<>();
-        RelatedParty relatedParty1 = new RelatedParty();
-        relatedParty1.setRelatedPartyID("P1");
-        relatedParty1.setRelationshipType("R1");
-        relatedParties.add(relatedParty1);
-        RelatedParty relatedParty2 = new RelatedParty();
-        relatedParty2.setRelatedPartyID("P2");
-        relatedParty2.setRelationshipType("R2");
-        relatedParties.add(relatedParty2);
-        individualDetails.setRelatedParties(relatedParties);
         return individualDetails;
     }
 
@@ -203,10 +190,6 @@ public class TestingUtil {
         individualDetails.setTitle("Mr");
         individualDetails.setFirstName("firstName");
         individualDetails.setLastName("lastName");
-        List<RelatedParty> relatedParties = new ArrayList<>();
-        RelatedParty relatedParty1 = new RelatedParty();
-        relatedParties.add(relatedParty1);
-        individualDetails.setRelatedParties(relatedParties);
         return individualDetails;
     }
 
@@ -874,16 +857,6 @@ public class TestingUtil {
         individualDetails.setVulnerabilityDetails("More vulnerable");
         individualDetails.setHearingChannelPhone(List.of("01111111111"));
         individualDetails.setHearingChannelEmail(List.of("hearing.channel_udated@email.com"));
-        List<RelatedParty> relatedParties = new ArrayList<>();
-        RelatedParty relatedParty1 = new RelatedParty();
-        relatedParty1.setRelatedPartyID("Party1");
-        relatedParty1.setRelationshipType("Mother");
-        relatedParties.add(relatedParty1);
-        RelatedParty relatedParty2 = new RelatedParty();
-        relatedParty2.setRelatedPartyID("Party2");
-        relatedParty2.setRelationshipType("Father");
-        relatedParties.add(relatedParty2);
-        individualDetails.setRelatedParties(relatedParties);
         return individualDetails;
     }
 

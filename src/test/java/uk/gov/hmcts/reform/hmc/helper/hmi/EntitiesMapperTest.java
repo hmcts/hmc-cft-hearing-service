@@ -8,7 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
-import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.reform.hmc.model.hmi.EntityCommunication;
 import uk.gov.hmcts.reform.hmc.model.hmi.EntitySubType;
 import uk.gov.hmcts.reform.hmc.model.hmi.EntityUnavailableDate;
 import uk.gov.hmcts.reform.hmc.model.hmi.EntityUnavailableDay;
-import uk.gov.hmcts.reform.hmc.model.hmi.RelatedEntity;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,9 +45,6 @@ class EntitiesMapperTest {
     private CommunicationsMapper communicationsMapper;
 
     @Mock
-    private RelatedEntitiesMapper relatedEntitiesMapper;
-
-    @Mock
     private EntitySubTypeMapper entitySubTypeMapper;
 
     private static final String PREFERRED_HEARING_CHANNEL = "PreferredHearingChannel";
@@ -77,7 +72,6 @@ class EntitiesMapperTest {
         EntityUnavailableDate entityUnavailableDate =  EntityUnavailableDate.builder().build();
         EntityUnavailableDay entityUnavailableDay = EntityUnavailableDay.builder().build();
         EntityCommunication entityCommunication = EntityCommunication.builder().build();
-        RelatedEntity relatedEntity = RelatedEntity.builder().build();
         when(entitySubTypeMapper.getPersonEntitySubType(any())).thenReturn(entitySubTypePerson);
         when(entitySubTypeMapper.getOrgEntitySubType(any())).thenReturn(entitySubTypeOrg);
         when(unavailableDatesMapper.getUnavailableDates(any())).thenReturn(Collections
@@ -85,13 +79,11 @@ class EntitiesMapperTest {
         when(communicationsMapper.getCommunications(any())).thenReturn(Collections.singletonList(entityCommunication));
         when(unavailableDaysMapper.getUnavailableDays(any())).thenReturn(Collections
                                                                              .singletonList(entityUnavailableDay));
-        when(relatedEntitiesMapper.getRelatedEntities(any())).thenReturn(Collections.singletonList(relatedEntity));
 
         IndividualDetails individualDetails = new IndividualDetails();
         individualDetails.setPreferredHearingChannel(PREFERRED_HEARING_CHANNEL);
         individualDetails.setReasonableAdjustments(Collections.singletonList(ADJUSTMENTS));
-        RelatedParty relatedParty = new RelatedParty();
-        individualDetails.setRelatedParties(Collections.singletonList(relatedParty));
+
         PartyDetails partyDetailsOne = new PartyDetails();
         partyDetailsOne.setIndividualDetails(individualDetails);
         UnavailabilityRanges unavailabilityRanges = new UnavailabilityRanges();
@@ -112,8 +104,6 @@ class EntitiesMapperTest {
         IndividualDetails individualDetailsTwo = new IndividualDetails();
         individualDetailsTwo.setPreferredHearingChannel(PREFERRED_HEARING_CHANNEL);
         individualDetailsTwo.setReasonableAdjustments(Collections.singletonList(ADJUSTMENTS_THREE));
-        RelatedParty relatedPartyTwo = new RelatedParty();
-        individualDetailsTwo.setRelatedParties(Collections.singletonList(relatedPartyTwo));
         PartyDetails partyDetailsThree = new PartyDetails();
         partyDetailsThree.setIndividualDetails(individualDetailsTwo);
         partyDetailsThree.setPartyID(PARTY_ID_THREE);
@@ -123,16 +113,12 @@ class EntitiesMapperTest {
         IndividualDetails individualDetailsFour = new IndividualDetails();
         individualDetailsFour.setPreferredHearingChannel(null);
         individualDetailsFour.setReasonableAdjustments(Collections.singletonList(ADJUSTMENTS_THREE));
-        RelatedParty relatedPartyFour = new RelatedParty();
-        individualDetailsFour.setRelatedParties(Collections.singletonList(relatedPartyFour));
         PartyDetails partyDetailsFour = new PartyDetails();
         partyDetailsFour.setIndividualDetails(individualDetailsFour);
 
         IndividualDetails individualDetailsFive = new IndividualDetails();
         individualDetailsFive.setPreferredHearingChannel(PREFERRED_HEARING_CHANNEL_TWO);
         individualDetailsFive.setReasonableAdjustments(Collections.singletonList(ADJUSTMENTS_THREE));
-        RelatedParty relatedPartyFive = new RelatedParty();
-        individualDetailsFive.setRelatedParties(Collections.singletonList(relatedPartyFive));
         PartyDetails partyDetailsFive = new PartyDetails();
         partyDetailsFive.setIndividualDetails(individualDetailsFive);
 
@@ -153,7 +139,6 @@ class EntitiesMapperTest {
         assertEquals(ADJUSTMENTS, entities.get(0).getEntityOtherConsiderations().get(0));
         assertEquals(entityUnavailableDay, entities.get(0).getEntityUnavailableDays().get(0));
         assertEquals(entityUnavailableDate, entities.get(0).getEntityUnavailableDates().get(0));
-        assertEquals(relatedEntity, entities.get(0).getEntityRelatedEntities().get(0));
 
         assertEquals(PARTY_ID_TWO, entities.get(1).getEntityId());
         assertEquals(PARTY_TYPE_TWO, entities.get(1).getEntityTypeCode());

@@ -34,7 +34,7 @@ VALUES (100, 'TUESDAY', 'AM', null, null, 100, 'DOW');
 INSERT INTO unavailability(tech_party_id, day_of_week_unavailable, day_of_week_unavailable_type, start_date, end_date, id, unavailability_type)
 VALUES (100, null, null, '2022-10-20 00:00:00', '2022-10-22 00:00:00', 101, 'Range');
 
-INSERT INTO individual_detail(tech_party_id, related_party_relationship_type, related_party_id, vulnerability_details, vulnerable_flag, interpreter_language, channel_type, last_name, first_name, title, id)
-VALUES (100, 'sibling', 'P1', 'vulnerable', 'true', 'French', 'channel1', 'Bloggs', 'Joe', 'Mrs', 100);
-INSERT INTO individual_detail(tech_party_id, related_party_relationship_type, related_party_id, vulnerability_details, vulnerable_flag, interpreter_language, channel_type, last_name, first_name, title, id)
-VALUES (200, 'sibling', 'P2', null, 'false', null, null, 'Bloggs', 'Josh', 'Mr', 200);
+INSERT INTO individual_detail(tech_party_id, vulnerability_details, vulnerable_flag, interpreter_language, channel_type, last_name, first_name, title, id)
+VALUES (100, 'vulnerable', 'true', 'French', 'channel1', 'Bloggs', 'Joe', 'Mrs', 100);
+INSERT INTO individual_detail(tech_party_id, vulnerability_details, vulnerable_flag, interpreter_language, channel_type, last_name, first_name, title, id)
+VALUES (200, null, 'false', null, null, 'Bloggs', 'Josh', 'Mr', 200);

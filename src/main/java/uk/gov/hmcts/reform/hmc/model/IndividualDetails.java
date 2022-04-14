@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.util.List;
-import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -54,9 +53,6 @@ public class IndividualDetails {
         message = ValidationError.HEARING_CHANNEL_PHONE_INVALID)
         @Size(max = 30, message = ValidationError.HEARING_CHANNEL_PHONE_MAX_LENGTH)
             String> hearingChannelPhone;
-
-    @Valid
-    private List<RelatedParty> relatedParties;
 
     @Size(max = 80, message = ValidationError.OTHER_REASON_LENGTH)
     private String custodyStatus;

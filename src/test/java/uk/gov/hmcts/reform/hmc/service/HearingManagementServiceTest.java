@@ -49,7 +49,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
-import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
@@ -107,7 +106,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_VERSION_NUMBER;
@@ -1186,29 +1184,6 @@ class HearingManagementServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .updateHearingRequest(2000000000L, request));
             assertEquals(INVALID_UNAVAILABILITY_RANGES_DETAILS, exception.getMessage());
-        }
-
-        @Test
-        void updateHearingRequestShouldThrowErrorWhenRelatedPartyDetailsAreNotPresent() {
-            HearingDetails hearingDetails = new HearingDetails();
-            hearingDetails.setAutoListFlag(true);
-            HearingWindow hearingWindow = new HearingWindow();
-            hearingWindow.setDateRangeEnd(LocalDate.now());
-            hearingDetails.setHearingWindow(hearingWindow);
-            PartyDetails partyDetails = new PartyDetails();
-            IndividualDetails individualDetails = new IndividualDetails();
-            individualDetails.setHearingChannelEmail(List.of("email"));
-            List<RelatedParty> relatedParties = new ArrayList<>();
-            individualDetails.setRelatedParties(relatedParties);
-            partyDetails.setIndividualDetails(individualDetails);
-            List<PartyDetails> partyDetailsList = new ArrayList<>();
-            partyDetailsList.add(partyDetails);
-            UpdateHearingRequest request = new UpdateHearingRequest();
-            request.setHearingDetails(hearingDetails);
-            request.setPartyDetails(partyDetailsList);
-            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .updateHearingRequest(2000000000L, request));
-            assertEquals(INVALID_RELATED_PARTY_DETAILS, exception.getMessage());
         }
 
         @Test

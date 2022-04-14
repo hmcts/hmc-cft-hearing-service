@@ -15,17 +15,15 @@ public class EntitiesMapper {
     private final UnavailableDaysMapper unavailableDaysMapper;
     private final UnavailableDatesMapper unavailableDatesMapper;
     private final CommunicationsMapper communicationsMapper;
-    private final RelatedEntitiesMapper relatedEntitiesMapper;
     private final EntitySubTypeMapper entitySubTypeMapper;
 
     @Autowired
     public EntitiesMapper(UnavailableDaysMapper unavailableDaysMapper, UnavailableDatesMapper unavailableDatesMapper,
-                          CommunicationsMapper communicationsMapper, RelatedEntitiesMapper relatedEntitiesMapper,
+                          CommunicationsMapper communicationsMapper,
                           EntitySubTypeMapper entitySubTypeMapper) {
         this.unavailableDaysMapper = unavailableDaysMapper;
         this.unavailableDatesMapper = unavailableDatesMapper;
         this.communicationsMapper = communicationsMapper;
-        this.relatedEntitiesMapper = relatedEntitiesMapper;
         this.entitySubTypeMapper = entitySubTypeMapper;
     }
 
@@ -46,8 +44,6 @@ public class EntitiesMapper {
                         .entityUnavailableDays(unavailableDaysMapper.getUnavailableDays(party.getUnavailabilityDow()))
                         .entityUnavailableDates(unavailableDatesMapper
                                                     .getUnavailableDates(party.getUnavailabilityRanges()))
-                        .entityRelatedEntities(relatedEntitiesMapper.getRelatedEntities(party.getIndividualDetails()
-                                                                                            .getRelatedParties()))
                         .build();
 
                     entities.add(entity);

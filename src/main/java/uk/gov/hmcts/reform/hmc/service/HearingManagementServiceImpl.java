@@ -70,7 +70,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_VERSION_NUMBER;
@@ -300,11 +299,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             }
             if (partyDetail.getUnavailabilityRanges() != null && partyDetail.getUnavailabilityRanges().isEmpty()) {
                 throw new BadRequestException(INVALID_UNAVAILABILITY_RANGES_DETAILS);
-            }
-            if (partyDetail.getIndividualDetails() != null
-                && (partyDetail.getIndividualDetails().getRelatedParties() != null
-                && partyDetail.getIndividualDetails().getRelatedParties().isEmpty())) {
-                throw new BadRequestException(INVALID_RELATED_PARTY_DETAILS);
             }
         }
     }
