@@ -26,7 +26,7 @@ public class HmiCaseDetails {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T00:00:00Z'")
     private LocalDate caseRegistered;
 
-    private String caseCourt;
+    private ListingLocation caseCourt;
 
     private List<CaseClassification> caseClassifications;
 

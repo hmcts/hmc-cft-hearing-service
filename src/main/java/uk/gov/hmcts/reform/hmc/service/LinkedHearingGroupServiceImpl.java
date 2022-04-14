@@ -13,8 +13,10 @@ import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
+import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
@@ -30,6 +32,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
@@ -74,10 +77,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private final DefaultFutureHearingRepository futureHearingRepository;
 
-    private final TransactionHandler transactionHandler;
-
     private final ObjectMapperService objectMapperService;
-
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
                                          LinkedGroupDetailsRepository linkedGroupDetailsRepository,
@@ -87,7 +87,6 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
                                          LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper,
                                          LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper,
                                          DefaultFutureHearingRepository futureHearingRepository,
-                                         TransactionHandler transactionHandler,
                                          ObjectMapperService objectMapperService) {
         super(hearingRepository, linkedGroupDetailsRepository, linkedHearingDetailsRepository);
         this.hearingRepository = hearingRepository;
@@ -96,7 +95,6 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         this.linkedGroupDetailsAuditMapper = linkedGroupDetailsAuditMapper;
         this.linkedHearingDetailsAuditMapper = linkedHearingDetailsAuditMapper;
         this.futureHearingRepository = futureHearingRepository;
-        this.transactionHandler = transactionHandler;
         this.objectMapperService = objectMapperService;
     }
 
@@ -338,13 +336,15 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         final String requestId = linkedGroupDetails.getRequestId();
         saveLinkedGroupDetailsAudit(linkedGroupDetails);
         linkedGroupHearings.forEach(hearingEntity -> saveLinkedHearingDetailsAudit(hearingEntity));
-        saveLinkedGroupDetails(linkedGroupDetails, requestId);
+        saveLinkedGroupDetails(linkedGroupDetails);
         try {
             futureHearingRepository.deleteLinkedHearingGroup(requestId);
-            log.info("Response received from ListAssist successfully");
+            log.debug("Response received from ListAssist successfully");
             linkedGroupDetailsRepository.delete(linkedGroupDetails);
-        } catch (Exception exception) {
-            validateListAssistException(linkedGroupDetails, exception);
+        } catch (BadFutureHearingRequestException requestException) {
+            process400ResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails);
+        } catch (FutureHearingServerException serverException) {
+            process500ResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails);
         }
 
     }
@@ -369,14 +369,22 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         }
     }
 
-    private void saveLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails, String request) {
-        if (LIST_ASSIST.equals(request)) {
-            linkedGroupDetails.setStatus(ERROR);
-        } else {
-            Long versionNumber = linkedGroupDetails.getLinkedGroupLatestVersion();
-            linkedGroupDetails.setLinkedGroupLatestVersion(versionNumber + VERSION_NUMBER_TO_INCREMENT);
-            linkedGroupDetails.setStatus(PENDING);
-        }
+    private void process500ResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails) {
+        linkedGroupDetails.setStatus(ERROR);
+        linkedGroupDetailsRepository.save(linkedGroupDetails);
+        throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
+
+    }
+
+    private void process400ResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails) {
+        linkedGroupDetailsRepository.delete(linkedGroupDetails);
+        throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
+    }
+
+    private void saveLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails) {
+        Long versionNumber = linkedGroupDetails.getLinkedGroupLatestVersion();
+        linkedGroupDetails.setLinkedGroupLatestVersion(versionNumber + VERSION_NUMBER_TO_INCREMENT);
+        linkedGroupDetails.setStatus(PENDING);
         linkedGroupDetailsRepository.save(linkedGroupDetails);
     }
 

@@ -113,7 +113,7 @@ idam:
     totp_secret: ${IDAM_KEY_CFT_HEARING_SERVICE:AAAAAAAAAAAAAAAA}
     url: ${S2S_URL:http://localhost:4502}
   s2s-authorised:
-    services: ${CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES:xui_webapp,ccd_data,am_role_assignment_service}
+    services: ${CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES:xui_webapp,hmc_hmi_inbound_adapter}
   client:
     id: hmc_cft_hearing_service
     secret: ${CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET:AAAAAAAAAAAAAAAA}

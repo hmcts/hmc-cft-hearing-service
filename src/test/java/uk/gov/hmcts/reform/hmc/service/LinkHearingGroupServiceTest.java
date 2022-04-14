@@ -84,9 +84,6 @@ class LinkHearingGroupServiceTest {
     private DefaultFutureHearingRepository futureHearingRepository;
 
     @Mock
-    private TransactionHandler transactionHandler;
-
-    @Mock
     ObjectMapperService objectMapper;
 
     @BeforeEach
@@ -100,7 +97,6 @@ class LinkHearingGroupServiceTest {
                                               linkedGroupDetailsAuditMapper,
                                               linkedHearingDetailsAuditMapper,
                                               futureHearingRepository,
-                                              transactionHandler,
                                               objectMapper);
     }
 
