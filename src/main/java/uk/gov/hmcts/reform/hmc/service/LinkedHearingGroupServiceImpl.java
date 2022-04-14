@@ -16,11 +16,11 @@ import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GetLinkedHearingGroupResponse;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
-import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkedHearingGroupResponse;
-import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkedHearingGroupResponses;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkedHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
@@ -102,7 +102,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     }
 
     @Override
-    public LinkedHearingGroupResponses getLinkedHearingGroupDetails(String requestId) {
+    public GetLinkedHearingGroupResponse getLinkedHearingGroupDetails(String requestId) {
         LinkedGroupDetails linkedGroupDetails =
             linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId);
         if (linkedGroupDetails != null) {
@@ -112,13 +112,13 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         }
     }
 
-    private LinkedHearingGroupResponses getLinkedHearingGroupDetails(LinkedGroupDetails linkedGroupDetails) {
-        LinkedHearingGroupResponses responses = new LinkedHearingGroupResponses();
+    private GetLinkedHearingGroupResponse getLinkedHearingGroupDetails(LinkedGroupDetails linkedGroupDetails) {
+        GetLinkedHearingGroupResponse response = new GetLinkedHearingGroupResponse();
 
-        responses.setGroupDetails(getGroupDetails(linkedGroupDetails));
-        responses.setHearingsInGroup(getHearingsInGroup(linkedGroupDetails.getLinkedGroupId()));
+        response.setGroupDetails(getGroupDetails(linkedGroupDetails));
+        response.setHearingsInGroup(getHearingsInGroup(linkedGroupDetails.getLinkedGroupId()));
 
-        return responses;
+        return response;
     }
 
     private GroupDetails getGroupDetails(LinkedGroupDetails linkedGroupDetails) {
@@ -131,12 +131,12 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         return groupDetails;
     }
 
-    private List<LinkedHearingGroupResponse> getHearingsInGroup(Long hearingGroupId) {
+    private List<LinkedHearingDetails> getHearingsInGroup(Long hearingGroupId) {
         List<HearingEntity> linkedGroupHearings =
             hearingRepository.findByLinkedGroupId(hearingGroupId);
-        List<LinkedHearingGroupResponse> hearingsInGroup = new ArrayList<>();
+        List<LinkedHearingDetails> hearingsInGroup = new ArrayList<>();
         linkedGroupHearings.forEach(hearing -> {
-            LinkedHearingGroupResponse response = new LinkedHearingGroupResponse();
+            LinkedHearingDetails response = new LinkedHearingDetails();
             response.setHearingId(hearing.getId());
             response.setHearingOrder(hearing.getLinkedOrder());
             hearingsInGroup.add(response);
