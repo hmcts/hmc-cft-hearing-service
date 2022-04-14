@@ -155,7 +155,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                 throw new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND);
             }
         } else {
-            return ResponseEntity.noContent().header("Content-Length", "0").build();
+            Integer latestRequestVersion = 0;
+            Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
+            if (hearingEntity.isPresent()) {
+                latestRequestVersion = hearingEntity.get().getLatestRequestVersion();
+            }
+            return ResponseEntity.noContent()
+                    .header("latestHearingRequestVersion", String.valueOf(latestRequestVersion))
+                    .build();
         }
     }
 
