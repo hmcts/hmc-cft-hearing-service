@@ -84,7 +84,7 @@ public class FutureHearingRepositoryIT extends BaseTest {
     void shouldThrow500AuthenticationExceptionForPut() {
         stubUpdateMethodThrowingError(500, HMI_REQUEST_URL + "/" + REQUEST_ID);
         assertThatThrownBy(() -> defaultFutureHearingRepository.updateLinkedHearingGroup(REQUEST_ID, data))
-            .isInstanceOf(AuthenticationException.class)
+            .isInstanceOf(FutureHearingServerException.class)
             .hasMessageContaining(SERVER_ERROR);
     }
 }

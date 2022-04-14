@@ -12,8 +12,6 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
-import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
-import uk.gov.hmcts.reform.hmc.exceptions.AuthenticationException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
@@ -48,7 +46,6 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.LIST_ASSIST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PENDING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_GROUP_ID_NOT_FOUND;
@@ -132,8 +129,12 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
                 .convertObjectToJsonNode(linkedHearingGroup));
             log.info("Response received from ListAssist successfully");
             linkedGroupDetailsRepository.updateLinkedGroupDetailsStatus(requestId, "ACTIVE");
-        } catch (Exception exception) {
-            processResponseFromListAssistForCreateLinkedHearing(requestId, hearingLinkGroupRequest, exception);
+        } catch (BadFutureHearingRequestException requestException) {
+            process400ResponseFromListAssistForLinkedHearing(
+                linkedHearingGroup.getLinkedHearingGroup().getGroupClientReference(), hearingLinkGroupRequest);
+        } catch (FutureHearingServerException serverException) {
+            process500ResponseFromListAssistForLinkedHearing(
+                linkedHearingGroup.getLinkedHearingGroup().getGroupClientReference());
         }
 
     }
@@ -218,43 +219,6 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         LinkedHearingGroup linkedHearingGroup = new LinkedHearingGroup();
         linkedHearingGroup.setLinkedHearingGroup(hearingGroup);
         return linkedHearingGroup;
-    }
-
-    private void processResponseFromListAssistForCreateLinkedHearing(String requestId,
-                                                                     HearingLinkGroupRequest hearingLinkGroupRequest,
-                                                                     Exception exception) {
-        if (exception instanceof BadFutureHearingRequestException) {
-            log.error(
-                "Exception occurred List Assist failed to respond with status code: {}",
-                ((BadFutureHearingRequestException) exception).getErrorDetails().getErrorCode()
-            );
-            hearingLinkGroupRequest.getHearingsInGroup()
-                .forEach(linkHearingDetails -> {
-                    Optional<HearingEntity> hearing = hearingRepository
-                        .findById(Long.valueOf(linkHearingDetails.getHearingId()));
-                    if (hearing.isPresent()) {
-                        HearingEntity hearingToSave = hearing.get();
-                        hearingToSave.setLinkedOrder(null);
-                        hearingToSave.setLinkedGroupDetails(null);
-                        hearingRepository.save(hearingToSave);
-                    } else {
-                        throw new HearingNotFoundException(
-                            Long.valueOf(linkHearingDetails.getHearingId()),
-                            HEARING_ID_NOT_FOUND
-                        );
-                    }
-                });
-            linkedGroupDetailsRepository.deleteLinkedGroupDetailsStatus(requestId);
-            throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
-        } else {
-            log.error(
-                "Time out exception occurred with status code:  {}",
-                ((AuthenticationException) exception).getErrorDetails().getErrorCode()
-            );
-            linkedGroupDetailsRepository.updateLinkedGroupDetailsStatus(requestId, "ERROR");
-            throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
-        }
-
     }
 
     private void validateHearingLinkGroupRequestForUpdate(String requestId,
@@ -349,24 +313,31 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     }
 
-    private void validateListAssistException(LinkedGroupDetails linkedGroupDetails, Exception exception) {
-        //Errors with 4xxx
-        if (exception instanceof BadFutureHearingRequestException) {
-            log.error(
-                "Exception occurred List Assist failed to respond with status code: {}",
-                ((BadFutureHearingRequestException) exception).getErrorDetails().getErrorCode()
-            );
-            linkedGroupDetailsRepository.delete(linkedGroupDetails);
-            throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
-        } else {
-            //Errors with 5xxx
-            log.error(
-                "Time out exception occurred with status code:  {}",
-                ((AuthenticationException) exception).getErrorDetails().getErrorCode()
-            );
-            saveLinkedGroupDetails(linkedGroupDetails, LIST_ASSIST);
-            throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
-        }
+
+    private void process500ResponseFromListAssistForLinkedHearing(String requestId) {
+
+        linkedGroupDetailsRepository.updateLinkedGroupDetailsStatus(requestId, "ERROR");
+        throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
+    }
+
+    private void process400ResponseFromListAssistForLinkedHearing(String requestId,
+                                                                  HearingLinkGroupRequest hearingLinkGroupRequest) {
+        hearingLinkGroupRequest.getHearingsInGroup()
+            .forEach(linkHearingDetails -> {
+                Optional<HearingEntity> hearing = hearingRepository
+                    .findById(Long.valueOf(linkHearingDetails.getHearingId()));
+                if (hearing.isPresent()) {
+                    HearingEntity hearingToSave = hearing.get();
+                    hearingToSave.setLinkedOrder(null);
+                    hearingToSave.setLinkedGroupDetails(null);
+                    hearingRepository.save(hearingToSave);
+                } else {
+                    throw new HearingNotFoundException(Long.valueOf(linkHearingDetails.getHearingId()),
+                                                       HEARING_ID_NOT_FOUND);
+                }
+            });
+        linkedGroupDetailsRepository.deleteLinkedGroupDetailsStatus(requestId);
+        throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
     }
 
     private void process500ResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails) {
