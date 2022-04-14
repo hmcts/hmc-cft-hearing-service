@@ -1091,6 +1091,29 @@ class HearingManagementServiceTest {
         }
 
         @Test
+        void updateHearingRequestShouldThrowErrorDueToPlannedResponse() {
+            final long hearingId = 2000000000L;
+            UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+            final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+            HearingEntity hearingEntity = generateHearingEntity(hearingId, UPDATE_REQUESTED.name(),
+                                                                versionNumber
+            );
+            val hearingResponseEntity = new HearingResponseEntity();
+            hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity));
+            val plannedResponse = LocalDate.of(2021, 5, 20);
+
+            when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
+            lenient().when(linkedHearingValidator.filterHearingResponses(any())).thenReturn(plannedResponse);
+            when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
+            when(hearingRepository.existsById(hearingId)).thenReturn(true);
+            when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
+
+            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .updateHearingRequest(hearingId, hearingRequest));
+            assertEquals(INVALID_PUT_HEARING_STATUS, exception.getMessage());
+        }
+
+        @Test
         void updateHearingRequestShouldThrowErrorWhenVersionNumberDoesNotMatchRequest() {
             final long hearingId = 2000000000L;
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(6);
