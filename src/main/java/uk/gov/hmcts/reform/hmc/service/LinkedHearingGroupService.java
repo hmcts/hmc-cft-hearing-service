@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GetLinkedHearingGroupResponse;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
-import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkedHearingGroupResponses;
 
 public interface LinkedHearingGroupService {
 
@@ -11,5 +11,5 @@ public interface LinkedHearingGroupService {
 
     void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest);
 
-    LinkedHearingGroupResponses getLinkedHearingGroupDetails(String requestId);
+    GetLinkedHearingGroupResponse getLinkedHearingGroupDetails(String requestId);
 }

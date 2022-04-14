@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LinkedHearingGroupResponse {
+public class LinkedHearingDetails {
 
     private Long hearingId;
 

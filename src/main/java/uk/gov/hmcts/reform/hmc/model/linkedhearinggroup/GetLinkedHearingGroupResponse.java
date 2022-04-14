@@ -7,9 +7,9 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class LinkedHearingGroupResponses {
+public class GetLinkedHearingGroupResponse {
 
     private GroupDetails groupDetails;
 
-    private List<LinkedHearingGroupResponse> hearingsInGroup;
+    private List<LinkedHearingDetails> hearingsInGroup;
 }

@@ -21,8 +21,9 @@ import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GetLinkedHearingGroupResponse;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
-import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkedHearingGroupResponses;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkedHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -400,8 +402,8 @@ class LinkedHearingGroupServiceTest {
             caseHearingRequest.setVersionNumber(1);
             caseHearingRequest.setCaseReference("122211123211");
             caseHearingRequest.setHmctsInternalCaseName("Some internal Code");
-            HearingEntity hearing1 = generateHearingEntity(HEARING_ID1,linkedGroupDetails);
-            HearingEntity hearing2 = generateHearingEntity(HEARING_ID2,linkedGroupDetails);
+            HearingEntity hearing1 = generateHearingEntity(HEARING_ID1,linkedGroupDetails,1L);
+            HearingEntity hearing2 = generateHearingEntity(HEARING_ID2,linkedGroupDetails,2L);
             hearing1.setCaseHearingRequests(List.of(caseHearingRequest));
             hearing2.setCaseHearingRequests(List.of(caseHearingRequest));
 
@@ -410,15 +412,28 @@ class LinkedHearingGroupServiceTest {
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing1, hearing2));
 
-            LinkedHearingGroupResponses linkedHearingGroupResponses =
+            GetLinkedHearingGroupResponse response =
                 service.getLinkedHearingGroupDetails(VALID_REQUEST_ID);
 
-            GroupDetails returnedGroupDetails = linkedHearingGroupResponses.getGroupDetails();
+            assertGroupDetails(response.getGroupDetails());
+            for (LinkedHearingDetails linkedHearingDetails : response.getHearingsInGroup()) {
+                assertHearingsInGroup(linkedHearingDetails);
+            }
+        }
+
+        private void assertGroupDetails(GroupDetails returnedGroupDetails) {
             assertNotNull(returnedGroupDetails);
             assertEquals(VALID_REQUEST_ID, returnedGroupDetails.getGroupName());
             assertEquals("reason for link", returnedGroupDetails.getGroupReason());
             assertEquals(returnedGroupDetails.getGroupLinkType(), ORDERED.label);
             assertEquals("Example comment", returnedGroupDetails.getGroupComments());
+        }
+
+        private void assertHearingsInGroup(LinkedHearingDetails linkedHearingDetails) {
+            assertAll(
+                () -> assertNotNull(linkedHearingDetails.getHearingId()),
+                () -> assertNotNull(linkedHearingDetails.getHearingOrder())
+            );
         }
 
         @Test
@@ -441,13 +456,14 @@ class LinkedHearingGroupServiceTest {
             return groupDetails;
         }
 
-        private HearingEntity generateHearingEntity(Long hearingId, LinkedGroupDetails groupDetails) {
+        private HearingEntity generateHearingEntity(Long hearingId, LinkedGroupDetails groupDetails,
+                                                    Long hearingOrder) {
             HearingEntity hearing = new HearingEntity();
             hearing.setId(hearingId);
             hearing.setLinkedGroupDetails(groupDetails);
             hearing.setStatus("ACTIVE");
             hearing.setIsLinkedFlag(true);
-            hearing.setLinkedOrder(1L);
+            hearing.setLinkedOrder(hearingOrder);
             return hearing;
         }
 

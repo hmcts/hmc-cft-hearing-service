@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkedHearingGroupResponses;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GetLinkedHearingGroupResponse;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -41,7 +41,7 @@ public class LinkedHearingGroupController {
         @ApiResponse(code = 200, message = "Success (with content)"),
         @ApiResponse(code = 400, message = "Invalid linked group id"),
     })
-    public LinkedHearingGroupResponses getLinkedHearingGroupDetails(@PathVariable("id") String requestId) {
+    public GetLinkedHearingGroupResponse getLinkedHearingGroupDetails(@PathVariable("id") String requestId) {
         return linkedHearingGroupService.getLinkedHearingGroupDetails(requestId);
     }
 }
