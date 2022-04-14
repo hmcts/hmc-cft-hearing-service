@@ -112,13 +112,16 @@ public class LinkedHearingValidator {
         List<HearingEntity> linkedHearingDetailsListObsolete =
                 extractObsoleteLinkedHearings(linkHearingDetailsListPayload, linkedHearingDetailsListExisting);
 
-        // validate and get errors, if any, for obsolete linkedHearingDetails
+        // validate and get errors, if invalid status for obsolete linkedHearingDetails
         List<String> errors = validateObsoleteLinkedHearings(linkedHearingDetailsListObsolete);
 
         // if errors then throw BadRequest with error list
         if (!errors.isEmpty()) {
             throw new LinkedHearingNotValidForUnlinkingException(errors);
         }
+
+        // validate obsolete linkedHearingDetails if hearing is in the past
+        validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedHearingDetailsListObsolete);
 
     }
 
@@ -209,9 +212,14 @@ public class LinkedHearingValidator {
                                                         String requestId) {
         Optional<HearingEntity> hearing =
                 hearingRepository.findById(Long.parseLong(details.getHearingId()));
+        // if hearing is present AND
+        // (POST and hearing already linked
+        // OR PUT and hearing is is not linked to current group/request)
+        // then throw error
         if (hearing.isPresent()
-            && ((null == requestId && hearing.get().getLinkedGroupDetails() != null)
-            || (null != requestId && !hearing.get().getLinkedGroupDetails().getRequestId()
+            && ((null == requestId && null != hearing.get().getLinkedGroupDetails())
+            || (null != requestId && null != hearing.get().getLinkedGroupDetails()
+                && !hearing.get().getLinkedGroupDetails().getRequestId()
                     .equals(requestId)))) {
             throw new BadRequestException(HEARING_REQUEST_ALREADY_LINKED);
         }
