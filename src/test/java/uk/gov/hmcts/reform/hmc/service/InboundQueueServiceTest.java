@@ -29,8 +29,11 @@ import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +61,12 @@ class InboundQueueServiceTest {
     private HearingRepository hearingRepository;
 
     @Mock
+    private ActualHearingRepository actualHearingRepository;
+
+    @Mock
+    private ActualHearingDayRepository actualHearingDayRepository;
+
+    @Mock
     private HmiHearingResponseMapper hmiHearingResponseMapper;
     @Mock
     ServiceBusReceiverClient client;
@@ -67,6 +76,8 @@ class InboundQueueServiceTest {
 
     @Mock
     ObjectMapperService objectMapperService;
+
+    HearingIdValidator hearingIdValidator;
 
     @Mock
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
@@ -169,12 +180,15 @@ class InboundQueueServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        hearingIdValidator = new HearingIdValidator(hearingRepository, actualHearingRepository,
+                actualHearingDayRepository);
         inboundQueueService = new InboundQueueServiceImpl(
             OBJECT_MAPPER,
             hearingRepository,
             hmiHearingResponseMapper,
             messageSenderToTopicConfiguration,
-            objectMapperService
+            objectMapperService,
+            hearingIdValidator
         );
     }
 
