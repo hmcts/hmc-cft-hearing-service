@@ -68,10 +68,7 @@ public class ListingMapper {
             listing.setListingMultiDay(calculateMultiDayDurations(hearingDetails.getDuration()));
         } else {
             listing.setListingDuration(hearingDetails.getDuration());
-            ListingMultiDay multiDay = new ListingMultiDay();
-            multiDay.setWeeks(0);
-            multiDay.setDays(0);
-            multiDay.setHours(0);
+            listing.setListingMultiDay(null);
         }
         return listing;
     }
