@@ -55,13 +55,12 @@ public final class ValidationError {
     public static final String INVALID_CASE_DETAILS = "Case details are required";
     public static final String PARTY_DETAILS_NULL_EMPTY = "Party id can not be empty";
     public static final String PARTY_DETAILS_MAX_LENGTH = "Party id must not be more than 40 " + CHARACTERS_LONG;
-    public static final String PARTY_ROLE_MAX_LENGTH = "Party role must not be more than 6 " + CHARACTERS_LONG;
+    public static final String PARTY_ROLE_MAX_LENGTH = "Party role must not be more than 40 " + CHARACTERS_LONG;
     public static final String NAME_NULL_EMPTY = "Name can not be empty";
     public static final String NAME_MAX_LENGTH = "Name must not be more than 2000 " + CHARACTERS_LONG;
     public static final String ORGANISATION_TYPE_NULL_EMPTY = "Organisation type can not be empty";
     public static final String ORGANISATION_TYPE_MAX_LENGTH = "Organisation type must not be more than 60 "
         + CHARACTERS_LONG;
-    public static final String CFT_ORG_ID_NULL_EMPTY = "CFT organisation id can not be empty";
     public static final String CFT_ORG_ID_MAX_LENGTH = "CFT organisation id must not be more than 60 "
         + CHARACTERS_LONG;
     public static final String UNAVAILABLE_FROM_DATE_EMPTY = "Unavailable from date can not be empty";

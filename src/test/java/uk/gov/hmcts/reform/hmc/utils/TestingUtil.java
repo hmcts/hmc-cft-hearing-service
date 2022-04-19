@@ -157,25 +157,6 @@ public class TestingUtil {
         return individualDetailEntity;
     }
 
-    public static CaseDetails caseDetails() {
-        CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setHmctsServiceCode("ABA1");
-        caseDetails.setCaseRef(CASE_REFERENCE);
-        caseDetails.setCaseDeepLink("https://www.google.com");
-        caseDetails.setHmctsInternalCaseName("Internal case name");
-        caseDetails.setPublicCaseName("Public case name");
-        caseDetails.setCaseManagementLocationCode("CMLC123");
-        caseDetails.setCaseRestrictedFlag(false);
-        caseDetails.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));
-        CaseCategory category = new CaseCategory();
-        category.setCategoryType("CASETYPE");
-        category.setCategoryValue("PROBATE");
-        List<CaseCategory> caseCategories = new ArrayList<>();
-        caseCategories.add(category);
-        caseDetails.setCaseCategories(caseCategories);
-        return caseDetails;
-    }
-
     public static List<PartyDetails> partyDetails() {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
@@ -242,6 +223,14 @@ public class TestingUtil {
         organisationDetails.setName("name");
         organisationDetails.setOrganisationType("type");
         organisationDetails.setCftOrganisationID("cft");
+        return organisationDetails;
+    }
+
+    public static OrganisationDetails organisationDetailsIdNull() {
+        OrganisationDetails organisationDetails = new OrganisationDetails();
+        organisationDetails.setName("name");
+        organisationDetails.setOrganisationType("type");
+        organisationDetails.setCftOrganisationID(null);
         return organisationDetails;
     }
 
@@ -314,10 +303,6 @@ public class TestingUtil {
         return request;
     }
 
-    public static UpdateHearingRequest updateHearingRequest() {
-        return updateHearingRequest(1);
-    }
-
     public static UpdateHearingRequest updateHearingRequest(int version) {
         UpdateHearingRequest request = new UpdateHearingRequest();
         request.setHearingDetails(hearingDetails());
@@ -327,6 +312,66 @@ public class TestingUtil {
         requestDetails.setVersionNumber(version);
         request.setRequestDetails(requestDetails);
         return request;
+    }
+
+    public static UpdateHearingRequest updateHearingRequest() {
+        return updateHearingRequest(1);
+    }
+
+    public static UpdateHearingRequest validUpdateHearingRequest() {
+        UpdateHearingRequest request = new UpdateHearingRequest();
+        request.setHearingDetails(hearingDetails());
+        CaseDetails caseDetails = getValidCaseDetails();
+        request.setCaseDetails(caseDetails);
+        request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        RequestDetails requestDetails = new RequestDetails();
+        requestDetails.setVersionNumber(1);
+        request.setRequestDetails(requestDetails);
+        return request;
+    }
+
+    public static CaseDetails caseDetails() {
+        CaseDetails caseDetails = new CaseDetails();
+        caseDetails.setHmctsServiceCode("ABA1");
+        caseDetails.setCaseRef(CASE_REFERENCE);
+        caseDetails.setCaseDeepLink("https://www.google.com");
+        caseDetails.setHmctsInternalCaseName("Internal case name");
+        caseDetails.setPublicCaseName("Public case name");
+        caseDetails.setCaseManagementLocationCode("CMLC123");
+        caseDetails.setCaseRestrictedFlag(false);
+        caseDetails.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));
+        CaseCategory category = new CaseCategory();
+        category.setCategoryType("CASETYPE");
+        category.setCategoryValue("PROBATE");
+        List<CaseCategory> caseCategories = new ArrayList<>();
+        caseCategories.add(category);
+        caseDetails.setCaseCategories(caseCategories);
+        return caseDetails;
+    }
+
+    public static CaseDetails getValidCaseDetails() {
+
+        CaseDetails caseDetails = new CaseDetails();
+        caseDetails.setHmctsServiceCode("ABA1");
+        caseDetails.setCaseRef(CASE_REFERENCE);
+        caseDetails.setCaseDeepLink("https://www.google.com");
+        caseDetails.setHmctsInternalCaseName("Internal case name");
+        caseDetails.setPublicCaseName("Public case name");
+        caseDetails.setCaseManagementLocationCode("CMLC123");
+        caseDetails.setCaseRestrictedFlag(false);
+        caseDetails.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));
+        CaseCategory category = new CaseCategory();
+        category.setCategoryType("caseType");
+        category.setCategoryValue("PROBATE");
+
+        CaseCategory categorySubType = new CaseCategory();
+        categorySubType.setCategoryType("caseSubType");
+        categorySubType.setCategoryValue("PROBATE");
+        List<CaseCategory> caseCategories = new ArrayList<>();
+        caseCategories.add(category);
+        caseCategories.add(categorySubType);
+        caseDetails.setCaseCategories(caseCategories);
+        return caseDetails;
     }
 
     public static HearingResponse deleteHearingResponse() {
@@ -704,32 +749,37 @@ public class TestingUtil {
         return entity1;
     }
 
-    public static UpdateHearingRequest updateHearingRequestWithPartyDetails() {
+    public static UpdateHearingRequest updateHearingRequestWithPartyDetails(boolean isCftOrganisationIdNull) {
         RequestDetails requestDetails = new RequestDetails();
         requestDetails.setVersionNumber(1);
         UpdateHearingRequest request = new UpdateHearingRequest();
         request.setRequestDetails(requestDetails);
         request.setHearingDetails(hearingDetailsWithAllFields());
-        request.setCaseDetails(caseDetails());
-        request.setPartyDetails(partyDetailsWith2Parties());
+        request.setCaseDetails(getValidCaseDetails());
+        request.setPartyDetails(partyDetailsWith2Parties(isCftOrganisationIdNull));
 
         return request;
     }
 
-    private static List<PartyDetails> partyDetailsWith2Parties() {
+
+    private static List<PartyDetails> partyDetailsWith2Parties(boolean isCftOrganisationIdNull) {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
         partyDetails1.setPartyType("ind");
         partyDetails1.setPartyRole("DEF");
         partyDetails1.setIndividualDetails(allIndividualDetails());
-        partyDetails1.setUnavailabilityDow(unavAilabilityDowDetails());
+        partyDetails1.setUnavailabilityDow(unavailabilityDowDetails());
         partyDetails1.setUnavailabilityRanges(unAvailabilityRanges());
 
         PartyDetails partyDetails2 = new PartyDetails();
         partyDetails2.setPartyID("P2");
         partyDetails2.setPartyType("IND");
         partyDetails2.setPartyRole("DEF2");
-        partyDetails2.setOrganisationDetails(organisationDetails());
+        if (isCftOrganisationIdNull) {
+            partyDetails2.setOrganisationDetails(organisationDetailsIdNull());
+        } else {
+            partyDetails2.setOrganisationDetails(organisationDetails());
+        }
 
         List<PartyDetails> partyDetails = Lists.newArrayList(partyDetails1, partyDetails2);
         return partyDetails;
@@ -748,13 +798,13 @@ public class TestingUtil {
         return unavailabilityRanges;
     }
 
-    private static List<UnavailabilityDow> unavAilabilityDowDetails() {
+    private static List<UnavailabilityDow> unavailabilityDowDetails() {
         UnavailabilityDow detail1 = new UnavailabilityDow();
         detail1.setDowUnavailabilityType("PM");
-        detail1.setDow("MONDAY");
+        detail1.setDow("Monday");
         UnavailabilityDow detail2 = new UnavailabilityDow();
         detail2.setDowUnavailabilityType("All Day");
-        detail2.setDow("THURSDAY");
+        detail2.setDow("Thursday");
         List<UnavailabilityDow> unavailabilityDows = Lists.newArrayList(detail1, detail2);
         return unavailabilityDows;
     }
@@ -793,9 +843,9 @@ public class TestingUtil {
 
     public static PanelRequirements panelRequirementsList() {
         PanelRequirements panelRequirements = new PanelRequirements();
-        panelRequirements.setRoleType(Arrays.asList("RoleType1","RoleType2"));
-        panelRequirements.setAuthorisationTypes(Arrays.asList("AuthorisationType1","AuthorisationType2"));
-        panelRequirements.setAuthorisationSubType(Arrays.asList("AuthorisationSubType2","AuthorisationSubType2"));
+        panelRequirements.setRoleType(Arrays.asList("RoleType1", "RoleType2"));
+        panelRequirements.setAuthorisationTypes(Arrays.asList("AuthorisationType1", "AuthorisationType2"));
+        panelRequirements.setAuthorisationSubType(Arrays.asList("AuthorisationSubType2", "AuthorisationSubType2"));
         return panelRequirements;
     }
 
@@ -819,7 +869,7 @@ public class TestingUtil {
         individualDetails.setLastName("Jason");
         individualDetails.setPreferredHearingChannel("channel 5");
         individualDetails.setInterpreterLanguage("French");
-        individualDetails.setReasonableAdjustments(Arrays.asList("Adjust1","Adjust2","Adjust3"));
+        individualDetails.setReasonableAdjustments(Arrays.asList("Adjust1", "Adjust2", "Adjust3"));
         individualDetails.setVulnerableFlag(false);
         individualDetails.setVulnerabilityDetails("More vulnerable");
         individualDetails.setHearingChannelPhone(List.of("01111111111"));
