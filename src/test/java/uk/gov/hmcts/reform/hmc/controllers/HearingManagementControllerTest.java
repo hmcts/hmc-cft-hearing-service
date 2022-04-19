@@ -74,13 +74,13 @@ class HearingManagementControllerTest {
         @Test
         void shouldReturn400_whenHearing_Details_Are_NotPresent() {
             // hearing request with no hearing details
-            HearingRequest hearingRequest = generateHearingRequest();
+            HearingRequest hearingRequest = generateHearingRequest(false);
             hearingRequest.setHearingDetails(null);
 
             HearingResponse hearingResponse = generateHearingResponse();
             when(hearingManagementService.saveHearingRequest(hearingRequest)).thenReturn(hearingResponse);
             doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(
-                    hearingResponse.getHearingRequestId(), hearingRequest, REQUEST_HEARING);
+                hearingResponse.getHearingRequestId(), hearingRequest, REQUEST_HEARING);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService);
             controller.saveHearing(hearingRequest);
@@ -90,14 +90,15 @@ class HearingManagementControllerTest {
         @Test
         void shouldReturn400_whenCase_Details_Are_NotPresent() {
             // hearing request with no request details
-            HearingRequest hearingRequest = generateHearingRequest();
+            HearingRequest hearingRequest = generateHearingRequest(false);
             hearingRequest.setCaseDetails(null);
 
             HearingResponse hearingResponse = generateHearingResponse();
             doNothing().when(hearingManagementService).verifyAccess(any());
             when(hearingManagementService.saveHearingRequest(hearingRequest)).thenReturn(hearingResponse);
             doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(1L, hearingRequest,
-                    REQUEST_HEARING);
+                                                                                REQUEST_HEARING
+            );
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService);
             controller.saveHearing(hearingRequest);
@@ -107,13 +108,33 @@ class HearingManagementControllerTest {
         @Test
         void shouldReturn201_whenHearingRequestData() {
             // hearing request - valid
-            HearingRequest hearingRequest = generateHearingRequest();
+            HearingRequest hearingRequest = generateHearingRequest(false);
 
             HearingResponse hearingResponse = generateHearingResponse();
             when(hearingManagementService.saveHearingRequest(hearingRequest)).thenReturn(hearingResponse);
             doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(
-                    hearingResponse.getHearingRequestId(), hearingRequest,
-                    REQUEST_HEARING);
+                hearingResponse.getHearingRequestId(), hearingRequest,
+                REQUEST_HEARING
+            );
+
+            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            controller.saveHearing(hearingRequest);
+            verify(hearingManagementService, times(1)).saveHearingRequest(any());
+            verify(hearingManagementService, times(1)).verifyAccess(any());
+        }
+
+
+        @Test
+        void shouldReturn201_whenHearingRequestDataWithOrgIdNull() {
+            // hearing request - valid
+            HearingRequest hearingRequest = generateHearingRequest(true);
+
+            HearingResponse hearingResponse = generateHearingResponse();
+            when(hearingManagementService.saveHearingRequest(hearingRequest)).thenReturn(hearingResponse);
+            doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(
+                hearingResponse.getHearingRequestId(), hearingRequest,
+                REQUEST_HEARING
+            );
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService);
             controller.saveHearing(hearingRequest);
@@ -134,8 +155,8 @@ class HearingManagementControllerTest {
             doNothing().when(hearingManagementService).verifyAccess(
                 hearingRequest.getCaseDetails().getCaseRef());
             doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(
-                    hearingResponse.getHearingRequestId(), hearingRequest,
-                    REQUEST_HEARING
+                hearingResponse.getHearingRequestId(), hearingRequest,
+                REQUEST_HEARING
             );
             HearingManagementController controller = new HearingManagementController(hearingManagementService);
             controller.saveHearing(hearingRequest);
@@ -227,12 +248,32 @@ class HearingManagementControllerTest {
         @Test
         void shouldCallUpdateHearingRequest() {
             final long hearingId = 2000000000L;
-            UpdateHearingRequest hearingRequest = generateUpdateHearingRequest();
+            UpdateHearingRequest hearingRequest = generateUpdateHearingRequest(false);
             HearingResponse hearingResponse = generateHearingResponse();
             when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest)).thenReturn(hearingResponse);
 
             doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(1L, hearingRequest,
-                    AMEND_HEARING);
+                                                                                AMEND_HEARING
+            );
+            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            controller.updateHearing(hearingRequest, hearingId);
+            InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
+            orderVerifier.verify(hearingManagementService).updateHearingRequest(hearingId, hearingRequest);
+            orderVerifier.verify(hearingManagementService)
+                .sendRequestToHmiAndQueue(hearingId, hearingRequest, AMEND_HEARING);
+            verifyNoMoreInteractions(hearingManagementService);
+        }
+
+        @Test
+        void shouldCallUpdateHearingRequestWithPartyWithOrgIdNull() {
+            final long hearingId = 2000000000L;
+            UpdateHearingRequest hearingRequest = generateUpdateHearingRequest(true);
+            HearingResponse hearingResponse = generateHearingResponse();
+            when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest)).thenReturn(hearingResponse);
+
+            doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(1L, hearingRequest,
+                                                                                AMEND_HEARING
+            );
             HearingManagementController controller = new HearingManagementController(hearingManagementService);
             controller.updateHearing(hearingRequest, hearingId);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
@@ -244,8 +285,8 @@ class HearingManagementControllerTest {
     }
 
     @Nested
-    @DisplayName("updateHearingCompletiong")
-    class UpdateHearingCompletiong {
+    @DisplayName("updateHearingCompletion")
+    class UpdateHearingCompletion {
 
         @Test
         void shouldInvokeHearingCompletion() {
@@ -257,10 +298,6 @@ class HearingManagementControllerTest {
         }
     }
 
-    /**
-     * generate Hearing Response.
-     * @return hearingResponse Hearing Response
-     */
     private HearingResponse generateHearingResponse() {
         final long hearingId = 2000000000L;
         HearingResponse hearingResponse = new HearingResponse();
@@ -270,28 +307,39 @@ class HearingManagementControllerTest {
         return hearingResponse;
     }
 
-    /**
-     * generate Create Hearing Request.
-     * @return hearingRequest Create Hearing Request
-     */
-    private HearingRequest generateHearingRequest() {
+    private HearingRequest generateHearingRequest(boolean isCftOrganisationIdNull) {
         HearingRequest hearingRequest = new HearingRequest();
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        if (isCftOrganisationIdNull) {
+            hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetailsIdNull());
+        } else {
+            hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        }
         return hearingRequest;
     }
 
     /**
      * generate Create Hearing Request.
+     *
      * @return hearingRequest Create Hearing Request
      */
-    private UpdateHearingRequest generateUpdateHearingRequest() {
+    private UpdateHearingRequest generateUpdateHearingRequest(boolean isCftOrganisationIdNull) {
         UpdateHearingRequest hearingRequest = new UpdateHearingRequest();
         RequestDetails requestDetails = new RequestDetails();
         requestDetails.setVersionNumber(2);
         hearingRequest.setRequestDetails(requestDetails);
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        if (isCftOrganisationIdNull) {
+            hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetailsIdNull());
+        } else {
+            hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        }
         return hearingRequest;
     }
 
