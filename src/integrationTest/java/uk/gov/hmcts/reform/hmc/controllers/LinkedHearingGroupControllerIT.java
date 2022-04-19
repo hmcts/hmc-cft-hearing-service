@@ -541,6 +541,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
 
             logger.info(objectMapper.writeValueAsString(hearingLinkGroupRequest));
             stubPutUpdateLinkHearingGroup(400, "2", TOKEN);
+
             mockMvc.perform(put(url + "?id=2")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))

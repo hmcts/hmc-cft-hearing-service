@@ -75,6 +75,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     private final DefaultFutureHearingRepository futureHearingRepository;
 
     private final ObjectMapperService objectMapperService;
+
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
                                          LinkedGroupDetailsRepository linkedGroupDetailsRepository,
@@ -159,7 +160,8 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         for (HearingEntity hearingEntity : currentHearings) {
             if (hearingLinkGroupRequest.getHearingsInGroup()
                 .stream().noneMatch(linkHearingDetails ->
-                                        Long.valueOf(linkHearingDetails.getHearingId()).equals(hearingEntity.getId()))) {
+                                        Long.valueOf(linkHearingDetails.getHearingId())
+                                            .equals(hearingEntity.getId()))) {
                 hearingEntity.setLinkedOrder(null);
                 hearingEntity.setLinkedGroupDetails(null);
                 hearingRepository.save(hearingEntity);
