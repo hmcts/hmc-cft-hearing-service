@@ -35,7 +35,8 @@ public class HmcHearingUpdate {
 
     private String hearingJudgeId;
 
-    private ListAssistCaseStatus ListAssistCaseStatus;
+    @JsonProperty("ListAssistCaseStatus")
+    private ListAssistCaseStatus listAssistCaseStatus;
 
     private String hearingRoomId;
 

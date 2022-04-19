@@ -96,7 +96,8 @@ public class HmiHearingResponseMapper {
                     hmcHearingUpdate.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
                 }
             }
-            hmcHearingUpdate.setListAssistCaseStatus(ListAssistCaseStatus.valueOf(hearingResponseEntity.getListingCaseStatus()));
+            hmcHearingUpdate.setListAssistCaseStatus(ListAssistCaseStatus.valueOf(hearingResponseEntity
+                                                                                      .getListingCaseStatus()));
             hmcHearingUpdate.setHearingRoomId(hearingResponseEntity.getHearingDayDetails().get(0).getRoomId());
         }
         hmcHearingResponse.setHearingUpdate(hmcHearingUpdate);
