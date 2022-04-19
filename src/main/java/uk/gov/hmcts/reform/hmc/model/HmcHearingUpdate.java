@@ -35,6 +35,7 @@ public class HmcHearingUpdate {
 
     private String hearingJudgeId;
 
+    @NotNull(message = ValidationError.LIST_ASSIST_CASE_STATUS_NULL)
     @JsonProperty("ListAssistCaseStatus")
     private ListAssistCaseStatus listAssistCaseStatus;
 
