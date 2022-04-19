@@ -214,5 +214,6 @@ public final class ValidationError {
     public static final String HMCTS_STATUS_NULL = "HMCTS status can not be null or empty";
     public static final String HMCTS_STATUS_LENGTH = "HMCTS status must not be more than 100 " + CHARACTERS_LONG;
     public static final String LISTING_STATUS_NULL = "Listing status can not be null or empty";
+    public static final String INVALID_DURATION_DETAILS = "Invalid duration details";
 
 }

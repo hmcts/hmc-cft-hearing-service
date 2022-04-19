@@ -85,7 +85,7 @@ public class TestingUtil {
         hearingWindow.setDateRangeEnd(LocalDate.parse("2017-03-01"));
         hearingWindow.setDateRangeStart(LocalDate.parse("2017-03-01"));
         hearingDetails.setHearingWindow(hearingWindow);
-        hearingDetails.setDuration(0);
+        hearingDetails.setDuration(360);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         hearingDetails.setHearingIsLinkedFlag(Boolean.TRUE);
@@ -817,7 +817,7 @@ public class TestingUtil {
         hearingWindow.setDateRangeEnd(LocalDate.parse("2017-03-01"));
         hearingWindow.setDateRangeStart(LocalDate.parse("2017-03-01"));
         hearingDetails.setHearingWindow(hearingWindow);
-        hearingDetails.setDuration(60);
+        hearingDetails.setDuration(360);
         hearingDetails.setNonStandardHearingDurationReasons(Arrays.asList("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         hearingDetails.setNumberOfPhysicalAttendees(4);

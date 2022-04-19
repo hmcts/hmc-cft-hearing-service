@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
+import uk.gov.hmcts.reform.hmc.model.hmi.ListingMultiDay;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +34,6 @@ public class ListingMapper {
             .listingAutoCreateFlag(hearingDetails.getAutoListFlag())
             .listingPriority(hearingDetails.getHearingPriorityType())
             .listingType(hearingDetails.getHearingType())
-            //.listingDuration(hearingDetails.getDuration())
             .listingDate(hearingDetails.getHearingWindow().getFirstDateTimeMustBe())
             .listingNumberAttendees(hearingDetails.getNumberOfPhysicalAttendees())
             .listingComments(hearingDetails.getListingComments())
@@ -62,11 +63,46 @@ public class ListingMapper {
             listing.setListingJohTiers(new ArrayList<>(hearingDetails.getPanelRequirements()
                                                            .getRoleType()));
         }
-        if (hearingDetails.getDuration() < HEARING_DETAILS_DURATION) {
-            listing.setListingDuration(hearingDetails.getDuration());
-        } else {
+        if (hearingDetails.getDuration() > HEARING_DETAILS_DURATION) {
             listing.setListingDuration(HEARING_DETAILS_DURATION);
+            listing.setListingMultiDay(calculateMultiDayDurations(hearingDetails.getDuration()));
+        } else {
+            listing.setListingDuration(hearingDetails.getDuration());
+            ListingMultiDay multiDay = new ListingMultiDay();
+            multiDay.setWeeks(0);
+            multiDay.setDays(0);
+            multiDay.setHours(0);
         }
         return listing;
     }
+
+    private ListingMultiDay calculateMultiDayDurations(Integer hearingDetailsDuration) {
+        DecimalFormat df = new DecimalFormat("#");
+        int weeks = getWeeks(hearingDetailsDuration, df);
+        int days = getDays(hearingDetailsDuration, df, weeks);
+        int hours = getHours(hearingDetailsDuration, weeks, days);
+        return setMultiDay(weeks, days, hours);
+    }
+
+    private ListingMultiDay setMultiDay(int weeks, int days, int hours) {
+        ListingMultiDay multiDay = new ListingMultiDay();
+        multiDay.setWeeks(weeks);
+        multiDay.setDays(days);
+        multiDay.setHours(hours);
+        return multiDay;
+    }
+
+    private int getHours(Integer hearingDetailsDuration, int weeks, int days) {
+        return hearingDetailsDuration - (weeks * 360 * 5) - (days * 360);
+    }
+
+    private int getDays(Integer hearingDetailsDuration, DecimalFormat df, int weeks) {
+        return Integer.parseInt(df.format(Math.round((hearingDetailsDuration - weeks * 360 * 5) / 360)));
+    }
+
+    private int getWeeks(Integer hearingDetailsDuration, DecimalFormat df) {
+        return Integer.parseInt(df.format(Math.round(hearingDetailsDuration / (360 * 5))));
+    }
+
+
 }
