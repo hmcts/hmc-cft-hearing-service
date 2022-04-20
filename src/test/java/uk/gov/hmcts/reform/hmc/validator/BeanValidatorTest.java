@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -509,25 +508,6 @@ class BeanValidatorTest {
         });
         assertEquals(1, violations.size());
         assertTrue(validationErrors.contains(PARTY_ROLE_EMPTY));
-    }
-
-    @Test
-    @Disabled("test prior to HMAN-146 make nullable change, now use shouldSucceedWhenGroupReasonIsNullForHman146()")
-    void shouldFailWhenGroupReasonIsNullBeforeHman146() {
-        GroupDetails groupDetails = new GroupDetails();
-        groupDetails.setGroupReason(null);
-        groupDetails.setGroupName("groupName");
-        groupDetails.setGroupComments("groupComments");
-        groupDetails.setGroupLinkType("linkType");
-        Set<ConstraintViolation<GroupDetails>> violations = validator.validate(groupDetails);
-        assertFalse(violations.isEmpty());
-        List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> {
-            validationErrors.add(e.getMessage());
-            logger.info(e.getMessage());
-        });
-        assertEquals(1, violations.size());
-        assertTrue(validationErrors.contains(GROUP_REASON_EMPTY));
     }
 
     @Test
