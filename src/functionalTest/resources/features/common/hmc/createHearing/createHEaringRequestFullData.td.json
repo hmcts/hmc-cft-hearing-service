@@ -53,10 +53,16 @@
     "publicCaseName" : "Public case name",
     "caseAdditionalSecurityFlag" : true,
     "caseInterpreterRequiredFlag" : true,
-    "caseCategories" : [ {
-      "categoryType" : "CASETYPE",
-      "categoryValue" : "CT2"
-    } ],
+    "caseCategories": [
+      {
+        "categoryType": "caseType",
+        "categoryValue": "BBA3-002"
+      },
+      {
+        "categoryType": "caseSubType",
+        "categoryValue": "BBA3-002CP"
+      }
+    ],
     "caseManagementLocationCode" : "CMLC123",
     "caserestrictedFlag" : true,
     "caseSLAStartDate" : "2021-10-10"
@@ -86,7 +92,7 @@
     },
     "unavailabilityDOW": [
       {
-        "DOW": "MONDAY",
+        "DOW": "Monday",
         "DOWUnavailabilityType": "am"
       }
     ],

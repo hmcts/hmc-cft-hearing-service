@@ -30,7 +30,10 @@
         "caseInterpreterRequiredFlag" : true,
         "caseCategories" : [ {
           "categoryType" : "caseType",
-          "categoryValue" : "CT2"
+          "categoryValue" : "BBA3-002"
+        }, {
+          "categoryType" : "caseSubType",
+          "categoryValue" : "BBA3-002CP"
         } ],
         "caseManagementLocationCode" : "CMLC123",
         "caserestrictedFlag" : true,

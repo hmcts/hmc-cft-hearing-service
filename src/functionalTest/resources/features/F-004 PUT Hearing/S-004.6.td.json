@@ -56,8 +56,12 @@
         "publicCaseName": "Public case name",
         "caseCategories": [
           {
-            "categoryType": "CASETYPE",
-            "categoryValue": "CT2"
+            "categoryType": "caseType",
+            "categoryValue": "BBA3-002"
+          },
+          {
+            "categoryType": "caseSubType",
+            "categoryValue": "BBA3-002CP"
           }
         ],
         "caseManagementLocationCode": "CMLC123",
