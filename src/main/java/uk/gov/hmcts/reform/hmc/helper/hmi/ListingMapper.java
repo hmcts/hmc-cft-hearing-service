@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingMultiDay;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,11 +45,10 @@ public class ListingMapper {
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
             .listingOtherConsiderations(
-                listingOtherConsiderationsMapper.getListingOtherConsiderations(
-                    hearingDetails.getHearingInWelshFlag(),
-                    hearingDetails.getFacilitiesRequired()
-                )
-            )
+                    listingOtherConsiderationsMapper.getListingOtherConsiderations(
+                            hearingDetails.getHearingInWelshFlag(),
+                            hearingDetails.getFacilitiesRequired())
+                    )
             .build();
         if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
             listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
@@ -74,9 +72,8 @@ public class ListingMapper {
     }
 
     private ListingMultiDay calculateMultiDayDurations(Integer hearingDetailsDuration) {
-        DecimalFormat df = new DecimalFormat("#");
-        int weeks = getWeeks(hearingDetailsDuration, df);
-        int days = getDays(hearingDetailsDuration, df, weeks);
+        int weeks = getWeeks(hearingDetailsDuration);
+        int days = getDays(hearingDetailsDuration, weeks);
         int hours = getHours(hearingDetailsDuration, weeks, days);
         return setMultiDay(weeks, days, hours);
     }
@@ -93,13 +90,12 @@ public class ListingMapper {
         return hearingDetailsDuration - (weeks * 360 * 5) - (days * 360);
     }
 
-    private int getDays(Integer hearingDetailsDuration, DecimalFormat df, int weeks) {
+    private int getDays(Integer hearingDetailsDuration, int weeks) {
         return ((hearingDetailsDuration - weeks * 360 * 5) / 360);
     }
 
-    private int getWeeks(Integer hearingDetailsDuration, DecimalFormat df) {
+    private int getWeeks(Integer hearingDetailsDuration) {
         return (hearingDetailsDuration / (360 * 5));
     }
-
 
 }

@@ -57,5 +57,4 @@ public class Listing {
 
     private ListingMultiDay listingMultiDay;
 
-
 }
