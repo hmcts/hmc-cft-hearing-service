@@ -525,7 +525,6 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         }
 
         @Test
-        @Disabled
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_WhenReceiving4xxFromListAssist() throws Exception {
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
@@ -553,7 +552,6 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         }
 
         @Test
-        @Disabled
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_WhenReceiving5xxFromListAssist() throws Exception {
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
