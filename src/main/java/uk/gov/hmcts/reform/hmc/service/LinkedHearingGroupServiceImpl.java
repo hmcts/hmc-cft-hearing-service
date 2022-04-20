@@ -83,7 +83,6 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Override
-    @Transactional(noRollbackFor = {BadRequestException.class})
     public void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest) {
         linkedHearingValidator.validateHearingLinkGroupRequestForUpdate(requestId, hearingLinkGroupRequest);
         //HMAN-94
@@ -223,7 +222,6 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
 
     private void process500ResponseFromListAssistForLinkedHearing(String requestId) {
-
         linkedGroupDetailsRepository.updateLinkedGroupDetailsStatus(requestId, "ERROR");
         throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
     }
