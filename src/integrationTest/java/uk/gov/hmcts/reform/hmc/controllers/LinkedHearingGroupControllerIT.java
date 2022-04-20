@@ -61,6 +61,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
     @DisplayName("PostLinkedHearingGroup")
     class PostLinkedHearingGroup {
         @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_WhenThereIsOnlyOneHearing() throws Exception {
             LinkHearingDetails hearingInGroup = new LinkHearingDetails();
             hearingInGroup.setHearingId("2000000001");
@@ -82,6 +83,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         }
 
         @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_WhenHearingIsNotUniqueInGroup() throws Exception {
             LinkHearingDetails hearingInGroup = new LinkHearingDetails();
             hearingInGroup.setHearingId("2000000001");
@@ -103,6 +105,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         }
 
         @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn404_WhenHearingDoesNotExist() throws Exception {
             LinkHearingDetails hearingInGroup = new LinkHearingDetails();
             hearingInGroup.setHearingId("2000000001");
@@ -128,6 +131,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         }
 
         @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_WhenHearingIsMalformed() throws Exception {
             LinkHearingDetails hearingInGroup = new LinkHearingDetails();
             hearingInGroup.setHearingId("1000000001");
