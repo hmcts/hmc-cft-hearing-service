@@ -500,6 +500,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         }
 
         @Test
+        @Disabled
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn200_ForValidRequest() throws Exception {
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
