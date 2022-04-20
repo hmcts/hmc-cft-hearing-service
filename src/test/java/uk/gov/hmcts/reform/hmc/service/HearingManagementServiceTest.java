@@ -63,9 +63,12 @@ import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
+import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -143,6 +146,12 @@ class HearingManagementServiceTest {
     CaseHearingRequestRepository caseHearingRequestRepository;
 
     @Mock
+    LinkedGroupDetailsRepository linkedGroupDetailsRepository;
+
+    @Mock
+    LinkedHearingDetailsRepository linkedHearingDetailsRepository;
+
+    @Mock
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
 
     @Mock
@@ -163,8 +172,6 @@ class HearingManagementServiceTest {
     @Mock
     MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
 
-    HearingIdValidator hearingIdValidator;
-
     @Mock
     ActualHearingRepository actualHearingRepository;
 
@@ -174,12 +181,19 @@ class HearingManagementServiceTest {
     @Mock
     ApplicationParams applicationParams;
 
+    HearingIdValidator hearingIdValidator;
+
+    LinkedHearingValidator linkedHearingValidator;
+
     JsonNode jsonNode = mock(JsonNode.class);
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        hearingIdValidator = new HearingIdValidator(hearingRepository);
+        linkedHearingValidator = new LinkedHearingValidator(hearingIdValidator, hearingRepository,
+                      linkedGroupDetailsRepository, linkedHearingDetailsRepository);
+        hearingIdValidator = new HearingIdValidator(hearingRepository, actualHearingRepository,
+                actualHearingDayRepository);
         hearingManagementService =
             new HearingManagementServiceImpl(
                 roleAssignmentService,
@@ -197,6 +211,7 @@ class HearingManagementServiceTest {
                 messageSenderToQueueConfiguration,
                 applicationParams,
                 hearingIdValidator,
+                linkedHearingValidator,
                 actualHearingRepository,
                 actualHearingDayRepository
             );
@@ -1693,6 +1708,7 @@ class HearingManagementServiceTest {
         List<HearingResponseEntity> responseEntities = new ArrayList<>();
         for (int i = 0; i < noOfResponses; i++) {
             HearingResponseEntity responseEntity = new HearingResponseEntity();
+            responseEntity.setRequestVersion(hearingEntity.getLatestRequestVersion());
             responseEntity.setResponseVersion(hearingEntity.getLatestRequestVersion());
             responseEntity.setRequestTimeStamp(LocalDateTime.now());
             responseEntities.add(responseEntity);

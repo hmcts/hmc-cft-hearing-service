@@ -38,10 +38,11 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_
 @Service
 @Component
 @Slf4j
-public class InboundQueueServiceImpl extends HearingIdValidator implements InboundQueueService {
+public class InboundQueueServiceImpl implements InboundQueueService {
 
     private final ObjectMapper objectMapper;
     private HearingRepository hearingRepository;
+    private HearingIdValidator hearingIdValidator;
     private final HmiHearingResponseMapper hmiHearingResponseMapper;
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
     private final ObjectMapperService objectMapperService;
@@ -53,13 +54,14 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
                                    HearingRepository hearingRepository,
                                    HmiHearingResponseMapper hmiHearingResponseMapper,
                                    MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
-                                   ObjectMapperService objectMapperService) {
-        super(hearingRepository);
+                                   ObjectMapperService objectMapperService,
+                                   HearingIdValidator hearingIdValidator) {
         this.objectMapper = objectMapper;
         this.hearingRepository = hearingRepository;
         this.hmiHearingResponseMapper = hmiHearingResponseMapper;
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
+        this.hearingIdValidator = hearingIdValidator;
     }
 
     @Override
@@ -70,7 +72,7 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
         log.info("Message of type " + messageType + " received");
         if (applicationProperties.containsKey(HEARING_ID)) {
             Long hearingId = Long.valueOf(applicationProperties.get(HEARING_ID).toString());
-            validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
+            hearingIdValidator.validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
             validateResponse(message, messageType, hearingId, client, serviceBusReceivedMessage);
         } else {
             throw new MalformedMessageException(MISSING_HEARING_ID);
