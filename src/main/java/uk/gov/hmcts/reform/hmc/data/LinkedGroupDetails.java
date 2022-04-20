@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
@@ -17,6 +18,7 @@ import javax.persistence.Table;
 @Table(name = "linked_group_details")
 @Entity
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LinkedGroupDetails {
 
     @Id

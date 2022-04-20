@@ -16,18 +16,22 @@ public class CommunicationsMapper {
     public List<EntityCommunication> getCommunications(PartyDetails partyDetails) {
         List<EntityCommunication> entityCommunications = new ArrayList<>();
         if (partyDetails.getIndividualDetails().getHearingChannelEmail() != null) {
-            EntityCommunication entityCommunication = EntityCommunication.builder()
-                .entityCommunicationDetails(partyDetails.getIndividualDetails().getHearingChannelEmail())
-                .entityCommunicationType(EMAIL_TYPE)
-                .build();
-            entityCommunications.add(entityCommunication);
+            for (String email : partyDetails.getIndividualDetails().getHearingChannelEmail()) {
+                EntityCommunication entityCommunication = EntityCommunication.builder()
+                    .entityCommunicationDetails(email)
+                    .entityCommunicationType(EMAIL_TYPE)
+                    .build();
+                entityCommunications.add(entityCommunication);
+            }
         }
         if (partyDetails.getIndividualDetails().getHearingChannelPhone() != null) {
-            EntityCommunication entityCommunication = EntityCommunication.builder()
-                .entityCommunicationDetails(partyDetails.getIndividualDetails().getHearingChannelPhone())
-                .entityCommunicationType(PHONE_TYPE)
-                .build();
-            entityCommunications.add(entityCommunication);
+            for (String phoneNumber : partyDetails.getIndividualDetails().getHearingChannelPhone()) {
+                EntityCommunication entityCommunication = EntityCommunication.builder()
+                    .entityCommunicationDetails(phoneNumber)
+                    .entityCommunicationType(PHONE_TYPE)
+                    .build();
+                entityCommunications.add(entityCommunication);
+            }
         }
         return entityCommunications;
     }

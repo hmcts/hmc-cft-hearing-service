@@ -16,7 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
-import uk.gov.hmcts.reform.hmc.model.CreateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -55,7 +55,7 @@ public class WiremockFixtures {
         }
     }
 
-    public static void stubSuccessfullyValidateHearingObject(CreateHearingRequest createHearingRequest) {
+    public static void stubSuccessfullyValidateHearingObject(HearingRequest createHearingRequest) {
         stubFor(WireMock.post(urlEqualTo("/hearing"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
@@ -65,7 +65,7 @@ public class WiremockFixtures {
                     .willReturn(aResponse().withStatus(HTTP_CREATED)));
     }
 
-    public static void stubReturn400WhileValidateHearingObject(CreateHearingRequest createHearingRequest) {
+    public static void stubReturn400WhileValidateHearingObject(HearingRequest createHearingRequest) {
         stubFor(WireMock.post(urlEqualTo("/hearing"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))

@@ -7,7 +7,6 @@ import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -16,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -34,22 +34,22 @@ class CaseHearingRequestRepositoryTest {
     @Test
     void testGetVersionNumber() {
         Integer expectedVersionNumber = 1;
-        doReturn(1).when(caseHearingRequestRepository).getVersionNumber(any());
-        Integer versionNumber = caseHearingRequestRepository.getVersionNumber(any());
+        doReturn(1).when(caseHearingRequestRepository).getLatestVersionNumber(any());
+        Integer versionNumber = caseHearingRequestRepository.getLatestVersionNumber(any());
         assertAll(
             () -> assertThat(versionNumber, is(expectedVersionNumber)),
-            () -> verify(caseHearingRequestRepository, times(1)).getVersionNumber(any())
+            () -> verify(caseHearingRequestRepository, times(1)).getLatestVersionNumber(any())
         );
     }
 
     @Test
     void testGetVersionNumber_IsInvalid() {
         Integer expectedVersionNumber = 1;
-        doReturn(2).when(caseHearingRequestRepository).getVersionNumber(any());
-        Integer versionNumber = caseHearingRequestRepository.getVersionNumber(any());
+        doReturn(2).when(caseHearingRequestRepository).getLatestVersionNumber(any());
+        Integer versionNumber = caseHearingRequestRepository.getLatestVersionNumber(any());
         assertAll(
             () -> assertNotEquals(versionNumber, expectedVersionNumber),
-            () -> verify(caseHearingRequestRepository, times(1)).getVersionNumber(any())
+            () -> verify(caseHearingRequestRepository, times(1)).getLatestVersionNumber(any())
         );
     }
 
@@ -80,7 +80,7 @@ class CaseHearingRequestRepositoryTest {
 
     @Test
     void testGetHearingDetailsWhenStatusNotPresent() {
-        List<CaseHearingRequestEntity> expectedDetails = Arrays.asList(TestingUtil.getCaseHearingsEntities());
+        List<CaseHearingRequestEntity> expectedDetails = List.of(TestingUtil.getCaseHearingsEntities());
         doReturn(expectedDetails).when(caseHearingRequestRepository).getHearingDetails(any());
         List<CaseHearingRequestEntity> entities = caseHearingRequestRepository.getHearingDetails(any());
         assertAll(
@@ -88,6 +88,7 @@ class CaseHearingRequestRepositoryTest {
             () -> assertEquals("ABA1", entities.get(0).getHmctsServiceCode()),
             () -> assertEquals(2000000000L, entities.get(0).getHearing().getId()),
             () -> assertEquals(1, entities.get(0).getHearing().getHearingResponses().size()),
+            () -> assertTrue(entities.get(0).getHearing().getIsLinkedFlag()),
             () -> verify(caseHearingRequestRepository, times(1)).getHearingDetails(any())
         );
     }
@@ -98,8 +99,8 @@ class CaseHearingRequestRepositoryTest {
         doReturn(expectedCaseHearingId).when(caseHearingRequestRepository).getCaseHearingId(any());
         Long caseHearingId = caseHearingRequestRepository.getCaseHearingId(any());
         assertAll(
-                () -> assertThat(caseHearingId, is(expectedCaseHearingId)),
-                () -> verify(caseHearingRequestRepository, times(1)).getCaseHearingId(any())
+            () -> assertThat(caseHearingId, is(expectedCaseHearingId)),
+            () -> verify(caseHearingRequestRepository, times(1)).getCaseHearingId(any())
         );
     }
 
@@ -110,6 +111,28 @@ class CaseHearingRequestRepositoryTest {
         assertAll(
             () -> assertNotNull(caseHearingRequestEntity),
             () -> verify(caseHearingRequestRepository, times(1)).getCaseHearing(any())
+        );
+    }
+
+    @Test
+    void testGetHmctsServiceCodeisValid() {
+        Long expectedCount = 1L;
+        doReturn(1L).when(caseHearingRequestRepository).getHmctsServiceCodeCount(any());
+        Long count = caseHearingRequestRepository.getHmctsServiceCodeCount(any());
+        assertAll(
+            () -> assertThat(count, is(expectedCount)),
+            () -> verify(caseHearingRequestRepository, times(1)).getHmctsServiceCodeCount(any())
+        );
+    }
+
+    @Test
+    void testGetHmctsServiceCodeisInvalid() {
+        Long expectedCount = 0L;
+        doReturn(0L).when(caseHearingRequestRepository).getHmctsServiceCodeCount(any());
+        Long count = caseHearingRequestRepository.getHmctsServiceCodeCount(any());
+        assertAll(
+            () -> assertThat(count, is(expectedCount)),
+            () -> verify(caseHearingRequestRepository, times(1)).getHmctsServiceCodeCount(any())
         );
     }
 

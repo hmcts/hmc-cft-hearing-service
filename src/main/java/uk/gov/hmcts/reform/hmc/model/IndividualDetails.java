@@ -26,7 +26,7 @@ public class IndividualDetails {
     private String firstName;
 
     @NotNull(message = ValidationError.LAST_NAME_EMPTY)
-    @Size(max = 100, message = ValidationError.LAST_NAME_MAX_LENGTH)
+    @Size(max = 730, message = ValidationError.LAST_NAME_MAX_LENGTH)
     private String lastName;
 
     @Size(max = 70, message = ValidationError.PREFERRED_HEARING_CHANNEL_MAX_LENGTH)
@@ -42,16 +42,26 @@ public class IndividualDetails {
     @Size(max = 256, message = ValidationError.VULNERABLE_DETAILS_MAX_LENGTH)
     private String vulnerabilityDetails;
 
-    @Size(max = 120, message = ValidationError.HEARING_CHANNEL_EMAIL_MAX_LENGTH)
-    @Email(message = ValidationError.HEARING_CHANNEL_EMAIL_INVALID)
-    private String hearingChannelEmail;
 
-    @Size(max = 30, message = ValidationError.HEARING_CHANNEL_PHONE_MAX_LENGTH)
-    @Pattern(regexp = "^\\+?(?:[0-9] ?){6,14}[0-9]$",
+    private List<
+        @Email(message = ValidationError.HEARING_CHANNEL_EMAIL_INVALID)
+        @Size(max = 120, message = ValidationError.HEARING_CHANNEL_EMAIL_MAX_LENGTH)
+            String> hearingChannelEmail;
+
+
+    private List<
+        @Pattern(regexp = "^\\+?(?:[0-9] ?){6,14}[0-9]$",
         message = ValidationError.HEARING_CHANNEL_PHONE_INVALID)
-    private String hearingChannelPhone;
+        @Size(max = 30, message = ValidationError.HEARING_CHANNEL_PHONE_MAX_LENGTH)
+            String> hearingChannelPhone;
 
     @Valid
     private List<RelatedParty> relatedParties;
+
+    @Size(max = 80, message = ValidationError.OTHER_REASON_LENGTH)
+    private String custodyStatus;
+
+    @Size(max = 200, message = ValidationError.CUSTODY_STATUS_LENGTH)
+    private String otherReasonableAdjustmentDetails;
 
 }

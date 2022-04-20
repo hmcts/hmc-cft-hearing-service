@@ -26,12 +26,22 @@ public class HmiCaseDetails {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T00:00:00Z'")
     private LocalDate caseRegistered;
 
-    private String caseCourt;
+    private ListingLocation caseCourt;
 
     private List<CaseClassification> caseClassifications;
 
     private Boolean caseInterpreterRequiredFlag;
 
     private Boolean caseRestrictedFlag;
+
+    private Integer caseVersionId;
+
+    private List<CaseLinks> caseLinks;
+
+    private String casePublishedName;
+
+    private Boolean caseAdditionalSecurityFlag;
+
+    private String linkedHearingGroupStatus;
 
 }

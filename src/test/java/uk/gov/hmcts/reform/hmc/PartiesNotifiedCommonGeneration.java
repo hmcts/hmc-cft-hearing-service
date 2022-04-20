@@ -26,17 +26,17 @@ public class PartiesNotifiedCommonGeneration {
         responses.add(response1);
         responses.add(response2);
         responses.add(response3);
-        logger.info("List<PartiesNotifiedResponse>: {}", responses);
+        logger.debug("List<PartiesNotifiedResponse>: {}", responses);
         return responses;
     }
 
     protected PartiesNotifiedResponse generateResponse(Long hearingResponseId) {
         PartiesNotifiedResponse response = new PartiesNotifiedResponse();
-        response.setResponseVersion("2");
+        response.setResponseVersion(2);
         response.setResponseReceivedDateTime(LocalDateTime.now().minusDays(hearingResponseId));
-        response.setRequestVersion("1");
+        response.setRequestVersion(1);
         response.setPartiesNotified(LocalDateTime.now().plusDays(2).plusHours(2));
-        logger.info("partiesNotifiedResponse: {}", response);
+        logger.debug("partiesNotifiedResponse: {}", response);
         return response;
     }
 
@@ -57,24 +57,24 @@ public class PartiesNotifiedCommonGeneration {
         entities.add(entity2);
         entities.add(entity3);
 
-        logger.info("List<HearingResponseEntity>: {}", entities);
+        logger.debug("List<HearingResponseEntity>: {}", entities);
         return entities;
     }
 
     protected HearingResponseEntity generateResponseEntity(Long hearingResponseId) {
         HearingResponseEntity entity = new HearingResponseEntity();
         entity.setHearingResponseId(hearingResponseId);
-        entity.setResponseVersion("2");
+        entity.setResponseVersion(2);
         entity.setRequestTimeStamp(LocalDateTime.now().minusDays(hearingResponseId));
-        entity.setRequestVersion("1");
-        logger.info("hearingResponseEntity: {}", entity);
+        entity.setRequestVersion(1);
+        logger.debug("hearingResponseEntity: {}", entity);
         return entity;
     }
 
     protected HearingEntity generateHearingEntity(Long hearingId) {
         HearingEntity entity = new HearingEntity();
         entity.setId(hearingId);
-        logger.info("hearingEntity: {}", entity);
+        logger.debug("hearingEntity: {}", entity);
         return entity;
     }
 
