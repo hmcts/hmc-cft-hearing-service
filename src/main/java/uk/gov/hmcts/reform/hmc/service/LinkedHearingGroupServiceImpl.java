@@ -83,6 +83,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Override
+    @Transactional(noRollbackFor = {BadRequestException.class})
     public void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest) {
         linkedHearingValidator.validateHearingLinkGroupRequestForUpdate(requestId, hearingLinkGroupRequest);
         //HMAN-94
@@ -139,7 +140,6 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
 
-    @Transactional
     private void saveAndAuditLinkHearing(HearingLinkGroupRequest hearingLinkGroupRequest,
                                          LinkedGroupDetails linkedGroupDetails) {
         saveLinkedGroupDetailsAudit(linkedGroupDetails);
@@ -153,7 +153,6 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         //        });
     }
 
-    @Transactional
     private void unlinkHearingsFromGroup(HearingLinkGroupRequest hearingLinkGroupRequest,
                                          List<HearingEntity> currentHearings) {
         for (HearingEntity hearingEntity : currentHearings) {
