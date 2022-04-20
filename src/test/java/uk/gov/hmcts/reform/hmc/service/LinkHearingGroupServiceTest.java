@@ -29,12 +29,16 @@ import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.DefaultFutureHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
+import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -46,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.HEARING_REQUESTED;
@@ -68,7 +73,13 @@ class LinkHearingGroupServiceTest {
     LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
     @Mock
-    private LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
+    ActualHearingRepository actualHearingRepository;
+
+    @Mock
+    ActualHearingDayRepository actualHearingDayRepository;
+
+    @Mock
+    LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
 
     @Mock
     private LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
@@ -79,15 +90,24 @@ class LinkHearingGroupServiceTest {
     @Mock
     private LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
 
+    HearingIdValidator hearingIdValidator;
+
+    LinkedHearingValidator linkedHearingValidator;
+
     @Mock
     private DefaultFutureHearingRepository futureHearingRepository;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        hearingIdValidator = new HearingIdValidator(hearingRepository, actualHearingRepository,
+                actualHearingDayRepository);
+        linkedHearingValidator = new LinkedHearingValidator(hearingIdValidator, hearingRepository,
+                linkedGroupDetailsRepository, linkedHearingDetailsRepository);
         linkedHearingGroupService =
             new LinkedHearingGroupServiceImpl(hearingRepository,
-                                              linkedGroupDetailsRepository, linkedHearingDetailsRepository,
+                                              linkedGroupDetailsRepository,
+                                              linkedHearingValidator,
                                               linkedHearingDetailsAuditRepository,
                                               linkedGroupDetailsAuditRepository,
                                               linkedGroupDetailsAuditMapper,
@@ -222,8 +242,6 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
-            when(linkedHearingDetailsRepository.getLinkedHearingDetailsByHearingId(any()))
-                    .thenReturn(hearingDetails1Data);
 
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
                     LinkType.ORDERED.label, "reason"
@@ -469,9 +487,9 @@ class LinkHearingGroupServiceTest {
 
             linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
-            verify(hearingRepository).findById(2000000000L);
+            verify(hearingRepository, times(2)).findById(2000000000L);
             verify(hearingRepository).existsById(2000000002L);
-            verify(hearingRepository).findById(2000000002L);
+            verify(hearingRepository, times(2)).findById(2000000002L);
         }
 
         @Test
@@ -505,9 +523,9 @@ class LinkHearingGroupServiceTest {
             logger.info("hearingLinkGroupRequest : {}", hearingLinkGroupRequest);
             linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
-            verify(hearingRepository).findById(2000000000L);
+            verify(hearingRepository, times(2)).findById(2000000000L);
             verify(hearingRepository).existsById(2000000002L);
-            verify(hearingRepository).findById(2000000002L);
+            verify(hearingRepository, times(2)).findById(2000000002L);
         }
     }
 

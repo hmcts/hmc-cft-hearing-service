@@ -6,6 +6,7 @@ public final class ValidationError {
     }
 
     private static final String CHARACTERS_LONG = "characters long";
+    public static final String HEARING_ID_PLACEHOLDER = "<hearingId>";
     public static final String AUTO_LIST_FLAG_NULL_EMPTY = "Auto list flag can not be null or empty";
     public static final String HEARING_TYPE_NULL_EMPTY = "Hearing type can not be null or empty";
     public static final String HEARING_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;
@@ -34,6 +35,7 @@ public final class ValidationError {
     public static final String CASE_REF_EMPTY = "Case ref can not be empty";
     public static final String CASE_REF_INVALID = "Case ref details is invalid";
     public static final String CASE_REF_INVALID_LENGTH = "Case ref has invalid length";
+    public static final String REQUEST_TIMESTAMP_EMPTY = "Request time stamp can not be empty";
     public static final String EXTERNAL_CASE_REFERENCE_MAX_LENGTH = "External case reference must not be more than 70 "
         + CHARACTERS_LONG;
     public static final String CASE_DEEP_LINK_EMPTY = "Case deep link can not be empty";
@@ -108,6 +110,7 @@ public final class ValidationError {
     public static final String INVALID_CASE_CATEGORIES = "Case categories are required";
     public static final String CASE_CATEGORY_EMPTY = "Case category can not be empty";
     public static final String CASE_RESTRICTED_FLAG_NULL_EMPTY = "Case restricted flag can not be empty";
+    public static final String REQUEST_TIMESTAMP_NULL_EMPTY = "Request time stamp can not be empty";
     public static final String INVALID_HEARING_REQUEST_DETAILS = "Invalid details";
     public static final String INVALID_ORG_INDIVIDUAL_DETAILS = "Either Individual or Organisation details should "
         + "be present";
@@ -177,7 +180,6 @@ public final class ValidationError {
             = "004 Invalid state for hearing request <hearingId>";
     public static final String INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST
             = "008 Invalid state for unlinking hearing request <hearingId>";
-    public static final String INSUFFICIENT_REQUEST_IDS = "001 Insufficient requestIds";
     public static final String HEARING_REQUEST_CANNOT_BE_LINKED = "002 hearing request isLinked is False";
     public static final String INVALID_STATE_FOR_LINKED_GROUP = "007 group is in a <state> state";
     public static final String HEARING_REQUEST_ALREADY_LINKED = "003 hearing request already in a group";

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
@@ -24,16 +23,9 @@ import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
@@ -50,17 +42,14 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIS
 @Service
 @Component
 @Slf4j
-public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implements LinkedHearingGroupService {
+public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService {
 
-    private static final List<String> invalidDeleteGroupStatuses = Arrays.asList("PENDING", "ERROR");
-    private HearingRepository hearingRepository;
-
+    private final HearingRepository hearingRepository;
+    private final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
+    private final LinkedHearingValidator linkedHearingValidator;
     private final LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
-
     private final LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
-
     private final LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper;
-
     private final LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
 
     private final DefaultFutureHearingRepository futureHearingRepository;
@@ -68,13 +57,14 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
                                          LinkedGroupDetailsRepository linkedGroupDetailsRepository,
-                                         LinkedHearingDetailsRepository linkedHearingDetailsRepository,
+                                         LinkedHearingValidator linkedHearingValidator,
                                          LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository,
                                          LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository,
                                          LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper,
                                          LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper,
                                          DefaultFutureHearingRepository futureHearingRepository) {
-        super(hearingRepository, linkedGroupDetailsRepository, linkedHearingDetailsRepository);
+        this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
+        this.linkedHearingValidator = linkedHearingValidator;
         this.hearingRepository = hearingRepository;
         this.linkedHearingDetailsAuditRepository = linkedHearingDetailsAuditRepository;
         this.linkedGroupDetailsAuditRepository = linkedGroupDetailsAuditRepository;
@@ -86,17 +76,21 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     @Override
     public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
-        validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
+        linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
+    }
+
+    @Override
+    public void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest) {
+        linkedHearingValidator.validateHearingLinkGroupRequestForUpdate(requestId, hearingLinkGroupRequest);
     }
 
     @Override
     @Transactional(noRollbackFor = {BadRequestException.class})
     public void deleteLinkedHearingGroup(Long hearingGroupId) {
-
-        validateHearingGroup(hearingGroupId);
+        linkedHearingValidator.validateHearingGroup(hearingGroupId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(hearingGroupId);
-        validateUnlinkingHearingsStatus(linkedGroupHearings);
-        validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
+        linkedHearingValidator.validateUnlinkingHearingsStatus(linkedGroupHearings);
+        linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
 
         deleteFromLinkedGroupDetails(linkedGroupHearings);
     }
@@ -135,39 +129,39 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
 
     private void validateUnlinkingHearingsStatus(List<HearingEntity> linkedHearings) {
         List<HearingEntity> unlinkInvalidStatusHearings = linkedHearings.stream()
-            .filter(h -> !DeleteHearingStatus.isValid(h.getStatus()))
-            .collect(Collectors.toList());
+                .filter(h -> !DeleteHearingStatus.isValid(h.getStatus()))
+                .collect(Collectors.toList());
 
         if (!unlinkInvalidStatusHearings.isEmpty()) {
             throw new BadRequestException(
-                format(INVALID_DELETE_HEARING_GROUP_HEARING_STATUS, unlinkInvalidStatusHearings.get(0).getId()));
+                    format(INVALID_DELETE_HEARING_GROUP_HEARING_STATUS, unlinkInvalidStatusHearings.get(0).getId()));
         }
     }
 
     private void validateUnlinkingHearingsWillNotHaveStartDateInThePast(List<HearingEntity> linkedHearings) {
 
         linkedHearings.stream()
-            .filter(h -> h.getHearingResponses().size() > 0)
-            .forEach(hearing -> {
-                List<HearingResponseEntity> latestVersionHearingResponses
-                    = getLatestVersionHearingResponses(hearing);
+                .filter(h -> h.getHearingResponses().size() > 0)
+                .forEach(hearing -> {
+                    List<HearingResponseEntity> latestVersionHearingResponses
+                            = getLatestVersionHearingResponses(hearing);
 
-                Optional<HearingResponseEntity> mostRecentLatestVersionHearingResponse
-                    = latestVersionHearingResponses
-                    .stream().max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
+                    Optional<HearingResponseEntity> mostRecentLatestVersionHearingResponse
+                            = latestVersionHearingResponses
+                            .stream().max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
 
-                boolean hasHearingDateInThePast = mostRecentLatestVersionHearingResponse.isPresent()
-                    && mostRecentLatestVersionHearingResponse.get()
-                    .getHearingDayDetails().stream()
-                    .anyMatch(dayTime -> dayTime.getStartDateTime().isBefore(LocalDateTime.now()));
+                    boolean hasHearingDateInThePast = mostRecentLatestVersionHearingResponse.isPresent()
+                            && mostRecentLatestVersionHearingResponse.get()
+                            .getHearingDayDetails().stream()
+                            .anyMatch(dayTime -> dayTime.getStartDateTime().isBefore(LocalDateTime.now()));
 
-                if (hasHearingDateInThePast) {
-                    throw new BadRequestException(format(
-                        INVALID_DELETE_HEARING_GROUP_HEARING_STATUS,
-                        hearing.getId()
-                    ));
-                }
-            });
+                    if (hasHearingDateInThePast) {
+                        throw new BadRequestException(format(
+                                INVALID_DELETE_HEARING_GROUP_HEARING_STATUS,
+                                hearing.getId()
+                        ));
+                    }
+                });
     }
 
     private List<HearingResponseEntity> getLatestVersionHearingResponses(HearingEntity hearing) {
@@ -228,5 +222,6 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
             .modelToEntity(hearingEntity);
         linkedHearingDetailsAuditRepository.save(linkedHearingDetailsAuditEntity);
     }
+
 
 }
