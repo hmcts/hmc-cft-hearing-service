@@ -966,9 +966,9 @@ class LinkHearingGroupServiceTest {
             );
             service.updateLinkHearing("1", hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
-            verify(hearingRepository, times(3)).findById(2000000000L);
+            verify(hearingRepository, times(4)).findById(2000000000L);
             verify(hearingRepository).existsById(2000000002L);
-            verify(hearingRepository, times(3)).findById(2000000002L);
+            verify(hearingRepository, times(4)).findById(2000000002L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
             verify(linkedGroupDetailsRepository, times(1)).save(any());
         }
@@ -1021,9 +1021,9 @@ class LinkHearingGroupServiceTest {
             logger.info("hearingLinkGroupRequest : {}", hearingLinkGroupRequest);
             service.updateLinkHearing("1", hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
-            verify(hearingRepository, times(3)).findById(2000000000L);
+            verify(hearingRepository, times(4)).findById(2000000000L);
             verify(hearingRepository).existsById(2000000002L);
-            verify(hearingRepository, times(3)).findById(2000000002L);
+            verify(hearingRepository, times(4)).findById(2000000002L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
             verify(linkedGroupDetailsRepository, times(1)).save(any());
         }

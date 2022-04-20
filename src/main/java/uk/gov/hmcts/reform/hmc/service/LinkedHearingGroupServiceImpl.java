@@ -143,14 +143,14 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     private void saveAndAuditLinkHearing(HearingLinkGroupRequest hearingLinkGroupRequest,
                                          LinkedGroupDetails linkedGroupDetails) {
         saveLinkedGroupDetailsAudit(linkedGroupDetails);
-        //        hearingLinkGroupRequest.getHearingsInGroup().forEach(hearingInGroup -> {
-        //            Optional<HearingEntity> optionalHearingEntity =
-        //                hearingRepository.findById(Long.valueOf(hearingInGroup.getHearingId()));
-        //            if (optionalHearingEntity.isPresent()){
-        //                HearingEntity hearingEntity = optionalHearingEntity.get();
-        //                saveLinkedHearingDetailsAudit(hearingEntity);
-        //            }
-        //        });
+        hearingLinkGroupRequest.getHearingsInGroup().forEach(hearingInGroup -> {
+            Optional<HearingEntity> optionalHearingEntity =
+                hearingRepository.findById(Long.valueOf(hearingInGroup.getHearingId()));
+            if (optionalHearingEntity.isPresent()) {
+                HearingEntity hearingEntity = optionalHearingEntity.get();
+                saveLinkedHearingDetailsAudit(hearingEntity);
+            }
+        });
     }
 
     private void unlinkHearingsFromGroup(HearingLinkGroupRequest hearingLinkGroupRequest,

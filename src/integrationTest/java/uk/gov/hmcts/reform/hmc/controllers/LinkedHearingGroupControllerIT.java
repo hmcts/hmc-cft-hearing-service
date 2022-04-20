@@ -473,7 +473,6 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                     .andReturn();
         }
 
-
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_ForInvalidRequestId() throws Exception {
@@ -500,7 +499,6 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         }
 
         @Test
-        @Disabled
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn200_ForValidRequest() throws Exception {
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
@@ -526,7 +524,6 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         }
 
         @Test
-        @Disabled
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_WhenReceiving4xxFromListAssist() throws Exception {
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
@@ -544,7 +541,6 @@ class LinkedHearingGroupControllerIT extends BaseTest {
 
             logger.info(objectMapper.writeValueAsString(hearingLinkGroupRequest));
             stubPutUpdateLinkHearingGroup(400, "2", TOKEN);
-
             mockMvc.perform(put(url + "?id=2")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
@@ -554,7 +550,6 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         }
 
         @Test
-        @Disabled
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_WhenReceiving5xxFromListAssist() throws Exception {
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
@@ -572,7 +567,6 @@ class LinkedHearingGroupControllerIT extends BaseTest {
 
             logger.info(objectMapper.writeValueAsString(hearingLinkGroupRequest));
             stubPutUpdateLinkHearingGroup(500, "2", TOKEN);
-
             mockMvc.perform(put(url + "?id=2")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
