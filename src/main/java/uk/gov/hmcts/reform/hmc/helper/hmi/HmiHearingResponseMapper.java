@@ -28,7 +28,6 @@ import java.util.List;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_LISTING;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
-import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.LISTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl.UNSUPPORTED_HEARING_STATUS;
 
@@ -118,7 +117,7 @@ public class HmiHearingResponseMapper {
 
     private ArrayList<HearingDayPanelEntity> mapHearingDayPanelEntity(HearingResponse hearing) {
         ArrayList<HearingDayPanelEntity> hearingDayPanelEntityArrayList = new ArrayList<>();
-        for (HearingJoh hearingJoh : hearing.getHearing().getHearingJoh()) {
+        for (HearingJoh hearingJoh : hearing.getHearing().getHearingJohs()) {
             HearingDayPanelEntity hearingDayPanelEntity = new HearingDayPanelEntity();
             hearingDayPanelEntity.setPanelUserId(hearingJoh.getJohCode());
             hearingDayPanelEntity.setIsPresiding(hearingJoh.getIsPresiding());
@@ -130,7 +129,7 @@ public class HmiHearingResponseMapper {
     private ArrayList<HearingAttendeeDetailsEntity> mapHearingAttendeeDetailsEntity(HearingResponse hearing) {
 
         ArrayList<HearingAttendeeDetailsEntity> hearingAttendeeDetailsEntityArrayList = new ArrayList<>();
-        for (HearingAttendee hearingAttendee : hearing.getHearing().getHearingAttendee()) {
+        for (HearingAttendee hearingAttendee : hearing.getHearing().getHearingAttendees()) {
             HearingAttendeeDetailsEntity hearingAttendeeDetailsEntity = new HearingAttendeeDetailsEntity();
             hearingAttendeeDetailsEntity.setPartyId(hearingAttendee.getEntityId());
             hearingAttendeeDetailsEntity.setPartySubChannelType(hearingAttendee.getHearingChannel().getCode());
@@ -145,12 +144,12 @@ public class HmiHearingResponseMapper {
         hearingDayDetailsEntity.setStartDateTime(hearing.getHearing().getHearingStartTime());
         hearingDayDetailsEntity.setEndDateTime(hearing.getHearing().getHearingEndTime());
         for (VenueLocationReference venueLocationReference :
-            hearing.getHearing().getHearingVenue().getLocationReference()) {
+            hearing.getHearing().getHearingVenue().getLocationReferences()) {
             if (venueLocationReference.getKey().equals("EPIMS")) {
                 hearingDayDetailsEntity.setVenueId(venueLocationReference.getValue());
             }
         }
-        hearingDayDetailsEntity.setRoomId(hearing.getHearing().getHearingRoom().getRoomName());
+        hearingDayDetailsEntity.setRoomId(hearing.getHearing().getHearingRoom().getLocationName());
         return hearingDayDetailsEntity;
     }
 
