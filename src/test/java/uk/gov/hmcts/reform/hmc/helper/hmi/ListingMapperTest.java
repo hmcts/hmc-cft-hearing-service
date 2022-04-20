@@ -173,9 +173,7 @@ class ListingMapperTest {
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
         assertEquals(HEARING_TYPE, listing.getListingType());
         assertEquals(360, listing.getListingDuration());
-        /*assertEquals(0, listing.getListingMultiDay().getWeeks());
-        assertEquals(0, listing.getListingMultiDay().getDays());
-        assertEquals(0, listing.getListingMultiDay().getHours());*/
+        assertNull(listing.getListingMultiDay());
         assertEquals(localDateTime, listing.getListingDate());
         assertEquals(2, listing.getListingNumberAttendees());
         assertEquals(LISTING_COMMENTS, listing.getListingComments());

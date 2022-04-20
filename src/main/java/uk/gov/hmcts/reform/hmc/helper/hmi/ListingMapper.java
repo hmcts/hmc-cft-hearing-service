@@ -94,11 +94,11 @@ public class ListingMapper {
     }
 
     private int getDays(Integer hearingDetailsDuration, DecimalFormat df, int weeks) {
-        return Integer.parseInt(df.format(Math.round((hearingDetailsDuration - weeks * 360 * 5) / 360)));
+        return ((hearingDetailsDuration - weeks * 360 * 5) / 360);
     }
 
     private int getWeeks(Integer hearingDetailsDuration, DecimalFormat df) {
-        return Integer.parseInt(df.format(Math.round(hearingDetailsDuration / (360 * 5))));
+        return (hearingDetailsDuration / (360 * 5));
     }
 
 
