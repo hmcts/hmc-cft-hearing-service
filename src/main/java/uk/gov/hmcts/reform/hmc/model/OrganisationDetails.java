@@ -19,7 +19,6 @@ public class OrganisationDetails {
     @Size(max = 60, message = ValidationError.ORGANISATION_TYPE_MAX_LENGTH)
     private String organisationType;
 
-    @NotEmpty(message = ValidationError.CFT_ORG_ID_NULL_EMPTY)
     @Size(max = 60, message = ValidationError.CFT_ORG_ID_MAX_LENGTH)
     private String cftOrganisationID;
 }

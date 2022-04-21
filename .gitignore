@@ -3,6 +3,7 @@
 !gradle/wrapper/gradle-wrapper.jar
 *.class
 bin/main/application.yaml
+.demo-env
 
 ### STS ###
 .apt_generated

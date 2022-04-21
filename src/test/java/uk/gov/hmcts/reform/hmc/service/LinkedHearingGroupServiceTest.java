@@ -23,11 +23,15 @@ import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GetLinkedHearingGroupResponse;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkedHearingDetails;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
+import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -62,8 +66,8 @@ class LinkedHearingGroupServiceTest {
         LocalDateTime.of(2000, 10, 1, 1, 1);
     public static final LocalDateTime HEARING_RESPONSE_DATE_TIME = LocalDateTime.now();
 
-    @Mock
-    LinkedHearingDetailsRepository linkedHearingDetailsRepository;
+    @InjectMocks
+    private LinkedHearingGroupServiceImpl service;
 
     @Mock
     LinkedGroupDetailsRepository linkedGroupDetailsRepository;
@@ -71,8 +75,18 @@ class LinkedHearingGroupServiceTest {
     @Mock
     HearingRepository hearingRepository;
 
-    @InjectMocks
-    private LinkedHearingGroupServiceImpl service;
+    @Mock
+    ActualHearingRepository actualHearingRepository;
+
+    @Mock
+    ActualHearingDayRepository actualHearingDayRepository;
+
+    @Mock
+    LinkedHearingDetailsRepository linkedHearingDetailsRepository;
+
+    HearingIdValidator hearingIdValidator;
+
+    LinkedHearingValidator linkedHearingValidator;
 
     @Mock
     LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
@@ -89,8 +103,14 @@ class LinkedHearingGroupServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        hearingIdValidator = new HearingIdValidator(hearingRepository, actualHearingRepository,
+                actualHearingDayRepository);
+        linkedHearingValidator = new LinkedHearingValidator(hearingIdValidator, hearingRepository,
+                linkedGroupDetailsRepository, linkedHearingDetailsRepository);
+
         service = new LinkedHearingGroupServiceImpl(hearingRepository,
-                                                    linkedGroupDetailsRepository, linkedHearingDetailsRepository,
+                                                    linkedGroupDetailsRepository, 
+                                                    linkedHearingValidator,
                                                     linkedHearingDetailsAuditRepository,
                                                     linkedGroupDetailsAuditRepository,
                                                     linkedGroupDetailsAuditMapper,
@@ -132,7 +152,7 @@ class LinkedHearingGroupServiceTest {
             LinkedGroupDetailsAudit groupDetailsAudit = createGroupDetailsAuditEntity(HEARING_GROUP_ID,
                                                                                       "ACTIVE",groupDetails);
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
-                .willReturn(Optional.of(groupDetails));
+                    .willReturn(Optional.of(groupDetails));
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing1, hearing2));
             given(linkedGroupDetailsAuditMapper.modelToEntity(groupDetails))
