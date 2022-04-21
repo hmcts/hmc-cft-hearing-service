@@ -167,7 +167,6 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         }
     }
 
-    @Transactional
     protected LinkedGroupDetails updateLinkGroup(HearingLinkGroupRequest hearingLinkGroupRequest,
                                                  String requestId) {
         LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
@@ -188,7 +187,6 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         return linkedGroupDetailsSaved;
     }
 
-    @Transactional
     private void updateHearingWithLinkGroup(HearingLinkGroupRequest hearingLinkGroupRequest,
                                             LinkedGroupDetails linkedGroupDetailsSaved) {
         hearingLinkGroupRequest.getHearingsInGroup()
