@@ -9,9 +9,13 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
+import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
+import uk.gov.hmcts.reform.hmc.repository.DefaultFutureHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
@@ -20,8 +24,11 @@ import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.util.List;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PENDING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 
 @Service
 @Component
@@ -36,6 +43,8 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     private final LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper;
     private final LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
 
+    private final DefaultFutureHearingRepository futureHearingRepository;
+
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
                                          LinkedGroupDetailsRepository linkedGroupDetailsRepository,
@@ -43,7 +52,8 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
                                          LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository,
                                          LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository,
                                          LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper,
-                                         LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper) {
+                                         LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper,
+                                         DefaultFutureHearingRepository futureHearingRepository) {
         this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
         this.linkedHearingValidator = linkedHearingValidator;
         this.hearingRepository = hearingRepository;
@@ -51,6 +61,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         this.linkedGroupDetailsAuditRepository = linkedGroupDetailsAuditRepository;
         this.linkedGroupDetailsAuditMapper = linkedGroupDetailsAuditMapper;
         this.linkedHearingDetailsAuditMapper = linkedHearingDetailsAuditMapper;
+        this.futureHearingRepository = futureHearingRepository;
     }
 
 
@@ -65,7 +76,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor = {BadRequestException.class})
     public void deleteLinkedHearingGroup(Long hearingGroupId) {
         linkedHearingValidator.validateHearingGroup(hearingGroupId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(hearingGroupId);
@@ -77,10 +88,32 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
     private void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings) {
         LinkedGroupDetails linkedGroupDetails = linkedGroupHearings.get(0).getLinkedGroupDetails();
+        final String requestId = linkedGroupDetails.getRequestId();
         saveLinkedGroupDetailsAudit(linkedGroupDetails);
         linkedGroupHearings.forEach(hearingEntity -> saveLinkedHearingDetailsAudit(hearingEntity));
         saveLinkedGroupDetails(linkedGroupDetails);
-        // TODO: call ListAssist - https://tools.hmcts.net/jira/browse/HMAN-97
+        try {
+            futureHearingRepository.deleteLinkedHearingGroup(requestId);
+            log.debug("Response received from ListAssist successfully");
+            linkedGroupDetailsRepository.delete(linkedGroupDetails);
+        } catch (BadFutureHearingRequestException requestException) {
+            process400ResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails);
+        } catch (FutureHearingServerException serverException) {
+            process500ResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails);
+        }
+
+    }
+
+    private void process500ResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails) {
+        linkedGroupDetails.setStatus(ERROR);
+        linkedGroupDetailsRepository.save(linkedGroupDetails);
+        throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
+
+    }
+
+    private void process400ResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails) {
+        linkedGroupDetailsRepository.delete(linkedGroupDetails);
+        throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
     }
 
     private void saveLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails) {

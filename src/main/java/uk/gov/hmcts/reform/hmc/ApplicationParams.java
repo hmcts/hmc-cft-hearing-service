@@ -46,6 +46,24 @@ public class ApplicationParams {
     @Value("${access-control.enabled}")
     private boolean accessControlEnabled;
 
+    @Value("${fh.ad.client-id}")
+    private String clientId;
+
+    @Value("${fh.ad.client-secret}")
+    private String clientSecret;
+
+    @Value("${fh.ad.scope}")
+    private String scope;
+
+    @Value("${fh.ad.grant-type}")
+    private String grantType;
+
+    @Value("${fh.hmi.source-system}")
+    private String sourceSystem;
+
+    @Value("${fh.hmi.destination-system}")
+    private String destinationSystem;
+
     public static String encode(final String stringToEncode) {
         try {
             return URLEncoder.encode(stringToEncode, "UTF-8");

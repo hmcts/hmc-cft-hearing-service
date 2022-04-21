@@ -26,6 +26,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn4XX;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn5XX;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyDeleteLinkedHearingGroups;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 
 
 class LinkedHearingGroupControllerIT extends BaseTest {
@@ -48,6 +53,8 @@ class LinkedHearingGroupControllerIT extends BaseTest {
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-caseHearings_LinkedHearings.sql";
     private static final String INSERT_LINKED_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-linked-hearings.sql";
+
+    private static final String TOKEN = "example-token";
 
     @Nested
     @DisplayName("PostLinkedHearingGroup")
@@ -576,9 +583,32 @@ class LinkedHearingGroupControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
         void shouldReturn200_WhenHearingGroupExists() throws Exception {
-            mockMvc.perform(delete(url + "/7600000000")
+            stubSuccessfullyDeleteLinkedHearingGroups(TOKEN, "12345");
+            mockMvc.perform(delete(url + "/7700000000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(200))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+        void shouldReturn4xx_WhenDeleteLinkedHearing() throws Exception {
+            stubDeleteLinkedHearingGroupsReturn4XX(TOKEN, "12345");
+            mockMvc.perform(delete(url + "/7700000000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem(REJECTED_BY_LIST_ASSIST)))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+        void shouldReturn5xx_WhenDeleteLinkedHearing() throws Exception {
+            stubDeleteLinkedHearingGroupsReturn5XX(TOKEN, "12345");
+            mockMvc.perform(delete(url + "/7700000000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem(LIST_ASSIST_FAILED_TO_RESPOND)))
                 .andReturn();
         }
     }
