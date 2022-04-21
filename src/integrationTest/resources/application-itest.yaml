@@ -34,7 +34,6 @@ idam:
   s2s-auth:
     url: http://localhost:${wiremock.server.port:5000}/s2s
 
-
 fh:
   ad:
     host: http://localhost:${wiremock.server.port:5123}

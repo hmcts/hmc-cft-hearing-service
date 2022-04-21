@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FutureHearingErrorDecoder implements ErrorDecoder {
     public static final String INVALID_REQUEST = "Missing or invalid request parameters";
-    public static final String INVALID_SECRET = "Authentication error";
     public static final String SERVER_ERROR = "Server error";
 
     @Override

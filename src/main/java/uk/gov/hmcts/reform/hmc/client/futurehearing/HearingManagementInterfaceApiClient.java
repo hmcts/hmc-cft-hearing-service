@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -21,6 +22,7 @@ public interface HearingManagementInterfaceApiClient {
 
     String DELETE_HEARINGS_URL = "/resources/linked-hearing-group/{groupClientReference}";
     String UPDATE_HEARINGS_URL = "/resources/linked-hearing-group/{groupClientReference}";
+    String CREATE_HEARINGS_URL = "/resources/linked-hearing-group";
 
     @DeleteMapping(value = DELETE_HEARINGS_URL, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     void deleteLinkedHearingGroup(@RequestHeader(AUTHORIZATION) String token,
@@ -31,5 +33,9 @@ public interface HearingManagementInterfaceApiClient {
     void updateLinkedHearingGroup(@RequestHeader(AUTHORIZATION) String token,
                                   @PathVariable("groupClientReference") String requestId,
                                   @RequestBody JsonNode data);
+
+    @PostMapping(value = CREATE_HEARINGS_URL, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    void createLinkedHearingGroup(@RequestHeader(AUTHORIZATION) String token,  @RequestBody JsonNode data);
+
 
 }

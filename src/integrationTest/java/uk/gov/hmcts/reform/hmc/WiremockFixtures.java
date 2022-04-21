@@ -105,6 +105,25 @@ public class WiremockFixtures {
                     .willReturn(okJson(TEST_BODY).withStatus(status)));
     }
 
+    public static void stubPostCreateLinkHearingGroup(int status, String url, String token) {
+        HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
+        response.setResponseCode(status);
+        response.setDescription("The request was received successfully.");
+        stubFor(WireMock.post(urlEqualTo(url))
+                    .withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader("Accept", equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
+                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
+                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
+                                                                   + "{2}:[0-9]{2}Z"))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(response))
+                                    .withStatus(status)
+                    ));
+    }
+
     public static void stubPutUpdateLinkHearingGroup(int status, String requestId, String token) {
         HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
         response.setResponseCode(status);
@@ -115,7 +134,7 @@ public class WiremockFixtures {
                     .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
                     .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
                     .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}.[0-9]{6}Z"))
+                                                                   + "{2}:[0-9]{2}Z"))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -131,7 +150,7 @@ public class WiremockFixtures {
                     .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
                     .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
                     .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}.[0-9]{6}Z"))
+                                                                   + "{2}:[0-9]{2}Z"))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -149,7 +168,7 @@ public class WiremockFixtures {
                     .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
                     .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
                     .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}.[0-9]{6}Z"))
+                                                                   + "{2}:[0-9]{2}Z"))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -168,7 +187,7 @@ public class WiremockFixtures {
                     .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
                     .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
                     .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}.[0-9]{6}Z"))
+                                                                   + "{2}:[0-9]{2}Z"))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -187,7 +206,7 @@ public class WiremockFixtures {
                     .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
                     .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
                     .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}.[0-9]{6}Z"))
+                                                                   + "{2}:[0-9]{2}Z"))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -206,7 +225,7 @@ public class WiremockFixtures {
                     .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
                     .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
                     .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}.[0-9]{6}Z"))
+                                                                   + "{2}:[0-9]{2}Z"))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

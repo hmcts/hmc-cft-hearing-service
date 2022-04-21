@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupResponse;
 import uk.gov.hmcts.reform.hmc.model.listassist.CaseListing;
 import uk.gov.hmcts.reform.hmc.model.listassist.HearingGroup;
 import uk.gov.hmcts.reform.hmc.model.listassist.LinkedHearingGroup;
@@ -78,8 +79,30 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
 
     @Override
-    public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
+    public HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
         linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
+        LinkedGroupDetails linkedGroupDetails =
+            linkedHearingValidator.updateHearingWithLinkGroup(hearingLinkGroupRequest);
+
+        LinkedHearingGroup linkedHearingGroup = processRequestForListAssist(linkedGroupDetails);
+
+        try {
+            futureHearingRepository.createLinkedHearingGroup(objectMapperService
+                                                                 .convertObjectToJsonNode(linkedHearingGroup));
+            log.debug("Response received from ListAssist successfully");
+            linkedGroupDetailsRepository
+                .updateLinkedGroupDetailsStatus(linkedHearingGroup.getLinkedHearingGroup().getGroupClientReference(),
+                                                "ACTIVE");
+        } catch (BadFutureHearingRequestException requestException) {
+            process400ResponseFromListAssistForLinkedHearing(
+                linkedHearingGroup.getLinkedHearingGroup().getGroupClientReference(), hearingLinkGroupRequest);
+        } catch (FutureHearingServerException serverException) {
+            process500ResponseFromListAssistForLinkedHearing(
+                linkedHearingGroup.getLinkedHearingGroup().getGroupClientReference());
+        }
+        HearingLinkGroupResponse hearingLinkGroupResponse = new HearingLinkGroupResponse();
+        hearingLinkGroupResponse.setHearingGroupRequestId(linkedGroupDetails.getRequestId());
+        return hearingLinkGroupResponse;
     }
 
     @Override

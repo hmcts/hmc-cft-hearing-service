@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
@@ -404,6 +405,33 @@ public class LinkedHearingValidator {
                 throw new BadRequestException(errorMessage);
             }
         }
+    }
+
+    @Transactional
+    public LinkedGroupDetails updateHearingWithLinkGroup(HearingLinkGroupRequest hearingLinkGroupRequest) {
+        LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
+        linkedGroupDetails.setRequestName(hearingLinkGroupRequest.getGroupDetails().getGroupName());
+        linkedGroupDetails.setReasonForLink(hearingLinkGroupRequest.getGroupDetails().getGroupReason());
+        linkedGroupDetails.setLinkType(LinkType.getByLabel(hearingLinkGroupRequest
+                                                               .getGroupDetails().getGroupLinkType()));
+        linkedGroupDetails.setLinkedComments(hearingLinkGroupRequest.getGroupDetails().getGroupComments());
+        linkedGroupDetails.setStatus("PENDING");
+        linkedGroupDetails.setRequestDateTime(LocalDateTime.now());
+        linkedGroupDetails.setLinkedGroupLatestVersion(1L);
+        LinkedGroupDetails linkedGroupDetailsSaved = linkedGroupDetailsRepository.save(linkedGroupDetails);
+
+        hearingLinkGroupRequest.getHearingsInGroup()
+            .forEach(linkHearingDetails -> {
+                Optional<HearingEntity> hearing = hearingRepository
+                    .findById(Long.valueOf(linkHearingDetails.getHearingId()));
+                if (hearing.isPresent()) {
+                    HearingEntity hearingToSave = hearing.get();
+                    hearingToSave.setLinkedGroupDetails(linkedGroupDetailsSaved);
+                    hearingToSave.setLinkedOrder(Long.valueOf(linkHearingDetails.getHearingOrder()));
+                    hearingRepository.save(hearingToSave);
+                }
+            });
+        return linkedGroupDetailsSaved;
     }
 
 }
