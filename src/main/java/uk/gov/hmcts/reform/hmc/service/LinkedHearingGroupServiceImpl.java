@@ -151,13 +151,10 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
     @Override
     public GetLinkedHearingGroupResponse getLinkedHearingGroupDetails(String requestId) {
+        linkedHearingValidator.validateRequestId(requestId,INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
         LinkedGroupDetails linkedGroupDetails =
             linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId);
-        if (linkedGroupDetails != null) {
-            return getLinkedHearingGroupDetails(linkedGroupDetails);
-        } else {
-            throw new LinkedGroupNotFoundException(requestId,INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
-        }
+        return getLinkedHearingGroupDetails(linkedGroupDetails);
     }
 
     private GetLinkedHearingGroupResponse getLinkedHearingGroupDetails(LinkedGroupDetails linkedGroupDetails) {
