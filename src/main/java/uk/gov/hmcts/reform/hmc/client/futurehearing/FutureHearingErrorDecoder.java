@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
-
 @Slf4j
 public class FutureHearingErrorDecoder implements ErrorDecoder {
     public static final String INVALID_REQUEST = "Missing or invalid request parameters";

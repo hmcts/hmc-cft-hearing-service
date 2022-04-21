@@ -38,4 +38,16 @@ public class DefaultFutureHearingRepository implements FutureHearingRepository {
         String authorization = retrieveAuthToken().getAccessToken();
         hmiClient.createLinkedHearingGroup(BEARER + authorization, data);
     }
+
+    @Override
+    public void deleteLinkedHearingGroup(String requestId) {
+        String authorization = retrieveAuthToken().getAccessToken();
+        hmiClient.deleteLinkedHearingGroup(BEARER + authorization, requestId);
+    }
+
+    @Override
+    public void updateLinkedHearingGroup(String requestId, JsonNode data) {
+        String authorization = retrieveAuthToken().getAccessToken();
+        hmiClient.updateLinkedHearingGroup(BEARER + authorization, requestId, data);
+    }
 }

@@ -64,7 +64,7 @@ class FutureHearingErrorDecoderTest {
         assertEquals(1, logsList.size());
         assertEquals(Level.ERROR, logsList.get(0).getLevel());
         assertEquals("Response from FH failed with error code 400, "
-                         + "error message " + INPUT_STRING, logsList.get(0).getMessage());
+            + "error message " + INPUT_STRING, logsList.get(0).getMessage());
     }
 
     @Test
@@ -89,7 +89,7 @@ class FutureHearingErrorDecoderTest {
         assertEquals(1, logsList.size());
         assertEquals(Level.ERROR, logsList.get(0).getLevel());
         assertEquals("Response from FH failed with error code 401, "
-                         + "error message " + INPUT_STRING, logsList.get(0).getMessage());
+            + "error message " + INPUT_STRING, logsList.get(0).getMessage());
     }
 
     @Test
@@ -114,11 +114,11 @@ class FutureHearingErrorDecoderTest {
         assertEquals(1, logsList.size());
         assertEquals(Level.ERROR, logsList.get(0).getLevel());
         assertEquals("Response from FH failed with error code 404, "
-                         + "error message " + INPUT_STRING, logsList.get(0).getMessage());
+            + "error message " + INPUT_STRING, logsList.get(0).getMessage());
     }
 
     @Test
-    void shouldThrowFutureHearingServerExceptionWith500Error() {
+    void shouldThrowAuthenticationExceptionWith500Error() {
 
         Logger logger = (Logger) LoggerFactory.getLogger(FutureHearingErrorDecoder.class);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();

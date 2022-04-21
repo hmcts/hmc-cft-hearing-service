@@ -9,4 +9,7 @@ public interface FutureHearingRepository {
 
     void createLinkedHearingGroup(JsonNode data);
 
+    void deleteLinkedHearingGroup(String requestId);
+
+    void updateLinkedHearingGroup(String requestId, JsonNode body);
 }

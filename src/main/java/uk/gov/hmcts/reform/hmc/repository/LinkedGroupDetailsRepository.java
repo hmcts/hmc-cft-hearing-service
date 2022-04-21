@@ -26,7 +26,4 @@ public interface LinkedGroupDetailsRepository extends CrudRepository<LinkedGroup
     @Query("DELETE FROM LinkedGroupDetails lgd WHERE lgd.requestId = :requestId ")
     void deleteLinkedGroupDetailsStatus(String requestId);
 
-    // TODO: implement DB query - https://tools.hmcts.net/jira/browse/HMAN-96
-    default void deleteHearingGroup(Long hearingGroupId) {
-    }
 }
