@@ -733,17 +733,17 @@ class LinkedHearingGroupControllerIT extends BaseTest {
     class GetLinkedHearingGroup {
 
         @Test
-        void shouldReturn400_WhenLinkedHearingIdDoesNotExist() throws Exception {
-            mockMvc.perform(get(url + "/7600000001")
+        void shouldReturn404_WhenLinkedHearingIdDoesNotExist() throws Exception {
+            mockMvc.perform(get(url + "/760000000o")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().is(400))
+                .andExpect(status().is(404))
                 .andReturn();
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn200WhenLinkedHearingGroupExists() throws Exception {
-            mockMvc.perform(get(url + "/2")
+            mockMvc.perform(get(url + "/12")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.groupDetails").exists())
@@ -751,11 +751,12 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.groupDetails.groupReason").value("Test 2"))
                 .andExpect(jsonPath("$.groupDetails.groupLinkType").value("Ordered"))
                 .andExpect(jsonPath("$.groupDetails.groupComments").value("commented"))
-                .andExpect(jsonPath("$.hearingsInGroup",hasSize(5)))
-                .andExpect(jsonPath("$.hearingsInGroup[3].hearingId").value("2000000015"))
-                .andExpect(jsonPath("$.hearingsInGroup[3].hearingOrder").value("2"))
-                .andExpect(jsonPath("$.hearingsInGroup[4].hearingId").value("2000000016"))
-                .andExpect(jsonPath("$.hearingsInGroup[4].hearingOrder").value("1"))
+                .andExpect(jsonPath("$.hearingsInGroup",hasSize(3)))
+                .andExpect(jsonPath("$.hearingsInGroup[0].hearingId").value("2000000007"))
+                .andExpect(jsonPath("$.hearingsInGroup[0].hearingOrder").value("1"))
+                .andExpect(jsonPath("$.hearingsInGroup[1].hearingId").value("2000000008"))
+                .andExpect(jsonPath("$.hearingsInGroup[1].hearingOrder").value("2"))
+                .andExpect(jsonPath("$.hearingsInGroup[2].hearingId").value("2000000009"))
                 .andReturn();
         }
     }
