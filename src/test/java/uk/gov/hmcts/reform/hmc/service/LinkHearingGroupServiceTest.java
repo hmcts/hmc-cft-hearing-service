@@ -44,6 +44,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
+import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
@@ -61,12 +62,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.doThrow;
 import static uk.gov.hmcts.reform.hmc.client.futurehearing.FutureHearingErrorDecoder.INVALID_REQUEST;
 import static uk.gov.hmcts.reform.hmc.client.futurehearing.FutureHearingErrorDecoder.SERVER_ERROR;
@@ -498,10 +497,6 @@ class LinkHearingGroupServiceTest {
 
         @Test
         void shouldPassWhenHearingOrderIsSameSlot() {
-            GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                    LinkType.SAME_SLOT.label, "reason"
-            );
-
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
                 HEARING_REQUESTED.name(),
@@ -512,11 +507,26 @@ class LinkHearingGroupServiceTest {
                 null
             );
 
-            when(hearingRepository.existsById(any())).thenReturn(true);
-            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
 
+            when(hearingRepository.existsById(2000000002L)).thenReturn(true);
+            when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
+            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntityWithLinkDetails());
+            given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
+
+            HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
+            response.setResponseCode(200);
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
+            doNothing().when(futureHearingRepository).createLinkedHearingGroup(any());
+            given(hearingRepository.findByLinkedGroupId(any())).willReturn(List.of(
+                TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
+
+            GroupDetails groupDetails = generateGroupDetails("comment", "name",
+                                                             LinkType.SAME_SLOT.label, "reason"
+            );
+
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
                 groupDetails,
                 Arrays.asList(
@@ -524,21 +534,17 @@ class LinkHearingGroupServiceTest {
                     hearingDetails2
                 )
             );
-
             service.linkHearing(hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
-            verify(hearingRepository, times(2)).findById(2000000000L);
+            verify(hearingRepository, times(3)).findById(2000000000L);
             verify(hearingRepository).existsById(2000000002L);
-            verify(hearingRepository, times(2)).findById(2000000002L);
+            verify(hearingRepository, times(3)).findById(2000000002L);
+            verify(hearingRepository, times(2)).save(any());
+            verify(linkedGroupDetailsRepository, times(1)).save(any());
         }
 
         @Test
         void shouldPassWithValidLinkedHearing() {
-            GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.ORDERED.label, "reason"
-            );
-            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
-            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
                 HEARING_REQUESTED.name(),
@@ -548,10 +554,23 @@ class LinkHearingGroupServiceTest {
                 Arrays.asList(generateHearingDetailsEntity(2000000000L, LocalDateTime.now().plusDays(1))),
                 null
             );
-
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.existsById(any())).thenReturn(true);
+            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntityWithLinkDetails());
+            given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
+            HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
+            response.setResponseCode(200);
+            doNothing().when(futureHearingRepository).createLinkedHearingGroup(any());
+            given(hearingRepository.findByLinkedGroupId(any())).willReturn(List.of(
+                TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
 
+            GroupDetails groupDetails = generateGroupDetails("comment", "name",
+                                                             LinkType.ORDERED.label, "reason"
+            );
+            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
+            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
                 groupDetails,
                 Arrays.asList(
@@ -563,9 +582,103 @@ class LinkHearingGroupServiceTest {
             logger.info("hearingLinkGroupRequest : {}", hearingLinkGroupRequest);
             service.linkHearing(hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
-            verify(hearingRepository, times(2)).findById(2000000000L);
+            verify(hearingRepository, times(3)).findById(2000000000L);
             verify(hearingRepository).existsById(2000000002L);
-            verify(hearingRepository, times(2)).findById(2000000002L);
+            verify(hearingRepository, times(3)).findById(2000000002L);
+            verify(hearingRepository, times(2)).save(any());
+            verify(linkedGroupDetailsRepository, times(1)).save(any());
+        }
+
+        @Test
+        void shouldFailBecauseOfError4xxFromListAssist() {
+            HearingEntity hearingEntity = generateHearingEntity(
+                2000000000L,
+                HEARING_REQUESTED.name(),
+                1,
+                true,
+                LocalDateTime.now().plusDays(1),
+                Arrays.asList(generateHearingDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
+                null
+            );
+
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+
+            when(hearingRepository.existsById(2000000002L)).thenReturn(true);
+            when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
+            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntityWithLinkDetails());
+            given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
+            given(hearingRepository.findByLinkedGroupId(1L)).willReturn(
+                List.of(TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
+
+            ErrorDetails errorDetails = new ErrorDetails();
+            errorDetails.setErrorCode(400);
+            BadFutureHearingRequestException badFutureHearingRequestException = new BadFutureHearingRequestException(
+                INVALID_REQUEST);
+            doThrow(badFutureHearingRequestException).when(futureHearingRepository).createLinkedHearingGroup(any());
+
+            GroupDetails groupDetails = generateGroupDetails("comment", "name",
+                                                             LinkType.SAME_SLOT.label, "reason"
+            );
+
+            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
+            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
+            HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
+                groupDetails,
+                Arrays.asList(
+                    hearingDetails1,
+                    hearingDetails2
+                )
+            );
+            Exception exception = assertThrows(BadRequestException.class, () -> {
+                service.linkHearing(hearingLinkGroupRequest);
+            });
+            assertTrue(exception.getMessage().contains(REJECTED_BY_LIST_ASSIST));
+        }
+
+        @Test
+        void shouldFailBecauseOfError5xxFromListAssist() {
+            HearingEntity hearingEntity = generateHearingEntity(
+                2000000000L,
+                HEARING_REQUESTED.name(),
+                1,
+                true,
+                LocalDateTime.now().plusDays(1),
+                Arrays.asList(generateHearingDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
+                null
+            );
+
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+
+            when(hearingRepository.existsById(2000000002L)).thenReturn(true);
+            when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
+            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntityWithLinkDetails());
+            given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
+            given(hearingRepository.findByLinkedGroupId(any())).willReturn(List.of(
+                TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
+
+            ErrorDetails errorDetails = new ErrorDetails();
+            errorDetails.setErrorCode(500);
+            FutureHearingServerException futureHearingServerException = new FutureHearingServerException(SERVER_ERROR);
+            doThrow(futureHearingServerException).when(futureHearingRepository).createLinkedHearingGroup(any());
+            GroupDetails groupDetails = generateGroupDetails("comment", "name",
+                                                             LinkType.SAME_SLOT.label, "reason"
+            );
+
+            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
+            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
+            HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
+                groupDetails,
+                Arrays.asList(
+                    hearingDetails1,
+                    hearingDetails2
+                )
+            );
+            Exception exception = assertThrows(BadRequestException.class, () -> {
+                service.linkHearing(hearingLinkGroupRequest);
+            });
+            assertTrue(exception.getMessage().contains(LIST_ASSIST_FAILED_TO_RESPOND));
         }
     }
 
@@ -923,93 +1036,11 @@ class LinkHearingGroupServiceTest {
 
 
         @Test
-        void shouldFailBecauseOfError4xxFromListAssist() {
-            HearingEntity hearingEntity = generateHearingEntity(
-                2000000000L,
-                HEARING_REQUESTED.name(),
-                1,
-                true,
-                LocalDateTime.now().plusDays(1),
-                Arrays.asList(generateHearingDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
-                null
-            );
-
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
-
-            when(hearingRepository.existsById(2000000002L)).thenReturn(true);
-            when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
-            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntityWithLinkDetails());
-            given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
-            given(hearingRepository.findByLinkedGroupId(1L)).willReturn(
-                List.of(TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
-
-
-            listAssistThrows4xxError();
-
-            GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.SAME_SLOT.label, "reason"
-            );
-
-            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
-            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
-            HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
-                groupDetails,
-                Arrays.asList(
-                    hearingDetails1,
-                    hearingDetails2
-                )
-            );
-            Exception exception = assertThrows(BadRequestException.class, () -> {
-                linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
-            });
-            assertTrue(exception.getMessage().contains(REJECTED_BY_LIST_ASSIST));
-        }
-
-        @Test
-        void shouldFailBecauseOfError5xxFromListAssist() {
-            HearingEntity hearingEntity = generateHearingEntity(
-                2000000000L,
-                HEARING_REQUESTED.name(),
-                1,
-                true,
-                LocalDateTime.now().plusDays(1),
-                Arrays.asList(generateHearingDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
-                null
-            );
-
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
-
-            when(hearingRepository.existsById(2000000002L)).thenReturn(true);
-            when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
-            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntityWithLinkDetails());
-            given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
-            given(hearingRepository.findByLinkedGroupId(any())).willReturn(List.of(
-                TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
-
-            listAssistThrows5xxError();
-            GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.SAME_SLOT.label, "reason"
-            );
-
-            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
-            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
-            HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
-                groupDetails,
-                Arrays.asList(
-                    hearingDetails1,
-                    hearingDetails2
-                )
-            );
-            Exception exception = assertThrows(BadRequestException.class, () -> {
-                linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
-            });
-            assertTrue(exception.getMessage().contains(LIST_ASSIST_FAILED_TO_RESPOND));
-        }
-
-        @Test
         void shouldPassWhenHearingOrderIsSameSlot() {
+            GroupDetails groupDetails = generateGroupDetails("comment", "name",
+                                                             LinkType.SAME_SLOT.label, "reason"
+            );
+
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
                 HEARING_REQUESTED.name(),
@@ -1020,16 +1051,9 @@ class LinkHearingGroupServiceTest {
                 null
             );
 
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.existsById(any())).thenReturn(true);
+            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
-            when(hearingRepository.existsById(2000000002L)).thenReturn(true);
-            when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
-            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntityWithLinkDetails());
-            given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
-
-            HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
-            response.setResponseCode(200);
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
 
@@ -1048,14 +1072,6 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(linkedGroupDetails);
             when(hearingRepository.findByLinkedGroupId(any())).thenReturn(Arrays.asList(hearingEntity));
             when(linkedGroupDetailsRepository.save(any())).thenReturn(linkedGroupDetails);
-            doNothing().when(futureHearingRepository).createLinkedHearingGroup(any());
-            given(hearingRepository.findByLinkedGroupId(any())).willReturn(List.of(
-                TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
-
-            GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.SAME_SLOT.label, "reason"
-            );
-
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
                 groupDetails,
                 Arrays.asList(
@@ -1064,21 +1080,21 @@ class LinkHearingGroupServiceTest {
                 )
             );
             service.updateLinkHearing("1", hearingLinkGroupRequest);
-            linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
             verify(hearingRepository, times(4)).findById(2000000000L);
-            verify(hearingRepository, times(2)).findById(2000000000L);
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(4)).findById(2000000002L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
-            verify(hearingRepository, times(2)).findById(2000000002L);
-            verify(hearingRepository, times(2)).save(any());
             verify(linkedGroupDetailsRepository, times(1)).save(any());
         }
 
         @Test
         void shouldPassWithValidLinkedHearing() {
+            GroupDetails groupDetails = generateGroupDetails("comment", "name",
+                                                             LinkType.ORDERED.label, "reason"
+            );
+            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
+            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
                 HEARING_REQUESTED.name(),
@@ -1092,15 +1108,6 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(1L);
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
-            when(hearingRepository.existsById(any())).thenReturn(true);
-            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
-            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntityWithLinkDetails());
-            given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
-            HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
-            response.setResponseCode(200);
-            doNothing().when(futureHearingRepository).createLinkedHearingGroup(any());
-            given(hearingRepository.findByLinkedGroupId(any())).willReturn(List.of(
-                TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
 
             LinkedGroupDetails linkedGroupDetails = generateLinkGroupDetails(
                 1L,
@@ -1119,11 +1126,6 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.save(any())).thenReturn(linkedGroupDetails);
 
 
-            GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                                                             LinkType.ORDERED.label, "reason"
-            );
-            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
-            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
                 groupDetails,
                 Arrays.asList(
@@ -1135,7 +1137,6 @@ class LinkHearingGroupServiceTest {
             service.updateLinkHearing("1", hearingLinkGroupRequest);
             verify(hearingRepository).existsById(2000000000L);
             verify(hearingRepository, times(4)).findById(2000000000L);
-            verify(hearingRepository, times(2)).findById(2000000000L);
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(4)).findById(2000000002L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
@@ -1310,9 +1311,6 @@ class LinkHearingGroupServiceTest {
             verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
             verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
-            verify(hearingRepository, times(2)).findById(2000000002L);
-            verify(hearingRepository, times(2)).save(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
         }
 
         @Test
@@ -1751,27 +1749,4 @@ class LinkHearingGroupServiceTest {
 
         return linkedGroupDetails;
     }
-
-    private void listAssistThrows4xxError() {
-        ErrorDetails errorDetails = new ErrorDetails();
-        errorDetails.setErrorCode(400);
-        BadFutureHearingRequestException badFutureHearingRequestException = new BadFutureHearingRequestException(
-            INVALID_REQUEST);
-        doThrow(badFutureHearingRequestException).when(futureHearingRepository).createLinkedHearingGroup(any());
-    }
-
-    private void listAssistThrows5xxError() {
-        ErrorDetails errorDetails = new ErrorDetails();
-        errorDetails.setErrorCode(500);
-        FutureHearingServerException futureHearingServerException = new FutureHearingServerException(SERVER_ERROR);
-        doThrow(futureHearingServerException).when(futureHearingRepository).createLinkedHearingGroup(any());
-    }
-
-    private HearingManagementInterfaceResponse getHearingResponseFromListAssist(Integer errorCode, String description) {
-        HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
-        response.setResponseCode(errorCode);
-        response.setDescription(description);
-        return response;
-    }
-
 }

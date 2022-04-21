@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupResponse;
 import uk.gov.hmcts.reform.hmc.model.listassist.CaseListing;
 import uk.gov.hmcts.reform.hmc.model.listassist.HearingGroup;
 import uk.gov.hmcts.reform.hmc.model.listassist.LinkedHearingGroup;
@@ -78,9 +79,10 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
 
     @Override
-    public void linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
-        validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-        LinkedGroupDetails linkedGroupDetails = updateHearingWithLinkGroup(hearingLinkGroupRequest);
+    public HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
+        linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
+        LinkedGroupDetails linkedGroupDetails =
+            linkedHearingValidator.updateHearingWithLinkGroup(hearingLinkGroupRequest);
 
         LinkedHearingGroup linkedHearingGroup = processRequestForListAssist(linkedGroupDetails);
 

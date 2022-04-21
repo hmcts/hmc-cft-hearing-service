@@ -41,42 +41,6 @@ public class FutureHearingRepositoryIT extends BaseTest {
     private DefaultFutureHearingRepository defaultFutureHearingRepository;
 
     @Nested
-    @DisplayName("Retrieve Authorisation Token")
-    class RetrieveAuthorisationToken {
-
-        @Test
-        void shouldSuccessfullyReturnAuthenticationObject() {
-            stubSuccessfullyReturnToken(TOKEN);
-            AuthenticationResponse response = defaultFutureHearingRepository.retrieveAuthToken();
-            assertEquals(TOKEN, response.getAccessToken());
-        }
-
-        @Test
-        void shouldThrow400AuthenticationException() {
-            stubPostMethodThrowingAuthenticationError(400, GET_TOKEN_URL);
-            assertThatThrownBy(() -> defaultFutureHearingRepository.retrieveAuthToken())
-                .isInstanceOf(BadFutureHearingRequestException.class)
-                .hasMessageContaining(INVALID_REQUEST);
-        }
-
-        @Test
-        void shouldThrow401AuthenticationException() {
-            stubPostMethodThrowingAuthenticationError(401, GET_TOKEN_URL);
-            assertThatThrownBy(() -> defaultFutureHearingRepository.retrieveAuthToken())
-                .isInstanceOf(BadFutureHearingRequestException.class)
-                .hasMessageContaining(INVALID_REQUEST);
-        }
-
-        @Test
-        void shouldThrow500AuthenticationException() {
-            stubPostMethodThrowingAuthenticationError(500, GET_TOKEN_URL);
-            assertThatThrownBy(() -> defaultFutureHearingRepository.retrieveAuthToken())
-                .isInstanceOf(FutureHearingServerException.class)
-                .hasMessageContaining(SERVER_ERROR);
-        }
-    }
-
-    @Nested
     @DisplayName("Delete Linked Hearing Group")
     class DeleteLinkedHearingGroup {
 

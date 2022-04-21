@@ -35,7 +35,7 @@ public interface HearingManagementInterfaceApiClient {
                                   @RequestBody JsonNode data);
 
     @PostMapping(value = CREATE_HEARINGS_URL, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    void createLinkedHearingGroup(@RequestHeader(AUTHORIZATION) String token,
+    void createLinkedHearingGroup(@RequestHeader(AUTHORIZATION) String token,  @RequestBody JsonNode data);
 
 
 }

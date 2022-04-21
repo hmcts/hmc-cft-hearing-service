@@ -63,14 +63,12 @@ public class LinkedHearingValidator {
     protected final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
     protected final LinkedHearingDetailsRepository linkedHearingDetailsRepository;
     private static final String HEARING_ID_PLACEHOLDER = "<hearingId>";
-    private final HearingRepository hearingRepository;
 
     @Autowired
     public LinkedHearingValidator(HearingIdValidator hearingIdValidator,
                                   HearingRepository hearingRepository,
                                   LinkedGroupDetailsRepository linkedGroupDetailsRepository,
                                   LinkedHearingDetailsRepository linkedHearingDetailsRepository) {
-        super(hearingRepository);
         this.hearingRepository = hearingRepository;
         this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
         this.hearingIdValidator = hearingIdValidator;
@@ -410,7 +408,7 @@ public class LinkedHearingValidator {
     }
 
     @Transactional
-    protected LinkedGroupDetails updateHearingWithLinkGroup(HearingLinkGroupRequest hearingLinkGroupRequest) {
+    public LinkedGroupDetails updateHearingWithLinkGroup(HearingLinkGroupRequest hearingLinkGroupRequest) {
         LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
         linkedGroupDetails.setRequestName(hearingLinkGroupRequest.getGroupDetails().getGroupName());
         linkedGroupDetails.setReasonForLink(hearingLinkGroupRequest.getGroupDetails().getGroupReason());
