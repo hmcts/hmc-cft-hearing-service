@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/FH_GET_TOKEN_URL"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\"access_token\":\"example-token\"}"
+  }
+}
