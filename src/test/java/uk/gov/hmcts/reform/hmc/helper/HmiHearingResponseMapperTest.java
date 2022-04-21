@@ -362,12 +362,12 @@ class HmiHearingResponseMapperTest {
         HearingChannel hearingChannel = new HearingChannel();
         hearingChannel.setCode("codeSubChannel");
         hearingAttendee.setHearingChannel(hearingChannel);
-        hearing.setHearingAttendees(new ArrayList<>(List.of(hearingAttendee)));
+        hearing.setHearingAttendees(List.of(hearingAttendee));
 
         HearingJoh hearingJoh = new HearingJoh();
         hearingJoh.setJohCode("JohCode");
         hearingJoh.setIsPresiding(true);
-        hearing.setHearingJohs(new ArrayList<>(List.of(hearingJoh)));
+        hearing.setHearingJohs(List.of(hearingJoh));
 
         hearingResponse.setHearing(hearing);
         return hearingResponse;
