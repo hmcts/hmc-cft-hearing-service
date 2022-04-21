@@ -8,6 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.PartyRelationshipDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
@@ -38,6 +41,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.helper.PartyRelationshipDetailsMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
@@ -49,6 +53,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
@@ -61,7 +66,9 @@ import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingPartyRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.PartyRelationshipDetailsRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
@@ -78,6 +85,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -106,6 +114,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_VERSION_NUMBER;
@@ -172,6 +181,19 @@ class HearingManagementServiceTest {
     @Mock
     ApplicationParams applicationParams;
 
+    @Mock
+    HearingPartyRepository hearingPartyRepository;
+
+    @Mock
+    PartyRelationshipDetailsMapper partyRelationshipDetailsMapper;
+
+    @Mock
+    PartyRelationshipDetailsRepository partyRelationshipDetailsRepository;
+
+
+    @Captor
+    ArgumentCaptor<List<PartyRelationshipDetailsEntity>> savedEntitiesCaptor;
+
     JsonNode jsonNode = mock(JsonNode.class);
 
     @BeforeEach
@@ -196,8 +218,9 @@ class HearingManagementServiceTest {
                 applicationParams,
                 hearingIdValidator,
                 actualHearingRepository,
-                actualHearingDayRepository
-            );
+                actualHearingDayRepository,
+                partyRelationshipDetailsMapper,
+                partyRelationshipDetailsRepository);
     }
 
     public static final String JURISDICTION = "Jurisdiction1";
@@ -342,10 +365,32 @@ class HearingManagementServiceTest {
             given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
+
+            PartyRelationshipDetailsEntity entity1 = PartyRelationshipDetailsEntity.builder()
+                    .partyRelationshipDetailsId(1L)
+                    .relationshipType("type1")
+                    .sourceTechPartyId(1L)
+                    .targetTechPartyId(2L)
+                    .build();
+
+            PartyRelationshipDetailsEntity entity2 = PartyRelationshipDetailsEntity.builder()
+                    .partyRelationshipDetailsId(2L)
+                    .relationshipType("type2")
+                    .sourceTechPartyId(3L)
+                    .targetTechPartyId(4L)
+                    .build();
+
+            final List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntities = List.of(entity1, entity2);
+            given(partyRelationshipDetailsMapper.modelToEntity(any())).willReturn(partyRelationshipDetailsEntities);
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
             assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
             assertEquals(POST_HEARING_STATUS, response.getStatus());
             assertNotNull(response.getHearingRequestId());
+
+            verify(partyRelationshipDetailsRepository).saveAll(savedEntitiesCaptor.capture());
+            final List<PartyRelationshipDetailsEntity> savedEntitiesCaptorValue = savedEntitiesCaptor.getValue();
+
+            assertTrue(savedEntitiesCaptorValue.containsAll(partyRelationshipDetailsEntities));
 
         }
 
@@ -1184,6 +1229,29 @@ class HearingManagementServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .updateHearingRequest(2000000000L, request));
             assertEquals(INVALID_UNAVAILABILITY_RANGES_DETAILS, exception.getMessage());
+        }
+
+        @Test
+        void updateHearingRequestShouldThrowErrorWhenRelatedPartyDetailsAreNotPresent() {
+            HearingDetails hearingDetails = new HearingDetails();
+            hearingDetails.setAutoListFlag(true);
+            HearingWindow hearingWindow = new HearingWindow();
+            hearingWindow.setDateRangeEnd(LocalDate.now());
+            hearingDetails.setHearingWindow(hearingWindow);
+            PartyDetails partyDetails = new PartyDetails();
+            IndividualDetails individualDetails = new IndividualDetails();
+            individualDetails.setHearingChannelEmail(List.of("email"));
+            List<RelatedParty> relatedParties = new ArrayList<>();
+            individualDetails.setRelatedParties(relatedParties);
+            partyDetails.setIndividualDetails(individualDetails);
+            List<PartyDetails> partyDetailsList = new ArrayList<>();
+            partyDetailsList.add(partyDetails);
+            UpdateHearingRequest request = new UpdateHearingRequest();
+            request.setHearingDetails(hearingDetails);
+            request.setPartyDetails(partyDetailsList);
+            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .updateHearingRequest(2000000000L, request));
+            assertEquals(INVALID_RELATED_PARTY_DETAILS, exception.getMessage());
         }
 
         @Test

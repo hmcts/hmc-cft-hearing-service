@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
+import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
@@ -171,6 +172,11 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         individualDetails.setVulnerableFlag(individualDetailEntity.getVulnerableFlag());
         individualDetails.setVulnerabilityDetails(individualDetailEntity.getVulnerabilityDetails());
         updateContactDetails(hearingPartyEntity, individualDetails);
+        RelatedParty relatedParty = new RelatedParty();
+
+        //TODO_GS - placeholder for getting values from new entity
+        relatedParty.setRelatedPartyID(null); // TODO_GS get from new entity)
+        relatedParty.setRelationshipType(null); // TODO_GS get from new entity)
 
         return individualDetails;
     }

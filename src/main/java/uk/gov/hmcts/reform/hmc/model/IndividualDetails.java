@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.util.List;
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -41,7 +42,6 @@ public class IndividualDetails {
     @Size(max = 256, message = ValidationError.VULNERABLE_DETAILS_MAX_LENGTH)
     private String vulnerabilityDetails;
 
-
     private List<
         @Email(message = ValidationError.HEARING_CHANNEL_EMAIL_INVALID)
         @Size(max = 120, message = ValidationError.HEARING_CHANNEL_EMAIL_MAX_LENGTH)
@@ -53,6 +53,9 @@ public class IndividualDetails {
         message = ValidationError.HEARING_CHANNEL_PHONE_INVALID)
         @Size(max = 30, message = ValidationError.HEARING_CHANNEL_PHONE_MAX_LENGTH)
             String> hearingChannelPhone;
+
+    @Valid
+    private List<RelatedParty> relatedParties;
 
     @Size(max = 80, message = ValidationError.OTHER_REASON_LENGTH)
     private String custodyStatus;

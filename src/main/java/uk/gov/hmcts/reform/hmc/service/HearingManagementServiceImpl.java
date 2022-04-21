@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.PartyRelationshipDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
@@ -29,6 +30,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.helper.PartyRelationshipDetailsMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
@@ -47,6 +49,7 @@ import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.PartyRelationshipDetailsRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
@@ -70,6 +73,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED_PARTY_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_VERSION_NUMBER;
@@ -102,11 +106,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final ActualHearingDayRepository actualHearingDayRepository;
     private final HearingIdValidator hearingIdValidator;
     private final HearingRepository hearingRepository;
+    private final PartyRelationshipDetailsMapper partyRelationshipDetailsMapper;
+    private final PartyRelationshipDetailsRepository partyRelationshipDetailsRepository;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
                                         @Qualifier("defaultDataStoreRepository")
-                                            DataStoreRepository dataStoreRepository,
+                                                DataStoreRepository dataStoreRepository,
                                         HearingRepository hearingRepository,
                                         HearingMapper hearingMapper,
                                         CaseHearingRequestRepository caseHearingRequestRepository,
@@ -120,7 +126,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         ApplicationParams applicationParams,
                                         HearingIdValidator hearingIdValidator,
                                         ActualHearingRepository actualHearingRepository,
-                                        ActualHearingDayRepository actualHearingDayRepository) {
+                                        ActualHearingDayRepository actualHearingDayRepository,
+                                        PartyRelationshipDetailsMapper partyRelationshipDetailsMapper,
+                                        PartyRelationshipDetailsRepository partyRelationshipDetailsRepository) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -138,6 +146,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.actualHearingDayRepository = actualHearingDayRepository;
         this.hearingRepository = hearingRepository;
         this.hearingIdValidator = hearingIdValidator;
+        this.partyRelationshipDetailsMapper = partyRelationshipDetailsMapper;
+        this.partyRelationshipDetailsRepository = partyRelationshipDetailsRepository;
     }
 
     @Override
@@ -252,6 +262,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private HearingResponse insertHearingRequest(HearingRequest createHearingRequest) {
         HearingEntity savedEntity = saveHearingDetails(createHearingRequest);
+        savePartyRelationshipDetails(createHearingRequest);
         return getSaveHearingResponseDetails(savedEntity);
     }
 
@@ -259,6 +270,22 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(createHearingRequest, new HearingEntity(), VERSION_NUMBER_TO_INCREMENT, POST_HEARING_STATUS);
         return hearingRepository.save(hearingEntity);
+    }
+
+    private void savePartyRelationshipDetails(HearingRequest createHearingRequest) {
+
+        final List<PartyDetails> partyDetails = createHearingRequest.getPartyDetails();
+
+        if (partyDetails != null) {
+            for (PartyDetails partyDetail : partyDetails) {
+                if (partyDetail.getIndividualDetails() != null
+                    && partyDetail.getIndividualDetails().getRelatedParties() != null) {
+                    final List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntities =
+                        partyRelationshipDetailsMapper.modelToEntity(partyDetail);
+                    partyRelationshipDetailsRepository.saveAll(partyRelationshipDetailsEntities);
+                }
+            }
+        }
     }
 
     private HearingResponse getSaveHearingResponseDetails(HearingEntity savedEntity) {
@@ -299,6 +326,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             }
             if (partyDetail.getUnavailabilityRanges() != null && partyDetail.getUnavailabilityRanges().isEmpty()) {
                 throw new BadRequestException(INVALID_UNAVAILABILITY_RANGES_DETAILS);
+            }
+            if (partyDetail.getIndividualDetails() != null
+                && (partyDetail.getIndividualDetails().getRelatedParties() != null
+                && partyDetail.getIndividualDetails().getRelatedParties().isEmpty())) {
+                throw new BadRequestException(INVALID_RELATED_PARTY_DETAILS);
             }
         }
     }
