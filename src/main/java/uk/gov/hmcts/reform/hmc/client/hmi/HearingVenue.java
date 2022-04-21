@@ -15,5 +15,5 @@ public class HearingVenue {
     private JsonNode locationRegion;
     private JsonNode locationCluster;
     @Valid
-    private ArrayList<VenueLocationReference> locationReference;
+    private ArrayList<VenueLocationReference> locationReferences;
 }
