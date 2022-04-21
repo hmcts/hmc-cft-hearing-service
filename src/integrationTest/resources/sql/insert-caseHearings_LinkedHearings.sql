@@ -41,20 +41,20 @@ insert into hearing ( hearing_id, status, is_linked_flag) values ('2000000014', 
 
 INSERT INTO public.linked_hearing_details_audit(
 	linked_hearing_details_audit_id, linked_group_id, linked_group_version, hearing_id, linked_order)
-	VALUES (21, 1, 2, 2000000005, 1);
+	VALUES (91, 1, 2, 2000000005, 1);
 INSERT INTO public.linked_hearing_details_audit(
 	linked_hearing_details_audit_id, linked_group_id, linked_group_version, hearing_id, linked_order)
-	VALUES (22, 1, 3, 2000000006, 2);
+	VALUES (92, 1, 3, 2000000006, 2);
 
 INSERT INTO public.linked_hearing_details_audit(
 	linked_hearing_details_audit_id, linked_group_id, linked_group_version, hearing_id, linked_order)
-	VALUES (23, 2, 1, 2000000007, 3);
+	VALUES (93, 2, 1, 2000000007, 3);
 INSERT INTO public.linked_hearing_details_audit(
 	linked_hearing_details_audit_id, linked_group_id, linked_group_version, hearing_id, linked_order)
-	VALUES (24, 2, 2, 2000000008, 2);
+	VALUES (94, 2, 2, 2000000008, 2);
 INSERT INTO public.linked_hearing_details_audit(
 	linked_hearing_details_audit_id, linked_group_id, linked_group_version, hearing_id, linked_order)
-	VALUES (25, 2, 1, 2000000009, 1);
+	VALUES (95, 2, 1, 2000000009, 1);
 
 insert into case_hearing_request (
  auto_list_flag, hearing_type, required_duration_in_minutes, hearing_priority_type, number_of_physical_attendees, hearing_in_welsh_flag, private_hearing_required_flag, lead_judge_contract_type, first_date_time_of_hearing_must_be, hmcts_service_code, case_reference, hearing_request_received_date_time, external_case_reference, case_url_context_path, hmcts_internal_case_name, public_case_name, additional_security_required_flag, owning_location_id, case_restricted_flag, case_sla_start_date, hearing_request_version, hearing_id, interpreter_booking_required_flag, listing_comments, requester, hearing_window_start_date_range, hearing_window_end_date_range)
