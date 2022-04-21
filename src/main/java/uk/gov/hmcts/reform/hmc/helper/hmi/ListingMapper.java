@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.hmc.model.hmi.ListingMultiDay;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_DETAILS_DURATION;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
 
 @Component
 public class ListingMapper {
@@ -61,12 +61,11 @@ public class ListingMapper {
             listing.setListingJohTiers(new ArrayList<>(hearingDetails.getPanelRequirements()
                                                            .getRoleType()));
         }
-        if (hearingDetails.getDuration() > HEARING_DETAILS_DURATION) {
-            listing.setListingDuration(HEARING_DETAILS_DURATION);
+        if (hearingDetails.isMultiDayHearing()) {
+            listing.setListingDuration(DURATION_OF_DAY);
             listing.setListingMultiDay(calculateMultiDayDurations(hearingDetails.getDuration()));
         } else {
             listing.setListingDuration(hearingDetails.getDuration());
-            listing.setListingMultiDay(null);
         }
         return listing;
     }

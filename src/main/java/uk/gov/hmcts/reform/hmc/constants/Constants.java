@@ -29,5 +29,5 @@ public final class Constants {
     public static final Integer UN_NOTIFIED_HEARINGS_LIMIT = 1000;
     public static final Integer FIRST_PAGE = 0;
     public static final String PENDING = "PENDING";
-    public static final Integer HEARING_DETAILS_DURATION = 360;
+    public static final Integer DURATION_OF_DAY = 360;
 }
