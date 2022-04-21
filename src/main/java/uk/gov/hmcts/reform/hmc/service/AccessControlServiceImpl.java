@@ -126,7 +126,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             if (!HearingStatus.LISTED.name().equals(status) && filteredRoleAssignments
                 .stream()
                 .filter(roleAssignment -> checkCaseType(roleAssignment.getAttributes(), caseTypeId)
-                    || checkJurisdiction(roleAssignment.getAttributes(), jurisdictionId))
+                    && checkJurisdiction(roleAssignment.getAttributes(), jurisdictionId))
                 .allMatch(roleAssignment -> LISTED_HEARING_VIEWER.equals(roleAssignment.getRoleName()))) {
                 throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_STATUS);
             }
@@ -146,7 +146,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                                                           List<RoleAssignment> roleAssignments) {
         return roleAssignments.stream()
             .anyMatch(roleAssignment -> checkJurisdiction(roleAssignment.getAttributes(), caseDetails.getJurisdiction())
-                || checkCaseType(roleAssignment.getAttributes(), caseDetails.getCaseTypeId()));
+                && checkCaseType(roleAssignment.getAttributes(), caseDetails.getCaseTypeId()));
 
     }
 
