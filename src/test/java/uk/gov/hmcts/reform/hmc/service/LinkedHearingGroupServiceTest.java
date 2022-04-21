@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
@@ -108,6 +109,10 @@ class LinkedHearingGroupServiceTest {
     @Mock
     DefaultFutureHearingRepository futureHearingRepository;
 
+    @Mock
+    ObjectMapperService objectMapper;
+
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -123,7 +128,8 @@ class LinkedHearingGroupServiceTest {
                                                     linkedGroupDetailsAuditRepository,
                                                     linkedGroupDetailsAuditMapper,
                                                     linkedHearingDetailsAuditMapper,
-                                                    futureHearingRepository
+                                                    futureHearingRepository,
+                                                    objectMapper
         );
     }
 

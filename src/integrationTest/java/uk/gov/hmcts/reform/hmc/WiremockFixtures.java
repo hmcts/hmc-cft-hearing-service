@@ -100,6 +100,30 @@ public class WiremockFixtures {
                     .willReturn(okJson(TEST_BODY).withStatus(status)));
     }
 
+    public static void stubUpdateMethodThrowingError(int status, String url) {
+        stubFor(WireMock.put(urlEqualTo(url))
+                    .willReturn(okJson(TEST_BODY).withStatus(status)));
+    }
+
+    public static void stubPutUpdateLinkHearingGroup(int status, String requestId, String token) {
+        HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
+        response.setResponseCode(status);
+        response.setDescription("The request was received successfully.");
+        stubFor(WireMock.put(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
+                    .withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader("Accept", equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
+                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
+                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
+                                                                   + "{2}:[0-9]{2}.[0-9]{6}Z"))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(response))
+                                    .withStatus(status)
+                    ));
+    }
+
     public static void stubSuccessfullyDeleteLinkedHearingGroups(String token, String requestId) {
         stubFor(WireMock.delete(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
