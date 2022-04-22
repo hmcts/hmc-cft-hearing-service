@@ -170,10 +170,11 @@ public class HmiHearingResponseMapper {
 
         return hearingAttendeeDetailsEntityArrayList;
     }
+
     private List<HearingDayDetailsEntity> mapHearingDayDetailsFromSessionDetails(HearingResponse hearing) {
         List<HearingDayDetailsEntity> hearingDayDetailsEntities = new ArrayList<>();
 
-        for(HearingSession hearingSession : hearing.getHearing().getHearingSessions()) {
+        for (HearingSession hearingSession : hearing.getHearing().getHearingSessions()) {
             HearingDayDetailsEntity hearingDayDetailsEntity = new HearingDayDetailsEntity();
 
             hearingDayDetailsEntity.setStartDateTime(hearingSession.getHearingStartTime());
