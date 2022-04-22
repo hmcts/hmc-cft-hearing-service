@@ -495,26 +495,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    private void validateHearingOutcomeInformation(Long hearingId, String errorMessage) {
-        Optional<ActualHearingEntity> entity = getActualHearing(hearingId);
-        if (entity.isEmpty()) {
-            throw new BadRequestException(errorMessage);
-        }
-    }
-
-    private void validateHearingResultType(Long hearingId, String errorMessage) {
-        Optional<ActualHearingEntity> entity = getActualHearing(hearingId);
-        if (entity.isPresent()) {
-            HearingResultType hearingResultType = entity.get().getHearingResultType();
-
-            if ((hearingResultType.getLabel().equals(COMPLETED.getLabel())
-                || hearingResultType.getLabel().equals(ADJOURNED.getLabel()))
-                && actualHearingDayRepository.findByActualHearing(entity.get()).isEmpty()) {
-                throw new BadRequestException(errorMessage);
-            }
-        }
-    }
-
     private Optional<ActualHearingEntity> getActualHearing(Long hearingId) {
         Optional<HearingResponseEntity> hearingResponseEntity = hearingIdValidator
             .getHearingResponse(hearingRepository.findById(hearingId)
@@ -523,17 +503,5 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             return actualHearingRepository.findByHearingResponse(hearingResponseEntity.get());
         }
         return Optional.empty();
-    }
-
-    private void validateCancelHearingResultType(Long hearingId, String errorMessage) {
-        Optional<ActualHearingEntity> entity = getActualHearing(hearingId);
-        if (entity.isPresent()) {
-            HearingResultType hearingResultType = entity.get().getHearingResultType();
-
-            if ((hearingResultType.getLabel().equals(CANCELLED.getLabel()))
-                && actualHearingDayRepository.findByActualHearing(entity.get()).isPresent()) {
-                throw new BadRequestException(errorMessage);
-            }
-        }
     }
 }
