@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.client.futurehearing;
 
 import feign.RequestTemplate;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,8 +20,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RunWith(PowerMockRunner.class)
