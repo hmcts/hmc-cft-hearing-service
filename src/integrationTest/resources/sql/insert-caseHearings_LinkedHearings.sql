@@ -111,32 +111,32 @@ values (9, '2000000007', '2022-06-10 11:20:00', 'listingStatus1-1', 'caselisting
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version, parties_notified_datetime)
 values (10, '2000000008', '2022-05-03 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', 2, 2, '2022-05-01 11:20:00');
 
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (1, 1, '2022-05-10 11:20:00', '2022-05-18 11:20:00', 'session1-1', 'venue1-1', 'room1-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (2, 1, '2022-05-10 11:20:00', '2022-05-11 11:20:00', 'session1-2', 'venue1-2', 'room1-2');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (3, 2, '2022-05-10 11:20:00', '2022-05-12 11:20:00', 'session1-2', 'venue2-1', 'room2-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (4, 3, '2023-01-10 11:20:00', '2023-01-11 11:20:00', 'session1-2', 'venue3-1', 'room3-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (5, 6, '2023-08-10 11:20:00', '2023-08-11 13:20:00', 'session1-2', 'venue3-1', 'room3-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (6, 7, '2022-08-10 11:20:00', '2022-08-10 14:20:00', 'session1-2', 'venue3-1', 'room3-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (7, 4, '2023-08-10 11:20:00', '2023-08-10 13:20:00', 'session1-2', 'venue3-1', 'room3-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (8, 5, '2022-08-10 11:20:00', '2022-08-10 14:20:00', 'session1-2', 'venue3-1', 'room3-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (9, 6, '2023-01-10 11:20:00', '2023-08-10 11:20:00', 'session1-2', 'venue3-1', 'room3-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (10, 7, '2023-01-10 11:20:00', '2023-08-10 11:20:00', 'session1-2', 'venue3-1', 'room3-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (11, 8, '2022-01-10 11:20:00', '2022-08-10 11:20:00', 'session1-2', 'venue3-1', 'room3-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (12, 9, '2023-01-10 11:20:00', '2023-08-10 11:20:00', 'session1-2', 'venue3-1', 'room3-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (13, 10, '2022-08-10 11:20:00', '2022-08-14 11:20:00', 'session1-2', 'venue3-1', 'room3-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (1, 1, '2022-05-10 11:20:00', '2022-05-18 11:20:00', 'venue1-1', 'room1-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (2, 1, '2022-05-10 11:20:00', '2022-05-11 11:20:00', 'venue1-2', 'room1-2');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (3, 2, '2022-05-10 11:20:00', '2022-05-12 11:20:00', 'venue2-1', 'room2-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (4, 3, '2023-01-10 11:20:00', '2023-01-11 11:20:00', 'venue3-1', 'room3-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (5, 6, '2023-08-10 11:20:00', '2023-08-11 13:20:00', 'venue3-1', 'room3-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (6, 7, '2022-08-10 11:20:00', '2022-08-10 14:20:00', 'venue3-1', 'room3-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (7, 4, '2023-08-10 11:20:00', '2023-08-10 13:20:00', 'venue3-1', 'room3-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (8, 5, '2022-08-10 11:20:00', '2022-08-10 14:20:00', 'venue3-1', 'room3-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (9, 6, '2023-01-10 11:20:00', '2023-08-10 11:20:00', 'venue3-1', 'room3-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (10, 7, '2023-01-10 11:20:00', '2023-08-10 11:20:00', 'venue3-1', 'room3-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (11, 8, '2022-01-10 11:20:00', '2022-08-10 11:20:00', 'venue3-1', 'room3-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (12, 9, '2023-01-10 11:20:00', '2023-08-10 11:20:00', 'venue3-1', 'room3-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (13, 10, '2022-08-10 11:20:00', '2022-08-14 11:20:00', 'venue3-1', 'room3-1');
 
 insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (1, 1, 'panel1-1','true');
 insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (2, 1, 'panel1-2','false');
