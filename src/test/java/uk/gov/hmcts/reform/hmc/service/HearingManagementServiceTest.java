@@ -128,6 +128,7 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
+import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingPartyEntityInd;
 
 @ExtendWith(MockitoExtension.class)
 class HearingManagementServiceTest {
@@ -405,15 +406,15 @@ class HearingManagementServiceTest {
             PartyRelationshipDetailsEntity entity1 = PartyRelationshipDetailsEntity.builder()
                     .partyRelationshipDetailsId(1L)
                     .relationshipType("type1")
-                    .sourceTechPartyId(1L)
-                    .targetTechPartyId(2L)
+                    .sourceTechParty(hearingPartyEntityInd())
+                    .targetTechParty(hearingPartyEntityInd())
                     .build();
 
             PartyRelationshipDetailsEntity entity2 = PartyRelationshipDetailsEntity.builder()
                     .partyRelationshipDetailsId(2L)
                     .relationshipType("type2")
-                    .sourceTechPartyId(3L)
-                    .targetTechPartyId(4L)
+                    .sourceTechParty(hearingPartyEntityInd())
+                    .targetTechParty(hearingPartyEntityInd())
                     .build();
 
             final List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntities = List.of(entity1, entity2);

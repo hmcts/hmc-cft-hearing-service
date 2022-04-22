@@ -758,8 +758,8 @@ public class TestingUtil {
                                                                                  String relationshipType) {
         return PartyRelationshipDetailsEntity.builder()
                 .partyRelationshipDetailsId(id)
-                .sourceTechPartyId(sourceTechPartyId)
-                .targetTechPartyId(targetTechPartyId)
+                .sourceTechParty(hearingPartyEntityInd())
+                .targetTechParty(hearingPartyEntityInd())
                 .relationshipType(relationshipType)
                 .build();
     }

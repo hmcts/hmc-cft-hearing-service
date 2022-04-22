@@ -187,10 +187,8 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
                 .stream()
                 .map(partyRelationshipDetailsEntity -> {
                     RelatedParty relatedParty = new RelatedParty();
-                    final String referenceByTechPartyId =
-                            hearingPartyRepository
-                                    .getReferenceByTechPartyId(partyRelationshipDetailsEntity.getTargetTechPartyId());
-                    relatedParty.setRelatedPartyID(referenceByTechPartyId);
+                    relatedParty.setRelatedPartyID(partyRelationshipDetailsEntity.getTargetTechParty()
+                                                       .getPartyReference());
                     relatedParty.setRelationshipType(partyRelationshipDetailsEntity.getRelationshipType());
                     return relatedParty;
                 })
