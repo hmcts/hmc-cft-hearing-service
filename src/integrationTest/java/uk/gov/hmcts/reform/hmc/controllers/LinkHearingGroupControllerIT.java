@@ -35,9 +35,9 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAI
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 
 
-class LinkedHearingGroupControllerIT extends BaseTest {
+class LinkHearingGroupControllerIT extends BaseTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(LinkedHearingGroupControllerIT.class);
+    private static final Logger logger = LoggerFactory.getLogger(LinkHearingGroupControllerIT.class);
 
     public static String ERROR_PATH_ERROR = "$.errors";
 
