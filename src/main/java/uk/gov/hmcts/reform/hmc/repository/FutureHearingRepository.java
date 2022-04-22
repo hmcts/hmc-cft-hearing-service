@@ -7,6 +7,8 @@ public interface FutureHearingRepository {
 
     AuthenticationResponse retrieveAuthToken();
 
+    void createLinkedHearingGroup(JsonNode data);
+
     void deleteLinkedHearingGroup(String requestId);
 
     void updateLinkedHearingGroup(String requestId, JsonNode body);
