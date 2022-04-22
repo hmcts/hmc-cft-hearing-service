@@ -6,11 +6,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.PartyRelationshipDetailsEntity;
 
-import java.util.List;
-
 @Transactional(propagation = Propagation.REQUIRED)
 @Repository
 public interface PartyRelationshipDetailsRepository extends CrudRepository<PartyRelationshipDetailsEntity, Long> {
-    @Override
-    List<PartyRelationshipDetailsEntity> findAll();
+
 }
