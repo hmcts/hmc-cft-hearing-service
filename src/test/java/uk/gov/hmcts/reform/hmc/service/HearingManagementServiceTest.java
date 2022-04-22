@@ -366,7 +366,13 @@ class HearingManagementServiceTest {
             hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
 
-            given(partyRelationshipDetailsMapper.modelToEntity(any()))
+            final HearingEntity hearingEntity = mock(HearingEntity.class);
+            CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
+            caseHearingRequestEntity.setHearingParties(Collections.emptyList());
+            when(hearingEntity.getLatestCaseHearingRequest()).thenReturn(caseHearingRequestEntity);
+
+            given(hearingRepository.save(any())).willReturn(hearingEntity);
+            given(partyRelationshipDetailsMapper.modelToEntity(any(), any()))
                     .willThrow(BadRequestException.class);
             assertThrows(BadRequestException.class, () -> hearingManagementService
                     .saveHearingRequest(hearingRequest));
@@ -418,7 +424,8 @@ class HearingManagementServiceTest {
                     .build();
 
             final List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntities = List.of(entity1, entity2);
-            given(partyRelationshipDetailsMapper.modelToEntity(any())).willReturn(partyRelationshipDetailsEntities);
+            given(partyRelationshipDetailsMapper.modelToEntity(any(), any()))
+                    .willReturn(partyRelationshipDetailsEntities);
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
             assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
             assertEquals(POST_HEARING_STATUS, response.getStatus());

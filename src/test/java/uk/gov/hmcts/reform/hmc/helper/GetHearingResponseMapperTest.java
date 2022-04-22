@@ -1,10 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
@@ -25,7 +21,6 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
-import uk.gov.hmcts.reform.hmc.repository.HearingPartyRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
@@ -35,16 +30,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.BDDMockito.given;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(MockitoExtension.class)
 class GetHearingResponseMapperTest {
 
-    @InjectMocks
-    private GetHearingResponseMapper getHearingResponseMapper;
-
-    @Mock
-    private HearingPartyRepository hearingPartyRepository;
+    private GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
 
     @Test
     void toHearingsResponseWhenDataIsPresentForOrg() {
@@ -76,9 +66,6 @@ class GetHearingResponseMapperTest {
             .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityInd()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
-
-        given(hearingPartyRepository.getReferenceByTechPartyId(10L)).willReturn("P1");
-        given(hearingPartyRepository.getReferenceByTechPartyId(20L)).willReturn("P2");
 
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
@@ -325,10 +312,10 @@ class GetHearingResponseMapperTest {
         relatedParty1.setRelationshipType("A");
 
         RelatedParty relatedParty2 = new RelatedParty();
-        relatedParty1.setRelatedPartyID("P2");
-        relatedParty1.setRelationshipType("B");
+        relatedParty2.setRelatedPartyID("P2");
+        relatedParty2.setRelationshipType("B");
 
-        relatedParties.containsAll(List.of(relatedParty1, relatedParty2));
+        assertTrue(relatedParties.containsAll(List.of(relatedParty1, relatedParty2)));
     }
 
     private void assertPanelRequirements(PanelRequirements panelRequirements) {

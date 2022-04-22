@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.ContactDetailsEntity;
@@ -31,7 +30,6 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
-import uk.gov.hmcts.reform.hmc.repository.HearingPartyRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +38,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
-
-    private HearingPartyRepository hearingPartyRepository;
-
-    @Autowired
-    public GetHearingResponseMapper(HearingPartyRepository hearingPartyRepository) {
-        this.hearingPartyRepository = hearingPartyRepository;
-    }
 
     public GetHearingResponse toHearingResponse(HearingEntity hearingEntity) {
         GetHearingResponse getHearingResponse = new GetHearingResponse();

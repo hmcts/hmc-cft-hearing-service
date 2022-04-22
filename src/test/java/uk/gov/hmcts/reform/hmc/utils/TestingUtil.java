@@ -747,19 +747,19 @@ public class TestingUtil {
         entity.setPartyRoleType("role");
         entity.setContactDetails(List.of(contactDetailsEntity_Email(), contactDetailsEntity_Phone()));
         entity.setIndividualDetailEntity(List.of(individualDetailEntity()));
-        entity.setPartyRelationshipDetailsEntity(List.of(partyRelationshipDetailsEntity(1L, 5L, 10L, "A"),
-                partyRelationshipDetailsEntity(2L, 15L, 20L, "B")));
+        entity.setPartyRelationshipDetailsEntity(List.of(partyRelationshipDetailsEntity("P1", "A"),
+                partyRelationshipDetailsEntity("P2", "B")));
         return entity;
     }
 
-    private static PartyRelationshipDetailsEntity partyRelationshipDetailsEntity(Long id,
-                                                                                 Long sourceTechPartyId,
-                                                                                 Long targetTechPartyId,
+    private static PartyRelationshipDetailsEntity partyRelationshipDetailsEntity(String targetTechPartyId,
                                                                                  String relationshipType) {
+
+        HearingPartyEntity targetHearingPartyEntity = new HearingPartyEntity();
+        targetHearingPartyEntity.setPartyReference(targetTechPartyId);
+
         return PartyRelationshipDetailsEntity.builder()
-                .partyRelationshipDetailsId(id)
-                .sourceTechParty(hearingPartyEntityInd())
-                .targetTechParty(hearingPartyEntityInd())
+                .targetTechParty(targetHearingPartyEntity)
                 .relationshipType(relationshipType)
                 .build();
     }

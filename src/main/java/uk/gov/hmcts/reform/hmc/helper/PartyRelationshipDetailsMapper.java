@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.PartyRelationshipDetailsEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.RelatedParty;
-import uk.gov.hmcts.reform.hmc.repository.HearingPartyRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,15 +13,8 @@ import java.util.List;
 @Component
 public class PartyRelationshipDetailsMapper {
 
-    private HearingPartyRepository hearingPartyRepository;
-
-    @Autowired
-    public PartyRelationshipDetailsMapper(HearingPartyRepository hearingPartyRepository) {
-        this.hearingPartyRepository = hearingPartyRepository;
-    }
-
-
-    public List<PartyRelationshipDetailsEntity> modelToEntity(PartyDetails partyDetails) {
+    public List<PartyRelationshipDetailsEntity> modelToEntity(PartyDetails partyDetails,
+                                                              List<HearingPartyEntity> hearingPartyEntities) {
 
         List<RelatedParty> relatedParties = partyDetails.getIndividualDetails().getRelatedParties();
         List<PartyRelationshipDetailsEntity> partyRelationshipDetails = new ArrayList<>();
@@ -33,17 +24,12 @@ public class PartyRelationshipDetailsMapper {
 
                 String relatedPartyId = relatedParty.getRelatedPartyID();
 
+                // get the Hearing Party Entity where relatedPartyId = hearing party Entity reference
                 final HearingPartyEntity targetTechParty =
-                        hearingPartyRepository.getTechPartyByReference(relatedPartyId);
-
-                if (targetTechParty == null) {
-                    throw new BadRequestException(
-                            String.format("RelatedPartyId with value %s, does not exist in hearing_party db table",
-                                    relatedPartyId));
-                }
+                        getHearingPartyEntityByReference(relatedPartyId, hearingPartyEntities);
 
                 final HearingPartyEntity sourceTechParty =
-                        hearingPartyRepository.getTechPartyByReference(partyDetails.getPartyID());
+                        getHearingPartyEntityByReference(partyDetails.getPartyID(), hearingPartyEntities);
 
                 PartyRelationshipDetailsEntity partyRelationshipDetailsEntity = PartyRelationshipDetailsEntity
                         .builder()
@@ -56,5 +42,15 @@ public class PartyRelationshipDetailsMapper {
         }
 
         return partyRelationshipDetails;
+    }
+
+    private HearingPartyEntity getHearingPartyEntityByReference(String relatedPartyId,
+                                                                List<HearingPartyEntity> hearingPartyEntities) {
+        return hearingPartyEntities.stream()
+                .filter(y -> y.getPartyReference().equals(relatedPartyId))
+                .findFirst()
+                .orElseThrow(() -> new BadRequestException(
+                            String.format("RelatedPartyId with value %s, does not exist",
+                                    relatedPartyId)));
     }
 }

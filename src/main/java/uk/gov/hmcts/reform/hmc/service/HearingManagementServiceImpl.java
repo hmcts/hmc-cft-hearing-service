@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.PartyRelationshipDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
@@ -259,7 +260,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private HearingResponse insertHearingRequest(HearingRequest createHearingRequest) {
         HearingEntity savedEntity = saveHearingDetails(createHearingRequest);
-        savePartyRelationshipDetails(createHearingRequest);
+        savePartyRelationshipDetails(createHearingRequest, savedEntity);
         return getSaveHearingResponseDetails(savedEntity);
     }
 
@@ -269,16 +270,17 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         return hearingRepository.save(hearingEntity);
     }
 
-    private void savePartyRelationshipDetails(HearingRequest createHearingRequest) {
+    private void savePartyRelationshipDetails(HearingRequest createHearingRequest, HearingEntity hearingEntity) {
 
         final List<PartyDetails> partyDetails = createHearingRequest.getPartyDetails();
+        final List<HearingPartyEntity> hearingParties = hearingEntity.getLatestCaseHearingRequest().getHearingParties();
 
         if (partyDetails != null) {
             for (PartyDetails partyDetail : partyDetails) {
                 if (partyDetail.getIndividualDetails() != null
                     && partyDetail.getIndividualDetails().getRelatedParties() != null) {
                     final List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntities =
-                        partyRelationshipDetailsMapper.modelToEntity(partyDetail);
+                        partyRelationshipDetailsMapper.modelToEntity(partyDetail, hearingParties);
                     partyRelationshipDetailsRepository.saveAll(partyRelationshipDetailsEntities);
                 }
             }
