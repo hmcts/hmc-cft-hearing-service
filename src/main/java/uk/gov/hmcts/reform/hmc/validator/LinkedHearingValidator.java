@@ -281,25 +281,34 @@ public class LinkedHearingValidator {
         return Collections.frequency(list, value);
     }
 
-    public void validateHearingGroup(Long hearingGroupId) {
-        Optional<LinkedGroupDetails> linkedGroupDetailsOptional = linkedGroupDetailsRepository.findById(hearingGroupId);
-        validateHearingGroupPresent(hearingGroupId, linkedGroupDetailsOptional);
+    public Long validateHearingGroup(String requestId) {
+        Long linkedGroupId = validateRequestIdForDelete(requestId, HEARING_GROUP_ID_NOT_FOUND);
+        LinkedGroupDetails linkedGroupDetailsOptional = linkedGroupDetailsRepository
+            .getLinkedGroupDetailsByRequestId(requestId);
         validateHearingGroupStatus(linkedGroupDetailsOptional);
+        return linkedGroupId;
     }
 
-    public void validateHearingGroupPresent(Long hearingGroupId, Optional<LinkedGroupDetails> linkedGroupDetails) {
-        if (linkedGroupDetails.isEmpty()) {
-            throw new LinkedHearingGroupNotFoundException(hearingGroupId, HEARING_GROUP_ID_NOT_FOUND);
+    public final Long validateRequestIdForDelete(String requestId, String errorMessage) {
+        if (requestId == null) {
+            throw new BadRequestException(LINKED_GROUP_ID_EMPTY);
+        } else {
+            Long answer = linkedGroupDetailsRepository.isFoundForRequestId(requestId);
+            if (null == answer || answer.intValue() == 0) {
+                throw new LinkedHearingGroupNotFoundException(requestId, errorMessage);
+            } else {
+                return answer;
+            }
         }
     }
 
-    public void validateHearingGroupStatus(Optional<LinkedGroupDetails> linkedGroupDetails) {
+    public void validateHearingGroupStatus(LinkedGroupDetails linkedGroupDetails) {
         String groupStatus = null;
-        if (linkedGroupDetails.isPresent()) {
-            groupStatus = linkedGroupDetails.get().getStatus();
+        if (linkedGroupDetails != null) {
+            groupStatus = linkedGroupDetails.getStatus();
         }
-        if (linkedGroupDetails.isEmpty()
-            || invalidDeleteGroupStatuses.stream().anyMatch(e -> e.equals(linkedGroupDetails.get().getStatus()))) {
+        if (linkedGroupDetails == null
+            || invalidDeleteGroupStatuses.stream().anyMatch(e -> e.equals(linkedGroupDetails.getStatus()))) {
             throw new BadRequestException(format(INVALID_DELETE_HEARING_GROUP_STATUS, groupStatus));
         }
     }

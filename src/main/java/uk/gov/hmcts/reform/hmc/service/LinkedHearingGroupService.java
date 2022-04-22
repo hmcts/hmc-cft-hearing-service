@@ -7,7 +7,7 @@ public interface LinkedHearingGroupService {
 
     HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest);
 
-    void deleteLinkedHearingGroup(Long hearingGroupId);
+    void deleteLinkedHearingGroup(String requestId);
 
     void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest);
 

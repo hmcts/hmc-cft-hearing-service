@@ -1076,13 +1076,13 @@ class LinkedHearingValidatorTest {
 
     @Test
     void shouldReturn404ErrorWhenNonExistentHearingGroup() {
-        final Long hearingGroupId = 123L;
-        given(linkedGroupDetailsRepository.findById(hearingGroupId)).willReturn(Optional.empty());
+        final String requestId = "123";
+        given(linkedGroupDetailsRepository.isFoundForRequestId(requestId)).willReturn(null);
 
         Exception exception = assertThrows(LinkedHearingGroupNotFoundException.class, () ->
-                linkedHearingValidator.validateHearingGroup(hearingGroupId));
-        assertEquals("No hearing" + " group found for reference: " + hearingGroupId, exception.getMessage());
-        verify(linkedGroupDetailsRepository, times(1)).findById(hearingGroupId);
+                linkedHearingValidator.validateHearingGroup(requestId));
+        assertEquals("No hearing" + " group found for reference: " + requestId, exception.getMessage());
+        verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(requestId);
         verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
     }
 

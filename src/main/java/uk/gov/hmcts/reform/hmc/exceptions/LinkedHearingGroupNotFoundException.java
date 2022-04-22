@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class LinkedHearingGroupNotFoundException extends RuntimeException {
 
-    public LinkedHearingGroupNotFoundException(Long hearingId, String errorMessage) {
-        super(String.format(errorMessage, hearingId));
+    public LinkedHearingGroupNotFoundException(String requestId, String errorMessage) {
+        super(String.format(errorMessage, requestId));
     }
 }

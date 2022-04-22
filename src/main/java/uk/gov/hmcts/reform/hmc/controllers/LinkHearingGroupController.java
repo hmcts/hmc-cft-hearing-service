@@ -72,7 +72,7 @@ public class LinkHearingGroupController {
         @ApiResponse(code = 404, message = "Hearing Group id not found"),
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
-    public void deleteHearingGroup(@PathVariable("id") Long hearingGroupId) {
-        linkedHearingGroupService.deleteLinkedHearingGroup(hearingGroupId);
+    public void deleteHearingGroup(@PathVariable("id") String requestId) {
+        linkedHearingGroupService.deleteLinkedHearingGroup(requestId);
     }
 }

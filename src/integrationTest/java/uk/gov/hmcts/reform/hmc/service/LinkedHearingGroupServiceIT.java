@@ -66,7 +66,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertTrue(linkedGroupDetailsBeforeDelete.isPresent());
         Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2100000005L);
         final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
-        linkedHearingGroupService.deleteLinkedHearingGroup(7700000000L);
+        linkedHearingGroupService.deleteLinkedHearingGroup("7700000000");
         //validating Hearing details
         Optional<HearingEntity> hearingEntityAfterDelete = hearingRepository.findById(2100000005L);
         assertTrue(hearingEntityBeforeDelete.isPresent());
@@ -95,7 +95,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2100000005L);
         final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
-            .deleteLinkedHearingGroup(7700000000L));
+            .deleteLinkedHearingGroup("7700000000"));
         assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, exception.getMessage());
 
         //validating Hearing details
@@ -127,7 +127,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2100000005L);
         final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
-            .deleteLinkedHearingGroup(7700000000L));
+            .deleteLinkedHearingGroup("7700000000"));
         assertEquals(REJECTED_BY_LIST_ASSIST, exception.getMessage());
         //validating Hearing details
         Optional<HearingEntity> hearingEntityAfterDelete = hearingRepository.findById(2100000005L);
@@ -156,7 +156,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2100000005L);
         final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
-            .deleteLinkedHearingGroup(7700000000L));
+            .deleteLinkedHearingGroup("7700000000"));
         assertEquals(REJECTED_BY_LIST_ASSIST, exception.getMessage());
         //validating Hearing details
         Optional<HearingEntity> hearingEntityAfterDelete = hearingRepository.findById(2100000005L);
@@ -186,7 +186,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2100000005L);
         final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
-            .deleteLinkedHearingGroup(7700000000L));
+            .deleteLinkedHearingGroup("7700000000"));
         assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, exception.getMessage());
 
         //validating Hearing details
@@ -212,7 +212,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_WhenHearingGroupDoesNotExist() {
         Exception exception = assertThrows(LinkedHearingGroupNotFoundException.class, () -> linkedHearingGroupService
-            .deleteLinkedHearingGroup(7600000123L));
+            .deleteLinkedHearingGroup("7600000123"));
         assertEquals("No hearing group found for reference: 7600000123", exception.getMessage());
     }
 
@@ -220,7 +220,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_WhenHearingGroupStatusIsPending() {
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
-            .deleteLinkedHearingGroup(7600000501L));
+            .deleteLinkedHearingGroup("7600000501"));
         assertEquals("007 group is in a PENDING state", exception.getMessage());
     }
 
