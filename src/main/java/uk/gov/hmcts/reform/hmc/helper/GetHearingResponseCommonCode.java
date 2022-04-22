@@ -20,7 +20,6 @@ public class GetHearingResponseCommonCode {
         HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
         hearingDaySchedule.setHearingStartDateTime(detailEntity.getStartDateTime());
         hearingDaySchedule.setHearingEndDateTime(detailEntity.getEndDateTime());
-        hearingDaySchedule.setListAssistSessionId(detailEntity.getListAssistSessionId());
         hearingDaySchedule.setHearingVenueId(detailEntity.getVenueId());
         hearingDaySchedule.setHearingRoomId(detailEntity.getRoomId());
         return hearingDaySchedule;
