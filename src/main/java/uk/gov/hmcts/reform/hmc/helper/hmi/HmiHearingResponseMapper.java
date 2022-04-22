@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.hmc.client.hmi.HearingAttendee;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingCode;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingJoh;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
+import uk.gov.hmcts.reform.hmc.client.hmi.HearingSession;
 import uk.gov.hmcts.reform.hmc.client.hmi.SyncResponse;
 import uk.gov.hmcts.reform.hmc.client.hmi.VenueLocationReference;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
@@ -36,22 +37,49 @@ import static uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl.UNSUPPORTE
 public class HmiHearingResponseMapper {
     public HearingEntity mapHmiHearingToEntity(HearingResponse hearing, HearingEntity hearingEntity) {
         HearingResponseEntity hearingResponseEntity = mapHearingResponseEntity(hearing, hearingEntity);
-        HearingDayDetailsEntity hearingDayDetailsEntity = mapHearingDayDetailsEntity(hearing);
-        hearingDayDetailsEntity.setHearingResponse(hearingResponseEntity);
+
+        List<HearingDayDetailsEntity> hearingDayDetailsEntities = mapHearingDayDetailsFromSessionDetails(hearing);
         ArrayList<HearingAttendeeDetailsEntity> hearingAttendeeDetailsEntity = mapHearingAttendeeDetailsEntity(hearing);
         ArrayList<HearingDayPanelEntity> hearingDayPanelEntity = mapHearingDayPanelEntity(hearing);
+
+        List<HearingSession> hearingSession = hearing.getHearing().getHearingSessions();
+        if (hearingSession != null && !hearingSession.isEmpty()) {
+            for (HearingDayDetailsEntity hearingDayDetailsEntity : hearingDayDetailsEntities) {
+                setHearingDayDetails(hearingResponseEntity,
+                                     hearingDayDetailsEntity,
+                                     hearingDayPanelEntity,
+                                     hearingAttendeeDetailsEntity);
+            }
+        } else {
+            HearingDayDetailsEntity hearingDayDetailsEntity = mapHearingDayDetailsEntity(hearing);
+            setHearingDayDetails(hearingResponseEntity,
+                                 hearingDayDetailsEntity,
+                                 hearingDayPanelEntity,
+                                 hearingAttendeeDetailsEntity);
+        }
+
+
+        hearingResponseEntity.setHearingDayDetails(hearingDayDetailsEntities);
+        hearingEntity.getHearingResponses().add(hearingResponseEntity);
+        hearingEntity.setStatus(getHearingStatus(hearing, hearingEntity).name());
+        return hearingEntity;
+    }
+
+    private void setHearingDayDetails(HearingResponseEntity hearingResponseEntity,
+                                      HearingDayDetailsEntity hearingDayDetailsEntity,
+                                      List<HearingDayPanelEntity> hearingDayPanelEntity,
+                                      List<HearingAttendeeDetailsEntity> hearingAttendeeDetailsEntity
+    ) {
+        hearingDayDetailsEntity.setHearingResponse(hearingResponseEntity);
         hearingDayDetailsEntity.setHearingDayPanel(hearingDayPanelEntity);
         hearingDayDetailsEntity.setHearingAttendeeDetails(hearingAttendeeDetailsEntity);
+
         for (HearingDayPanelEntity hdpe : hearingDayDetailsEntity.getHearingDayPanel()) {
             hdpe.setHearingDayDetails(hearingDayDetailsEntity);
         }
         for (HearingAttendeeDetailsEntity hade : hearingDayDetailsEntity.getHearingAttendeeDetails()) {
             hade.setHearingDayDetails(hearingDayDetailsEntity);
         }
-        hearingResponseEntity.setHearingDayDetails(List.of(hearingDayDetailsEntity));
-        hearingEntity.getHearingResponses().add(hearingResponseEntity);
-        hearingEntity.setStatus(getHearingStatus(hearing, hearingEntity).name());
-        return hearingEntity;
     }
 
     public HearingEntity mapHmiSyncResponseToEntity(SyncResponse syncResponse, HearingEntity hearingEntity) {
@@ -141,6 +169,26 @@ public class HmiHearingResponseMapper {
         }
 
         return hearingAttendeeDetailsEntityArrayList;
+    }
+    private List<HearingDayDetailsEntity> mapHearingDayDetailsFromSessionDetails(HearingResponse hearing) {
+        List<HearingDayDetailsEntity> hearingDayDetailsEntities = new ArrayList<>();
+
+        for(HearingSession hearingSession : hearing.getHearing().getHearingSessions()) {
+            HearingDayDetailsEntity hearingDayDetailsEntity = new HearingDayDetailsEntity();
+
+            hearingDayDetailsEntity.setStartDateTime(hearingSession.getHearingStartTime());
+            hearingDayDetailsEntity.setEndDateTime(hearingSession.getHearingEndTime());
+
+            for (VenueLocationReference venueLocationReference :
+                hearingSession.getHearingVenue().getLocationReferences()) {
+                if (venueLocationReference.getKey().equals("EPIMS")) {
+                    hearingDayDetailsEntity.setVenueId(venueLocationReference.getValue());
+                }
+            }
+            hearingDayDetailsEntity.setRoomId(hearingSession.getHearingRoom().getLocationName());
+            hearingDayDetailsEntities.add(hearingDayDetailsEntity);
+        }
+        return hearingDayDetailsEntities;
     }
 
     private HearingDayDetailsEntity mapHearingDayDetailsEntity(HearingResponse hearing) {

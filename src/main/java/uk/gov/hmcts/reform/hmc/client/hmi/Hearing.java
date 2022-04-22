@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -65,5 +66,5 @@ public class Hearing {
 
     private ArrayList<HearingJoh> hearingJohs;
 
-    private JsonNode hearingSessions;
+    private List<HearingSession> hearingSessions;
 }
