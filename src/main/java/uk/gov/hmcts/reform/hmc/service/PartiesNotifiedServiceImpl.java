@@ -63,10 +63,10 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
         hearingIdValidator.validateHearingId(hearingId, PARTIES_NOTIFIED_ID_NOT_FOUND);
         List<HearingResponseEntity> entities = hearingResponseRepository.getPartiesNotified(hearingId);
         if (entities.isEmpty()) {
-            log.info("No partiesNotified found for hearingId {}", hearingId);
+            log.debug("No partiesNotified found for hearingId {}", hearingId);
         } else {
             HearingResponseEntity entity = entities.get(0);
-            log.info("hearingId {}, partiesNotified {}", hearingId,
+            log.debug("hearingId {}, partiesNotified {}", hearingId,
                      entity.getHearingResponseId()
             );
         }

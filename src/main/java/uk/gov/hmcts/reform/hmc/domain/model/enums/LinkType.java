@@ -16,10 +16,10 @@ public enum LinkType {
         this.label = label;
     }
 
-    public static LinkType getByLabel(String value) {
+    public static LinkType getByLabel(String label) {
         return Arrays.stream(LinkType.values())
             .filter(eachLinkType -> eachLinkType.label.toLowerCase(Locale.ROOT)
-                .equals(value.toLowerCase(Locale.ROOT))).findAny().orElse(null);
+                .equals(label.toLowerCase(Locale.ROOT))).findAny().orElse(null);
     }
 
     public static boolean isValidLabel(String label) {
