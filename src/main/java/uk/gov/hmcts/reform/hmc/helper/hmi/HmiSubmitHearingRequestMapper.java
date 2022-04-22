@@ -27,10 +27,10 @@ public class HmiSubmitHearingRequestMapper {
         Boolean isLinkedFlag = hearingRequest.getHearingDetails().getHearingIsLinkedFlag();
 
         int versionNumber = 1;
-        if (hearingRequest.getClass().isInstance(UpdateHearingRequest.class)) {
+        if (hearingRequest instanceof UpdateHearingRequest) {
             UpdateHearingRequest request = (UpdateHearingRequest) hearingRequest;
             if (null != request.getRequestDetails()) {
-                versionNumber = request.getRequestDetails().getVersionNumber();
+                versionNumber = request.getRequestDetails().getVersionNumber() + 1;
             }
         }
 
