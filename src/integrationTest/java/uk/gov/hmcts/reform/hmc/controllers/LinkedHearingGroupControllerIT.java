@@ -537,7 +537,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-        void shouldReturn400_ForInvalidRequestId() throws Exception {
+        void shouldReturn404_ForInvalidRequestId() throws Exception {
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
             hearingInGroup1.setHearingId("2000000007");
             hearingInGroup1.setHearingOrder(1);
@@ -554,7 +554,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
             mockMvc.perform(put(url + "?id=88782")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
-                .andExpect(status().is(400))
+                .andExpect(status().is(404))
                 .andExpect(jsonPath("$.errors", hasItem(ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS)))
                 .andReturn();
 
