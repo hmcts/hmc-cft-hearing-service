@@ -140,3 +140,16 @@ http:
 ccd:
   data-store:
     host: ${CCD_DATA_STORE_API_BASE_URL:http://localhost:4452}
+
+fh:
+  ad:
+    host: ${FH_BASE_URL:base/url}
+    get-token-url: ${FH_GET_TOKEN_URL:get/token/url}
+    client-id: ${CLIENT_ID:client-id}
+    client-secret: ${CLIENT_SECRET:client-secret}
+    scope: ${SCOPE:scope}
+    grant-type: ${GRANT_TYPE:grant-type}
+  hmi:
+    host: ${HMI_BASE_URL:base/url}
+    source-system: ${HMI_SOURCE_SYSTEM:source-system}
+    destination-system: ${HMI_DESTINATION_SYSTEM:destination-system}

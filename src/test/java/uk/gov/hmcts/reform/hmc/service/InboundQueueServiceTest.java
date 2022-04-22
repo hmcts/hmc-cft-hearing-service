@@ -29,8 +29,11 @@ import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
+import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +61,12 @@ class InboundQueueServiceTest {
     private HearingRepository hearingRepository;
 
     @Mock
+    private ActualHearingRepository actualHearingRepository;
+
+    @Mock
+    private ActualHearingDayRepository actualHearingDayRepository;
+
+    @Mock
     private HmiHearingResponseMapper hmiHearingResponseMapper;
     @Mock
     ServiceBusReceiverClient client;
@@ -67,6 +76,8 @@ class InboundQueueServiceTest {
 
     @Mock
     ObjectMapperService objectMapperService;
+
+    HearingIdValidator hearingIdValidator;
 
     @Mock
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
@@ -111,28 +122,28 @@ class InboundQueueServiceTest {
                                                    + "      \"locationName\": \"<locationName>\",\n"
                                                    + "      \"locationRegion\": \"<locationRegion>\",\n"
                                                    + "      \"locationCluster\": \"<locationCluster>\",\n"
-                                                   + "      \"locationReference\": [{\n"
+                                                   + "      \"locationReferences\": [{\n"
                                                    + "        \"key\": \"<key>\",\n"
                                                    + "        \"value\": \"<value>\"\n"
                                                    + "      }]\n"
                                                    + "    },\n"
                                                    + "    \"hearingRoom\": {\n"
                                                    + "      \"locationIdCaseHQ\": \"<locationIdCaseHQ>\",\n"
-                                                   + "      \"roomName\": \"<roomName>\",\n"
-                                                   + "      \"roomLocationRegion\": {\n"
+                                                   + "      \"locationName\": \"<roomName>\",\n"
+                                                   + "      \"locationRegion\": {\n"
                                                    + "        \"key\": \"<key>\",\n"
                                                    + "        \"value\": \"<value>\"\n"
                                                    + "      },\n"
-                                                   + "      \"roomLocationCluster\": {\n"
+                                                   + "      \"locationCluster\": {\n"
                                                    + "        \"key\": \"<key>\",\n"
                                                    + "        \"value\": \"<value>\"\n"
                                                    + "      },\n"
-                                                   + "      \"roomLocationReference\": {\n"
+                                                   + "      \"locationReferences\": {\n"
                                                    + "        \"key\": \"<key>\",\n"
                                                    + "        \"value\": \"<value>\"\n"
                                                    + "      }\n"
                                                    + "    },\n"
-                                                   + "    \"hearingAttendee\": [{\n"
+                                                   + "    \"hearingAttendees\": [{\n"
                                                    + "      \"entityIdCaseHQ\": \"<id>\",\n"
                                                    + "      \"entityId\": \"<id>\",\n"
                                                    + "      \"entityType\": \"<type>\",\n"
@@ -146,7 +157,7 @@ class InboundQueueServiceTest {
                                                    + "        \"description\": \"<value>\"\n"
                                                    + "      }\n"
                                                    + "    }],\n"
-                                                   + "    \"hearingJoh\": [{\n"
+                                                   + "    \"hearingJohs\": [{\n"
                                                    + "      \"johId\": \"<johId>\",\n"
                                                    + "      \"johCode\": \"<johCode>\",\n"
                                                    + "      \"johName\": \"<johName>\",\n"
@@ -156,7 +167,7 @@ class InboundQueueServiceTest {
                                                    + "      },\n"
                                                    + "      \"isPresiding\": false\n"
                                                    + "    }],\n"
-                                                   + "    \"hearingSession\": {\n"
+                                                   + "    \"hearingSessions\": {\n"
                                                    + "      \"key\": \"<key>\",\n"
                                                    + "      \"value\": \"<value>\"\n"
                                                    + "    }\n"
@@ -169,12 +180,15 @@ class InboundQueueServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        hearingIdValidator = new HearingIdValidator(hearingRepository, actualHearingRepository,
+                actualHearingDayRepository);
         inboundQueueService = new InboundQueueServiceImpl(
             OBJECT_MAPPER,
             hearingRepository,
             hmiHearingResponseMapper,
             messageSenderToTopicConfiguration,
-            objectMapperService
+            objectMapperService,
+            hearingIdValidator
         );
     }
 
@@ -282,28 +296,28 @@ class InboundQueueServiceTest {
                                                            + "      \"locationName\": \"<locationName>\",\n"
                                                            + "      \"locationRegion\": \"<locationRegion>\",\n"
                                                            + "      \"locationCluster\": \"<locationCluster>\",\n"
-                                                           + "      \"locationReference\": [{\n"
+                                                           + "      \"locationReferences\": [{\n"
                                                            + "        \"key\": \"<key>\",\n"
                                                            + "        \"value\": \"<value>\"\n"
                                                            + "      }]\n"
                                                            + "    },\n"
                                                            + "    \"hearingRoom\": {\n"
                                                            + "      \"locationIdCaseHQ\": \"<locationIdCaseHQ>\",\n"
-                                                           + "      \"roomName\": \"<roomName>\",\n"
-                                                           + "      \"roomLocationRegion\": {\n"
+                                                           + "      \"locationName\": \"<roomName>\",\n"
+                                                           + "      \"locationRegion\": {\n"
                                                            + "        \"key\": \"<key>\",\n"
                                                            + "        \"value\": \"<value>\"\n"
                                                            + "      },\n"
-                                                           + "      \"roomLocationCluster\": {\n"
+                                                           + "      \"locationCluster\": {\n"
                                                            + "        \"key\": \"<key>\",\n"
                                                            + "        \"value\": \"<value>\"\n"
                                                            + "      },\n"
-                                                           + "      \"roomLocationReference\": {\n"
+                                                           + "      \"locationReferences\": {\n"
                                                            + "        \"key\": \"<key>\",\n"
                                                            + "        \"value\": \"<value>\"\n"
                                                            + "      }\n"
                                                            + "    },\n"
-                                                           + "    \"hearingAttendee\": [{\n"
+                                                           + "    \"hearingAttendees\": [{\n"
                                                            + "      \"entityIdCaseHQ\": \"<id>\",\n"
                                                            + "      \"entityId\": \"<id>\",\n"
                                                            + "      \"entityType\": \"<type>\",\n"
@@ -317,7 +331,7 @@ class InboundQueueServiceTest {
                                                            + "        \"description\": \"<value>\"\n"
                                                            + "      }\n"
                                                            + "    }],\n"
-                                                           + "    \"hearingJoh\": [{\n"
+                                                           + "    \"hearingJohs\": [{\n"
                                                            + "      \"johId\": \"<johId>\",\n"
                                                            + "      \"johCode\": \"<johCode>\",\n"
                                                            + "      \"johName\": \"<johName>\",\n"
@@ -327,7 +341,7 @@ class InboundQueueServiceTest {
                                                            + "      },\n"
                                                            + "      \"isPresiding\": false\n"
                                                            + "    }],\n"
-                                                           + "    \"hearingSession\": {\n"
+                                                           + "    \"hearingSessions\": {\n"
                                                            + "      \"key\": \"<key>\",\n"
                                                            + "      \"value\": \"<value>\"\n"
                                                            + "    }\n"

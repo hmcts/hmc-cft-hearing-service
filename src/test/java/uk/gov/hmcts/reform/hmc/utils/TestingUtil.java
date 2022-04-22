@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.Attendee;
@@ -238,10 +239,37 @@ public class TestingUtil {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(1L);
         hearingEntity.setStatus(POST_HEARING_STATUS);
+        hearingEntity.setLinkedOrder(1L);
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
+        hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
+        return hearingEntity;
+    }
+
+    public static HearingEntity hearingEntityWithLinkDetails() {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(1L);
+        hearingEntity.setStatus(POST_HEARING_STATUS);
+        hearingEntity.setLinkedOrder(1L);
+        LinkedGroupDetails linkedGroupDetailsEntity = linkedGroupDetailsEntity();
+        hearingEntity.setLinkedGroupDetails(linkedGroupDetailsEntity);
+        hearingEntity.setLinkedOrder(1L);
         hearingEntity.setIsLinkedFlag(Boolean.TRUE);
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
         hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
         return hearingEntity;
+    }
+
+    public static LinkedGroupDetails linkedGroupDetailsEntity() {
+        LinkedGroupDetails entity = new LinkedGroupDetails();
+        entity.setLinkedGroupId(1L);
+        entity.setRequestName("RequestName");
+        entity.setReasonForLink("ReasonForLink");
+        entity.setLinkType(LinkType.ORDERED);
+        entity.setLinkedComments("linkComments");
+        entity.setStatus("PENDING");
+        entity.setRequestDateTime(LocalDateTime.now());
+        entity.setLinkedGroupLatestVersion(1L);
+        return entity;
     }
 
     public static CaseHearingRequestEntity caseHearingRequestEntity() {
