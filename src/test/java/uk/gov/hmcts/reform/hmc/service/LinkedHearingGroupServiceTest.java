@@ -36,16 +36,17 @@ import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.doThrow;
 import static uk.gov.hmcts.reform.hmc.client.futurehearing.FutureHearingErrorDecoder.INVALID_REQUEST;
@@ -166,8 +167,9 @@ class LinkedHearingGroupServiceTest {
                 )));
 
             LinkedGroupDetailsAudit groupDetailsAudit = createGroupDetailsAuditEntity("ACTIVE",groupDetails);
-            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
-                    .willReturn(Optional.of(groupDetails));
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(HEARING_GROUP_ID);
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
+
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing1, hearing2));
             given(linkedGroupDetailsAuditMapper.modelToEntity(groupDetails))
@@ -175,19 +177,19 @@ class LinkedHearingGroupServiceTest {
             doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
             service.deleteLinkedHearingGroup(REQUEST_ID);
 
-            verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
+            verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
             verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
         }
 
         @Test
         void shouldReturn404ErrorWhenNonExistentHearingGroup() {
-            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.empty());
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(null);
 
             Exception exception = assertThrows(LinkedHearingGroupNotFoundException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID));
-            assertEquals("No hearing group found for reference: " + HEARING_GROUP_ID, exception.getMessage());
-            verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
+            assertEquals("No hearing group found for reference: " + REQUEST_ID, exception.getMessage());
+            verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
         }
 
@@ -195,13 +197,13 @@ class LinkedHearingGroupServiceTest {
         void shouldReturn400ErrorWhenGroupDetailsHasStatusPENDING() {
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "PENDING");
 
-            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
-                .willReturn(Optional.of(groupDetails));
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(HEARING_GROUP_ID);
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
 
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID));
             assertEquals("007 group is in a PENDING state", exception.getMessage());
-            verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
+            verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
         }
 
@@ -209,13 +211,13 @@ class LinkedHearingGroupServiceTest {
         void shouldReturn400ErrorWhenGroupDetailsHasStatusERROR() {
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ERROR");
 
-            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
-                .willReturn(Optional.of(groupDetails));
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(HEARING_GROUP_ID);
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
 
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID));
             assertEquals("007 group is in a ERROR state", exception.getMessage());
-            verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
+            verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
         }
 
@@ -249,8 +251,9 @@ class LinkedHearingGroupServiceTest {
                 )));
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
-            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
-                .willReturn(Optional.of(groupDetails));
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(HEARING_GROUP_ID);
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
+
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing1, hearing2));
 
@@ -258,7 +261,7 @@ class LinkedHearingGroupServiceTest {
                 service.deleteLinkedHearingGroup(REQUEST_ID));
             assertEquals("008 Invalid state for unlinking hearing request " + HEARING_ID2,
                          exception.getMessage());
-            verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
+            verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
         }
 
@@ -276,8 +279,9 @@ class LinkedHearingGroupServiceTest {
                 )));
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
-            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
-                .willReturn(Optional.of(groupDetails));
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(HEARING_GROUP_ID);
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
+
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
 
@@ -285,7 +289,7 @@ class LinkedHearingGroupServiceTest {
                 service.deleteLinkedHearingGroup(REQUEST_ID));
             assertEquals("008 Invalid state for unlinking hearing request " + HEARING_ID1,
                          exception.getMessage());
-            verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
+            verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
         }
 
@@ -302,8 +306,8 @@ class LinkedHearingGroupServiceTest {
                 )));
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
 
-            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
-                .willReturn(Optional.of(groupDetails));
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(HEARING_GROUP_ID);
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
 
@@ -311,7 +315,7 @@ class LinkedHearingGroupServiceTest {
                 service.deleteLinkedHearingGroup(REQUEST_ID));
             assertEquals("008 Invalid state for unlinking hearing request " + HEARING_ID1,
                          exception.getMessage());
-            verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
+            verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
         }
 
@@ -343,14 +347,14 @@ class LinkedHearingGroupServiceTest {
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
             hearing1.setLinkedGroupDetails(groupDetails);
             hearing2.setLinkedGroupDetails(groupDetails);
-            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
-                .willReturn(Optional.of(groupDetails));
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(HEARING_GROUP_ID);
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing1, hearing2));
             doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
             service.deleteLinkedHearingGroup(REQUEST_ID);
 
-            verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
+            verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
             verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
         }
@@ -372,14 +376,14 @@ class LinkedHearingGroupServiceTest {
                 )));
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
             hearing.setLinkedGroupDetails(groupDetails);
-            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
-                .willReturn(Optional.of(groupDetails));
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(HEARING_GROUP_ID);
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
             doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
             service.deleteLinkedHearingGroup(REQUEST_ID);
 
-            verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
+            verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
             verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
         }
@@ -402,8 +406,8 @@ class LinkedHearingGroupServiceTest {
             ));
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
             hearing.setLinkedGroupDetails(groupDetails);
-            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
-                .willReturn(Optional.of(groupDetails));
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(HEARING_GROUP_ID);
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
             listAssistThrows4xxError();
@@ -412,7 +416,7 @@ class LinkedHearingGroupServiceTest {
             final HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 400, "005 rejected by List Assist");
             assertEquals(REJECTED_BY_LIST_ASSIST, exception.getMessage());
-            verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
+            verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
             verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
             assertEquals(REJECTED_BY_LIST_ASSIST, response.getDescription());
@@ -437,8 +441,8 @@ class LinkedHearingGroupServiceTest {
             ));
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
             hearing.setLinkedGroupDetails(groupDetails);
-            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID))
-                .willReturn(Optional.of(groupDetails));
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(HEARING_GROUP_ID);
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
             final HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
@@ -447,7 +451,7 @@ class LinkedHearingGroupServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID));
             assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, exception.getMessage());
-            verify(linkedGroupDetailsRepository, times(1)).findById(HEARING_GROUP_ID);
+            verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
             assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, response.getDescription());
             assertEquals(500, response.getResponseCode());
