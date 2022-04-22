@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
-import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingNotValidForUnlinkingException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
@@ -295,7 +294,7 @@ public class LinkedHearingValidator {
         } else {
             Long answer = linkedGroupDetailsRepository.isFoundForRequestId(requestId);
             if (null == answer || answer.intValue() == 0) {
-                throw new LinkedHearingGroupNotFoundException(requestId, errorMessage);
+                throw new LinkedGroupNotFoundException(requestId, errorMessage);
             } else {
                 return answer;
             }

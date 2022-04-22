@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
-import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingNotValidForUnlinkingException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
@@ -1079,7 +1078,7 @@ class LinkedHearingValidatorTest {
         final String requestId = "123";
         given(linkedGroupDetailsRepository.isFoundForRequestId(requestId)).willReturn(null);
 
-        Exception exception = assertThrows(LinkedHearingGroupNotFoundException.class, () ->
+        Exception exception = assertThrows(LinkedGroupNotFoundException.class, () ->
                 linkedHearingValidator.validateHearingGroup(requestId));
         assertEquals("No hearing" + " group found for reference: " + requestId, exception.getMessage());
         verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(requestId);

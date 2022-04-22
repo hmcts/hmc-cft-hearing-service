@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
-import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingManagementInterfaceResponse;
@@ -186,7 +186,7 @@ class LinkedHearingGroupServiceTest {
         void shouldReturn404ErrorWhenNonExistentHearingGroup() {
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(null);
 
-            Exception exception = assertThrows(LinkedHearingGroupNotFoundException.class, () ->
+            Exception exception = assertThrows(LinkedGroupNotFoundException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID));
             assertEquals("No hearing group found for reference: " + REQUEST_ID, exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);

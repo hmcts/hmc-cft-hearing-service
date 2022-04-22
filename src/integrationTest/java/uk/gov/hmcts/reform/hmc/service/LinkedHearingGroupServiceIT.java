@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
-import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
@@ -212,7 +212,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_WhenHearingGroupDoesNotExist() {
-        Exception exception = assertThrows(LinkedHearingGroupNotFoundException.class, () -> linkedHearingGroupService
+        Exception exception = assertThrows(LinkedGroupNotFoundException.class, () -> linkedHearingGroupService
             .deleteLinkedHearingGroup("7600000123"));
         assertEquals("No hearing group found for reference: 7600000123", exception.getMessage());
     }
