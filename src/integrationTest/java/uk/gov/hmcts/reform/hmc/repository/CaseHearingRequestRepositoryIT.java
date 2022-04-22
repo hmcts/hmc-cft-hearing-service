@@ -119,7 +119,7 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testGetCaseHearingId_HearingIdIsValid() {
-        CaseHearingRequestEntity caseHearing = caseHearingRequestRepository.getCaseHearing(2000000000L);
+        CaseHearingRequestEntity caseHearing = caseHearingRequestRepository.getLatestCaseHearingRequest(2000000000L);
         assertNotNull(caseHearing);
         assertNotNull(caseHearing.getCaseHearingID());
     }
@@ -127,7 +127,7 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testGetCaseHearingId_HearingIdNotInDb() {
-        CaseHearingRequestEntity caseHearing = caseHearingRequestRepository.getCaseHearing(2200000000L);
+        CaseHearingRequestEntity caseHearing = caseHearingRequestRepository.getLatestCaseHearingRequest(2200000000L);
         assertNull(caseHearing);
     }
 

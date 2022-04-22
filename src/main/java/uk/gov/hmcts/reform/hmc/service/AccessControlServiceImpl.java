@@ -100,7 +100,8 @@ public class AccessControlServiceImpl implements AccessControlService {
 
     @Override
     public void verifyHearingCaseAccess(Long hearingId, List<String> requiredRoles) {
-        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository.getCaseHearing(hearingId);
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository
+            .getLatestCaseHearingRequest(hearingId);
         if (caseHearingRequestEntity != null) {
             verifyCaseAccess(caseHearingRequestEntity.getCaseReference(), requiredRoles, hearingId);
         }
