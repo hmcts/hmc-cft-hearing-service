@@ -274,8 +274,6 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals(ListingStatus.FIXED.name(), response.getCaseHearings().get(1).getHearingListingStatus());
         assertEquals(ListAssistCaseStatus.LISTED.name(), response.getCaseHearings().get(1).getListAssistCaseStatus());
         assertEquals(1, response.getCaseHearings().get(1).getHearingDaySchedule().size());
-        assertEquals("session1-2", response.getCaseHearings().get(1)
-            .getHearingDaySchedule().get(0).getListAssistSessionId());
         assertEquals("venue3-1", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getHearingVenueId());
         assertEquals("venue2-1", response.getCaseHearings().get(0)
@@ -350,8 +348,6 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals(ListAssistCaseStatus.LISTED.name(),
                 response.getCaseHearings().get(0).getListAssistCaseStatus());
         assertEquals(2, response.getCaseHearings().get(1).getHearingDaySchedule().size());
-        assertEquals("session1-1", response.getCaseHearings().get(1)
-            .getHearingDaySchedule().get(0).getListAssistSessionId());
         assertEquals("venue1-1", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getHearingVenueId());
         assertEquals("venue3-1", response.getCaseHearings().get(0)

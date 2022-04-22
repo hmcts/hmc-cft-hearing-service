@@ -535,7 +535,6 @@ public class TestingUtil {
         entity.setEndDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         entity.setVenueId("venue1");
         entity.setRoomId("room1");
-        entity.setListAssistSessionId("session1");
         entity.setHearingAttendeeDetails(List.of(hearingAttendeeDetailsEntity()));
         entity.setHearingDayPanel(List.of(hearingDayPanelEntities()));
         return entity;
@@ -722,7 +721,6 @@ public class TestingUtil {
         entity.setStartDateTime(LocalDateTime.of(2000, 8, 10, 12, 20));
         entity.setEndDateTime(LocalDateTime.of(2000, 8, 10, 12, 20));
         entity.setRoomId("roomId");
-        entity.setListAssistSessionId("sessionId");
         entity.setVenueId("venueId");
 
         HearingAttendeeDetailsEntity attendee = new HearingAttendeeDetailsEntity();

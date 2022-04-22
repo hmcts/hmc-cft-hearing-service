@@ -249,7 +249,6 @@ class GetHearingResponseMapperTest {
 
     private void assertHearingDaySchedule(HearingDaySchedule hearingDaySchedule) {
         assertAll(
-            () -> assertEquals("session1", hearingDaySchedule.getListAssistSessionId()),
             () -> assertEquals("venue1", hearingDaySchedule.getHearingVenueId()),
             () -> assertEquals("room1", hearingDaySchedule.getHearingRoomId()),
             () -> assertEquals("PanelUser1", hearingDaySchedule.getPanelMemberId())
