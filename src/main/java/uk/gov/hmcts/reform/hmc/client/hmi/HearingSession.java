@@ -28,6 +28,6 @@ public class HearingSession {
     private String hearingVhStatus;
     private String hearingVhId;
     private List<HearingAttendee> hearingAttendees;
-    private List<HearingChannel> hearingJohs;
+    private List<HearingJoh> hearingJohs;
 
 }

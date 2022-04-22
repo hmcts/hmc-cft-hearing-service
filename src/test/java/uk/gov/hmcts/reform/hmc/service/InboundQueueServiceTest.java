@@ -167,10 +167,8 @@ class InboundQueueServiceTest {
                                                    + "      },\n"
                                                    + "      \"isPresiding\": false\n"
                                                    + "    }],\n"
-                                                   + "    \"hearingSessions\": {\n"
-                                                   + "      \"key\": \"<key>\",\n"
-                                                   + "      \"value\": \"<value>\"\n"
-                                                   + "    }\n"
+                                                   + "    \"hearingSessions\": [{\n"
+                                                   + "    }]\n"
                                                    + "  }\n"
                                                    + "}");
 
@@ -236,6 +234,119 @@ class InboundQueueServiceTest {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "2000000000");
             applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+
+            HearingEntity hearingEntity = generateHearingEntity(2000000000L);
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L))
+                .thenReturn(java.util.Optional.of(hearingEntity));
+            when(hmiHearingResponseMapper.mapHmiHearingToEntity(any(), any())).thenReturn(hearingEntity);
+            when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
+                .thenReturn(generateHmcResponse(HearingStatus.AWAITING_LISTING));
+            when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(jsonNode);
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any());
+
+            inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage);
+            verify(hearingRepository).save(hearingEntity);
+            verify(hmiHearingResponseMapper, times(1)).mapHmiHearingToEntity(any(), any());
+            verify(hearingRepository, times(1)).existsById(2000000000L);
+            verify(hearingRepository, times(2)).findById(2000000000L);
+        }
+
+        @Test
+        void shouldProcessMultiDayHearingResponseMessage() throws JsonProcessingException {
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(HEARING_ID, "2000000000");
+            applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+
+            JsonNode jsonNode = OBJECT_MAPPER.readTree("{\n"
+                                                           + "  \"meta\": {\n"
+                                                           + "    \"transactionIdCaseHQ\": \"<transactionIdCaseHQ>\",\n"
+                                                           + "    \"timestamp\": \"2021-08-10T12:20:00\"\n"
+                                                           + "  },\n"
+                                                           + "  \"hearing\": {\n"
+                                                           + "    \"listingRequestId\": \"<listingRequestId>\",\n"
+                                                           + "    \"hearingCaseVersionId\": 10,\n"
+                                                           + "    \"hearingCaseIdHMCTS\": \"<hearingCaseIdHMCTS>\",\n"
+                                                           + "    \"hearingCaseJurisdiction\": {\n"
+                                                           + "      \"test\": \"value\"\n"
+                                                           + "    },\n"
+                                                           + "    \"hearingCaseStatus\": {\n"
+                                                           + "      \"code\": \"LISTED\",\n"
+                                                           + "      \"description\": \"<description>\"\n"
+                                                           + "    },\n"
+                                                           + "    \"hearingIdCaseHQ\": \"<hearingIdCaseHQ>\",\n"
+                                                           + "    \"hearingType\": {\n"
+                                                           + "      \"test\": \"value\"\n"
+                                                           + "    },\n"
+                                                           + "    \"hearingStatus\": {\n"
+                                                           + "      \"code\": \"DRAFT\",\n"
+                                                           + "      \"description\": \"<descrixption>\"\n"
+                                                           + "    },\n"
+                                                           + "    \"hearingCancellationReason\""
+                                                           + ": \"<hearingCancellationReason>\",\n"
+                                                           + "    \"hearingStartTime\": \"2021-08-10T12:20:00\",\n"
+                                                           + "    \"hearingEndTime\": \"2021-08-10T12:20:00\",\n"
+                                                           + "    \"hearingPrivate\": true,\n"
+                                                           + "    \"hearingRisk\": true,\n"
+                                                           + "    \"hearingTranslatorRequired\": false,\n"
+                                                           + "    \"hearingCreatedDate\": \"2021-08-10T12:20:00\",\n"
+                                                           + "    \"hearingCreatedBy\": \"testuser\",\n"
+                                                           + "    \"hearingVenue\": {\n"
+                                                           + "      \"locationIdCaseHQ\": \"<locationIdCaseHQ>\",\n"
+                                                           + "      \"locationName\": \"<locationName>\",\n"
+                                                           + "      \"locationRegion\": \"<locationRegion>\",\n"
+                                                           + "      \"locationCluster\": \"<locationCluster>\",\n"
+                                                           + "      \"locationReferences\": [{\n"
+                                                           + "        \"key\": \"<key>\",\n"
+                                                           + "        \"value\": \"<value>\"\n"
+                                                           + "      }]\n"
+                                                           + "    },\n"
+                                                           + "    \"hearingRoom\": {\n"
+                                                           + "      \"locationIdCaseHQ\": \"<locationIdCaseHQ>\",\n"
+                                                           + "      \"locationName\": \"<roomName>\",\n"
+                                                           + "      \"locationRegion\": {\n"
+                                                           + "        \"key\": \"<key>\",\n"
+                                                           + "        \"value\": \"<value>\"\n"
+                                                           + "      },\n"
+                                                           + "      \"locationCluster\": {\n"
+                                                           + "        \"key\": \"<key>\",\n"
+                                                           + "        \"value\": \"<value>\"\n"
+                                                           + "      },\n"
+                                                           + "      \"locationReferences\": {\n"
+                                                           + "        \"key\": \"<key>\",\n"
+                                                           + "        \"value\": \"<value>\"\n"
+                                                           + "      }\n"
+                                                           + "    },\n"
+                                                           + "    \"hearingAttendees\": [{\n"
+                                                           + "      \"entityIdCaseHQ\": \"<id>\",\n"
+                                                           + "      \"entityId\": \"<id>\",\n"
+                                                           + "      \"entityType\": \"<type>\",\n"
+                                                           + "      \"entityClass\": \"<class>\",\n"
+                                                           + "      \"entityRole\": {\n"
+                                                           + "        \"key\": \"<key>\",\n"
+                                                           + "        \"value\": \"<value>\"\n"
+                                                           + "      },\n"
+                                                           + "      \"hearingChannel\": {\n"
+                                                           + "        \"code\": \"<key>\",\n"
+                                                           + "        \"description\": \"<value>\"\n"
+                                                           + "      }\n"
+                                                           + "    }],\n"
+                                                           + "    \"hearingJohs\": [{\n"
+                                                           + "      \"johId\": \"<johId>\",\n"
+                                                           + "      \"johCode\": \"<johCode>\",\n"
+                                                           + "      \"johName\": \"<johName>\",\n"
+                                                           + "      \"johPosition\": {\n"
+                                                           + "        \"key\": \"<key>\",\n"
+                                                           + "        \"value\": \"<value>\"\n"
+                                                           + "      },\n"
+                                                           + "      \"isPresiding\": false\n"
+                                                           + "    }],\n"
+                                                           + "    \"hearingSessions\": [{\n"
+                                                           + "      \"hearingStartTime\": \"2021-08-10T12:20:00\",\n"
+                                                           + "      \"hearingEndTime\": \"2021-08-10T12:20:00\""
+                                                           + "    }]\n"
+                                                           + "  }\n"
+                                                           + "}");
 
             HearingEntity hearingEntity = generateHearingEntity(2000000000L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
@@ -341,10 +452,8 @@ class InboundQueueServiceTest {
                                                            + "      },\n"
                                                            + "      \"isPresiding\": false\n"
                                                            + "    }],\n"
-                                                           + "    \"hearingSessions\": {\n"
-                                                           + "      \"key\": \"<key>\",\n"
-                                                           + "      \"value\": \"<value>\"\n"
-                                                           + "    }\n"
+                                                           + "    \"hearingSessions\": [{\n"
+                                                           + "    }]\n"
                                                            + "  }\n"
                                                            + "}");
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
