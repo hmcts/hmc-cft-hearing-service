@@ -4,7 +4,6 @@ import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.S
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -14,7 +13,6 @@ import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
-import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -68,20 +66,6 @@ public class HearingIdValidator {
                 || hearingIdStr.charAt(0) != '2') {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
         }
-    }
-
-    public LocalDate filterHearingResponses(HearingEntity hearingEntity) {
-        Optional<HearingResponseEntity> hearingResponse = getHearingResponse(hearingEntity);
-
-        return getLowestDate(hearingResponse.orElseThrow(() -> new BadRequestException("bad request")));
-    }
-
-    public LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
-        Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getHearingDayDetails()
-            .stream().min(Comparator.comparing(hearingDayDetailsEntity -> hearingDayDetailsEntity.getStartDateTime()));
-
-        return hearingDayDetails
-            .orElseThrow(() -> new BadRequestException("bad request")).getStartDateTime().toLocalDate();
     }
 
     public Optional<HearingResponseEntity> getHearingResponse(HearingEntity hearingEntity) {
