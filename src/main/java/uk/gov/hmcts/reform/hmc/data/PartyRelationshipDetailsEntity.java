@@ -5,12 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Table(name = "party_relationship_details")
@@ -19,7 +21,7 @@ import javax.persistence.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PartyRelationshipDetailsEntity implements Serializable {
+public class PartyRelationshipDetailsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -27,11 +29,13 @@ public class PartyRelationshipDetailsEntity implements Serializable {
     @Column(name = "party_relationship_details_id")
     private Long partyRelationshipDetailsId;
 
-    @Column(name = "source_tech_party_id")
-    private Long sourceTechPartyId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_tech_party_id")
+    private HearingPartyEntity sourceTechParty;
 
-    @Column(name = "target_tech_party_id")
-    private Long targetTechPartyId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "target_tech_party_id")
+    private HearingPartyEntity targetTechParty;
 
     @Column(name = "relationship_type")
     private String relationshipType;

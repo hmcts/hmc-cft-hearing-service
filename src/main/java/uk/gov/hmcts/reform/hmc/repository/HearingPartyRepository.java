@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 @Repository
 public interface HearingPartyRepository extends JpaRepository<HearingPartyEntity, Long> {
 
-    @Query("SELECT techPartyId from HearingPartyEntity where partyReference = :partyRef")
-    Long getTechPartyIdByReference(String partyRef);
+    @Query("from HearingPartyEntity where partyReference = :partyRef")
+    HearingPartyEntity getTechPartyByReference(String partyRef);
 
     @Query("SELECT partyReference from HearingPartyEntity where techPartyId = :techPartyId")
     String getReferenceByTechPartyId(Long techPartyId);

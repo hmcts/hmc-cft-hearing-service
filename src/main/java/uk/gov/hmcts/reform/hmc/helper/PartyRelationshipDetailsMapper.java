@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.PartyRelationshipDetailsEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
@@ -32,22 +33,22 @@ public class PartyRelationshipDetailsMapper {
 
                 String relatedPartyId = relatedParty.getRelatedPartyID();
 
-                final Long targetTechPartyId =
-                        hearingPartyRepository.getTechPartyIdByReference(relatedPartyId);
+                final HearingPartyEntity targetTechParty =
+                        hearingPartyRepository.getTechPartyByReference(relatedPartyId);
 
-                if (targetTechPartyId == null) {
+                if (targetTechParty == null) {
                     throw new BadRequestException(
                             String.format("RelatedPartyId with value %s, does not exist in hearing_party db table",
                                     relatedPartyId));
                 }
 
-                final Long sourceTechPartyId =
-                        hearingPartyRepository.getTechPartyIdByReference(partyDetails.getPartyID());
+                final HearingPartyEntity sourceTechParty =
+                        hearingPartyRepository.getTechPartyByReference(partyDetails.getPartyID());
 
                 PartyRelationshipDetailsEntity partyRelationshipDetailsEntity = PartyRelationshipDetailsEntity
                         .builder()
-                        .sourceTechPartyId(sourceTechPartyId)
-                        .targetTechPartyId(targetTechPartyId)
+                        .sourceTechParty(sourceTechParty)
+                        .targetTechParty(targetTechParty)
                         .relationshipType(relatedParty.getRelationshipType())
                         .build();
                 partyRelationshipDetails.add(partyRelationshipDetailsEntity);
