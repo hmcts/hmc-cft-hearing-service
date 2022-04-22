@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.base.Enums;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
@@ -39,7 +37,6 @@ import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
-import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
@@ -78,9 +75,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_RELATED
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_VERSION_NUMBER;
-import static uk.gov.hmcts.reform.hmc.model.HearingResultType.ADJOURNED;
-import static uk.gov.hmcts.reform.hmc.model.HearingResultType.CANCELLED;
-import static uk.gov.hmcts.reform.hmc.model.HearingResultType.COMPLETED;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
@@ -474,34 +468,5 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                     String messageType) {
         var jsonNode = objectMapperService.convertObjectToJsonNode(hmiDeleteHearingRequest);
         messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType);
-    }
-
-    private void validateHearingActualsStatus(Long hearingId, String errorMessage) {
-        String status = getStatus(hearingId);
-        DeleteHearingStatus deleteHearingStatus = Enums.getIfPresent(DeleteHearingStatus.class, status).orNull();
-        if (deleteHearingStatus != null) {
-            boolean isValidStatus = DeleteHearingStatus.isValidHearingActuals(deleteHearingStatus);
-            LocalDate minStartDate = hearingIdValidator
-                .filterHearingResponses(hearingRepository.findById(hearingId)
-                                            .orElseThrow(() -> new HearingNotFoundException(
-                                                hearingId,
-                                                HEARING_ID_NOT_FOUND
-                                            )));
-            LocalDate now = LocalDate.now();
-            boolean isMinStartDatePast = minStartDate.isBefore(now) || minStartDate.equals(now);
-            if (!(isValidStatus && isMinStartDatePast)) {
-                throw new BadRequestException(errorMessage);
-            }
-        }
-    }
-
-    private Optional<ActualHearingEntity> getActualHearing(Long hearingId) {
-        Optional<HearingResponseEntity> hearingResponseEntity = hearingIdValidator
-            .getHearingResponse(hearingRepository.findById(hearingId)
-                                    .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND)));
-        if (hearingResponseEntity.isPresent()) {
-            return actualHearingRepository.findByHearingResponse(hearingResponseEntity.get());
-        }
-        return Optional.empty();
     }
 }
