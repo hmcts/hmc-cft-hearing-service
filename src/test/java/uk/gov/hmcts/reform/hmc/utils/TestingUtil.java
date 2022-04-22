@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
 import uk.gov.hmcts.reform.hmc.data.OrganisationDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
+import uk.gov.hmcts.reform.hmc.data.PartyRelationshipDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
@@ -718,7 +719,21 @@ public class TestingUtil {
         entity.setPartyRoleType("role");
         entity.setContactDetails(List.of(contactDetailsEntity_Email(), contactDetailsEntity_Phone()));
         entity.setIndividualDetailEntity(List.of(individualDetailEntity()));
+        entity.setPartyRelationshipDetailsEntity(List.of(partyRelationshipDetailsEntity(1L, 5L, 10L, "A"),
+                partyRelationshipDetailsEntity(2L, 15L, 20L, "B")));
         return entity;
+    }
+
+    private static PartyRelationshipDetailsEntity partyRelationshipDetailsEntity(Long id,
+                                                                                 Long sourceTechPartyId,
+                                                                                 Long targetTechPartyId,
+                                                                                 String relationshipType) {
+        return PartyRelationshipDetailsEntity.builder()
+                .partyRelationshipDetailsId(id)
+                .sourceTechPartyId(sourceTechPartyId)
+                .targetTechPartyId(targetTechPartyId)
+                .relationshipType(relationshipType)
+                .build();
     }
 
     private static CaseHearingRequestEntity caseHearingRequestEntityWithPartyOrg() {

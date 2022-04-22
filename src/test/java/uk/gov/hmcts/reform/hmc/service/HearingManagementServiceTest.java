@@ -94,6 +94,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -334,6 +335,26 @@ class HearingManagementServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest));
             assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
+        }
+
+        @Test
+        void shouldFailIfNoCorrespondingHearingPartyTechIdInDatabase() {
+
+            HearingDetails hearingDetails = TestingUtil.hearingDetails();
+            hearingDetails.setHearingIsLinkedFlag(Boolean.FALSE);
+            HearingRequest hearingRequest = new HearingRequest();
+            hearingRequest.setHearingDetails(hearingDetails);
+            hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+            hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+            hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+            hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+            hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+
+            given(partyRelationshipDetailsMapper.modelToEntity(any()))
+                    .willThrow(BadRequestException.class);
+            assertThrows(BadRequestException.class, () -> hearingManagementService
+                    .saveHearingRequest(hearingRequest));
+            verify(partyRelationshipDetailsRepository, never()).saveAll(any());
         }
 
         @Test

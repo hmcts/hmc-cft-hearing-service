@@ -13,4 +13,7 @@ public interface HearingPartyRepository extends JpaRepository<HearingPartyEntity
 
     @Query("SELECT techPartyId from HearingPartyEntity where partyReference = :partyRef")
     Long getTechPartyIdByReference(String partyRef);
+
+    @Query("SELECT partyReference from HearingPartyEntity where techPartyId = :techPartyId")
+    String getReferenceByTechPartyId(Long techPartyId);
 }

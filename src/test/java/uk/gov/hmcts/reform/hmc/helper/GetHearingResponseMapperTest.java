@@ -20,11 +20,12 @@ import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
+import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingPartyRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
@@ -34,6 +35,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class GetHearingResponseMapperTest {
@@ -42,7 +44,7 @@ class GetHearingResponseMapperTest {
     private GetHearingResponseMapper getHearingResponseMapper;
 
     @Mock
-    private LinkedHearingDetailsRepository linkedHearingDetailsRepository;
+    private HearingPartyRepository hearingPartyRepository;
 
     @Test
     void toHearingsResponseWhenDataIsPresentForOrg() {
@@ -74,6 +76,9 @@ class GetHearingResponseMapperTest {
             .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityInd()));
         hearingEntity.getHearingResponses().get(0)
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
+
+        given(hearingPartyRepository.getReferenceByTechPartyId(10L)).willReturn("P1");
+        given(hearingPartyRepository.getReferenceByTechPartyId(20L)).willReturn("P2");
 
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
@@ -309,8 +314,21 @@ class GetHearingResponseMapperTest {
             () -> assertEquals(true, individualDetails.getVulnerableFlag()),
             () -> assertEquals("details", individualDetails.getVulnerabilityDetails()),
             () -> assertEquals("01234567890", individualDetails.getHearingChannelPhone().get(0)),
-            () -> assertEquals("hearing.channel@email.com", individualDetails.getHearingChannelEmail().get(0))
+            () -> assertEquals("hearing.channel@email.com", individualDetails.getHearingChannelEmail().get(0)),
+            () -> assertRelatedParties(individualDetails.getRelatedParties())
         );
+    }
+
+    private void assertRelatedParties(List<RelatedParty> relatedParties) {
+        RelatedParty relatedParty1 = new RelatedParty();
+        relatedParty1.setRelatedPartyID("P1");
+        relatedParty1.setRelationshipType("A");
+
+        RelatedParty relatedParty2 = new RelatedParty();
+        relatedParty1.setRelatedPartyID("P2");
+        relatedParty1.setRelationshipType("B");
+
+        relatedParties.containsAll(List.of(relatedParty1, relatedParty2));
     }
 
     private void assertPanelRequirements(PanelRequirements panelRequirements) {
