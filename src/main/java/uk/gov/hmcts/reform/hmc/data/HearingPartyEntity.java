@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 
@@ -25,7 +24,6 @@ import javax.persistence.Table;
 @Table(name = "hearing_party")
 @Entity
 @Data
-@EqualsAndHashCode(exclude = "organisationDetailEntity")
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
