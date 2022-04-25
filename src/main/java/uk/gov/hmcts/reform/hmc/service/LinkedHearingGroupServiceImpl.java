@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
-import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GetLinkedHearingGroupResponse;
@@ -52,7 +51,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIS
 public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService {
 
     private final HearingRepository hearingRepository;
-    public final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
+    private final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
     private final LinkedHearingValidator linkedHearingValidator;
     private final LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
     private final LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
@@ -150,15 +149,12 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Override
-    public GetLinkedHearingGroupResponse getLinkedHearingGroupDetails(String requestId) {
-        if (!requestId.matches("^\\d+$")
-            || linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId) == null)  {
-            throw new LinkedGroupNotFoundException(requestId,INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
-        }
-        return getLinkedHearingGroupResponse(requestId);
+    public GetLinkedHearingGroupResponse getLinkedHearingGroupResponse(String requestId) {
+        linkedHearingValidator.validateRequestId(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
+        return getLinkedHearingGroupDetails(requestId);
     }
 
-    private GetLinkedHearingGroupResponse getLinkedHearingGroupResponse(String requestId) {
+    private GetLinkedHearingGroupResponse getLinkedHearingGroupDetails(String requestId) {
         LinkedGroupDetails linkedGroupDetails =
             linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId);
         GetLinkedHearingGroupResponse response = new GetLinkedHearingGroupResponse();

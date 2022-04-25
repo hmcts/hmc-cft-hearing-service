@@ -12,5 +12,5 @@ public interface LinkedHearingGroupService {
 
     void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest);
 
-    GetLinkedHearingGroupResponse getLinkedHearingGroupDetails(String requestId);
+    GetLinkedHearingGroupResponse getLinkedHearingGroupResponse(String requestId);
 }

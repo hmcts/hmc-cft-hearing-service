@@ -39,9 +39,10 @@ public class LinkedHearingGroupController {
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success (with content)"),
+        @ApiResponse(code = 400, message = "Invalid linked group id"),
         @ApiResponse(code = 404, message = "Invalid linked group id"),
     })
-    public GetLinkedHearingGroupResponse getLinkedHearingGroupDetails(@PathVariable("id") String requestId) {
-        return linkedHearingGroupService.getLinkedHearingGroupDetails(requestId);
+    public GetLinkedHearingGroupResponse getLinkedHearingGroup(@PathVariable("id") String requestId) {
+        return linkedHearingGroupService.getLinkedHearingGroupResponse(requestId);
     }
 }

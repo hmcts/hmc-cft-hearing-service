@@ -733,10 +733,10 @@ class LinkedHearingGroupControllerIT extends BaseTest {
     class GetLinkedHearingGroup {
 
         @Test
-        void shouldReturn404_WhenLinkedHearingIdDoesNotExist() throws Exception {
+        void shouldReturn400_WhenLinkedHearingGroupIdIsNotValid() throws Exception {
             mockMvc.perform(get(url + "/760000000o")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().is(404))
+                .andExpect(status().is(400))
                 .andReturn();
         }
 
