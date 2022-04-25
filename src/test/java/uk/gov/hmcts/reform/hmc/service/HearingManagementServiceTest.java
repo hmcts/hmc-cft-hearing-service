@@ -237,6 +237,7 @@ class HearingManagementServiceTest {
                 hearingIdValidator,
                 linkedHearingValidator,
                 actualHearingRepository,
+                actualHearingDayRepository,
                 partyRelationshipDetailsMapper,
                 partyRelationshipDetailsRepository);
     }
