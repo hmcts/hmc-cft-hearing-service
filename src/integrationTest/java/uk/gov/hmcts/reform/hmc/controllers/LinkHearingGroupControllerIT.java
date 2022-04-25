@@ -552,7 +552,7 @@ class LinkHearingGroupControllerIT extends BaseTest {
             mockMvc.perform(put(url + "?id=88782")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
-                .andExpect(status().is(400))
+                .andExpect(status().is(404))
                 .andExpect(jsonPath("$.errors", hasItem(ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS)))
                 .andReturn();
 
