@@ -21,4 +21,16 @@ public class LinkedHearingDetailsAuditMapper {
         linkedHearingDetailsAuditEntity.getHearing().setLinkedOrder(null);
         return linkedHearingDetailsAuditEntity;
     }
+
+    public LinkedHearingDetailsAudit modelToEntityUpdate(HearingEntity hearingEntity) {
+        LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
+        linkedGroupDetails.setLinkedGroupId(hearingEntity.getLinkedGroupDetails().getLinkedGroupId());
+        LinkedHearingDetailsAudit linkedHearingDetailsAuditEntity = new LinkedHearingDetailsAudit();
+        linkedHearingDetailsAuditEntity.setLinkedGroup(linkedGroupDetails);
+        linkedHearingDetailsAuditEntity.setLinkedGroupVersion(hearingEntity.getLinkedGroupDetails()
+                                                                  .getLinkedGroupLatestVersion());
+        linkedHearingDetailsAuditEntity.setHearing(hearingEntity);
+        linkedHearingDetailsAuditEntity.setLinkedOrder(hearingEntity.getLinkedOrder());
+        return linkedHearingDetailsAuditEntity;
+    }
 }
