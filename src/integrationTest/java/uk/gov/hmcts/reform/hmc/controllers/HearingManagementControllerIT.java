@@ -193,8 +193,8 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(get(url + "/2000000136" + "?isValid=true")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(204))
-            .andExpect(header().exists("latestHearingRequestVersion"))
-            .andExpect(header().string("latestHearingRequestVersion", "3"))
+            .andExpect(header().exists("Latest-Hearing-Request-Version"))
+            .andExpect(header().string("Latest-Hearing-Request-Version", "3"))
             .andReturn();
     }
 
