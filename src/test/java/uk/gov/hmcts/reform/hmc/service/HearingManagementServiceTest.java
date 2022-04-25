@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -185,7 +186,10 @@ class HearingManagementServiceTest {
     ActualHearingRepository actualHearingRepository;
 
     @Mock
-    ActualHearingDayRepository actualHearingDayRepository;
+    ActualHearingDayRepository  actualHearingDayRepository;
+
+    @Mock
+    LinkedHearingValidator linkedHearingValidator;
 
     @Mock
     ApplicationParams applicationParams;
@@ -204,8 +208,6 @@ class HearingManagementServiceTest {
     ArgumentCaptor<List<PartyRelationshipDetailsEntity>> savedEntitiesCaptor;
 
     HearingIdValidator hearingIdValidator;
-
-    LinkedHearingValidator linkedHearingValidator;
 
     JsonNode jsonNode = mock(JsonNode.class);
 
@@ -235,7 +237,6 @@ class HearingManagementServiceTest {
                 hearingIdValidator,
                 linkedHearingValidator,
                 actualHearingRepository,
-                actualHearingDayRepository,
                 partyRelationshipDetailsMapper,
                 partyRelationshipDetailsRepository);
     }
@@ -1126,6 +1127,94 @@ class HearingManagementServiceTest {
         }
 
         @Test
+        void updateHearingRequestShouldPassWithValidPlannedResponses() {
+            val hearingDayDetailsEntity = new HearingDayDetailsEntity();
+            hearingDayDetailsEntity.setStartDateTime(LocalDateTime.now());
+
+            val hearingResponseEntity = new HearingResponseEntity();
+            hearingResponseEntity.setRequestTimeStamp(LocalDateTime.now());
+            hearingResponseEntity.setRequestVersion(2);
+            hearingResponseEntity.setResponseVersion(2);
+
+            hearingDayDetailsEntity.setEndDateTime(LocalDateTime.now());
+            hearingResponseEntity.setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity));
+            val hearingRequest = TestingUtil.updateHearingRequest();
+            val versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+            val hearingId = 2000000000L;
+            val hearingEntity = generateHearingEntity(
+                hearingId,
+                UPDATE_REQUESTED.name(),
+                versionNumber
+            );
+            hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity));
+
+            when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
+            when(hearingMapper.modelToEntity(any(), any(), any(), any())).thenReturn(hearingEntity);
+            when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
+            when(hearingRepository.existsById(hearingId)).thenReturn(true);
+            when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
+
+            HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
+            assertEquals(hearingResponse.getVersionNumber(), versionNumber + 1);
+            verify(hearingRepository).existsById(hearingId);
+            verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
+        }
+
+        @Test
+        void updateHearingRequestShouldPassWithOutValidPlannedResponses() {
+            final long hearingId = 2000000000L;
+            UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+            final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+            HearingEntity hearingEntity = generateHearingEntity(hearingId, UPDATE_REQUESTED.name(),
+                                                                versionNumber
+            );
+            when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
+            when(hearingMapper.modelToEntity(any(), any(), any(), any())).thenReturn(hearingEntity);
+            when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
+            when(hearingRepository.existsById(hearingId)).thenReturn(true);
+            when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
+
+            HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
+            assertEquals(hearingResponse.getVersionNumber(), versionNumber + 1);
+            verify(hearingRepository).existsById(hearingId);
+            verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
+        }
+
+        @Test
+        void updateHearingRequestShouldThrowErrorDueToPlannedResponse() {
+            val hearingDayDetailsEntity = new HearingDayDetailsEntity();
+            hearingDayDetailsEntity.setStartDateTime(
+                LocalDateTime.of(2021, 5, 20,10,10,10)
+            );
+
+            val hearingResponseEntity = new HearingResponseEntity();
+            val plannedResponse = LocalDateTime.of(2021, 5, 20,10,10,10);
+            hearingResponseEntity.setRequestTimeStamp(plannedResponse);
+            hearingResponseEntity.setRequestVersion(2);
+            hearingResponseEntity.setResponseVersion(2);
+            hearingDayDetailsEntity.setEndDateTime(LocalDateTime.now());
+            hearingResponseEntity.setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity));
+
+            val hearingRequest = TestingUtil.updateHearingRequest();
+            val hearingId = 2000000000L;
+            val versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+            val hearingEntity = generateHearingEntity(hearingId,
+                                                      UPDATE_REQUESTED.name(),
+                                                      versionNumber
+            );
+            hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity));
+
+            when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
+            when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
+            when(hearingRepository.existsById(hearingId)).thenReturn(true);
+            when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
+
+            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .updateHearingRequest(hearingId, hearingRequest));
+            assertEquals(INVALID_PUT_HEARING_STATUS, exception.getMessage());
+        }
+
+        @Test
         void updateHearingRequestShouldThrowErrorWhenVersionNumberDoesNotMatchRequest() {
             final long hearingId = 2000000000L;
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(6);
@@ -1662,7 +1751,7 @@ class HearingManagementServiceTest {
 
 
         @Test
-        void shouldThrowErrorWhenActualHearingDayNotPresentForActualHearing() {
+        void fshouldThrowErrorWhenActualHearingDayNotPresentForActualHearing() {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
             final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
