@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
-import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_MISSING_REQUIRED;
 
 @Service
@@ -129,7 +128,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 .filter(roleAssignment -> checkCaseType(roleAssignment.getAttributes(), caseTypeId)
                     && checkJurisdiction(roleAssignment.getAttributes(), jurisdictionId))
                 .allMatch(roleAssignment -> LISTED_HEARING_VIEWER.equals(roleAssignment.getRoleName()))) {
-                throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_STATUS);
+                throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_MISSING_REQUIRED);
             }
         }
     }

@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_STATUS;
+import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_MISSING_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 
@@ -94,7 +94,7 @@ class AccessControlServiceTest {
         when(hearingRepository.getStatus(anyLong())).thenReturn(HearingStatus.UPDATE_REQUESTED.name());
         Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> accessControlService
             .verifyAccess(1234L, Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER)));
-        assertEquals(ROLE_ASSIGNMENT_INVALID_STATUS, exception.getMessage());
+        assertEquals(ROLE_ASSIGNMENT_MISSING_REQUIRED, exception.getMessage());
     }
 
     @Test
@@ -126,7 +126,7 @@ class AccessControlServiceTest {
                 12345L
             )
         );
-        assertEquals(ROLE_ASSIGNMENT_INVALID_STATUS, exception.getMessage());
+        assertEquals(ROLE_ASSIGNMENT_MISSING_REQUIRED, exception.getMessage());
     }
 
     @Test
