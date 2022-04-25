@@ -20,10 +20,11 @@
     <cpe>cpe:/a:pivotal_software:spring_security</cpe>
     <cve>CVE-2018-1258</cve>
   </suppress>
-  <suppress until="2022-04-25">
+  <suppress until="2022-05-25">
     <notes>
       <![CDATA[Temporary suppressions pending investigation]]>
     </notes>
+    <cve>CVE-2022-22968</cve>
     <cve>CVE-2022-21724</cve>
     <cve>CVE-2022-21724</cve>
     <cve>CVE-2020-36518</cve>
