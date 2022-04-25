@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -563,4 +562,28 @@ class BeanValidatorTest {
         Set<ConstraintViolation<GroupDetails>> violations = validator.validate(groupDetails);
         assertTrue(violations.isEmpty());
     }
+
+    @Test
+    void whenValidPartyRoleIs40Characters() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID("XXX1");
+        partyDetails.setPartyType(PartyType.IND.getLabel());
+        partyDetails.setPartyRole("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN");
+        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    void whenInvalidPartyRoleIs41Characters() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID("XXX1");
+        partyDetails.setPartyType(PartyType.IND.getLabel());
+        partyDetails.setPartyRole("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNO");
+        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
+        assertEquals(1, violations.size());
+        assertTrue(violations.stream()
+                       .map(ConstraintViolation::getMessage)
+                       .anyMatch(msg -> msg.equals(PARTY_ROLE_MAX_LENGTH)));
+    }
+
 }
