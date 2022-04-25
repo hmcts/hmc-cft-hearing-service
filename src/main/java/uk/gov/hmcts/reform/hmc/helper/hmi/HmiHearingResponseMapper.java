@@ -39,27 +39,27 @@ public class HmiHearingResponseMapper {
         HearingResponseEntity hearingResponseEntity = mapHearingResponseEntity(hearing, hearingEntity);
 
         List<HearingDayDetailsEntity> hearingDayDetailsEntities = mapHearingDayDetailsFromSessionDetails(hearing);
-        ArrayList<HearingAttendeeDetailsEntity> hearingAttendeeDetailsEntity = mapHearingAttendeeDetailsEntity(hearing);
-        ArrayList<HearingDayPanelEntity> hearingDayPanelEntity = mapHearingDayPanelEntity(hearing);
+        ArrayList<HearingAttendeeDetailsEntity> hearingAttendeeDetailsEntities = mapHearingAttendeeDetailsEntity(hearing);
+        ArrayList<HearingDayPanelEntity> hearingDayPanelEntities = mapHearingDayPanelEntity(hearing);
 
         List<HearingSession> hearingSession = hearing.getHearing().getHearingSessions();
         if (hearingSession != null && !hearingSession.isEmpty()) {
             for (HearingDayDetailsEntity hearingDayDetailsEntity : hearingDayDetailsEntities) {
                 setHearingDayDetails(hearingResponseEntity,
                                      hearingDayDetailsEntity,
-                                     hearingDayPanelEntity,
-                                     hearingAttendeeDetailsEntity);
+                                     hearingDayPanelEntities,
+                                     hearingAttendeeDetailsEntities);
             }
+            hearingResponseEntity.setHearingDayDetails(hearingDayDetailsEntities);
         } else {
             HearingDayDetailsEntity hearingDayDetailsEntity = mapHearingDayDetailsEntity(hearing);
             setHearingDayDetails(hearingResponseEntity,
                                  hearingDayDetailsEntity,
-                                 hearingDayPanelEntity,
-                                 hearingAttendeeDetailsEntity);
+                                 hearingDayPanelEntities,
+                                 hearingAttendeeDetailsEntities);
+            hearingResponseEntity.setHearingDayDetails(new ArrayList<>(List.of(hearingDayDetailsEntity)));
         }
 
-
-        hearingResponseEntity.setHearingDayDetails(hearingDayDetailsEntities);
         hearingEntity.getHearingResponses().add(hearingResponseEntity);
         hearingEntity.setStatus(getHearingStatus(hearing, hearingEntity).name());
         return hearingEntity;
