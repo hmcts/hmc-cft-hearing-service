@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.service;
 
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
@@ -52,7 +54,9 @@ import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
@@ -206,10 +210,30 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validateHearingStatusForUpdate(Long hearingId) {
-        String status = hearingRepository.getStatus(hearingId);
-        if (!PutHearingStatus.isValid(status)) {
+        String status = getStatus(hearingId);
+        if (!PutHearingStatus.isValid(status) || validatePlannedStartDate(hearingId,status)) {
             throw new BadRequestException(INVALID_PUT_HEARING_STATUS);
         }
+    }
+
+    private boolean validatePlannedStartDate(Long hearingId, String status) {
+
+        val statusValues = Arrays.asList(
+            HearingStatus.LISTED.toString(),
+            HearingStatus.UPDATE_REQUESTED.toString(),
+            HearingStatus.UPDATE_SUBMITTED.toString()
+        );
+
+        val existingHearing = hearingRepository.findById(hearingId)
+            .orElseThrow(() -> new HearingNotFoundException(
+                hearingId,
+                HEARING_ID_NOT_FOUND
+            ));
+        if (existingHearing.hasHearingResponses()) {
+            return statusValues.contains(status)
+                && linkedHearingValidator.filterHearingResponses(existingHearing).isBefore(LocalDate.now());
+        }
+        return false;
     }
 
     /**
@@ -431,10 +455,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validateDeleteHearingStatus(Long hearingId) {
-        String status = hearingRepository.getStatus(hearingId);
+        String status = getStatus(hearingId);
         if (!DeleteHearingStatus.isValid(status)) {
             throw new BadRequestException(INVALID_DELETE_HEARING_STATUS);
         }
+    }
+
+    private String getStatus(Long hearingId) {
+        return hearingRepository.getStatus(hearingId);
     }
 
     private void validateVersionNumber(Long hearingId, Integer versionNumber) {
@@ -469,5 +497,4 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         var jsonNode = objectMapperService.convertObjectToJsonNode(hmiDeleteHearingRequest);
         messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType);
     }
-
 }
