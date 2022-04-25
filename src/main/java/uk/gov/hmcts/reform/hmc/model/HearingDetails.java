@@ -70,7 +70,7 @@ public class HearingDetails {
     @NotNull(message = ValidationError.INVALID_PANEL_REQUIREMENTS)
     private PanelRequirements panelRequirements;
 
-    private Boolean hearingIsLinkedFlag = false;
+    private Boolean hearingIsLinkedFlag;
 
     @Size(max = 70, message = ValidationError.LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH)
     private String amendReasonCode;
