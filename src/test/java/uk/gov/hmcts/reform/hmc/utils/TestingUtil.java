@@ -378,7 +378,9 @@ public class TestingUtil {
 
     public static UpdateHearingRequest updateHearingRequest(int version) {
         UpdateHearingRequest request = new UpdateHearingRequest();
-        request.setHearingDetails(hearingDetails());
+        HearingDetails hearingDetails = hearingDetails();
+        hearingDetails.setAmendReasonCode("reason");
+        request.setHearingDetails(hearingDetails);
         request.setCaseDetails(caseDetails());
         request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         RequestDetails requestDetails = new RequestDetails();
@@ -393,7 +395,9 @@ public class TestingUtil {
 
     public static UpdateHearingRequest validUpdateHearingRequest() {
         UpdateHearingRequest request = new UpdateHearingRequest();
-        request.setHearingDetails(hearingDetails());
+        HearingDetails hearingDetails = hearingDetails();
+        hearingDetails.setAmendReasonCode("reason");
+        request.setHearingDetails(hearingDetails);
         CaseDetails caseDetails = getValidCaseDetails();
         request.setCaseDetails(caseDetails);
         request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
@@ -885,6 +889,7 @@ public class TestingUtil {
     public static HearingDetails hearingDetailsWithAllFields() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
+        hearingDetails.setAmendReasonCode("reason");
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
         hearingWindow.setDateRangeEnd(LocalDate.parse("2017-03-01"));

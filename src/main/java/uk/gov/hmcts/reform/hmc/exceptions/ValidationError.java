@@ -222,5 +222,6 @@ public final class ValidationError {
     public static final String AMEND_REASON_CODE_EMPTY = "Amend reason code can not be empty";
     public static final String AMEND_REASON_CODE_MAX_LENGTH = "Amend reason code must not be more than "
         + "70 " + CHARACTERS_LONG;
+    public static final String INVALID_AMEND_REASON_CODE = "Amend reason code details are required";
 
 }
