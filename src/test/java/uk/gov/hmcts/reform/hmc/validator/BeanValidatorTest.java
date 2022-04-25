@@ -33,7 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_TYPE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_VALUE_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.GROUP_REASON_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_LOCATION_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_DETAILS_NULL_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_ROLE_EMPTY;
@@ -534,25 +533,6 @@ class BeanValidatorTest {
     }
 
     @Test
-    @Disabled("test prior to HMAN-146 make nullable change, now use shouldSucceedWhenGroupReasonIsNullForHman146()")
-    void shouldFailWhenGroupReasonIsNullBeforeHman146() {
-        GroupDetails groupDetails = new GroupDetails();
-        groupDetails.setGroupReason(null);
-        groupDetails.setGroupName("groupName");
-        groupDetails.setGroupComments("groupComments");
-        groupDetails.setGroupLinkType("linkType");
-        Set<ConstraintViolation<GroupDetails>> violations = validator.validate(groupDetails);
-        assertFalse(violations.isEmpty());
-        List<String> validationErrors = new ArrayList<>();
-        violations.forEach(e -> {
-            validationErrors.add(e.getMessage());
-            logger.info(e.getMessage());
-        });
-        assertEquals(1, violations.size());
-        assertTrue(validationErrors.contains(GROUP_REASON_EMPTY));
-    }
-
-    @Test
     void shouldSucceedWhenGroupReasonIsNullForHman146() {
         GroupDetails groupDetails = new GroupDetails();
         groupDetails.setGroupReason(null);
@@ -561,29 +541,6 @@ class BeanValidatorTest {
         groupDetails.setGroupLinkType("linkType");
         Set<ConstraintViolation<GroupDetails>> violations = validator.validate(groupDetails);
         assertTrue(violations.isEmpty());
-    }
-
-    @Test
-    void whenValidPartyRoleIs40Characters() {
-        PartyDetails partyDetails = new PartyDetails();
-        partyDetails.setPartyID("XXX1");
-        partyDetails.setPartyType(PartyType.IND.getLabel());
-        partyDetails.setPartyRole("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN");
-        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
-        assertTrue(violations.isEmpty());
-    }
-
-    @Test
-    void whenInvalidPartyRoleIs41Characters() {
-        PartyDetails partyDetails = new PartyDetails();
-        partyDetails.setPartyID("XXX1");
-        partyDetails.setPartyType(PartyType.IND.getLabel());
-        partyDetails.setPartyRole("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNO");
-        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
-        assertEquals(1, violations.size());
-        assertTrue(violations.stream()
-                       .map(ConstraintViolation::getMessage)
-                       .anyMatch(msg -> msg.equals(PARTY_ROLE_MAX_LENGTH)));
     }
 
 }
