@@ -39,7 +39,8 @@ public class HmiHearingResponseMapper {
         HearingResponseEntity hearingResponseEntity = mapHearingResponseEntity(hearing, hearingEntity);
 
         List<HearingDayDetailsEntity> hearingDayDetailsEntities = mapHearingDayDetailsFromSessionDetails(hearing);
-        ArrayList<HearingAttendeeDetailsEntity> hearingAttendeeDetailsEntities = mapHearingAttendeeDetailsEntity(hearing);
+        ArrayList<HearingAttendeeDetailsEntity> hearingAttendeeDetailsEntities =
+            mapHearingAttendeeDetailsEntity(hearing);
         ArrayList<HearingDayPanelEntity> hearingDayPanelEntities = mapHearingDayPanelEntity(hearing);
 
         List<HearingSession> hearingSession = hearing.getHearing().getHearingSessions();
