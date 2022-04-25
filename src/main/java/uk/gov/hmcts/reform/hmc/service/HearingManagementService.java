@@ -28,4 +28,6 @@ public interface HearingManagementService {
 
     ResponseEntity hearingCompletion(Long hearingId);
 
+    String getStatus(Long hearingId);
+
 }

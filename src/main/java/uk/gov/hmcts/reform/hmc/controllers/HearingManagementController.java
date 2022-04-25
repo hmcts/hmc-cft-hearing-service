@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -67,9 +68,13 @@ public class HearingManagementController {
     public ResponseEntity<GetHearingResponse> getHearing(@PathVariable("id") Long hearingId,
                                                          @RequestParam(value = "isValid",
                                                              defaultValue = "false") boolean isValid) {
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(
-            HEARING_VIEWER,
-            LISTED_HEARING_VIEWER));
+        String status = hearingManagementService.getStatus(hearingId);
+        List<String> requiredRoles = Lists.newArrayList(HEARING_VIEWER);
+        if (HearingStatus.LISTED.name().equals(status)) {
+            requiredRoles.add(LISTED_HEARING_VIEWER);
+        }
+
+        accessControlService.verifyHearingCaseAccess(hearingId, requiredRoles);
         return hearingManagementService.getHearingRequest(hearingId, isValid);
     }
 

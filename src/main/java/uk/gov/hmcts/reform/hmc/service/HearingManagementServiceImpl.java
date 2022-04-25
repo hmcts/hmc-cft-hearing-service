@@ -343,7 +343,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    private String getStatus(Long hearingId) {
+    public String getStatus(Long hearingId) {
         return hearingRepository.getStatus(hearingId);
     }
 
