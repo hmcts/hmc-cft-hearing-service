@@ -117,6 +117,7 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.INVALID_CASE_REFERENCE;
 
@@ -512,7 +513,7 @@ class HearingManagementServiceTest {
         void shouldVerifyAccessWhenRoleAssignmentValidAndMatchesOnlyCaseTypeId() {
             stubRoleAssignments(RoleAssignmentAttributes.builder()
                                     .jurisdiction(Optional.of(JURISDICTION))
-                                    .caseType(Optional.of(CASE_TYPE)), ROLE_NAME);
+                                    .caseType(Optional.of(CASE_TYPE)), HEARING_VIEWER);
             doReturn(USER_ID).when(securityUtils).getUserId();
             DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
                 .jurisdiction("different Jurisdiction")

@@ -68,7 +68,7 @@ public class HearingManagementController {
                                                          @RequestParam(value = "isValid",
                                                              defaultValue = "false") boolean isValid) {
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(
-            HEARING_MANAGER,
+            HEARING_VIEWER,
             LISTED_HEARING_VIEWER));
         return hearingManagementService.getHearingRequest(hearingId, isValid);
     }
