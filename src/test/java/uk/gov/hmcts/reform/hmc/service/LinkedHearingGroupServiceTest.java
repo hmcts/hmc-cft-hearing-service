@@ -570,7 +570,9 @@ class LinkedHearingGroupServiceTest {
         private void assertHearingsInGroup(LinkedHearingDetails linkedHearingDetails) {
             assertAll(
                 () -> assertNotNull(linkedHearingDetails.getHearingId()),
-                () -> assertNotNull(linkedHearingDetails.getHearingOrder())
+                () -> assertNotNull(linkedHearingDetails.getHearingOrder()),
+                () -> assertEquals("122211123211",linkedHearingDetails.getCaseRef()),
+                () -> assertEquals("Some internal code", linkedHearingDetails.getHmctsInternalCaseName())
             );
         }
 
@@ -597,6 +599,8 @@ class LinkedHearingGroupServiceTest {
             caseHearingRequestEntity.setHearingWindowStartDateRange(LocalDate.now().plusDays(2));
             caseHearingRequestEntity.setHearingWindowEndDateRange(LocalDate.now().plusDays(4));
             caseHearingRequestEntity.setVersionNumber(versionNumber);
+            caseHearingRequestEntity.setCaseReference("122211123211");
+            caseHearingRequestEntity.setHmctsInternalCaseName("Some internal code");
 
             hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
 
