@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
@@ -94,6 +95,9 @@ public class HmiHearingResponseMapper {
                     hmcHearingUpdate.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
                 }
             }
+            hmcHearingUpdate.setListAssistCaseStatus(ListAssistCaseStatus.valueOf(hearingResponseEntity
+                                                                                      .getListingCaseStatus()));
+            hmcHearingUpdate.setHearingRoomId(hearingResponseEntity.getHearingDayDetails().get(0).getRoomId());
         }
         hmcHearingResponse.setHearingUpdate(hmcHearingUpdate);
         return hmcHearingResponse;
