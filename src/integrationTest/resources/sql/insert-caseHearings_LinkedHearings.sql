@@ -30,8 +30,8 @@ insert into hearing ( hearing_id, status, is_linked_flag) values ('2000000000', 
 insert into hearing ( hearing_id, status, is_linked_flag) values ('2000000004', 'HEARING_REQUESTED', false);
 insert into hearing ( hearing_id, status, is_linked_flag, linked_group_id) values ('2000000005', 'HEARING_REQUESTED', true, 21);
 insert into hearing ( hearing_id, status, is_linked_flag, linked_group_id) values ('2000000006', 'HEARING_REQUESTED', true, 21);
-insert into hearing ( hearing_id, status, is_linked_flag, linked_group_id) values ('2000000007', 'HEARING_REQUESTED', true, 22);
-insert into hearing ( hearing_id, status, is_linked_flag, linked_group_id) values ('2000000008', 'HEARING_REQUESTED', true, 22);
+insert into hearing ( hearing_id, status, is_linked_flag, linked_group_id, linked_order) values ('2000000007', 'HEARING_REQUESTED', true, 22, 1);
+insert into hearing ( hearing_id, status, is_linked_flag, linked_group_id, linked_order) values ('2000000008', 'HEARING_REQUESTED', true, 22, 2);
 insert into hearing ( hearing_id, status, is_linked_flag) values ('2000000010', 'UPDATE_SUBMITTED', true);
 insert into hearing ( hearing_id, status, is_linked_flag, linked_group_id) values ('2000000009', 'HEARING_REQUESTED', true, 22);
 insert into hearing ( hearing_id, status, is_linked_flag) values ('2000000011', 'INVALID_STATE', true);
