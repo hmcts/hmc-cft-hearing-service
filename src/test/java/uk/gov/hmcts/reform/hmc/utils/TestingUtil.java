@@ -285,6 +285,7 @@ public class TestingUtil {
         hearingEntity.setStatus(POST_HEARING_STATUS);
         hearingEntity.setLinkedOrder(1L);
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
+        caseHearingRequestEntity.setHearingParties(List.of(new HearingPartyEntity()));
         hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
         return hearingEntity;
     }
@@ -962,11 +963,11 @@ public class TestingUtil {
         individualDetails.setHearingChannelEmail(List.of("hearing.channel_udated@email.com"));
         List<RelatedParty> relatedParties = new ArrayList<>();
         RelatedParty relatedParty1 = new RelatedParty();
-        relatedParty1.setRelatedPartyID("Party1");
+        relatedParty1.setRelatedPartyID("P1");
         relatedParty1.setRelationshipType("Mother");
         relatedParties.add(relatedParty1);
         RelatedParty relatedParty2 = new RelatedParty();
-        relatedParty2.setRelatedPartyID("Party2");
+        relatedParty2.setRelatedPartyID("P2");
         relatedParty2.setRelationshipType("Father");
         relatedParties.add(relatedParty2);
         individualDetails.setRelatedParties(relatedParties);

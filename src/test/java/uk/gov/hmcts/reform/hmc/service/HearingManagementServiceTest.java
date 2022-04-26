@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.PartyRelationshipDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
@@ -370,7 +371,7 @@ class HearingManagementServiceTest {
 
             final HearingEntity hearingEntity = mock(HearingEntity.class);
             CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
-            caseHearingRequestEntity.setHearingParties(Collections.emptyList());
+            caseHearingRequestEntity.setHearingParties(List.of(new HearingPartyEntity()));
             when(hearingEntity.getLatestCaseHearingRequest()).thenReturn(caseHearingRequestEntity);
 
             given(hearingRepository.save(any())).willReturn(hearingEntity);

@@ -8,8 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
@@ -720,11 +722,13 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        mockMvc.perform(put(url + "/2000000012")
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(hearingRequest)))
-            .andExpect(status().is(201))
-            .andReturn();
+        final MvcResult mvcResult = mockMvc.perform(put(url + "/2000000012")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(hearingRequest)))
+                .andExpect(status().is(201))
+                .andReturn();
+        final MockHttpServletResponse response = mvcResult.getResponse();
+        System.out.println(response);
     }
 
     @Test
@@ -1089,6 +1093,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.errors", hasItem((INVALID_PUT_HEARING_STATUS))))
             .andReturn();
     }
+
 
 
     @Test

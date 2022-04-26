@@ -20,15 +20,14 @@ public class PartyRelationshipDetailsMapper {
         List<PartyRelationshipDetailsEntity> partyRelationshipDetails = new ArrayList<>();
 
         if (relatedParties != null) {
+            final HearingPartyEntity sourceTechParty =
+                    getHearingPartyEntityByReference(partyDetails.getPartyID(), hearingPartyEntities);
             for (RelatedParty relatedParty: relatedParties) {
 
                 String relatedPartyId = relatedParty.getRelatedPartyID();
 
                 final HearingPartyEntity targetTechParty =
                         getHearingPartyEntityByReference(relatedPartyId, hearingPartyEntities);
-
-                final HearingPartyEntity sourceTechParty =
-                        getHearingPartyEntityByReference(partyDetails.getPartyID(), hearingPartyEntities);
 
                 PartyRelationshipDetailsEntity partyRelationshipDetailsEntity = PartyRelationshipDetailsEntity
                         .builder()

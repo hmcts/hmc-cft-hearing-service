@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
@@ -193,6 +194,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         String statusToUpdate = getNextPutHearingStatus(existingHearing.getStatus());
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate);
+        savePartyRelationshipDetails(hearingRequest, hearingEntity);
         return getSaveHearingResponseDetails(hearingEntity);
     }
 
@@ -294,15 +296,16 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         return hearingRepository.save(hearingEntity);
     }
 
-    private void savePartyRelationshipDetails(HearingRequest createHearingRequest, HearingEntity hearingEntity) {
+    private void savePartyRelationshipDetails(HearingRequest hearingRequest, HearingEntity hearingEntity) {
 
-        final List<PartyDetails> partyDetails = createHearingRequest.getPartyDetails();
+        final List<PartyDetails> partyDetails = hearingRequest.getPartyDetails();
         final List<HearingPartyEntity> hearingParties = hearingEntity.getLatestCaseHearingRequest().getHearingParties();
 
-        if (partyDetails != null) {
+
+        if (!CollectionUtils.isEmpty(partyDetails) && !CollectionUtils.isEmpty(hearingParties)) {
             for (PartyDetails partyDetail : partyDetails) {
                 if (partyDetail.getIndividualDetails() != null
-                    && partyDetail.getIndividualDetails().getRelatedParties() != null) {
+                    && !CollectionUtils.isEmpty(partyDetail.getIndividualDetails().getRelatedParties())) {
                     final List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntities =
                         partyRelationshipDetailsMapper.modelToEntity(partyDetail, hearingParties);
                     partyRelationshipDetailsRepository.saveAll(partyRelationshipDetailsEntities);
