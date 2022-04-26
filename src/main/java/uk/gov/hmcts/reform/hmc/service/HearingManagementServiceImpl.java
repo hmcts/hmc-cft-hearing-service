@@ -306,9 +306,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             for (PartyDetails partyDetail : partyDetails) {
                 if (partyDetail.getIndividualDetails() != null
                     && !CollectionUtils.isEmpty(partyDetail.getIndividualDetails().getRelatedParties())) {
-                    final List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntities =
-                        partyRelationshipDetailsMapper.modelToEntity(partyDetail, hearingParties);
-                    partyRelationshipDetailsRepository.saveAll(partyRelationshipDetailsEntities);
+                    partyRelationshipDetailsMapper.modelToEntity(partyDetail, hearingParties);
                 }
             }
         }
