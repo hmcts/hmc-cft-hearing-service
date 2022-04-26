@@ -535,7 +535,7 @@ class LinkHearingGroupControllerIT extends BaseTest {
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-        void shouldReturn400_ForInvalidRequestId() throws Exception {
+        void shouldReturn404_ForInvalidRequestId() throws Exception {
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
             hearingInGroup1.setHearingId("2000000007");
             hearingInGroup1.setHearingOrder(1);
