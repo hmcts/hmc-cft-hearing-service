@@ -37,6 +37,7 @@ public class PartyRelationshipDetailsMapper {
                         .build();
                 partyRelationshipDetails.add(partyRelationshipDetailsEntity);
             }
+            sourceTechParty.setPartyRelationshipDetailsEntity(partyRelationshipDetails);
         }
 
         return partyRelationshipDetails;
@@ -45,7 +46,7 @@ public class PartyRelationshipDetailsMapper {
     private HearingPartyEntity getHearingPartyEntityByReference(String relatedPartyId,
                                                                 List<HearingPartyEntity> hearingPartyEntities) {
         return hearingPartyEntities.stream()
-                .filter(hearingPartyEntity -> hearingPartyEntity.getPartyReference().equals(relatedPartyId))
+                .filter(hearingPartyEntity -> relatedPartyId.equals(hearingPartyEntity.getPartyReference()))
                 .findFirst()
                 .orElseThrow(() -> new BadRequestException(
                             String.format("RelatedPartyId with value %s, does not exist",
