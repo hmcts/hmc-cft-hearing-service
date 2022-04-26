@@ -93,8 +93,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ROLE);
         }
 
-        verifyRequiredRolesExists(requiredRoles, filteredRoleAssignments);
-        return filteredRoleAssignments;
+        return verifyRequiredRolesExistsAndFilter(requiredRoles, filteredRoleAssignments);
     }
 
     @Override
@@ -106,15 +105,18 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
     }
 
-    private void verifyRequiredRolesExists(List<String> requiredRoles, List<RoleAssignment> filteredRoleAssignments) {
+    private List<RoleAssignment> verifyRequiredRolesExistsAndFilter(List<String> requiredRoles, List<RoleAssignment> filteredRoleAssignments) {
+        List<RoleAssignment> requiredRoleAssignments = Lists.newArrayList();
         if (!requiredRoles.isEmpty()) {
-            boolean containsRequiredRoles = filteredRoleAssignments.stream()
-                .anyMatch(roleAssignment -> requiredRoles.contains(roleAssignment.getRoleName()));
+            requiredRoleAssignments = filteredRoleAssignments.stream()
+                .filter(roleAssignment -> requiredRoles.contains(roleAssignment.getRoleName()))
+                .collect(Collectors.toList());
 
-            if (!containsRequiredRoles) {
+            if (requiredRoleAssignments.size() == 0) {
                 throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_MISSING_REQUIRED);
             }
         }
+        return requiredRoleAssignments;
     }
 
     private void verifyHearingStatus(List<RoleAssignment> filteredRoleAssignments,
@@ -136,7 +138,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     private List<RoleAssignment> filterRoleAssignments(RoleAssignments roleAssignments) {
         return roleAssignments.getRoleAssignments()
             .stream()
-            .filter(roleAssignment -> roleAssignment.isNotExpiredRoleAssignment())
+            .filter(RoleAssignment::isNotExpiredRoleAssignment)
             .filter(roleAssignment -> roleAssignment.getRoleType().equalsIgnoreCase("ORGANISATION")
                 && HMC_ROLE_NAMES.contains(roleAssignment.getRoleName()))
             .collect(Collectors.toList());
