@@ -21,7 +21,7 @@ public class CaseClassificationsMapper {
     public static final String CATEGORY_PARENT_ERROR2 = "A casesType should not have a defined category parent.";
 
     private final Predicate<CaseCategory> isCategoryParentNorNull = caseCategory ->
-        caseCategory.getCategoryParent() != null && caseCategory.getCategoryParent() != "";
+        caseCategory.getCategoryParent() != null && !caseCategory.getCategoryParent().equals("");
 
     public List<CaseClassification> getCaseClassifications(CaseDetails caseDetails) {
 
