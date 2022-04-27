@@ -68,7 +68,7 @@ public class CaseClassificationsMapper {
     }
 
     private void validateCategoriesOfCaseType(List<CaseCategory> caseCategories) {
-        if (caseCategories.stream().filter(isCategoryParentNorNull).findAny().isPresent()) {
+        if (caseCategories.stream().anyMatch(isCategoryParentNorNull)) {
             throw new BadRequestException(CATEGORY_PARENT_ERROR2);
         }
     }
