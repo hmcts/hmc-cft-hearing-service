@@ -1,0 +1,9 @@
+{
+  "hearingOutcome": {
+    "hearingType": "Witness Statement",
+    "hearingFinalFlag": false,
+    "hearingResult": "CANCELLED",
+    "hearingResultReasonType": "Witness not arrived",
+    "hearingResultDate": "2022-02-01"
+  }
+}

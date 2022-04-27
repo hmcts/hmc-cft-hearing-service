@@ -219,7 +219,7 @@ sonarqube {
 def versions = [
   junit           : '5.7.2',
   junitPlatform   : '1.7.2',
-  jsr310          : '2.12.4',
+  jsr310          : '2.13.2',
   lombok          : '1.18.16',
   mapstruct       : '1.4.2.Final',
   pact            : '4.1.7',
@@ -235,6 +235,7 @@ def versions = [
 
 ext['spring-framework.version'] = '5.3.18'
 ext['log4j2.version'] = '2.17.1'
+ext['jackson.version'] = '2.13.2'
 
 // before committing a change, make sure task still works
 dependencyUpdates {
@@ -352,12 +353,14 @@ dependencies {
 
   compile group: 'org.apache.logging.log4j', name: 'log4j-api'
   compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j'
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jsr310
   compile group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceAuthVersion
   compile group: 'com.github.hmcts', name: 'idam-java-client', version: '2.0.1'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
   compile 'net.minidev:json-smart:2.4.7'
+  compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-jaxb-annotations', version: '2.13.2'
+  compile "com.fasterxml.jackson.core:jackson-databind:2.13.2.2"
+  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.2'
 
   testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.13.0') {
     exclude group: 'com.github.hmcts.befta-fw', module: 'befta-fw'
@@ -420,18 +423,18 @@ dependencies {
   }
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.11.1'
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.1.0'
+  testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.11.1'
+  testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
+  testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.9'
 
   contractTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
   contractTestCompile group: 'io.rest-assured', name: 'json-path', version: versions.restAssured
   contractTestCompile group: 'io.rest-assured', name: 'xml-path', version: versions.restAssured
-
   contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact
   contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact
-
   contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact
   contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact
   contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact
-
   contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'

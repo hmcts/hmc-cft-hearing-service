@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.hmc.data;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -38,18 +34,11 @@ public class HearingDayDetailsEntity {
     @Column(name = "hearing_day_id")
     private Long hearingDayId;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @Column(name = "start_date_time", nullable = false)
     private LocalDateTime startDateTime;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @Column(name = "end_date_time", nullable = false)
     private LocalDateTime endDateTime;
-
-    @Column(name = "list_assist_session_id")
-    private String listAssistSessionId;
 
     @Column(name = "venue_id", nullable = false)
     private String venueId;
