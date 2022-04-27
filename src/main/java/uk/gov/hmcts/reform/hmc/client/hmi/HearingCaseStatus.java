@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 public class HearingCaseStatus {
 
     @NotNull(message = ValidationError.HEARING_CODE_NULL)
-    @HearingCodeEnumPattern(enumClass = HearingCode.class, fieldName = "number")
+    @HearingCodeEnumPattern(enumClass = HearingCode.class, fieldName = "hearing case status code")
     private String code;
     private String description;
 }

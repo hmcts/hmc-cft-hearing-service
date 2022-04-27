@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.hmc.validator;
 
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingCode;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
 public class HearingCodeEnumPatternValidator implements ConstraintValidator<HearingCodeEnumPattern, String> {
     private List<String> acceptedValues;
@@ -23,9 +23,9 @@ public class HearingCodeEnumPatternValidator implements ConstraintValidator<Hear
         Integer number = null;
         try {
             number = Integer.valueOf(value);
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return false;
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             return false;
         }
         return HearingCode.isValidNumber(number);

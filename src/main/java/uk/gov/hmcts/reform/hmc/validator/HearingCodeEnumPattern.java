@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import javax.validation.Constraint;
+import javax.validation.Payload;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -16,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface HearingCodeEnumPattern {
     Class<? extends Enum<?>> enumClass();
     String fieldName();
-    String message() default "Unsupported type or value for Hearing case status code";
+    String message() default "Unsupported type or value for {fieldName}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

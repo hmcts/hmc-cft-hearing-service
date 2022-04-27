@@ -9,14 +9,14 @@ import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingCaseStatus;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingCode;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -39,7 +39,7 @@ class HearingCodeEnumPatternValidatorTest {
     }
 
     @Test
-    void whenInvalidHearingCode() {
+    void whenInvalidHearingCodeNumber() {
         HearingCaseStatus hearingCaseStatus = new HearingCaseStatus();
         hearingCaseStatus.setCode("11");
         Set<ConstraintViolation<HearingCaseStatus>> violations = validator.validate(hearingCaseStatus);
@@ -47,7 +47,7 @@ class HearingCodeEnumPatternValidatorTest {
         assertEquals(1, violations.size());
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type or value for Hearing case status code", validationErrors.get(0));
+        assertEquals("Unsupported type or value for hearing case status code", validationErrors.get(0));
     }
 
     @Test
@@ -60,11 +60,11 @@ class HearingCodeEnumPatternValidatorTest {
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertTrue(validationErrors.contains("Hearing code can not be null or empty"));
-        assertTrue(validationErrors.contains("Unsupported type or value for Hearing case status code"));
+        assertTrue(validationErrors.contains("Unsupported type or value for hearing case status code"));
     }
 
     @Test
-    void whenInvalidLocationTypeIsInValid() {
+    void whenInvalidHearingCodeString() {
         HearingCaseStatus hearingCaseStatus = new HearingCaseStatus();
         hearingCaseStatus.setCode(HearingCode.LISTED.name());
         Set<ConstraintViolation<HearingCaseStatus>> violations = validator.validate(hearingCaseStatus);
@@ -72,11 +72,11 @@ class HearingCodeEnumPatternValidatorTest {
         assertEquals(1, violations.size());
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type or value for Hearing case status code", validationErrors.get(0));
+        assertEquals("Unsupported type or value for hearing case status code", validationErrors.get(0));
     }
 
     @Test
-    void whenValidLocationTypeIsNull() {
+    void whenValidHearingCode() {
         HearingCaseStatus hearingCaseStatus = new HearingCaseStatus();
         hearingCaseStatus.setCode("100");
         Set<ConstraintViolation<HearingCaseStatus>> violations = validator.validate(hearingCaseStatus);
