@@ -8,7 +8,7 @@ CREATE SEQUENCE public.party_relationship_details_id_seq
 CREATE TABLE public.party_relationship_details (party_relationship_details_id bigint not null default nextval('public.party_relationship_details_id_seq'::regclass),
                                              source_tech_party_id bigint not null,
                                              target_tech_party_id bigint not null,
-                                             relationship_type varchar(2000)
+                                             relationship_type varchar(10)
 );
 
 ALTER SEQUENCE public.party_relationship_details_id_seq OWNED BY public.party_relationship_details.party_relationship_details_id;
