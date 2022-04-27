@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import io.jsonwebtoken.lang.Collections;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
@@ -50,7 +51,9 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         if (!hearingDayDetailEntities.isEmpty()) {
             for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
                 HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
-                setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
+                if (!Collections.isEmpty(detailEntity.getHearingDayPanel())) {
+                    setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
+                }
                 setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
                 hearingDaySchedule.setHearingVenueId(detailEntity.getVenueId());
                 scheduleList.add(hearingDaySchedule);
