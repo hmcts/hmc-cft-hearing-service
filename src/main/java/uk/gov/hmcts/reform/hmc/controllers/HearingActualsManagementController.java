@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.service.HearingActualsService;
 
+import javax.validation.Valid;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -36,7 +38,7 @@ public class HearingActualsManagementController {
         @ApiResponse(code = 500, message = "Error occurred on the server")
     })
     public void updateHearingActuals(@PathVariable("id") Long hearingId,
-                                     @RequestBody HearingActual request) {
+                                     @RequestBody @Valid HearingActual request) {
         hearingActualsService.updateHearingActuals(hearingId, request);
     }
 }

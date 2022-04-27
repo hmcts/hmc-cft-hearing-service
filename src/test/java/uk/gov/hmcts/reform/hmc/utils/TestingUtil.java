@@ -1069,7 +1069,7 @@ public class TestingUtil {
                                                               Boolean didNotAttendFlag) {
         ActualHearingDayParties parties = new ActualHearingDayParties();
 
-        parties.setActualPartyId(partyId);
+        parties.setActualPartyId(partyId.toString());
         parties.setPartyRole(partyRole);
         parties.setIndividualDetails(partyDetail);
         parties.setPartyChannelSubType(partyChannelSubType);

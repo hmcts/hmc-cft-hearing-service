@@ -153,6 +153,44 @@ public final class ValidationError {
     public static final String HEARING_ACTUALS_MISSING_HEARING_OUTCOME = "005 missing hearing outcome";
     public static final String HEARING_ACTUALS_MISSING_HEARING_DAY = "003 missing hearing day actuals";
     public static final String HEARING_ACTUALS_UN_EXPRECTED = "004 unexpected hearing day actuals";
+    public static final String HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND = "No response found on the hearing %s";
+
+    public static final String HA_OUTCOME_TYPE_NOT_EMPTY = "hearingType cannot be null or empty";
+    public static final String HA_OUTCOME_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;
+    public static final String HA_OUTCOME_FINAL_FLAG_NOT_EMPTY = "hearingFinalFlag has to be provided";
+    public static final String HA_OUTCOME_RESULT_NOT_EMPTY = "hearingResult has to be one of"
+        + " COMPLETED, ADJOURNED, CANCELLED";
+    public static final String HA_OUTCOME_REASON_TYPE_MAX_LENGTH = "hearingResultReasonType must not be more than 70 "
+        + CHARACTERS_LONG;
+    public static final String HA_OUTCOME_REQUEST_DATE_NOT_EMPTY = "hearingResultDate cannot be null or empty";
+
+    public static final String HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY = "hearingDate cannot be null or empty";
+    public static final String HA_HEARING_DAY_START_TIME_DATE_NOT_EMPTY = "hearingStartTime cannot be null or empty";
+    public static final String HA_HEARING_DAY_END_TIME_DATE_NOT_EMPTY = "hearingEndTime cannot be null or empty";
+    public static final String HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY = "pauseStartTime cannot be null or empty";
+    public static final String HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY = "pauseEndTime cannot be null or empty";
+
+    public static final String HA_HEARING_DAY_PARTY_ID_MAX_LENGTH = "actualPartyId must not be more than 40 "
+        + CHARACTERS_LONG;
+    public static final String HA_HEARING_DAY_PARTY_ROLE_NOT_EMPTY = "partyRole cannot be null or empty";
+    public static final String HA_HEARING_DAY_PARTY_ROLE_MAX_LENGTH = "partyRole must not be more than 40 "
+        + CHARACTERS_LONG;
+    public static final String HA_HEARING_DAY_PARTY_CHANNEL_NOT_EMPTY = "partyChannelSubType cannot be null or empty";
+    public static final String HA_HEARING_DAY_PARTY_CHANNEL_MAX_LENGTH = "partyChannelSubType must not be more than 40 "
+        + CHARACTERS_LONG;
+    public static final String HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH = "representedParty must not be more than"
+        + " 40 " + CHARACTERS_LONG;
+
+    public static final String HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_NOT_EMPTY = "firstName cannot be null or empty";
+    public static final String HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_MAX_LENGTH = "firstName must not be more than 40 "
+        + CHARACTERS_LONG;
+    public static final String HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_NOT_EMPTY = "lastName cannot be null or empty";
+    public static final String HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_MAX_LENGTH = "lastName must not be more than 40 "
+        + CHARACTERS_LONG;
+
+    public static final String HA_HEARING_DAY_ORGANISATION_NAME_NOT_EMPTY = "organisation name cannot be null or empty";
+    public static final String HA_HEARING_DAY_ORGANISATION_NAME_MAX_LENGTH = "organisation name must not be more than"
+        + " 40 " + CHARACTERS_LONG;
 
     public static final String OTHER_REASON_LENGTH = "Other reasonable adjustment details cannot be greater than 200 "
         + CHARACTERS_LONG;
