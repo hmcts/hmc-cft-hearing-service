@@ -229,7 +229,7 @@ public class LinkedHearingValidator {
 
 
     public void checkValidStateForHearingRequest(Optional<HearingEntity> hearingEntity,
-                                                    LinkHearingDetails details) {
+                                                 LinkHearingDetails details) {
         if (hearingEntity.isEmpty()
             || !PutHearingStatus.isValid(hearingEntity.get().getStatus())
             || (hearingEntity.get().hasHearingResponses()
