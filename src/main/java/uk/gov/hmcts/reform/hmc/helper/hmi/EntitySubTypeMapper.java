@@ -8,8 +8,8 @@ import uk.gov.hmcts.reform.hmc.model.hmi.EntitySubType;
 @Component
 public class EntitySubTypeMapper {
 
-    public static final String ORGANISATION_CLASS_CODE = "ORG/ORG";
-    public static final String PERSON_CLASS_CODE = "IND/PERSON";
+    public static final String ORGANISATION_CLASS_CODE = "ORG";
+    public static final String PERSON_CLASS_CODE = "PERSON";
 
     public EntitySubType getPersonEntitySubType(IndividualDetails individualDetails) {
         return EntitySubType.builder()

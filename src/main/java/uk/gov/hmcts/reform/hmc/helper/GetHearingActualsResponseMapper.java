@@ -73,7 +73,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
     private void setHearingActuals(HearingEntity hearingEntity, HearingActualResponse response) {
 
         val hearingResponses = hearingEntity.getLatestHearingResponse();
-        if (hearingResponses.isPresent()) {
+        if (hearingResponses.isPresent() && hearingResponses.get().getActualHearingEntity() != null) {
             HearingResponseEntity hearingResponse = hearingResponses.get();
             if (hearingResponse.getActualHearingEntity() != null) {
                 val hearingOutcome = new HearingOutcome();

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingActualsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingActualsMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
@@ -30,6 +31,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -48,20 +50,26 @@ class HearingActualsServiceTest {
 
     @Mock
     private HearingRepository hearingRepository;
+
     @Mock
     private HearingEntity hearingEntity;
-    @Mock
-    GetHearingActualsResponseMapper getHearingActualsResponseMapper;
-    @Mock
-    ApplicationParams applicationParams;
 
-    HearingIdValidator hearingIdValidator;
+    @Mock
+    private ActualHearingRepository actualHearingRepository;
+
+    @Mock
+    private ActualHearingDayRepository actualHearingDayRepository;
+
+    @Mock
+    private HearingIdValidator hearingIdValidator;
+
+    @Mock
+    private GetHearingActualsResponseMapper getHearingActualsResponseMapper;
+
     @Mock
     HearingIdValidator hearingIdValidatorMock;
     @Mock
     private HearingResponseRepository hearingResponseRepository;
-    @Mock
-    private ActualHearingRepository actualHearingRepository;
     @Mock
     private HearingActualsMapper hearingActualsMapper;
 
@@ -71,7 +79,6 @@ class HearingActualsServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        hearingIdValidator = new HearingIdValidator(hearingRepository);
         hearingActualsService =
             new HearingActualsServiceImpl(
                 hearingRepository,
@@ -98,27 +105,14 @@ class HearingActualsServiceTest {
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
         }
 
-        @Test
-        void shouldFailWithInvalidHearingIdFormat() {
-            HearingEntity hearing = new HearingEntity();
-            hearing.setStatus("RESPONDED");
-            hearing.setId(1L);
-
-            Exception exception = assertThrows(BadRequestException.class, () ->
-                hearingActualsService.getHearingActuals(1000000000L));
-            assertEquals("Invalid hearing Id", exception.getMessage());
-        }
-
 
         @Test
         void shouldPassWithValidHearingIdInDb() {
             HearingEntity hearing = new HearingEntity();
             hearing.setStatus("RESPONDED");
             hearing.setId(2000000000L);
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearing));
             hearingActualsService.getHearingActuals(2000000000L);
-            verify(hearingRepository).existsById(2000000000L);
             verify(getHearingActualsResponseMapper).toHearingActualResponse(hearing);
         }
 

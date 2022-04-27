@@ -92,9 +92,9 @@ public class HearingEntity {
     public Optional<HearingResponseEntity> getHearingResponseForLatestRequest() {
         Integer latestRequestVersion = getLatestRequestVersion();
         return hasHearingResponses() ? getHearingResponses().stream()
-            .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
-            .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp))
-            :  Optional.empty();
+                .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
+                .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp))
+                :  Optional.empty();
     }
 
     /**

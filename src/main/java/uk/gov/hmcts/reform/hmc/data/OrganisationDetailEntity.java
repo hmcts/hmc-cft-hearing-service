@@ -34,7 +34,7 @@ public class OrganisationDetailEntity {
     @Column(name = "organisation_type_code", nullable = false)
     private String organisationTypeCode;
 
-    @Column(name = "hmcts_organisation_reference", nullable = false)
+    @Column(name = "hmcts_organisation_reference")
     private String hmctsOrganisationReference;
 
     @OneToOne(fetch = FetchType.LAZY)
