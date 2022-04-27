@@ -556,7 +556,8 @@ public class TestingUtil {
         hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntityWithPartyOrg()));
 
         hearingEntity.getCaseHearingRequests().get(0).setVersionNumber(1);
-        hearingEntity.getCaseHearingRequests().get(0).setHearingParties(Arrays.asList(hearingPartyEntityOrg()));
+        hearingEntity.getCaseHearingRequests().get(0).setHearingParties(Arrays.asList(
+            hearingPartyEntitySetReference("reference")));
         return hearingEntity;
     }
 
@@ -568,6 +569,7 @@ public class TestingUtil {
         hearingEntity.getCaseHearingRequests().add(caseHearingRequestEntityWithPartyOrg());
 
         CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
+        caseHearingRequestEntity.setCaseHearingID(2000000000L);
         caseHearingRequestEntity.setVersionNumber(1);
         caseHearingRequestEntity.setHearingType("hearingType");
         caseHearingRequestEntity.setHmctsServiceCode("serviceCode");
@@ -581,7 +583,9 @@ public class TestingUtil {
         caseHearingRequestEntity.setOwningLocationId("locationId");
         caseHearingRequestEntity.setCaseRestrictedFlag(true);
         caseHearingRequestEntity.setCaseSlaStartDate(LocalDate.of(2000, 01, 01));
-        caseHearingRequestEntity.setHearingParties(Arrays.asList(hearingPartyEntityOrg()));
+        caseHearingRequestEntity.setHearingParties(Arrays.asList(hearingPartyEntitySetReference("reference2"),
+                                                                 hearingPartyEntitySetReference("reference"),
+                                                                 hearingPartyEntitySetReference("reference2")));
         caseHearingRequestEntity.setCaseCategories(caseCategoriesEntities());
 
         hearingEntity.getHearingResponses().get(0).setActualHearingEntity(actualHearingEntity(PartyType.ORG));
@@ -597,6 +601,7 @@ public class TestingUtil {
 
         CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
         caseHearingRequestEntity.setVersionNumber(1);
+        caseHearingRequestEntity.setCaseHearingID(2000000000L);
         caseHearingRequestEntity.setHearingType("hearingType");
         caseHearingRequestEntity.setHmctsServiceCode("serviceCode");
         caseHearingRequestEntity.setCaseReference("caseRef");
@@ -698,7 +703,21 @@ public class TestingUtil {
         entity.setVenueId("venueId");
 
         HearingAttendeeDetailsEntity attendee = new HearingAttendeeDetailsEntity();
-        entity.setHearingAttendeeDetails(List.of(attendee));
+        attendee.setId(2000000000L);
+        attendee.setPartySubChannelType("partySubChannelA");
+        attendee.setPartyId("reference");
+
+        HearingAttendeeDetailsEntity attendee2 = new HearingAttendeeDetailsEntity();
+        attendee2.setId(2000000000L);
+        attendee2.setPartySubChannelType("partySubChannelB");
+        attendee2.setPartyId("reference2");
+
+
+        HearingAttendeeDetailsEntity attendee3 = new HearingAttendeeDetailsEntity();
+        attendee3.setId(2000000000L);
+        attendee3.setPartySubChannelType("partySubChannelC");
+        attendee3.setPartyId("reference3");
+        entity.setHearingAttendeeDetails(List.of(attendee, attendee2, attendee3));
         return entity;
     }
 
@@ -709,6 +728,19 @@ public class TestingUtil {
         entity.setPartyRoleType("role");
         entity.setUnavailabilityEntity(List.of(unavailabilityEntity()));
         entity.setOrganisationDetailEntity(organisationDetailEntity());
+        entity.setCaseHearing(caseHearingRequestEntityWithPartyOrg());
+
+        return entity;
+    }
+
+    public static HearingPartyEntity hearingPartyEntitySetReference(String partyReference) {
+        HearingPartyEntity entity = new HearingPartyEntity();
+        entity.setPartyReference(partyReference);
+        entity.setPartyType(PartyType.ORG);
+        entity.setPartyRoleType("role");
+        entity.setUnavailabilityEntity(List.of(unavailabilityEntity()));
+        entity.setOrganisationDetailEntity(organisationDetailEntity());
+        entity.setCaseHearing(caseHearingRequestEntityWithPartyOrg());
 
         return entity;
     }
@@ -720,6 +752,7 @@ public class TestingUtil {
         entity.setPartyRoleType("role");
         entity.setContactDetails(List.of(contactDetailsEntity_Email(), contactDetailsEntity_Phone()));
         entity.setIndividualDetailEntity(List.of(individualDetailEntity()));
+        entity.setCaseHearing(caseHearingRequestEntityWithPartyOrg());
         return entity;
     }
 

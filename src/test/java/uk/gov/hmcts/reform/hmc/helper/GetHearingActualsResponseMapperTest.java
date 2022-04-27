@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -11,9 +13,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class GetHearingActualsResponseMapperTest {
-
 
     @BeforeEach
     void setUp() {
@@ -21,12 +23,12 @@ class GetHearingActualsResponseMapperTest {
     }
 
     @Test
-    void toHearingsResponseWhenDataIsPresentForOrgDetails() {
+    void toHearingsResponseWhenDataIsPresentForOrgDetails() throws JsonProcessingException {
         GetHearingActualsResponseMapper getHearingsResponseMapper = new GetHearingActualsResponseMapper();
         HearingActualResponse response =
             getHearingsResponseMapper.toHearingActualResponse(
                 TestingUtil.getHearingsEntityForHearingActuals("HEARING_REQUESTED"));
-
+        System.out.println(new ObjectMapper().writeValueAsString(response));
         assertCommonFields(response);
         assertEquals("name",
                      response.getHearingPlanned().getPlannedHearingDays().get(0).getParties()
@@ -37,6 +39,75 @@ class GetHearingActualsResponseMapperTest {
         assertEquals("partyOrgName",
                      response.getHearingActuals().getActualHearingDays().get(0)
                          .getActualDayParties().get(0).getActualOrganisationDetails().get(0).getName());
+    }
+
+    @Test
+    void hearingResponsePartyDetailsOnOneMatchOnAttendeeDetailsAndHearingParty() {
+        GetHearingActualsResponseMapper getHearingsResponseMapper = new GetHearingActualsResponseMapper();
+        HearingActualResponse response =
+            getHearingsResponseMapper.toHearingActualResponse(
+                TestingUtil.getHearingsEntityForHearingActuals("HEARING_REQUESTED"));
+
+        assertEquals(3, response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().size());
+        assertEquals("reference",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(0).getPartyID());
+        assertEquals("partySubChannelA",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(0)
+                         .getPartyChannelSubType());
+        assertEquals("role",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(0).getPartyRole());
+        assertEquals("name",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(0)
+                         .getOrganisationDetails().getName());
+        assertEquals("reference",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(0)
+                         .getOrganisationDetails().getCftOrganisationID());
+
+    }
+
+    @Test
+    void hearingResponsePartyDetailsOnMultipleMatchesOnAttendeeDetailsAndHearingParty() {
+        GetHearingActualsResponseMapper getHearingsResponseMapper = new GetHearingActualsResponseMapper();
+        HearingActualResponse response =
+            getHearingsResponseMapper.toHearingActualResponse(
+                TestingUtil.getHearingsEntityForHearingActuals("HEARING_REQUESTED"));
+
+        assertEquals(3, response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().size());
+        assertEquals("reference2",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(1).getPartyID());
+        assertEquals("partySubChannelB",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(1)
+                         .getPartyChannelSubType());
+        assertEquals("role",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(1).getPartyRole());
+        assertEquals("name",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(1)
+                         .getOrganisationDetails().getName());
+        assertEquals("reference",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(1)
+                         .getOrganisationDetails().getCftOrganisationID());
+
+    }
+
+    @Test
+    void hearingResponsePartyDetailsOnZeroMatchOnAttendeeDetailsAndHearingParty() {
+        GetHearingActualsResponseMapper getHearingsResponseMapper = new GetHearingActualsResponseMapper();
+        HearingActualResponse response =
+            getHearingsResponseMapper.toHearingActualResponse(
+                TestingUtil.getHearingsEntityForHearingActuals("HEARING_REQUESTED"));
+
+        assertEquals(3, response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().size());
+        assertEquals("reference3",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(2).getPartyID());
+        assertEquals("partySubChannelC",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(2)
+                         .getPartyChannelSubType());
+        assertNull(response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(2).getPartyRole());
+        assertNull(response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(2)
+                         .getOrganisationDetails());
+        assertNull(response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(2)
+                       .getIndividualDetails());
+
     }
 
     @Test
