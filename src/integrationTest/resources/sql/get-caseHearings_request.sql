@@ -19,14 +19,14 @@ values (2, '2000000010', '2021-08-10 11:20:00', 'PROVISIONAL', 'AWAITING_LISTING
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version)
 values (3, '2000000009', '2021-08-10 11:20:00', 'FIXED', 'LISTED', '2', '1');
 
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (1, 1, '2021-01-10 11:20:00', '2021-08-10 11:20:00', 'session1-1', 'venue1-1', 'room1-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (2, 1, '2020-01-10 11:20:00', '2020-08-10 11:20:00', 'session1-2', 'venue1-2', 'room1-2');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (3, 2, '2020-01-10 11:20:00', '2020-08-10 11:20:00', 'session1-2', 'venue2-1', 'room2-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (4, 3, '2020-01-10 11:20:00', '2020-08-10 11:20:00', 'session1-2', 'venue3-1', 'room3-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (1, 1, '2021-01-10 11:20:00', '2021-08-10 11:20:00', 'venue1-1', 'room1-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (2, 1, '2020-01-10 11:20:00', '2020-08-10 11:20:00', 'venue1-2', 'room1-2');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (3, 2, '2020-01-10 11:20:00', '2020-08-10 11:20:00', 'venue2-1', 'room2-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (4, 3, '2020-01-10 11:20:00', '2020-08-10 11:20:00', 'venue3-1', 'room3-1');
 
 insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (1, 1, 'panel1-1','true');
 insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (2, 1, 'panel1-2','false');

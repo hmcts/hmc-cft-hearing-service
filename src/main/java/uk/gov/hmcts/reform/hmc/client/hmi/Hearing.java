@@ -61,9 +61,9 @@ public class Hearing {
 
     private String hearingVhGroupId;
 
-    private ArrayList<HearingAttendee> hearingAttendee;
+    private ArrayList<HearingAttendee> hearingAttendees;
 
-    private ArrayList<HearingJoh> hearingJoh;
+    private ArrayList<HearingJoh> hearingJohs;
 
-    private JsonNode hearingSession;
+    private JsonNode hearingSessions;
 }

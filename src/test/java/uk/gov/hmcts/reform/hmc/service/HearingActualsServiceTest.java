@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingActualsResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
@@ -27,6 +29,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -45,16 +48,27 @@ class HearingActualsServiceTest {
 
     @Mock
     private HearingRepository hearingRepository;
+
     @Mock
     private HearingHelper hearingHelper;
+
     @Mock
     private HearingEntity hearingEntity;
-    @Mock
-    GetHearingActualsResponseMapper getHearingActualsResponseMapper;
-    @Mock
-    ApplicationParams applicationParams;
 
-    HearingIdValidator hearingIdValidator;
+    @Mock
+    private ActualHearingRepository actualHearingRepository;
+
+    @Mock
+    private ActualHearingDayRepository actualHearingDayRepository;
+
+    @Mock
+    private HearingIdValidator hearingIdValidator;
+
+    @Mock
+    private GetHearingActualsResponseMapper getHearingActualsResponseMapper;
+
+    @Mock
+    private ApplicationParams applicationParams;
 
     @InjectMocks
     private HearingActualsServiceImpl hearingActualsService;
@@ -62,7 +76,6 @@ class HearingActualsServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        hearingIdValidator = new HearingIdValidator(hearingRepository);
         hearingActualsService =
             new HearingActualsServiceImpl(
                 hearingRepository,
@@ -87,27 +100,14 @@ class HearingActualsServiceTest {
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
         }
 
-        @Test
-        void shouldFailWithInvalidHearingIdFormat() {
-            HearingEntity hearing = new HearingEntity();
-            hearing.setStatus("RESPONDED");
-            hearing.setId(1L);
-
-            Exception exception = assertThrows(BadRequestException.class, () ->
-                hearingActualsService.getHearingActuals(1000000000L));
-            assertEquals("Invalid hearing Id", exception.getMessage());
-        }
-
 
         @Test
         void shouldPassWithValidHearingIdInDb() {
             HearingEntity hearing = new HearingEntity();
             hearing.setStatus("RESPONDED");
             hearing.setId(2000000000L);
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearing));
             hearingActualsService.getHearingActuals(2000000000L);
-            verify(hearingRepository).existsById(2000000000L);
             verify(getHearingActualsResponseMapper).toHearingActualResponse(hearing);
         }
 
@@ -134,20 +134,21 @@ class HearingActualsServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenInvalidHearingId() {
-        doThrow(new BadRequestException(INVALID_HEARING_ID_DETAILS)).when(hearingHelper).isValidFormat(anyString());
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingActualsService.updateHearingActuals(INVALID_HEARING_ID, TestingUtil.hearingActual());
-        });
-        assertEquals("Invalid hearing Id", exception.getMessage());
-    }
-
-    @Test
     void shouldThrowExceptionWhenNoHearingIdFound() {
         Exception exception = assertThrows(HearingNotFoundException.class, () -> {
             hearingActualsService.updateHearingActuals(HEARING_ID, TestingUtil.hearingActual());
         });
         assertEquals("001 No such id: 2000000000", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenInvalidHearingId() {
+        doThrow(new BadRequestException(INVALID_HEARING_ID_DETAILS)).when(hearingIdValidator)
+            .isValidFormat(anyString());
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingActualsService.updateHearingActuals(INVALID_HEARING_ID, TestingUtil.hearingActual());
+        });
+        assertEquals("Invalid hearing Id", exception.getMessage());
     }
 
     @Test
@@ -191,7 +192,7 @@ class HearingActualsServiceTest {
     void shouldThrowExceptionWhenHasHearingResultOfAdjournedWithoutHearingResultReasonType() {
         HearingEntity hearingEntity = mock(HearingEntity.class);
         given(hearingEntity.getStatus()).willReturn(VALID_HEARING_STAUS);
-        given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearingEntity));
+        given(hearingRepository.findById(any())).willReturn(Optional.of(hearingEntity));
         given(hearingHelper.getLowestStartDateOfMostRecentHearingResponse(hearingEntity))
             .willReturn(LocalDateTime.of(LocalDate.of(2022, 1, 28), LocalTime.MIN));
 

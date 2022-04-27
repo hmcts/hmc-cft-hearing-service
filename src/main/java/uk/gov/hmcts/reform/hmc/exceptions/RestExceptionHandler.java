@@ -105,8 +105,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(LinkedGroupNotFoundException.class)
     protected ResponseEntity<Object> handleLinkedGroupNotFoundException(Exception ex) {
-        log.debug(BAD_REQUEST_EXCEPTION + ":{}", ex.getLocalizedMessage());
-        return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+        log.debug("LinkedHearingGroupNotFoundException:{}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(LinkedHearingNotValidForUnlinkingException.class)

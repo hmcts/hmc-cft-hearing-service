@@ -139,6 +139,12 @@ class GetHearingResponseMapperTest {
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
         hearingEntity.getCaseHearingRequests().get(0)
             .setPanelRequirements(Arrays.asList(TestingUtil.panelRequirementsEntity()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setPanelSpecialisms(Arrays.asList(TestingUtil.panelSpecialismsEntity()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setPanelAuthorisationRequirements(Arrays.asList(TestingUtil.panelAuthorisationRequirementsEntity()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setPanelUserRequirements(Arrays.asList(TestingUtil.panelUserRequirementsEntity()));
 
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
@@ -244,7 +250,6 @@ class GetHearingResponseMapperTest {
 
     private void assertHearingDaySchedule(HearingDaySchedule hearingDaySchedule) {
         assertAll(
-            () -> assertEquals("session1", hearingDaySchedule.getListAssistSessionId()),
             () -> assertEquals("venue1", hearingDaySchedule.getHearingVenueId()),
             () -> assertEquals("room1", hearingDaySchedule.getHearingRoomId()),
             () -> assertEquals("PanelUser1", hearingDaySchedule.getPanelMemberId())
@@ -281,6 +286,9 @@ class GetHearingResponseMapperTest {
                 LocalDate.of(2020, 12, 20),
                 unavailabilityRanges.getUnavailableFromDate()
             ),
+            () -> assertEquals("All Day",
+                unavailabilityRanges.getUnavailabilityType()
+            ),
             () -> assertEquals("All Day", unavailabilityDow.getDowUnavailabilityType()),
             () -> assertEquals("Friday", unavailabilityDow.getDow())
         );
@@ -302,13 +310,22 @@ class GetHearingResponseMapperTest {
             () -> assertEquals("channelType", individualDetails.getPreferredHearingChannel()),
             () -> assertEquals("english", individualDetails.getInterpreterLanguage()),
             () -> assertEquals(true, individualDetails.getVulnerableFlag()),
-            () -> assertEquals("details", individualDetails.getVulnerabilityDetails())
+            () -> assertEquals("details", individualDetails.getVulnerabilityDetails()),
+            () -> assertEquals("01234567890", individualDetails.getHearingChannelPhone().get(0)),
+            () -> assertEquals("hearing.channel@email.com", individualDetails.getHearingChannelEmail().get(0)),
+            () -> assertEquals("First reason", individualDetails.getReasonableAdjustments().get(0)),
+            () -> assertEquals("custodyStatus", individualDetails.getCustodyStatus()),
+            () -> assertEquals("otherReason", individualDetails.getOtherReasonableAdjustmentDetails())
         );
     }
 
     private void assertPanelRequirements(PanelRequirements panelRequirements) {
         assertAll(
-            () -> assertEquals(Arrays.asList("RoleType1"), panelRequirements.getRoleType())
+            () -> assertEquals(Arrays.asList("RoleType1"), panelRequirements.getRoleType()),
+            () -> assertEquals(Arrays.asList("Specialism 1"), panelRequirements.getPanelSpecialisms()),
+            () -> assertEquals(Arrays.asList("AuthorisationType1"), panelRequirements.getAuthorisationTypes()),
+            () -> assertEquals(Arrays.asList("AuthorisationSubType2"), panelRequirements.getAuthorisationSubType()),
+            () -> assertEquals("judge1", panelRequirements.getPanelPreferences().get(0).getMemberID())
         );
     }
 

@@ -3,14 +3,11 @@ package uk.gov.hmcts.reform.hmc.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
-import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,15 +22,11 @@ import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingResponseEntity;
 @ExtendWith(MockitoExtension.class)
 class HearingHelperTest {
 
-    @Mock
-    private HearingRepository hearingRepository;
-
-    @InjectMocks
     private HearingHelper hearingHelper;
 
     @BeforeEach
     public void setUp() {
-        hearingHelper = new HearingHelper(hearingRepository);
+        hearingHelper = new HearingHelper();
     }
 
     @Test

@@ -36,7 +36,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     private final HearingHelper hearingHelper;
     private final HearingRepository hearingRepository;
     private final GetHearingActualsResponseMapper getHearingActualsResponseMapper;
-    private HearingIdValidator hearingIdValidator;
+    private final HearingIdValidator hearingIdValidator;
 
     private static final List<String> ALLOWED_ACTUALS_STATUSES = List.of("LISTED",
                                                                          "UPDATE_REQUESTED",
@@ -66,7 +66,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     }
 
     public void updateHearingActuals(Long hearingId, HearingActual request) {
-        hearingHelper.isValidFormat(hearingId.toString());
+        hearingIdValidator.isValidFormat(hearingId.toString());
         HearingEntity hearing = getHearing(hearingId);
         String hearingStatus = hearing.getStatus();
         validateHearingStatusForActuals(hearingStatus);

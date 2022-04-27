@@ -13,8 +13,8 @@ public class HearingRoom {
 
     private String locationIdCaseHQ;
     @Size(max = 70, message = ValidationError.HEARING_ROOM_NAME_LENGTH)
-    private String roomName;
-    private JsonNode roomLocationRegion;
-    private JsonNode roomLocationCluster;
-    private JsonNode roomLocationReference;
+    private String locationName;
+    private JsonNode locationRegion;
+    private JsonNode locationCluster;
+    private JsonNode locationReferences;
 }
