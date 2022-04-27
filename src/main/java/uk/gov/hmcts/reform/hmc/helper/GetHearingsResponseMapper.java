@@ -51,7 +51,7 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         if (!hearingDayDetailEntities.isEmpty()) {
             for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
                 HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
-                if (!CollectionUtils.isEmpty((detailEntity.getHearingDayPanel())) {
+                if (!CollectionUtils.isEmpty((detailEntity.getHearingDayPanel()))) {
                     setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
                 }
                 setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
