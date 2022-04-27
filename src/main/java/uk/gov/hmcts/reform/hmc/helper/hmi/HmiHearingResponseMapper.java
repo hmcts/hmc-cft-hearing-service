@@ -166,14 +166,14 @@ public class HmiHearingResponseMapper {
         hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode().name());
         hearingResponseEntity.setCancellationReasonType(hearingResponse.getHearing().getHearingCancellationReason());
         hearingResponseEntity.setTranslatorRequired(hearingResponse.getHearing().getHearingTranslatorRequired());
-        hearingResponseEntity.setListingCaseStatus(hearingResponse.getHearing()
-                                                       .getHearingCaseStatus().getCode().name());
+        hearingResponseEntity.setListingCaseStatus(HearingCode.getByNumber(hearingResponse.getHearing()
+                                                       .getHearingCaseStatus().getCode()).name());
         return hearingResponseEntity;
     }
 
     public HearingStatus getHearingStatus(HearingResponse hearing, HearingEntity hearingEntity) {
         HearingStatus currentStatus = HearingStatus.valueOf(hearingEntity.getStatus());
-        HearingCode laStatus = hearing.getHearing().getHearingCaseStatus().getCode();
+        HearingCode laStatus = HearingCode.getByNumber(hearing.getHearing().getHearingCaseStatus().getCode());
         HearingStatus postStatus = null;
 
         switch (laStatus) {

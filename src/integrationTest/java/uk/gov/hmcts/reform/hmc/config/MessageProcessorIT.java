@@ -61,7 +61,7 @@ class MessageProcessorIT extends BaseTest {
                                                    + "      \"test\": \"value\"\n"
                                                    + "    },\n"
                                                    + "    \"hearingCaseStatus\": {\n"
-                                                   + "      \"code\": \"LISTED\",\n"
+                                                   + "      \"code\": \"100\",\n"
                                                    + "      \"description\": \"<description>\"\n"
                                                    + "    },\n"
                                                    + "    \"hearingIdCaseHQ\": \"<hearingIdCaseHQ>\",\n"

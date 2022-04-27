@@ -343,7 +343,7 @@ class HmiHearingResponseMapperTest {
         hearing.setHearingStatus(hearingStatus);
 
         HearingCaseStatus hearingCaseStatus = new HearingCaseStatus();
-        hearingCaseStatus.setCode(hearingCode);
+        hearingCaseStatus.setCode(String.valueOf(HearingCode.getNumber(hearingCode)));
         hearing.setHearingCaseStatus(hearingCaseStatus);
 
         HearingVenue hearingVenue = new HearingVenue();
