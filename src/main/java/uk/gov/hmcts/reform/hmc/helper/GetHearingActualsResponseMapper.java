@@ -37,7 +37,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
 
     public HearingActualResponse toHearingActualResponse(HearingEntity hearingEntity) {
         val response = new HearingActualResponse();
-        response.setHmcStatus(getHearingStatus(hearingEntity));
+        response.setHmcStatus(hearingEntity.getHearingStatus());
         response.setCaseDetails(setCaseDetails(hearingEntity));
         setHearingPlanned(hearingEntity, response);
         setHearingActuals(hearingEntity, response);

@@ -136,6 +136,37 @@ class GetHearingResponseMapperTest {
     }
 
     @Test
+    void toHearingsResponseWhenStatusIsHearingRequested() {
+        HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity("HEARING_REQUESTED");
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getHearingResponses().get(0)
+            .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setNonStandardDurations(TestingUtil.getNonStandardDurationEntities());
+        GetHearingResponseMapper getHearingsResponseMapper = new GetHearingResponseMapper();
+        GetHearingResponse response = getHearingsResponseMapper.toHearingResponse(hearingEntity);
+
+        assertEquals("HEARING_REQUESTED", response.getRequestDetails().getStatus());
+    }
+
+    @Test
+    void toHearingsResponseWhenStatusIsListed() {
+        HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity("LISTED");
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getHearingResponses().get(0)
+            .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setNonStandardDurations(TestingUtil.getNonStandardDurationEntities());
+        GetHearingResponseMapper getHearingsResponseMapper = new GetHearingResponseMapper();
+        GetHearingResponse response = getHearingsResponseMapper.toHearingResponse(hearingEntity);
+
+        assertEquals("AWAITING_ACTUALS", response.getRequestDetails().getStatus());
+    }
+
+
+    @Test
     void toHearingsResponseWhenDataIsPresentWithPanelRequirements() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
         hearingEntity.getCaseHearingRequests().get(0)

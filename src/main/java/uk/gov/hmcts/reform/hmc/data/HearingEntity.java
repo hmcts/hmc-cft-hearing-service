@@ -5,6 +5,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -108,6 +109,32 @@ public class HearingEntity {
             .stream()
             .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp))
             : Optional.empty();
+    }
+
+    public String getHearingStatus() {
+        String hearingStatus = null;
+        switch (this.status) {
+            case "LISTED":
+            case "UPDATE_REQUESTED":
+            case "UPDATE_SUBMITTED":
+                hearingStatus = this.status;
+                Optional<HearingResponseEntity> hearingResponse = getLatestHearingResponse();
+                if (hearingResponse.isPresent()) {
+                    HearingResponseEntity latestHearingResponse = hearingResponse.get();
+                    Optional<HearingDayDetailsEntity> hearingDayDetails =
+                        latestHearingResponse.getEarliestHearingDayDetails();
+                    if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
+                        HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
+                        if (LocalDate.now().isAfter(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
+                            return "AWAITING_ACTUALS";
+                        }
+                    }
+                }
+                break;
+            default:
+                hearingStatus = this.status;
+        }
+        return hearingStatus;
     }
 
     public Integer getNextRequestVersion() {
