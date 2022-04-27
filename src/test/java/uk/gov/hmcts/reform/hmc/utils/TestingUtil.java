@@ -862,11 +862,11 @@ public class TestingUtil {
         UnavailabilityRanges detail1 = new UnavailabilityRanges();
         detail1.setUnavailableFromDate(LocalDate.parse("2021-10-20"));
         detail1.setUnavailableToDate(LocalDate.parse("2021-12-31"));
-        detail1.setUnavailabilityType("All Day");
+        detail1.setUnavailabilityType("All");
         UnavailabilityRanges detail2 = new UnavailabilityRanges();
         detail2.setUnavailableFromDate(LocalDate.parse("2030-10-20"));
         detail2.setUnavailableToDate(LocalDate.parse("2030-10-22"));
-        detail2.setUnavailabilityType("All Day");
+        detail2.setUnavailabilityType("All");
         List<UnavailabilityRanges> unavailabilityRanges = Lists.newArrayList(detail1, detail2);
         return unavailabilityRanges;
     }
@@ -876,7 +876,7 @@ public class TestingUtil {
         detail1.setDowUnavailabilityType("PM");
         detail1.setDow("Monday");
         UnavailabilityDow detail2 = new UnavailabilityDow();
-        detail2.setDowUnavailabilityType("All Day");
+        detail2.setDowUnavailabilityType("All");
         detail2.setDow("Thursday");
         List<UnavailabilityDow> unavailabilityDows = Lists.newArrayList(detail1, detail2);
         return unavailabilityDows;

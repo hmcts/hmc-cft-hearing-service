@@ -18,7 +18,7 @@ public class UnavailabilityDow {
 
     @JsonProperty("DOWUnavailabilityType")
     @EnumPattern(enumClass = DayOfWeekUnAvailableType.class, fieldName = "dowUnavailabilityType")
-    @ApiModelProperty(allowableValues = "AM, PM, All Day")
+    @ApiModelProperty(allowableValues = "AM, PM, ALL")
     private String dowUnavailabilityType;
 
 }

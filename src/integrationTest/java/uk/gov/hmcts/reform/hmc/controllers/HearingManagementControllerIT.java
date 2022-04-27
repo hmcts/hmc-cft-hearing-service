@@ -947,6 +947,7 @@ class HearingManagementControllerIT extends BaseTest {
         individualDetails.setRelatedParties(Collections.singletonList(relatedParty));
         OrganisationDetails organisationDetails = new OrganisationDetails();
         UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
+        unavailabilityDow.setDowUnavailabilityType("ALL");
         List<UnavailabilityDow> unavailabilityDowList = Collections.singletonList(unavailabilityDow);
         UnavailabilityRanges unavailabilityRanges = new UnavailabilityRanges();
         List<UnavailabilityRanges> unavailabilityRangesList = Collections.singletonList(unavailabilityRanges);
@@ -1006,6 +1007,7 @@ class HearingManagementControllerIT extends BaseTest {
         partyDetails.setOrganisationDetails(organisationDetails);
         UnavailabilityDow unavailabilityDowMonday = new UnavailabilityDow();
         unavailabilityDowMonday.setDow("MONDAY");
+        unavailabilityDowMonday.setDowUnavailabilityType("ALL");
         partyDetails.setUnavailabilityDow(List.of(unavailabilityDowMonday));
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         hearingRequest.setPartyDetails(Collections.singletonList(partyDetails));

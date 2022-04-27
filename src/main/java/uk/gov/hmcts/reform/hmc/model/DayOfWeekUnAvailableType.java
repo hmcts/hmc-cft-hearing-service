@@ -10,7 +10,7 @@ import java.util.Locale;
 public enum DayOfWeekUnAvailableType {
     AM("AM"),
     PM("PM"),
-    ALL("All Day");
+    ALL("ALL");
 
     public final String label;
 

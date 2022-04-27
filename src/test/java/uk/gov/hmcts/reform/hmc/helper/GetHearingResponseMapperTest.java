@@ -291,10 +291,10 @@ class GetHearingResponseMapperTest {
                 LocalDate.of(2020, 12, 20),
                 unavailabilityRanges.getUnavailableFromDate()
             ),
-            () -> assertEquals("All Day",
+            () -> assertEquals("ALL",
                 unavailabilityRanges.getUnavailabilityType()
             ),
-            () -> assertEquals("All Day", unavailabilityDow.getDowUnavailabilityType()),
+            () -> assertEquals("ALL", unavailabilityDow.getDowUnavailabilityType()),
             () -> assertEquals("Friday", unavailabilityDow.getDow())
         );
     }
