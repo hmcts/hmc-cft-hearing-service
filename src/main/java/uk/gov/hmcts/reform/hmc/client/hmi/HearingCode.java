@@ -23,7 +23,7 @@ public enum HearingCode {
 
     public static HearingCode getByLabel(String name) {
         return Arrays.stream(HearingCode.values())
-            .filter(eachLinkType -> eachLinkType.label == name).findAny().orElse(null);
+            .filter(eachLinkType -> eachLinkType.label.equals(name)).findAny().orElse(null);
     }
 
     public static HearingCode getByNumber(String number) {
