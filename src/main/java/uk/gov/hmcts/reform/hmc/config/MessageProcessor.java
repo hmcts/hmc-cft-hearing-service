@@ -32,12 +32,10 @@ public class MessageProcessor {
     }
 
     public void processMessage(ServiceBusReceiverClient client, ServiceBusReceivedMessage message) {
-        JsonNode requestBody = null;
         try {
             log.info("Received message with id '{}'", message.getMessageId());
-            requestBody = convertMessage(message.getBody());
             processMessage(
-                requestBody,
+                convertMessage(message.getBody()),
                 message.getApplicationProperties(),
                 client, message
             );
