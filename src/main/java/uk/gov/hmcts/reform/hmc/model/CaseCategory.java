@@ -19,4 +19,7 @@ public class CaseCategory {
     @NotEmpty(message = ValidationError.CATEGORY_VALUE_EMPTY)
     @Size(max = 70, message = ValidationError.CATEGORY_VALUE)
     private String categoryValue;
+
+    @Size(max = 70, message = ValidationError.CATEGORY_VALUE)
+    private String categoryParent;
 }
