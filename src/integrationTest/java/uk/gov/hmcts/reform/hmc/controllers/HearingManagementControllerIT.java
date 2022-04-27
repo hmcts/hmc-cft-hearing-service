@@ -1105,7 +1105,7 @@ class HearingManagementControllerIT extends BaseTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(hearingRequest)))
                 .andExpect(status().is(400))
-                .andExpect(jsonPath("$.errors", hasItem("RelatedPartyId with value unknown, does not exist")))
+                .andExpect(jsonPath("$.errors", hasItem("Cannot find unique PartyID with value unknown")))
                 .andReturn();
     }
 
@@ -1215,7 +1215,7 @@ class HearingManagementControllerIT extends BaseTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(hearingRequest)))
                 .andExpect(status().is(400))
-                .andExpect(jsonPath("$.errors", hasItem("RelatedPartyId with value unknown, does not exist")))
+                .andExpect(jsonPath("$.errors", hasItem("Cannot find unique PartyID with value unknown")))
                 .andReturn();
     }
 
