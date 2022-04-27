@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.validator.CapitalizedEnumPattern;
+import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +17,8 @@ public class UnavailabilityDow {
     private String dow;
 
     @JsonProperty("DOWUnavailabilityType")
+    @EnumPattern(enumClass = DayOfWeekUnAvailableType.class, fieldName = "dowUnavailabilityType")
+    @ApiModelProperty(allowableValues = "AM, PM, All Day")
     private String dowUnavailabilityType;
 
 }
