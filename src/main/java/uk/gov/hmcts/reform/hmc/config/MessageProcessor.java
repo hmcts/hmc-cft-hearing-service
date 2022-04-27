@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 
@@ -22,6 +23,7 @@ public class MessageProcessor {
     private static final String MESSAGE_TYPE = "message_type";
     public static final String MISSING_MESSAGE_TYPE = "Message is missing custom header message_type";
     public static final String MESSAGE_PARSE_ERROR = "Unable to parse incoming message with id '{}'";
+    public static final String MESSAGE_ERROR = "Error for message with id '{}'";
     public static final String ERROR_MESSAGE_TYPE = "Message of type error received with id '{}'";
 
     public MessageProcessor(ObjectMapper objectMapper, InboundQueueService inboundQueueService) {
@@ -30,10 +32,12 @@ public class MessageProcessor {
     }
 
     public void processMessage(ServiceBusReceiverClient client, ServiceBusReceivedMessage message) {
+        JsonNode requestBody = null;
         try {
             log.info("Received message with id '{}'", message.getMessageId());
+            requestBody = convertMessage(message.getBody());
             processMessage(
-                convertMessage(message.getBody()),
+                requestBody,
                 message.getApplicationProperties(),
                 client, message
             );
@@ -42,17 +46,29 @@ public class MessageProcessor {
 
         } catch (JsonProcessingException ex) {
             log.error(MESSAGE_PARSE_ERROR, message.getMessageId(), ex);
-            throw new MalformedMessageException(MESSAGE_PARSE_ERROR);
         }
     }
 
     public void processMessage(JsonNode message, Map<String, Object> applicationProperties,
-                               ServiceBusReceiverClient client, ServiceBusReceivedMessage serviceBusReceivedMessage)
-        throws JsonProcessingException {
+                               ServiceBusReceiverClient client, ServiceBusReceivedMessage serviceBusReceivedMessage) {
         if (applicationProperties.containsKey(MESSAGE_TYPE)) {
-            inboundQueueService.processMessage(message, applicationProperties, client, serviceBusReceivedMessage);
+            try {
+                inboundQueueService.processMessage(message, applicationProperties, client, serviceBusReceivedMessage);
+            } catch (JsonProcessingException ex) {
+                log.error(MESSAGE_PARSE_ERROR, serviceBusReceivedMessage.getMessageId(), ex);
+                inboundQueueService.catchExceptionAndUpdateHearing(serviceBusReceivedMessage.getApplicationProperties(),
+                                                                   ex);
+            }  catch (HearingNotFoundException | MalformedMessageException ex) {
+                log.error(MESSAGE_ERROR, serviceBusReceivedMessage.getMessageId(), ex);
+
+            } catch (Exception ex) {
+                log.error(MESSAGE_ERROR, serviceBusReceivedMessage.getMessageId(), ex);
+                inboundQueueService.catchExceptionAndUpdateHearing(serviceBusReceivedMessage.getApplicationProperties(),
+                                                                   ex);
+            }
         } else {
-            throw new MalformedMessageException(MISSING_MESSAGE_TYPE);
+            log.error(MISSING_MESSAGE_TYPE + " for message with message with id "
+                          + serviceBusReceivedMessage.getMessageId());
         }
     }
 

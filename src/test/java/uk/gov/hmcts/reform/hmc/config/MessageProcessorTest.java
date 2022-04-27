@@ -13,17 +13,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
-import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
+import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.hmc.config.MessageProcessor.MISSING_MESSAGE_TYPE;
 
 class MessageProcessorTest {
     private static final String MESSAGE_TYPE = "message_type";
@@ -77,17 +77,42 @@ class MessageProcessorTest {
     void shouldThrowErrorWhenMessageTypeIsNull() {
         Map<String, Object> applicationProperties = new HashMap<>();
         JsonNode anyData = OBJECT_MAPPER.convertValue("test data", JsonNode.class);
-        assertThatThrownBy(() -> messageProcessor.processMessage(anyData, applicationProperties, client, message))
-            .isInstanceOf(MalformedMessageException.class)
-            .hasMessageContaining(MISSING_MESSAGE_TYPE);
+        messageProcessor.processMessage(anyData, applicationProperties, client, message);
+        verify(inboundQueueService, times(0)).catchExceptionAndUpdateHearing(any(), any());
     }
 
     @Test
-    void shouldThrowErrorWhenNoMessageType() {
+    void shouldLogErrorWhenNoMessageType() {
         Map<String, Object> applicationProperties = new HashMap<>();
         JsonNode anyData = OBJECT_MAPPER.convertValue("test data", JsonNode.class);
-        assertThatThrownBy(() -> messageProcessor.processMessage(anyData, applicationProperties, client, message))
-            .isInstanceOf(MalformedMessageException.class)
-            .hasMessageContaining(MISSING_MESSAGE_TYPE);
+        messageProcessor.processMessage(anyData, applicationProperties, client, message);
+        verify(inboundQueueService, times(0)).catchExceptionAndUpdateHearing(any(), any());
     }
+
+    @Test
+    void shouldCatchExceptionAndLog() throws JsonProcessingException {
+        Map<String, Object> applicationProperties = new HashMap<>();
+        applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+        when(message.getApplicationProperties()).thenReturn(applicationProperties);
+        when(message.getBody()).thenReturn(BinaryData.fromString("{ \"test\": \"name\"}"));
+        ResourceNotFoundException exception = new ResourceNotFoundException("");
+        doThrow(exception).when(inboundQueueService).processMessage(any(), any(), any(), any());
+        JsonNode anyData = OBJECT_MAPPER.convertValue("test data", JsonNode.class);
+        messageProcessor.processMessage(anyData, applicationProperties, client, message);
+        verify(inboundQueueService, times(1)).processMessage(any(), any(), any(), any());
+        verify(inboundQueueService, times(1)).catchExceptionAndUpdateHearing(any(), any());
+    }
+
+    @Test
+    void shouldThrowErrorWhenParsingMessageBody() throws JsonProcessingException {
+        Map<String, Object> applicationProperties = new HashMap<>();
+        applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+        when(message.getApplicationProperties()).thenReturn(applicationProperties);
+        when(message.getBody()).thenReturn(BinaryData.fromString("{ \"test\": \"name\""));
+        messageProcessor.processMessage(client, message);
+        verify(inboundQueueService, times(0)).catchExceptionAndUpdateHearing(any(), any());
+        verify(inboundQueueService, times(0)).processMessage(any(), any(), any(), any());
+    }
+
+
 }
