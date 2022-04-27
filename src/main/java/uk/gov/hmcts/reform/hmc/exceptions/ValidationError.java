@@ -175,7 +175,6 @@ public final class ValidationError {
 
 
     public static final String INVALID_LINKED_GROUP_REQUEST_ID_DETAILS = "Invalid linked group id";
-    public static final String LINKED_GROUP_ID_EMPTY = "Linked group id cannot be null or empty";
     public static final String INVALID_STATE_FOR_HEARING_REQUEST
             = "004 Invalid state for hearing request <hearingId>";
     public static final String INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST

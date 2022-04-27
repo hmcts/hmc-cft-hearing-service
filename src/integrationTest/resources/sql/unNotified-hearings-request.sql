@@ -34,25 +34,25 @@ insert into hearing_response(hearing_response_id, hearing_id, received_date_time
 values (7, '2100000004', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 1, 2, null);
 
 
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (1, 1, '2021-01-10 11:00:00', '2020-11-10 11:00:00', 'session1-1', 'venue1-1', 'room1-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (2, 1, '2020-01-10 11:00:00', '2020-08-10 11:00:00', 'session1-2', 'venue1-2', 'room1-2');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (3, 3, '2020-01-10 11:00:00', '2020-07-10 11:00:00', 'session1-2', 'venue2-1', 'room2-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (4, 3, '2021-01-10 11:00:00', '2021-08-10 11:00:00', 'session1-1', 'venue1-1', 'room1-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (1, 1, '2021-01-10 11:00:00', '2020-11-10 11:00:00', 'venue1-1', 'room1-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (2, 1, '2020-01-10 11:00:00', '2020-08-10 11:00:00', 'venue1-2', 'room1-2');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (3, 3, '2020-01-10 11:00:00', '2020-07-10 11:00:00', 'venue2-1', 'room2-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (4, 3, '2021-01-10 11:00:00', '2021-08-10 11:00:00', 'venue1-1', 'room1-1');
 
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (5, 4, '2020-01-10 11:00:00', '2020-07-10 11:00:00', 'session1-2', 'venue2-1', 'room2-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (6, 5, '2021-01-10 11:00:00', '2021-08-10 11:00:00', 'session1-1', 'venue1-1', 'room1-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (5, 4, '2020-01-10 11:00:00', '2020-07-10 11:00:00', 'venue2-1', 'room2-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (6, 5, '2021-01-10 11:00:00', '2021-08-10 11:00:00', 'venue1-1', 'room1-1');
 
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (7, 6, '2020-01-10 11:00:00', '2020-07-10 11:00:00', 'session1-2', 'venue2-1', 'room2-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (8, 6, '2021-01-10 11:00:00', '2021-08-10 11:00:00', 'session1-1', 'venue1-1', 'room1-1');
-insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, list_assist_session_id, venue_id, room_id)
-values (9, 7, '2011-01-10 11:00:00', '2010-07-10 11:00:00', 'session1-2', 'venue2-1', 'room2-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (7, 6, '2020-01-10 11:00:00', '2020-07-10 11:00:00', 'venue2-1', 'room2-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (8, 6, '2021-01-10 11:00:00', '2021-08-10 11:00:00', 'venue1-1', 'room1-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (9, 7, '2011-01-10 11:00:00', '2010-07-10 11:00:00', 'venue2-1', 'room2-1');
 
 
