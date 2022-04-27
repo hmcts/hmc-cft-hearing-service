@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
-import uk.gov.hmcts.reform.hmc.data.PartyRelationshipDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
@@ -45,12 +44,9 @@ import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
-import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
-import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.repository.PartyRelationshipDetailsRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
@@ -102,13 +98,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
     private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
     private final ApplicationParams applicationParams;
-    private final ActualHearingRepository actualHearingRepository;
-    private final ActualHearingDayRepository actualHearingDayRepository;
     private final HearingIdValidator hearingIdValidator;
     private final LinkedHearingValidator linkedHearingValidator;
     private final HearingRepository hearingRepository;
     private final PartyRelationshipDetailsMapper partyRelationshipDetailsMapper;
-    private final PartyRelationshipDetailsRepository partyRelationshipDetailsRepository;
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -127,10 +120,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         ApplicationParams applicationParams,
                                         HearingIdValidator hearingIdValidator,
                                         LinkedHearingValidator linkedHearingValidator,
-                                        ActualHearingRepository actualHearingRepository,
-                                        ActualHearingDayRepository actualHearingDayRepository,
-                                        PartyRelationshipDetailsMapper partyRelationshipDetailsMapper,
-                                        PartyRelationshipDetailsRepository partyRelationshipDetailsRepository) {
+                                        PartyRelationshipDetailsMapper partyRelationshipDetailsMapper) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -144,13 +134,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.objectMapperService = objectMapperService;
         this.messageSenderToQueueConfiguration = messageSenderToQueueConfiguration;
         this.applicationParams = applicationParams;
-        this.actualHearingRepository = actualHearingRepository;
-        this.actualHearingDayRepository = actualHearingDayRepository;
         this.hearingRepository = hearingRepository;
         this.hearingIdValidator = hearingIdValidator;
         this.linkedHearingValidator = linkedHearingValidator;
         this.partyRelationshipDetailsMapper = partyRelationshipDetailsMapper;
-        this.partyRelationshipDetailsRepository = partyRelationshipDetailsRepository;
     }
 
     @Override

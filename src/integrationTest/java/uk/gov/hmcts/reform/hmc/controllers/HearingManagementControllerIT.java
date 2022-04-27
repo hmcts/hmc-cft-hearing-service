@@ -8,10 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
@@ -722,13 +720,11 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        final MvcResult mvcResult = mockMvc.perform(put(url + "/2000000012")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(hearingRequest)))
-                .andExpect(status().is(201))
-                .andReturn();
-        final MockHttpServletResponse response = mvcResult.getResponse();
-        System.out.println(response);
+        mockMvc.perform(put(url + "/2000000012")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(201))
+            .andReturn();
     }
 
     @Test
@@ -1094,7 +1090,24 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
-
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn400_WhenUpdateHearingRequestHearingPartyTechPartyId_NotFound() throws Exception {
+        UpdateHearingRequest hearingRequest = TestingUtil.validUpdateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
+            .get(0).setRelatedPartyID("unknown");
+        hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
+            .get(0).setRelationshipType("a".repeat(10));
+        mockMvc.perform(put(url + "/2000000012")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(hearingRequest)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem("RelatedPartyId with value unknown, does not exist")))
+                .andReturn();
+    }
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
@@ -1202,6 +1215,7 @@ class HearingManagementControllerIT extends BaseTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(hearingRequest)))
                 .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem("RelatedPartyId with value unknown, does not exist")))
                 .andReturn();
     }
 

@@ -9,8 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -72,7 +70,6 @@ import uk.gov.hmcts.reform.hmc.repository.HearingPartyRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
-import uk.gov.hmcts.reform.hmc.repository.PartyRelationshipDetailsRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
@@ -90,7 +87,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -99,7 +95,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -201,13 +196,6 @@ class HearingManagementServiceTest {
     @Mock
     PartyRelationshipDetailsMapper partyRelationshipDetailsMapper;
 
-    @Mock
-    PartyRelationshipDetailsRepository partyRelationshipDetailsRepository;
-
-
-    @Captor
-    ArgumentCaptor<List<PartyRelationshipDetailsEntity>> savedEntitiesCaptor;
-
     HearingIdValidator hearingIdValidator;
 
     JsonNode jsonNode = mock(JsonNode.class);
@@ -237,10 +225,7 @@ class HearingManagementServiceTest {
                 applicationParams,
                 hearingIdValidator,
                 linkedHearingValidator,
-                actualHearingRepository,
-                actualHearingDayRepository,
-                partyRelationshipDetailsMapper,
-                partyRelationshipDetailsRepository);
+                partyRelationshipDetailsMapper);
     }
 
     public static final String JURISDICTION = "Jurisdiction1";
@@ -379,7 +364,6 @@ class HearingManagementServiceTest {
                     .willThrow(BadRequestException.class);
             assertThrows(BadRequestException.class, () -> hearingManagementService
                     .saveHearingRequest(hearingRequest));
-            verify(partyRelationshipDetailsRepository, never()).saveAll(any());
         }
 
         @Test
@@ -433,12 +417,6 @@ class HearingManagementServiceTest {
             assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
             assertEquals(POST_HEARING_STATUS, response.getStatus());
             assertNotNull(response.getHearingRequestId());
-
-            verify(partyRelationshipDetailsRepository).saveAll(savedEntitiesCaptor.capture());
-            final List<PartyRelationshipDetailsEntity> savedEntitiesCaptorValue = savedEntitiesCaptor.getValue();
-
-            assertTrue(savedEntitiesCaptorValue.containsAll(partyRelationshipDetailsEntities));
-
         }
 
         @Test
