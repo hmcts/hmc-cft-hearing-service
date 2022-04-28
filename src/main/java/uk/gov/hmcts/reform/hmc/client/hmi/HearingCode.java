@@ -6,10 +6,9 @@ public enum HearingCode {
     LISTED(100, "LISTED"),
     PENDING_RELISTING(6, "PENDING_RELISTING"),
     CLOSED(8, "CLOSED"),
-    EXCEPTION(0, "EXCEPTION"),
-    ;
+    EXCEPTION(-1, "EXCEPTION");
 
-    private int number;
+    private Integer number;
     private String label;
 
     HearingCode(int number, String label) {

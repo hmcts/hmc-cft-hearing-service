@@ -22,9 +22,8 @@ public class MessageProcessor {
     private final InboundQueueService inboundQueueService;
     private static final String MESSAGE_TYPE = "message_type";
     public static final String MISSING_MESSAGE_TYPE = "Message is missing custom header message_type";
-    public static final String MESSAGE_PARSE_ERROR = "Unable to parse incoming message with id '{}'";
-    public static final String MESSAGE_ERROR = "Error for message with id '{}'";
-    public static final String ERROR_MESSAGE_TYPE = "Message of type error received with id '{}'";
+    public static final String MESSAGE_PARSE_ERROR = "Unable to parse incoming message with id ";
+    public static final String MESSAGE_ERROR = "Error for message with id ";
 
     public MessageProcessor(ObjectMapper objectMapper, InboundQueueService inboundQueueService) {
         this.objectMapper = objectMapper;
@@ -53,16 +52,14 @@ public class MessageProcessor {
             try {
                 inboundQueueService.processMessage(message, applicationProperties, client, serviceBusReceivedMessage);
             } catch (JsonProcessingException ex) {
-                log.error(MESSAGE_PARSE_ERROR, serviceBusReceivedMessage.getMessageId(), ex);
-                inboundQueueService.catchExceptionAndUpdateHearing(serviceBusReceivedMessage.getApplicationProperties(),
-                                                                   ex);
-            }  catch (HearingNotFoundException | MalformedMessageException ex) {
-                log.error(MESSAGE_ERROR, serviceBusReceivedMessage.getMessageId(), ex);
-
+                log.error(MESSAGE_PARSE_ERROR + serviceBusReceivedMessage.getMessageId()
+                              + " with error " + ex.getMessage());
+                inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, ex);
+            } catch (HearingNotFoundException | MalformedMessageException ex) {
+                log.error(MESSAGE_ERROR + serviceBusReceivedMessage.getMessageId() + " with error " + ex.getMessage());
             } catch (Exception ex) {
-                log.error(MESSAGE_ERROR, serviceBusReceivedMessage.getMessageId(), ex);
-                inboundQueueService.catchExceptionAndUpdateHearing(serviceBusReceivedMessage.getApplicationProperties(),
-                                                                   ex);
+                log.error(MESSAGE_ERROR + serviceBusReceivedMessage.getMessageId() + " with error " + ex.getMessage());
+                inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, ex);
             }
         } else {
             log.error(MISSING_MESSAGE_TYPE + " for message with message with id "

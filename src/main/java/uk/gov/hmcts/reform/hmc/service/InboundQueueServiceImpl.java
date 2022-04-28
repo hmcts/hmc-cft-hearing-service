@@ -83,7 +83,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     public void catchExceptionAndUpdateHearing(Map<String, Object> applicationProperties, Exception exception) {
         if (applicationProperties.containsKey(HEARING_ID)) {
             Long hearingId = Long.valueOf(applicationProperties.get(HEARING_ID).toString());
-            log.error("Error processing message with Hearing id " + hearingId + " and exception was "
+            log.error("Error processing message with Hearing id " + hearingId + " exception was "
                           + exception.getMessage());
             Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
             if (hearingResult.isPresent()) {
@@ -91,8 +91,10 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 hearingEntity.setStatus(EXCEPTION.name());
                 hearingEntity.setErrorDescription(exception.getMessage());
                 hearingRepository.save(hearingEntity);
+                log.error("Updated Hearing id " + hearingId + " to status Exception");
+            } else {
+                log.error("Hearing id " + hearingId + " not found");
             }
-            log.error("Updated Hearing id " + hearingId + " to status Exception");
         } else {
             log.error("Error processing message " + MISSING_HEARING_ID);
         }

@@ -3,9 +3,10 @@ package uk.gov.hmcts.reform.hmc.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
+import uk.gov.hmcts.reform.hmc.client.hmi.HearingCode;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.validator.HearingCodeEnumPattern;
 
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotEmpty;
@@ -37,7 +38,8 @@ public class HmcHearingUpdate {
 
     @NotNull(message = ValidationError.LIST_ASSIST_CASE_STATUS_NULL)
     @JsonProperty("ListAssistCaseStatus")
-    private ListAssistCaseStatus listAssistCaseStatus;
+    @HearingCodeEnumPattern(enumClass = HearingCode.class, fieldName = "hearing case status code")
+    private String listAssistCaseStatus;
 
     private String hearingRoomId;
 
