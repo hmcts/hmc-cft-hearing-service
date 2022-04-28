@@ -61,7 +61,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     private final LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
     private final DefaultFutureHearingRepository futureHearingRepository;
     private final ObjectMapperService objectMapperService;
-    private AccessControlService accessControlService;
+    private final AccessControlService accessControlService;
 
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
@@ -157,6 +157,8 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     @Override
     public GetLinkedHearingGroupResponse getLinkedHearingGroupResponse(String requestId) {
         linkedHearingValidator.validateRequestId(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
+        List<HearingEntity> linkedGroupHearings = hearingRepository.findByRequestId(requestId);
+        verifyAccess(linkedGroupHearings);
         return getLinkedHearingGroupDetails(requestId);
     }
 
