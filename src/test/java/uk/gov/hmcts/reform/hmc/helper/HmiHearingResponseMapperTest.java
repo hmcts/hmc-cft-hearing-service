@@ -343,18 +343,18 @@ class HmiHearingResponseMapperTest {
         hearing.setHearingStatus(hearingStatus);
 
         HearingCaseStatus hearingCaseStatus = new HearingCaseStatus();
-        hearingCaseStatus.setCode(hearingCode);
+        hearingCaseStatus.setCode(String.valueOf(HearingCode.getNumber(hearingCode)));
         hearing.setHearingCaseStatus(hearingCaseStatus);
 
         HearingVenue hearingVenue = new HearingVenue();
         VenueLocationReference venueLocationReference = new VenueLocationReference();
         venueLocationReference.setKey(key);
         venueLocationReference.setValue("value");
-        hearingVenue.setLocationReference(new ArrayList<>(List.of(venueLocationReference)));
+        hearingVenue.setLocationReferences(new ArrayList<>(List.of(venueLocationReference)));
         hearing.setHearingVenue(hearingVenue);
 
         HearingRoom hearingRoom = new HearingRoom();
-        hearingRoom.setRoomName("roomName");
+        hearingRoom.setLocationName("roomName");
         hearing.setHearingRoom(hearingRoom);
 
         HearingAttendee hearingAttendee = new HearingAttendee();
@@ -362,12 +362,12 @@ class HmiHearingResponseMapperTest {
         HearingChannel hearingChannel = new HearingChannel();
         hearingChannel.setCode("codeSubChannel");
         hearingAttendee.setHearingChannel(hearingChannel);
-        hearing.setHearingAttendee(new ArrayList<>(List.of(hearingAttendee)));
+        hearing.setHearingAttendees(new ArrayList<>(List.of(hearingAttendee)));
 
         HearingJoh hearingJoh = new HearingJoh();
         hearingJoh.setJohCode("JohCode");
         hearingJoh.setIsPresiding(true);
-        hearing.setHearingJoh(new ArrayList<>(List.of(hearingJoh)));
+        hearing.setHearingJohs(new ArrayList<>(List.of(hearingJoh)));
 
         hearingResponse.setHearing(hearing);
         return hearingResponse;
