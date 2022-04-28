@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_GROUP_I
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 
 @Service
 @Component
@@ -77,7 +78,7 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
     private void verifyAccess(List<HearingEntity> linkedGroupHearings) {
         linkedGroupHearings.stream()
             .forEach(hearingEntity -> accessControlService
-                .verifyAccess(hearingEntity.getId(), Lists.newArrayList()));
+                .verifyAccess(hearingEntity.getId(), Lists.newArrayList(HEARING_MANAGER)));
     }
 
     private void validateHearingLinkGroupRequestForUpdate(String requestId,
