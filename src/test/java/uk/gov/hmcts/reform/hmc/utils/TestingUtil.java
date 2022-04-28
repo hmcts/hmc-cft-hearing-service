@@ -830,7 +830,6 @@ public class TestingUtil {
         entity.setPartyRoleType("role");
         entity.setUnavailabilityEntity(unavailabilityEntity());
         entity.setOrganisationDetailEntity(organisationDetailEntity());
-        entity.setCaseHearing(caseHearingRequestEntityWithPartyOrg());
 
         return entity;
     }
@@ -840,7 +839,7 @@ public class TestingUtil {
         entity.setPartyReference(partyReference);
         entity.setPartyType(PartyType.ORG);
         entity.setPartyRoleType("role");
-        entity.setUnavailabilityEntity(List.of(unavailabilityEntity()));
+        entity.setUnavailabilityEntity(unavailabilityEntity());
         entity.setOrganisationDetailEntity(organisationDetailEntity());
         entity.setCaseHearing(caseHearingRequestEntityWithPartyOrg());
 

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -28,7 +27,6 @@ class GetHearingActualsResponseMapperTest {
         HearingActualResponse response =
             getHearingsResponseMapper.toHearingActualResponse(
                 TestingUtil.getHearingsEntityForHearingActuals("HEARING_REQUESTED"));
-        System.out.println(new ObjectMapper().writeValueAsString(response));
         assertCommonFields(response);
         assertEquals("name",
                      response.getHearingPlanned().getPlannedHearingDays().get(0).getParties()
