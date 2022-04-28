@@ -215,8 +215,6 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             Party partyDetails = new Party();
             partyDetails.setPartyID(hearingAttendeeDetails.getPartyId());
             partyDetails.setPartyChannelSubType(hearingAttendeeDetails.getPartySubChannelType());
-            //Set PartyRole, IndividualDetails and OrganisationDetails
-            // if there is a match for CaseHearingId and party reference/id
             if (hearingPartyEntity != null && caseHearingIdMatches) {
                 partyDetails.setPartyRole(hearingPartyEntity.getPartyRoleType());
                 if (PartyType.IND.getLabel().equals(hearingPartyEntity.getPartyType().getLabel())) {
@@ -224,9 +222,6 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
                 } else {
                     partyDetails.setOrganisationDetails(setOrganisationDetails(hearingPartyEntity));
                 }
-                //If there is no match just set the partyRole to null
-            } else {
-                partyDetails.setPartyRole(null);
             }
             partyDetailsList.add(partyDetails);
         }

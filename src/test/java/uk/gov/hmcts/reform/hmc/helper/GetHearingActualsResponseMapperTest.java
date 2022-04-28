@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -15,11 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class GetHearingActualsResponseMapperTest {
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void toHearingsResponseWhenDataIsPresentForOrgDetails() throws JsonProcessingException {
@@ -107,6 +100,8 @@ class GetHearingActualsResponseMapperTest {
                        .getIndividualDetails());
 
     }
+
+
 
     @Test
     void checkHearingStatusWhenStatusIsHearingRequested() {
