@@ -46,6 +46,10 @@ class MessageProcessorTest {
     @Mock
     private InboundQueueServiceImpl inboundQueueService;
 
+    MessageProcessorTest() throws JsonProcessingException {
+    }
+
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -110,7 +114,7 @@ class MessageProcessorTest {
         when(message.getApplicationProperties()).thenReturn(applicationProperties);
         when(message.getBody()).thenReturn(BinaryData.fromString("{ \"test\": \"name\""));
         messageProcessor.processMessage(client, message);
-        verify(inboundQueueService, times(0)).catchExceptionAndUpdateHearing(any(), any());
+        verify(inboundQueueService, times(1)).catchExceptionAndUpdateHearing(any(), any());
         verify(inboundQueueService, times(0)).processMessage(any(), any(), any(), any());
     }
 
