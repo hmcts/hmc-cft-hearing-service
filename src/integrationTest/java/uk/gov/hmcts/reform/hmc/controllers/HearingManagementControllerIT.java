@@ -331,15 +331,7 @@ class HearingManagementControllerIT extends BaseTest {
         RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(ROLE_NAME);
         resource.setRoleType(ROLE_TYPE);
-        RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
-        attributesResource.setCaseType(Optional.of(CASE_TYPE));
-        attributesResource.setJurisdiction(Optional.of(JURISDICTION));
-        resource.setAttributes(attributesResource);
-        List<RoleAssignmentResource> roleAssignmentList = new ArrayList<>();
-        roleAssignmentList.add(resource);
-        RoleAssignmentResponse response = new RoleAssignmentResponse();
-        response.setRoleAssignments(roleAssignmentList);
-        stubReturn200RoleAssignments(USER_ID, response);
+        stubRoleAssignments();
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
             .caseTypeId(CASE_TYPE)
             .jurisdiction(JURISDICTION)

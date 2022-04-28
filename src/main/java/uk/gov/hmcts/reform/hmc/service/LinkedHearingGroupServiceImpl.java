@@ -43,14 +43,14 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.PENDING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
-import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 
 @Service
 @Component
 @Slf4j
-public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implements LinkedHearingGroupService {
+public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService {
 
     private final HearingRepository hearingRepository;
     private final LinkedGroupDetailsRepository linkedGroupDetailsRepository;
@@ -148,8 +148,6 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
         linkedHearingValidator.validateHearingGroup(hearingGroupId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(hearingGroupId);
         verifyAccess(linkedGroupHearings);
-        validateUnlinkingHearingsStatus(linkedGroupHearings);
-        validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
         linkedHearingValidator.validateUnlinkingHearingsStatus(linkedGroupHearings);
         linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
 
@@ -325,18 +323,6 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
             });
         linkedGroupDetailsRepository.deleteLinkedGroupDetailsStatus(requestId);
         throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
-    private void verifyAccess(List<HearingEntity> linkedGroupHearings) {
-        linkedGroupHearings.stream()
-            .forEach(hearingEntity -> accessControlService
-                .verifyAccess(hearingEntity.getId(), Lists.newArrayList(HEARING_MANAGER)));
-    }
-
-    private void validateHearingLinkGroupRequestForUpdate(String requestId,
-                                                          HearingLinkGroupRequest hearingLinkGroupRequest) {
-        validateRequestId(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
-        validateHearingLinkGroupRequest(hearingLinkGroupRequest, requestId);
-        List<LinkHearingDetails> linkedHearingDetailsListPayload = hearingLinkGroupRequest.getHearingsInGroup();
-        validateLinkedHearingsForUpdate(requestId, linkedHearingDetailsListPayload);
     }
 
     private void process500ResponseFromListAssistForDeleteLinkedHearing(LinkedGroupDetails linkedGroupDetails) {
@@ -374,6 +360,12 @@ public class LinkedHearingGroupServiceImpl extends LinkedHearingValidator implem
                 .modelToEntity(hearingEntity);
         }
         linkedHearingDetailsAuditRepository.save(linkedHearingDetailsAuditEntity);
+    }
+
+    private void verifyAccess(List<HearingEntity> linkedGroupHearings) {
+        linkedGroupHearings.stream()
+            .forEach(hearingEntity -> accessControlService
+                .verifyAccess(hearingEntity.getId(), Lists.newArrayList(HEARING_MANAGER)));
     }
 
 }

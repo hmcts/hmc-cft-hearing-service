@@ -483,11 +483,11 @@ class HearingManagementServiceTest {
     class VerifyAccess {
 
         private void stubRoleAssignments(RoleAssignmentAttributes.RoleAssignmentAttributesBuilder builder,
-                                         String hearningManager) {
+                                         String hearingManager) {
             RoleAssignmentAttributes roleAssignmentAttributes = builder
                 .build();
             RoleAssignment roleAssignment = RoleAssignment.builder()
-                .roleName(hearningManager)
+                .roleName(hearingManager)
                 .roleType(ROLE_TYPE)
                 .attributes(roleAssignmentAttributes)
                 .build();

@@ -105,7 +105,8 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
     }
 
-    private List<RoleAssignment> verifyRequiredRolesExistsAndFilter(List<String> requiredRoles, List<RoleAssignment> filteredRoleAssignments) {
+    private List<RoleAssignment> verifyRequiredRolesExistsAndFilter(List<String> requiredRoles,
+                                                                    List<RoleAssignment> filteredRoleAssignments) {
         List<RoleAssignment> requiredRoleAssignments = Lists.newArrayList();
         if (!requiredRoles.isEmpty()) {
             requiredRoleAssignments = filteredRoleAssignments.stream()

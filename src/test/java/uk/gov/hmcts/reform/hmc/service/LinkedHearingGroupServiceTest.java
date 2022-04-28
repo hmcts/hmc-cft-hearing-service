@@ -129,9 +129,6 @@ class LinkedHearingGroupServiceTest {
     @Mock
     AccessControlService accessControlService;
 
-    @InjectMocks
-    private LinkedHearingGroupServiceImpl service;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
