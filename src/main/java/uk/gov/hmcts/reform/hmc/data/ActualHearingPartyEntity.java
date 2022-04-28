@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import java.io.Serializable;
 import java.util.List;
@@ -41,9 +43,11 @@ public class ActualHearingPartyEntity implements Serializable {
     private ActualHearingDayEntity actualHearingDay;
 
     @OneToMany(mappedBy = "actualHearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<ActualPartyRelationshipDetailEntity> actualPartyRelationshipDetail;
 
     @OneToMany(mappedBy = "actualHearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<ActualAttendeeIndividualDetailEntity> actualAttendeeIndividualDetail;
 
 }

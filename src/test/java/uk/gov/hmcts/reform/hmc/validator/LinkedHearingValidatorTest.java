@@ -54,7 +54,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.HEARING_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LINKED_GROUP_ID_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 
 class LinkedHearingValidatorTest {
 
@@ -89,8 +89,16 @@ class LinkedHearingValidatorTest {
     void shouldFailAsRequestIdIsNull() {
         String requestId = null;
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingValidator
-                .validateRequestId(requestId, null));
-        assertEquals(LINKED_GROUP_ID_EMPTY, exception.getMessage());
+                .validateRequestId(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS));
+        assertEquals(INVALID_LINKED_GROUP_REQUEST_ID_DETAILS, exception.getMessage());
+    }
+
+    @Test
+    void shouldFailAsRequestIdIsAString() {
+        String requestId = "string requestId";
+        Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingValidator
+            .validateRequestId(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS));
+        assertEquals(INVALID_LINKED_GROUP_REQUEST_ID_DETAILS, exception.getMessage());
     }
 
     @Test

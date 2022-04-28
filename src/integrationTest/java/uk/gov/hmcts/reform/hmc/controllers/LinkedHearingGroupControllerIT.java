@@ -21,7 +21,9 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -535,7 +537,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-        void shouldReturn400_ForInvalidRequestId() throws Exception {
+        void shouldReturn404_ForInvalidRequestId() throws Exception {
             LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
             hearingInGroup1.setHearingId("2000000007");
             hearingInGroup1.setHearingOrder(1);
@@ -552,7 +554,7 @@ class LinkedHearingGroupControllerIT extends BaseTest {
             mockMvc.perform(put(url + "?id=88782")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
-                .andExpect(status().is(400))
+                .andExpect(status().is(404))
                 .andExpect(jsonPath("$.errors", hasItem(ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS)))
                 .andReturn();
 
@@ -722,6 +724,39 @@ class LinkedHearingGroupControllerIT extends BaseTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasItem(LIST_ASSIST_FAILED_TO_RESPOND)))
+                .andReturn();
+        }
+    }
+
+    @Nested
+    @DisplayName("GetLinkedHearingGroup")
+    class GetLinkedHearingGroup {
+
+        @Test
+        void shouldReturn400_WhenLinkedHearingGroupIdIsNotValid() throws Exception {
+            mockMvc.perform(get(url + "/760000000o")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(400))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldReturn200WhenLinkedHearingGroupExists() throws Exception {
+            mockMvc.perform(get(url + "/12")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.groupDetails").exists())
+                .andExpect(jsonPath("$.groupDetails.groupName").value("HMAN-56 group 2"))
+                .andExpect(jsonPath("$.groupDetails.groupReason").value("Test 2"))
+                .andExpect(jsonPath("$.groupDetails.groupLinkType").value("Ordered"))
+                .andExpect(jsonPath("$.groupDetails.groupComments").value("commented"))
+                .andExpect(jsonPath("$.hearingsInGroup",hasSize(3)))
+                .andExpect(jsonPath("$.hearingsInGroup[0].hearingId").value("2000000007"))
+                .andExpect(jsonPath("$.hearingsInGroup[0].hearingOrder").value("1"))
+                .andExpect(jsonPath("$.hearingsInGroup[1].hearingId").value("2000000008"))
+                .andExpect(jsonPath("$.hearingsInGroup[1].hearingOrder").value("2"))
+                .andExpect(jsonPath("$.hearingsInGroup[2].hearingId").value("2000000009"))
                 .andReturn();
         }
     }

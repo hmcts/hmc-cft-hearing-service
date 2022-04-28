@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
@@ -32,9 +35,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(MockitoExtension.class)
 class GetHearingResponseMapperTest {
 
-    private GetHearingResponseMapper getHearingResponseMapper = new GetHearingResponseMapper();
+    @InjectMocks
+    private GetHearingResponseMapper getHearingResponseMapper;
 
     @Test
     void toHearingsResponseWhenDataIsPresentForOrg() {
@@ -309,7 +314,6 @@ class GetHearingResponseMapperTest {
             () -> assertEquals(true, individualDetails.getVulnerableFlag()),
             () -> assertEquals("details", individualDetails.getVulnerabilityDetails()),
             () -> assertEquals("01234567890", individualDetails.getHearingChannelPhone().get(0)),
-            () -> assertEquals("hearing.channel@email.com", individualDetails.getHearingChannelEmail().get(0)),
             () -> assertEquals("hearing.channel@email.com", individualDetails.getHearingChannelEmail().get(0)),
             () -> assertEquals("First reason", individualDetails.getReasonableAdjustments().get(0)),
             () -> assertEquals("custodyStatus", individualDetails.getCustodyStatus()),
