@@ -111,7 +111,7 @@ public class HearingEntity {
             : Optional.empty();
     }
 
-    public String getHearingStatus() {
+    public String getDerivedHearingStatus() {
         String hearingStatus = null;
         switch (this.status) {
             case "LISTED":
