@@ -8,7 +8,7 @@ public enum HearingCode {
     CLOSED(8, "CLOSED"),
     EXCEPTION(-1, "EXCEPTION");
 
-    private Integer number;
+    private int number;
     private String label;
 
     HearingCode(int number, String label) {
