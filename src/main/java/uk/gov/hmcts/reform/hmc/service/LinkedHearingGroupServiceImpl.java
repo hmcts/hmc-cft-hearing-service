@@ -46,6 +46,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 
 @Service
 @Component
@@ -147,7 +148,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     public void deleteLinkedHearingGroup(Long hearingGroupId) {
         linkedHearingValidator.validateHearingGroup(hearingGroupId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(hearingGroupId);
-        verifyAccess(linkedGroupHearings);
+        verifyAccess(linkedGroupHearings, Lists.newArrayList(HEARING_MANAGER));
         linkedHearingValidator.validateUnlinkingHearingsStatus(linkedGroupHearings);
         linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
 
@@ -158,7 +159,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     public GetLinkedHearingGroupResponse getLinkedHearingGroupResponse(String requestId) {
         linkedHearingValidator.validateRequestId(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByRequestId(requestId);
-        verifyAccess(linkedGroupHearings);
+        verifyAccess(linkedGroupHearings, Lists.newArrayList(HEARING_VIEWER));
         return getLinkedHearingGroupDetails(requestId);
     }
 
@@ -364,10 +365,10 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         linkedHearingDetailsAuditRepository.save(linkedHearingDetailsAuditEntity);
     }
 
-    private void verifyAccess(List<HearingEntity> linkedGroupHearings) {
+    private void verifyAccess(List<HearingEntity> linkedGroupHearings, List<String> requiredRoles) {
         linkedGroupHearings.stream()
             .forEach(hearingEntity -> accessControlService
-                .verifyAccess(hearingEntity.getId(), Lists.newArrayList(HEARING_MANAGER)));
+                .verifyAccess(hearingEntity.getId(), requiredRoles));
     }
 
 }
