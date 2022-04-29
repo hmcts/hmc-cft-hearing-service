@@ -1,0 +1,58 @@
+{
+  "hearingOutcome": {
+    "hearingType": "Witness Statement",
+    "hearingFinalFlag": false,
+    "hearingResult": "COMPLETED",
+    "hearingResultDate": "2022-02-01"
+  },
+  "actualHearingDays": [
+    {
+      "hearingDate": "2022-01-28",
+      "hearingStartTime": "2022-01-28T10:00:00.000",
+      "hearingEndTime": "2022-01-28T15:00:00.000",
+      "pauseDateTimes": [
+        {
+          "pauseStartTime": "2022-01-28T12:00:00.000",
+          "pauseEndTime": "2022-01-28T12:30:00.000"
+        }
+      ],
+      "actualDayParties": [
+        {
+          "partyRole": 43334,
+          "individualDetails" : {
+            "firstName": "WitnessForeName2",
+            "lastName": "WitnessLastName2"
+          },
+          "partyChannelSubType": "present party",
+          "didNotAttendFlag": false
+        }
+      ]
+    },
+    {
+      "hearingDate": "2022-01-29",
+      "hearingStartTime": "2022-01-29T10:00:00.000",
+      "hearingEndTime": "2022-01-29T17:30:00.000",
+      "pauseDateTimes": [
+        {
+          "pauseStartTime": "2022-01-29T12:00:00.000",
+          "pauseEndTime": "2022-01-29T12:30:00.000"
+        },
+        {
+          "pauseStartTime": "2022-01-29T15:00:00.000",
+          "pauseEndTime": "2022-01-29T15:30:00.000"
+        }
+      ],
+      "actualDayParties": [
+        {
+          "partyRole": 43334,
+          "individualDetails" : {
+            "firstName": "WitnessForeName2",
+            "lastName": "WitnessLastName2"
+          },
+          "partyChannelSubType": "present party",
+          "didNotAttendFlag": true
+        }
+      ]
+    }
+  ]
+}

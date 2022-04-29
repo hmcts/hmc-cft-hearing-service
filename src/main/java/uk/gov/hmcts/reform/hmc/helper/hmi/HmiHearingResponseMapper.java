@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
@@ -95,8 +94,8 @@ public class HmiHearingResponseMapper {
                     hmcHearingUpdate.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
                 }
             }
-            hmcHearingUpdate.setListAssistCaseStatus(ListAssistCaseStatus.valueOf(hearingResponseEntity
-                                                                                      .getListingCaseStatus()));
+            hmcHearingUpdate.setListAssistCaseStatus(HearingCode.getByLabel(hearingResponseEntity
+                                                                                      .getListingCaseStatus()).name());
             hmcHearingUpdate.setHearingRoomId(hearingResponseEntity.getHearingDayDetails().get(0).getRoomId());
         }
         hmcHearingResponse.setHearingUpdate(hmcHearingUpdate);
@@ -166,14 +165,14 @@ public class HmiHearingResponseMapper {
         hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode().name());
         hearingResponseEntity.setCancellationReasonType(hearingResponse.getHearing().getHearingCancellationReason());
         hearingResponseEntity.setTranslatorRequired(hearingResponse.getHearing().getHearingTranslatorRequired());
-        hearingResponseEntity.setListingCaseStatus(hearingResponse.getHearing()
-                                                       .getHearingCaseStatus().getCode().name());
+        hearingResponseEntity.setListingCaseStatus(HearingCode.getByNumber(hearingResponse.getHearing()
+                                                       .getHearingCaseStatus().getCode()).name());
         return hearingResponseEntity;
     }
 
     public HearingStatus getHearingStatus(HearingResponse hearing, HearingEntity hearingEntity) {
         HearingStatus currentStatus = HearingStatus.valueOf(hearingEntity.getStatus());
-        HearingCode laStatus = hearing.getHearing().getHearingCaseStatus().getCode();
+        HearingCode laStatus = HearingCode.getByNumber(hearing.getHearing().getHearingCaseStatus().getCode());
         HearingStatus postStatus = null;
 
         switch (laStatus) {
@@ -272,5 +271,4 @@ public class HmiHearingResponseMapper {
         }
         return postStatus;
     }
-
 }
