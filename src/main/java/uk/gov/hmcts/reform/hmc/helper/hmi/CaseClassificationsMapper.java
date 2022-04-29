@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
@@ -17,11 +18,12 @@ public class CaseClassificationsMapper {
 
     public static final String CASE_TYPE_ERROR = "caseCategories element should have a caseType.";
     public static final String CASE_SUBTYPE_ERROR = "caseCategories element should have a caseSubType.";
-    public static final String CATEGORY_PARENT_ERROR = "A caseSubType should have a defined category parent.";
-    public static final String CATEGORY_PARENT_ERROR2 = "A casesType should not have a defined category parent.";
+    public static final String CATEGORY_PARENT_EXPECTED_ERROR = "A caseSubType should have a defined category parent.";
+    public static final String CATEGORY_PARENT_NOT_EXPECTED_ERROR =
+        "A caseType should not have a defined category parent.";
 
-    private final Predicate<CaseCategory> isCategoryParentNorNull = caseCategory ->
-        caseCategory.getCategoryParent() != null && !caseCategory.getCategoryParent().equals("");
+    private final Predicate<CaseCategory> isCategoryParentNotNull = caseCategory ->
+        !StringUtils.isEmpty(caseCategory.getCategoryParent());
 
     public List<CaseClassification> getCaseClassifications(CaseDetails caseDetails) {
 
@@ -60,16 +62,16 @@ public class CaseClassificationsMapper {
     }
 
     private void validateCategoryParent(CaseCategory caseCategory, List<String> caseClassificationTypes) {
-        if (!(caseCategory.getCategoryParent() != null
-            && caseClassificationTypes.contains(caseCategory.getCategoryParent()))) {
+        if (caseCategory.getCategoryParent() == null
+            || !caseClassificationTypes.contains(caseCategory.getCategoryParent())) {
 
-            throw new BadRequestException(CATEGORY_PARENT_ERROR);
+            throw new BadRequestException(CATEGORY_PARENT_EXPECTED_ERROR);
         }
     }
 
     private void validateCategoriesOfCaseType(List<CaseCategory> caseCategories) {
-        if (caseCategories.stream().anyMatch(isCategoryParentNorNull)) {
-            throw new BadRequestException(CATEGORY_PARENT_ERROR2);
+        if (caseCategories.stream().anyMatch(isCategoryParentNotNull)) {
+            throw new BadRequestException(CATEGORY_PARENT_NOT_EXPECTED_ERROR);
         }
     }
 

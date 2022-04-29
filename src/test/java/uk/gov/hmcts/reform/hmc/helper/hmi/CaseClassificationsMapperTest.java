@@ -208,7 +208,7 @@ class CaseClassificationsMapperTest {
         try {
             caseClassificationsMapper.getCaseClassifications(caseDetails);
         } catch (Exception exception) {
-            assertThat(exception.getMessage(), is(CaseClassificationsMapper.CATEGORY_PARENT_ERROR));
+            assertThat(exception.getMessage(), is(CaseClassificationsMapper.CATEGORY_PARENT_EXPECTED_ERROR));
         }
     }
 
@@ -234,7 +234,7 @@ class CaseClassificationsMapperTest {
         try {
             caseClassificationsMapper.getCaseClassifications(caseDetails);
         } catch (Exception exception) {
-            assertThat(exception.getMessage(), is(CaseClassificationsMapper.CATEGORY_PARENT_ERROR2));
+            assertThat(exception.getMessage(), is(CaseClassificationsMapper.CATEGORY_PARENT_NOT_EXPECTED_ERROR));
         }
     }
 
