@@ -38,7 +38,6 @@ public class HmcHearingUpdate {
 
     @NotNull(message = ValidationError.LIST_ASSIST_CASE_STATUS_NULL)
     @JsonProperty("ListAssistCaseStatus")
-    @HearingCodeEnumPattern(enumClass = HearingCode.class, fieldName = "hearing case status code")
     private String listAssistCaseStatus;
 
     private String hearingRoomId;
