@@ -63,8 +63,15 @@ public class HearingManagementController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = ValidationError.HEARING_SUCCESSFULLY_CREATED),
-        @ApiResponse(code = 400, message = ValidationError.INVALID_HEARING_REQUEST_DETAILS),
-        @ApiResponse(code = 403, message = ValidationError.CASE_NOT_FOUND)
+        @ApiResponse(code = 400,
+            message = "One or more of the following reasons:"
+                + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
+                + "\n2) " + ValidationError.INVALID_HEARING_WINDOW
+                + "\n3) " + ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS
+                + "\n4) " + ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS
+                + "\n5) " + ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS
+                + "\n6) " + ValidationError.INVALID_RELATED_PARTY_DETAILS
+        )
     })
     public HearingResponse saveHearing(@RequestBody @Valid HearingRequest createHearingRequest) {
         hearingManagementService.verifyAccess(getCaseRef(createHearingRequest));
