@@ -273,7 +273,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         hearingGroup.setGroupClientReference(linkedGroupDetails.getRequestId());
         hearingGroup.setGroupName(linkedGroupDetails.getRequestName());
         hearingGroup.setGroupReason(linkedGroupDetails.getReasonForLink());
-        hearingGroup.setGroupLinkType(linkedGroupDetails.getLinkType());
+        hearingGroup.setGroupLinkType(linkedGroupDetails.getLinkType().getLabel());
         hearingGroup.setGroupComment(linkedGroupDetails.getLinkedComments());
         hearingGroup.setGroupStatus("LHSAWL");
         ArrayList<CaseListing> caseListingArrayList = new ArrayList<>();
