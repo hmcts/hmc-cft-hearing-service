@@ -43,6 +43,7 @@ import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -200,7 +201,7 @@ class LinkedHearingGroupServiceTest {
 
             Exception exception = assertThrows(LinkedGroupNotFoundException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID));
-            assertEquals("No hearing group found for reference: " + REQUEST_ID, exception.getMessage());
+            assertEquals(INVALID_LINKED_GROUP_REQUEST_ID_DETAILS, exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
         }

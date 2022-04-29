@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGr
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn4XX;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn5XX;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyDeleteLinkedHearingGroups;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 
@@ -214,7 +215,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     void testDeleteLinkedHearingGroup_WhenHearingGroupDoesNotExist() {
         Exception exception = assertThrows(LinkedGroupNotFoundException.class, () -> linkedHearingGroupService
             .deleteLinkedHearingGroup("7600000123"));
-        assertEquals("No hearing group found for reference: 7600000123", exception.getMessage());
+        assertEquals(INVALID_LINKED_GROUP_REQUEST_ID_DETAILS, exception.getMessage());
     }
 
     @Test

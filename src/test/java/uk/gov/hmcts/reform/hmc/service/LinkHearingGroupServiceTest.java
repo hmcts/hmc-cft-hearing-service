@@ -73,6 +73,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATUS_UPDATE_
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType.ORDERED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.HEARING_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 
@@ -1318,7 +1319,7 @@ class LinkHearingGroupServiceTest {
 
             Exception exception = assertThrows(LinkedGroupNotFoundException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID));
-            assertEquals("No hearing group found for reference: " + REQUEST_ID, exception.getMessage());
+            assertEquals(INVALID_LINKED_GROUP_REQUEST_ID_DETAILS, exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
         }

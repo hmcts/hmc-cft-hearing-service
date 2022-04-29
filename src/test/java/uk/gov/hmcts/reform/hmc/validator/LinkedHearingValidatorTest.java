@@ -1088,7 +1088,7 @@ class LinkedHearingValidatorTest {
 
         Exception exception = assertThrows(LinkedGroupNotFoundException.class, () ->
                 linkedHearingValidator.validateHearingGroup(requestId));
-        assertEquals("No hearing" + " group found for reference: " + requestId, exception.getMessage());
+        assertEquals(INVALID_LINKED_GROUP_REQUEST_ID_DETAILS, exception.getMessage());
         verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(requestId);
         verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
     }

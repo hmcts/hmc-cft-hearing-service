@@ -37,7 +37,6 @@ import javax.transaction.Transactional;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARINGS_IN_GROUP_SIZE;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_GROUP_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ORDER_NOT_UNIQUE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_REQUEST_ALREADY_LINKED;
@@ -282,7 +281,7 @@ public class LinkedHearingValidator {
     }
 
     public Long validateHearingGroup(String requestId) {
-        Long linkedGroupId = validateRequestIdForDelete(requestId, HEARING_GROUP_ID_NOT_FOUND);
+        Long linkedGroupId = validateRequestIdForDelete(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
         LinkedGroupDetails linkedGroupDetailsOptional = linkedGroupDetailsRepository
             .getLinkedGroupDetailsByRequestId(requestId);
         validateHearingGroupStatus(linkedGroupDetailsOptional);
@@ -290,8 +289,9 @@ public class LinkedHearingValidator {
     }
 
     public final Long validateRequestIdForDelete(String requestId, String errorMessage) {
-        if (requestId == null) {
-            throw new BadRequestException(LINKED_GROUP_ID_EMPTY);
+        if (!StringUtils.isNumeric(requestId)) {
+            log.debug("Null or non numeric value: {}", requestId);
+            throw new BadRequestException(errorMessage);
         } else {
             Long answer = linkedGroupDetailsRepository.isFoundForRequestId(requestId);
             if (null == answer || answer.intValue() == 0) {
