@@ -22,8 +22,7 @@ public class LinkedHearingGroupController {
         this.linkedHearingGroupService = linkedHearingGroupService;
     }
 
-    @DeleteMapping(path = "/linkedHearingGroup/{id}", consumes = APPLICATION_JSON_VALUE,
-        produces = APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/linkedHearingGroup/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Hearing group deletion processed"),
