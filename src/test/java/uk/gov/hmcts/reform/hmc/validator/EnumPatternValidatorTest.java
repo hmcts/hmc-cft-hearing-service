@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
-import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnavailable;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.LocationType;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
@@ -43,6 +42,8 @@ class EnumPatternValidatorTest {
     static Validator validator;
 
     private static final Logger logger = LoggerFactory.getLogger(EnumPatternValidatorTest.class);
+
+    private static final String FRIDAY = "Friday";
 
     @Mock
     private ConstraintValidatorContext constraintValidatorContext;
@@ -362,7 +363,7 @@ class EnumPatternValidatorTest {
     void whenValidUnavailabilityDow() {
         UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
         unavailabilityDow.setDowUnavailabilityType(DayOfWeekUnAvailableType.ALL.toString());
-        unavailabilityDow.setDow(DayOfWeekUnavailable.FRIDAY.toString());
+        unavailabilityDow.setDow(FRIDAY);
         Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
         assertTrue(violations.isEmpty());
     }
@@ -384,7 +385,7 @@ class EnumPatternValidatorTest {
     void whenValidUnavailabilityDowUnavailabilityType() {
         UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
         unavailabilityDow.setDowUnavailabilityType(DayOfWeekUnAvailableType.ALL.toString());
-        unavailabilityDow.setDow(DayOfWeekUnavailable.FRIDAY.toString());
+        unavailabilityDow.setDow(FRIDAY);
         Set<ConstraintViolation<UnavailabilityDow>> violations = validator.validate(unavailabilityDow);
         assertTrue(violations.isEmpty());
     }

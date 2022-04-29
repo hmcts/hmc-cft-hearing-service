@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -14,7 +13,6 @@ public class GroupDetails {
     @Size(max = 255, message = ValidationError.GROUP_NAME_LENGTH)
     private String groupName;
 
-    @NotBlank(message = ValidationError.GROUP_REASON_EMPTY)
     @Size(max = 8, message = ValidationError.GROUP_REASON_LENGTH)
     private String groupReason;
 

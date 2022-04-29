@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedBadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
@@ -48,6 +50,12 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
     HearingRepository hearingRepository;
 
     @Mock
+    ActualHearingRepository actualHearingRepository;
+
+    @Mock
+    ActualHearingDayRepository actualHearingDayRepository;
+
+    @Mock
     HearingResponseRepository hearingResponseRepository;
 
     private HearingIdValidator hearingIdValidator;
@@ -55,7 +63,8 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        hearingIdValidator = new HearingIdValidator(hearingRepository);
+        hearingIdValidator = new HearingIdValidator(hearingRepository,
+                actualHearingRepository, actualHearingDayRepository);
         partiesNotifiedService =
             new PartiesNotifiedServiceImpl(hearingResponseRepository,
                                            hearingIdValidator);

@@ -33,3 +33,16 @@ idam:
     url: http://localhost:${wiremock.server.port:5000}
   s2s-auth:
     url: http://localhost:${wiremock.server.port:5000}/s2s
+
+fh:
+  ad:
+    host: http://localhost:${wiremock.server.port:5123}
+    get-token-url: /FH_GET_TOKEN_URL
+    client-id: CLIENT_ID
+    client-secret: CLIENT_SECRET
+    scope: SCOPE
+    grant-type: GRANT_TYPE
+  hmi:
+    host: http://localhost:${wiremock.server.port:5124}
+    source-system: SOURCE_SYSTEM
+    destination-system: DESTINATION_SYSTEM

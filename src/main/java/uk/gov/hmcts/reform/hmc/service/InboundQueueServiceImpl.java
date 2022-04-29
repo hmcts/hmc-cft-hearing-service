@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
-import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -33,15 +32,17 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 
 @Service
 @Component
 @Slf4j
-public class InboundQueueServiceImpl extends HearingIdValidator implements InboundQueueService {
+public class InboundQueueServiceImpl implements InboundQueueService {
 
     private final ObjectMapper objectMapper;
     private HearingRepository hearingRepository;
+    private HearingIdValidator hearingIdValidator;
     private final HmiHearingResponseMapper hmiHearingResponseMapper;
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
     private final ObjectMapperService objectMapperService;
@@ -53,13 +54,14 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
                                    HearingRepository hearingRepository,
                                    HmiHearingResponseMapper hmiHearingResponseMapper,
                                    MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
-                                   ObjectMapperService objectMapperService) {
-        super(hearingRepository);
+                                   ObjectMapperService objectMapperService,
+                                   HearingIdValidator hearingIdValidator) {
         this.objectMapper = objectMapper;
         this.hearingRepository = hearingRepository;
         this.hmiHearingResponseMapper = hmiHearingResponseMapper;
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
+        this.hearingIdValidator = hearingIdValidator;
     }
 
     @Override
@@ -70,10 +72,31 @@ public class InboundQueueServiceImpl extends HearingIdValidator implements Inbou
         log.info("Message of type " + messageType + " received");
         if (applicationProperties.containsKey(HEARING_ID)) {
             Long hearingId = Long.valueOf(applicationProperties.get(HEARING_ID).toString());
-            validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
+            hearingIdValidator.validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
             validateResponse(message, messageType, hearingId, client, serviceBusReceivedMessage);
         } else {
-            throw new MalformedMessageException(MISSING_HEARING_ID);
+            log.error("Error processing message, exception was " + MISSING_HEARING_ID);
+        }
+    }
+
+    @Override
+    public void catchExceptionAndUpdateHearing(Map<String, Object> applicationProperties, Exception exception) {
+        if (applicationProperties.containsKey(HEARING_ID)) {
+            Long hearingId = Long.valueOf(applicationProperties.get(HEARING_ID).toString());
+            log.error("Error processing message with Hearing id " + hearingId + " exception was "
+                          + exception.getMessage());
+            Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
+            if (hearingResult.isPresent()) {
+                HearingEntity hearingEntity = hearingResult.get();
+                hearingEntity.setStatus(EXCEPTION.name());
+                hearingEntity.setErrorDescription(exception.getMessage());
+                hearingRepository.save(hearingEntity);
+                log.error("Updated Hearing id " + hearingId + " to status Exception");
+            } else {
+                log.error("Hearing id " + hearingId + " not found");
+            }
+        } else {
+            log.error("Error processing message " + MISSING_HEARING_ID);
         }
     }
 

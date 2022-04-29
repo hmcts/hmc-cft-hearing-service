@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.hmc.data;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
@@ -57,8 +53,6 @@ public class LinkedGroupDetailsAudit {
     @Column(name = "reason_for_link", nullable = false)
     private String reasonForLink;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @Column(name = "request_date_time", nullable = false)
     private LocalDateTime requestDateTime;
 

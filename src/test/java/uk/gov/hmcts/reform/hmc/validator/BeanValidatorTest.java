@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_VALUE_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_LOCATION_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_DETAILS_NULL_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_ROLE_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_ROLE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTY_TYPE_EMPTY;
 
 
@@ -505,6 +507,40 @@ class BeanValidatorTest {
         });
         assertEquals(1, violations.size());
         assertTrue(validationErrors.contains(PARTY_ROLE_EMPTY));
+    }
+
+    @Test
+    void whenValidPartyRoleIs40Characters() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID("XXX1");
+        partyDetails.setPartyType(PartyType.IND.getLabel());
+        partyDetails.setPartyRole("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN");
+        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    void whenInvalidPartyRoleIs41Characters() {
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setPartyID("XXX1");
+        partyDetails.setPartyType(PartyType.IND.getLabel());
+        partyDetails.setPartyRole("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNO");
+        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetails);
+        assertEquals(1, violations.size());
+        assertTrue(violations.stream()
+                       .map(ConstraintViolation::getMessage)
+                       .anyMatch(msg -> msg.equals(PARTY_ROLE_MAX_LENGTH)));
+    }
+
+    @Test
+    void shouldSucceedWhenGroupReasonIsNullForHman146() {
+        GroupDetails groupDetails = new GroupDetails();
+        groupDetails.setGroupReason(null);
+        groupDetails.setGroupName("groupName");
+        groupDetails.setGroupComments("groupComments");
+        groupDetails.setGroupLinkType("linkType");
+        Set<ConstraintViolation<GroupDetails>> violations = validator.validate(groupDetails);
+        assertTrue(violations.isEmpty());
     }
 
 }
