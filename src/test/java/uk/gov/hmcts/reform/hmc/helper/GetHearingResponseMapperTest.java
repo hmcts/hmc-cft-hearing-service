@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.hmc.helper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
@@ -24,7 +23,6 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
@@ -40,9 +38,6 @@ class GetHearingResponseMapperTest {
 
     @InjectMocks
     private GetHearingResponseMapper getHearingResponseMapper;
-
-    @Mock
-    private LinkedHearingDetailsRepository linkedHearingDetailsRepository;
 
     @Test
     void toHearingsResponseWhenDataIsPresentForOrg() {

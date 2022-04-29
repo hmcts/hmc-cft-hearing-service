@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -26,6 +27,7 @@ public class Hearing {
     private JsonNode hearingCaseJurisdiction;
 
     @NotNull(message = ValidationError.HEARING_CASE_STATUS_NULL)
+    @Valid
     private HearingCaseStatus hearingCaseStatus;
 
     private String hearingIdCaseHQ;

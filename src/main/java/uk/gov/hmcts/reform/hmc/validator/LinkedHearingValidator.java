@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.validator;
 
 import com.microsoft.applicationinsights.core.dependencies.google.common.base.Enums;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
@@ -49,7 +50,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_LINKED_GROUP;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LINKED_GROUP_ID_EMPTY;
 
 @Slf4j
 @Component
@@ -78,9 +78,10 @@ public class LinkedHearingValidator {
      * validate Request id.
      * @param requestId request id
      */
-    public final void validateRequestId(String requestId, String errorMessage) {
-        if (requestId == null) {
-            throw new BadRequestException(LINKED_GROUP_ID_EMPTY);
+    public void validateRequestId(String requestId, String errorMessage) {
+        if (!StringUtils.isNumeric(requestId)) {
+            log.debug("Null or non numeric value: {}", requestId);
+            throw new BadRequestException(errorMessage);
         } else {
             Long answer = linkedGroupDetailsRepository.isFoundForRequestId(requestId);
             if (null == answer || answer.intValue() == 0) {
@@ -227,7 +228,7 @@ public class LinkedHearingValidator {
 
 
     public void checkValidStateForHearingRequest(Optional<HearingEntity> hearingEntity,
-                                                    LinkHearingDetails details) {
+                                                 LinkHearingDetails details) {
         if (hearingEntity.isEmpty()
             || !PutHearingStatus.isValid(hearingEntity.get().getStatus())
             || (hearingEntity.get().hasHearingResponses()
