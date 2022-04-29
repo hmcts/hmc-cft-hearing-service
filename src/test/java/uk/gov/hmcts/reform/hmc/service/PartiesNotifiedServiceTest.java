@@ -143,6 +143,18 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             assertEquals("003 Already set", exception.getMessage());
         }
 
+        @Test
+        void shouldFailWithNoHearingResponseEntity() throws JsonProcessingException {
+            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+            PartiesNotified partiesNotified = generatePartiesNotified(jsonNode);
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingResponseRepository.getHearingResponse(2000000000L)).thenReturn(null);
+
+            Exception exception = assertThrows(PartiesNotifiedNotFoundException.class, () ->
+                partiesNotifiedService.getPartiesNotified(2000000000L, 1, partiesNotified));
+            assertEquals("002 No such response version", exception.getMessage());
+        }
+
     }
 
     @Nested
