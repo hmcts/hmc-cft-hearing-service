@@ -136,6 +136,11 @@ public final class ValidationError {
     public static final String HEARING_START_DATE_FROM = "Hearing start date from can not be empty";
     public static final String INVALID_HMCTS_SERVICE_CODE = "Invalid hmcts service code";
 
+    public static final String HEARING_CANCELLATION_PROCESSED = "Hearing cancellation processed";
+    public static final String HEARING_WITH_CASE_REFERENCE_FOUND = "Hearing with case reference is valid";
+    public static final String HEARING_ID_IS_VALID = "Hearing id is valid";
+    public static final String HEARING_SUCCESSFULLY_CREATED = "Hearing successfully created";
+    public static final String HEARING_IS_UPDATED = "Hearing successfully updated";
     public static final String HEARING_ID_NOT_FOUND = "No hearing found for reference: %s";
     public static final String HEARING_GROUP_ID_NOT_FOUND = "No hearing group found for reference: %s";
     public static final String INVALID_DELETE_HEARING_GROUP_STATUS = "007 group is in a %s state";
