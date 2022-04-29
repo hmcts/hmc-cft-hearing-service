@@ -143,6 +143,7 @@ public final class ValidationError {
     public static final String HEARING_IS_UPDATED = "Hearing successfully updated";
     public static final String HEARING_ID_NOT_FOUND = "No hearing found for reference: %s";
     public static final String HEARING_GROUP_ID_NOT_FOUND = "No hearing group found for reference: %s";
+    public static final String HEARING_GROUP_DELETION_PROCESSED = "Hearing group deletion processed";
     public static final String INVALID_DELETE_HEARING_GROUP_STATUS = "007 group is in a %s state";
     public static final String INVALID_DELETE_HEARING_GROUP_HEARING_STATUS = "008 Invalid state for unlinking hearing"
         + " request %s";
@@ -150,6 +151,7 @@ public final class ValidationError {
     public static final String PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH = "002 No such response version";
     public static final String PARTIES_NOTIFIED_ALREADY_SET = "003 Already set";
 
+    public static final String HEARING_ACTUALS_SUCCESSFULLY_PROCESSED = "Hearing actuals update processed";
     public static final String HEARING_ACTUALS_ID_NOT_FOUND = "001 No such id: %s";
     public static final String HEARING_ACTUALS_INVALID_STATUS = "002 invalid status %s";
     public static final String HEARING_ACTUALS_HEARING_DAYS_INVALID = "003 invalid date";
@@ -265,4 +267,6 @@ public final class ValidationError {
     public static final String REJECTED_BY_LIST_ASSIST = "005 rejected by List Assist";
     public static final String LIST_ASSIST_FAILED_TO_RESPOND = "006 List Assist failed to respond";
     public static final String LIST_ASSIST_CASE_STATUS_NULL = "List assist case status can not be null or empty";
+
+    public static final String INTERNAL_SERVER_ERROR = "Error occurred on the server";
 }

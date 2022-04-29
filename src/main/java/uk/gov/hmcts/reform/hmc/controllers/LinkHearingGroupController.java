@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupResponse;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
@@ -34,12 +35,13 @@ public class LinkHearingGroupController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = "Success"),
-        @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 400, message = "001 insufficient request ids"),
-        @ApiResponse(code = 400, message = "002 hearing request is linked is false"),
-        @ApiResponse(code = 400, message = "003 hearing request already in a group"),
-        @ApiResponse(code = 400, message = "004 invalid state of hearing for request"),
-        @ApiResponse(code = 400, message = "005 Hearing Order is not unique")
+        @ApiResponse(code = 400,
+            message = "One or more of the following reasons:"
+                + "\n001) " + ValidationError.HEARINGS_IN_GROUP_SIZE
+                + "\n002) " + ValidationError.HEARING_REQUEST_CANNOT_BE_LINKED
+                + "\n003) " + ValidationError.HEARING_REQUEST_ALREADY_LINKED
+                + "\n004) " + ValidationError.INVALID_STATE_FOR_HEARING_REQUEST
+                + "\n005) " + ValidationError.HEARING_ORDER_NOT_UNIQUE)
     })
     public HearingLinkGroupResponse validateLinkHearing(@RequestBody @Valid
                                                             HearingLinkGroupRequest hearingLinkGroupRequest) {
@@ -49,14 +51,16 @@ public class LinkHearingGroupController {
     @PutMapping(path = "/linkedHearingGroup", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 400, message = "001 insufficient request ids"),
-            @ApiResponse(code = 400, message = "002 hearing request is linked is false"),
-            @ApiResponse(code = 400, message = "003 hearing request already in a group"),
-            @ApiResponse(code = 400, message = "004 invalid state of hearing for request"),
-            @ApiResponse(code = 400, message = "007 group is in a <state> state"),
-            @ApiResponse(code = 400, message = "008 invalid state for unlinking hearing request <hearingid>")
+        @ApiResponse(code = 200, message = "Success"),
+        @ApiResponse(code = 400,
+            message = "One or more of the following reasons:"
+                + "\n1) " + ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS
+                + "\n001) " + ValidationError.HEARINGS_IN_GROUP_SIZE
+                + "\n002) " + ValidationError.HEARING_REQUEST_CANNOT_BE_LINKED
+                + "\n003) " + ValidationError.HEARING_REQUEST_ALREADY_LINKED
+                + "\n004) " + ValidationError.INVALID_STATE_FOR_HEARING_REQUEST
+                + "\n007) " + ValidationError.INVALID_STATE_FOR_LINKED_GROUP
+                + "\n008) " + ValidationError.INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST)
     })
     public void updateHearing(@RequestParam("id") String requestId,
                               @RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
@@ -66,10 +70,10 @@ public class LinkHearingGroupController {
     @DeleteMapping(path = "/linkedHearingGroup/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Hearing group deletion processed"),
-        @ApiResponse(code = 400, message = "Invalid hearing group details found"),
-        @ApiResponse(code = 404, message = "Hearing Group id not found"),
-        @ApiResponse(code = 500, message = "Error occurred on the server")
+        @ApiResponse(code = 200, message = ValidationError.HEARING_GROUP_DELETION_PROCESSED),
+        @ApiResponse(code = 400, message = ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS),
+        @ApiResponse(code = 404, message = ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS),
+        @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
     public void deleteHearingGroup(@PathVariable("id") String requestId) {
         linkedHearingGroupService.deleteLinkedHearingGroup(requestId);
