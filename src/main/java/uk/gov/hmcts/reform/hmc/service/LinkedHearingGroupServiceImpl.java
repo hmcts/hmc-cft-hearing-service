@@ -139,9 +139,9 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
     @Override
     @Transactional(noRollbackFor = {BadRequestException.class})
-    public void deleteLinkedHearingGroup(Long hearingGroupId) {
-        linkedHearingValidator.validateHearingGroup(hearingGroupId);
-        List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(hearingGroupId);
+    public void deleteLinkedHearingGroup(String requestId) {
+        Long linkedGroupId = linkedHearingValidator.validateHearingGroup(requestId);
+        List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(linkedGroupId);
         linkedHearingValidator.validateUnlinkingHearingsStatus(linkedGroupHearings);
         linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
 
