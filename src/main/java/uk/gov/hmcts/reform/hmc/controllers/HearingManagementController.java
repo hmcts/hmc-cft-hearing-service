@@ -113,11 +113,11 @@ public class HearingManagementController {
                 + "\n4) " + ValidationError.CASE_REF_INVALID
         )
     })
-    public GetHearingsResponse getHearings(@PathVariable("ccdCaseRef")
-                                           @Valid
+    public GetHearingsResponse getHearings(@PathVariable("ccdCaseRef") @Valid
                                            @NotEmpty(message = ValidationError.CASE_REF_EMPTY)
                                            @Size(min = 16, max = 16, message = ValidationError.CASE_REF_INVALID_LENGTH)
-                                           @LuhnCheck(message = ValidationError.CASE_REF_INVALID, ignoreNonDigitCharacters = false)
+                                           @LuhnCheck(message = ValidationError.CASE_REF_INVALID,
+                                               ignoreNonDigitCharacters = false)
                                                String ccdCaseRef,
                                            @RequestParam(required = false)
                                                String status) {
