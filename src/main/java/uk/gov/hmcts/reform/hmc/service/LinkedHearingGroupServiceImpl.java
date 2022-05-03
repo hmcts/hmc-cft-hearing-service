@@ -282,13 +282,20 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         for (HearingEntity hearingEntity : hearingEntities) {
             CaseListing caseListing = new CaseListing();
             caseListing.setCaseListingRequestId(hearingEntity.getId().toString());
-            caseListing.setCaseLinkOrder(Integer.valueOf(hearingEntity.getLinkedOrder().toString()));
+            caseListing.setCaseLinkOrder(getCaseLinkOrder(hearingEntity));
             caseListingArrayList.add(caseListing);
         }
         hearingGroup.setGroupHearings(caseListingArrayList);
         LinkedHearingGroup linkedHearingGroup = new LinkedHearingGroup();
         linkedHearingGroup.setLinkedHearingGroup(hearingGroup);
         return linkedHearingGroup;
+    }
+
+    private Integer getCaseLinkOrder(HearingEntity hearingEntity) {
+        if (hearingEntity.getLinkedOrder() != null) {
+            return Integer.valueOf(hearingEntity.getLinkedOrder().toString());
+        }
+        return null;
     }
 
 

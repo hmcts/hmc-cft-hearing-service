@@ -544,6 +544,55 @@ class LinkHearingGroupServiceTest {
             verify(linkedGroupDetailsRepository, times(1)).save(any());
         }
 
+
+        @Test
+        void shouldPassWhenHearingOrderIsSameSlotWithOrderZero() {
+            HearingEntity hearingEntity = generateHearingEntity(
+                2000000000L,
+                HEARING_REQUESTED.name(),
+                1,
+                true,
+                LocalDateTime.now().plusDays(1),
+                Arrays.asList(generateHearingDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
+                null
+            );
+            hearingEntity.setLinkedOrder(null);
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+
+            when(hearingRepository.existsById(2000000002L)).thenReturn(true);
+            when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
+            given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntityWithLinkDetails());
+            given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
+
+            HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
+            response.setResponseCode(200);
+            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 0);
+            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 0);
+            doNothing().when(futureHearingRepository).createLinkedHearingGroup(any());
+            given(hearingRepository.findByLinkedGroupId(any())).willReturn(List.of(
+                TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
+
+            GroupDetails groupDetails = generateGroupDetails("comment", "name",
+                                                             LinkType.SAME_SLOT.label, "reason"
+            );
+
+            HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
+                groupDetails,
+                Arrays.asList(
+                    hearingDetails1,
+                    hearingDetails2
+                )
+            );
+            service.linkHearing(hearingLinkGroupRequest);
+            verify(hearingRepository).existsById(2000000000L);
+            verify(hearingRepository, times(3)).findById(2000000000L);
+            verify(hearingRepository).existsById(2000000002L);
+            verify(hearingRepository, times(3)).findById(2000000002L);
+            verify(hearingRepository, times(2)).save(any());
+            verify(linkedGroupDetailsRepository, times(1)).save(any());
+        }
+
         @Test
         void shouldPassWithValidLinkedHearing() {
             HearingEntity hearingEntity = generateHearingEntity(
