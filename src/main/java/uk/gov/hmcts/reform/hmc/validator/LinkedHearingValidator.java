@@ -437,16 +437,19 @@ public class LinkedHearingValidator {
                 if (hearing.isPresent()) {
                     HearingEntity hearingToSave = hearing.get();
                     hearingToSave.setLinkedGroupDetails(linkedGroupDetailsSaved);
-                    hearingToSave.setLinkedOrder(getHearingOrder(linkHearingDetails));
+                    hearingToSave.setLinkedOrder(getHearingOrder(linkHearingDetails,hearingLinkGroupRequest));
                     hearingRepository.save(hearingToSave);
                 }
             });
         return linkedGroupDetailsSaved;
     }
 
-    private Long getHearingOrder(LinkHearingDetails linkHearingDetails) {
+    private Long getHearingOrder(LinkHearingDetails linkHearingDetails,
+                                 HearingLinkGroupRequest hearingLinkGroupRequest) {
+
         val order = Long.valueOf(linkHearingDetails.getHearingOrder());
-        if (order == 0) {
+        if (order == 0
+            && hearingLinkGroupRequest.getGroupDetails().getGroupLinkType().equals(LinkType.SAME_SLOT.getLabel())) {
             return null;
         }
         return order;
