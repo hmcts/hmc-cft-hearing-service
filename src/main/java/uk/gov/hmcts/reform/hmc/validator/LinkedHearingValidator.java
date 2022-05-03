@@ -444,7 +444,7 @@ public class LinkedHearingValidator {
         return linkedGroupDetailsSaved;
     }
 
-    private Long getHearingOrder(LinkHearingDetails linkHearingDetails,
+    public Long getHearingOrder(LinkHearingDetails linkHearingDetails,
                                  HearingLinkGroupRequest hearingLinkGroupRequest) {
 
         val order = Long.valueOf(linkHearingDetails.getHearingOrder());

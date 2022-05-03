@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GetLinkedHearingGroupRes
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupResponse;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkedHearingDetails;
 import uk.gov.hmcts.reform.hmc.model.listassist.CaseListing;
 import uk.gov.hmcts.reform.hmc.model.listassist.HearingGroup;
@@ -122,7 +123,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         saveAndAuditLinkHearing(hearingLinkGroupRequest, linkedGroupDetails);
 
         //HMAN-95
-        LinkedHearingGroup linkedHearingGroup = processRequestForListAssist(linkedGroupDetails);
+            LinkedHearingGroup linkedHearingGroup = processRequestForListAssist(linkedGroupDetails);
         try {
             futureHearingRepository.updateLinkedHearingGroup(requestId, objectMapperService
                 .convertObjectToJsonNode(linkedHearingGroup));
@@ -262,7 +263,9 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
                 if (hearing.isPresent()) {
                     HearingEntity hearingToSave = hearing.get();
                     hearingToSave.setLinkedGroupDetails(linkedGroupDetailsSaved);
-                    hearingToSave.setLinkedOrder(Long.valueOf(linkHearingDetails.getHearingOrder()));
+                    hearingToSave.setLinkedOrder(
+                        linkedHearingValidator.getHearingOrder(linkHearingDetails,hearingLinkGroupRequest)
+                    );
                     hearingRepository.save(hearingToSave);
                 }
             });
