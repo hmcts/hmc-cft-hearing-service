@@ -138,6 +138,9 @@ public class HearingManagementController {
             accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
                 HEARING_VIEWER,
                 LISTED_HEARING_VIEWER));
+        } else if (status == null || status.isEmpty()) {
+            accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(LISTED_HEARING_VIEWER));
+            status = HearingStatus.LISTED.name();
         } else {
             accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(HEARING_VIEWER));
         }
