@@ -1247,9 +1247,10 @@ class HearingManagementServiceTest {
 
         @Test
         void updateHearingRequestShouldThrowErrorWhenHearingWindowFieldsAreNull() {
-            UpdateHearingRequest request = new UpdateHearingRequest();
+            final UpdateHearingRequest request = new UpdateHearingRequest();
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingDetails.setHearingWindow(hearingWindow);
             request.setHearingDetails(hearingDetails);
@@ -1262,6 +1263,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenPartyIndividualAndOrgDetailsNull() {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
@@ -1280,6 +1282,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenPartyIndividualAndOrgDetailsBothExist() {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
@@ -1302,6 +1305,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenPartyUnavailabilityDowIsNotPresent() {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
@@ -1325,6 +1329,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenPartyUnavailabilityRangesIsNotPresent() {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
@@ -1348,6 +1353,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenRelatedPartyDetailsAreNotPresent() {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
