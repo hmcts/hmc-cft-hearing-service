@@ -28,13 +28,13 @@ class RelatedEntitiesMapperTest {
         List<RelatedParty> relatedPartyList = Arrays.asList(relatedParty, relatedPartyTwo);
 
         RelatedEntity relatedEntity = RelatedEntity.builder()
-            .relatedEntityId(PARTY_ID)
-            .relatedEntityRelationshipType(RELATIONSHIP)
-            .build();
+                .relatedEntityId(PARTY_ID)
+                .relatedEntityRelationshipType(RELATIONSHIP)
+                .build();
         RelatedEntity relatedEntityTwo = RelatedEntity.builder()
-            .relatedEntityId(PARTY_ID_TWO)
-            .relatedEntityRelationshipType(RELATIONSHIP_TWO)
-            .build();
+                .relatedEntityId(PARTY_ID_TWO)
+                .relatedEntityRelationshipType(RELATIONSHIP_TWO)
+                .build();
         List<RelatedEntity> expectedRelatedEntities = Arrays.asList(relatedEntity, relatedEntityTwo);
         RelatedEntitiesMapper relatedEntitiesMapper = new RelatedEntitiesMapper();
         List<RelatedEntity> actualRelatedEntities = relatedEntitiesMapper.getRelatedEntities(relatedPartyList);

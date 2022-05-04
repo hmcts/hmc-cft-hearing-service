@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
+import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
@@ -32,6 +33,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class GetHearingResponseMapperTest {
@@ -315,8 +317,21 @@ class GetHearingResponseMapperTest {
             () -> assertEquals("hearing.channel@email.com", individualDetails.getHearingChannelEmail().get(0)),
             () -> assertEquals("First reason", individualDetails.getReasonableAdjustments().get(0)),
             () -> assertEquals("custodyStatus", individualDetails.getCustodyStatus()),
-            () -> assertEquals("otherReason", individualDetails.getOtherReasonableAdjustmentDetails())
+            () -> assertEquals("otherReason", individualDetails.getOtherReasonableAdjustmentDetails()),
+            () -> assertRelatedParties(individualDetails.getRelatedParties())
         );
+    }
+
+    private void assertRelatedParties(List<RelatedParty> relatedParties) {
+        RelatedParty relatedParty1 = new RelatedParty();
+        relatedParty1.setRelatedPartyID("P1");
+        relatedParty1.setRelationshipType("A");
+
+        RelatedParty relatedParty2 = new RelatedParty();
+        relatedParty2.setRelatedPartyID("P2");
+        relatedParty2.setRelationshipType("B");
+
+        assertTrue(relatedParties.containsAll(List.of(relatedParty1, relatedParty2)));
     }
 
     private void assertPanelRequirements(PanelRequirements panelRequirements) {

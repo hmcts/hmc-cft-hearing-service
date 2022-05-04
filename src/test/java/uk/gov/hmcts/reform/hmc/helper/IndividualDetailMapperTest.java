@@ -20,8 +20,6 @@ class IndividualDetailMapperTest {
         IndividualDetails individualDetail = TestingUtil.individualDetails();
         HearingPartyEntity hearingPartyEntity = new HearingPartyEntity();
         List<IndividualDetailEntity> entities = mapper.modelToEntity(individualDetail, hearingPartyEntity);
-        assertEquals("P1", entities.get(0).getRelatedPartyID());
-        assertEquals("R1", entities.get(0).getRelatedPartyRelationshipType());
         assertNull(entities.get(0).getVulnerabilityDetails());
         assertNull(entities.get(0).getVulnerableFlag());
         assertNull(entities.get(0).getInterpreterLanguage());
@@ -31,18 +29,6 @@ class IndividualDetailMapperTest {
         assertEquals("custodyStatus", entities.get(0).getCustodyStatus());
         assertEquals("otherReason", entities.get(0).getOtherReasonableAdjustmentDetails());
         assertEquals("Mr", entities.get(0).getTitle());
-
-        assertEquals("P2", entities.get(1).getRelatedPartyID());
-        assertEquals("R2", entities.get(1).getRelatedPartyRelationshipType());
-        assertNull(entities.get(1).getVulnerabilityDetails());
-        assertNull(entities.get(1).getVulnerableFlag());
-        assertNull(entities.get(1).getInterpreterLanguage());
-        assertNull(entities.get(1).getChannelType());
-        assertEquals("lastName", entities.get(1).getLastName());
-        assertEquals("firstName", entities.get(1).getFirstName());
-        assertEquals("Mr", entities.get(1).getTitle());
-        assertEquals("custodyStatus", entities.get(1).getCustodyStatus());
-        assertEquals("otherReason", entities.get(1).getOtherReasonableAdjustmentDetails());
     }
 
     @Test
@@ -51,8 +37,6 @@ class IndividualDetailMapperTest {
         IndividualDetails individualDetail = individualDetails_RelatedPartyNotPresent();
         HearingPartyEntity hearingPartyEntity = new HearingPartyEntity();
         List<IndividualDetailEntity> entities = mapper.modelToEntity(individualDetail, hearingPartyEntity);
-        assertNull(entities.get(0).getRelatedPartyID());
-        assertNull(entities.get(0).getRelatedPartyRelationshipType());
         assertEquals("A bit vulnerable", entities.get(0).getVulnerabilityDetails());
         assertEquals(FALSE, entities.get(0).getVulnerableFlag());
         assertEquals("French", entities.get(0).getInterpreterLanguage());

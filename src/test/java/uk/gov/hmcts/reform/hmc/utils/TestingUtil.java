@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.hmc.data.PanelAuthorisationRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelSpecialismsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelUserRequirementsEntity;
+import uk.gov.hmcts.reform.hmc.data.PartyRelationshipDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.ReasonableAdjustmentsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
@@ -202,8 +203,6 @@ public class TestingUtil {
         individualDetailEntity.setChannelType("channelType");
         individualDetailEntity.setInterpreterLanguage("english");
         individualDetailEntity.setVulnerableFlag(true);
-        individualDetailEntity.setRelatedPartyRelationshipType("relationshipType");
-        individualDetailEntity.setRelatedPartyID("id");
         individualDetailEntity.setVulnerabilityDetails("details");
         individualDetailEntity.setCustodyStatus("custodyStatus");
         individualDetailEntity.setOtherReasonableAdjustmentDetails("otherReason");
@@ -293,6 +292,7 @@ public class TestingUtil {
         hearingEntity.setStatus(POST_HEARING_STATUS);
         hearingEntity.setLinkedOrder(1L);
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
+        caseHearingRequestEntity.setHearingParties(List.of(new HearingPartyEntity()));
         hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
         return hearingEntity;
     }
@@ -823,7 +823,21 @@ public class TestingUtil {
         entity.setContactDetails(List.of(contactDetailsEntity_Email(), contactDetailsEntity_Phone()));
         entity.setIndividualDetailEntity(List.of(individualDetailEntity()));
         entity.setReasonableAdjustmentsEntity(List.of(reasonableAdjustmentsEntity()));
+        entity.setPartyRelationshipDetailsEntity(List.of(partyRelationshipDetailsEntity("P1", "A"),
+                partyRelationshipDetailsEntity("P2", "B")));
         return entity;
+    }
+
+    private static PartyRelationshipDetailsEntity partyRelationshipDetailsEntity(String targetTechPartyId,
+                                                                                 String relationshipType) {
+
+        HearingPartyEntity targetHearingPartyEntity = new HearingPartyEntity();
+        targetHearingPartyEntity.setPartyReference(targetTechPartyId);
+
+        return PartyRelationshipDetailsEntity.builder()
+                .targetTechParty(targetHearingPartyEntity)
+                .relationshipType(relationshipType)
+                .build();
     }
 
     private static CaseHearingRequestEntity caseHearingRequestEntityWithPartyOrg() {
@@ -980,11 +994,11 @@ public class TestingUtil {
         individualDetails.setHearingChannelEmail(List.of("hearing.channel_udated@email.com"));
         List<RelatedParty> relatedParties = new ArrayList<>();
         RelatedParty relatedParty1 = new RelatedParty();
-        relatedParty1.setRelatedPartyID("Party1");
+        relatedParty1.setRelatedPartyID("P1");
         relatedParty1.setRelationshipType("Mother");
         relatedParties.add(relatedParty1);
         RelatedParty relatedParty2 = new RelatedParty();
-        relatedParty2.setRelatedPartyID("Party2");
+        relatedParty2.setRelatedPartyID("P2");
         relatedParty2.setRelationshipType("Father");
         relatedParties.add(relatedParty2);
         individualDetails.setRelatedParties(relatedParties);
