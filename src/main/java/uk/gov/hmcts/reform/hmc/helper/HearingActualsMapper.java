@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import io.jsonwebtoken.lang.Collections;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
@@ -59,7 +60,7 @@ public class HearingActualsMapper {
 
     private List<ActualHearingDayPausesEntity> toActualHearingDayPausesEntities(
         List<ActualHearingDayPauseDayTime> dayPauseDayTimes, ActualHearingDayEntity dayEntity) {
-        if (dayPauseDayTimes == null || dayPauseDayTimes.isEmpty()) {
+        if (Collections.isEmpty(dayPauseDayTimes)) {
             return List.of();
         }
         return dayPauseDayTimes.stream()
@@ -78,6 +79,9 @@ public class HearingActualsMapper {
 
     private List<ActualHearingPartyEntity> toActualHearingPartyEntities(
         List<ActualHearingDayParties> actualDayParties, ActualHearingDayEntity dayEntity) {
+        if (Collections.isEmpty(actualDayParties)) {
+            return List.of();
+        }
         return actualDayParties.stream()
             .map(actualHearingDayParty -> toActualHearingPartyEntity(actualHearingDayParty, dayEntity))
             .collect(Collectors.toList());
