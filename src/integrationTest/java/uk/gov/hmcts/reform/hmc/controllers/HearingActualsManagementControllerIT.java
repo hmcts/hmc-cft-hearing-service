@@ -348,6 +348,8 @@ class HearingActualsManagementControllerIT extends BaseTest {
             mockMvc.perform(get(URL + "/2000001200")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(200))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
+                               .value(IsNull.nullValue()))
                 .andReturn();
         }
 

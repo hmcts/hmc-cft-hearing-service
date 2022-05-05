@@ -119,11 +119,11 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             actualDayParty.setPartyRole(actualHearingPartyEntity.getActualPartyRoleType());
             actualDayParty.setDidNotAttendFlag(actualHearingPartyEntity.getDidNotAttendFlag());
             for (ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity
-                : actualHearingPartyEntity.getActualPartyRelationshipDetail()) {
-                if (actualHearingPartyEntity.getActualPartyId()
-                    .equals(actualPartyRelationshipDetailEntity.getActualHearingParty().getActualPartyId())) {
+                : actualHearingPartyEntity.getSourcePartyRelationshipDetail()) {
+                if (actualHearingPartyEntity.getPartyId()
+                    .equals(actualPartyRelationshipDetailEntity.getSourceActualPartyId().getPartyId())) {
                     actualDayParty.setRepresentedParty(actualPartyRelationshipDetailEntity
-                                                           .getTargetActualPartyId().toString());
+                                                           .getTargetActualPartyId().getPartyId());
                 }
             }
 

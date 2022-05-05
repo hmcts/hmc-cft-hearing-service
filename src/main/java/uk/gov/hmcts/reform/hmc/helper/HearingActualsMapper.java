@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.hmc.data.ActualHearingDayPausesEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualPartyRelationshipDetailEntity;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayParties;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPartyDetail;
@@ -36,7 +37,7 @@ public class HearingActualsMapper {
     }
 
     private List<ActualHearingDayEntity> toActualHearingDayEntities(List<ActualHearingDay> actualHearingDay,
-                                                                   ActualHearingEntity actualHearing) {
+                                                                    ActualHearingEntity actualHearing) {
         return actualHearingDay.stream()
             .map((ActualHearingDay day) -> toActualHearingDayEntity(day, actualHearing))
             .collect(Collectors.toList());
@@ -78,9 +79,14 @@ public class HearingActualsMapper {
 
     private List<ActualHearingPartyEntity> toActualHearingPartyEntities(
         List<ActualHearingDayParties> actualDayParties, ActualHearingDayEntity dayEntity) {
-        return actualDayParties.stream()
-            .map(actualHearingDayParty -> toActualHearingPartyEntity(actualHearingDayParty, dayEntity))
+        List<ActualHearingPartyEntity> actualHearingPartyEntities = actualDayParties.stream()
+            .map(actualHearingDayParty -> toActualHearingPartyEntity(
+                actualHearingDayParty,
+                dayEntity
+            ))
             .collect(Collectors.toList());
+        createActualPartyRelationshipDetailEntity(actualHearingPartyEntities, actualDayParties);
+        return actualHearingPartyEntities;
     }
 
     private ActualHearingPartyEntity toActualHearingPartyEntity(ActualHearingDayParties actualHearingDayParty,
@@ -92,10 +98,6 @@ public class HearingActualsMapper {
         partyEntity.setDidNotAttendFlag(actualHearingDayParty.getDidNotAttendFlag() != null
                                             ? actualHearingDayParty.getDidNotAttendFlag() : false);
         partyEntity.setActualAttendeeIndividualDetail(createIndividualDetail(actualHearingDayParty, partyEntity));
-        if (actualHearingDayParty.getRepresentedParty() != null) {
-            partyEntity.setActualPartyRelationshipDetail(
-                createActualPartyRelationshipDetailEntity(partyEntity, actualHearingDayParty.getRepresentedParty()));
-        }
         partyEntity.setActualHearingDay(dayEntity);
         return partyEntity;
     }
@@ -113,12 +115,43 @@ public class HearingActualsMapper {
         }
     }
 
-    private List<ActualPartyRelationshipDetailEntity> createActualPartyRelationshipDetailEntity(
-        ActualHearingPartyEntity partyEntity, String representedPartyId) {
-        ActualPartyRelationshipDetailEntity partyRelationshipDetailEntity = new ActualPartyRelationshipDetailEntity();
-        partyRelationshipDetailEntity.setActualHearingParty(partyEntity);
-        partyRelationshipDetailEntity.setTargetActualPartyId(Long.parseLong(representedPartyId));
-        return List.of(partyRelationshipDetailEntity);
+    private List<ActualHearingPartyEntity> createActualPartyRelationshipDetailEntity(
+        List<ActualHearingPartyEntity> hearingPartyEntities, List<ActualHearingDayParties> actualDayParties) {
+        for (ActualHearingDayParties actualHearingDayParty : actualDayParties) {
+            String representedPartyId = actualHearingDayParty.getRepresentedParty();
+            if (representedPartyId != null) {
+                ActualHearingPartyEntity matchingHearingPartyEntity =
+                    getHearingPartyEntityByReference(representedPartyId, hearingPartyEntities);
+
+                ActualHearingPartyEntity sourceEntity =
+                    hearingPartyEntities.stream()
+                        .filter(actualHearingPartyEntity ->
+                                    actualHearingDayParty.getRepresentedParty().equals(representedPartyId))
+                        .collect(Collectors.toList()).get(0);
+
+                ActualPartyRelationshipDetailEntity partyRelationshipDetail = ActualPartyRelationshipDetailEntity
+                    .builder()
+                    .targetActualPartyId(matchingHearingPartyEntity)
+                    .sourceActualPartyId(sourceEntity)
+                    .build();
+
+                sourceEntity.setSourcePartyRelationshipDetail(List.of(partyRelationshipDetail));
+            }
+        }
+        return hearingPartyEntities;
+    }
+
+    private ActualHearingPartyEntity getHearingPartyEntityByReference(
+        String representedPartyId, List<ActualHearingPartyEntity> hearingPartyEntities) {
+        final List<ActualHearingPartyEntity> matchingHearingPartyEntities = hearingPartyEntities.stream()
+            .filter(hearingPartyEntity -> representedPartyId.equals(hearingPartyEntity.getPartyId()))
+            .collect(Collectors.toList());
+
+        if (matchingHearingPartyEntities.size() != 1) {
+            throw new BadRequestException(
+                String.format("Cannot find unique PartyID with value %s", representedPartyId));
+        }
+        return matchingHearingPartyEntities.get(0);
     }
 
     private List<ActualAttendeeIndividualDetailEntity> createIndividualDetail(

@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,6 +20,9 @@ import javax.persistence.Table;
 @Table(name = "actual_party_relationship_detail")
 @Entity
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ActualPartyRelationshipDetailEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -23,10 +30,11 @@ public class ActualPartyRelationshipDetailEntity implements Serializable {
     @Column(name = "actual_party_relationship_id")
     private Long actualPartyRelationshipId;
 
-    @Column(name = "target_actual_party_id")
-    private Long targetActualPartyId;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "target_actual_party_id")
+    private ActualHearingPartyEntity targetActualPartyId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "source_actual_party_id")
-    private ActualHearingPartyEntity actualHearingParty;
+    private ActualHearingPartyEntity sourceActualPartyId;
 }
