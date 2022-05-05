@@ -188,7 +188,7 @@ class CaseClassificationsMapperTest {
     // ERRORS
 
     @Test // Failure Scenario 1 - CategoryParent does not match with categoryValue of the caseType:
-    void shouldThrowsAnErrorDueToCategoryParentNotMatchWithCategoryValueOfCaseType() {
+    void shouldThrowsAnErrorDueToCaseTypeDoesNotHaveSubCase() {
         val caseTypeCategory = new CaseCategory();
         caseTypeCategory.setCategoryType(CaseCategoryType.CASETYPE.getLabel().toLowerCase());
         caseTypeCategory.setCategoryValue(CATEGORY_TYPE_VALUE);
@@ -208,9 +208,10 @@ class CaseClassificationsMapperTest {
         try {
             caseClassificationsMapper.getCaseClassifications(caseDetails);
         } catch (Exception exception) {
-            assertThat(exception.getMessage(), is(CaseClassificationsMapper.CATEGORY_PARENT_EXPECTED_ERROR));
+            assertThat(exception.getMessage(), is(CaseClassificationsMapper.CASE_TYPE_CASE_SUBTYPE_ERROR));
         }
     }
+
 
     @Test //Failure Scenario 2 - CategoryParent is supplied for a categoryType of CaseType:
     void shouldThrowsAnErrorDueToCategoryParentIsSuppliedForCaseType() {
@@ -237,6 +238,37 @@ class CaseClassificationsMapperTest {
             assertThat(exception.getMessage(), is(CaseClassificationsMapper.CATEGORY_PARENT_NOT_EXPECTED_ERROR));
         }
     }
+
+    @Test // Failure Scenario 4 - multiple case-types but one caseType without subtype
+    void shouldThrowsAnErrorDueToMultipleCaseTypeDoesNotHaveSubCase() {
+        val caseTypeCategory = new CaseCategory();
+        caseTypeCategory.setCategoryType(CaseCategoryType.CASETYPE.getLabel().toLowerCase());
+        caseTypeCategory.setCategoryValue(CATEGORY_TYPE_VALUE);
+
+        val caseSubTypeCategory = new CaseCategory();
+        caseSubTypeCategory.setCategoryType(CaseCategoryType.CASESUBTYPE.getLabel().toUpperCase());
+        caseSubTypeCategory.setCategoryValue(CATEGORY_TYPE_SUBVALUE);
+        caseSubTypeCategory.setCategoryParent(CATEGORY_TYPE_VALUE);
+
+        val caseTypeCategory1 = new CaseCategory();
+        caseTypeCategory1.setCategoryType(CaseCategoryType.CASETYPE.getLabel().toLowerCase());
+        caseTypeCategory1.setCategoryValue(CATEGORY_TYPE_VALUE + "NO_MATCH");
+
+        List<CaseCategory> caseCategories = Arrays.asList(
+            caseTypeCategory,
+            caseSubTypeCategory,
+            caseTypeCategory1
+        );
+        val caseDetails = createCaseDetails();
+        caseDetails.setCaseCategories(caseCategories);
+
+        try {
+            caseClassificationsMapper.getCaseClassifications(caseDetails);
+        } catch (Exception exception) {
+            assertThat(exception.getMessage(), is(CaseClassificationsMapper.CASE_TYPE_CASE_SUBTYPE_ERROR));
+        }
+    }
+
 
     @Test
     void shouldThrowsAnErrorDueToMissingCategoryType() {

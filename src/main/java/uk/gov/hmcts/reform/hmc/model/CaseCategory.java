@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -20,6 +21,7 @@ public class CaseCategory {
     @Size(max = 70, message = ValidationError.CATEGORY_VALUE)
     private String categoryValue;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Size(max = 70, message = ValidationError.CATEGORY_VALUE)
     private String categoryParent;
 }

@@ -21,6 +21,7 @@ public class CaseClassificationsMapper {
     public static final String CATEGORY_PARENT_EXPECTED_ERROR = "A caseSubType should have a defined category parent.";
     public static final String CATEGORY_PARENT_NOT_EXPECTED_ERROR =
         "A caseType should not have a defined category parent.";
+    public static final String CASE_TYPE_CASE_SUBTYPE_ERROR = "A caseType should have a defined caseSubType.";
 
     private final Predicate<CaseCategory> isCategoryParentNotNull = caseCategory ->
         !StringUtils.isEmpty(caseCategory.getCategoryParent());
@@ -37,6 +38,7 @@ public class CaseClassificationsMapper {
 
         val caseClassificationSubTypes = getCaseCategories(caseDetails, CaseCategoryType.CASESUBTYPE);
         validateSize(caseClassificationSubTypes,  new BadRequestException(CASE_SUBTYPE_ERROR));
+        validateCaseTypeAndCaseSubType(caseTypeValues, caseClassificationSubTypes);
 
         return caseClassificationSubTypes.stream()
             .map(caseClassificationSubType ->
@@ -46,6 +48,22 @@ public class CaseClassificationsMapper {
                          caseTypeValues
                      )
             ).collect(Collectors.toList());
+    }
+
+    private void validateCaseTypeAndCaseSubType(List<String> caseTypeValues,
+                                                List<CaseCategory> caseClassificationSubTypes) {
+
+        val categoryParents = caseClassificationSubTypes.stream()
+            .map(element -> element.getCategoryParent())
+            .collect(Collectors.toList());
+
+        caseTypeValues.stream()
+            .forEach(caseType -> {
+                if (!categoryParents.contains(caseType)) {
+                    throw new BadRequestException(CASE_TYPE_CASE_SUBTYPE_ERROR);
+                }
+            });
+        return;
     }
 
     private CaseClassification buildCaseClassification(String hmctsServiceCode, CaseCategory caseClassificationSubType,
