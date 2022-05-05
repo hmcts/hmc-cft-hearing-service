@@ -72,7 +72,7 @@ public class HearingDetails {
 
     private Boolean hearingIsLinkedFlag;
 
-    @Size(max = 70, message = ValidationError.LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH)
+    @Size(max = 70, message = ValidationError.AMEND_REASON_CODE_MAX_LENGTH)
     private String amendReasonCode;
 
 }

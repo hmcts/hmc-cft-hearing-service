@@ -68,4 +68,6 @@ public class HearingPartyEntity {
     @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<ContactDetailsEntity> contactDetails;
 
+    @OneToMany(mappedBy = "sourceTechParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntity;
 }

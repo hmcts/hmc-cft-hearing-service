@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.hmc.data.PanelAuthorisationRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelSpecialismsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelUserRequirementsEntity;
+import uk.gov.hmcts.reform.hmc.data.PartyRelationshipDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.ReasonableAdjustmentsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
@@ -203,8 +204,6 @@ public class TestingUtil {
         individualDetailEntity.setChannelType("channelType");
         individualDetailEntity.setInterpreterLanguage("english");
         individualDetailEntity.setVulnerableFlag(true);
-        individualDetailEntity.setRelatedPartyRelationshipType("relationshipType");
-        individualDetailEntity.setRelatedPartyID("id");
         individualDetailEntity.setVulnerabilityDetails("details");
         individualDetailEntity.setCustodyStatus("custodyStatus");
         individualDetailEntity.setOtherReasonableAdjustmentDetails("otherReason");
@@ -294,6 +293,7 @@ public class TestingUtil {
         hearingEntity.setStatus(POST_HEARING_STATUS);
         hearingEntity.setLinkedOrder(1L);
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestEntity();
+        caseHearingRequestEntity.setHearingParties(List.of(new HearingPartyEntity()));
         hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
         return hearingEntity;
     }
@@ -386,7 +386,9 @@ public class TestingUtil {
 
     public static UpdateHearingRequest updateHearingRequest(int version) {
         UpdateHearingRequest request = new UpdateHearingRequest();
-        request.setHearingDetails(hearingDetails());
+        HearingDetails hearingDetails = hearingDetails();
+        hearingDetails.setAmendReasonCode("reason");
+        request.setHearingDetails(hearingDetails);
         request.setCaseDetails(caseDetails());
         request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         RequestDetails requestDetails = new RequestDetails();
@@ -401,7 +403,9 @@ public class TestingUtil {
 
     public static UpdateHearingRequest validUpdateHearingRequest() {
         UpdateHearingRequest request = new UpdateHearingRequest();
-        request.setHearingDetails(hearingDetails());
+        HearingDetails hearingDetails = hearingDetails();
+        hearingDetails.setAmendReasonCode("reason");
+        request.setHearingDetails(hearingDetails);
         CaseDetails caseDetails = getValidCaseDetails();
         request.setCaseDetails(caseDetails);
         request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
@@ -504,6 +508,26 @@ public class TestingUtil {
         hearingEntity.setIsLinkedFlag(Boolean.TRUE);
         entity.setCaseHearingID(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
+        entity.setVersionNumber(1);
+        hearingEntity.setIsLinkedFlag(true);
+        hearingEntity.setLinkedGroupDetails(getLinkedGroupDetails());
+        entity.setHearing(hearingEntity);
+        entity.setHmctsServiceCode("ABA1");
+        entity.setCaseReference("12345");
+        entity.setHearingType("Some hearing type");
+        entity.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
+        entity.getHearing().getHearingResponses().get(0)
+            .setHearingDayDetails(List.of(hearingDayDetailsEntities()));
+        return entity;
+    }
+
+    public static CaseHearingRequestEntity getCaseHearingsEntities(String status) {
+        CaseHearingRequestEntity entity = new CaseHearingRequestEntity();
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(2000000000L);
+        hearingEntity.setIsLinkedFlag(Boolean.TRUE);
+        entity.setCaseHearingID(2000000000L);
+        hearingEntity.setStatus(status);
         entity.setVersionNumber(1);
         hearingEntity.setIsLinkedFlag(true);
         hearingEntity.setLinkedGroupDetails(getLinkedGroupDetails());
@@ -688,6 +712,18 @@ public class TestingUtil {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
+        hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity()));
+        hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntityWithPartyOrg()));
+
+        hearingEntity.getCaseHearingRequests().get(0).setVersionNumber(1);
+        hearingEntity.getCaseHearingRequests().get(0).setHearingParties(Arrays.asList(hearingPartyEntityOrg()));
+        return hearingEntity;
+    }
+
+    public static HearingEntity getCaseHearingsEntity(String status) {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(2000000000L);
+        hearingEntity.setStatus(status);
         hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity()));
         hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntityWithPartyOrg()));
 
@@ -881,7 +917,21 @@ public class TestingUtil {
         entity.setContactDetails(List.of(contactDetailsEntity_Email(), contactDetailsEntity_Phone()));
         entity.setIndividualDetailEntity(List.of(individualDetailEntity()));
         entity.setReasonableAdjustmentsEntity(List.of(reasonableAdjustmentsEntity()));
+        entity.setPartyRelationshipDetailsEntity(List.of(partyRelationshipDetailsEntity("P1", "A"),
+                partyRelationshipDetailsEntity("P2", "B")));
         return entity;
+    }
+
+    private static PartyRelationshipDetailsEntity partyRelationshipDetailsEntity(String targetTechPartyId,
+                                                                                 String relationshipType) {
+
+        HearingPartyEntity targetHearingPartyEntity = new HearingPartyEntity();
+        targetHearingPartyEntity.setPartyReference(targetTechPartyId);
+
+        return PartyRelationshipDetailsEntity.builder()
+                .targetTechParty(targetHearingPartyEntity)
+                .relationshipType(relationshipType)
+                .build();
     }
 
     private static CaseHearingRequestEntity caseHearingRequestEntityWithPartyOrg() {
@@ -974,6 +1024,7 @@ public class TestingUtil {
     public static HearingDetails hearingDetailsWithAllFields() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
+        hearingDetails.setAmendReasonCode("reason");
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
         hearingWindow.setDateRangeEnd(LocalDate.parse("2017-03-01"));
@@ -1038,11 +1089,11 @@ public class TestingUtil {
         individualDetails.setHearingChannelEmail(List.of("hearing.channel_udated@email.com"));
         List<RelatedParty> relatedParties = new ArrayList<>();
         RelatedParty relatedParty1 = new RelatedParty();
-        relatedParty1.setRelatedPartyID("Party1");
+        relatedParty1.setRelatedPartyID("P1");
         relatedParty1.setRelationshipType("Mother");
         relatedParties.add(relatedParty1);
         RelatedParty relatedParty2 = new RelatedParty();
-        relatedParty2.setRelatedPartyID("Party2");
+        relatedParty2.setRelatedPartyID("P2");
         relatedParty2.setRelationshipType("Father");
         relatedParties.add(relatedParty2);
         individualDetails.setRelatedParties(relatedParties);

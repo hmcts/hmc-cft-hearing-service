@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayPausesEntity;
@@ -37,7 +38,7 @@ public class HearingActualsMapper {
     }
 
     private List<ActualHearingDayEntity> toActualHearingDayEntities(List<ActualHearingDay> actualHearingDay,
-                                                                    ActualHearingEntity actualHearing) {
+                                                                   ActualHearingEntity actualHearing) {
         return actualHearingDay.stream()
             .map((ActualHearingDay day) -> toActualHearingDayEntity(day, actualHearing))
             .collect(Collectors.toList());
@@ -60,7 +61,7 @@ public class HearingActualsMapper {
 
     private List<ActualHearingDayPausesEntity> toActualHearingDayPausesEntities(
         List<ActualHearingDayPauseDayTime> dayPauseDayTimes, ActualHearingDayEntity dayEntity) {
-        if (dayPauseDayTimes == null || dayPauseDayTimes.isEmpty()) {
+        if (CollectionUtils.isEmpty(dayPauseDayTimes)) {
             return List.of();
         }
         return dayPauseDayTimes.stream()
@@ -79,6 +80,10 @@ public class HearingActualsMapper {
 
     private List<ActualHearingPartyEntity> toActualHearingPartyEntities(
         List<ActualHearingDayParties> actualDayParties, ActualHearingDayEntity dayEntity) {
+        if (CollectionUtils.isEmpty(actualDayParties)) {
+            return List.of();
+        }
+
         List<ActualHearingPartyEntity> actualHearingPartyEntities = actualDayParties.stream()
             .map(actualHearingDayParty -> toActualHearingPartyEntity(
                 actualHearingDayParty,
