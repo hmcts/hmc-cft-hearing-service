@@ -182,6 +182,8 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             LinkedHearingDetails response = new LinkedHearingDetails();
             response.setHearingId(hearing.getId());
             response.setHearingOrder(hearing.getLinkedOrder());
+            response.setCaseRef(hearing.getLatestCaseHearingRequest().getCaseReference());
+            response.setHmctsInternalCaseName(hearing.getLatestCaseHearingRequest().getHmctsInternalCaseName());
             hearingsInGroup.add(response);
         });
 

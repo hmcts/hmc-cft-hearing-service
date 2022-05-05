@@ -42,7 +42,6 @@ public class IndividualDetails {
     @Size(max = 256, message = ValidationError.VULNERABLE_DETAILS_MAX_LENGTH)
     private String vulnerabilityDetails;
 
-
     private List<
         @Email(message = ValidationError.HEARING_CHANNEL_EMAIL_INVALID)
         @Size(max = 120, message = ValidationError.HEARING_CHANNEL_EMAIL_MAX_LENGTH)
