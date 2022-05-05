@@ -277,17 +277,18 @@ class HearingManagementServiceTest {
 
         @Test
         void shouldPassWithValidHearingId() {
-            HearingEntity hearing = new HearingEntity();
+            HearingEntity hearing = TestingUtil.hearingEntity();
             hearing.setStatus("RESPONDED");
             hearing.setId(2000000000L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearing));
             hearingManagementService.getHearingRequest(2000000000L, true);
             verify(hearingRepository).existsById(2000000000L);
         }
 
         @Test
         void shouldPassWithValidHearingIdInDb() {
-            HearingEntity hearing = new HearingEntity();
+            HearingEntity hearing = TestingUtil.hearingEntity();
             hearing.setStatus("RESPONDED");
             hearing.setId(2000000000L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
