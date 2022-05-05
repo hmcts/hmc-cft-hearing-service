@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
@@ -32,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 
@@ -145,6 +147,42 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void testValidateHearingRequest_WhenAmendReasonCodeIsNotNull() {
+        HearingRequest createHearingRequest = new HearingRequest();
+        HearingDetails hearingDetails = TestingUtil.hearingDetails();
+        hearingDetails.setAmendReasonCode("Amend Reason");
+        createHearingRequest.setHearingDetails(hearingDetails);
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
+        assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
+        assertEquals(POST_HEARING_STATUS, response.getStatus());
+        assertNotNull(response.getHearingRequestId());
+        assertNotNull(response.getTimeStamp());
+    }
+
+    @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void testValidateHearingRequest_WhenAmendReasonCodeIsNull() {
+        HearingRequest createHearingRequest = new HearingRequest();
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
+        assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
+        assertEquals(POST_HEARING_STATUS, response.getStatus());
+        assertNotNull(response.getHearingRequestId());
+        assertNotNull(response.getTimeStamp());
+    }
+
+    @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testDeleteHearingRequest_WithAllMandatoryFields() {
         DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
@@ -239,6 +277,28 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
+    void testUpdateHearingRequest_WhenAmendReasonIsEmpty() {
+        UpdateHearingRequest request = TestingUtil.updateHearingRequest();
+        request.getHearingDetails().setAmendReasonCode("");
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.updateHearingRequest(2000000024L, request);
+        });
+        assertEquals(INVALID_AMEND_REASON_CODE, exception.getMessage());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
+    void testUpdateHearingRequest_WhenAmendReasonIsNull() {
+        UpdateHearingRequest request = TestingUtil.updateHearingRequest();
+        request.getHearingDetails().setAmendReasonCode(null);
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.updateHearingRequest(2000000024L, request);
+        });
+        assertEquals(INVALID_AMEND_REASON_CODE, exception.getMessage());
+    }
+
+    @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
     void testUpdateHearingCompletion_WithValidData() {
         ResponseEntity responseEntity = hearingManagementService.hearingCompletion(2000000000L);
@@ -274,8 +334,6 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals(ListingStatus.FIXED.name(), response.getCaseHearings().get(1).getHearingListingStatus());
         assertEquals(ListAssistCaseStatus.LISTED.name(), response.getCaseHearings().get(1).getListAssistCaseStatus());
         assertEquals(1, response.getCaseHearings().get(1).getHearingDaySchedule().size());
-        assertEquals("session1-2", response.getCaseHearings().get(1)
-            .getHearingDaySchedule().get(0).getListAssistSessionId());
         assertEquals("venue3-1", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getHearingVenueId());
         assertEquals("venue2-1", response.getCaseHearings().get(0)
@@ -350,8 +408,6 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals(ListAssistCaseStatus.LISTED.name(),
                 response.getCaseHearings().get(0).getListAssistCaseStatus());
         assertEquals(2, response.getCaseHearings().get(1).getHearingDaySchedule().size());
-        assertEquals("session1-1", response.getCaseHearings().get(1)
-            .getHearingDaySchedule().get(0).getListAssistSessionId());
         assertEquals("venue1-1", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getHearingVenueId());
         assertEquals("venue3-1", response.getCaseHearings().get(0)

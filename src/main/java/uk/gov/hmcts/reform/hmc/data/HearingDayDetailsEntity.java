@@ -40,9 +40,6 @@ public class HearingDayDetailsEntity {
     @Column(name = "end_date_time", nullable = false)
     private LocalDateTime endDateTime;
 
-    @Column(name = "list_assist_session_id")
-    private String listAssistSessionId;
-
     @Column(name = "venue_id", nullable = false)
     private String venueId;
 

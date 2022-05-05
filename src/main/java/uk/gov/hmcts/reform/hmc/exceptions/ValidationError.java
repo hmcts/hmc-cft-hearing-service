@@ -126,6 +126,7 @@ public final class ValidationError {
     public static final String VERSION_NUMBER_NULL_EMPTY = "Version number must be present";
     public static final String INVALID_DELETE_HEARING_STATUS = "Invalid hearing state for DELETE";
     public static final String INVALID_PUT_HEARING_STATUS = "Invalid hearing state for PUT";
+    public static final String INVALID_HEARING_STATE = "Invalid hearing state";
 
     public static final String CATEGORY_TYPE_EMPTY = "Category type must be present";
     public static final String CATEGORY_VALUE_EMPTY = "Category value must be present";
@@ -144,6 +145,53 @@ public final class ValidationError {
     public static final String PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH = "002 No such response version";
     public static final String PARTIES_NOTIFIED_ALREADY_SET = "003 Already set";
 
+    public static final String HEARING_ACTUALS_ID_NOT_FOUND = "001 No such id: %s";
+    public static final String HEARING_ACTUALS_INVALID_STATUS = "002 invalid status %s";
+    public static final String HEARING_ACTUALS_HEARING_DAYS_INVALID = "003 invalid date";
+    public static final String HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS = "004 non-unique dates";
+    public static final String HEARING_ACTUALS_MISSING_RESULT_TYPE = "%s result requires a hearingResultReasonType";
+    public static final String HEARING_ACTUALS_MISSING_HEARING_OUTCOME = "005 missing hearing outcome";
+    public static final String HEARING_ACTUALS_MISSING_HEARING_DAY = "003 missing hearing day actuals";
+    public static final String HEARING_ACTUALS_UN_EXPRECTED = "004 unexpected hearing day actuals";
+    public static final String HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND = "No response found on the hearing %s";
+
+    public static final String HA_OUTCOME_TYPE_NOT_EMPTY = "hearingType cannot be null or empty";
+    public static final String HA_OUTCOME_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;
+    public static final String HA_OUTCOME_FINAL_FLAG_NOT_EMPTY = "hearingFinalFlag has to be provided";
+    public static final String HA_OUTCOME_RESULT_NOT_EMPTY = "hearingResult has to be one of"
+        + " COMPLETED, ADJOURNED, CANCELLED";
+    public static final String HA_OUTCOME_REASON_TYPE_MAX_LENGTH = "hearingResultReasonType must not be more than 70 "
+        + CHARACTERS_LONG;
+    public static final String HA_OUTCOME_REQUEST_DATE_NOT_EMPTY = "hearingResultDate cannot be null or empty";
+
+    public static final String HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY = "hearingDate cannot be null or empty";
+    public static final String HA_HEARING_DAY_START_TIME_DATE_NOT_EMPTY = "hearingStartTime cannot be null or empty";
+    public static final String HA_HEARING_DAY_END_TIME_DATE_NOT_EMPTY = "hearingEndTime cannot be null or empty";
+    public static final String HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY = "pauseStartTime cannot be null or empty";
+    public static final String HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY = "pauseEndTime cannot be null or empty";
+
+    public static final String HA_HEARING_DAY_PARTY_ID_MAX_LENGTH = "actualPartyId must not be more than 40 "
+        + CHARACTERS_LONG;
+    public static final String HA_HEARING_DAY_PARTY_ROLE_NOT_EMPTY = "partyRole cannot be null or empty";
+    public static final String HA_HEARING_DAY_PARTY_ROLE_MAX_LENGTH = "partyRole must not be more than 40 "
+        + CHARACTERS_LONG;
+    public static final String HA_HEARING_DAY_PARTY_CHANNEL_NOT_EMPTY = "partyChannelSubType cannot be null or empty";
+    public static final String HA_HEARING_DAY_PARTY_CHANNEL_MAX_LENGTH = "partyChannelSubType must not be more than 40 "
+        + CHARACTERS_LONG;
+    public static final String HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH = "representedParty must not be more than"
+        + " 40 " + CHARACTERS_LONG;
+
+    public static final String HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_NOT_EMPTY = "firstName cannot be null or empty";
+    public static final String HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_MAX_LENGTH = "firstName must not be more than 40 "
+        + CHARACTERS_LONG;
+    public static final String HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_NOT_EMPTY = "lastName cannot be null or empty";
+    public static final String HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_MAX_LENGTH = "lastName must not be more than 40 "
+        + CHARACTERS_LONG;
+
+    public static final String HA_HEARING_DAY_ORGANISATION_NAME_NOT_EMPTY = "organisation name cannot be null or empty";
+    public static final String HA_HEARING_DAY_ORGANISATION_NAME_MAX_LENGTH = "organisation name must not be more than"
+        + " 40 " + CHARACTERS_LONG;
+
     public static final String OTHER_REASON_LENGTH = "Other reasonable adjustment details cannot be greater than 200 "
         + CHARACTERS_LONG;
     public static final String CUSTODY_STATUS_LENGTH = "Custody status cannot be greater than 80 " + CHARACTERS_LONG;
@@ -158,12 +206,6 @@ public final class ValidationError {
     public static final String HEARINGS_IN_GROUP = "Linked hearing details are required";
     public static final String HEARINGS_IN_GROUP_SIZE = "001 Insufficient requestIds";
 
-    public static final String HEARING_ACTUALS_ID_NOT_FOUND = "001 No such id: %s";
-    public static final String HEARING_ACTUALS_INVALID_STATUS = "002 invalid status";
-    public static final String HEARING_ACTUALS_MISSING_HEARING_OUTCOME = "005 missing hearing outcome";
-    public static final String HEARING_ACTUALS_MISSING_HEARING_DAY = "003 missing hearing day actuals";
-    public static final String HEARING_ACTUALS_UN_EXPRECTED = "004 unexpected hearing day actuals";
-
     public static final String HEARING_REQUEST_ID_MAX_LENGTH =
             "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
     public static final String HEARING_GROUP_REQUEST_ID_MAX_LENGTH =
@@ -175,7 +217,6 @@ public final class ValidationError {
 
 
     public static final String INVALID_LINKED_GROUP_REQUEST_ID_DETAILS = "Invalid linked group id";
-    public static final String LINKED_GROUP_ID_EMPTY = "Linked group id cannot be null or empty";
     public static final String INVALID_STATE_FOR_HEARING_REQUEST
             = "004 Invalid state for hearing request <hearingId>";
     public static final String INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST
@@ -219,4 +260,8 @@ public final class ValidationError {
     public static final String REJECTED_BY_LIST_ASSIST = "005 rejected by List Assist";
     public static final String LIST_ASSIST_FAILED_TO_RESPOND = "006 List Assist failed to respond";
     public static final String LIST_ASSIST_CASE_STATUS_NULL = "List assist case status can not be null or empty";
+    public static final String AMEND_REASON_CODE_MAX_LENGTH = "Amend reason code must not be more than "
+        + "70 " + CHARACTERS_LONG;
+    public static final String INVALID_AMEND_REASON_CODE = "Amend reason code details are required";
+
 }

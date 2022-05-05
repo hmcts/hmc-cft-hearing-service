@@ -27,67 +27,43 @@ import uk.gov.hmcts.reform.hmc.model.hearingactuals.Party;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.PauseDateTimes;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.PlannedHearingDays;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCode {
 
     public HearingActualResponse toHearingActualResponse(HearingEntity hearingEntity) {
         val response = new HearingActualResponse();
-        response.setHmcStatus(getHearingStatus(hearingEntity));
+        response.setHmcStatus(hearingEntity.getDerivedHearingStatus());
         response.setCaseDetails(setCaseDetails(hearingEntity));
         setHearingPlanned(hearingEntity, response);
         setHearingActuals(hearingEntity, response);
         return response;
     }
 
-    private String getHearingStatus(HearingEntity hearingEntity) {
-        String hearingStatus = null;
-        switch (hearingEntity.getStatus()) {
-            case "LISTED":
-            case "UPDATE_REQUESTED":
-            case "UPDATE_SUBMITTED":
-                hearingStatus = hearingEntity.getStatus();
-                Optional<HearingResponseEntity> hearingResponse = hearingEntity.getLatestHearingResponse();
-                if (hearingResponse.isPresent()) {
-                    HearingResponseEntity latestHearingResponse = hearingResponse.get();
-                    Optional<HearingDayDetailsEntity> hearingDayDetails =
-                        latestHearingResponse.getEarliestHearingDayDetails();
-                    if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
-                        HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
-                        if (LocalDate.now().isAfter(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
-                            return "AWAITING_ACTUALS";
-                        }
-                    }
-                }
-                break;
-            default:
-                hearingStatus = hearingEntity.getStatus();
-        }
-        return hearingStatus;
-    }
-
     private void setHearingActuals(HearingEntity hearingEntity, HearingActualResponse response) {
-        val hearingActual = new HearingActual();
 
         val hearingResponses = hearingEntity.getLatestHearingResponse();
-        if (hearingResponses.isPresent()) {
+        if (hearingResponses.isPresent() && hearingResponses.get().getActualHearingEntity() != null) {
             HearingResponseEntity hearingResponse = hearingResponses.get();
-            val hearingOutcome = new HearingOutcome();
-            hearingOutcome.setHearingType(hearingResponse.getActualHearingEntity().getActualHearingType());
-            hearingOutcome.setHearingFinalFlag(hearingResponse.getActualHearingEntity().getActualHearingIsFinalFlag());
-            hearingOutcome.setHearingResult(hearingResponse.getActualHearingEntity().getHearingResultType());
-            hearingOutcome.setHearingResultReasonType(hearingResponse
-                                                          .getActualHearingEntity().getHearingResultReasonType());
-            hearingOutcome.setHearingResultDate(hearingResponse
-                                                    .getActualHearingEntity().getHearingResultDate());
-            hearingActual.setHearingOutcome(hearingOutcome);
-            getActualHearingDays(hearingResponse, hearingActual);
+            if (hearingResponse.getActualHearingEntity() != null) {
+                val hearingOutcome = new HearingOutcome();
+                hearingOutcome.setHearingType(hearingResponse.getActualHearingEntity().getActualHearingType());
+                hearingOutcome.setHearingFinalFlag(
+                    hearingResponse.getActualHearingEntity().getActualHearingIsFinalFlag());
+                hearingOutcome.setHearingResult(hearingResponse.getActualHearingEntity().getHearingResultType());
+                hearingOutcome.setHearingResultReasonType(hearingResponse
+                                                              .getActualHearingEntity().getHearingResultReasonType());
+                hearingOutcome.setHearingResultDate(hearingResponse
+                                                        .getActualHearingEntity().getHearingResultDate());
+                val hearingActual = new HearingActual();
+                hearingActual.setHearingOutcome(hearingOutcome);
+                getActualHearingDays(hearingResponse, hearingActual);
+
+                response.setHearingActuals(hearingActual);
+            }
         }
-        response.setHearingActuals(hearingActual);
 
     }
 
@@ -111,7 +87,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         List<ActualDayParty> actualDayParties = new ArrayList<>();
         for (ActualHearingPartyEntity actualHearingPartyEntity : actualHearingDayEntity.getActualHearingParty()) {
             ActualDayParty actualDayParty = new ActualDayParty();
-            actualDayParty.setActualPartyId(actualHearingPartyEntity.getActualPartyId().intValue());
+            actualDayParty.setActualPartyId(Integer.valueOf(actualHearingPartyEntity.getPartyId()));
             actualDayParty.setPartyRole(actualHearingPartyEntity.getActualPartyRoleType());
             actualDayParty.setDidNotAttendFlag(actualHearingPartyEntity.getDidNotAttendFlag());
             for (ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity

@@ -12,4 +12,7 @@ public interface InboundQueueService {
     void processMessage(JsonNode message, Map<String, Object> applicationProperties,
                         ServiceBusReceiverClient client, ServiceBusReceivedMessage serviceBusReceivedMessage)
         throws JsonProcessingException;
+
+    void catchExceptionAndUpdateHearing(Map<String, Object> applicationProperties, Exception exception);
+
 }

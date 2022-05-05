@@ -16,8 +16,11 @@ import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
 import uk.gov.hmcts.reform.hmc.helper.LinkedHearingDetailsAuditMapper;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GetLinkedHearingGroupResponse;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupResponse;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkedHearingDetails;
 import uk.gov.hmcts.reform.hmc.model.listassist.CaseListing;
 import uk.gov.hmcts.reform.hmc.model.listassist.HearingGroup;
 import uk.gov.hmcts.reform.hmc.model.listassist.LinkedHearingGroup;
@@ -38,6 +41,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PENDING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 
@@ -135,13 +139,54 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
     @Override
     @Transactional(noRollbackFor = {BadRequestException.class})
-    public void deleteLinkedHearingGroup(Long hearingGroupId) {
-        linkedHearingValidator.validateHearingGroup(hearingGroupId);
-        List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(hearingGroupId);
+    public void deleteLinkedHearingGroup(String requestId) {
+        Long linkedGroupId = linkedHearingValidator.validateHearingGroup(requestId);
+        List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(linkedGroupId);
         linkedHearingValidator.validateUnlinkingHearingsStatus(linkedGroupHearings);
         linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
 
         deleteFromLinkedGroupDetails(linkedGroupHearings);
+    }
+
+    @Override
+    public GetLinkedHearingGroupResponse getLinkedHearingGroupResponse(String requestId) {
+        linkedHearingValidator.validateRequestId(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
+        return getLinkedHearingGroupDetails(requestId);
+    }
+
+    private GetLinkedHearingGroupResponse getLinkedHearingGroupDetails(String requestId) {
+        LinkedGroupDetails linkedGroupDetails =
+            linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId);
+        GetLinkedHearingGroupResponse response = new GetLinkedHearingGroupResponse();
+        response.setGroupDetails(getGroupDetails(linkedGroupDetails));
+        response.setHearingsInGroup(getHearingsInGroup(linkedGroupDetails.getLinkedGroupId()));
+        return response;
+    }
+
+    private GroupDetails getGroupDetails(LinkedGroupDetails linkedGroupDetails) {
+        GroupDetails groupDetails = new GroupDetails();
+        groupDetails.setGroupName(linkedGroupDetails.getRequestName());
+        groupDetails.setGroupReason(linkedGroupDetails.getReasonForLink());
+        groupDetails.setGroupComments(linkedGroupDetails.getLinkedComments());
+        groupDetails.setGroupLinkType(linkedGroupDetails.getLinkType().label);
+
+        return groupDetails;
+    }
+
+    private List<LinkedHearingDetails> getHearingsInGroup(Long hearingGroupId) {
+        List<HearingEntity> linkedGroupHearings =
+            hearingRepository.findByLinkedGroupId(hearingGroupId);
+        List<LinkedHearingDetails> hearingsInGroup = new ArrayList<>();
+        linkedGroupHearings.forEach(hearing -> {
+            LinkedHearingDetails response = new LinkedHearingDetails();
+            response.setHearingId(hearing.getId());
+            response.setHearingOrder(hearing.getLinkedOrder());
+            response.setCaseRef(hearing.getLatestCaseHearingRequest().getCaseReference());
+            response.setHmctsInternalCaseName(hearing.getLatestCaseHearingRequest().getHmctsInternalCaseName());
+            hearingsInGroup.add(response);
+        });
+
+        return hearingsInGroup;
     }
 
     private void deleteFromLinkedGroupDetails(List<HearingEntity> linkedGroupHearings) {
@@ -230,7 +275,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         hearingGroup.setGroupClientReference(linkedGroupDetails.getRequestId());
         hearingGroup.setGroupName(linkedGroupDetails.getRequestName());
         hearingGroup.setGroupReason(linkedGroupDetails.getReasonForLink());
-        hearingGroup.setGroupLinkType(linkedGroupDetails.getLinkType());
+        hearingGroup.setGroupLinkType(linkedGroupDetails.getLinkType().getLabel());
         hearingGroup.setGroupComment(linkedGroupDetails.getLinkedComments());
         hearingGroup.setGroupStatus("LHSAWL");
         ArrayList<CaseListing> caseListingArrayList = new ArrayList<>();
