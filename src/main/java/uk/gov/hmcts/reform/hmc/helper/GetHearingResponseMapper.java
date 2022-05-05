@@ -64,7 +64,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
         requestDetails.setHearingRequestId(hearingEntity.getId().toString());
         requestDetails.setHearingGroupRequestId(getRequestId(hearingEntity));
-        requestDetails.setStatus(hearingEntity.getStatus());
+        requestDetails.setStatus(hearingEntity.getDerivedHearingStatus());
         requestDetails.setTimestamp(caseHearingRequestEntity.getHearingRequestReceivedDateTime());
         requestDetails.setVersionNumber(caseHearingRequestEntity.getVersionNumber());
         return requestDetails;

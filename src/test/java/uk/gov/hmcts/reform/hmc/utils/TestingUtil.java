@@ -520,6 +520,26 @@ public class TestingUtil {
         return entity;
     }
 
+    public static CaseHearingRequestEntity getCaseHearingsEntities(String status) {
+        CaseHearingRequestEntity entity = new CaseHearingRequestEntity();
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(2000000000L);
+        hearingEntity.setIsLinkedFlag(Boolean.TRUE);
+        entity.setCaseHearingID(2000000000L);
+        hearingEntity.setStatus(status);
+        entity.setVersionNumber(1);
+        hearingEntity.setIsLinkedFlag(true);
+        hearingEntity.setLinkedGroupDetails(getLinkedGroupDetails());
+        entity.setHearing(hearingEntity);
+        entity.setHmctsServiceCode("ABA1");
+        entity.setCaseReference("12345");
+        entity.setHearingType("Some hearing type");
+        entity.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
+        entity.getHearing().getHearingResponses().get(0)
+            .setHearingDayDetails(List.of(hearingDayDetailsEntities()));
+        return entity;
+    }
+
     public static LinkedGroupDetails getLinkedGroupDetails() {
         LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
         linkedGroupDetails.setLinkedGroupId(1L);
@@ -635,6 +655,18 @@ public class TestingUtil {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(2000000000L);
         hearingEntity.setStatus("HEARING_REQUESTED");
+        hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity()));
+        hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntityWithPartyOrg()));
+
+        hearingEntity.getCaseHearingRequests().get(0).setVersionNumber(1);
+        hearingEntity.getCaseHearingRequests().get(0).setHearingParties(Arrays.asList(hearingPartyEntityOrg()));
+        return hearingEntity;
+    }
+
+    public static HearingEntity getCaseHearingsEntity(String status) {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(2000000000L);
+        hearingEntity.setStatus(status);
         hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity()));
         hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntityWithPartyOrg()));
 
