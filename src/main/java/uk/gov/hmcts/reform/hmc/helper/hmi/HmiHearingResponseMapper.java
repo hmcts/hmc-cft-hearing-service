@@ -120,11 +120,13 @@ public class HmiHearingResponseMapper {
 
     private ArrayList<HearingDayPanelEntity> mapHearingDayPanelEntity(HearingResponse hearing) {
         ArrayList<HearingDayPanelEntity> hearingDayPanelEntityArrayList = new ArrayList<>();
-        for (HearingJoh hearingJoh : hearing.getHearing().getHearingJohs()) {
-            HearingDayPanelEntity hearingDayPanelEntity = new HearingDayPanelEntity();
-            hearingDayPanelEntity.setPanelUserId(hearingJoh.getJohCode());
-            hearingDayPanelEntity.setIsPresiding(hearingJoh.getIsPresiding());
-            hearingDayPanelEntityArrayList.add(hearingDayPanelEntity);
+        if (hearing.getHearing().getHearingJohs() != null) {
+            for (HearingJoh hearingJoh : hearing.getHearing().getHearingJohs()) {
+                HearingDayPanelEntity hearingDayPanelEntity = new HearingDayPanelEntity();
+                hearingDayPanelEntity.setPanelUserId(hearingJoh.getJohCode());
+                hearingDayPanelEntity.setIsPresiding(hearingJoh.getIsPresiding());
+                hearingDayPanelEntityArrayList.add(hearingDayPanelEntity);
+            }
         }
         return hearingDayPanelEntityArrayList;
     }
@@ -135,7 +137,9 @@ public class HmiHearingResponseMapper {
         for (HearingAttendee hearingAttendee : hearing.getHearing().getHearingAttendees()) {
             HearingAttendeeDetailsEntity hearingAttendeeDetailsEntity = new HearingAttendeeDetailsEntity();
             hearingAttendeeDetailsEntity.setPartyId(hearingAttendee.getEntityId());
-            hearingAttendeeDetailsEntity.setPartySubChannelType(hearingAttendee.getHearingChannel().getCode());
+            if (hearingAttendee.getHearingChannel() != null) {
+                hearingAttendeeDetailsEntity.setPartySubChannelType(hearingAttendee.getHearingChannel().getCode());
+            }
             hearingAttendeeDetailsEntityArrayList.add(hearingAttendeeDetailsEntity);
         }
 
