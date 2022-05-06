@@ -109,4 +109,23 @@ class GetHearingsResponseMapperTest {
         assertNull(response.getHmctsServiceCode());
         assertEquals(0, response.getCaseHearings().size());
     }
+
+    @Test
+    void toHearingsResponseWhenStatusIsHearingRequested() {
+        List<CaseHearingRequestEntity> entities =
+            Arrays.asList(TestingUtil.getCaseHearingsEntities("HEARING_REQUESTED"));
+        GetHearingsResponseMapper getHearingsResponseMapper = new GetHearingsResponseMapper();
+        GetHearingsResponse response = getHearingsResponseMapper.toHearingsResponse(validCaseRef, entities);
+
+        assertEquals("HEARING_REQUESTED", response.getCaseHearings().get(0).getHmcStatus());
+    }
+
+    @Test
+    void toHearingsResponseWhenStatusIsListed() {
+        List<CaseHearingRequestEntity> entities = Arrays.asList(TestingUtil.getCaseHearingsEntities("LISTED"));
+        GetHearingsResponseMapper getHearingsResponseMapper = new GetHearingsResponseMapper();
+        GetHearingsResponse response = getHearingsResponseMapper.toHearingsResponse(validCaseRef, entities);
+
+        assertEquals("AWAITING_ACTUALS", response.getCaseHearings().get(0).getHmcStatus());
+    }
 }

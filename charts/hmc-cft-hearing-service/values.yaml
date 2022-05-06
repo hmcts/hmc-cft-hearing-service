@@ -50,5 +50,11 @@ java:
     HTTP_CLIENT_VALIDATE_AFTER_INACTIVITY: '2000'
     CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
 
+    HMI_BASE_URL: https://hmi-apim.test.platform.hmcts.net/hmi
+    HMI_SOURCE_SYSTEM: CFT
+    HMI_DESTINATION_SYSTEM: SNL
+    GRANT_TYPE: client_credentials
+    FH_BASE_URL: https://login.microsoftonline.com
+
 servicebus:
   enabled: false

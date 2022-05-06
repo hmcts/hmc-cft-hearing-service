@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.ContactDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
@@ -39,6 +40,7 @@ import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.EMAIL_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_DOW_TYPE;
@@ -62,7 +64,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
         requestDetails.setHearingRequestId(hearingEntity.getId().toString());
         requestDetails.setHearingGroupRequestId(getRequestId(hearingEntity));
-        requestDetails.setStatus(hearingEntity.getStatus());
+        requestDetails.setStatus(hearingEntity.getDerivedHearingStatus());
         requestDetails.setTimestamp(caseHearingRequestEntity.getHearingRequestReceivedDateTime());
         requestDetails.setVersionNumber(caseHearingRequestEntity.getVersionNumber());
         return requestDetails;
@@ -182,11 +184,19 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             individualDetailEntity.getOtherReasonableAdjustmentDetails());
         setReasonableAdjustments(hearingPartyEntity,individualDetails);
         updateContactDetails(hearingPartyEntity, individualDetails);
-        RelatedParty relatedParty = new RelatedParty();
-        relatedParty.setRelatedPartyID(individualDetailEntity.getRelatedPartyID());
-        relatedParty.setRelationshipType(individualDetailEntity.getRelatedPartyRelationshipType());
 
-        individualDetails.setRelatedParties(List.of(relatedParty));
+        final List<RelatedParty> relatedParties = hearingPartyEntity.getPartyRelationshipDetailsEntity()
+                .stream()
+                .map(partyRelationshipDetailsEntity -> {
+                    RelatedParty relatedParty = new RelatedParty();
+                    relatedParty.setRelatedPartyID(partyRelationshipDetailsEntity.getTargetTechParty()
+                                                       .getPartyReference());
+                    relatedParty.setRelationshipType(partyRelationshipDetailsEntity.getRelationshipType());
+                    return relatedParty;
+                })
+                .collect(Collectors.toList());
+
+        individualDetails.setRelatedParties(relatedParties);
         return individualDetails;
     }
 
@@ -407,7 +417,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             if (null != hearingDayDetailEntities && !hearingDayDetailEntities.isEmpty()) {
                 for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
                     HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
-                    if (!detailEntity.getHearingDayPanel().isEmpty()) {
+                    if (!CollectionUtils.isEmpty(detailEntity.getHearingDayPanel())) {
                         setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
                     }
                     setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
