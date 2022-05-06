@@ -833,7 +833,7 @@ public class TestingUtil {
         entity.setActualPartyRoleType("roleType");
         entity.setDidNotAttendFlag(false);
         entity.setActualAttendeeIndividualDetail(Arrays.asList(actualAttendeeIndividualDetailEntity(partyType)));
-        entity.setSourcePartyRelationshipDetail(Arrays.asList(actualPartyRelationshipDetailEntity(entity)));
+        entity.setActualPartyRelationshipDetail(Arrays.asList(actualPartyRelationshipDetailEntity(entity)));
         return entity;
     }
 

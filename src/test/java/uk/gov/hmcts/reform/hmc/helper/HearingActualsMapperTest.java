@@ -250,12 +250,12 @@ class HearingActualsMapperTest {
         assertTrue(response.getActualHearingDay().get(1).getActualHearingParty().get(0).getDidNotAttendFlag());
         assertEquals(
             "2",
-            response.getActualHearingDay().get(1).getActualHearingParty().get(0).getSourcePartyRelationshipDetail()
+            response.getActualHearingDay().get(1).getActualHearingParty().get(0).getActualPartyRelationshipDetail()
                 .get(0).getTargetActualPartyId().getPartyId()
         );
         assertEquals(
             "1",
-            response.getActualHearingDay().get(1).getActualHearingParty().get(0).getSourcePartyRelationshipDetail()
+            response.getActualHearingDay().get(1).getActualHearingParty().get(0).getActualPartyRelationshipDetail()
                 .get(0).getSourceActualPartyId().getPartyId()
         );
         assertEquals(
@@ -283,7 +283,7 @@ class HearingActualsMapperTest {
         );
         assertFalse(response.getActualHearingDay().get(1).getActualHearingParty().get(1).getDidNotAttendFlag());
         assertNull(response.getActualHearingDay().get(1)
-                       .getActualHearingParty().get(1).getSourcePartyRelationshipDetail());
+                       .getActualHearingParty().get(1).getActualPartyRelationshipDetail());
         assertEquals(
             "TestRepFirstName",
             response.getActualHearingDay().get(1).getActualHearingParty().get(1)
@@ -307,7 +307,7 @@ class HearingActualsMapperTest {
         );
         assertFalse(response.getActualHearingDay().get(1).getActualHearingParty().get(2).getDidNotAttendFlag());
         assertNull(response.getActualHearingDay().get(1)
-                       .getActualHearingParty().get(2).getSourcePartyRelationshipDetail());
+                       .getActualHearingParty().get(2).getActualPartyRelationshipDetail());
         assertEquals(
             "Organisation Name",
             response.getActualHearingDay().get(1).getActualHearingParty().get(2)

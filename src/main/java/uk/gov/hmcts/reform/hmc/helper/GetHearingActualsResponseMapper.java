@@ -91,7 +91,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             actualDayParty.setPartyRole(actualHearingPartyEntity.getActualPartyRoleType());
             actualDayParty.setDidNotAttendFlag(actualHearingPartyEntity.getDidNotAttendFlag());
             for (ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity
-                : actualHearingPartyEntity.getSourcePartyRelationshipDetail()) {
+                : actualHearingPartyEntity.getActualPartyRelationshipDetail()) {
                 if (actualHearingPartyEntity.getPartyId()
                     .equals(actualPartyRelationshipDetailEntity.getSourceActualPartyId().getPartyId())) {
                     actualDayParty.setRepresentedParty(actualPartyRelationshipDetailEntity

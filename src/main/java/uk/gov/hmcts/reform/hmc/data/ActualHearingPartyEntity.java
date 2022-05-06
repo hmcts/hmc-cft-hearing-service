@@ -42,11 +42,8 @@ public class ActualHearingPartyEntity implements Serializable {
     @JoinColumn(name = "actual_hearing_day_id")
     private ActualHearingDayEntity actualHearingDay;
 
-    @OneToMany(mappedBy = "targetActualPartyId", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<ActualPartyRelationshipDetailEntity> targetPartyRelationshipDetail;
-
     @OneToMany(mappedBy = "sourceActualPartyId", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<ActualPartyRelationshipDetailEntity> sourcePartyRelationshipDetail;
+    private List<ActualPartyRelationshipDetailEntity> actualPartyRelationshipDetail;
 
     @OneToMany(mappedBy = "actualHearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)

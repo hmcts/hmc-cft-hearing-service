@@ -140,7 +140,7 @@ public class HearingActualsMapper {
                     .sourceActualPartyId(sourceEntity)
                     .build();
 
-                sourceEntity.setSourcePartyRelationshipDetail(List.of(partyRelationshipDetail));
+                sourceEntity.setActualPartyRelationshipDetail(List.of(partyRelationshipDetail));
             }
         }
         return hearingPartyEntities;
