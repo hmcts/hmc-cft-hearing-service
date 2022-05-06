@@ -28,8 +28,10 @@ import uk.gov.hmcts.reform.hmc.model.hearingactuals.Party;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.PauseDateTimes;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.PlannedHearingDays;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCode {
