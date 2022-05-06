@@ -335,6 +335,37 @@ class LinkedHearingValidatorTest {
         verify(linkedGroupDetailsRepository, times(1)).save(any());
     }
 
+    @Test
+    void shouldPassWithDetailsValidForUpdateHearingWithLinkGroupAndNoOrder() {
+        LinkHearingDetails hearingInGroup = new LinkHearingDetails();
+        hearingInGroup.setHearingId("2000000000");
+
+        LinkHearingDetails hearingInGroup1 = new LinkHearingDetails();
+        hearingInGroup1.setHearingId("2000000002");
+
+        HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
+        hearingLinkGroupRequest.setGroupDetails(generateGroupDetails(LinkType.SAME_SLOT));
+        hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
+
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(
+            TestingUtil.hearingEntityWithLinkDetails()));
+
+        when(hearingRepository.existsById(2000000002L)).thenReturn(true);
+        when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(
+            TestingUtil.hearingEntityWithLinkDetails()));
+
+        given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntity());
+        given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
+
+        linkedHearingValidator.updateHearingWithLinkGroup(hearingLinkGroupRequest);
+        verify(hearingRepository, times(1)).findById(2000000000L);
+        verify(hearingRepository, times(1)).findById(2000000002L);
+        verify(hearingRepository, times(2)).save(any());
+        verify(linkedGroupDetailsRepository, times(1)).save(any());
+    }
+
+
     @Nested
     @DisplayName("validateLinkedHearingGroup")
     class ValidateLinkedHearingGroup {
