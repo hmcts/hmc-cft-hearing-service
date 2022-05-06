@@ -67,11 +67,11 @@ class GetHearingActualsResponseMapperTest {
                                                                   .getHearingsEntityForHearingActualsIndividual());
         assertCommonFields(response);
         assertEquals("mr", response.getHearingPlanned().getPlannedHearingDays()
-            .get(0).getParties().get(0).getIndividualDetails().get(0).getTitle());
+            .get(0).getParties().get(0).getIndividualDetails().getTitle());
         assertEquals("joe", response.getHearingPlanned().getPlannedHearingDays()
-            .get(0).getParties().get(0).getIndividualDetails().get(0).getFirstName());
+            .get(0).getParties().get(0).getIndividualDetails().getFirstName());
         assertEquals("bloggs", response.getHearingPlanned().getPlannedHearingDays()
-            .get(0).getParties().get(0).getIndividualDetails().get(0).getLastName());
+            .get(0).getParties().get(0).getIndividualDetails().getLastName());
         assertEquals("firstName", response.getHearingActuals().getActualHearingDays()
             .get(0).getActualDayParties().get(0).getActualIndividualDetails().get(0).getFirstName());
         assertEquals("lastName", response.getHearingActuals().getActualHearingDays()

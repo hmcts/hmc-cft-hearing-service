@@ -101,20 +101,19 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
 
             List<ActualIndividualDetails> individualDetailsList = new ArrayList<>();
             List<ActualOrganisationDetails> organisationDetailsList = new ArrayList<>();
-            for (ActualAttendeeIndividualDetailEntity individualDetailEntity
-                : actualHearingPartyEntity.getActualAttendeeIndividualDetail()) {
-                actualDayParty.setPartyChannelSubType(individualDetailEntity.getPartyActualSubChannelType());
-                if (individualDetailEntity.getPartyOrganisationName() == null) {
-                    ActualIndividualDetails individualDetails = new ActualIndividualDetails();
-                    individualDetails.setFirstName(individualDetailEntity.getFirstName());
-                    individualDetails.setLastName(individualDetailEntity.getLastName());
-                    individualDetailsList.add(individualDetails);
+            ActualAttendeeIndividualDetailEntity individualDetailEntity = actualHearingPartyEntity
+                .getActualAttendeeIndividualDetail();
+            actualDayParty.setPartyChannelSubType(individualDetailEntity.getPartyActualSubChannelType());
+            if (individualDetailEntity.getPartyOrganisationName() == null) {
+                ActualIndividualDetails individualDetails = new ActualIndividualDetails();
+                individualDetails.setFirstName(individualDetailEntity.getFirstName());
+                individualDetails.setLastName(individualDetailEntity.getLastName());
+                individualDetailsList.add(individualDetails);
 
-                } else {
-                    ActualOrganisationDetails organisationDetails = new ActualOrganisationDetails();
-                    organisationDetails.setName(individualDetailEntity.getPartyOrganisationName());
-                    organisationDetailsList.add(organisationDetails);
-                }
+            } else {
+                ActualOrganisationDetails organisationDetails = new ActualOrganisationDetails();
+                organisationDetails.setName(individualDetailEntity.getPartyOrganisationName());
+                organisationDetailsList.add(organisationDetails);
             }
             actualDayParty.setActualIndividualDetails(individualDetailsList);
             actualDayParty.setActualOrganisationDetails(organisationDetailsList);
@@ -194,17 +193,14 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         return organisationDetails;
     }
 
-    private ArrayList<IndividualDetails> setIndividualDetails(HearingPartyEntity hearingPartyEntity) {
-        ArrayList<IndividualDetails> individualDetailsArrayList = new ArrayList<>();
+    private IndividualDetails setIndividualDetails(HearingPartyEntity hearingPartyEntity) {
+        IndividualDetails individualDetails = new IndividualDetails();
         if (hearingPartyEntity.getIndividualDetailEntity() != null) {
-            for (IndividualDetailEntity individualDetailEntity : hearingPartyEntity.getIndividualDetailEntity()) {
-                IndividualDetails individualDetails = new IndividualDetails();
-                individualDetails.setTitle(individualDetailEntity.getTitle());
-                individualDetails.setFirstName(individualDetailEntity.getFirstName());
-                individualDetails.setLastName(individualDetailEntity.getLastName());
-                individualDetailsArrayList.add(individualDetails);
-            }
+            List<IndividualDetailEntity> individualDetailEntity = hearingPartyEntity.getIndividualDetailEntity();
+            individualDetails.setTitle(individualDetailEntity.get(0).getTitle());
+            individualDetails.setFirstName(individualDetailEntity.get(0).getFirstName());
+            individualDetails.setLastName(individualDetailEntity.get(0).getLastName());
         }
-        return individualDetailsArrayList;
+        return individualDetails;
     }
 }
