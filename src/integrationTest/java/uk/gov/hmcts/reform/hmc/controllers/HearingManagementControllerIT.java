@@ -49,6 +49,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200CaseDetailsByCaseId;
@@ -57,6 +58,7 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidat
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404FromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyValidateHearingObject;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AMEND_REASON_CODE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AUTHORISATION_TYPE_MAX_LENGTH_MSG;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AUTO_LIST_FLAG_NULL_EMPTY;
@@ -179,7 +181,6 @@ class HearingManagementControllerIT extends BaseTest {
     public static final String HEARING_NOT_FOUND_EXCEPTION = "No hearing found for reference: %s";
     private static final String hearingCompletion = "/hearingActualsCompletion";
 
-    private static final String INSERT_DATA_SCRIPT = "classpath:sql/insert-hearing.sql";
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
     private static final String CASE_HEARING_ACTUAL_HEARING = "classpath:sql/insert-caseHearings_actualhearings.sql";
     private static final String UPDATE_HEARINGS_DATA_SCRIPT = "classpath:sql/update-case-hearing-request.sql";
@@ -188,11 +189,13 @@ class HearingManagementControllerIT extends BaseTest {
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-caseHearings_request.sql";
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_DATA_SCRIPT})
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn204_WhenHearingExists() throws Exception {
-        mockMvc.perform(get(url + "/2000000000" + "?isValid=true")
+        mockMvc.perform(get(url + "/2000000136" + "?isValid=true")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(204))
+            .andExpect(header().exists("Latest-Hearing-Request-Version"))
+            .andExpect(header().string("Latest-Hearing-Request-Version", "3"))
             .andReturn();
     }
 
@@ -841,6 +844,7 @@ class HearingManagementControllerIT extends BaseTest {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         hearingRequest.getHearingDetails().setHearingType("a".repeat(41));
         hearingRequest.getHearingDetails().setDuration(-1);
+        hearingRequest.getHearingDetails().setAmendReasonCode("a".repeat(71));
         List<String> nonStandardHearingDurationReasonsList = Collections.singletonList("a".repeat(71));
         hearingRequest.getHearingDetails().setNonStandardHearingDurationReasons(nonStandardHearingDurationReasonsList);
         hearingRequest.getHearingDetails().setHearingPriorityType("a".repeat(61));
@@ -872,7 +876,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(19)))
+            .andExpect(jsonPath("$.errors", hasSize(20)))
             .andExpect(jsonPath("$.errors", hasItems(HEARING_TYPE_MAX_LENGTH, DURATION_MIN_VALUE,
                                                      NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG,
                                                      HEARING_PRIORITY_TYPE_MAX_LENGTH,
@@ -884,7 +888,8 @@ class HearingManagementControllerIT extends BaseTest {
                                                      AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG,
                                                      PANEL_SPECIALISMS_MAX_LENGTH_MSG, MEMBER_ID_EMPTY,
                                                      MEMBER_ID_MAX_LENGTH, MEMBER_TYPE_MAX_LENGTH,
-                                                     "Unsupported type for requirementType"
+                                                     "Unsupported type for requirementType",
+                                                     AMEND_REASON_CODE_MAX_LENGTH
             )))
             .andReturn();
     }
@@ -1090,6 +1095,24 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn400_WhenUpdateHearingRequestHearingPartyTechPartyId_NotFound() throws Exception {
+        UpdateHearingRequest hearingRequest = TestingUtil.validUpdateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
+            .get(0).setRelatedPartyID("unknown");
+        hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
+            .get(0).setRelationshipType("a".repeat(10));
+        mockMvc.perform(put(url + "/2000000012")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(hearingRequest)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem("Cannot find unique PartyID with value unknown")))
+                .andReturn();
+    }
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
@@ -1132,7 +1155,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         hearingRequest.getHearingDetails().setListingComments("a".repeat(2000));
         hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
-            .get(0).setRelatedPartyID("a".repeat(15));
+            .get(0).setRelatedPartyID("P1");
         hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
             .get(0).setRelationshipType("a".repeat(10));
         stubSuccessfullyValidateHearingObject(hearingRequest);
@@ -1158,6 +1181,47 @@ class HearingManagementControllerIT extends BaseTest {
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(201))
             .andReturn();
+    }
+
+    @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void shouldReturn400_WhenHearingRequestHearingPartyTechPartyId_NotFound() throws Exception {
+        HearingRequest hearingRequest = new HearingRequest();
+        hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        hearingRequest.setCaseDetails(TestingUtil.getValidCaseDetails());
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingRequest.getHearingDetails().setListingComments("a".repeat(2000));
+        hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
+                .get(0).setRelatedPartyID("unknown");
+        hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
+                .get(0).setRelationshipType("a".repeat(10));
+        stubSuccessfullyValidateHearingObject(hearingRequest);
+        RoleAssignmentResource resource = new RoleAssignmentResource();
+        resource.setRoleName(ROLE_NAME);
+        resource.setRoleType(ROLE_TYPE);
+        RoleAssignmentAttributesResource attributesResource = new RoleAssignmentAttributesResource();
+        attributesResource.setCaseType(Optional.of(CASE_TYPE));
+        attributesResource.setJurisdiction(Optional.of(JURISDICTION));
+        resource.setAttributes(attributesResource);
+        List<RoleAssignmentResource> roleAssignmentList = new ArrayList<>();
+        roleAssignmentList.add(resource);
+        RoleAssignmentResponse response = new RoleAssignmentResponse();
+        response.setRoleAssignments(roleAssignmentList);
+        stubReturn200RoleAssignments(USER_ID, response);
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+                .caseTypeId(CASE_TYPE)
+                .jurisdiction(JURISDICTION)
+                .build();
+        stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
+        mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(hearingRequest)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem("Cannot find unique PartyID with value unknown")))
+                .andReturn();
     }
 
     @Test

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -14,6 +15,7 @@ public class CaseCategory {
 
     @NotEmpty(message = ValidationError.CATEGORY_TYPE_EMPTY)
     @EnumPattern(enumClass = CaseCategoryType.class, fieldName = "categoryType")
+    @ApiModelProperty(allowableValues = "caseType, caseSubType")
     private String categoryType;
 
     @NotEmpty(message = ValidationError.CATEGORY_VALUE_EMPTY)

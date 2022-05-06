@@ -28,17 +28,15 @@ import uk.gov.hmcts.reform.hmc.model.hearingactuals.Party;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.PauseDateTimes;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.PlannedHearingDays;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCode {
 
     public HearingActualResponse toHearingActualResponse(HearingEntity hearingEntity) {
         val response = new HearingActualResponse();
-        response.setHmcStatus(getHearingStatus(hearingEntity));
+        response.setHmcStatus(hearingEntity.getDerivedHearingStatus());
         response.setCaseDetails(setCaseDetails(hearingEntity));
         setHearingPlanned(hearingEntity, response);
         setHearingActuals(hearingEntity, response);
@@ -70,6 +68,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         }
         return hearingStatus;
     }
+
 
     private void setHearingActuals(HearingEntity hearingEntity, HearingActualResponse response) {
 

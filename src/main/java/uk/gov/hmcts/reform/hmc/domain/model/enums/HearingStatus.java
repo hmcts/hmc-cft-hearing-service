@@ -9,6 +9,7 @@ public enum HearingStatus {
     CANCELLATION_REQUESTED,
     CANCELLATION_SUBMITTED,
     CANCELLED,
+    CLOSED,
     EXCEPTION
 }
 

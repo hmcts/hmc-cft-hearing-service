@@ -22,8 +22,8 @@ INSERT INTO required_facilities(case_hearing_id, facility_type, id) VALUES (100,
 
 INSERT INTO required_locations(case_hearing_id, location_level_type, location_id, id) VALUES (100, 'COURT', 'CLUSTER', 100);
 
-INSERT INTO hearing_party(case_hearing_id, tech_party_id, party_reference, party_type, party_role_type) VALUES (100, 100, 'p1_1', 'IND', 'DEF');
-INSERT INTO hearing_party(case_hearing_id, tech_party_id, party_reference, party_type, party_role_type) VALUES (100, 200, 'p2', 'IND', 'DEF');
+INSERT INTO hearing_party(case_hearing_id, tech_party_id, party_reference, party_type, party_role_type) VALUES (100, 100, 'P1', 'IND', 'DEF');
+INSERT INTO hearing_party(case_hearing_id, tech_party_id, party_reference, party_type, party_role_type) VALUES (100, 200, 'P2', 'IND', 'DEF');
 
 INSERT INTO contact_details(tech_party_id, contact_type, contact_details, id) VALUES (100, 'email', 'abc@gmail.com', 100);
 
@@ -34,7 +34,7 @@ VALUES (100, 'TUESDAY', 'AM', null, null, 100, 'DOW');
 INSERT INTO unavailability(tech_party_id, day_of_week_unavailable, day_of_week_unavailable_type, start_date, end_date, id, unavailability_type)
 VALUES (100, null, null, '2022-10-20 00:00:00', '2022-10-22 00:00:00', 101, 'Range');
 
-INSERT INTO individual_detail(tech_party_id, related_party_relationship_type, related_party_id, vulnerability_details, vulnerable_flag, interpreter_language, channel_type, last_name, first_name, title, id)
-VALUES (100, 'sibling', 'P1', 'vulnerable', 'true', 'French', 'channel1', 'Bloggs', 'Joe', 'Mrs', 100);
-INSERT INTO individual_detail(tech_party_id, related_party_relationship_type, related_party_id, vulnerability_details, vulnerable_flag, interpreter_language, channel_type, last_name, first_name, title, id)
-VALUES (200, 'sibling', 'P2', null, 'false', null, null, 'Bloggs', 'Josh', 'Mr', 200);
+INSERT INTO individual_detail(tech_party_id, vulnerability_details, vulnerable_flag, interpreter_language, channel_type, last_name, first_name, title, id)
+VALUES (100, 'vulnerable', 'true', 'French', 'channel1', 'Bloggs', 'Joe', 'Mrs', 100);
+INSERT INTO individual_detail(tech_party_id, vulnerability_details, vulnerable_flag, interpreter_language, channel_type, last_name, first_name, title, id)
+VALUES (200, null, 'false', null, null, 'Bloggs', 'Josh', 'Mr', 200);
