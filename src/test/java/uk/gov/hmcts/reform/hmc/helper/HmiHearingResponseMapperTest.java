@@ -197,8 +197,8 @@ class HmiHearingResponseMapperTest {
             () -> assertNull(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0)
                     .getHearingAttendeeDetails().get(0).getPartySubChannelType()),
-            () -> assertEquals(response.getHearingResponses().get(1).getHearingDayDetails().get(0)
-                                 .getHearingDayPanel().size(), 0)
+            () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(0)
+                                 .getHearingDayPanel().size(), is(0))
         );
     }
 
