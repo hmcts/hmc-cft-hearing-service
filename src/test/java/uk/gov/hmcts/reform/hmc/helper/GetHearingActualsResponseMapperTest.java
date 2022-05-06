@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
@@ -17,7 +16,7 @@ import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.LISTED
 class GetHearingActualsResponseMapperTest {
 
     @Test
-    void toHearingsResponseWhenDataIsPresentForOrgDetails() throws JsonProcessingException {
+    void toHearingsResponseWhenDataIsPresentForOrgDetails()  {
         HearingActualResponse response = getHearingActualResponse(HEARING_REQUESTED.name());
         assertCommonFields(response);
         assertEquals("name",

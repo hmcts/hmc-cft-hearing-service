@@ -129,15 +129,17 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
                 }
             }
 
-            ActualIndividualDetails individualDetails = new ActualIndividualDetails();
-            ActualOrganisationDetails organisationDetails = new ActualOrganisationDetails();
+            ActualIndividualDetails individualDetails = null;
+            ActualOrganisationDetails organisationDetails = null;
             ActualAttendeeIndividualDetailEntity individualDetailEntity = actualHearingPartyEntity
                 .getActualAttendeeIndividualDetail();
             actualDayParty.setPartyChannelSubType(individualDetailEntity.getPartyActualSubChannelType());
             if (individualDetailEntity.getPartyOrganisationName() == null) {
+                individualDetails = new ActualIndividualDetails();
                 individualDetails.setFirstName(individualDetailEntity.getFirstName());
                 individualDetails.setLastName(individualDetailEntity.getLastName());
             } else {
+                organisationDetails = new ActualOrganisationDetails();
                 organisationDetails.setName(individualDetailEntity.getPartyOrganisationName());
             }
             actualDayParty.setActualIndividualDetails(individualDetails);
@@ -234,8 +236,9 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
     }
 
     private IndividualDetails setIndividualDetails(HearingPartyEntity hearingPartyEntity) {
-        IndividualDetails individualDetails = new IndividualDetails();
+        IndividualDetails individualDetails = null;
         if (hearingPartyEntity.getIndividualDetailEntity() != null) {
+            individualDetails = new IndividualDetails();
             IndividualDetailEntity individualDetailEntity = hearingPartyEntity.getIndividualDetailEntity();
             individualDetails.setTitle(individualDetailEntity.getTitle());
             individualDetails.setFirstName(individualDetailEntity.getFirstName());

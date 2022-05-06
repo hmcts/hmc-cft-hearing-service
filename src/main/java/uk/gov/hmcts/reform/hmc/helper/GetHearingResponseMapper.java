@@ -157,17 +157,17 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
     }
 
     private IndividualDetails setIndividualDetails(HearingPartyEntity hearingPartyEntity) {
-        IndividualDetails individualDetails = new IndividualDetails();
+        IndividualDetails individualDetails = null;
         if (hearingPartyEntity.getIndividualDetailEntity() != null) {
             IndividualDetailEntity individualDetailEntity = hearingPartyEntity.getIndividualDetailEntity();
-            return createIndividualDetail(hearingPartyEntity, individualDetailEntity, individualDetails);
+            individualDetails = createIndividualDetail(hearingPartyEntity, individualDetailEntity);
         }
         return individualDetails;
     }
 
     private IndividualDetails createIndividualDetail(HearingPartyEntity hearingPartyEntity,
-                                                     IndividualDetailEntity individualDetailEntity,
-                                                     IndividualDetails individualDetails) {
+                                                     IndividualDetailEntity individualDetailEntity) {
+        IndividualDetails individualDetails = new IndividualDetails();
         individualDetails.setTitle(individualDetailEntity.getTitle());
         individualDetails.setFirstName(individualDetailEntity.getFirstName());
         individualDetails.setLastName(individualDetailEntity.getLastName());
