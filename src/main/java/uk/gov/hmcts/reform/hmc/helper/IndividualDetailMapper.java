@@ -5,18 +5,16 @@ import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.IndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 
-import java.util.List;
-
 @Component
 public class IndividualDetailMapper {
 
-    public List<IndividualDetailEntity> modelToEntity(IndividualDetails individualDetail,
-                                                      HearingPartyEntity hearingPartyEntity) {
+    public IndividualDetailEntity modelToEntity(IndividualDetails individualDetail,
+                                                HearingPartyEntity hearingPartyEntity) {
         IndividualDetailEntity individualDetailEntity = new IndividualDetailEntity();
         setIndividualDetails(individualDetail, individualDetailEntity);
         individualDetailEntity.setHearingParty(hearingPartyEntity);
 
-        return List.of(individualDetailEntity);
+        return individualDetailEntity;
     }
 
     private void setIndividualDetails(IndividualDetails individualDetail, IndividualDetailEntity individualEntity) {

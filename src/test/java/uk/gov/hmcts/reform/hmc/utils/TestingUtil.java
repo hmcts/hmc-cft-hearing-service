@@ -889,7 +889,7 @@ public class TestingUtil {
         entity.setPartyType(PartyType.IND);
         entity.setPartyRoleType("role");
         entity.setContactDetails(List.of(contactDetailsEntity_Email(), contactDetailsEntity_Phone()));
-        entity.setIndividualDetailEntity(List.of(individualDetailEntity()));
+        entity.setIndividualDetailEntity(individualDetailEntity());
         entity.setCaseHearing(caseHearingRequestEntityWithPartyOrg());
         entity.setReasonableAdjustmentsEntity(List.of(reasonableAdjustmentsEntity()));
         entity.setPartyRelationshipDetailsEntity(List.of(partyRelationshipDetailsEntity("P1", "A"),

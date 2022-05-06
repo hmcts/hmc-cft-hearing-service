@@ -241,10 +241,10 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
     private IndividualDetails setIndividualDetails(HearingPartyEntity hearingPartyEntity) {
         IndividualDetails individualDetails = new IndividualDetails();
         if (hearingPartyEntity.getIndividualDetailEntity() != null) {
-            List<IndividualDetailEntity> individualDetailEntity = hearingPartyEntity.getIndividualDetailEntity();
-            individualDetails.setTitle(individualDetailEntity.get(0).getTitle());
-            individualDetails.setFirstName(individualDetailEntity.get(0).getFirstName());
-            individualDetails.setLastName(individualDetailEntity.get(0).getLastName());
+            IndividualDetailEntity individualDetailEntity = hearingPartyEntity.getIndividualDetailEntity();
+            individualDetails.setTitle(individualDetailEntity.getTitle());
+            individualDetails.setFirstName(individualDetailEntity.getFirstName());
+            individualDetails.setLastName(individualDetailEntity.getLastName());
         }
         return individualDetails;
     }
