@@ -28,7 +28,7 @@ class GetHearingActualsResponseMapperTest {
                          .get(0).getOrganisationDetails().getCftOrganisationID());
         assertEquals("partyOrgName",
                      response.getHearingActuals().getActualHearingDays().get(0)
-                         .getActualDayParties().get(0).getActualOrganisationDetails().get(0).getName());
+                         .getActualDayParties().get(0).getActualOrganisationDetails().getName());
     }
 
     @Test
@@ -127,9 +127,9 @@ class GetHearingActualsResponseMapperTest {
         assertEquals("bloggs", response.getHearingPlanned().getPlannedHearingDays()
             .get(0).getParties().get(0).getIndividualDetails().getLastName());
         assertEquals("firstName", response.getHearingActuals().getActualHearingDays()
-            .get(0).getActualDayParties().get(0).getActualIndividualDetails().get(0).getFirstName());
+            .get(0).getActualDayParties().get(0).getActualIndividualDetails().getFirstName());
         assertEquals("lastName", response.getHearingActuals().getActualHearingDays()
-            .get(0).getActualDayParties().get(0).getActualIndividualDetails().get(0).getLastName());
+            .get(0).getActualDayParties().get(0).getActualIndividualDetails().getLastName());
     }
 
     private void assertCommonFields(HearingActualResponse response) {
