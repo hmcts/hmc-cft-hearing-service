@@ -129,18 +129,16 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
                 }
             }
 
-            ActualIndividualDetails individualDetails = null;
-            ActualOrganisationDetails organisationDetails = null;
             ActualAttendeeIndividualDetailEntity individualDetailEntity = actualHearingPartyEntity
                 .getActualAttendeeIndividualDetail();
             actualDayParty.setPartyChannelSubType(individualDetailEntity.getPartyActualSubChannelType());
             if (individualDetailEntity.getPartyOrganisationName() == null) {
-                individualDetails = new ActualIndividualDetails();
+                ActualIndividualDetails individualDetails = new ActualIndividualDetails();
                 individualDetails.setFirstName(individualDetailEntity.getFirstName());
                 individualDetails.setLastName(individualDetailEntity.getLastName());
                 actualDayParty.setActualIndividualDetails(individualDetails);
             } else {
-                organisationDetails = new ActualOrganisationDetails();
+                ActualOrganisationDetails organisationDetails = new ActualOrganisationDetails();
                 organisationDetails.setName(individualDetailEntity.getPartyOrganisationName());
                 actualDayParty.setActualOrganisationDetails(organisationDetails);
             }
