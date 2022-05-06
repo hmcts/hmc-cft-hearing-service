@@ -86,7 +86,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             partyDetails.setPartyType(hearingPartyEntity.getPartyType().getLabel());
             partyDetails.setPartyRole(hearingPartyEntity.getPartyRoleType());
             if (PartyType.IND.getLabel().equals(hearingPartyEntity.getPartyType().getLabel())) {
-                partyDetails.setIndividualDetails(setIndividualDetails(hearingPartyEntity).get(0));
+                partyDetails.setIndividualDetails(setIndividualDetails(hearingPartyEntity));
             } else {
                 partyDetails.setOrganisationDetails(setOrganisationDetails(hearingPartyEntity));
             }
@@ -156,23 +156,18 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         return organisationDetails;
     }
 
-    private ArrayList<IndividualDetails> setIndividualDetails(HearingPartyEntity hearingPartyEntity) {
-        ArrayList<IndividualDetails> individualDetailsArrayList = new ArrayList<>();
+    private IndividualDetails setIndividualDetails(HearingPartyEntity hearingPartyEntity) {
+        IndividualDetails individualDetails = new IndividualDetails();
         if (hearingPartyEntity.getIndividualDetailEntity() != null) {
             IndividualDetailEntity individualDetailEntity = hearingPartyEntity.getIndividualDetailEntity();
-            IndividualDetails individualDetails = createIndividualDetail(
-                hearingPartyEntity,
-                individualDetailEntity);
-            individualDetailsArrayList.add(individualDetails);
-
+            return createIndividualDetail(hearingPartyEntity, individualDetailEntity, individualDetails);
         }
-        return individualDetailsArrayList;
+        return individualDetails;
     }
 
     private IndividualDetails createIndividualDetail(HearingPartyEntity hearingPartyEntity,
-                                                     IndividualDetailEntity individualDetailEntity) {
-
-        IndividualDetails individualDetails = new IndividualDetails();
+                                                     IndividualDetailEntity individualDetailEntity,
+                                                     IndividualDetails individualDetails) {
         individualDetails.setTitle(individualDetailEntity.getTitle());
         individualDetails.setFirstName(individualDetailEntity.getFirstName());
         individualDetails.setLastName(individualDetailEntity.getLastName());
