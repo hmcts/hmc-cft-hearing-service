@@ -450,7 +450,7 @@ dependencies {
   functionalTestImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '8.7.1'
   functionalTestImplementation libraries.junit5
 
-  runtime group: 'org.postgresql', name: 'postgresql', version: '42.3.2'
+  runtime group: 'org.postgresql', name: 'postgresql', version: '42.3.3'
 
   cftlibImplementation group: 'org.springframework.boot', name: 'spring-boot-devtools'
 }
