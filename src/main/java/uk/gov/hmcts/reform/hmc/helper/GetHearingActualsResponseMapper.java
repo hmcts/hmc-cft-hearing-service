@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayPausesEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualPartyRelationshipDetailEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
@@ -41,6 +42,33 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         setHearingActuals(hearingEntity, response);
         return response;
     }
+
+    private String getHearingStatus(HearingEntity hearingEntity) {
+        String hearingStatus;
+        switch (hearingEntity.getStatus()) {
+            case "LISTED":
+            case "UPDATE_REQUESTED":
+            case "UPDATE_SUBMITTED":
+                hearingStatus = hearingEntity.getStatus();
+                Optional<HearingResponseEntity> hearingResponse = hearingEntity.getLatestHearingResponse();
+                if (hearingResponse.isPresent()) {
+                    HearingResponseEntity latestHearingResponse = hearingResponse.get();
+                    Optional<HearingDayDetailsEntity> hearingDayDetails =
+                        latestHearingResponse.getEarliestHearingDayDetails();
+                    if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
+                        HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
+                        if (LocalDate.now().isAfter(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
+                            return "AWAITING_ACTUALS";
+                        }
+                    }
+                }
+                break;
+            default:
+                hearingStatus = hearingEntity.getStatus();
+        }
+        return hearingStatus;
+    }
+
 
     private void setHearingActuals(HearingEntity hearingEntity, HearingActualResponse response) {
 
@@ -153,7 +181,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
                     PlannedHearingDays plannedHearingDay = new PlannedHearingDays();
                     plannedHearingDay.setPlannedStartTime(hearingDayDetailsEntity.getStartDateTime());
                     plannedHearingDay.setPlannedEndTime(hearingDayDetailsEntity.getEndDateTime());
-                    plannedHearingDay.setParties(setPartyDetails(hearingEntity));
+                    plannedHearingDay.setParties(setPartyDetails(hearingEntity, hearingDayDetailsEntity));
                     plannedHearingDays.add(plannedHearingDay);
                 }
             }
@@ -162,26 +190,41 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         return plannedHearingDays;
     }
 
-    private ArrayList<Party> setPartyDetails(HearingEntity hearingEntity) {
+    private ArrayList<Party> setPartyDetails(HearingEntity hearingEntity,
+                                             HearingDayDetailsEntity hearingDayDetailsEntity) {
 
         ArrayList<Party> partyDetailsList = new ArrayList<>();
-        for (HearingPartyEntity hearingPartyEntity : hearingEntity.getLatestCaseHearingRequest().getHearingParties()) {
+        for (HearingAttendeeDetailsEntity hearingAttendeeDetails
+            : hearingDayDetailsEntity.getHearingAttendeeDetails()) {
+
+            //Check if there is at least one match for party reference/id in hearing attendee and hearing party
+            HearingPartyEntity hearingPartyEntity = hearingEntity.getLatestCaseHearingRequest().getHearingParties()
+                .stream()
+                .filter(x -> x.getPartyReference().equals(hearingAttendeeDetails.getPartyId()))
+                .findFirst()
+                .orElse(null);
+
+            //Check if Case Hearing Id match in the Case Hearing Request and Hearing Party
+            boolean caseHearingIdMatches = hearingPartyEntity != null
+                && hearingEntity.getLatestCaseHearingRequest().getCaseHearingID()
+                    .equals(hearingPartyEntity.getCaseHearing().getCaseHearingID());
+
 
             Party partyDetails = new Party();
-            partyDetails.setPartyID(hearingPartyEntity.getPartyReference());
-            partyDetails.setPartyRole(hearingPartyEntity.getPartyRoleType());
-            //TBD separate ticket to be raised for subChannel
-            partyDetails.setPartyChannelSubType(null);
-            if (PartyType.IND.getLabel().equals(hearingPartyEntity.getPartyType().getLabel())) {
-                partyDetails.setIndividualDetails(setIndividualDetails(hearingPartyEntity));
-            } else {
-                partyDetails.setOrganisationDetails(setOrganisationDetails(hearingPartyEntity));
+            partyDetails.setPartyID(hearingAttendeeDetails.getPartyId());
+            partyDetails.setPartyChannelSubType(hearingAttendeeDetails.getPartySubChannelType());
+            if (hearingPartyEntity != null && caseHearingIdMatches) {
+                partyDetails.setPartyRole(hearingPartyEntity.getPartyRoleType());
+                if (PartyType.IND.getLabel().equals(hearingPartyEntity.getPartyType().getLabel())) {
+                    partyDetails.setIndividualDetails(setIndividualDetails(hearingPartyEntity));
+                } else {
+                    partyDetails.setOrganisationDetails(setOrganisationDetails(hearingPartyEntity));
+                }
             }
             partyDetailsList.add(partyDetails);
         }
         return partyDetailsList;
     }
-
 
     private OrganisationDetails setOrganisationDetails(HearingPartyEntity hearingPartyEntity) {
         OrganisationDetails organisationDetails = new OrganisationDetails();
