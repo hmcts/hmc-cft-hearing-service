@@ -131,11 +131,14 @@ public class AccessControlServiceImpl implements AccessControlService {
                 .filter(roleAssignment -> checkCaseType(roleAssignment.getAttributes(), caseTypeId)
                     && checkJurisdiction(roleAssignment.getAttributes(), jurisdictionId)).collect(Collectors.toList());
 
-            if (!HearingStatus.LISTED.name().equals(status) &&
-                furtherFilteredRoleAssignments.stream().allMatch(roleAssignment -> LISTED_HEARING_VIEWER.equals(roleAssignment.getRoleName()))) {
+            if (!HearingStatus.LISTED.name().equals(status)
+                && furtherFilteredRoleAssignments
+                .stream()
+                .allMatch(roleAssignment -> LISTED_HEARING_VIEWER.equals(roleAssignment.getRoleName()))) {
                 throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_MISSING_REQUIRED);
             }
-            return furtherFilteredRoleAssignments.stream().map(RoleAssignment::getRoleName).collect(Collectors.toList());
+            return furtherFilteredRoleAssignments.stream()
+                .map(RoleAssignment::getRoleName).collect(Collectors.toList());
         }
         return filteredRoleAssignments.stream().map(RoleAssignment::getRoleName).collect(Collectors.toList());
     }
