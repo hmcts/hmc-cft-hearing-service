@@ -29,15 +29,15 @@ public class HearingActualsManagementController {
         produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = ValidationError.HEARING_ACTUALS_SUCCESSFULLY_PROCESSED),
+        @ApiResponse(code = 200, message = "Hearing actuals update processed"),
         @ApiResponse(code = 400,
             message = "One or more of the following reasons:"
             + "\n1) " + ValidationError.HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND
             + "\n2) " + ValidationError.INVALID_HEARING_ID_DETAILS
-            + "\n001) " + ValidationError.HEARING_ACTUALS_ID_NOT_FOUND
-            + "\n002) " + ValidationError.HEARING_ACTUALS_INVALID_STATUS
-            + "\n003) " + ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID
-            + "\n004) " + ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS),
+            + "\n3) " + ValidationError.HEARING_ACTUALS_ID_NOT_FOUND
+            + "\n4) " + ValidationError.HEARING_ACTUALS_INVALID_STATUS
+            + "\n5) " + ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID
+            + "\n6) " + ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS),
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
     public void updateHearingActuals(@PathVariable("id") Long hearingId,
