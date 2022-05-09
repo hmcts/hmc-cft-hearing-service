@@ -266,7 +266,8 @@ class HearingManagementControllerTest {
         void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhnAndStatus() {
             final String validCaseRef = "9372710950276233";
             final String status = "UPDATED"; // for example
-            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "HEARING_REQUESTED")).when(hearingManagementService)
+            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "HEARING_REQUESTED"))
+                .when(hearingManagementService)
                 .getHearings(any(), any());
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService);
