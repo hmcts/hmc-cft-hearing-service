@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
-import java.util.HashSet;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
