@@ -45,33 +45,6 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         return response;
     }
 
-    private String getHearingStatus(HearingEntity hearingEntity) {
-        String hearingStatus;
-        switch (hearingEntity.getStatus()) {
-            case "LISTED":
-            case "UPDATE_REQUESTED":
-            case "UPDATE_SUBMITTED":
-                hearingStatus = hearingEntity.getStatus();
-                Optional<HearingResponseEntity> hearingResponse = hearingEntity.getLatestHearingResponse();
-                if (hearingResponse.isPresent()) {
-                    HearingResponseEntity latestHearingResponse = hearingResponse.get();
-                    Optional<HearingDayDetailsEntity> hearingDayDetails =
-                        latestHearingResponse.getEarliestHearingDayDetails();
-                    if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
-                        HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
-                        if (LocalDate.now().isAfter(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
-                            return "AWAITING_ACTUALS";
-                        }
-                    }
-                }
-                break;
-            default:
-                hearingStatus = hearingEntity.getStatus();
-        }
-        return hearingStatus;
-    }
-
-
     private void setHearingActuals(HearingEntity hearingEntity, HearingActualResponse response) {
 
         val hearingResponses = hearingEntity.getLatestHearingResponse();
