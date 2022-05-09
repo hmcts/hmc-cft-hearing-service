@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
@@ -64,18 +65,18 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     @Override
-    public void verifyCaseAccess(String caseReference, List<String> requiredRoles) {
-        verifyCaseAccess(caseReference, requiredRoles, null);
+    public List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles) {
+        return verifyCaseAccess(caseReference, requiredRoles, null);
     }
 
-    public void verifyCaseAccess(String caseReference, List<String> requiredRoles, Long hearingId) {
+    public List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles, Long hearingId) {
         List<RoleAssignment> filteredRoleAssignments = verifyRoleAccess(requiredRoles);
 
         DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
         if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
             throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
         }
-        verifyHearingStatus(
+        return verifyHearingStatus(
             filteredRoleAssignments,
             caseDetails.getCaseTypeId(),
             caseDetails.getJurisdiction(),
@@ -120,20 +121,24 @@ public class AccessControlServiceImpl implements AccessControlService {
         return requiredRoleAssignments;
     }
 
-    private void verifyHearingStatus(List<RoleAssignment> filteredRoleAssignments,
+    private List<String> verifyHearingStatus(List<RoleAssignment> filteredRoleAssignments,
                                      String caseTypeId,
                                      String jurisdictionId,
                                      Long hearingId) {
         if (hearingId != null) {
             String status = hearingRepository.getStatus(hearingId);
-            if (!HearingStatus.LISTED.name().equals(status) && filteredRoleAssignments
+            List<RoleAssignment> furtherFilteredRoleAssignments = filteredRoleAssignments
                 .stream()
                 .filter(roleAssignment -> checkCaseType(roleAssignment.getAttributes(), caseTypeId)
-                    && checkJurisdiction(roleAssignment.getAttributes(), jurisdictionId))
-                .allMatch(roleAssignment -> LISTED_HEARING_VIEWER.equals(roleAssignment.getRoleName()))) {
+                    && checkJurisdiction(roleAssignment.getAttributes(), jurisdictionId)).collect(Collectors.toList());
+
+            if (!HearingStatus.LISTED.name().equals(status) &&
+                furtherFilteredRoleAssignments.stream().allMatch(roleAssignment -> LISTED_HEARING_VIEWER.equals(roleAssignment.getRoleName()))) {
                 throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_MISSING_REQUIRED);
             }
+            return furtherFilteredRoleAssignments.stream().map(RoleAssignment::getRoleName).collect(Collectors.toList());
         }
+        return filteredRoleAssignments.stream().map(RoleAssignment::getRoleName).collect(Collectors.toList());
     }
 
     private List<RoleAssignment> filterRoleAssignments(RoleAssignments roleAssignments) {

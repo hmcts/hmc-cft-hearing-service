@@ -464,7 +464,7 @@ public class TestingUtil {
         return response;
     }
 
-    public static GetHearingsResponse getHearingsResponseWhenDataIsPresent(String caseRef) {
+    public static GetHearingsResponse getHearingsResponseWhenDataIsPresent(String caseRef, String status) {
         GetHearingsResponse getHearingsResponse = new GetHearingsResponse();
         getHearingsResponse.setCaseRef(caseRef);
         getHearingsResponse.setHmctsServiceCode("AB1A");
@@ -472,7 +472,7 @@ public class TestingUtil {
         caseHearing.setHearingId(2000000000L);
         caseHearing.setHearingRequestDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         caseHearing.setHearingType("45YAO6VflHAmYy7N85fv");
-        caseHearing.setHmcStatus("HEARING_REQUESTED");
+        caseHearing.setHmcStatus(status);
         caseHearing.setLastResponseReceivedDateTime(LocalDateTime.parse("2020-08-10T12:20:00"));
         caseHearing.setListAssistCaseStatus("EXCEPTION");
         caseHearing.setHearingListingStatus("listingStatus");

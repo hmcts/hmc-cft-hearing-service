@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
+import java.util.HashSet;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -139,7 +140,12 @@ public class HearingManagementController {
                 HEARING_VIEWER,
                 LISTED_HEARING_VIEWER));
         } else {
-            accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(HEARING_VIEWER));
+            List<String> rolesRequired = Lists.newArrayList(HEARING_VIEWER, LISTED_HEARING_VIEWER);
+            List<String> filteredRoleAssignments =
+                accessControlService.verifyCaseAccess(ccdCaseRef, rolesRequired);
+            if (verifyFilteredRoles(filteredRoleAssignments)) {
+                status = HearingStatus.LISTED.name();
+            }
         }
         return hearingManagementService.getHearings(ccdCaseRef, status);
     }
@@ -182,5 +188,15 @@ public class HearingManagementController {
             return null;
         }
         return hearingRequest.getCaseDetails().getCaseRef();
+    }
+
+    private boolean verifyFilteredRoles(List<String> filteredRoleAssignments) {
+
+        for (String roleAssignment : filteredRoleAssignments) {
+            if (!roleAssignment.equals(LISTED_HEARING_VIEWER)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
