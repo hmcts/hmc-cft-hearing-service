@@ -123,6 +123,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
         //HMAN-95
         LinkedHearingGroup linkedHearingGroup = processRequestForListAssist(linkedGroupDetails);
+
         try {
             futureHearingRepository.updateLinkedHearingGroup(requestId, objectMapperService
                 .convertObjectToJsonNode(linkedHearingGroup));
@@ -181,6 +182,8 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             LinkedHearingDetails response = new LinkedHearingDetails();
             response.setHearingId(hearing.getId());
             response.setHearingOrder(hearing.getLinkedOrder());
+            response.setCaseRef(hearing.getLatestCaseHearingRequest().getCaseReference());
+            response.setHmctsInternalCaseName(hearing.getLatestCaseHearingRequest().getHmctsInternalCaseName());
             hearingsInGroup.add(response);
         });
 
@@ -262,7 +265,9 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
                 if (hearing.isPresent()) {
                     HearingEntity hearingToSave = hearing.get();
                     hearingToSave.setLinkedGroupDetails(linkedGroupDetailsSaved);
-                    hearingToSave.setLinkedOrder(Long.valueOf(linkHearingDetails.getHearingOrder()));
+                    hearingToSave.setLinkedOrder(
+                        linkedHearingValidator.getHearingOrder(linkHearingDetails,hearingLinkGroupRequest)
+                    );
                     hearingRepository.save(hearingToSave);
                 }
             });
@@ -282,13 +287,20 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         for (HearingEntity hearingEntity : hearingEntities) {
             CaseListing caseListing = new CaseListing();
             caseListing.setCaseListingRequestId(hearingEntity.getId().toString());
-            caseListing.setCaseLinkOrder(Integer.valueOf(hearingEntity.getLinkedOrder().toString()));
+            caseListing.setCaseLinkOrder(getCaseLinkOrder(hearingEntity));
             caseListingArrayList.add(caseListing);
         }
         hearingGroup.setGroupHearings(caseListingArrayList);
         LinkedHearingGroup linkedHearingGroup = new LinkedHearingGroup();
         linkedHearingGroup.setLinkedHearingGroup(hearingGroup);
         return linkedHearingGroup;
+    }
+
+    private Integer getCaseLinkOrder(HearingEntity hearingEntity) {
+        if (hearingEntity.getLinkedOrder() != null) {
+            return Integer.valueOf(hearingEntity.getLinkedOrder().toString());
+        }
+        return null;
     }
 
 

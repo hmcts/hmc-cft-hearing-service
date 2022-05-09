@@ -25,7 +25,9 @@ import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.PartyRelationshipDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
@@ -39,6 +41,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.helper.PartyRelationshipDetailsMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
@@ -63,6 +66,7 @@ import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingPartyRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
@@ -121,6 +125,7 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
+import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingPartyEntityInd;
 
 @ExtendWith(MockitoExtension.class)
 class HearingManagementServiceTest {
@@ -185,6 +190,12 @@ class HearingManagementServiceTest {
     @Mock
     ApplicationParams applicationParams;
 
+    @Mock
+    HearingPartyRepository hearingPartyRepository;
+
+    @Mock
+    PartyRelationshipDetailsMapper partyRelationshipDetailsMapper;
+
     HearingIdValidator hearingIdValidator;
 
     JsonNode jsonNode = mock(JsonNode.class);
@@ -214,8 +225,7 @@ class HearingManagementServiceTest {
                 applicationParams,
                 hearingIdValidator,
                 linkedHearingValidator,
-                actualHearingRepository,
-                actualHearingDayRepository);
+                partyRelationshipDetailsMapper);
     }
 
     public static final String JURISDICTION = "Jurisdiction1";
@@ -267,17 +277,18 @@ class HearingManagementServiceTest {
 
         @Test
         void shouldPassWithValidHearingId() {
-            HearingEntity hearing = new HearingEntity();
+            HearingEntity hearing = TestingUtil.hearingEntity();
             hearing.setStatus("RESPONDED");
             hearing.setId(2000000000L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearing));
             hearingManagementService.getHearingRequest(2000000000L, true);
             verify(hearingRepository).existsById(2000000000L);
         }
 
         @Test
         void shouldPassWithValidHearingIdInDb() {
-            HearingEntity hearing = new HearingEntity();
+            HearingEntity hearing = TestingUtil.hearingEntity();
             hearing.setStatus("RESPONDED");
             hearing.setId(2000000000L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
@@ -332,6 +343,31 @@ class HearingManagementServiceTest {
         }
 
         @Test
+        void shouldFailIfNoCorrespondingHearingPartyTechIdInDatabase() {
+
+            HearingDetails hearingDetails = TestingUtil.hearingDetails();
+            hearingDetails.setHearingIsLinkedFlag(Boolean.FALSE);
+            HearingRequest hearingRequest = new HearingRequest();
+            hearingRequest.setHearingDetails(hearingDetails);
+            hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+            hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+            hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+            hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+            hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+
+            final HearingEntity hearingEntity = mock(HearingEntity.class);
+            CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
+            caseHearingRequestEntity.setHearingParties(List.of(new HearingPartyEntity()));
+            when(hearingEntity.getLatestCaseHearingRequest()).thenReturn(caseHearingRequestEntity);
+
+            given(hearingRepository.save(any())).willReturn(hearingEntity);
+            given(partyRelationshipDetailsMapper.modelToEntity(any(), any()))
+                    .willThrow(BadRequestException.class);
+            assertThrows(BadRequestException.class, () -> hearingManagementService
+                    .saveHearingRequest(hearingRequest));
+        }
+
+        @Test
         void shouldPassWithHearing_Case_Request_Details_Valid() {
             HearingRequest hearingRequest = new HearingRequest();
             hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
@@ -360,11 +396,28 @@ class HearingManagementServiceTest {
             given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
+
+            PartyRelationshipDetailsEntity entity1 = PartyRelationshipDetailsEntity.builder()
+                    .partyRelationshipDetailsId(1L)
+                    .relationshipType("type1")
+                    .sourceTechParty(hearingPartyEntityInd())
+                    .targetTechParty(hearingPartyEntityInd())
+                    .build();
+
+            PartyRelationshipDetailsEntity entity2 = PartyRelationshipDetailsEntity.builder()
+                    .partyRelationshipDetailsId(2L)
+                    .relationshipType("type2")
+                    .sourceTechParty(hearingPartyEntityInd())
+                    .targetTechParty(hearingPartyEntityInd())
+                    .build();
+
+            final List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntities = List.of(entity1, entity2);
+            given(partyRelationshipDetailsMapper.modelToEntity(any(), any()))
+                    .willReturn(partyRelationshipDetailsEntities);
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
             assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
             assertEquals(POST_HEARING_STATUS, response.getStatus());
             assertNotNull(response.getHearingRequestId());
-
         }
 
         @Test
@@ -1195,9 +1248,10 @@ class HearingManagementServiceTest {
 
         @Test
         void updateHearingRequestShouldThrowErrorWhenHearingWindowFieldsAreNull() {
-            UpdateHearingRequest request = new UpdateHearingRequest();
+            final UpdateHearingRequest request = new UpdateHearingRequest();
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingDetails.setHearingWindow(hearingWindow);
             request.setHearingDetails(hearingDetails);
@@ -1210,6 +1264,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenPartyIndividualAndOrgDetailsNull() {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
@@ -1228,6 +1283,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenPartyIndividualAndOrgDetailsBothExist() {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
@@ -1250,6 +1306,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenPartyUnavailabilityDowIsNotPresent() {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
@@ -1273,6 +1330,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenPartyUnavailabilityRangesIsNotPresent() {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
@@ -1296,6 +1354,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenRelatedPartyDetailsAreNotPresent() {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);

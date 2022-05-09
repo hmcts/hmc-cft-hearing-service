@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.validator;
 
 import com.microsoft.applicationinsights.core.dependencies.google.common.base.Enums;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -295,7 +296,7 @@ public class LinkedHearingValidator {
         } else {
             Long answer = linkedGroupDetailsRepository.isFoundForRequestId(requestId);
             if (null == answer || answer.intValue() == 0) {
-                throw new LinkedGroupNotFoundException(requestId, errorMessage);
+                throw new LinkedGroupNotFoundException(requestId,    errorMessage);
             } else {
                 return answer;
             }
@@ -436,11 +437,21 @@ public class LinkedHearingValidator {
                 if (hearing.isPresent()) {
                     HearingEntity hearingToSave = hearing.get();
                     hearingToSave.setLinkedGroupDetails(linkedGroupDetailsSaved);
-                    hearingToSave.setLinkedOrder(Long.valueOf(linkHearingDetails.getHearingOrder()));
+                    hearingToSave.setLinkedOrder(getHearingOrder(linkHearingDetails,hearingLinkGroupRequest));
                     hearingRepository.save(hearingToSave);
                 }
             });
         return linkedGroupDetailsSaved;
     }
 
+    public Long getHearingOrder(LinkHearingDetails linkHearingDetails,
+                                 HearingLinkGroupRequest hearingLinkGroupRequest) {
+
+        val order = Long.valueOf(linkHearingDetails.getHearingOrder());
+        if (order == 0
+            && hearingLinkGroupRequest.getGroupDetails().getGroupLinkType().equals(LinkType.SAME_SLOT.getLabel())) {
+            return null;
+        }
+        return order;
+    }
 }
