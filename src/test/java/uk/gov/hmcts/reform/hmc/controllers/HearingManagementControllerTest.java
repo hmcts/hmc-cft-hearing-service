@@ -33,7 +33,6 @@ import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

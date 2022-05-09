@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
-
 import java.util.List;
 
 public interface AccessControlService {
