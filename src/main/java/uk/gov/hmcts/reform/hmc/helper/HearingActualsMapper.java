@@ -129,15 +129,12 @@ public class HearingActualsMapper {
                     getHearingPartyEntityByReference(representedPartyId, hearingPartyEntities);
 
                 ActualHearingPartyEntity sourceEntity =
-                    hearingPartyEntities.stream()
-                        .filter(actualHearingPartyEntity ->
-                                    actualHearingDayParty.getRepresentedParty().equals(representedPartyId))
-                        .collect(Collectors.toList()).get(0);
+                    getHearingPartyEntityByReference(actualHearingDayParty.getActualPartyId(), hearingPartyEntities);
 
                 ActualPartyRelationshipDetailEntity partyRelationshipDetail = ActualPartyRelationshipDetailEntity
                     .builder()
-                    .targetActualPartyId(matchingHearingPartyEntity)
-                    .sourceActualPartyId(sourceEntity)
+                    .targetActualParty(matchingHearingPartyEntity)
+                    .sourceActualParty(sourceEntity)
                     .build();
 
                 sourceEntity.setActualPartyRelationshipDetail(List.of(partyRelationshipDetail));
@@ -147,14 +144,14 @@ public class HearingActualsMapper {
     }
 
     private ActualHearingPartyEntity getHearingPartyEntityByReference(
-        String representedPartyId, List<ActualHearingPartyEntity> hearingPartyEntities) {
+        String partyId, List<ActualHearingPartyEntity> hearingPartyEntities) {
         final List<ActualHearingPartyEntity> matchingHearingPartyEntities = hearingPartyEntities.stream()
-            .filter(hearingPartyEntity -> representedPartyId.equals(hearingPartyEntity.getPartyId()))
+            .filter(hearingPartyEntity -> partyId.equals(hearingPartyEntity.getPartyId()))
             .collect(Collectors.toList());
 
         if (matchingHearingPartyEntities.size() != 1) {
             throw new BadRequestException(
-                String.format("Cannot find unique PartyID with value %s", representedPartyId));
+                String.format("Cannot find unique PartyID with value %s", partyId));
         }
         return matchingHearingPartyEntities.get(0);
     }

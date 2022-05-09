@@ -32,9 +32,9 @@ public class ActualPartyRelationshipDetailEntity implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "target_actual_party_id")
-    private ActualHearingPartyEntity targetActualPartyId;
+    private ActualHearingPartyEntity targetActualParty;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "source_actual_party_id")
-    private ActualHearingPartyEntity sourceActualPartyId;
+    private ActualHearingPartyEntity sourceActualParty;
 }

@@ -810,8 +810,8 @@ public class TestingUtil {
         ActualPartyRelationshipDetailEntity entity = ActualPartyRelationshipDetailEntity
             .builder()
             .actualPartyRelationshipId(1L)
-            .targetActualPartyId(actualHearingPartyEntity)
-            .sourceActualPartyId(actualHearingPartyEntity).build();
+            .targetActualParty(actualHearingPartyEntity)
+            .sourceActualParty(actualHearingPartyEntity).build();
         return entity;
     }
 

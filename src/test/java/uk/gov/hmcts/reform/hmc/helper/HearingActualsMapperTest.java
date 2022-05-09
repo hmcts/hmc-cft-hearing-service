@@ -251,12 +251,12 @@ class HearingActualsMapperTest {
         assertEquals(
             "2",
             response.getActualHearingDay().get(1).getActualHearingParty().get(0).getActualPartyRelationshipDetail()
-                .get(0).getTargetActualPartyId().getPartyId()
+                .get(0).getTargetActualParty().getPartyId()
         );
         assertEquals(
             "1",
             response.getActualHearingDay().get(1).getActualHearingParty().get(0).getActualPartyRelationshipDetail()
-                .get(0).getSourceActualPartyId().getPartyId()
+                .get(0).getSourceActualParty().getPartyId()
         );
         assertEquals(
             "TestFirstName",
