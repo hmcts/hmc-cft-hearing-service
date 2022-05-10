@@ -62,12 +62,12 @@ class HearingActualsMapperTest {
         assertEquals(
             "name",
             response.getActualHearingDay().get(0).getActualHearingParty().get(0)
-                .getActualAttendeeIndividualDetail().get(0).getPartyOrganisationName()
+                .getActualAttendeeIndividualDetail().getPartyOrganisationName()
         );
         assertNull(response.getActualHearingDay().get(0).getActualHearingParty().get(0)
-                       .getActualAttendeeIndividualDetail().get(0).getFirstName());
+                       .getActualAttendeeIndividualDetail().getFirstName());
         assertNull(response.getActualHearingDay().get(0).getActualHearingParty().get(0)
-                       .getActualAttendeeIndividualDetail().get(0).getLastName());
+                       .getActualAttendeeIndividualDetail().getLastName());
     }
 
     @Test
@@ -98,16 +98,16 @@ class HearingActualsMapperTest {
 
         assertCommonFields(response);
         assertNull(response.getActualHearingDay().get(0).getActualHearingParty().get(0)
-                       .getActualAttendeeIndividualDetail().get(0).getPartyOrganisationName());
+                       .getActualAttendeeIndividualDetail().getPartyOrganisationName());
         assertEquals(
             "fname",
             response.getActualHearingDay().get(0).getActualHearingParty().get(0)
-                .getActualAttendeeIndividualDetail().get(0).getFirstName()
+                .getActualAttendeeIndividualDetail().getFirstName()
         );
         assertEquals(
             "lname",
             response.getActualHearingDay().get(0).getActualHearingParty().get(0)
-                .getActualAttendeeIndividualDetail().get(0).getLastName()
+                .getActualAttendeeIndividualDetail().getLastName()
         );
     }
 
@@ -261,19 +261,17 @@ class HearingActualsMapperTest {
         assertEquals(
             "TestFirstName",
             response.getActualHearingDay().get(1).getActualHearingParty().get(0).getActualAttendeeIndividualDetail()
-                .get(0).getFirstName()
+                .getFirstName()
         );
         assertEquals(
             "TestLastName",
             response.getActualHearingDay().get(1).getActualHearingParty().get(0).getActualAttendeeIndividualDetail()
-                .get(
-
-                    0).getLastName()
+                .getLastName()
         );
         assertEquals(
             "SubType2",
             response.getActualHearingDay().get(1).getActualHearingParty().get(0).getActualAttendeeIndividualDetail()
-                .get(0).getPartyActualSubChannelType()
+                .getPartyActualSubChannelType()
         );
 
         assertEquals("2", response.getActualHearingDay().get(1).getActualHearingParty().get(1).getPartyId());
@@ -287,17 +285,17 @@ class HearingActualsMapperTest {
         assertEquals(
             "TestRepFirstName",
             response.getActualHearingDay().get(1).getActualHearingParty().get(1)
-                .getActualAttendeeIndividualDetail().get(0).getFirstName()
+                .getActualAttendeeIndividualDetail().getFirstName()
         );
         assertEquals(
             "TestRepLastName",
             response.getActualHearingDay().get(1).getActualHearingParty().get(1)
-                .getActualAttendeeIndividualDetail().get(0).getLastName()
+                .getActualAttendeeIndividualDetail().getLastName()
         );
         assertEquals(
             "SubType2",
             response.getActualHearingDay().get(1).getActualHearingParty().get(1)
-                .getActualAttendeeIndividualDetail().get(0).getPartyActualSubChannelType()
+                .getActualAttendeeIndividualDetail().getPartyActualSubChannelType()
         );
 
         assertEquals("3", response.getActualHearingDay().get(1).getActualHearingParty().get(2).getPartyId());
@@ -311,12 +309,12 @@ class HearingActualsMapperTest {
         assertEquals(
             "Organisation Name",
             response.getActualHearingDay().get(1).getActualHearingParty().get(2)
-                .getActualAttendeeIndividualDetail().get(0).getPartyOrganisationName()
+                .getActualAttendeeIndividualDetail().getPartyOrganisationName()
         );
         assertEquals(
             "SubType2",
             response.getActualHearingDay().get(1).getActualHearingParty().get(2)
-                .getActualAttendeeIndividualDetail().get(0).getPartyActualSubChannelType()
+                .getActualAttendeeIndividualDetail().getPartyActualSubChannelType()
         );
     }
 

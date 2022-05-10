@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import java.io.Serializable;
 import java.util.List;
