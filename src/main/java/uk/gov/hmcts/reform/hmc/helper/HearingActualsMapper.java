@@ -156,7 +156,7 @@ public class HearingActualsMapper {
         return matchingHearingPartyEntities.get(0);
     }
 
-    private List<ActualAttendeeIndividualDetailEntity> createIndividualDetail(
+    private ActualAttendeeIndividualDetailEntity createIndividualDetail(
         ActualHearingDayParties actualHearingDayParty, ActualHearingPartyEntity partyEntity) {
         ActualAttendeeIndividualDetailEntity individualDetailEntity = new ActualAttendeeIndividualDetailEntity();
 
@@ -172,6 +172,6 @@ public class HearingActualsMapper {
         individualDetailEntity.setPartyActualSubChannelType(actualHearingDayParty.getPartyChannelSubType());
         individualDetailEntity.setActualHearingParty(partyEntity);
 
-        return List.of(individualDetailEntity);
+        return individualDetailEntity;
     }
 }
