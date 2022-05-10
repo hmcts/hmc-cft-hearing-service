@@ -72,15 +72,20 @@ public class AccessControlServiceImpl implements AccessControlService {
         List<RoleAssignment> filteredRoleAssignments = verifyRoleAccess(requiredRoles);
 
         DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
-        if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
+        List<RoleAssignment> roleAssignmentsMatches = checkRoleAssignmentMatchesCaseDetails(
+            caseDetails,
+            filteredRoleAssignments
+        );
+        if (roleAssignmentsMatches.isEmpty()) {
             throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
         }
-        return verifyHearingStatus(
+        verifyHearingStatus(
             filteredRoleAssignments,
             caseDetails.getCaseTypeId(),
             caseDetails.getJurisdiction(),
             hearingId
         );
+        return roleAssignmentsMatches.stream().map(RoleAssignment::getRoleName).collect(Collectors.toList());
     }
 
     private List<RoleAssignment> verifyRoleAccess(List<String> requiredRoles) {
@@ -120,27 +125,20 @@ public class AccessControlServiceImpl implements AccessControlService {
         return requiredRoleAssignments;
     }
 
-    private List<String> verifyHearingStatus(List<RoleAssignment> filteredRoleAssignments,
+    private void verifyHearingStatus(List<RoleAssignment> filteredRoleAssignments,
                                      String caseTypeId,
                                      String jurisdictionId,
                                      Long hearingId) {
         if (hearingId != null) {
             String status = hearingRepository.getStatus(hearingId);
-            List<RoleAssignment> furtherFilteredRoleAssignments = filteredRoleAssignments
+            if (!HearingStatus.LISTED.name().equals(status) && filteredRoleAssignments
                 .stream()
                 .filter(roleAssignment -> checkCaseType(roleAssignment.getAttributes(), caseTypeId)
-                    && checkJurisdiction(roleAssignment.getAttributes(), jurisdictionId)).collect(Collectors.toList());
-
-            if (!HearingStatus.LISTED.name().equals(status)
-                && furtherFilteredRoleAssignments
-                .stream()
+                    && checkJurisdiction(roleAssignment.getAttributes(), jurisdictionId))
                 .allMatch(roleAssignment -> LISTED_HEARING_VIEWER.equals(roleAssignment.getRoleName()))) {
                 throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_MISSING_REQUIRED);
             }
-            return furtherFilteredRoleAssignments.stream()
-                .map(RoleAssignment::getRoleName).collect(Collectors.toList());
         }
-        return filteredRoleAssignments.stream().map(RoleAssignment::getRoleName).collect(Collectors.toList());
     }
 
     private List<RoleAssignment> filterRoleAssignments(RoleAssignments roleAssignments) {
@@ -152,11 +150,11 @@ public class AccessControlServiceImpl implements AccessControlService {
             .collect(Collectors.toList());
     }
 
-    private boolean checkRoleAssignmentMatchesCaseDetails(DataStoreCaseDetails caseDetails,
-                                                          List<RoleAssignment> roleAssignments) {
+    private List<RoleAssignment> checkRoleAssignmentMatchesCaseDetails(DataStoreCaseDetails caseDetails,
+                                                                       List<RoleAssignment> roleAssignments) {
         return roleAssignments.stream()
-            .anyMatch(roleAssignment -> checkJurisdiction(roleAssignment.getAttributes(), caseDetails.getJurisdiction())
-                && checkCaseType(roleAssignment.getAttributes(), caseDetails.getCaseTypeId()));
+            .filter(roleAssignment -> checkJurisdiction(roleAssignment.getAttributes(), caseDetails.getJurisdiction())
+                && checkCaseType(roleAssignment.getAttributes(), caseDetails.getCaseTypeId())).collect(Collectors.toList());
 
     }
 
