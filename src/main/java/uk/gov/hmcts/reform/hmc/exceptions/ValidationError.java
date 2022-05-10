@@ -6,7 +6,6 @@ public final class ValidationError {
     }
 
     private static final String CHARACTERS_LONG = "characters long";
-    public static final String HEARING_ID_PLACEHOLDER = "<hearingId>";
     public static final String AUTO_LIST_FLAG_NULL_EMPTY = "Auto list flag can not be null or empty";
     public static final String HEARING_TYPE_NULL_EMPTY = "Hearing type can not be null or empty";
     public static final String HEARING_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;
@@ -35,7 +34,6 @@ public final class ValidationError {
     public static final String CASE_REF_EMPTY = "Case ref can not be empty";
     public static final String CASE_REF_INVALID = "Case ref details is invalid";
     public static final String CASE_REF_INVALID_LENGTH = "Case ref has invalid length";
-    public static final String REQUEST_TIMESTAMP_EMPTY = "Request time stamp can not be empty";
     public static final String EXTERNAL_CASE_REFERENCE_MAX_LENGTH = "External case reference must not be more than 70 "
         + CHARACTERS_LONG;
     public static final String CASE_DEEP_LINK_EMPTY = "Case deep link can not be empty";
@@ -110,13 +108,9 @@ public final class ValidationError {
     public static final String INVALID_CASE_CATEGORIES = "Case categories are required";
     public static final String CASE_CATEGORY_EMPTY = "Case category can not be empty";
     public static final String CASE_RESTRICTED_FLAG_NULL_EMPTY = "Case restricted flag can not be empty";
-    public static final String REQUEST_TIMESTAMP_NULL_EMPTY = "Request time stamp can not be empty";
     public static final String INVALID_HEARING_REQUEST_DETAILS = "Invalid details";
     public static final String INVALID_ORG_INDIVIDUAL_DETAILS = "Either Individual or Organisation details should "
         + "be present";
-    public static final String INVALID_UNAVAILABILITY_DOW_DETAILS = "Unavailability DOW details should be present";
-    public static final String INVALID_UNAVAILABILITY_RANGES_DETAILS = "Unavailability range details should be present";
-    public static final String INVALID_RELATED_PARTY_DETAILS = "Related Party details are not present";
     public static final String INVALID_CANCELLATION_REASON_CODE = "Cancellation Reason code details are not present";
     public static final String CANCELLATION_REASON_CODE_MAX_LENGTH_MSG = "Cancellation Reason code "
         + "length cannot be greater than 100 characters";
@@ -126,14 +120,12 @@ public final class ValidationError {
     public static final String VERSION_NUMBER_NULL_EMPTY = "Version number must be present";
     public static final String INVALID_DELETE_HEARING_STATUS = "Invalid hearing state for DELETE";
     public static final String INVALID_PUT_HEARING_STATUS = "Invalid hearing state for PUT";
-    public static final String INVALID_HEARING_STATE = "Invalid hearing state";
 
     public static final String CATEGORY_TYPE_EMPTY = "Category type must be present";
     public static final String CATEGORY_VALUE_EMPTY = "Category value must be present";
     public static final String PARTY_TYPE_EMPTY = "Party type must be present";
     public static final String PARTY_ROLE_EMPTY = "Party role must be present";
     public static final String HMCTS_SERVICE_CODE_EMPTY = "Hmcts service code can not be empty";
-    public static final String HEARING_START_DATE_FROM = "Hearing start date from can not be empty";
     public static final String INVALID_HMCTS_SERVICE_CODE = "Invalid hmcts service code";
 
     public static final String HEARING_ID_NOT_FOUND = "No hearing found for reference: %s";
