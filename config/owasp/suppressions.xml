@@ -10,7 +10,7 @@
     <cpe>cpe:/a:nim-lang:nim-lang</cpe>
     <cve>CVE-2020-23171</cve>
   </suppress>
-  <suppress until="2030-01-01">
+  <suppress until="2022-05-25">
     <notes>
       <![CDATA[
      Suppressing as it's a false positive (see: https://pivotal.io/security/cve-2018-1258)
