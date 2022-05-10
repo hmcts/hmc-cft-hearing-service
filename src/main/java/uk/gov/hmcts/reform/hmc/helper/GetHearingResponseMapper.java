@@ -86,7 +86,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             partyDetails.setPartyType(hearingPartyEntity.getPartyType().getLabel());
             partyDetails.setPartyRole(hearingPartyEntity.getPartyRoleType());
             if (PartyType.IND.getLabel().equals(hearingPartyEntity.getPartyType().getLabel())) {
-                partyDetails.setIndividualDetails(setIndividualDetails(hearingPartyEntity).get(0));
+                partyDetails.setIndividualDetails(setIndividualDetails(hearingPartyEntity));
             } else {
                 partyDetails.setOrganisationDetails(setOrganisationDetails(hearingPartyEntity));
             }
@@ -100,7 +100,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         ArrayList<UnavailabilityDow> unavailabilityDowArrayList = new ArrayList<>();
         ArrayList<UnavailabilityRanges> unavailabilityRangesArrayList = new ArrayList<>();
         if (null != hearingPartyEntity.getUnavailabilityEntity()
-                && !hearingPartyEntity.getUnavailabilityEntity().isEmpty()) {
+            && !hearingPartyEntity.getUnavailabilityEntity().isEmpty()) {
             for (UnavailabilityEntity unavailabilityEntity : hearingPartyEntity.getUnavailabilityEntity()) {
                 if (unavailabilityEntity.getUnAvailabilityType().equalsIgnoreCase(UNAVAILABILITY_DOW_TYPE)) {
                     addUnavailabilityDow(unavailabilityEntity, unavailabilityDowArrayList);
@@ -119,11 +119,11 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
         if (null != unavailabilityEntity.getDayOfWeekUnavailableType()) {
             unavailabilityDow.setDowUnavailabilityType(
-                    unavailabilityEntity.getDayOfWeekUnavailableType().getLabel());
+                unavailabilityEntity.getDayOfWeekUnavailableType().getLabel());
         }
         if (null != unavailabilityEntity.getDayOfWeekUnavailable()) {
             unavailabilityDow.setDow(
-                    unavailabilityEntity.getDayOfWeekUnavailable().getLabel());
+                unavailabilityEntity.getDayOfWeekUnavailable().getLabel());
         }
         unavailabilityDowArrayList.add(unavailabilityDow);
     }
@@ -156,21 +156,17 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         return organisationDetails;
     }
 
-    private ArrayList<IndividualDetails> setIndividualDetails(HearingPartyEntity hearingPartyEntity) {
-        ArrayList<IndividualDetails> individualDetailsArrayList = new ArrayList<>();
+    private IndividualDetails setIndividualDetails(HearingPartyEntity hearingPartyEntity) {
+        IndividualDetails individualDetails = null;
         if (hearingPartyEntity.getIndividualDetailEntity() != null) {
-            for (IndividualDetailEntity individualDetailEntity : hearingPartyEntity.getIndividualDetailEntity()) {
-                IndividualDetails individualDetails = createIndividualDetail(hearingPartyEntity,
-                                                        individualDetailEntity);
-                individualDetailsArrayList.add(individualDetails);
-            }
+            IndividualDetailEntity individualDetailEntity = hearingPartyEntity.getIndividualDetailEntity();
+            individualDetails = createIndividualDetail(hearingPartyEntity, individualDetailEntity);
         }
-        return individualDetailsArrayList;
+        return individualDetails;
     }
 
     private IndividualDetails createIndividualDetail(HearingPartyEntity hearingPartyEntity,
                                                      IndividualDetailEntity individualDetailEntity) {
-
         IndividualDetails individualDetails = new IndividualDetails();
         individualDetails.setTitle(individualDetailEntity.getTitle());
         individualDetails.setFirstName(individualDetailEntity.getFirstName());
@@ -182,19 +178,19 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         individualDetails.setCustodyStatus(individualDetailEntity.getCustodyStatus());
         individualDetails.setOtherReasonableAdjustmentDetails(
             individualDetailEntity.getOtherReasonableAdjustmentDetails());
-        setReasonableAdjustments(hearingPartyEntity,individualDetails);
+        setReasonableAdjustments(hearingPartyEntity, individualDetails);
         updateContactDetails(hearingPartyEntity, individualDetails);
 
         final List<RelatedParty> relatedParties = hearingPartyEntity.getPartyRelationshipDetailsEntity()
-                .stream()
-                .map(partyRelationshipDetailsEntity -> {
-                    RelatedParty relatedParty = new RelatedParty();
-                    relatedParty.setRelatedPartyID(partyRelationshipDetailsEntity.getTargetTechParty()
-                                                       .getPartyReference());
-                    relatedParty.setRelationshipType(partyRelationshipDetailsEntity.getRelationshipType());
-                    return relatedParty;
-                })
-                .collect(Collectors.toList());
+            .stream()
+            .map(partyRelationshipDetailsEntity -> {
+                RelatedParty relatedParty = new RelatedParty();
+                relatedParty.setRelatedPartyID(partyRelationshipDetailsEntity.getTargetTechParty()
+                                                   .getPartyReference());
+                relatedParty.setRelationshipType(partyRelationshipDetailsEntity.getRelationshipType());
+                return relatedParty;
+            })
+            .collect(Collectors.toList());
 
         individualDetails.setRelatedParties(relatedParties);
         return individualDetails;
@@ -222,11 +218,11 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         Optional<HearingResponseEntity> hearingResponseEntityOpt = hearingEntity.getLatestHearingResponse();
         hearingResponseEntityOpt.ifPresent(hearingResponseEntity -> {
             hearingResponse.setListAssistTransactionID(
-                 hearingResponseEntity.getListAssistTransactionId());
+                hearingResponseEntity.getListAssistTransactionId());
             hearingResponse.setReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
             hearingResponse.setResponseVersion(hearingResponseEntity.getHearingResponseId());
             hearingResponse.setLaCaseStatus(ListAssistCaseStatus.getLabel(
-                    hearingResponseEntity.getListingCaseStatus()));
+                hearingResponseEntity.getListingCaseStatus()));
             hearingResponse.setListingStatus(ListingStatus.getLabel(hearingResponseEntity.getListingStatus()));
             hearingResponse.setHearingCancellationReason(hearingResponseEntity.getCancellationReasonType());
             setHearingDaySchedule(hearingResponse, List.of(hearingResponseEntity));
@@ -263,9 +259,9 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         ArrayList<String> hearingPriorityType = new ArrayList<>();
         CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
         if (null != caseHearingRequestEntity.getNonStandardDurations()
-                && !caseHearingRequestEntity.getNonStandardDurations().isEmpty()) {
+            && !caseHearingRequestEntity.getNonStandardDurations().isEmpty()) {
             for (NonStandardDurationsEntity nonStandardDurationsEntity
-                    : caseHearingRequestEntity.getNonStandardDurations()) {
+                : caseHearingRequestEntity.getNonStandardDurations()) {
                 hearingPriorityType.add(nonStandardDurationsEntity.getNonStandardHearingDurationReasonType());
             }
         }
@@ -276,20 +272,20 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         PanelRequirements panelRequirement = new PanelRequirements();
         CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
 
-        setRoleTypes(caseHearingRequestEntity,panelRequirement);
-        setPanelPreferences(caseHearingRequestEntity,panelRequirement);
-        setPanelSpecialisms(caseHearingRequestEntity,panelRequirement);
-        setAuthorisationTypes(caseHearingRequestEntity,panelRequirement);
+        setRoleTypes(caseHearingRequestEntity, panelRequirement);
+        setPanelPreferences(caseHearingRequestEntity, panelRequirement);
+        setPanelSpecialisms(caseHearingRequestEntity, panelRequirement);
+        setAuthorisationTypes(caseHearingRequestEntity, panelRequirement);
         return panelRequirement;
     }
 
     private void setRoleTypes(CaseHearingRequestEntity caseHearingRequestEntity,
-                                           PanelRequirements panelRequirement) {
+                              PanelRequirements panelRequirement) {
         ArrayList<String> roleTypes = new ArrayList<>();
         if (null != caseHearingRequestEntity.getPanelRequirements()
             && !caseHearingRequestEntity.getPanelRequirements().isEmpty()) {
             for (PanelRequirementsEntity panelRequirementsEntity
-                    : caseHearingRequestEntity.getPanelRequirements()) {
+                : caseHearingRequestEntity.getPanelRequirements()) {
                 roleTypes.add(panelRequirementsEntity.getRoleType());
             }
         }
@@ -325,7 +321,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         if (null != caseHearingRequestEntity.getPanelSpecialisms()
             && !caseHearingRequestEntity.getPanelSpecialisms().isEmpty()) {
             for (PanelSpecialismsEntity panelRequirementsEntity
-                    : caseHearingRequestEntity.getPanelSpecialisms()) {
+                : caseHearingRequestEntity.getPanelSpecialisms()) {
                 panelSpecialisms.add(panelRequirementsEntity.getSpecialismType());
             }
         }
@@ -333,13 +329,13 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
     }
 
     private void setAuthorisationTypes(CaseHearingRequestEntity caseHearingRequestEntity,
-                                 PanelRequirements panelRequirement) {
+                                       PanelRequirements panelRequirement) {
         ArrayList<String> authorisationTypes = new ArrayList<>();
         ArrayList<String> authorisationSubType = new ArrayList<>();
         if (null != caseHearingRequestEntity.getPanelAuthorisationRequirements()
             && !caseHearingRequestEntity.getPanelAuthorisationRequirements().isEmpty()) {
             for (PanelAuthorisationRequirementsEntity panelAuthorisationRequirements
-                    : caseHearingRequestEntity.getPanelAuthorisationRequirements()) {
+                : caseHearingRequestEntity.getPanelAuthorisationRequirements()) {
                 if (panelAuthorisationRequirements.getAuthorisationType() != null) {
                     authorisationTypes.add(panelAuthorisationRequirements.getAuthorisationType());
                 }
@@ -372,9 +368,9 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         ArrayList<String> facilityType = new ArrayList<>();
         CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
         if (null != caseHearingRequestEntity.getRequiredFacilities()
-                && !caseHearingRequestEntity.getRequiredFacilities().isEmpty()) {
+            && !caseHearingRequestEntity.getRequiredFacilities().isEmpty()) {
             for (RequiredFacilitiesEntity requiredFacilitiesEntity
-                    : caseHearingRequestEntity.getRequiredFacilities()) {
+                : caseHearingRequestEntity.getRequiredFacilities()) {
                 facilityType.add(requiredFacilitiesEntity.getFacilityType());
             }
         }
@@ -385,9 +381,9 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         ArrayList<HearingLocation> hearingLocations = new ArrayList<>();
         CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
         if (null != caseHearingRequestEntity.getRequiredLocations()
-                && !caseHearingRequestEntity.getRequiredLocations().isEmpty()) {
+            && !caseHearingRequestEntity.getRequiredLocations().isEmpty()) {
             for (RequiredLocationsEntity requiredLocationsEntity
-                    : caseHearingRequestEntity.getRequiredLocations()) {
+                : caseHearingRequestEntity.getRequiredLocations()) {
                 HearingLocation hearingLocation = new HearingLocation();
                 hearingLocation.setLocationId(requiredLocationsEntity.getLocationId());
                 hearingLocation.setLocationType(requiredLocationsEntity.getLocationLevelType().getLabel());
