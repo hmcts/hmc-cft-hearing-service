@@ -134,17 +134,12 @@ public class HearingManagementController {
                                                String ccdCaseRef,
                                            @RequestParam(required = false)
                                                String status) {
-        if (HearingStatus.LISTED.name().equals(status)) {
+        List<String> filteredRoleAssignments =
             accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
                 HEARING_VIEWER,
                 LISTED_HEARING_VIEWER));
-        } else {
-            List<String> rolesRequired = Lists.newArrayList(HEARING_VIEWER, LISTED_HEARING_VIEWER);
-            List<String> filteredRoleAssignments =
-                accessControlService.verifyCaseAccess(ccdCaseRef, rolesRequired);
-            if (verifyFilteredRoles(filteredRoleAssignments)) {
-                status = HearingStatus.LISTED.name();
-            }
+        if (!HearingStatus.LISTED.name().equals(status) && hasOnlyListedHearingViewerRoles(filteredRoleAssignments)) {
+            status = HearingStatus.LISTED.name();
         }
         return hearingManagementService.getHearings(ccdCaseRef, status);
     }
@@ -189,13 +184,8 @@ public class HearingManagementController {
         return hearingRequest.getCaseDetails().getCaseRef();
     }
 
-    private boolean verifyFilteredRoles(List<String> filteredRoleAssignments) {
-
-        for (String roleAssignment : filteredRoleAssignments) {
-            if (!roleAssignment.equals(LISTED_HEARING_VIEWER)) {
-                return false;
-            }
-        }
-        return true;
+    private boolean hasOnlyListedHearingViewerRoles(List<String> filteredRoleAssignments) {
+        return filteredRoleAssignments.stream()
+            .allMatch(roleAssignment -> roleAssignment.equals(LISTED_HEARING_VIEWER));
     }
 }

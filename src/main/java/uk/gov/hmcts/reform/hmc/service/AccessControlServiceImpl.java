@@ -154,7 +154,8 @@ public class AccessControlServiceImpl implements AccessControlService {
                                                                        List<RoleAssignment> roleAssignments) {
         return roleAssignments.stream()
             .filter(roleAssignment -> checkJurisdiction(roleAssignment.getAttributes(), caseDetails.getJurisdiction())
-                && checkCaseType(roleAssignment.getAttributes(), caseDetails.getCaseTypeId())).collect(Collectors.toList());
+                && checkCaseType(roleAssignment.getAttributes(), caseDetails.getCaseTypeId()))
+            .collect(Collectors.toList());
 
     }
 
