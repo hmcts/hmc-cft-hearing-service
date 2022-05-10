@@ -138,9 +138,15 @@ public class HearingManagementController {
             accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
                 HEARING_VIEWER,
                 LISTED_HEARING_VIEWER));
-        if (!HearingStatus.LISTED.name().equals(status) && hasOnlyListedHearingViewerRoles(filteredRoleAssignments)) {
-            status = HearingStatus.LISTED.name();
+
+        if(hasOnlyListedHearingViewerRoles(filteredRoleAssignments)) {
+            if ((status == null || HearingStatus.LISTED.name().equals(status))) {
+                status = HearingStatus.LISTED.name();
+            } else {
+                return hearingManagementService.getEmptyHearingsResponse(ccdCaseRef);
+            }
         }
+
         return hearingManagementService.getHearings(ccdCaseRef, status);
     }
 
