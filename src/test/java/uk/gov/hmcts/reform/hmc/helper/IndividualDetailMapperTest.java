@@ -6,8 +6,6 @@ import uk.gov.hmcts.reform.hmc.data.IndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
-import java.util.List;
-
 import static java.lang.Boolean.FALSE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -19,16 +17,16 @@ class IndividualDetailMapperTest {
         IndividualDetailMapper mapper = new IndividualDetailMapper();
         IndividualDetails individualDetail = TestingUtil.individualDetails();
         HearingPartyEntity hearingPartyEntity = new HearingPartyEntity();
-        List<IndividualDetailEntity> entities = mapper.modelToEntity(individualDetail, hearingPartyEntity);
-        assertNull(entities.get(0).getVulnerabilityDetails());
-        assertNull(entities.get(0).getVulnerableFlag());
-        assertNull(entities.get(0).getInterpreterLanguage());
-        assertNull(entities.get(0).getChannelType());
-        assertEquals("lastName", entities.get(0).getLastName());
-        assertEquals("firstName", entities.get(0).getFirstName());
-        assertEquals("custodyStatus", entities.get(0).getCustodyStatus());
-        assertEquals("otherReason", entities.get(0).getOtherReasonableAdjustmentDetails());
-        assertEquals("Mr", entities.get(0).getTitle());
+        IndividualDetailEntity entity = mapper.modelToEntity(individualDetail, hearingPartyEntity);
+        assertNull(entity.getVulnerabilityDetails());
+        assertNull(entity.getVulnerableFlag());
+        assertNull(entity.getInterpreterLanguage());
+        assertNull(entity.getChannelType());
+        assertEquals("lastName", entity.getLastName());
+        assertEquals("firstName", entity.getFirstName());
+        assertEquals("custodyStatus", entity.getCustodyStatus());
+        assertEquals("otherReason", entity.getOtherReasonableAdjustmentDetails());
+        assertEquals("Mr", entity.getTitle());
     }
 
     @Test
@@ -36,14 +34,14 @@ class IndividualDetailMapperTest {
         IndividualDetailMapper mapper = new IndividualDetailMapper();
         IndividualDetails individualDetail = individualDetails_RelatedPartyNotPresent();
         HearingPartyEntity hearingPartyEntity = new HearingPartyEntity();
-        List<IndividualDetailEntity> entities = mapper.modelToEntity(individualDetail, hearingPartyEntity);
-        assertEquals("A bit vulnerable", entities.get(0).getVulnerabilityDetails());
-        assertEquals(FALSE, entities.get(0).getVulnerableFlag());
-        assertEquals("French", entities.get(0).getInterpreterLanguage());
-        assertEquals("Email", entities.get(0).getChannelType());
-        assertEquals("lastName", entities.get(0).getLastName());
-        assertEquals("firstName", entities.get(0).getFirstName());
-        assertEquals("Mr", entities.get(0).getTitle());
+        IndividualDetailEntity entity = mapper.modelToEntity(individualDetail, hearingPartyEntity);
+        assertEquals("A bit vulnerable", entity.getVulnerabilityDetails());
+        assertEquals(FALSE, entity.getVulnerableFlag());
+        assertEquals("French", entity.getInterpreterLanguage());
+        assertEquals("Email", entity.getChannelType());
+        assertEquals("lastName", entity.getLastName());
+        assertEquals("firstName", entity.getFirstName());
+        assertEquals("Mr", entity.getTitle());
     }
 
     public static IndividualDetails individualDetails_RelatedPartyNotPresent() {
