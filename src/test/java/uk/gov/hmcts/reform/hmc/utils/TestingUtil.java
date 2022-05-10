@@ -780,7 +780,7 @@ public class TestingUtil {
         entity.setPartyId("1");
         entity.setActualPartyRoleType("roleType");
         entity.setDidNotAttendFlag(false);
-        entity.setActualAttendeeIndividualDetail(List.of(actualAttendeeIndividualDetailEntity(partyType)));
+        entity.setActualAttendeeIndividualDetail(actualAttendeeIndividualDetailEntity(partyType));
         entity.setActualPartyRelationshipDetail(List.of(actualPartyRelationshipDetailEntity(entity)));
         return entity;
     }
@@ -889,7 +889,7 @@ public class TestingUtil {
         entity.setPartyType(PartyType.IND);
         entity.setPartyRoleType("role");
         entity.setContactDetails(List.of(contactDetailsEntity_Email(), contactDetailsEntity_Phone()));
-        entity.setIndividualDetailEntity(List.of(individualDetailEntity()));
+        entity.setIndividualDetailEntity(individualDetailEntity());
         entity.setCaseHearing(caseHearingRequestEntityWithPartyOrg());
         entity.setReasonableAdjustmentsEntity(List.of(reasonableAdjustmentsEntity()));
         entity.setPartyRelationshipDetailsEntity(List.of(partyRelationshipDetailsEntity("P1", "A"),
