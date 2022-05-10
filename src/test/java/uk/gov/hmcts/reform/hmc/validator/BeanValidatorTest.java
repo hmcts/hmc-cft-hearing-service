@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.util.ArrayList;
@@ -529,6 +530,17 @@ class BeanValidatorTest {
         assertTrue(violations.stream()
                        .map(ConstraintViolation::getMessage)
                        .anyMatch(msg -> msg.equals(PARTY_ROLE_MAX_LENGTH)));
+    }
+
+    @Test
+    void shouldSucceedWhenGroupReasonIsNullForHman146() {
+        GroupDetails groupDetails = new GroupDetails();
+        groupDetails.setGroupReason(null);
+        groupDetails.setGroupName("groupName");
+        groupDetails.setGroupComments("groupComments");
+        groupDetails.setGroupLinkType("linkType");
+        Set<ConstraintViolation<GroupDetails>> violations = validator.validate(groupDetails);
+        assertTrue(violations.isEmpty());
     }
 
 }

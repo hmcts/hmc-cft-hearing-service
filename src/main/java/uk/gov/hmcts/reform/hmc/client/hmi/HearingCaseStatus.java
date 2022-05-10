@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.client.hmi;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.validator.HearingCodeEnumPattern;
 
 import javax.validation.constraints.NotNull;
 
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
 public class HearingCaseStatus {
 
     @NotNull(message = ValidationError.HEARING_CODE_NULL)
-    private HearingCode code;
+    @HearingCodeEnumPattern(enumClass = HearingCode.class, fieldName = "hearing case status code")
+    private String code;
     private String description;
 }

@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.hmc.validator;
 
 import com.microsoft.applicationinsights.core.dependencies.google.common.base.Enums;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
@@ -14,7 +16,6 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
-import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingNotValidForUnlinkingException;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
@@ -32,11 +33,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARINGS_IN_GROUP_SIZE;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_GROUP_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ORDER_NOT_UNIQUE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_REQUEST_ALREADY_LINKED;
@@ -49,7 +50,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_LINKED_GROUP;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LINKED_GROUP_ID_EMPTY;
 
 @Slf4j
 @Component
@@ -78,9 +78,10 @@ public class LinkedHearingValidator {
      * validate Request id.
      * @param requestId request id
      */
-    public final void validateRequestId(String requestId, String errorMessage) {
-        if (requestId == null) {
-            throw new BadRequestException(LINKED_GROUP_ID_EMPTY);
+    public void validateRequestId(String requestId, String errorMessage) {
+        if (!StringUtils.isNumeric(requestId)) {
+            log.debug("Null or non numeric value: {}", requestId);
+            throw new BadRequestException(errorMessage);
         } else {
             Long answer = linkedGroupDetailsRepository.isFoundForRequestId(requestId);
             if (null == answer || answer.intValue() == 0) {
@@ -227,7 +228,7 @@ public class LinkedHearingValidator {
 
 
     public void checkValidStateForHearingRequest(Optional<HearingEntity> hearingEntity,
-                                                    LinkHearingDetails details) {
+                                                 LinkHearingDetails details) {
         if (hearingEntity.isEmpty()
             || !PutHearingStatus.isValid(hearingEntity.get().getStatus())
             || (hearingEntity.get().hasHearingResponses()
@@ -280,25 +281,35 @@ public class LinkedHearingValidator {
         return Collections.frequency(list, value);
     }
 
-    public void validateHearingGroup(Long hearingGroupId) {
-        Optional<LinkedGroupDetails> linkedGroupDetailsOptional = linkedGroupDetailsRepository.findById(hearingGroupId);
-        validateHearingGroupPresent(hearingGroupId, linkedGroupDetailsOptional);
+    public Long validateHearingGroup(String requestId) {
+        Long linkedGroupId = validateRequestIdForDelete(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
+        LinkedGroupDetails linkedGroupDetailsOptional = linkedGroupDetailsRepository
+            .getLinkedGroupDetailsByRequestId(requestId);
         validateHearingGroupStatus(linkedGroupDetailsOptional);
+        return linkedGroupId;
     }
 
-    public void validateHearingGroupPresent(Long hearingGroupId, Optional<LinkedGroupDetails> linkedGroupDetails) {
-        if (linkedGroupDetails.isEmpty()) {
-            throw new LinkedHearingGroupNotFoundException(hearingGroupId, HEARING_GROUP_ID_NOT_FOUND);
+    public final Long validateRequestIdForDelete(String requestId, String errorMessage) {
+        if (!StringUtils.isNumeric(requestId)) {
+            log.debug("Null or non numeric value: {}", requestId);
+            throw new BadRequestException(errorMessage);
+        } else {
+            Long answer = linkedGroupDetailsRepository.isFoundForRequestId(requestId);
+            if (null == answer || answer.intValue() == 0) {
+                throw new LinkedGroupNotFoundException(requestId,    errorMessage);
+            } else {
+                return answer;
+            }
         }
     }
 
-    public void validateHearingGroupStatus(Optional<LinkedGroupDetails> linkedGroupDetails) {
+    public void validateHearingGroupStatus(LinkedGroupDetails linkedGroupDetails) {
         String groupStatus = null;
-        if (linkedGroupDetails.isPresent()) {
-            groupStatus = linkedGroupDetails.get().getStatus();
+        if (linkedGroupDetails != null) {
+            groupStatus = linkedGroupDetails.getStatus();
         }
-        if (linkedGroupDetails.isEmpty()
-            || invalidDeleteGroupStatuses.stream().anyMatch(e -> e.equals(linkedGroupDetails.get().getStatus()))) {
+        if (linkedGroupDetails == null
+            || invalidDeleteGroupStatuses.stream().anyMatch(e -> e.equals(linkedGroupDetails.getStatus()))) {
             throw new BadRequestException(format(INVALID_DELETE_HEARING_GROUP_STATUS, groupStatus));
         }
     }
@@ -406,4 +417,41 @@ public class LinkedHearingValidator {
         }
     }
 
+    @Transactional
+    public LinkedGroupDetails updateHearingWithLinkGroup(HearingLinkGroupRequest hearingLinkGroupRequest) {
+        LinkedGroupDetails linkedGroupDetails = new LinkedGroupDetails();
+        linkedGroupDetails.setRequestName(hearingLinkGroupRequest.getGroupDetails().getGroupName());
+        linkedGroupDetails.setReasonForLink(hearingLinkGroupRequest.getGroupDetails().getGroupReason());
+        linkedGroupDetails.setLinkType(LinkType.getByLabel(hearingLinkGroupRequest
+                                                               .getGroupDetails().getGroupLinkType()));
+        linkedGroupDetails.setLinkedComments(hearingLinkGroupRequest.getGroupDetails().getGroupComments());
+        linkedGroupDetails.setStatus("PENDING");
+        linkedGroupDetails.setRequestDateTime(LocalDateTime.now());
+        linkedGroupDetails.setLinkedGroupLatestVersion(1L);
+        LinkedGroupDetails linkedGroupDetailsSaved = linkedGroupDetailsRepository.save(linkedGroupDetails);
+
+        hearingLinkGroupRequest.getHearingsInGroup()
+            .forEach(linkHearingDetails -> {
+                Optional<HearingEntity> hearing = hearingRepository
+                    .findById(Long.valueOf(linkHearingDetails.getHearingId()));
+                if (hearing.isPresent()) {
+                    HearingEntity hearingToSave = hearing.get();
+                    hearingToSave.setLinkedGroupDetails(linkedGroupDetailsSaved);
+                    hearingToSave.setLinkedOrder(getHearingOrder(linkHearingDetails,hearingLinkGroupRequest));
+                    hearingRepository.save(hearingToSave);
+                }
+            });
+        return linkedGroupDetailsSaved;
+    }
+
+    public Long getHearingOrder(LinkHearingDetails linkHearingDetails,
+                                 HearingLinkGroupRequest hearingLinkGroupRequest) {
+
+        val order = Long.valueOf(linkHearingDetails.getHearingOrder());
+        if (order == 0
+            && hearingLinkGroupRequest.getGroupDetails().getGroupLinkType().equals(LinkType.SAME_SLOT.getLabel())) {
+            return null;
+        }
+        return order;
+    }
 }

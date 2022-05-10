@@ -50,8 +50,8 @@ public class HearingPartyEntity {
     @Column(name = "party_role_type")
     private String partyRoleType;
 
-    @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<IndividualDetailEntity> individualDetailEntity;
+    @OneToOne(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private IndividualDetailEntity individualDetailEntity;
 
     @OneToOne(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private OrganisationDetailEntity organisationDetailEntity;
@@ -68,4 +68,6 @@ public class HearingPartyEntity {
     @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<ContactDetailsEntity> contactDetails;
 
+    @OneToMany(mappedBy = "sourceTechParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntity;
 }

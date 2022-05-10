@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.hmc.helper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
@@ -20,11 +19,11 @@ import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
+import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
@@ -34,15 +33,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class GetHearingResponseMapperTest {
 
     @InjectMocks
     private GetHearingResponseMapper getHearingResponseMapper;
-
-    @Mock
-    private LinkedHearingDetailsRepository linkedHearingDetailsRepository;
 
     @Test
     void toHearingsResponseWhenDataIsPresentForOrg() {
@@ -136,6 +133,37 @@ class GetHearingResponseMapperTest {
     }
 
     @Test
+    void toHearingsResponseWhenStatusIsHearingRequested() {
+        HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity("HEARING_REQUESTED");
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getHearingResponses().get(0)
+            .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setNonStandardDurations(TestingUtil.getNonStandardDurationEntities());
+        GetHearingResponseMapper getHearingsResponseMapper = new GetHearingResponseMapper();
+        GetHearingResponse response = getHearingsResponseMapper.toHearingResponse(hearingEntity);
+
+        assertEquals("HEARING_REQUESTED", response.getRequestDetails().getStatus());
+    }
+
+    @Test
+    void toHearingsResponseWhenStatusIsListed() {
+        HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity("LISTED");
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setHearingParties(Arrays.asList(TestingUtil.hearingPartyEntityOrg()));
+        hearingEntity.getHearingResponses().get(0)
+            .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setNonStandardDurations(TestingUtil.getNonStandardDurationEntities());
+        GetHearingResponseMapper getHearingsResponseMapper = new GetHearingResponseMapper();
+        GetHearingResponse response = getHearingsResponseMapper.toHearingResponse(hearingEntity);
+
+        assertEquals("AWAITING_ACTUALS", response.getRequestDetails().getStatus());
+    }
+
+
+    @Test
     void toHearingsResponseWhenDataIsPresentWithPanelRequirements() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
         hearingEntity.getCaseHearingRequests().get(0)
@@ -144,6 +172,12 @@ class GetHearingResponseMapperTest {
             .setHearingDayDetails(Arrays.asList(TestingUtil.hearingDayDetailsEntities()));
         hearingEntity.getCaseHearingRequests().get(0)
             .setPanelRequirements(Arrays.asList(TestingUtil.panelRequirementsEntity()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setPanelSpecialisms(Arrays.asList(TestingUtil.panelSpecialismsEntity()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setPanelAuthorisationRequirements(Arrays.asList(TestingUtil.panelAuthorisationRequirementsEntity()));
+        hearingEntity.getCaseHearingRequests().get(0)
+            .setPanelUserRequirements(Arrays.asList(TestingUtil.panelUserRequirementsEntity()));
 
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertCaseDetails(response.getCaseDetails());
@@ -249,7 +283,6 @@ class GetHearingResponseMapperTest {
 
     private void assertHearingDaySchedule(HearingDaySchedule hearingDaySchedule) {
         assertAll(
-            () -> assertEquals("session1", hearingDaySchedule.getListAssistSessionId()),
             () -> assertEquals("venue1", hearingDaySchedule.getHearingVenueId()),
             () -> assertEquals("room1", hearingDaySchedule.getHearingRoomId()),
             () -> assertEquals("PanelUser1", hearingDaySchedule.getPanelMemberId())
@@ -286,6 +319,9 @@ class GetHearingResponseMapperTest {
                 LocalDate.of(2020, 12, 20),
                 unavailabilityRanges.getUnavailableFromDate()
             ),
+            () -> assertEquals("All Day",
+                unavailabilityRanges.getUnavailabilityType()
+            ),
             () -> assertEquals("All Day", unavailabilityDow.getDowUnavailabilityType()),
             () -> assertEquals("Friday", unavailabilityDow.getDow())
         );
@@ -309,13 +345,33 @@ class GetHearingResponseMapperTest {
             () -> assertEquals(true, individualDetails.getVulnerableFlag()),
             () -> assertEquals("details", individualDetails.getVulnerabilityDetails()),
             () -> assertEquals("01234567890", individualDetails.getHearingChannelPhone().get(0)),
-            () -> assertEquals("hearing.channel@email.com", individualDetails.getHearingChannelEmail().get(0))
+            () -> assertEquals("hearing.channel@email.com", individualDetails.getHearingChannelEmail().get(0)),
+            () -> assertEquals("First reason", individualDetails.getReasonableAdjustments().get(0)),
+            () -> assertEquals("custodyStatus", individualDetails.getCustodyStatus()),
+            () -> assertEquals("otherReason", individualDetails.getOtherReasonableAdjustmentDetails()),
+            () -> assertRelatedParties(individualDetails.getRelatedParties())
         );
+    }
+
+    private void assertRelatedParties(List<RelatedParty> relatedParties) {
+        RelatedParty relatedParty1 = new RelatedParty();
+        relatedParty1.setRelatedPartyID("P1");
+        relatedParty1.setRelationshipType("A");
+
+        RelatedParty relatedParty2 = new RelatedParty();
+        relatedParty2.setRelatedPartyID("P2");
+        relatedParty2.setRelationshipType("B");
+
+        assertTrue(relatedParties.containsAll(List.of(relatedParty1, relatedParty2)));
     }
 
     private void assertPanelRequirements(PanelRequirements panelRequirements) {
         assertAll(
-            () -> assertEquals(Arrays.asList("RoleType1"), panelRequirements.getRoleType())
+            () -> assertEquals(Arrays.asList("RoleType1"), panelRequirements.getRoleType()),
+            () -> assertEquals(Arrays.asList("Specialism 1"), panelRequirements.getPanelSpecialisms()),
+            () -> assertEquals(Arrays.asList("AuthorisationType1"), panelRequirements.getAuthorisationTypes()),
+            () -> assertEquals(Arrays.asList("AuthorisationSubType2"), panelRequirements.getAuthorisationSubType()),
+            () -> assertEquals("judge1", panelRequirements.getPanelPreferences().get(0).getMemberID())
         );
     }
 

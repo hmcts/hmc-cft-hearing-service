@@ -113,7 +113,7 @@ idam:
     totp_secret: ${IDAM_KEY_CFT_HEARING_SERVICE:AAAAAAAAAAAAAAAA}
     url: ${S2S_URL:http://localhost:4502}
   s2s-authorised:
-    services: ${CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES:xui_webapp,hmc_hmi_inbound_adapter}
+    services: ${CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES:xui_webapp,hmc_hmi_inbound_adapter,sscs}
   client:
     id: hmc_cft_hearing_service
     secret: ${CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET:AAAAAAAAAAAAAAAA}
@@ -140,3 +140,16 @@ http:
 ccd:
   data-store:
     host: ${CCD_DATA_STORE_API_BASE_URL:http://localhost:4452}
+
+fh:
+  ad:
+    host: ${FH_BASE_URL:base/url}
+    get-token-url: ${FH_GET_TOKEN_URL:get/token/url}
+    client-id: ${CLIENT_ID:client-id}
+    client-secret: ${CLIENT_SECRET:client-secret}
+    scope: ${SCOPE:scope}
+    grant-type: ${GRANT_TYPE:grant-type}
+  hmi:
+    host: ${HMI_BASE_URL:base/url}
+    source-system: ${HMI_SOURCE_SYSTEM:source-system}
+    destination-system: ${HMI_DESTINATION_SYSTEM:destination-system}
