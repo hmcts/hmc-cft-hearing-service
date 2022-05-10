@@ -141,7 +141,6 @@ public class HearingManagementController {
         @ApiResponse(code = 404, message = "001 No such id"),
         @ApiResponse(code = 400, message = "Invalid hearing details found"),
         @ApiResponse(code = 400, message = "002 invalid status"),
-        @ApiResponse(code = 400, message = "003 missing hearing day actuals"),
         @ApiResponse(code = 400, message = "004 unexpected hearing day actuals"),
         @ApiResponse(code = 400, message = "005 missing hearing outcome"),
         @ApiResponse(code = 500, message = "Error occurred on the server")
