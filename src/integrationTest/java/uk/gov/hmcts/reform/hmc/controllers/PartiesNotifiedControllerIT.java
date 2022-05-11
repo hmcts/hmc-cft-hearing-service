@@ -19,7 +19,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ALREADY_SET;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_NO_SUCH_RESPONSE;
 
 class PartiesNotifiedControllerIT extends BaseTest {
 
@@ -96,7 +98,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(404))
-                .andExpect(jsonPath("$.errors", hasItem("002 No such response version")))
+                .andExpect(jsonPath("$.errors", hasItem(PARTIES_NOTIFIED_NO_SUCH_RESPONSE)))
                 .andReturn();
         }
 
@@ -112,7 +114,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(400))
-                .andExpect(jsonPath("$.errors", hasItem("003 Already set")))
+                .andExpect(jsonPath("$.errors", hasItem(PARTIES_NOTIFIED_ALREADY_SET)))
                 .andReturn();
         }
     }
