@@ -17,7 +17,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REASONABLE_ADJU
 @NoArgsConstructor
 public class IndividualDetails {
 
-    @NotNull(message = ValidationError.TITLE_EMPTY)
     @Size(max = 40, message = ValidationError.TITLE_MAX_LENGTH)
     private String title;
 
