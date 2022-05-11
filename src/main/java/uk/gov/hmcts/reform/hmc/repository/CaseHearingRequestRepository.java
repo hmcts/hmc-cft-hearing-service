@@ -19,10 +19,15 @@ public interface CaseHearingRequestRepository extends CrudRepository<CaseHearing
     @Query("SELECT caseHearingID from CaseHearingRequestEntity where hearing.id = :hearingId")
     Long getCaseHearingId(Long hearingId);
 
-    @Query("from CaseHearingRequestEntity chr WHERE chr.caseReference = :caseRef order by chr.hearing.id desc")
+    @Query("from CaseHearingRequestEntity chr WHERE chr.caseReference = :caseRef "
+        + "and chr.versionNumber = (select max(chr2.versionNumber) from CaseHearingRequestEntity chr2 "
+        + "where chr2.hearing.id = chr.hearing.id) "
+        + "order by chr.hearing.id desc")
     List<CaseHearingRequestEntity> getHearingDetails(String caseRef);
 
     @Query("from CaseHearingRequestEntity chr WHERE chr.caseReference = :caseRef and chr.hearing.status = :status "
+        + "and chr.versionNumber = (select max(chr2.versionNumber) from CaseHearingRequestEntity chr2 "
+        + "where chr2.hearing.id = chr.hearing.id) "
         + "order by chr.hearing.id desc")
     List<CaseHearingRequestEntity> getHearingDetailsWithStatus(String caseRef, String status);
 
