@@ -46,8 +46,8 @@ class PartiesNotifiedControllerIT extends BaseTest {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
-
-            mockMvc.perform(put(url + "/2000000000" + "?version=2")
+            final String dateTime = "2020-08-10 12:20:00";
+            mockMvc.perform(put(url + "/2000000000" + "?version=1&received=" + dateTime)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(200))

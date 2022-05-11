@@ -13,11 +13,11 @@ insert into case_hearing_request (
 values ( 't'	,'hearingType3',	63,	'Priority type3',	6,'t','t','AB123',null,'ABA1'	,9372710950276233,	'2020-08-10 11:20:00','EXT/REF123',	'https://www.google.com',	'Internal case name','Public case name',	't'	,'CMLC333',	't',	'2021-10-10 00:00:00',	1,	2000000009	,'f'	,	'Some listing comments3',	'Some judge3',	'2021-11-01 00:00:00',	'2021-11-12 00:00:00');
 
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)
-values (1, '2000000000', '2020-08-10 11:20:00', 'DRAFT', 'CASE_CREATED', '1');
+values (1, '2000000000', '2020-08-10 11:20:00', 'DRAFT', 'CASE_CREATED', 1);
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
-values (2, '2000000010', '2021-08-10 11:20:00', 'PROVISIONAL', 'AWAITING_LISTING', '1', '2020-08-10 11:20:00');
+values (2, '2000000010', '2021-08-10 11:20:00', 'PROVISIONAL', 'AWAITING_LISTING', 1, '2020-08-10 11:20:00');
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)
-values (3, '2000000009', '2021-08-10 11:20:00', 'FIXED', 'LISTED', '1');
+values (3, '2000000009', '2021-08-10 11:20:00', 'FIXED', 'LISTED', 1);
 
 insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
 values (1, 1, '2021-01-10 11:20:00', '2021-08-10 11:20:00', 'venue1-1', 'room1-1');
