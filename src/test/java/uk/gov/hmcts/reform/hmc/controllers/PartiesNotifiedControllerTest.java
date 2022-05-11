@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.PartiesNotifiedService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,13 +77,14 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
             doNothing().when(partiesNotifiedService).getPartiesNotified(
                 anyLong(),
                 anyInt(),
+                any(),
                 any(PartiesNotified.class)
             );
 
             PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService);
-            controller.putPartiesNotified(partiesNotified, 1L, 10);
+            controller.putPartiesNotified(partiesNotified, 1L, 10, LocalDateTime.now());
             verify(partiesNotifiedService, times(1))
-                .getPartiesNotified(anyLong(), anyInt(), any(PartiesNotified.class));
+                .getPartiesNotified(anyLong(), anyInt(), any(), any(PartiesNotified.class));
         }
     }
 

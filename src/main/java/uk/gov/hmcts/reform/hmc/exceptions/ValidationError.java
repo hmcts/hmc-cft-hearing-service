@@ -142,7 +142,7 @@ public final class ValidationError {
     public static final String INVALID_DELETE_HEARING_GROUP_HEARING_STATUS = "008 Invalid state for unlinking hearing"
         + " request %s";
     public static final String PARTIES_NOTIFIED_ID_NOT_FOUND = "001 No such id: %s";
-    public static final String PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH = "002 No such response version";
+    public static final String PARTIES_NOTIFIED_NO_SUCH_RESPONSE = "001 No such response";
     public static final String PARTIES_NOTIFIED_ALREADY_SET = "003 Already set";
 
     public static final String HEARING_ACTUALS_ID_NOT_FOUND = "001 No such id: %s";

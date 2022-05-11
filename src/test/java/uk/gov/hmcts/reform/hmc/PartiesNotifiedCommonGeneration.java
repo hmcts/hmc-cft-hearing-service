@@ -64,7 +64,6 @@ public class PartiesNotifiedCommonGeneration {
     protected HearingResponseEntity generateResponseEntity(Long hearingResponseId) {
         HearingResponseEntity entity = new HearingResponseEntity();
         entity.setHearingResponseId(hearingResponseId);
-        entity.setResponseVersion(2);
         entity.setRequestTimeStamp(LocalDateTime.now().minusDays(hearingResponseId));
         entity.setRequestVersion(1);
         logger.debug("hearingResponseEntity: {}", entity);

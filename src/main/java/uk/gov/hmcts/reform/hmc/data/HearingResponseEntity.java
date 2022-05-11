@@ -62,9 +62,6 @@ public class HearingResponseEntity {
     @Column(name = "request_version", nullable = false)
     private Integer requestVersion;
 
-    @Column(name = "response_version", nullable = false)
-    private Integer responseVersion;
-
     @Column(name = "parties_notified_datetime")
     private LocalDateTime partiesNotifiedDateTime;
 

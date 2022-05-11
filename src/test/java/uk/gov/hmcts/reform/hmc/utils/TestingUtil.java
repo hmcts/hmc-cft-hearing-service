@@ -814,7 +814,6 @@ public class TestingUtil {
                                                               LocalDateTime requestTimestamp,
                                                               List<HearingDayDetailsEntity> hearingDayDetailsEntities) {
         HearingResponseEntity entity = new HearingResponseEntity();
-        entity.setResponseVersion(version);
         entity.setRequestVersion(requestVersion);
         entity.setRequestTimeStamp(requestTimestamp);
         entity.setHearingResponseId(2L);
