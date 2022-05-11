@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.hmc.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
@@ -37,7 +36,7 @@ public class HmcHearingUpdate {
 
     @NotNull(message = ValidationError.LIST_ASSIST_CASE_STATUS_NULL)
     @JsonProperty("ListAssistCaseStatus")
-    private ListAssistCaseStatus listAssistCaseStatus;
+    private String listAssistCaseStatus;
 
     private String hearingRoomId;
 

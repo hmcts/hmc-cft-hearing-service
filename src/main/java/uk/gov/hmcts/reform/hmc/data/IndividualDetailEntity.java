@@ -28,12 +28,6 @@ public class IndividualDetailEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "related_party_relationship_type", nullable = false)
-    private String relatedPartyRelationshipType;
-
-    @Column(name = "related_party_id", nullable = false)
-    private String relatedPartyID;
-
     @Column(name = "vulnerability_details")
     private String vulnerabilityDetails;
 
