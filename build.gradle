@@ -453,6 +453,8 @@ dependencies {
   runtime group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
 
   cftlibImplementation group: 'org.springframework.boot', name: 'spring-boot-devtools'
+
+  testCompile 'com.github.hmcts:fortify-client:1.2.0:all'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.hmc.Application'
@@ -523,4 +525,12 @@ bootWithCCD {
   environment("CFT_HEARING_SERVICE_DB_NAME", "hmc")
   environment("S2S_URL", "http://localhost:8489")
   environment("HMC_ACCESS_CONTROL_ENABLED", "false")
+}
+
+task fortifyScan(type: JavaExec)  {
+  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  classpath += sourceSets.test.runtimeClasspath
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
+  // The line below prevents the build from failing if the Fortify scan detects issues
+  ignoreExitValue = true
 }
