@@ -71,7 +71,6 @@ public final class ValidationError {
     public static final String RELATIONSHIP_TYPE_EMPTY = "Relationship type can not be empty";
     public static final String RELATIONSHIP_TYPE_MAX_LENGTH = "Relationship type must not be more than 10 characters"
         + " long";
-    public static final String TITLE_EMPTY = "Title can not be empty";
     public static final String TITLE_MAX_LENGTH = "Title must not be more than 40 " + CHARACTERS_LONG;
     public static final String FIRST_NAME_EMPTY = "First name can not be empty";
     public static final String FIRST_NAME_MAX_LENGTH = "First name must not be more than 100 " + CHARACTERS_LONG;
