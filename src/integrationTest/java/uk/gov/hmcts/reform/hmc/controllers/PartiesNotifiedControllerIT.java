@@ -60,7 +60,8 @@ class PartiesNotifiedControllerIT extends BaseTest {
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/1000000000" + "?version=2")
+            final String dateTime = "2020-11-30 10:15:21";
+            mockMvc.perform(put(url + "/1000000000" + "?version=2&received=" + dateTime)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(400))
@@ -74,7 +75,8 @@ class PartiesNotifiedControllerIT extends BaseTest {
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/2000000001" + "?version=2")
+            final String dateTime = "2020-11-30 10:15:21";
+            mockMvc.perform(put(url + "/2000000001" + "?version=2&received=" + dateTime)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(404))
@@ -89,7 +91,8 @@ class PartiesNotifiedControllerIT extends BaseTest {
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/2000000000" + "?version=25")
+            final String dateTime = "2020-11-30 10:15:21";
+            mockMvc.perform(put(url + "/2000000000" + "?version=25&received=" + dateTime)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(404))
@@ -104,7 +107,8 @@ class PartiesNotifiedControllerIT extends BaseTest {
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
 
-            mockMvc.perform(put(url + "/2000000010" + "?version=2")
+            final String dateTime = "2021-08-10 11:20:00";
+            mockMvc.perform(put(url + "/2000000010" + "?version=1&received=" + dateTime)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(400))
