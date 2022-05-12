@@ -20,6 +20,8 @@ java:
           alias: CFT_HEARING_SERVICE_DB_NAME
         - name: idam-hmc-cft-hearing-service-client-secret
           alias: CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET
+        - name: hmc-cft-hearing-service-s2s-secret
+          alias: IDAM_KEY_CFT_HEARING_SERVICE
         - name: hmc-servicebus-connection-string
           alias: HMC_SERVICE_BUS_CONNECTION_STRING
         - name: hmc-queue-connection-string
