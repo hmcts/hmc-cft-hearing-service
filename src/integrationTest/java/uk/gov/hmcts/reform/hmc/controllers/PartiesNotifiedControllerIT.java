@@ -82,12 +82,12 @@ class PartiesNotifiedControllerIT extends BaseTest {
     @DisplayName("PutPartiesNotified")
     class PutPartiesNotified {
 
-      @BeforeEach
-      void setUp() {
-          stubRoleAssignments();
-      }
+        @BeforeEach
+        void setUp() {
+            stubRoleAssignments();
+        }
       
-      @Test
+        @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn200_WhenPartiesNotifiedIsSuccess() throws Exception {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
@@ -100,7 +100,6 @@ class PartiesNotifiedControllerIT extends BaseTest {
                 .andExpect(status().is(200))
                 .andReturn();
         }
-
 
         @Test
         void shouldReturn400_WhenHearingIdIsInValid() throws Exception {
