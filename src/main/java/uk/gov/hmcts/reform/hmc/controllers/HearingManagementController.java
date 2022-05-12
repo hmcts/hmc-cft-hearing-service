@@ -68,14 +68,14 @@ public class HearingManagementController {
     public ResponseEntity<GetHearingResponse> getHearing(@PathVariable("id") Long hearingId,
                                                          @RequestParam(value = "isValid",
                                                              defaultValue = "false") boolean isValid) {
-        String status = hearingManagementService.getStatus(hearingId);
-        List<String> requiredRoles = Lists.newArrayList(HEARING_VIEWER);
-        if (HearingStatus.LISTED.name().equals(status)) {
-            requiredRoles.add(LISTED_HEARING_VIEWER);
-        }
-
         if (!isValid) {
             // Only verify access if the user is requesting more than just confirmation of a valid hearing id
+            String status = hearingManagementService.getStatus(hearingId);
+            List<String> requiredRoles = Lists.newArrayList(HEARING_VIEWER);
+            if (HearingStatus.LISTED.name().equals(status)) {
+                requiredRoles.add(LISTED_HEARING_VIEWER);
+            }
+
             accessControlService.verifyHearingCaseAccess(hearingId, requiredRoles);
         }
         return hearingManagementService.getHearingRequest(hearingId, isValid);
