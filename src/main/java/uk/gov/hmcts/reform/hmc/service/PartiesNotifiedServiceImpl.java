@@ -82,7 +82,7 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
         });
         PartiesNotifiedResponses responses = new PartiesNotifiedResponses();
         responses.setResponses(partiesNotified);
-        responses.setHearingID(hearingId);
+        responses.setHearingID(hearingId.toString());
         return responses;
     }
 

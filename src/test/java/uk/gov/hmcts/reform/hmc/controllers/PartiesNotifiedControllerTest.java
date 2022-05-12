@@ -98,7 +98,7 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
         void shouldReturn200_whenNo_PartiesNotifiedDateTimes() {
             final Long hearingId = 2000000099L;
             PartiesNotifiedResponses responsesExpected = new PartiesNotifiedResponses();
-            responsesExpected.setHearingID(hearingId);
+            responsesExpected.setHearingID(hearingId.toString());
             responsesExpected.setResponses(new ArrayList<>());
             when(partiesNotifiedService.getPartiesNotified(hearingId)).thenReturn(responsesExpected);
 
@@ -113,7 +113,7 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
         void shouldReturn200_whenSome_PartiesNotifiedDateTimes() {
             final Long hearingId = 2000000099L;
             PartiesNotifiedResponses responsesExpected = new PartiesNotifiedResponses();
-            responsesExpected.setHearingID(hearingId);
+            responsesExpected.setHearingID(hearingId.toString());
             List<PartiesNotifiedResponse> partiesNotifiedExpectedList = generateResponses();
             responsesExpected.setResponses(partiesNotifiedExpectedList);
             when(partiesNotifiedService.getPartiesNotified(hearingId)).thenReturn(responsesExpected);
