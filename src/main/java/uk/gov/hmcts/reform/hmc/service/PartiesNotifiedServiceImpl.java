@@ -44,8 +44,7 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
                 hearingResponseRepository.getHearingResponse(hearingId, requestVersion, receivedDateTime);
         if (null == hearingResponseEntity) {
             throw new PartiesNotifiedNotFoundException(PARTIES_NOTIFIED_NO_SUCH_RESPONSE);
-        } else if (hearingResponseEntity.getRequestVersion().equals(requestVersion)
-            && hearingResponseEntity.getPartiesNotifiedDateTime() != null) {
+        } else if (hearingResponseEntity.getPartiesNotifiedDateTime() != null) {
             throw new PartiesNotifiedBadRequestException(PARTIES_NOTIFIED_ALREADY_SET);
         } else {
             hearingResponseEntity.setPartiesNotifiedDateTime(LocalDateTime.now());
