@@ -74,7 +74,10 @@ public class HearingManagementController {
             requiredRoles.add(LISTED_HEARING_VIEWER);
         }
 
-        accessControlService.verifyHearingCaseAccess(hearingId, requiredRoles);
+        if (!isValid) {
+            // Only verify access if the user is requesting more than just confirmation of a valid hearing id
+            accessControlService.verifyHearingCaseAccess(hearingId, requiredRoles);
+        }
         return hearingManagementService.getHearingRequest(hearingId, isValid);
     }
 
