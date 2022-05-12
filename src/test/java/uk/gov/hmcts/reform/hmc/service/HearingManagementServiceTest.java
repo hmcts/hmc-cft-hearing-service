@@ -1212,6 +1212,7 @@ class HearingManagementServiceTest {
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
+            hearingDetails.setDuration(360);
             PartyDetails partyDetails = new PartyDetails();
             List<PartyDetails> partyDetailsList = new ArrayList<>();
             partyDetailsList.add(partyDetails);
@@ -1226,6 +1227,7 @@ class HearingManagementServiceTest {
         @Test
         void updateHearingRequestShouldThrowErrorWhenPartyIndividualAndOrgDetailsBothExist() {
             HearingDetails hearingDetails = new HearingDetails();
+            hearingDetails.setDuration(360);
             hearingDetails.setAutoListFlag(true);
             hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
@@ -1250,6 +1252,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldNotErrorWhenPartyUnavailabilityDowIsNotPresent() {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setDuration(360);
             hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
@@ -1283,6 +1286,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldNotErrorWhenPartyUnavailabilityRangesIsNotPresent() {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
+            hearingDetails.setDuration(360);
             hearingDetails.setAmendReasonCode("reason");
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
@@ -1320,6 +1324,7 @@ class HearingManagementServiceTest {
             HearingWindow hearingWindow = new HearingWindow();
             hearingWindow.setDateRangeEnd(LocalDate.now());
             hearingDetails.setHearingWindow(hearingWindow);
+            hearingDetails.setDuration(365);
             PartyDetails partyDetails = new PartyDetails();
             IndividualDetails individualDetails = new IndividualDetails();
             individualDetails.setHearingChannelEmail(List.of("email"));

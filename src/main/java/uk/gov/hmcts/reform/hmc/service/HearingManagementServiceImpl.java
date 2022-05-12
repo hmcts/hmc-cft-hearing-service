@@ -68,6 +68,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DURATION_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
@@ -365,6 +366,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             && hearingDetails.getHearingWindow().getDateRangeStart() == null
             && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() == null) {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
+        }
+        if (hearingDetails.getDuration() % 5 != 0) {
+            throw new BadRequestException(INVALID_DURATION_DETAILS);
         }
     }
 

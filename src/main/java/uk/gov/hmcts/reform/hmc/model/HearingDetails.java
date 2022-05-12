@@ -13,6 +13,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.FACILITIES_REQUIRED_MAX_LENGTH_MSG;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG;
 
@@ -74,5 +75,9 @@ public class HearingDetails {
 
     @Size(max = 70, message = ValidationError.AMEND_REASON_CODE_MAX_LENGTH)
     private String amendReasonCode;
+
+    public boolean isMultiDayHearing() {
+        return getDuration() != null ? getDuration() > DURATION_OF_DAY : false;
+    }
 
 }
