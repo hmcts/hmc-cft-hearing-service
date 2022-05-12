@@ -15,9 +15,9 @@ class RelatedEntitiesMapper {
         if (relatedParties != null) {
             for (RelatedParty relatedParty : relatedParties) {
                 RelatedEntity relatedEntity = RelatedEntity.builder()
-                    .relatedEntityId(relatedParty.getRelatedPartyID())
-                    .relatedEntityRelationshipType(relatedParty.getRelationshipType())
-                    .build();
+                        .relatedEntityId(relatedParty.getRelatedPartyID())
+                        .relatedEntityRelationshipType(relatedParty.getRelationshipType())
+                        .build();
                 relatedEntities.add(relatedEntity);
             }
         }

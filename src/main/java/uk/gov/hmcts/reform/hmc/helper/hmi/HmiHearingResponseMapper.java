@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
@@ -95,8 +94,8 @@ public class HmiHearingResponseMapper {
                     hmcHearingUpdate.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
                 }
             }
-            hmcHearingUpdate.setListAssistCaseStatus(ListAssistCaseStatus.valueOf(hearingResponseEntity
-                                                                                      .getListingCaseStatus()));
+            hmcHearingUpdate.setListAssistCaseStatus(HearingCode.getByLabel(hearingResponseEntity
+                                                                                      .getListingCaseStatus()).name());
             hmcHearingUpdate.setHearingRoomId(hearingResponseEntity.getHearingDayDetails().get(0).getRoomId());
         }
         hmcHearingResponse.setHearingUpdate(hmcHearingUpdate);
@@ -121,11 +120,13 @@ public class HmiHearingResponseMapper {
 
     private ArrayList<HearingDayPanelEntity> mapHearingDayPanelEntity(HearingResponse hearing) {
         ArrayList<HearingDayPanelEntity> hearingDayPanelEntityArrayList = new ArrayList<>();
-        for (HearingJoh hearingJoh : hearing.getHearing().getHearingJohs()) {
-            HearingDayPanelEntity hearingDayPanelEntity = new HearingDayPanelEntity();
-            hearingDayPanelEntity.setPanelUserId(hearingJoh.getJohCode());
-            hearingDayPanelEntity.setIsPresiding(hearingJoh.getIsPresiding());
-            hearingDayPanelEntityArrayList.add(hearingDayPanelEntity);
+        if (hearing.getHearing().getHearingJohs() != null) {
+            for (HearingJoh hearingJoh : hearing.getHearing().getHearingJohs()) {
+                HearingDayPanelEntity hearingDayPanelEntity = new HearingDayPanelEntity();
+                hearingDayPanelEntity.setPanelUserId(hearingJoh.getJohCode());
+                hearingDayPanelEntity.setIsPresiding(hearingJoh.getIsPresiding());
+                hearingDayPanelEntityArrayList.add(hearingDayPanelEntity);
+            }
         }
         return hearingDayPanelEntityArrayList;
     }
@@ -136,7 +137,9 @@ public class HmiHearingResponseMapper {
         for (HearingAttendee hearingAttendee : hearing.getHearing().getHearingAttendees()) {
             HearingAttendeeDetailsEntity hearingAttendeeDetailsEntity = new HearingAttendeeDetailsEntity();
             hearingAttendeeDetailsEntity.setPartyId(hearingAttendee.getEntityId());
-            hearingAttendeeDetailsEntity.setPartySubChannelType(hearingAttendee.getHearingChannel().getCode());
+            if (hearingAttendee.getHearingChannel() != null) {
+                hearingAttendeeDetailsEntity.setPartySubChannelType(hearingAttendee.getHearingChannel().getCode());
+            }
             hearingAttendeeDetailsEntityArrayList.add(hearingAttendeeDetailsEntity);
         }
 
@@ -272,5 +275,4 @@ public class HmiHearingResponseMapper {
         }
         return postStatus;
     }
-
 }
