@@ -116,7 +116,7 @@ idam:
     services: ${CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES:xui_webapp,hmc_hmi_inbound_adapter,sscs}
   client:
     id: hmc_cft_hearing_service
-    scope: openid roles profile manage-user
+    scope: openid roles profile
     # same for all environments - not used in hmc but configured as idam mandates for token generation
     redirect_uri: https://cft-hearing-service/oauth2redirect
     secret: ${CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET:AAAAAAAAAAAAAAAA}
