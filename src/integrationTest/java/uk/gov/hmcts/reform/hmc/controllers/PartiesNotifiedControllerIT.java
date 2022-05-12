@@ -48,7 +48,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
-            final String dateTime = "2020-08-10 11:20:00";
+            final String dateTime = "2020-08-1T11:20:00";
             mockMvc.perform(put(url + "/2000000000" + "?version=1&received=" + dateTime)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
@@ -62,7 +62,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
 
-            final String dateTime = "2020-11-30 10:15:21";
+            final String dateTime = "2020-11-30T10:15:21";
             mockMvc.perform(put(url + "/1000000000" + "?version=2&received=" + dateTime)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
@@ -77,7 +77,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
 
-            final String dateTime = "2020-11-30 10:15:21";
+            final String dateTime = "2020-11-30T10:15:21";
             mockMvc.perform(put(url + "/2000000001" + "?version=2&received=" + dateTime)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
@@ -93,7 +93,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
 
-            final String dateTime = "2020-11-30 10:15:21";
+            final String dateTime = "2020-11-30T10:15:21";
             mockMvc.perform(put(url + "/2000000000" + "?version=25&received=" + dateTime)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
@@ -109,7 +109,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
 
-            final String dateTime = "2021-08-10 11:20:00";
+            final String dateTime = "2021-08-10T11:20:00";
             mockMvc.perform(put(url + "/2000000010" + "?version=1&received=" + dateTime)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
