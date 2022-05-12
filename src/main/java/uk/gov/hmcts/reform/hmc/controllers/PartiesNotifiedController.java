@@ -44,7 +44,7 @@ public class PartiesNotifiedController {
                                    @PathVariable("id") Long hearingId,
                                    @RequestParam("version") int requestVersion,
                                    @RequestParam("received")
-                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                   @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
                                    LocalDateTime receivedDateTime) {
         partiesNotifiedService.getPartiesNotified(hearingId, requestVersion, receivedDateTime, partiesNotified);
     }

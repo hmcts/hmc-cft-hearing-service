@@ -32,7 +32,6 @@ public class PartiesNotifiedCommonGeneration {
 
     protected PartiesNotifiedResponse generateResponse(Long hearingResponseId) {
         PartiesNotifiedResponse response = new PartiesNotifiedResponse();
-        response.setResponseVersion(2);
         response.setResponseReceivedDateTime(LocalDateTime.now().minusDays(hearingResponseId));
         response.setRequestVersion(1);
         response.setPartiesNotified(LocalDateTime.now().plusDays(2).plusHours(2));
