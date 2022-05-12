@@ -14,8 +14,6 @@ public interface HearingManagementService {
 
     HearingResponse saveHearingRequest(HearingRequest createHearingRequest);
 
-    void verifyAccess(String caseReference);
-
     HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest);
 
     HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest);
@@ -29,5 +27,7 @@ public interface HearingManagementService {
     void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest,Long hearingId, String messageType);
 
     ResponseEntity hearingCompletion(Long hearingId);
+
+    String getStatus(Long hearingId);
 
 }

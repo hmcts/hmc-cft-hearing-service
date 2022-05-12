@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.FIRST_PAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UN_NOTIFIED_HEARINGS_LIMIT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HMCTS_SERVICE_CODE;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 
 @Service
 @Component
@@ -27,21 +29,27 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
 
     private final CaseHearingRequestRepository caseHearingRequestRepository;
     private final HearingResponseRepository hearingResponseRepository;
+    private AccessControlService accessControlService;
 
 
     @Autowired
     public UnNotifiedHearingServiceImpl(CaseHearingRequestRepository caseHearingRequestRepository,
-                                        HearingResponseRepository hearingResponseRepository) {
+                                        HearingResponseRepository hearingResponseRepository,
+                                        AccessControlService accessControlService) {
         this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.hearingResponseRepository = hearingResponseRepository;
+        this.accessControlService = accessControlService;
     }
 
     @Override
-    public UnNotifiedHearingsResponse getUnNotifiedHearings(String hmctsServiceCode, LocalDateTime hearingStartDateFrom,
+    public UnNotifiedHearingsResponse getUnNotifiedHearings(String hmctsServiceCode,
+                                                            LocalDateTime hearingStartDateFrom,
                                                             LocalDateTime hearingStartDateTo) {
         isValidHmctsServiceCode(hmctsServiceCode);
         Page<Long> page = getUnNotifiedHearingResults(
             hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo);
+        page.getContent().stream()
+            .forEach(hearingId -> accessControlService.verifyAccess(hearingId, Lists.newArrayList(HEARING_MANAGER)));
         List<String> hearingIds = getHearingIdInStrings(page.getContent());
         return getUnNotifiedHearingsResponse(hearingIds, page.getTotalElements());
     }

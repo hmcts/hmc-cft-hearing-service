@@ -104,6 +104,9 @@ class LinkHearingGroupServiceTest {
     LinkedHearingDetailsRepository linkedHearingDetailsRepository;
 
     @Mock
+    AccessControlService accessControlService;
+
+    @Mock
     LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
     @Mock
@@ -150,7 +153,9 @@ class LinkHearingGroupServiceTest {
                                               linkedGroupDetailsAuditMapper,
                                               linkedHearingDetailsAuditMapper,
                                               futureHearingRepository,
-                                              objectMapper);
+                                              objectMapper,
+                                              accessControlService
+                                              );
     }
 
     @Nested
