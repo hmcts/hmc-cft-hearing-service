@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
+import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementServiceImpl;
 
 import java.time.LocalDate;
@@ -41,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -57,6 +59,9 @@ public class RestExceptionHandlerTest extends BaseTest {
 
     @MockBean
     protected HearingManagementServiceImpl service;
+
+    @MockBean
+    protected AccessControlService accessControlService;
 
     @Autowired
     protected MockMvc mockMvc;
@@ -120,8 +125,9 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleInvalidRoleAssignmentException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new InvalidRoleAssignmentException(testExceptionMessage)).when(service)
-            .verifyAccess(anyString());
+        Mockito.doThrow(new InvalidRoleAssignmentException(testExceptionMessage))
+            .when(accessControlService)
+            .verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -152,7 +158,8 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleCaseCouldNotBeFoundException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new CaseCouldNotBeFoundException(testExceptionMessage)).when(service).verifyAccess(anyString());
+        Mockito.doThrow(new CaseCouldNotBeFoundException(testExceptionMessage))
+            .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -168,7 +175,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         Request request = Request.create(Request.HttpMethod.GET, "url",
                                          new HashMap<>(), null, new RequestTemplate());
         Mockito.doThrow(new FeignException.NotFound(testExceptionMessage, request, null,null))
-            .when(service).verifyAccess(anyString());
+            .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -184,7 +191,8 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleResourceNotFoundException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new ResourceNotFoundException(testExceptionMessage)).when(service).verifyAccess(anyString());
+        Mockito.doThrow(new ResourceNotFoundException(testExceptionMessage))
+            .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -199,7 +207,8 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleServiceException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new ServiceException(testExceptionMessage)).when(service).verifyAccess(anyString());
+        Mockito.doThrow(new ServiceException(testExceptionMessage))
+            .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)

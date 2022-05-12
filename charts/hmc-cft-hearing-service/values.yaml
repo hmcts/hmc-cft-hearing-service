@@ -18,6 +18,8 @@ java:
           alias: CFT_HEARING_SERVICE_DB_PORT
         - name: cft-hearing-service-POSTGRES-DATABASE
           alias: CFT_HEARING_SERVICE_DB_NAME
+        - name: idam-hmc-cft-hearing-service-client-secret
+          alias: CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET
         - name: hmc-servicebus-connection-string
           alias: HMC_SERVICE_BUS_CONNECTION_STRING
         - name: hmc-queue-connection-string
@@ -49,7 +51,7 @@ java:
     HTTP_CLIENT_MAX_CLIENT_PER_ROUTE: '20'
     HTTP_CLIENT_VALIDATE_AFTER_INACTIVITY: '2000'
     CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-
+    ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     HMI_BASE_URL: https://hmi-apim.test.platform.hmcts.net/hmi
     HMI_SOURCE_SYSTEM: CFT
     HMI_DESTINATION_SYSTEM: SNL
