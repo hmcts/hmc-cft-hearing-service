@@ -134,13 +134,17 @@ public class HmiHearingResponseMapper {
     private ArrayList<HearingAttendeeDetailsEntity> mapHearingAttendeeDetailsEntity(HearingResponse hearing) {
 
         ArrayList<HearingAttendeeDetailsEntity> hearingAttendeeDetailsEntityArrayList = new ArrayList<>();
-        for (HearingAttendee hearingAttendee : hearing.getHearing().getHearingAttendees()) {
-            HearingAttendeeDetailsEntity hearingAttendeeDetailsEntity = new HearingAttendeeDetailsEntity();
-            hearingAttendeeDetailsEntity.setPartyId(hearingAttendee.getEntityId());
-            if (hearingAttendee.getHearingChannel() != null) {
-                hearingAttendeeDetailsEntity.setPartySubChannelType(hearingAttendee.getHearingChannel().getCode());
+        if (hearing.getHearing().getHearingAttendees() != null) {
+            for (HearingAttendee hearingAttendee : hearing.getHearing().getHearingAttendees()) {
+                HearingAttendeeDetailsEntity hearingAttendeeDetailsEntity = new HearingAttendeeDetailsEntity();
+                if (hearingAttendee.getEntityId() == null) {
+                    hearingAttendeeDetailsEntity.setPartyId(hearingAttendee.getEntityId());
+                }
+                if (hearingAttendee.getHearingChannel() != null) {
+                    hearingAttendeeDetailsEntity.setPartySubChannelType(hearingAttendee.getHearingChannel().getCode());
+                }
+                hearingAttendeeDetailsEntityArrayList.add(hearingAttendeeDetailsEntity);
             }
-            hearingAttendeeDetailsEntityArrayList.add(hearingAttendeeDetailsEntity);
         }
 
         return hearingAttendeeDetailsEntityArrayList;
@@ -148,12 +152,18 @@ public class HmiHearingResponseMapper {
 
     private HearingDayDetailsEntity mapHearingDayDetailsEntity(HearingResponse hearing) {
         HearingDayDetailsEntity hearingDayDetailsEntity = new HearingDayDetailsEntity();
-        hearingDayDetailsEntity.setStartDateTime(hearing.getHearing().getHearingStartTime());
-        hearingDayDetailsEntity.setEndDateTime(hearing.getHearing().getHearingEndTime());
-        for (VenueLocationReference venueLocationReference :
-            hearing.getHearing().getHearingVenue().getLocationReferences()) {
-            if (venueLocationReference.getKey().equals("EPIMS")) {
-                hearingDayDetailsEntity.setVenueId(venueLocationReference.getValue());
+        if (hearing.getHearing().getHearingStartTime() != null) {
+            hearingDayDetailsEntity.setEndDateTime(hearing.getHearing().getHearingEndTime());
+        }
+        if (hearing.getHearing().getHearingEndTime() != null) {
+            hearingDayDetailsEntity.setEndDateTime(hearing.getHearing().getHearingEndTime());
+        }
+        if (hearing.getHearing().getHearingVenue().getLocationReferences() != null) {
+            for (VenueLocationReference venueLocationReference :
+                hearing.getHearing().getHearingVenue().getLocationReferences()) {
+                if (venueLocationReference.getKey().equals("EPIMS")) {
+                    hearingDayDetailsEntity.setVenueId(venueLocationReference.getValue());
+                }
             }
         }
         hearingDayDetailsEntity.setRoomId(hearing.getHearing().getHearingRoom().getLocationName());
@@ -166,7 +176,9 @@ public class HmiHearingResponseMapper {
         hearingResponseEntity.setListingTransactionId(hearingResponse.getMeta().getTransactionIdCaseHQ());
         hearingResponseEntity.setRequestTimeStamp(hearingResponse.getMeta().getTimestamp());
         hearingResponseEntity.setRequestVersion(hearingResponse.getHearing().getHearingCaseVersionId());
-        hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode().name());
+        if (hearingResponse.getHearing().getHearingStatus() !=null) {
+            hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode().name());
+        }
         hearingResponseEntity.setCancellationReasonType(hearingResponse.getHearing().getHearingCancellationReason());
         hearingResponseEntity.setTranslatorRequired(hearingResponse.getHearing().getHearingTranslatorRequired());
         hearingResponseEntity.setListingCaseStatus(HearingCode.getByNumber(hearingResponse.getHearing()
