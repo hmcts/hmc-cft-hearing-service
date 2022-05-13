@@ -77,7 +77,6 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         caseHearing.setHearingType(entity.getHearingType());
         caseHearing.setHmcStatus(entity.getHearing().getDerivedHearingStatus());
         caseHearing.setHearingIsLinkedFlag(entity.getHearing().getIsLinkedFlag());
-        caseHearing.setRequestVersion(entity.getVersionNumber());
         return caseHearing;
     }
 
@@ -85,6 +84,7 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         caseHearing.setLastResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
         caseHearing.setHearingListingStatus(hearingResponseEntity.getListingStatus());
         caseHearing.setListAssistCaseStatus(hearingResponseEntity.getListingCaseStatus());
+        caseHearing.setRequestVersion(hearingResponseEntity.getRequestVersion());
     }
 
     private void setHearingGroupRequestId(CaseHearingRequestEntity entity, CaseHearing caseHearing) {
