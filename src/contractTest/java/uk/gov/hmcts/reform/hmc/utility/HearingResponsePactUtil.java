@@ -216,7 +216,7 @@ public class HearingResponsePactUtil {
                     .stringMatcher("hmcStatus",STATUS_OPTIONS_STRING, caseHearing.getHmcStatus())
                     .datetime("lastResponseReceivedDateTime", FORMATYYYYMMDDHHMMSSZ,
                             Instant.from(caseHearing.getLastResponseReceivedDateTime().atZone(ZoneOffset.UTC)))
-                    .integerType("responseVersion", caseHearing.getResponseVersion())
+                    .integerType("requestVersion", caseHearing.getRequestVersion())
                     .stringMatcher("hearingListingStatus",STATUS_OPTIONS_STRING,
                             caseHearing.getHearingListingStatus())
                     .stringMatcher("listAssistCaseStatus", STATUS_OPTIONS_STRING,
@@ -377,7 +377,7 @@ public class HearingResponsePactUtil {
         caseHearing.setHearingId(2000000000L + id);
         caseHearing.setHearingType("hearingType" + id);
         caseHearing.setHearingDaySchedule(generateHearingDaySchedules());
-        caseHearing.setResponseVersion(id.longValue());
+        caseHearing.setRequestVersion(id.longValue());
         caseHearing.setHearingListingStatus("HEARING_REQUESTED");
         caseHearing.setHearingRequestDateTime(LocalDateTime.now());
         caseHearing.setListAssistCaseStatus("AWAITING_LISTING");
@@ -397,7 +397,7 @@ public class HearingResponsePactUtil {
         caseHearing.setHearingId(2000000001L);
         caseHearing.setHearingType("hearingType1");
         caseHearing.setHearingDaySchedule(generateHearingDaySchedules());
-        caseHearing.setResponseVersion(2L);
+        caseHearing.setRequestVersion(2L);
         caseHearing.setHearingListingStatus(caseStatus);
         caseHearing.setHearingRequestDateTime(LocalDateTime.now());
         caseHearing.setListAssistCaseStatus(caseStatus);

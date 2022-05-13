@@ -340,9 +340,9 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("HEARING_REQUESTED", response.getCaseHearings().get(2).getHmcStatus());
         assertEquals("HEARING_REQUESTED", response.getCaseHearings().get(1).getHmcStatus());
         assertEquals("HEARING_UPDATED", response.getCaseHearings().get(0).getHmcStatus());
-        assertEquals(2, response.getCaseHearings().get(0).getResponseVersion());
-        assertEquals(3, response.getCaseHearings().get(1).getResponseVersion());
-        assertEquals(1, response.getCaseHearings().get(2).getResponseVersion());
+        assertEquals(20, response.getCaseHearings().get(0).getRequestVersion());
+        assertEquals(30, response.getCaseHearings().get(1).getRequestVersion());
+        assertEquals(10, response.getCaseHearings().get(2).getRequestVersion());
         assertEquals(ListingStatus.FIXED.name(), response.getCaseHearings().get(1).getHearingListingStatus());
         assertEquals(ListAssistCaseStatus.LISTED.name(), response.getCaseHearings().get(1).getListAssistCaseStatus());
         assertEquals(1, response.getCaseHearings().get(1).getHearingDaySchedule().size());
@@ -414,8 +414,8 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("hearingType1", response.getCaseHearings().get(1).getHearingType());
         assertEquals("HEARING_REQUESTED", response.getCaseHearings().get(1).getHmcStatus());
         assertEquals("HEARING_REQUESTED", response.getCaseHearings().get(0).getHmcStatus());
-        assertEquals(3, response.getCaseHearings().get(0).getResponseVersion());
-        assertEquals(1, response.getCaseHearings().get(1).getResponseVersion());
+        assertEquals(30, response.getCaseHearings().get(0).getRequestVersion());
+        assertEquals(10, response.getCaseHearings().get(1).getRequestVersion());
         assertEquals(ListingStatus.FIXED.name(), response.getCaseHearings().get(0).getHearingListingStatus());
         assertEquals(ListAssistCaseStatus.LISTED.name(),
                 response.getCaseHearings().get(0).getListAssistCaseStatus());
