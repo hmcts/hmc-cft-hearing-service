@@ -377,7 +377,7 @@ public class HearingResponsePactUtil {
         caseHearing.setHearingId(2000000000L + id);
         caseHearing.setHearingType("hearingType" + id);
         caseHearing.setHearingDaySchedule(generateHearingDaySchedules());
-        caseHearing.setRequestVersion(id.longValue());
+        caseHearing.setRequestVersion(id);
         caseHearing.setHearingListingStatus("HEARING_REQUESTED");
         caseHearing.setHearingRequestDateTime(LocalDateTime.now());
         caseHearing.setListAssistCaseStatus("AWAITING_LISTING");
@@ -397,7 +397,7 @@ public class HearingResponsePactUtil {
         caseHearing.setHearingId(2000000001L);
         caseHearing.setHearingType("hearingType1");
         caseHearing.setHearingDaySchedule(generateHearingDaySchedules());
-        caseHearing.setRequestVersion(2L);
+        caseHearing.setRequestVersion(2);
         caseHearing.setHearingListingStatus(caseStatus);
         caseHearing.setHearingRequestDateTime(LocalDateTime.now());
         caseHearing.setListAssistCaseStatus(caseStatus);
