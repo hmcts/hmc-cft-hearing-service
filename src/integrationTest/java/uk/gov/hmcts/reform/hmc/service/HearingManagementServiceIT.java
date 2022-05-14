@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DURATION_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 
 class HearingManagementServiceIT extends BaseTest {
@@ -305,6 +306,17 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         HearingEntity hearingEntity = hearingRepository.findById(2000000000L).get();
         assertEquals("ADJOURNED", hearingEntity.getStatus());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
+    void testUpdateHearingRequest_WithInvalidHearingDuration() {
+        UpdateHearingRequest request = TestingUtil.updateHearingRequest();
+        request.getHearingDetails().setDuration(361);
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.updateHearingRequest(2000000024L, request);
+        });
+        assertEquals(INVALID_DURATION_DETAILS, exception.getMessage());
     }
 
     @Test

@@ -224,10 +224,10 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
                                .value(IsNull.nullValue()))
                 .andExpect(jsonPath(
-                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails[0].lastName")
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails.lastName")
                                .value("WitnessLastName1"))
                 .andExpect(jsonPath(
-                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails[0].firstName")
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails.firstName")
                                .value("WitnessForeName1"));
 
         }
@@ -291,10 +291,10 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
                                .value(IsNull.nullValue()))
                 .andExpect(jsonPath(
-                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails[0].lastName")
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails.lastName")
                                .value("WitnessLastName1"))
                 .andExpect(jsonPath(
-                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails[0].firstName")
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails.firstName")
                                .value("WitnessForeName1"));
         }
 
