@@ -137,7 +137,7 @@ public class HmiHearingResponseMapper {
         if (hearing.getHearing().getHearingAttendees() != null) {
             for (HearingAttendee hearingAttendee : hearing.getHearing().getHearingAttendees()) {
                 HearingAttendeeDetailsEntity hearingAttendeeDetailsEntity = new HearingAttendeeDetailsEntity();
-                if (hearingAttendee.getEntityId() == null) {
+                if (hearingAttendee.getEntityId() != null) {
                     hearingAttendeeDetailsEntity.setPartyId(hearingAttendee.getEntityId());
                 }
                 if (hearingAttendee.getHearingChannel() != null) {
@@ -153,12 +153,13 @@ public class HmiHearingResponseMapper {
     private HearingDayDetailsEntity mapHearingDayDetailsEntity(HearingResponse hearing) {
         HearingDayDetailsEntity hearingDayDetailsEntity = new HearingDayDetailsEntity();
         if (hearing.getHearing().getHearingStartTime() != null) {
-            hearingDayDetailsEntity.setEndDateTime(hearing.getHearing().getHearingEndTime());
+            hearingDayDetailsEntity.setStartDateTime(hearing.getHearing().getHearingStartTime());
         }
         if (hearing.getHearing().getHearingEndTime() != null) {
             hearingDayDetailsEntity.setEndDateTime(hearing.getHearing().getHearingEndTime());
         }
-        if (hearing.getHearing().getHearingVenue().getLocationReferences() != null) {
+        if (hearing.getHearing().getHearingVenue() != null
+            && hearing.getHearing().getHearingVenue().getLocationReferences() != null)  {
             for (VenueLocationReference venueLocationReference :
                 hearing.getHearing().getHearingVenue().getLocationReferences()) {
                 if (venueLocationReference.getKey().equals("EPIMS")) {
@@ -166,7 +167,10 @@ public class HmiHearingResponseMapper {
                 }
             }
         }
-        hearingDayDetailsEntity.setRoomId(hearing.getHearing().getHearingRoom().getLocationName());
+        if (hearing.getHearing().getHearingRoom() != null
+            && hearing.getHearing().getHearingRoom().getLocationName() != null) {
+            hearingDayDetailsEntity.setRoomId(hearing.getHearing().getHearingRoom().getLocationName());
+        }
         return hearingDayDetailsEntity;
     }
 
@@ -176,7 +180,7 @@ public class HmiHearingResponseMapper {
         hearingResponseEntity.setListingTransactionId(hearingResponse.getMeta().getTransactionIdCaseHQ());
         hearingResponseEntity.setRequestTimeStamp(hearingResponse.getMeta().getTimestamp());
         hearingResponseEntity.setRequestVersion(hearingResponse.getHearing().getHearingCaseVersionId());
-        if (hearingResponse.getHearing().getHearingStatus() !=null) {
+        if (hearingResponse.getHearing().getHearingStatus() != null) {
             hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode().name());
         }
         hearingResponseEntity.setCancellationReasonType(hearingResponse.getHearing().getHearingCancellationReason());
