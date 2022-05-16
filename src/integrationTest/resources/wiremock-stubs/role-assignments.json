@@ -1,0 +1,64 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/am/role-assignments/actors/e8275d41-7f22-4ee7-8ed3-14644d6db096"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "roleAssignmentResponse" : [
+        {
+          "id": "4d96923f-891a-4cb1-863e-9bec44d1689d",
+          "actorIdType": "IDAM",
+          "actorId": "e8275d41-7f22-4ee7-8ed3-14644d6db096",
+          "roleType": "ORGANISATION",
+          "roleName": "hearing-manager",
+          "classification": "PUBLIC",
+          "grantType": "STANDARD",
+          "roleCategory": "JUDICIAL",
+          "readOnly": false,
+          "beginTime": "2021-01-01T00:00:00Z",
+          "endTime": "2024-01-01T00:00:00Z",
+          "created": "2020-12-23T06:37:58.096065Z",
+          "attributes": {},
+          "authorisations": []
+        },
+        {
+          "id": "e6fc5ebb-63e3-4613-9cfc-b3f9b1559571",
+          "actorIdType": "IDAM",
+          "actorId": "e8275d41-7f22-4ee7-8ed3-14644d6db096",
+          "roleType": "ORGANISATION",
+          "roleName": "hearing-viewer",
+          "classification": "PUBLIC",
+          "grantType": "STANDARD",
+          "roleCategory": "JUDICIAL",
+          "readOnly": false,
+          "beginTime": "2021-02-01T00:00:00Z",
+          "endTime": "2024-01-01T00:00:00Z",
+          "created": "2020-12-23T06:37:58.096065Z",
+          "attributes": {},
+          "authorisations": []
+        },
+        {
+          "id": "6d96923f-991a-4cb1-863e-9bec44d1689a",
+          "actorIdType": "IDAM",
+          "actorId": "e8275d41-7f22-4ee7-8ed3-14644d6db096",
+          "roleType": "ORGANISATION",
+          "roleName": "listed-hearing-viewer",
+          "classification": "PUBLIC",
+          "grantType": "STANDARD",
+          "roleCategory": "JUDICIAL",
+          "readOnly": false,
+          "beginTime": "2021-01-01T00:00:00Z",
+          "endTime": "2024-01-01T00:00:00Z",
+          "created": "2020-12-23T06:37:58.096065Z",
+          "attributes": {},
+          "authorisations": []
+        }
+      ]
+    }
+  }
+}

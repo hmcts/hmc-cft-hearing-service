@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
@@ -10,19 +11,24 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
+import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingActualsService;
 
 import javax.validation.Valid;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 
 @RestController
 public class HearingActualsManagementController {
 
     private final HearingActualsService hearingActualsService;
+    private final AccessControlService accessControlService;
 
-    public HearingActualsManagementController(HearingActualsService hearingActualsService) {
+    public HearingActualsManagementController(HearingActualsService hearingActualsService,
+                                              AccessControlService accessControlService) {
         this.hearingActualsService = hearingActualsService;
+        this.accessControlService = accessControlService;
     }
 
     @PutMapping(path = "/hearingActuals/{id}", consumes = APPLICATION_JSON_VALUE,
@@ -42,6 +48,7 @@ public class HearingActualsManagementController {
     })
     public void updateHearingActuals(@PathVariable("id") Long hearingId,
                                      @RequestBody @Valid HearingActual request) {
+        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         hearingActualsService.updateHearingActuals(hearingId, request);
     }
 }

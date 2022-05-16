@@ -23,4 +23,10 @@ public class RoleAssignment {
     private Instant created;
     private List<String> authorisations;
     private RoleAssignmentAttributes attributes;
+
+    public boolean isNotExpiredRoleAssignment() {
+        final var machineTimestamp = Instant.now();
+        return (beginTime == null || machineTimestamp.isAfter(beginTime))
+            && (endTime == null || machineTimestamp.isBefore(endTime));
+    }
 }

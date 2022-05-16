@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -19,14 +20,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -35,15 +39,24 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALID;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALID_LENGTH;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 
 @RestController
 @Validated
 public class HearingManagementController {
 
     private final HearingManagementService hearingManagementService;
+    private final AccessControlService accessControlService;
 
-    public HearingManagementController(HearingManagementService hearingManagementService) {
+    public HearingManagementController(HearingManagementService hearingManagementService,
+                                       AccessControlService accessControlService) {
         this.hearingManagementService = hearingManagementService;
+        this.accessControlService = accessControlService;
     }
 
     @GetMapping(path = "/hearing/{id}", produces = APPLICATION_JSON_VALUE)
@@ -56,6 +69,16 @@ public class HearingManagementController {
     public ResponseEntity<GetHearingResponse> getHearing(@PathVariable("id") Long hearingId,
                                                          @RequestParam(value = "isValid",
                                                              defaultValue = "false") boolean isValid) {
+        if (!isValid) {
+            // Only verify access if the user is requesting more than just confirmation of a valid hearing id
+            String status = hearingManagementService.getStatus(hearingId);
+            List<String> requiredRoles = Lists.newArrayList(HEARING_VIEWER);
+            if (HearingStatus.LISTED.name().equals(status)) {
+                requiredRoles.add(LISTED_HEARING_VIEWER);
+            }
+
+            accessControlService.verifyHearingCaseAccess(hearingId, requiredRoles);
+        }
         return hearingManagementService.getHearingRequest(hearingId, isValid);
     }
 
@@ -74,7 +97,7 @@ public class HearingManagementController {
         )
     })
     public HearingResponse saveHearing(@RequestBody @Valid HearingRequest createHearingRequest) {
-        hearingManagementService.verifyAccess(getCaseRef(createHearingRequest));
+        accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER));
         HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
         hearingManagementService.sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest,
                 REQUEST_HEARING
@@ -92,6 +115,7 @@ public class HearingManagementController {
     })
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
                                          @RequestBody @Valid DeleteHearingRequest deleteRequest) {
+        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
             hearingId, deleteRequest);
         hearingManagementService.sendRequestToHmiAndQueue(deleteRequest, hearingId, DELETE_HEARING);
@@ -128,6 +152,13 @@ public class HearingManagementController {
                                                String ccdCaseRef,
                                            @RequestParam(required = false)
                                                String status) {
+        if (HearingStatus.LISTED.name().equals(status)) {
+            accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
+                HEARING_VIEWER,
+                LISTED_HEARING_VIEWER));
+        } else {
+            accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(HEARING_VIEWER));
+        }
         return hearingManagementService.getHearings(ccdCaseRef, status);
     }
 
@@ -141,6 +172,7 @@ public class HearingManagementController {
     })
     public HearingResponse updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
                                          @PathVariable("id") Long hearingId) {
+        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
         hearingManagementService.sendRequestToHmiAndQueue(hearingId, hearingRequest, AMEND_HEARING);
         return hearingResponse;
@@ -161,6 +193,7 @@ public class HearingManagementController {
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
     public ResponseEntity hearingCompletion(@PathVariable("id") Long hearingId) {
+        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         return hearingManagementService.hearingCompletion(hearingId);
     }
 
