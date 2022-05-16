@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
+import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
@@ -39,9 +39,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALID;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALID_LENGTH;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
@@ -91,9 +88,6 @@ public class HearingManagementController {
                 + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
                 + "\n2) " + ValidationError.INVALID_HEARING_WINDOW
                 + "\n3) " + ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS
-                + "\n4) " + ValidationError.INVALID_UNAVAILABILITY_DOW_DETAILS
-                + "\n5) " + ValidationError.INVALID_UNAVAILABILITY_RANGES_DETAILS
-                + "\n6) " + ValidationError.INVALID_RELATED_PARTY_DETAILS
         )
     })
     public HearingResponse saveHearing(@RequestBody @Valid HearingRequest createHearingRequest) {
