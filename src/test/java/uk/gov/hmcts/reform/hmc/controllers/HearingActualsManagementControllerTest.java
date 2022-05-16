@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
+import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingActualsService;
 
 import static org.mockito.Mockito.times;
@@ -24,12 +25,15 @@ public class HearingActualsManagementControllerTest {
     @Mock
     private HearingActualsService hearingActualsService;
 
+    @Mock
+    private AccessControlService accessControlService;
+
     @InjectMocks
     private HearingActualsManagementController controller;
 
     @BeforeEach
     public void setUp() {
-        controller = new HearingActualsManagementController(hearingActualsService);
+        controller = new HearingActualsManagementController(hearingActualsService, accessControlService);
     }
 
     @Test

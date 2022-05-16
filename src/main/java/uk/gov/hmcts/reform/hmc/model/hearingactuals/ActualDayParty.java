@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class ActualDayParty {
-    private Integer actualPartyId;
+    private String actualPartyId;
     private String partyRole;
     private String partyChannelSubType;
     private Boolean didNotAttendFlag;

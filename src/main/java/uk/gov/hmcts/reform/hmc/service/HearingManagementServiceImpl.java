@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
@@ -17,16 +16,11 @@ import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
-import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
-import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
-import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
-import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
-import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
@@ -51,7 +45,6 @@ import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -68,14 +61,12 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DURATION_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_VERSION_NUMBER;
-import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
-import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
-import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
 
 @Service
 @Slf4j
@@ -234,7 +225,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      */
     @Override
     public GetHearingsResponse getHearings(String caseRef, String status) {
-        log.info("caseRef:{} ; status:{}", caseRef, status);
+        log.debug("caseRef:{} ; status:{}", caseRef, status);
         List<CaseHearingRequestEntity> entities;
         if (!isBlank(status)) {
             entities = caseHearingRequestRepository.getHearingDetailsWithStatus(caseRef, status);
@@ -366,63 +357,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() == null) {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
         }
-    }
-
-    public void verifyAccess(String caseReference) {
-        if (!applicationParams.isAccessControlEnabled()) {
-            return;
-        }
-        RoleAssignments roleAssignments = roleAssignmentService.getRoleAssignments(securityUtils.getUserId());
-        if (roleAssignments.getRoleAssignments().isEmpty()) {
-            throw new ResourceNotFoundException(String.format(ROLE_ASSIGNMENTS_NOT_FOUND, securityUtils.getUserId()));
-        }
-        List<RoleAssignment> filteredRoleAssignments = new ArrayList<>();
-        for (RoleAssignment roleAssignment : roleAssignments.getRoleAssignments()) {
-            if (roleAssignment.getRoleName().equalsIgnoreCase("Hearing Manage")
-                && roleAssignment.getRoleType().equalsIgnoreCase(
-                "ORGANISATION")) {
-                filteredRoleAssignments.add(roleAssignment);
-            }
-        }
-        if (filteredRoleAssignments.isEmpty()) {
-            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ROLE);
-        } else {
-            DataStoreCaseDetails caseDetails;
-            caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
-            if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
-                throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
-            }
-        }
-    }
-
-    @SuppressWarnings("java:S2789")
-    private boolean checkRoleAssignmentMatchesCaseDetails(DataStoreCaseDetails caseDetails,
-                                                          List<RoleAssignment> roleAssignments) {
-        for (RoleAssignment roleAssignment : roleAssignments) {
-            RoleAssignmentAttributes attributes = roleAssignment.getAttributes();
-            if (attributes.getJurisdiction() == null) {
-                return ifJurisdictionIsNullOrEmpty(attributes, caseDetails);
-            } else if (attributes.getJurisdiction().isEmpty()) {
-                return ifJurisdictionIsNullOrEmpty(attributes, caseDetails);
-            } else if (attributes.getJurisdiction().equals(Optional.of(caseDetails.getJurisdiction()))) {
-                return true;
-            } else if (attributes.getCaseType() != null && attributes.getCaseType().isPresent() && attributes
-                .getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()))) {
-                return true;
-            }
-
-        }
-        return false;
-    }
-
-    @SuppressWarnings("java:S2789")
-    private boolean ifJurisdictionIsNullOrEmpty(RoleAssignmentAttributes attributes, DataStoreCaseDetails caseDetails) {
-        if (attributes.getCaseType() == null) {
-            return true;
-        } else if (attributes.getCaseType().isEmpty()) {
-            return true;
-        } else {
-            return attributes.getCaseType().equals(Optional.of(caseDetails.getCaseTypeId()));
+        if (hearingDetails.getDuration() % 5 != 0) {
+            throw new BadRequestException(INVALID_DURATION_DETAILS);
         }
     }
 
@@ -446,7 +382,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    private String getStatus(Long hearingId) {
+    public String getStatus(Long hearingId) {
         return hearingRepository.getStatus(hearingId);
     }
 

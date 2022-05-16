@@ -71,7 +71,6 @@ public final class ValidationError {
     public static final String RELATIONSHIP_TYPE_EMPTY = "Relationship type can not be empty";
     public static final String RELATIONSHIP_TYPE_MAX_LENGTH = "Relationship type must not be more than 10 characters"
         + " long";
-    public static final String TITLE_EMPTY = "Title can not be empty";
     public static final String TITLE_MAX_LENGTH = "Title must not be more than 40 " + CHARACTERS_LONG;
     public static final String FIRST_NAME_EMPTY = "First name can not be empty";
     public static final String FIRST_NAME_MAX_LENGTH = "First name must not be more than 100 " + CHARACTERS_LONG;
@@ -252,6 +251,7 @@ public final class ValidationError {
     public static final String REJECTED_BY_LIST_ASSIST = "005 rejected by List Assist";
     public static final String LIST_ASSIST_FAILED_TO_RESPOND = "006 List Assist failed to respond";
     public static final String LIST_ASSIST_CASE_STATUS_NULL = "List assist case status can not be null or empty";
+    public static final String INVALID_DURATION_DETAILS = "Invalid duration details";
     public static final String AMEND_REASON_CODE_MAX_LENGTH = "Amend reason code must not be more than "
         + "70 " + CHARACTERS_LONG;
     public static final String INVALID_AMEND_REASON_CODE = "Amend reason code details are required";
