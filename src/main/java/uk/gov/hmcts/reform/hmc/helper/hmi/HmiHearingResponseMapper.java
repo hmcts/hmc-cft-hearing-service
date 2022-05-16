@@ -180,7 +180,8 @@ public class HmiHearingResponseMapper {
         hearingResponseEntity.setListingTransactionId(hearingResponse.getMeta().getTransactionIdCaseHQ());
         hearingResponseEntity.setRequestTimeStamp(hearingResponse.getMeta().getTimestamp());
         hearingResponseEntity.setRequestVersion(hearingResponse.getHearing().getHearingCaseVersionId());
-        if (hearingResponse.getHearing().getHearingStatus() != null) {
+        if (hearingResponse.getHearing().getHearingStatus() != null
+            && hearingResponse.getHearing().getHearingStatus().getCode() != null) {
             hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode().name());
         }
         hearingResponseEntity.setCancellationReasonType(hearingResponse.getHearing().getHearingCancellationReason());

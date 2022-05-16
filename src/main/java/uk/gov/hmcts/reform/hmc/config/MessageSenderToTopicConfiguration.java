@@ -26,6 +26,7 @@ public class MessageSenderToTopicConfiguration {
                 .sender()
                 .topicName(applicationParams.getExternalTopicName())
                 .buildClient();
+
             log.debug("Connected to Topic {}", applicationParams.getExternalTopicName());
             senderClient.sendMessage(new ServiceBusMessage(message));
             log.debug("Message has been sent to the topic {}", applicationParams.getExternalTopicName());
