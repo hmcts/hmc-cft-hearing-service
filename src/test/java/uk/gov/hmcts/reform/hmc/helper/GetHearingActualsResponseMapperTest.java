@@ -180,7 +180,7 @@ class GetHearingActualsResponseMapperTest {
         assertEquals(LocalDateTime.parse("2021-08-10T12:20:00"),
                      response.getHearingActuals().getActualHearingDays().get(0).getPauseDateTimes()
                          .get(0).getPauseEndTime());
-        assertEquals(1,
+        assertEquals("1",
                      response.getHearingActuals().getActualHearingDays().get(0).getActualDayParties()
                          .get(0).getActualPartyId());
         assertEquals("roleType", response.getHearingActuals()

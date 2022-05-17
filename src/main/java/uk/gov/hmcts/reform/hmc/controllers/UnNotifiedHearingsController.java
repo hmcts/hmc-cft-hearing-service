@@ -49,8 +49,10 @@ public class UnNotifiedHearingsController {
                                                                 required = false)
                                                             @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                                                 LocalDateTime hearingStartDateTo) {
-        return unNotifiedHearingService.getUnNotifiedHearings(hmctsServiceCode, hearingStartDateFrom,
-                                                              hearingStartDateTo
+        return unNotifiedHearingService.getUnNotifiedHearings(
+            hmctsServiceCode,
+            hearingStartDateFrom,
+            hearingStartDateTo
         );
     }
 }

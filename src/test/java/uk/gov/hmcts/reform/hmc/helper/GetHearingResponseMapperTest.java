@@ -276,7 +276,6 @@ class GetHearingResponseMapperTest {
         assertAll(
             () -> assertEquals(ListAssistCaseStatus.CASE_CREATED.label, hearingResponse.getLaCaseStatus()),
             () -> assertEquals(ListingStatus.FIXED.label, hearingResponse.getListingStatus()),
-            () -> assertEquals(2, hearingResponse.getResponseVersion()),
             () -> assertEquals("Cancelled Reason 1", hearingResponse.getHearingCancellationReason())
         );
     }

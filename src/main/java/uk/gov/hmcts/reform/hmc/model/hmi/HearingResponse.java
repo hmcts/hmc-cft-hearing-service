@@ -34,9 +34,6 @@ public class HearingResponse {
     @JsonProperty("receivedDateTime")
     private LocalDateTime receivedDateTime;
 
-    @JsonProperty("responseVersion")
-    private Long responseVersion;
-
     @JsonProperty("hearingCancellationReason")
     @Size(max = 40, message = ValidationError.HEARING_CANCELLATION_REASON_MAX_LENGTH)
     private String hearingCancellationReason;

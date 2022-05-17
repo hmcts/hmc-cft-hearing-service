@@ -106,11 +106,13 @@ class CaseHearingRequestRepositoryTest {
 
     @Test
     void testGetCaseHearing() {
-        doReturn(TestingUtil.caseHearingRequestEntity()).when(caseHearingRequestRepository).getCaseHearing(any());
-        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository.getCaseHearing(any());
+        doReturn(TestingUtil.caseHearingRequestEntity()).when(caseHearingRequestRepository)
+            .getLatestCaseHearingRequest(any());
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository
+            .getLatestCaseHearingRequest(any());
         assertAll(
             () -> assertNotNull(caseHearingRequestEntity),
-            () -> verify(caseHearingRequestRepository, times(1)).getCaseHearing(any())
+            () -> verify(caseHearingRequestRepository, times(1)).getLatestCaseHearingRequest(any())
         );
     }
 

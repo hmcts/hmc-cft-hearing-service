@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import lombok.val;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayPausesEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingPartyEntity;
-import uk.gov.hmcts.reform.hmc.data.ActualPartyRelationshipDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -88,16 +88,15 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         List<ActualDayParty> actualDayParties = new ArrayList<>();
         for (ActualHearingPartyEntity actualHearingPartyEntity : actualHearingDayEntity.getActualHearingParty()) {
             ActualDayParty actualDayParty = new ActualDayParty();
-            actualDayParty.setActualPartyId(Integer.valueOf(actualHearingPartyEntity.getPartyId()));
+            actualDayParty.setActualPartyId(actualHearingPartyEntity.getPartyId());
             actualDayParty.setPartyRole(actualHearingPartyEntity.getActualPartyRoleType());
             actualDayParty.setDidNotAttendFlag(actualHearingPartyEntity.getDidNotAttendFlag());
-            for (ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity
-                : actualHearingPartyEntity.getActualPartyRelationshipDetail()) {
-                if (actualHearingPartyEntity.getActualPartyId()
-                    .equals(actualPartyRelationshipDetailEntity.getActualHearingParty().getActualPartyId())) {
-                    actualDayParty.setRepresentedParty(actualPartyRelationshipDetailEntity
-                                                           .getTargetActualPartyId().toString());
-                }
+            if (!CollectionUtils.isEmpty(actualHearingPartyEntity.getActualPartyRelationshipDetail())) {
+                // Only one represented party can be returned, so use the first
+                actualDayParty.setRepresentedParty(actualHearingPartyEntity
+                                                       .getActualPartyRelationshipDetail().get(0)
+                                                       .getTargetActualParty()
+                                                       .getPartyId());
             }
 
             ActualAttendeeIndividualDetailEntity individualDetailEntity = actualHearingPartyEntity
