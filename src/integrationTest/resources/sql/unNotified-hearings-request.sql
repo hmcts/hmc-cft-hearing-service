@@ -17,21 +17,21 @@ insert into case_hearing_request (
 values ( 't'	,'hearingType1',	60,	'Priority type1',	4,'f','f','AAA2',null,'AAA2'	,9372710950276233,	'2021-08-10 11:20:00','EXT/REF123',	'https://www.google.com',	'Internal case name','Public case name',	't'	,'CMLC123',	't',	'2021-10-10 00:00:00',	2,	2100000004	,'t'	,	'Some listing comments1',	'Some judge1',	'2021-11-01 00:00:00',	'2021-11-12 00:00:00');
 
 
-insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version, parties_notified_datetime)
-values (1, '2100000000', '2020-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 1, 2, null);
-insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version, parties_notified_datetime)
-values (2, '2100000000', '2021-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 2, 2, null);
+insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
+values (1, '2100000000', '2020-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 2, null);
+insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
+values (2, '2100000000', '2021-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 2, null);
 
-insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version, parties_notified_datetime)
-values (3, '2100000001', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 1, 1, null);
-insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version, parties_notified_datetime)
-values (4, '2100000003', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 1, 1, null);
-insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version, parties_notified_datetime)
-values (5, '2100000003', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 1, 2, '2019-08-10 11:00:00');
-insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version, parties_notified_datetime)
-values (6, '2100000004', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 1, 1, null);
-insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version, parties_notified_datetime)
-values (7, '2100000004', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 1, 2, null);
+insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
+values (3, '2100000001', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 1, null);
+insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
+values (4, '2100000003', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 1, null);
+insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
+values (5, '2100000003', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 2, '2019-08-10 11:00:00');
+insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
+values (6, '2100000004', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 1, null);
+insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
+values (7, '2100000004', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 2, null);
 
 
 insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)

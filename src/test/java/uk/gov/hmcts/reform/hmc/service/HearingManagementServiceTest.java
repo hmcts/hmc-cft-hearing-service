@@ -68,7 +68,6 @@ import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
-import uk.gov.hmcts.reform.hmc.repository.HearingPartyRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
@@ -192,9 +191,6 @@ class HearingManagementServiceTest {
 
     @Mock
     ApplicationParams applicationParams;
-
-    @Mock
-    HearingPartyRepository hearingPartyRepository;
 
     @Mock
     PartyRelationshipDetailsMapper partyRelationshipDetailsMapper;
@@ -888,7 +884,6 @@ class HearingManagementServiceTest {
             val hearingResponseEntity = new HearingResponseEntity();
             hearingResponseEntity.setRequestTimeStamp(LocalDateTime.now());
             hearingResponseEntity.setRequestVersion(2);
-            hearingResponseEntity.setResponseVersion(2);
 
             hearingDayDetailsEntity.setEndDateTime(LocalDateTime.now());
             hearingResponseEntity.setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity));
@@ -945,7 +940,6 @@ class HearingManagementServiceTest {
             val plannedResponse = LocalDateTime.of(2021, 5, 20,10,10,10);
             hearingResponseEntity.setRequestTimeStamp(plannedResponse);
             hearingResponseEntity.setRequestVersion(2);
-            hearingResponseEntity.setResponseVersion(2);
             hearingDayDetailsEntity.setEndDateTime(LocalDateTime.now());
             hearingResponseEntity.setHearingDayDetails(Arrays.asList(hearingDayDetailsEntity));
 
@@ -1670,7 +1664,6 @@ class HearingManagementServiceTest {
         for (int i = 0; i < noOfResponses; i++) {
             HearingResponseEntity responseEntity = new HearingResponseEntity();
             responseEntity.setRequestVersion(hearingEntity.getLatestRequestVersion());
-            responseEntity.setResponseVersion(hearingEntity.getLatestRequestVersion());
             responseEntity.setRequestTimeStamp(LocalDateTime.now());
             responseEntities.add(responseEntity);
             if (addHearingDayDetails) {
