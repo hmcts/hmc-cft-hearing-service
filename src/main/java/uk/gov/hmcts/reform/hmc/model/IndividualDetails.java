@@ -17,7 +17,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REASONABLE_ADJU
 @NoArgsConstructor
 public class IndividualDetails {
 
-    @NotNull(message = ValidationError.TITLE_EMPTY)
     @Size(max = 40, message = ValidationError.TITLE_MAX_LENGTH)
     private String title;
 
@@ -41,7 +40,6 @@ public class IndividualDetails {
 
     @Size(max = 256, message = ValidationError.VULNERABLE_DETAILS_MAX_LENGTH)
     private String vulnerabilityDetails;
-
 
     private List<
         @Email(message = ValidationError.HEARING_CHANNEL_EMAIL_INVALID)

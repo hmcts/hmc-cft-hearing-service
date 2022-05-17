@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
@@ -32,6 +35,7 @@ import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_M
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class AccessControlServiceTest {
 
     public static final String USER_ID = "UserId";
@@ -57,6 +61,9 @@ class AccessControlServiceTest {
     @Mock
     HearingRepository hearingRepository;
 
+    @Mock
+    ApplicationParams applicationParams;
+
     @BeforeEach
     void setUp() {
         doReturn(USER_ID).when(securityUtils).getUserId();
@@ -65,16 +72,18 @@ class AccessControlServiceTest {
             securityUtils,
             dataStoreRepository,
             caseHearingRequestRepository,
-            hearingRepository
+            hearingRepository,
+            applicationParams
         );
+        when(applicationParams.isAccessControlEnabled()).thenReturn(true);
     }
 
     private void stubRoleAssignments(RoleAssignmentAttributes.RoleAssignmentAttributesBuilder builder,
-                                     String hearningManager) {
+                                     String roleName) {
         RoleAssignmentAttributes roleAssignmentAttributes = builder
             .build();
         RoleAssignment roleAssignment = RoleAssignment.builder()
-            .roleName(hearningManager)
+            .roleName(roleName)
             .roleType(ROLE_TYPE)
             .attributes(roleAssignmentAttributes)
             .build();

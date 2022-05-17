@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
-import uk.gov.hmcts.reform.hmc.exceptions.LinkedHearingGroupNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGr
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn4XX;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn5XX;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyDeleteLinkedHearingGroups;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 
@@ -61,12 +62,12 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_LinkedGroupDetails() {
         stubSuccessfullyDeleteLinkedHearingGroups(TOKEN, REQUEST_ID2);
-        Optional<LinkedGroupDetails> linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
-            .findById(7700000000L);
-        assertTrue(linkedGroupDetailsBeforeDelete.isPresent());
+        LinkedGroupDetails linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
+            .getLinkedGroupDetailsByRequestId(REQUEST_ID2);
+        assertNotNull(linkedGroupDetailsBeforeDelete);
         Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2100000005L);
         final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
-        linkedHearingGroupService.deleteLinkedHearingGroup(7700000000L);
+        linkedHearingGroupService.deleteLinkedHearingGroup(REQUEST_ID2);
         //validating Hearing details
         Optional<HearingEntity> hearingEntityAfterDelete = hearingRepository.findById(2100000005L);
         assertTrue(hearingEntityBeforeDelete.isPresent());
@@ -88,14 +89,14 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_LinkedHearingDetails3xxError() {
         stubDeleteLinkedHearingGroupsReturn3XX(TOKEN, REQUEST_ID2);
-        Optional<LinkedGroupDetails> linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
-            .findById(7700000000L);
-        assertTrue(linkedGroupDetailsBeforeDelete.isPresent());
-        assertEquals("ACTIVE", linkedGroupDetailsBeforeDelete.get().getStatus());
+        LinkedGroupDetails linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
+            .getLinkedGroupDetailsByRequestId(REQUEST_ID2);
+        assertNotNull(linkedGroupDetailsBeforeDelete);
+        assertEquals("ACTIVE", linkedGroupDetailsBeforeDelete.getStatus());
         Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2100000005L);
         final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
-            .deleteLinkedHearingGroup(7700000000L));
+            .deleteLinkedHearingGroup(REQUEST_ID2));
         assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, exception.getMessage());
 
         //validating Hearing details
@@ -108,10 +109,10 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
 
         //validating LinkedGroupDetails
-        Optional<LinkedGroupDetails> linkedGroupDetailsAfterDelete = linkedGroupDetailsRepository
-            .findById(7700000000L);
+        LinkedGroupDetails linkedGroupDetailsAfterDelete = linkedGroupDetailsRepository
+            .getLinkedGroupDetailsByRequestId(REQUEST_ID2);
         assertNotNull(linkedGroupDetailsAfterDelete);
-        assertEquals("ERROR", linkedGroupDetailsAfterDelete.get().getStatus());
+        assertEquals("ERROR", linkedGroupDetailsAfterDelete.getStatus());
         //checking Audit tables
         validateLinkedGroupAuditDetails();
         validateHearingAuditDetails(linkedOrder);
@@ -121,13 +122,13 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_LinkedHearingDetails4xxError() {
         stubDeleteLinkedHearingGroupsReturn4XX(TOKEN, REQUEST_ID2);
-        Optional<LinkedGroupDetails> linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
-            .findById(7700000000L);
-        assertTrue(linkedGroupDetailsBeforeDelete.isPresent());
+        LinkedGroupDetails linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
+            .getLinkedGroupDetailsByRequestId(REQUEST_ID2);
+        assertNotNull(linkedGroupDetailsBeforeDelete);
         Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2100000005L);
         final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
-            .deleteLinkedHearingGroup(7700000000L));
+            .deleteLinkedHearingGroup(REQUEST_ID2));
         assertEquals(REJECTED_BY_LIST_ASSIST, exception.getMessage());
         //validating Hearing details
         Optional<HearingEntity> hearingEntityAfterDelete = hearingRepository.findById(2100000005L);
@@ -150,13 +151,13 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_LinkedHearingDetails404Error() {
         stubDeleteLinkedHearingGroupsReturn404(TOKEN, REQUEST_ID2);
-        Optional<LinkedGroupDetails> linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
-            .findById(7700000000L);
-        assertTrue(linkedGroupDetailsBeforeDelete.isPresent());
+        LinkedGroupDetails linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
+            .getLinkedGroupDetailsByRequestId(REQUEST_ID2);
+        assertNotNull(linkedGroupDetailsBeforeDelete);
         Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2100000005L);
         final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
-            .deleteLinkedHearingGroup(7700000000L));
+            .deleteLinkedHearingGroup(REQUEST_ID2));
         assertEquals(REJECTED_BY_LIST_ASSIST, exception.getMessage());
         //validating Hearing details
         Optional<HearingEntity> hearingEntityAfterDelete = hearingRepository.findById(2100000005L);
@@ -179,14 +180,15 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_LinkedHearingDetails5xxError() {
         stubDeleteLinkedHearingGroupsReturn5XX(TOKEN, REQUEST_ID2);
-        Optional<LinkedGroupDetails> linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
-            .findById(7700000000L);
-        assertTrue(linkedGroupDetailsBeforeDelete.isPresent());
-        assertEquals("ACTIVE", linkedGroupDetailsBeforeDelete.get().getStatus());
+        linkedGroupDetailsRepository.isFoundForRequestId(REQUEST_ID2);
+        LinkedGroupDetails linkedGroupDetailsBeforeDelete = linkedGroupDetailsRepository
+            .getLinkedGroupDetailsByRequestId(REQUEST_ID2);
+        assertNotNull(linkedGroupDetailsBeforeDelete);
+        assertEquals("ACTIVE", linkedGroupDetailsBeforeDelete.getStatus());
         Optional<HearingEntity> hearingEntityBeforeDelete = hearingRepository.findById(2100000005L);
         final Long linkedOrder = hearingEntityBeforeDelete.get().getLinkedOrder();
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
-            .deleteLinkedHearingGroup(7700000000L));
+            .deleteLinkedHearingGroup(REQUEST_ID2));
         assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, exception.getMessage());
 
         //validating Hearing details
@@ -199,10 +201,10 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
 
         //validating LinkedGroupDetails
-        Optional<LinkedGroupDetails> linkedGroupDetailsAfterDelete = linkedGroupDetailsRepository
-            .findById(7700000000L);
+        LinkedGroupDetails linkedGroupDetailsAfterDelete = linkedGroupDetailsRepository
+            .getLinkedGroupDetailsByRequestId(REQUEST_ID2);
         assertNotNull(linkedGroupDetailsAfterDelete);
-        assertEquals("ERROR", linkedGroupDetailsAfterDelete.get().getStatus());
+        assertEquals("ERROR", linkedGroupDetailsAfterDelete.getStatus());
         //checking Audit tables
         validateLinkedGroupAuditDetails();
         validateHearingAuditDetails(linkedOrder);
@@ -211,16 +213,16 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_WhenHearingGroupDoesNotExist() {
-        Exception exception = assertThrows(LinkedHearingGroupNotFoundException.class, () -> linkedHearingGroupService
-            .deleteLinkedHearingGroup(7600000123L));
-        assertEquals("No hearing group found for reference: 7600000123", exception.getMessage());
+        Exception exception = assertThrows(LinkedGroupNotFoundException.class, () -> linkedHearingGroupService
+            .deleteLinkedHearingGroup("7600000123"));
+        assertEquals(INVALID_LINKED_GROUP_REQUEST_ID_DETAILS, exception.getMessage());
     }
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
     void testDeleteLinkedHearingGroup_WhenHearingGroupStatusIsPending() {
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
-            .deleteLinkedHearingGroup(7600000501L));
+            .deleteLinkedHearingGroup("44445"));
         assertEquals("007 group is in a PENDING state", exception.getMessage());
     }
 

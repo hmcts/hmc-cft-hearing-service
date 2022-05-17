@@ -4,6 +4,7 @@ import com.microsoft.applicationinsights.core.dependencies.google.common.collect
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     private final DataStoreRepository dataStoreRepository;
     private final CaseHearingRequestRepository caseHearingRequestRepository;
     private final HearingRepository hearingRepository;
+    private final ApplicationParams applicationParams;
 
     public static final String HEARING_MANAGER = "hearing-manager";
     public static final String HEARING_VIEWER = "hearing-viewer";
@@ -49,22 +52,30 @@ public class AccessControlServiceImpl implements AccessControlService {
                                     @Qualifier("defaultDataStoreRepository")
                                         DataStoreRepository dataStoreRepository,
                                     CaseHearingRequestRepository caseHearingRequestRepository,
-                                    HearingRepository hearingRepository) {
+                                    HearingRepository hearingRepository,
+                                    ApplicationParams applicationParams) {
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
         this.dataStoreRepository = dataStoreRepository;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.hearingRepository = hearingRepository;
+        this.applicationParams = applicationParams;
     }
 
     @Override
     public void verifyAccess(Long hearingId, List<String> requiredRoles) {
+        if (!applicationParams.isAccessControlEnabled()) {
+            return;
+        }
         List<RoleAssignment> filteredRoleAssignments = verifyRoleAccess(requiredRoles);
         verifyHearingStatus(filteredRoleAssignments, null, null, hearingId);
     }
 
     @Override
     public List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles) {
+        if (!applicationParams.isAccessControlEnabled()) {
+            return Collections.emptyList();
+        }
         return verifyCaseAccess(caseReference, requiredRoles, null);
     }
 
@@ -103,6 +114,9 @@ public class AccessControlServiceImpl implements AccessControlService {
 
     @Override
     public void verifyHearingCaseAccess(Long hearingId, List<String> requiredRoles) {
+        if (!applicationParams.isAccessControlEnabled()) {
+            return;
+        }
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository
             .getLatestCaseHearingRequest(hearingId);
         if (caseHearingRequestEntity != null) {

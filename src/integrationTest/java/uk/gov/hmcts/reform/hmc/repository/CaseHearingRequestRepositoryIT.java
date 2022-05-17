@@ -57,8 +57,14 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
             .getHearingDetails("9372710950276233");
         assertEquals(3, entities.size());
         assertEquals("9372710950276233", entities.get(0).getCaseReference());
+        assertEquals(2000000010L, entities.get(0).getHearing().getId());
+        assertEquals(20, entities.get(0).getVersionNumber());
         assertEquals("9372710950276233", entities.get(1).getCaseReference());
+        assertEquals(2000000009L, entities.get(1).getHearing().getId());
+        assertEquals(30, entities.get(1).getVersionNumber());
         assertEquals("9372710950276233", entities.get(2).getCaseReference());
+        assertEquals(2000000000L, entities.get(2).getHearing().getId());
+        assertEquals(10, entities.get(2).getVersionNumber());
         assertEquals("ABA1", entities.get(0).getHmctsServiceCode());
         assertEquals("HEARING_UPDATED", entities.get(0).getHearing().getStatus());
         assertEquals("HEARING_REQUESTED", entities.get(1).getHearing().getStatus());
@@ -76,7 +82,11 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
             .getHearingDetailsWithStatus("9372710950276233", "HEARING_REQUESTED");
         assertEquals(2, entities.size());
         assertEquals("9372710950276233", entities.get(0).getCaseReference());
+        assertEquals(2000000009L, entities.get(0).getHearing().getId());
+        assertEquals(30, entities.get(0).getVersionNumber());
         assertEquals("9372710950276233", entities.get(1).getCaseReference());
+        assertEquals(2000000000L, entities.get(1).getHearing().getId());
+        assertEquals(10, entities.get(1).getVersionNumber());
         assertEquals("ABA1", entities.get(0).getHmctsServiceCode());
         assertEquals("HEARING_REQUESTED", entities.get(0).getHearing().getStatus());
         assertEquals(3, entities.get(0).getHearing().getHearingResponses().get(0).getHearingResponseId());
