@@ -39,11 +39,16 @@ public class UnNotifiedHearingServiceTest {
     @Mock
     HearingResponseRepository hearingResponseRepository;
 
+    @Mock
+    AccessControlService accessControlService;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         unNotifiedHearingService =
-            new UnNotifiedHearingServiceImpl(caseHearingRequestRepository, hearingResponseRepository);
+            new UnNotifiedHearingServiceImpl(caseHearingRequestRepository,
+                                             hearingResponseRepository,
+                                             accessControlService);
     }
 
     @Nested

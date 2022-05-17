@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
@@ -13,20 +14,25 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
+import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.PartiesNotifiedService;
 
 import javax.validation.Valid;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 
 @RestController
 @Validated
 public class PartiesNotifiedController {
 
     private final PartiesNotifiedService partiesNotifiedService;
+    private AccessControlService accessControlService;
 
-    public PartiesNotifiedController(PartiesNotifiedService partiesNotifiedService) {
+    public PartiesNotifiedController(PartiesNotifiedService partiesNotifiedService,
+                                     AccessControlService accessControlService) {
         this.partiesNotifiedService = partiesNotifiedService;
+        this.accessControlService = accessControlService;
     }
 
     @PutMapping(path = "/partiesNotified/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -41,6 +47,7 @@ public class PartiesNotifiedController {
     public void putPartiesNotified(@RequestBody @Valid PartiesNotified partiesNotified,
                                    @PathVariable("id") Long hearingId,
                                    @RequestParam("version") int responseVersion) {
+        accessControlService.verifyAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         partiesNotifiedService.getPartiesNotified(hearingId, responseVersion, partiesNotified);
     }
 
@@ -52,6 +59,7 @@ public class PartiesNotifiedController {
         @ApiResponse(code = 404, message = "Hearing id not found")
     })
     public PartiesNotifiedResponses getPartiesNotified(@PathVariable("id") Long hearingId) {
+        accessControlService.verifyAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         return partiesNotifiedService.getPartiesNotified(hearingId);
     }
 }
