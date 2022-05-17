@@ -71,18 +71,18 @@ public class AccessControlServiceImpl implements AccessControlService {
     public List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles, Long hearingId) {
         List<RoleAssignment> filteredRoleAssignments = verifyRoleAccess(requiredRoles);
 
-//        DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
+        DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
         List<RoleAssignment> roleAssignmentsMatches = checkRoleAssignmentMatchesCaseDetails(
-            null,
+            caseDetails,
             filteredRoleAssignments
         );
-//        if (roleAssignmentsMatches.isEmpty()) {
-//            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
-//        }
+        if (roleAssignmentsMatches.isEmpty()) {
+            throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
+        }
         verifyHearingStatus(
             filteredRoleAssignments,
-            "caseDetails.getCaseTypeId()",
-            "caseDetails.getJurisdiction()",
+            caseDetails.getCaseTypeId(),
+            caseDetails.getJurisdiction(),
             hearingId
         );
         return roleAssignmentsMatches.stream().map(RoleAssignment::getRoleName).collect(Collectors.toList());
@@ -153,8 +153,8 @@ public class AccessControlServiceImpl implements AccessControlService {
     private List<RoleAssignment> checkRoleAssignmentMatchesCaseDetails(DataStoreCaseDetails caseDetails,
                                                                        List<RoleAssignment> roleAssignments) {
         return roleAssignments.stream()
-            .filter(roleAssignment -> checkJurisdiction(roleAssignment.getAttributes(), null)
-                && checkCaseType(roleAssignment.getAttributes(), null))
+            .filter(roleAssignment -> checkJurisdiction(roleAssignment.getAttributes(), caseDetails.getJurisdiction())
+                && checkCaseType(roleAssignment.getAttributes(), caseDetails.getCaseTypeId()))
             .collect(Collectors.toList());
 
     }

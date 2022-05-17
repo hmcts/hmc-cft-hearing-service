@@ -139,7 +139,7 @@ public class HearingManagementController {
                 HEARING_VIEWER,
                 LISTED_HEARING_VIEWER));
 
-        if(hasOnlyListedHearingViewerRoles(filteredRoleAssignments)) {
+        if (hasOnlyListedHearingViewerRoles(filteredRoleAssignments)) {
             if ((status == null || HearingStatus.LISTED.name().equals(status))) {
                 status = HearingStatus.LISTED.name();
             } else {
