@@ -268,11 +268,11 @@ class HearingManagementControllerTest {
             final String status = "UPDATED"; // for example
             doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "HEARING_REQUESTED"))
                 .when(hearingManagementService)
-                .getHearings(any(), any());
+                .getEmptyHearingsResponse(any());
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService);
             GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, status);
-            verify(hearingManagementService, times(1)).getHearings(any(), any());
+            verify(hearingManagementService, times(1)).getEmptyHearingsResponse(validCaseRef);
             assertEquals(hearingRequest.getCaseRef(), validCaseRef);
             assertTrue(hearingRequest.getCaseHearings().get(0).getHearingIsLinkedFlag());
         }
