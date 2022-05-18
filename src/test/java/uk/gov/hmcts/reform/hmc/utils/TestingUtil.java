@@ -84,6 +84,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_RANGE_T
 public class TestingUtil {
 
     public static final String CASE_REFERENCE = "1111222233334444";
+    public static final String INVALID_CASE_REFERENCE = "1111222233334445";
     public static Long ID = 2000000000L;
 
     private TestingUtil() {
@@ -101,7 +102,7 @@ public class TestingUtil {
         hearingWindow.setDateRangeEnd(LocalDate.parse("2017-03-01"));
         hearingWindow.setDateRangeStart(LocalDate.parse("2017-03-01"));
         hearingDetails.setHearingWindow(hearingWindow);
-        hearingDetails.setDuration(0);
+        hearingDetails.setDuration(360);
         hearingDetails.setNonStandardHearingDurationReasons(List.of("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         hearingDetails.setHearingIsLinkedFlag(Boolean.TRUE);
@@ -872,7 +873,6 @@ public class TestingUtil {
                                                               LocalDateTime requestTimestamp,
                                                               List<HearingDayDetailsEntity> hearingDayDetailsEntities) {
         HearingResponseEntity entity = new HearingResponseEntity();
-        entity.setResponseVersion(version);
         entity.setRequestVersion(requestVersion);
         entity.setRequestTimeStamp(requestTimestamp);
         entity.setHearingResponseId(2L);
@@ -1063,7 +1063,7 @@ public class TestingUtil {
         hearingWindow.setDateRangeEnd(LocalDate.parse("2017-03-01"));
         hearingWindow.setDateRangeStart(LocalDate.parse("2017-03-01"));
         hearingDetails.setHearingWindow(hearingWindow);
-        hearingDetails.setDuration(60);
+        hearingDetails.setDuration(360);
         hearingDetails.setNonStandardHearingDurationReasons(List.of("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         hearingDetails.setNumberOfPhysicalAttendees(4);

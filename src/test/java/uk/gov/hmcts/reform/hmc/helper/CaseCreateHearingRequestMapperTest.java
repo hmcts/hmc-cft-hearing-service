@@ -22,7 +22,7 @@ class CaseCreateHearingRequestMapperTest {
         CaseHearingRequestEntity expectedEntity = new CaseHearingRequestEntity();
         expectedEntity.setAutoListFlag(true);
         expectedEntity.setHearingType("Some hearing type");
-        expectedEntity.setRequiredDurationInMinutes(0);
+        expectedEntity.setRequiredDurationInMinutes(360);
         expectedEntity.setHearingPriorityType("Priority type");
         expectedEntity.setPrivateHearingRequiredFlag(true);
         expectedEntity.setHmctsServiceCode("ABA1");

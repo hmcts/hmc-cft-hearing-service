@@ -24,11 +24,9 @@
     <notes>
       <![CDATA[Temporary suppressions pending investigation]]>
     </notes>
-    <cve>CVE-2022-22968</cve>
     <cve>CVE-2022-22965</cve>
     <cve>CVE-2022-21724</cve>
     <cve>CVE-2020-36518</cve>
-    <cve>CVE-2022-22968</cve>
   </suppress>
   <suppress>
     <notes>
@@ -39,11 +37,5 @@
     <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
     <cve>CVE-2022-21724</cve>
   </suppress>
-  <suppress until="2022-05-25">
-    <notes><![CDATA[
-   file name: spring-core-5.3.18.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
-    <cve>CVE-2022-22968</cve>
-  </suppress>
+
 </suppressions>

@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
+import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
 import uk.gov.hmcts.reform.hmc.service.common.DefaultObjectMapperService;
 
@@ -57,6 +58,9 @@ class LinkHearingGroupControllerTest {
     @MockBean
     private LinkedHearingGroupService linkedHearingGroupService;
 
+    @MockBean
+    private AccessControlService accessControlService;
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -81,7 +85,8 @@ class LinkHearingGroupControllerTest {
                 )
             );
 
-            LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService);
+            LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService,
+                                                                                   accessControlService);
             var jsonNode = objectMapperService.convertObjectToJsonNode(hearingLinkGroupRequest);
             logger.info("jsonNode: {}", jsonNode);
             controller.validateLinkHearing(hearingLinkGroupRequest);
@@ -101,7 +106,8 @@ class LinkHearingGroupControllerTest {
                 )
             );
 
-            LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService);
+            LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService,
+                                                                                   accessControlService);
             controller.validateLinkHearing(hearingLinkGroupRequest);
             verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest);
         }

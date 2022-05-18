@@ -16,8 +16,11 @@ import java.util.List;
 @Repository
 public interface HearingResponseRepository extends JpaRepository<HearingResponseEntity, Long> {
 
-    @Query("from HearingResponseEntity hre where hre.hearing.id = :hearingId")
-    HearingResponseEntity getHearingResponse(Long hearingId);
+    @Query("from HearingResponseEntity hre where hre.hearing.id = :hearingId"
+            + " and hre.requestVersion = :requestVersion"
+            + " and hre.requestTimeStamp = :receivedDateTime")
+    HearingResponseEntity getHearingResponse(Long hearingId, Integer requestVersion,
+                                             LocalDateTime receivedDateTime);
 
     @Query("FROM HearingResponseEntity hre WHERE hre.hearing.id = :hearingId "
         + "AND hre.partiesNotifiedDateTime is NOT NULL")
