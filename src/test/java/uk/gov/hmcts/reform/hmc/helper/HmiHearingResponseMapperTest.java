@@ -663,6 +663,8 @@ class HmiHearingResponseMapperTest {
         hearingAttendee.setEntityId("entityId");
         hearing.setHearingAttendees(new ArrayList<>(List.of(hearingAttendee)));
 
+        hearing.setHearingSessions(new ArrayList<>());
+
         hearingResponse.setHearing(hearing);
         return hearingResponse;
     }
