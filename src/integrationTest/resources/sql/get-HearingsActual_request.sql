@@ -9,8 +9,8 @@ values (1, 'CASETYPE', 'CaseType1');
 insert into case_categories(case_hearing_id, case_category_type, case_category_value)
 values (1, 'CASETYPE', 'CaseType2');
 
-insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version)
-values (1, '2000000000', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '2', '1');
+insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)
+values (1, '2000000000', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '1');
 
 insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
 values (1, 1, '2021-01-10 11:20:00', '2021-08-10 11:20:00','venue1-1', 'room1-1');

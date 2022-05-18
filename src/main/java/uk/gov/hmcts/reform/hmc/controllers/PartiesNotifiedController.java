@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.controllers;
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.PartiesNotifiedService;
 
+import java.time.LocalDateTime;
 import javax.validation.Valid;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -46,9 +48,12 @@ public class PartiesNotifiedController {
     })
     public void putPartiesNotified(@RequestBody @Valid PartiesNotified partiesNotified,
                                    @PathVariable("id") Long hearingId,
-                                   @RequestParam("version") int responseVersion) {
+                                   @RequestParam("version") int requestVersion,
+                                   @RequestParam("received")
+                                   @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+                                   LocalDateTime receivedDateTime) {
         accessControlService.verifyAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
-        partiesNotifiedService.getPartiesNotified(hearingId, responseVersion, partiesNotified);
+        partiesNotifiedService.getPartiesNotified(hearingId, requestVersion, receivedDateTime, partiesNotified);
     }
 
     @GetMapping(path = "/partiesNotified/{id}", produces = APPLICATION_JSON_VALUE)

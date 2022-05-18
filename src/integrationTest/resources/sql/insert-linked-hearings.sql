@@ -16,10 +16,10 @@ VALUES ('7600000300', 'ACTIVE', 'ORDERED', '44447', '2021-08-10 11:20:00', 'good
 INSERT INTO hearing (hearing_id, is_linked_flag, linked_group_id, linked_order, status)
 VALUES ('2000000301', 't', '7600000300', '1', 'HEARING_REQUESTED');
 
-INSERT INTO hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version)
-VALUES (1, '2000000301', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '1', '1');
-INSERT INTO hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version)
-VALUES (2, '2000000301', '2021-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '2', '1');
+INSERT INTO hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)
+VALUES (1, '2000000301', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '1');
+INSERT INTO hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)
+VALUES (2, '2000000301', '2021-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '1');
 
 -- start date in the future, but hearing_response version is not latest
 INSERT INTO hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
@@ -36,8 +36,8 @@ VALUES ('7600000301', 'ACTIVE', 'ORDERED', '44448', '2021-08-10 11:20:00', 'good
 INSERT INTO hearing (hearing_id, is_linked_flag, linked_group_id, linked_order, status)
 VALUES ('2000000302', 't', '7600000301', '2', 'UPDATE_REQUESTED');
 
-INSERT INTO hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, response_version, request_version)
-VALUES (3, '2000000302', '2021-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '2', '1');
+INSERT INTO hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)
+VALUES (3, '2000000302', '2021-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '1');
 
 -- start date in the past for the latest hearing_response version
 INSERT INTO hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
