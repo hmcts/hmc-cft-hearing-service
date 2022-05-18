@@ -130,10 +130,8 @@ class MessageProcessorIT extends BaseTest {
                                                    + "      },\n"
                                                    + "      \"isPresiding\": false\n"
                                                    + "    }],\n"
-                                                   + "    \"hearingSessions\": {\n"
-                                                   + "      \"key\": \"<key>\",\n"
-                                                   + "      \"value\": \"<value>\"\n"
-                                                   + "    }\n"
+                                                   + "    \"hearingSessions\": [\n"
+                                                   + "    ]\n"
                                                    + "  }\n"
                                                    + "}");
 
