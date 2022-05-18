@@ -76,6 +76,7 @@ public class GetHearingResponseCommonCode {
                 CaseCategory caseCategory = new CaseCategory();
                 caseCategory.setCategoryType(caseCategoriesEntity.getCategoryType().getLabel());
                 caseCategory.setCategoryValue(caseCategoriesEntity.getCaseCategoryValue());
+                caseCategory.setCategoryParent(caseCategoriesEntity.getCaseCategoryParent());
                 caseCategories.add(caseCategory);
             }
         }
