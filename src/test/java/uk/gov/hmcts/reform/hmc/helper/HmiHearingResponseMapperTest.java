@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.hmc.client.hmi.HearingCode;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingJoh;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingRoom;
+import uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingVenue;
 import uk.gov.hmcts.reform.hmc.client.hmi.MetaResponse;
 import uk.gov.hmcts.reform.hmc.client.hmi.SyncResponse;
@@ -201,6 +202,29 @@ class HmiHearingResponseMapperTest {
                                  .getHearingDayPanel().size(), is(0))
         );
     }
+
+    @Test
+    void mapHmiHearingToEntityWhenHearingHasMissingOptionalFields_hman_204() {
+        HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
+            generateHmiHearing_WithMissingOptionalFields(),
+            generateHearingEntity("AWAITING_LISTING", 1)
+        );
+        assertThat(response.getHearingResponses().size(), is(2));
+        assertNull(response.getHearingResponses().get(1).getHearing()
+            .getHearingResponses().get(0).getListingStatus());
+        assertNull(response.getHearingResponses().get(1).getHearing()
+            .getHearingResponses().get(1).getHearingDayDetails().get(0).getStartDateTime());
+        assertNull(response.getHearingResponses().get(1).getHearing()
+            .getHearingResponses().get(1).getHearingDayDetails().get(0).getEndDateTime());
+        assertNull(response.getHearingResponses().get(1).getHearing()
+            .getHearingResponses().get(1).getHearingDayDetails().get(0).getVenueId());
+        assertNull(response.getHearingResponses().get(1).getHearing()
+            .getHearingResponses().get(1).getHearingDayDetails().get(0).getRoomId());
+        assertThat(response.getHearingResponses().get(1).getHearing()
+            .getHearingResponses().get(1).getHearingDayDetails().get(0)
+            .getHearingAttendeeDetails().size(), is(0));
+    }
+
 
     @Nested
     @DisplayName("getPostStateForSyncResponse")
@@ -458,10 +482,7 @@ class HmiHearingResponseMapperTest {
     private HearingResponse generateHmiHearing(String key, HearingCode hearingCode, int version, ListingStatus status) {
         HearingResponse hearingResponse = new HearingResponse();
 
-        MetaResponse metaResponse = new MetaResponse();
-        metaResponse.setTimestamp(LocalDateTime.parse("2021-08-10T12:20:00"));
-        metaResponse.setTransactionIdCaseHQ("transactionIdCaseHQ");
-        hearingResponse.setMeta(metaResponse);
+        hearingResponse.setMeta(generateMetaResponse());
 
         Hearing hearing = new Hearing();
         hearing.setHearingCaseVersionId(version);
@@ -470,14 +491,11 @@ class HmiHearingResponseMapperTest {
         hearing.setHearingEndTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         hearing.setHearingTranslatorRequired(true);
 
-        uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus hearingStatus =
-            new uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus();
+        HearingStatus hearingStatus = new HearingStatus();
         hearingStatus.setCode(status);
         hearing.setHearingStatus(hearingStatus);
 
-        HearingCaseStatus hearingCaseStatus = new HearingCaseStatus();
-        hearingCaseStatus.setCode(String.valueOf(HearingCode.getNumber(hearingCode)));
-        hearing.setHearingCaseStatus(hearingCaseStatus);
+        hearing.setHearingCaseStatus(generateHearingCaseStatus(hearingCode));
 
         HearingVenue hearingVenue = new HearingVenue();
         VenueLocationReference venueLocationReference = new VenueLocationReference();
@@ -510,10 +528,7 @@ class HmiHearingResponseMapperTest {
                                                                 ListingStatus status) {
         HearingResponse hearingResponse = new HearingResponse();
 
-        MetaResponse metaResponse = new MetaResponse();
-        metaResponse.setTimestamp(LocalDateTime.parse("2021-08-10T12:20:00"));
-        metaResponse.setTransactionIdCaseHQ("transactionIdCaseHQ");
-        hearingResponse.setMeta(metaResponse);
+        hearingResponse.setMeta(generateMetaResponse());
 
         Hearing hearing = new Hearing();
         hearing.setHearingCaseVersionId(version);
@@ -522,14 +537,11 @@ class HmiHearingResponseMapperTest {
         hearing.setHearingEndTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         hearing.setHearingTranslatorRequired(true);
 
-        uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus hearingStatus =
-            new uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus();
+        HearingStatus hearingStatus = new HearingStatus();
         hearingStatus.setCode(status);
         hearing.setHearingStatus(hearingStatus);
 
-        HearingCaseStatus hearingCaseStatus = new HearingCaseStatus();
-        hearingCaseStatus.setCode(String.valueOf(HearingCode.getNumber(hearingCode)));
-        hearing.setHearingCaseStatus(hearingCaseStatus);
+        hearing.setHearingCaseStatus(generateHearingCaseStatus(hearingCode));
 
         HearingVenue hearingVenue = new HearingVenue();
         VenueLocationReference venueLocationReference = new VenueLocationReference();
@@ -548,6 +560,34 @@ class HmiHearingResponseMapperTest {
 
         hearingResponse.setHearing(hearing);
         return hearingResponse;
+    }
+
+    private HearingResponse generateHmiHearing_WithMissingOptionalFields() {
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setMeta(generateMetaResponse());
+
+        Hearing hearing = new Hearing();
+        hearing.setHearingCaseVersionId(1);
+        hearing.setHearingCancellationReason("reason");
+        hearing.setHearingTranslatorRequired(true);
+        hearing.setHearingCaseStatus(generateHearingCaseStatus(HearingCode.EXCEPTION));
+
+        hearingResponse.setHearing(hearing);
+        return hearingResponse;
+
+    }
+
+    private MetaResponse generateMetaResponse() {
+        MetaResponse metaResponse = new MetaResponse();
+        metaResponse.setTimestamp(LocalDateTime.parse("2021-08-10T12:20:00"));
+        metaResponse.setTransactionIdCaseHQ("transactionIdCaseHQ");
+        return metaResponse;
+    }
+
+    private HearingCaseStatus generateHearingCaseStatus(HearingCode hearingCode) {
+        HearingCaseStatus hearingCaseStatus = new HearingCaseStatus();
+        hearingCaseStatus.setCode(String.valueOf(HearingCode.getNumber(hearingCode)));
+        return  hearingCaseStatus;
     }
 
     private HearingEntity generateHearingEntity(String status, int version) {
