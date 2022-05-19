@@ -99,10 +99,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.UPDATE_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
@@ -843,7 +841,6 @@ class HearingManagementServiceTest {
         @Test
         void deleteHearingShouldIncrementVersionNumber() {
             final long hearingId = 2000000000L;
-            DeleteHearingRequest hearingRequest = TestingUtil.deleteHearingRequest();
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingRepository.getStatus(hearingId)).thenReturn(DeleteHearingStatus.UPDATE_REQUESTED.name());
             HearingEntity hearingEntity = generateHearingEntity(
@@ -853,6 +850,8 @@ class HearingManagementServiceTest {
             );
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingMapper.modelToEntity(any(), any(), any())).thenReturn(hearingEntity);
+
+            DeleteHearingRequest hearingRequest = TestingUtil.deleteHearingRequest();
             mockDeleteRequest();
 
             HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
@@ -879,7 +878,7 @@ class HearingManagementServiceTest {
 
     @Nested
     @DisplayName("updateHearing")
-    class getUpdateHearing {
+    class UpdateHearing {
         @Test
         void updateHearingRequestShouldPassWithValidDetails() {
             final long hearingId = 2000000000L;
