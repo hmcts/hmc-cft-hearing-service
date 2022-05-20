@@ -37,6 +37,8 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1059,6 +1061,22 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(put(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem((INVALID_HEARING_WINDOW))))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn400WhenHearingWindowHasUnexpectedFieldsInGroup() throws Exception {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.getHearingDetails().getHearingWindow().setDateRangeStart(LocalDate.parse("2017-03-01"));
+        hearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(LocalDate.parse("2017-03-01"));
+        hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
+        mockMvc.perform(put(url + "/2000000000")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.errors", hasSize(1)))
             .andExpect(jsonPath("$.errors", hasItem((INVALID_HEARING_WINDOW))))

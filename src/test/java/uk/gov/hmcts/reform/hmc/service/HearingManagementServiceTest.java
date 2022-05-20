@@ -330,6 +330,40 @@ class HearingManagementServiceTest {
         }
 
         @Test
+        void shouldFailIfHearingWindowDetailsHasUnexpectedFieldsInGroup_firstScenario() {
+            HearingRequest hearingRequest = new HearingRequest();
+            hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+            hearingRequest.getHearingDetails().getHearingWindow().setDateRangeStart(LocalDate.parse("2017-03-01"));
+            hearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(LocalDate.parse("2017-03-01"));
+            hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
+            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .saveHearingRequest(hearingRequest));
+            assertEquals("Hearing window details are required", exception.getMessage());
+        }
+
+        @Test
+        void shouldFailIfHearingWindowDetailsHasUnexpectedFieldsInGroup_secondScenario() {
+            HearingRequest hearingRequest = new HearingRequest();
+            hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+            hearingRequest.getHearingDetails().getHearingWindow().setDateRangeStart(LocalDate.parse("2017-03-01"));
+            hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
+            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .saveHearingRequest(hearingRequest));
+            assertEquals("Hearing window details are required", exception.getMessage());
+        }
+
+        @Test
+        void shouldFailIfHearingWindowDetailsHasUnexpectedFieldsInGroup_thirdScenario() {
+            HearingRequest hearingRequest = new HearingRequest();
+            hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+            hearingRequest.getHearingDetails().getHearingWindow().setDateRangeStart(LocalDate.parse("2017-03-01"));
+            hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
+            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .saveHearingRequest(hearingRequest));
+            assertEquals("Hearing window details are required", exception.getMessage());
+        }
+
+        @Test
         void shouldFailIfNullHearingRequest() {
             HearingRequest hearingRequest = null;
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
