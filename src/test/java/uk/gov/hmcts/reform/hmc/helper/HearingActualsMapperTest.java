@@ -183,6 +183,7 @@ class HearingActualsMapperTest {
                         .getActualAttendeeIndividualDetail().getLastName()
         );
     }
+
     @Test
     void processHearingRequestToEntityForIndWhenPauseTimesIsNull() {
         ActualHearingDayPartyDetail individualDetails = new ActualHearingDayPartyDetail();
