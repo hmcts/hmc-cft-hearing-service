@@ -22,6 +22,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 @Table(name = "actual_hearing")
@@ -55,6 +56,9 @@ public class ActualHearingEntity implements Serializable {
     @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
+    @Column(name = "updated_date_time")
+    private LocalDateTime updatedDateTime;
+
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "hearing_response_id")
     private HearingResponseEntity hearingResponse;
@@ -66,5 +70,10 @@ public class ActualHearingEntity implements Serializable {
     @PrePersist
     public void prePersist() {
         createdDateTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedDateTime = LocalDateTime.now();
     }
 }

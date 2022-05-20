@@ -54,6 +54,12 @@ public class HearingEntity {
     @Column(name = "error_description")
     private String errorDescription;
 
+    @Column(name = "created_date_time")
+    private LocalDateTime createdDateTime;
+
+    @Column(name = "updated_date_time")
+    private LocalDateTime updatedDateTime;
+
     @OneToMany(mappedBy = "hearing", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<CaseHearingRequestEntity> caseHearingRequests = new ArrayList<>();
@@ -71,12 +77,6 @@ public class HearingEntity {
     @Column(name = "is_linked_flag")
     private Boolean isLinkedFlag;
 
-    @Column(name = "created_date_time")
-    private LocalDateTime createdDateTime;
-
-    @Column(name = "updated_date_time")
-    private LocalDateTime updatedDateTime;
-
     @PrePersist
     public void prePersist() {
         createdDateTime = LocalDateTime.now();
@@ -91,7 +91,7 @@ public class HearingEntity {
         return getCaseHearingRequests().stream()
             .max(Comparator.comparingInt(CaseHearingRequestEntity::getVersionNumber))
             .orElseThrow(() -> new ResourceNotFoundException("Cannot find latest case "
-                                                                 + "hearing request for hearing " + id));
+                + "hearing request for hearing " + id));
     }
 
     public CaseHearingRequestEntity getCaseHearingRequest(int version) {
@@ -112,9 +112,9 @@ public class HearingEntity {
     public Optional<HearingResponseEntity> getHearingResponseForLatestRequest() {
         Integer latestRequestVersion = getLatestRequestVersion();
         return hasHearingResponses() ? getHearingResponses().stream()
-            .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
-            .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp))
-            : Optional.empty();
+                .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
+                .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp))
+                :  Optional.empty();
     }
 
     /**

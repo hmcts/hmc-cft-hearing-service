@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 @Table(name = "actual_hearing_day")
@@ -44,6 +45,9 @@ public class ActualHearingDayEntity implements Serializable {
     @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
+    @Column(name = "updated_date_time")
+    private LocalDateTime updatedDateTime;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actual_hearing_id")
     private ActualHearingEntity actualHearing;
@@ -59,5 +63,10 @@ public class ActualHearingDayEntity implements Serializable {
     @PrePersist
     public void prePersist() {
         createdDateTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedDateTime = LocalDateTime.now();
     }
 }
