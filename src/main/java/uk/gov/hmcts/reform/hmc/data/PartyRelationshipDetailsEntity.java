@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 @Table(name = "party_relationship_details")
@@ -30,6 +32,9 @@ public class PartyRelationshipDetailsEntity {
     @Column(name = "party_relationship_details_id")
     private Long partyRelationshipDetailsId;
 
+    @Column(name ="created_date_time")
+    private LocalDateTime createdDateTime;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "source_tech_party_id")
     private HearingPartyEntity sourceTechParty;
@@ -40,4 +45,9 @@ public class PartyRelationshipDetailsEntity {
 
     @Column(name = "relationship_type")
     private String relationshipType;
+
+    @PrePersist
+    public void prePersist() {
+        createdDateTime = LocalDateTime.now();
+    }
 }

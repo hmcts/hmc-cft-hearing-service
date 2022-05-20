@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,6 +21,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 @Table(name = "actual_hearing")
@@ -50,6 +52,9 @@ public class ActualHearingEntity implements Serializable {
     @Column(name = "hearing_result_date", nullable = false)
     private LocalDate hearingResultDate;
 
+    @Column(name ="created_date_time")
+    private LocalDateTime createdDateTime;
+
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "hearing_response_id")
     private HearingResponseEntity hearingResponse;
@@ -57,4 +62,9 @@ public class ActualHearingEntity implements Serializable {
     @OneToMany(mappedBy = "actualHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ActualHearingDayEntity> actualHearingDay;
+
+    @PrePersist
+    public void prePersist() {
+        createdDateTime = LocalDateTime.now();
+    }
 }

@@ -6,6 +6,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -21,6 +22,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
@@ -67,6 +70,22 @@ public class HearingEntity {
 
     @Column(name = "is_linked_flag")
     private Boolean isLinkedFlag;
+
+    @Column(name ="created_date_time")
+    private LocalDateTime createdDateTime;
+
+    @Column(name ="updated_date_time")
+    private LocalDateTime updatedDateTime;
+
+    @PrePersist
+    public void prePersist() {
+        createdDateTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedDateTime = LocalDateTime.now();
+    }
 
     public CaseHearingRequestEntity getLatestCaseHearingRequest() {
         return getCaseHearingRequests().stream()

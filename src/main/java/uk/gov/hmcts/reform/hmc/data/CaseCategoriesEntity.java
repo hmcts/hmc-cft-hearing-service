@@ -4,6 +4,7 @@ import lombok.Data;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
@@ -40,8 +42,16 @@ public class CaseCategoriesEntity {
     @Column(name = "case_category_value")
     private String caseCategoryValue;
 
+    @Column(name ="created_date_time")
+    private LocalDateTime createdDateTime;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")
     private CaseHearingRequestEntity caseHearing;
+
+    @PrePersist
+    public void prePersist() {
+        createdDateTime = LocalDateTime.now();
+    }
 
 }

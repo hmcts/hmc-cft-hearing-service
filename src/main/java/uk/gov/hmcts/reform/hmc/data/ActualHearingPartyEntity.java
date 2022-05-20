@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.data;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 @Table(name = "actual_hearing_party")
@@ -37,6 +39,9 @@ public class ActualHearingPartyEntity implements Serializable {
     @Column(name = "did_not_attend_flag")
     private Boolean didNotAttendFlag;
 
+    @Column(name ="created_date_time")
+    private LocalDateTime createdDateTime;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actual_hearing_day_id")
     private ActualHearingDayEntity actualHearingDay;
@@ -46,5 +51,10 @@ public class ActualHearingPartyEntity implements Serializable {
 
     @OneToOne(mappedBy = "actualHearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private ActualAttendeeIndividualDetailEntity actualAttendeeIndividualDetail;
+
+    @PrePersist
+    public void prePersist() {
+        createdDateTime = LocalDateTime.now();
+    }
 
 }

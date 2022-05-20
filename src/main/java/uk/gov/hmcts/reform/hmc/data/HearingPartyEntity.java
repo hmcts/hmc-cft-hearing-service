@@ -4,6 +4,7 @@ import lombok.Data;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
@@ -50,6 +52,9 @@ public class HearingPartyEntity {
     @Column(name = "party_role_type")
     private String partyRoleType;
 
+    @Column(name ="created_date_time")
+    private LocalDateTime createdDateTime;
+
     @OneToOne(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private IndividualDetailEntity individualDetailEntity;
 
@@ -70,4 +75,9 @@ public class HearingPartyEntity {
 
     @OneToMany(mappedBy = "sourceTechParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntity;
+
+    @PrePersist
+    public void prePersist() {
+        createdDateTime = LocalDateTime.now();
+    }
 }

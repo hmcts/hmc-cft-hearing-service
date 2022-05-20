@@ -21,6 +21,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
@@ -50,6 +51,9 @@ public class HearingResponseEntity {
 
     @Column(name = "list_assist_transaction_id", nullable = false)
     private String listAssistTransactionId;
+
+    @Column(name ="created_date_time")
+    private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hearing_id")
@@ -88,5 +92,10 @@ public class HearingResponseEntity {
 
     public boolean hasHearingDayDetails() {
         return getHearingDayDetails() != null && !getHearingDayDetails().isEmpty();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        createdDateTime = LocalDateTime.now();
     }
 }

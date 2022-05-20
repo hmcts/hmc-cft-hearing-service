@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 @Table(name = "actual_hearing_day_pauses")
@@ -30,7 +31,15 @@ public class ActualHearingDayPausesEntity {
     @Column(name = "resume_date_time", nullable = false)
     private LocalDateTime resumeDateTime;
 
+    @Column(name ="created_date_time")
+    private LocalDateTime createdDateTime;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actual_hearing_day_id")
     private ActualHearingDayEntity actualHearingDay;
+
+    @PrePersist
+    public void prePersist() {
+        createdDateTime = LocalDateTime.now();
+    }
 }

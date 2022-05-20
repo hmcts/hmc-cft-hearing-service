@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 
@@ -58,6 +59,14 @@ public class LinkedGroupDetailsAudit {
 
     @Column(name = "status", nullable = false)
     private String status;
+
+    @Column(name ="created_date_time")
+    private LocalDateTime createdDateTime;
+
+    @PrePersist
+    public void prePersist() {
+        createdDateTime = LocalDateTime.now();
+    }
 
 }
 

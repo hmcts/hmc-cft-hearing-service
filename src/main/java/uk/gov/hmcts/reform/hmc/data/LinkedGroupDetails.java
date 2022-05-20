@@ -15,6 +15,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 @Table(name = "linked_group_details")
@@ -55,4 +56,12 @@ public class LinkedGroupDetails {
 
     @Column(name = "linked_group_latest_version")
     private Long linkedGroupLatestVersion;
+
+    @Column(name ="created_date_time")
+    private LocalDateTime createdDateTime;
+
+    @PrePersist
+    public void prePersist() {
+        createdDateTime = LocalDateTime.now();
+    }
 }
