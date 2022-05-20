@@ -36,7 +36,6 @@ import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayParties;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPartyDetail;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPauseDayTime;
-import uk.gov.hmcts.reform.hmc.model.ActualHearingOrganisationDetail;
 import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
@@ -624,13 +623,13 @@ public class TestingUtil {
 
     public static ActualHearingDayParties getHearingActualDayParties(
         String partyId, String partyRole, ActualHearingDayPartyDetail individualDetails,
-        ActualHearingOrganisationDetail organisationDetails, String partyChannelSubType, Boolean didNotAttendFlag,
+            String actualOrganisationName, String partyChannelSubType, Boolean didNotAttendFlag,
         String representedParty) {
         ActualHearingDayParties actualHearingDayParties = new ActualHearingDayParties();
         actualHearingDayParties.setActualPartyId(partyId);
         actualHearingDayParties.setPartyRole(partyRole);
         actualHearingDayParties.setIndividualDetails(individualDetails);
-        actualHearingDayParties.setOrganisationDetails(organisationDetails);
+        actualHearingDayParties.setActualOrganisationName(actualOrganisationName);
         actualHearingDayParties.setPartyChannelSubType(partyChannelSubType);
         actualHearingDayParties.setDidNotAttendFlag(didNotAttendFlag);
         actualHearingDayParties.setRepresentedParty(representedParty);

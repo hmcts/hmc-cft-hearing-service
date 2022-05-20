@@ -16,5 +16,5 @@ public class ActualDayParty {
     private Boolean didNotAttendFlag;
     private String representedParty;
     private ActualIndividualDetails actualIndividualDetails;
-    private ActualOrganisationDetails actualOrganisationDetails;
+    private String actualOrganisationName;
 }

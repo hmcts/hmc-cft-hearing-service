@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayParties;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPartyDetail;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPauseDayTime;
-import uk.gov.hmcts.reform.hmc.model.ActualHearingOrganisationDetail;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.model.HearingActualsOutcome;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
@@ -35,22 +34,21 @@ class HearingActualsMapperTest {
 
     @Test
     void processHearingRequestToEntityForOrg() {
-        ActualHearingOrganisationDetail organisationDetail = new ActualHearingOrganisationDetail();
-        organisationDetail.setName("name");
         ActualHearingDayPauseDayTime hearingDayPauseDayTime = TestingUtil.getHearingActualDayPause(
             LocalDateTime.of(2022, 01, 28, 10, 00),
             LocalDateTime.of(2022, 01, 28, 12, 00)
         );
+        final String actualOrganisationName = "name";
         ActualHearingDayParties hearingDayParty = TestingUtil.getHearingActualDayParties(
             "1",
             "RoleType1",
             null,
-            organisationDetail,
+                actualOrganisationName,
             "SubType1",
             false,
             null
         );
-        HearingActual hearingActual = getHearingActual(null, organisationDetail,
+        HearingActual hearingActual = getHearingActual(null, actualOrganisationName,
                                                        "2", List.of(hearingDayPauseDayTime),
                                                        List.of(hearingDayParty)
         );
@@ -221,8 +219,8 @@ class HearingActualsMapperTest {
         assertEquals(LocalDateTime.of(2022, 01, 29, 17, 30),
                      response.getActualHearingDay().get(1).getEndDateTime());
 
-        assertTrue(response.getActualHearingDay().get(1).getActualHearingParty().get(0)
-                       .getActualHearingDay().getActualHearingDayPauses().size() == 2);
+        assertEquals(2, response.getActualHearingDay().get(1).getActualHearingParty().get(0)
+                       .getActualHearingDay().getActualHearingDayPauses().size());
         assertEquals(
             LocalDateTime.of(2022, 01, 29, 12, 00),
             response.getActualHearingDay().get(1).getActualHearingDayPauses().get(0).getPauseDateTime()
@@ -319,12 +317,10 @@ class HearingActualsMapperTest {
     }
 
     private HearingActual getHearingActual(ActualHearingDayPartyDetail individualDetails,
-                                           ActualHearingOrganisationDetail organisationDetail, String partyId,
+                                           String actualOrganisationName, String partyId,
                                            List<ActualHearingDayPauseDayTime> hearingDayPauseDayTimes,
                                            List<ActualHearingDayParties> hearingDayParties) {
         ActualHearingDay actualHearingDay1 = generateHearingDay1(
-            individualDetails,
-            organisationDetail,
             hearingDayPauseDayTimes,
             hearingDayParties
         );
@@ -351,8 +347,7 @@ class HearingActualsMapperTest {
         ActualHearingDayPartyDetail indDetails1 = new ActualHearingDayPartyDetail();
         indDetails1.setFirstName("TestRepFirstName");
         indDetails1.setLastName("TestRepLastName");
-        ActualHearingOrganisationDetail orgDetail = new ActualHearingOrganisationDetail();
-        orgDetail.setName("Organisation Name");
+        final String actualOrganisationName = "Organisation Name";
         ActualHearingDayParties hearingDayParty2 = TestingUtil.getHearingActualDayParties(
             "1",
             "RoleType1",
@@ -375,7 +370,7 @@ class HearingActualsMapperTest {
             "3",
             "RoleType3",
             null,
-            orgDetail,
+                actualOrganisationName,
             "SubType2",
             false,
             null
@@ -397,9 +392,7 @@ class HearingActualsMapperTest {
         return actualHearingDay2;
     }
 
-    private ActualHearingDay generateHearingDay1(ActualHearingDayPartyDetail individualDetails,
-                                                 ActualHearingOrganisationDetail organisationDetail,
-                                                 List<ActualHearingDayPauseDayTime> hearingDayPauseDayTimes,
+    private ActualHearingDay generateHearingDay1(List<ActualHearingDayPauseDayTime> hearingDayPauseDayTimes,
                                                  List<ActualHearingDayParties> hearingDayParties) {
         ActualHearingDay actualHearingDay1 = TestingUtil.getHearingActualDay(
             LocalDate.of(2022, 01, 28),
