@@ -54,7 +54,7 @@ public class CaseClassificationsMapper {
                                                 List<CaseCategory> caseClassificationSubTypes) {
 
         val categoryParents = caseClassificationSubTypes.stream()
-            .map(element -> element.getCategoryParent())
+            .map(CaseCategory::getCategoryParent)
             .collect(Collectors.toList());
 
         caseTypeValues.stream()
