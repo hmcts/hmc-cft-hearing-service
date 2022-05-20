@@ -63,7 +63,6 @@ public class CaseClassificationsMapper {
                     throw new BadRequestException(CASE_TYPE_CASE_SUBTYPE_ERROR);
                 }
             });
-        return;
     }
 
     private CaseClassification buildCaseClassification(String hmctsServiceCode, CaseCategory caseClassificationSubType,
