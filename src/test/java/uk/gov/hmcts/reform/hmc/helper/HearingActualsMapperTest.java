@@ -110,6 +110,80 @@ class HearingActualsMapperTest {
     }
 
     @Test
+    void processHearingRequestToEntityForNullIndividual() {
+        final String actualOrganisationName = "New Organisation";
+        ActualHearingDayPauseDayTime hearingDayPauseDayTime = TestingUtil.getHearingActualDayPause(
+                LocalDateTime.of(2022, 01, 28, 10, 00),
+                LocalDateTime.of(2022, 01, 28, 12, 00)
+        );
+        ActualHearingDayParties hearingDayParty = TestingUtil.getHearingActualDayParties(
+                "1",
+                "RoleType1",
+                null,
+                actualOrganisationName,
+                "SubType1",
+                false,
+                null
+        );
+        HearingActual hearingActual = getHearingActual(null,
+                actualOrganisationName,
+                "2", List.of(hearingDayPauseDayTime),
+                List.of(hearingDayParty)
+        );
+
+        HearingActualsMapper actualsMapper = new HearingActualsMapper();
+        ActualHearingEntity response = actualsMapper.toActualHearingEntity(hearingActual);
+
+        assertCommonFields(response);
+        assertEquals(
+                actualOrganisationName,
+                response.getActualHearingDay().get(0).getActualHearingParty().get(0)
+                        .getActualAttendeeIndividualDetail().getPartyOrganisationName()
+        );
+    }
+
+    @Test
+    void processHearingRequestToEntityForNonNullIndividual() {
+        ActualHearingDayPartyDetail individualDetails = new ActualHearingDayPartyDetail();
+        final String fName = "fname";
+        final String lName = "lname";
+        individualDetails.setFirstName(fName);
+        individualDetails.setLastName(lName);
+        ActualHearingDayPauseDayTime hearingDayPauseDayTime = TestingUtil.getHearingActualDayPause(
+                LocalDateTime.of(2022, 01, 28, 10, 00),
+                LocalDateTime.of(2022, 01, 28, 12, 00)
+        );
+        ActualHearingDayParties hearingDayParty = TestingUtil.getHearingActualDayParties(
+                "1",
+                "RoleType1",
+                individualDetails,
+                null,
+                "SubType1",
+                false,
+                null
+        );
+        HearingActual hearingActual = getHearingActual(individualDetails,
+                null,
+                "2", List.of(hearingDayPauseDayTime),
+                List.of(hearingDayParty)
+        );
+
+        HearingActualsMapper actualsMapper = new HearingActualsMapper();
+        ActualHearingEntity response = actualsMapper.toActualHearingEntity(hearingActual);
+
+        assertCommonFields(response);
+        assertEquals(
+                fName,
+                response.getActualHearingDay().get(0).getActualHearingParty().get(0)
+                        .getActualAttendeeIndividualDetail().getFirstName()
+        );
+        assertEquals(
+                lName,
+                response.getActualHearingDay().get(0).getActualHearingParty().get(0)
+                        .getActualAttendeeIndividualDetail().getLastName()
+        );
+    }
+    @Test
     void processHearingRequestToEntityForIndWhenPauseTimesIsNull() {
         ActualHearingDayPartyDetail individualDetails = new ActualHearingDayPartyDetail();
         individualDetails.setFirstName("fname");
