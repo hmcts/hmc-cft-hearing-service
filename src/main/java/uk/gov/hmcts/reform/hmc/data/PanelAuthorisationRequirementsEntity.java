@@ -40,7 +40,7 @@ public class PanelAuthorisationRequirementsEntity {
     @Column(name = "authorisation_subtype")
     private String authorisationSubType;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @PrePersist

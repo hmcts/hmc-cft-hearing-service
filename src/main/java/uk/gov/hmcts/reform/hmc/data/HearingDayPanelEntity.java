@@ -40,7 +40,7 @@ public class HearingDayPanelEntity {
     @Column(name = "is_presiding")
     private Boolean isPresiding;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @PrePersist

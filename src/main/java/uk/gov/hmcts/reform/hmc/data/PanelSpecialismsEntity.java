@@ -37,7 +37,7 @@ public class PanelSpecialismsEntity {
     @Column(name = "specialism_type")
     private String specialismType;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @PrePersist

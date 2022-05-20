@@ -39,7 +39,7 @@ public class ActualHearingPartyEntity implements Serializable {
     @Column(name = "did_not_attend_flag")
     private Boolean didNotAttendFlag;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)

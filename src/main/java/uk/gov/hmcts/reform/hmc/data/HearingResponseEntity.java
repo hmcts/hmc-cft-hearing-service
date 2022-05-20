@@ -52,7 +52,7 @@ public class HearingResponseEntity {
     @Column(name = "list_assist_transaction_id", nullable = false)
     private String listAssistTransactionId;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)

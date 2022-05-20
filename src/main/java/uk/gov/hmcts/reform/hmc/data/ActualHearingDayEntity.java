@@ -41,7 +41,7 @@ public class ActualHearingDayEntity implements Serializable {
     @Column(name = "end_date_time", nullable = false)
     private LocalDateTime endDateTime;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)

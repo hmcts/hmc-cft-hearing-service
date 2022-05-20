@@ -44,7 +44,7 @@ public class PanelUserRequirementsEntity {
     @Column(name = "user_type")
     private String userType;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @Enumerated(EnumType.STRING)

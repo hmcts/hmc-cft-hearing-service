@@ -39,7 +39,7 @@ public class OrganisationDetailEntity {
     @Column(name = "hmcts_organisation_reference")
     private String hmctsOrganisationReference;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @OneToOne(fetch = FetchType.LAZY)

@@ -71,10 +71,10 @@ public class HearingEntity {
     @Column(name = "is_linked_flag")
     private Boolean isLinkedFlag;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
-    @Column(name ="updated_date_time")
+    @Column(name = "updated_date_time")
     private LocalDateTime updatedDateTime;
 
     @PrePersist
@@ -91,7 +91,7 @@ public class HearingEntity {
         return getCaseHearingRequests().stream()
             .max(Comparator.comparingInt(CaseHearingRequestEntity::getVersionNumber))
             .orElseThrow(() -> new ResourceNotFoundException("Cannot find latest case "
-                + "hearing request for hearing " + id));
+                                                                 + "hearing request for hearing " + id));
     }
 
     public CaseHearingRequestEntity getCaseHearingRequest(int version) {
@@ -112,9 +112,9 @@ public class HearingEntity {
     public Optional<HearingResponseEntity> getHearingResponseForLatestRequest() {
         Integer latestRequestVersion = getLatestRequestVersion();
         return hasHearingResponses() ? getHearingResponses().stream()
-                .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
-                .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp))
-                :  Optional.empty();
+            .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
+            .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp))
+            : Optional.empty();
     }
 
     /**

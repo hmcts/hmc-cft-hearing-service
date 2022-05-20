@@ -33,7 +33,7 @@ public class NonStandardDurationsEntity {
     @Column(name = "non_standard_hearing_duration_reason_type")
     private String nonStandardHearingDurationReasonType;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -32,7 +32,7 @@ public class ActualPartyRelationshipDetailEntity implements Serializable {
     @Column(name = "actual_party_relationship_id")
     private Long actualPartyRelationshipId;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)

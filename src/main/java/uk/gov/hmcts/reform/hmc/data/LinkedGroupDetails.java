@@ -57,7 +57,7 @@ public class LinkedGroupDetails {
     @Column(name = "linked_group_latest_version")
     private Long linkedGroupLatestVersion;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @PrePersist

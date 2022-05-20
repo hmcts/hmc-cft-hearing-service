@@ -39,7 +39,7 @@ public class LinkedHearingDetailsAudit {
     @Column(name = "linked_order")
     private Long linkedOrder;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @PrePersist

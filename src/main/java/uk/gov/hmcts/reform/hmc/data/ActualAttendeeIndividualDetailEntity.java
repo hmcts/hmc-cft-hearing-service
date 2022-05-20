@@ -38,7 +38,7 @@ public class ActualAttendeeIndividualDetailEntity implements Serializable {
     @Column(name = "party_actual_sub_channel_type", nullable = false)
     private String partyActualSubChannelType;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)

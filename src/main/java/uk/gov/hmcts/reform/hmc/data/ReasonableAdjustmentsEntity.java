@@ -33,7 +33,7 @@ public class ReasonableAdjustmentsEntity {
     @Column(name = "reasonable_adjustment_code")
     private String reasonableAdjustmentCode;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)

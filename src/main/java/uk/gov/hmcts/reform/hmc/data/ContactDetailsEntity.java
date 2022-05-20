@@ -36,7 +36,7 @@ public class ContactDetailsEntity {
     @Column(name = "contact_details")
     private String contactDetails;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)

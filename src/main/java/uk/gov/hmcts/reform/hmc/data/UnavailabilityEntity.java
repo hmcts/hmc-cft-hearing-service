@@ -55,7 +55,7 @@ public class UnavailabilityEntity {
     @Column(name = "unavailability_type")
     private String unAvailabilityType;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -52,7 +52,7 @@ public class HearingPartyEntity {
     @Column(name = "party_role_type")
     private String partyRoleType;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @OneToOne(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)

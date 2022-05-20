@@ -33,7 +33,7 @@ public class CancellationReasonsEntity {
     @Column(name = "cancellation_reason_type")
     private String cancellationReasonType;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @OneToOne(fetch = FetchType.LAZY)

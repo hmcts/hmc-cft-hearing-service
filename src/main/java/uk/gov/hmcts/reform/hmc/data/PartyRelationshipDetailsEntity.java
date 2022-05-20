@@ -28,11 +28,11 @@ public class PartyRelationshipDetailsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
-            generator = "party_relationship_details_id_seq")
+        generator = "party_relationship_details_id_seq")
     @Column(name = "party_relationship_details_id")
     private Long partyRelationshipDetailsId;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)

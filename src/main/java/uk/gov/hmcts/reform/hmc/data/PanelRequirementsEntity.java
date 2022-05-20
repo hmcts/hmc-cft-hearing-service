@@ -37,7 +37,7 @@ public class PanelRequirementsEntity {
     @Column(name = "role_type")
     private String roleType;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @PrePersist

@@ -52,7 +52,7 @@ public class ActualHearingEntity implements Serializable {
     @Column(name = "hearing_result_date", nullable = false)
     private LocalDate hearingResultDate;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

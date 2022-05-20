@@ -31,7 +31,7 @@ public class ActualHearingDayPausesEntity {
     @Column(name = "resume_date_time", nullable = false)
     private LocalDateTime resumeDateTime;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -61,7 +61,7 @@ public class IndividualDetailEntity {
     @Column(name = "custody_status")
     private String custodyStatus;
 
-    @Column(name ="created_date_time")
+    @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
     @PrePersist
