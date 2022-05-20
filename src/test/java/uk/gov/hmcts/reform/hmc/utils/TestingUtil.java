@@ -386,6 +386,10 @@ public class TestingUtil {
         return request;
     }
 
+    public static UpdateHearingRequest updateHearingRequest() {
+        return updateHearingRequest(1);
+    }
+
     public static UpdateHearingRequest updateHearingRequest(int version) {
         UpdateHearingRequest request = new UpdateHearingRequest();
         HearingDetails hearingDetails = hearingDetails();
@@ -410,10 +414,6 @@ public class TestingUtil {
         requestDetails.setVersionNumber(version);
         request.setRequestDetails(requestDetails);
         return request;
-    }
-
-    public static UpdateHearingRequest updateHearingRequest() {
-        return updateHearingRequest(1);
     }
 
     public static UpdateHearingRequest validUpdateHearingRequest() {
