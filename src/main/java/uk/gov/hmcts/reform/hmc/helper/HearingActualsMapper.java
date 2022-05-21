@@ -111,7 +111,7 @@ public class HearingActualsMapper {
         if (actualHearingDayParty.getActualPartyId() == null) {
             if (actualHearingDayParty.getIndividualDetails() != null) {
                 partyEntity.setPartyId(String.valueOf(actualHearingDayParty.getIndividualDetails().hashCode()));
-            } else if (actualHearingDayParty.getActualOrganisationName() != null) {
+            } else {
                 partyEntity.setPartyId(String.valueOf(actualHearingDayParty.getActualOrganisationName().hashCode()));
             }
         } else {
@@ -164,10 +164,7 @@ public class HearingActualsMapper {
             individualDetailEntity.setFirstName(individualDetails.getFirstName());
             individualDetailEntity.setLastName(individualDetails.getLastName());
         }
-
-        if (null != actualHearingDayParty.getActualOrganisationName()) {
-            individualDetailEntity.setPartyOrganisationName(actualHearingDayParty.getActualOrganisationName());
-        }
+        individualDetailEntity.setPartyOrganisationName(actualHearingDayParty.getActualOrganisationName());
         individualDetailEntity.setPartyActualSubChannelType(actualHearingDayParty.getPartyChannelSubType());
         individualDetailEntity.setActualHearingParty(partyEntity);
 
