@@ -33,7 +33,7 @@ class HearingActualsMapperTest {
     }
 
     @Test
-    void processHearingRequestToEntityForOrg() {
+    void processHearingRequestToEntityForOrg1DidNotAttendFalse() {
         ActualHearingDayPauseDayTime hearingDayPauseDayTime = TestingUtil.getHearingActualDayPause(
             LocalDateTime.of(2022, 01, 28, 10, 00),
             LocalDateTime.of(2022, 01, 28, 12, 00)
@@ -57,6 +57,8 @@ class HearingActualsMapperTest {
         ActualHearingEntity response = actualsMapper.toActualHearingEntity(hearingActual);
 
         assertCommonFields(response);
+        assertEquals("1", response.getActualHearingDay().get(0).getActualHearingParty().get(0).getPartyId());
+        assertFalse(response.getActualHearingDay().get(0).getActualHearingParty().get(0).getDidNotAttendFlag());
         assertEquals(
             "name",
             response.getActualHearingDay().get(0).getActualHearingParty().get(0)
@@ -66,6 +68,79 @@ class HearingActualsMapperTest {
                        .getActualAttendeeIndividualDetail().getFirstName());
         assertNull(response.getActualHearingDay().get(0).getActualHearingParty().get(0)
                        .getActualAttendeeIndividualDetail().getLastName());
+    }
+
+    @Test
+    void processHearingRequestToEntityForOrg2DidNotAttendTrue() {
+        ActualHearingDayPauseDayTime hearingDayPauseDayTime = TestingUtil.getHearingActualDayPause(
+                LocalDateTime.of(2022, 01, 28, 10, 00),
+                LocalDateTime.of(2022, 01, 28, 12, 00)
+        );
+        final String actualOrganisationName = "name";
+        ActualHearingDayParties hearingDayParty = TestingUtil.getHearingActualDayParties(
+                null,
+                "RoleType1",
+                null,
+                actualOrganisationName,
+                "SubType1",
+                true,
+                null
+        );
+        HearingActual hearingActual = getHearingActual(null, actualOrganisationName,
+                "2", List.of(hearingDayPauseDayTime),
+                List.of(hearingDayParty)
+        );
+
+        HearingActualsMapper actualsMapper = new HearingActualsMapper();
+        ActualHearingEntity response = actualsMapper.toActualHearingEntity(hearingActual);
+
+        assertCommonFields(response);
+        assertTrue(response.getActualHearingDay().get(0).getActualHearingParty().get(0).getDidNotAttendFlag());
+        assertEquals(
+                "name",
+                response.getActualHearingDay().get(0).getActualHearingParty().get(0)
+                        .getActualAttendeeIndividualDetail().getPartyOrganisationName()
+        );
+        assertNull(response.getActualHearingDay().get(0).getActualHearingParty().get(0)
+                .getActualAttendeeIndividualDetail().getFirstName());
+        assertNull(response.getActualHearingDay().get(0).getActualHearingParty().get(0)
+                .getActualAttendeeIndividualDetail().getLastName());
+    }
+
+    @Test
+    void processHearingRequestToEntityForOrg3DidNotAttendNull() {
+        ActualHearingDayPauseDayTime hearingDayPauseDayTime = TestingUtil.getHearingActualDayPause(
+                LocalDateTime.of(2022, 01, 28, 10, 00),
+                LocalDateTime.of(2022, 01, 28, 12, 00)
+        );
+        final String actualOrganisationName = "name";
+        ActualHearingDayParties hearingDayParty = TestingUtil.getHearingActualDayParties(
+                null,
+                "RoleType1",
+                null,
+                actualOrganisationName,
+                "SubType1",
+                null,
+                null
+        );
+        HearingActual hearingActual = getHearingActual(null, actualOrganisationName,
+                "2", List.of(hearingDayPauseDayTime),
+                List.of(hearingDayParty)
+        );
+
+        HearingActualsMapper actualsMapper = new HearingActualsMapper();
+        ActualHearingEntity response = actualsMapper.toActualHearingEntity(hearingActual);
+
+        assertCommonFields(response);
+        assertEquals(
+                "name",
+                response.getActualHearingDay().get(0).getActualHearingParty().get(0)
+                        .getActualAttendeeIndividualDetail().getPartyOrganisationName()
+        );
+        assertNull(response.getActualHearingDay().get(0).getActualHearingParty().get(0)
+                .getActualAttendeeIndividualDetail().getFirstName());
+        assertNull(response.getActualHearingDay().get(0).getActualHearingParty().get(0)
+                .getActualAttendeeIndividualDetail().getLastName());
     }
 
     @Test
@@ -95,6 +170,8 @@ class HearingActualsMapperTest {
         ActualHearingEntity response = actualsMapper.toActualHearingEntity(hearingActual);
 
         assertCommonFields(response);
+        assertEquals("1", response.getActualHearingDay().get(0).getActualHearingParty().get(0).getPartyId());
+        assertFalse(response.getActualHearingDay().get(0).getActualHearingParty().get(0).getDidNotAttendFlag());
         assertNull(response.getActualHearingDay().get(0).getActualHearingParty().get(0)
                        .getActualAttendeeIndividualDetail().getPartyOrganisationName());
         assertEquals(
@@ -135,6 +212,8 @@ class HearingActualsMapperTest {
         ActualHearingEntity response = actualsMapper.toActualHearingEntity(hearingActual);
 
         assertCommonFields(response);
+        assertEquals("1", response.getActualHearingDay().get(0).getActualHearingParty().get(0).getPartyId());
+        assertFalse(response.getActualHearingDay().get(0).getActualHearingParty().get(0).getDidNotAttendFlag());
         assertEquals(
                 actualOrganisationName,
                 response.getActualHearingDay().get(0).getActualHearingParty().get(0)
@@ -172,6 +251,8 @@ class HearingActualsMapperTest {
         ActualHearingEntity response = actualsMapper.toActualHearingEntity(hearingActual);
 
         assertCommonFields(response);
+        assertEquals("1", response.getActualHearingDay().get(0).getActualHearingParty().get(0).getPartyId());
+        assertFalse(response.getActualHearingDay().get(0).getActualHearingParty().get(0).getDidNotAttendFlag());
         assertEquals(
                 fName,
                 response.getActualHearingDay().get(0).getActualHearingParty().get(0)
@@ -270,12 +351,10 @@ class HearingActualsMapperTest {
         assertEquals(LocalDateTime.of(2022, 01, 28, 15, 00),
                      response.getActualHearingDay().get(0).getEndDateTime());
         assertEquals(1, response.getActualHearingDay().get(0).getActualHearingParty().size());
-        assertEquals("1", response.getActualHearingDay().get(0).getActualHearingParty().get(0).getPartyId());
         assertEquals(
             "RoleType1",
             response.getActualHearingDay().get(0).getActualHearingParty().get(0).getActualPartyRoleType()
         );
-        assertFalse(response.getActualHearingDay().get(0).getActualHearingParty().get(0).getDidNotAttendFlag());
         assertEquals(1, response.getActualHearingDay().get(0)
                        .getActualHearingParty().get(0).getActualHearingDay().getActualHearingDayPauses().size());
         assertEquals(
