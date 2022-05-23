@@ -102,7 +102,7 @@ public class HearingManagementController {
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Hearing successfully created"),
+        @ApiResponse(code = 200, message = "Hearing cancellation processed"),
         @ApiResponse(code = 400, message = ValidationError.INVALID_HEARING_REQUEST_DETAILS),
         @ApiResponse(code = 404, message = ValidationError.HEARING_ID_NOT_FOUND),
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
@@ -181,8 +181,8 @@ public class HearingManagementController {
             message = "One or more of the following reasons:"
                 + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
                 + "\n2) " + ValidationError.HEARING_ACTUALS_INVALID_STATUS
-                + "\n4) " + ValidationError.HEARING_ACTUALS_UN_EXPRECTED
-                + "\n5) " + ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME),
+                + "\n3) " + ValidationError.HEARING_ACTUALS_UN_EXPECTED
+                + "\n4) " + ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME),
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
     public ResponseEntity hearingCompletion(@PathVariable("id") Long hearingId) {

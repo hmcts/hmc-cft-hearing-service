@@ -35,10 +35,7 @@ public class UnNotifiedHearingsController {
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success"),
-        @ApiResponse(code = 400,
-            message = "One or more of the following reasons:"
-                + "\n1) " + ValidationError.INVALID_HMCTS_SERVICE_CODE
-                + "\n2) " + ValidationError.HMCTS_SERVICE_CODE_EMPTY),
+        @ApiResponse(code = 400, message = ValidationError.INVALID_HMCTS_SERVICE_CODE),
         @ApiResponse(code = 401, message = "Unauthorised"),
         @ApiResponse(code = 403, message = "Forbidden")
     })

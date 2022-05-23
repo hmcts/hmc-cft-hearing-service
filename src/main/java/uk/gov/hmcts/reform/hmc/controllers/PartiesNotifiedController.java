@@ -43,10 +43,7 @@ public class PartiesNotifiedController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success"),
         @ApiResponse(code = 400, message = ValidationError.INVALID_HEARING_ID_DETAILS),
-        @ApiResponse(code = 404,
-            message = "One or more of the following reasons:"
-                + "\n1) " + ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND
-                + "\n2) " + ValidationError.PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH
+        @ApiResponse(code = 404, message = ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND
         ),
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
@@ -68,10 +65,7 @@ public class PartiesNotifiedController {
             message = "One or more of the following reasons:"
                 + "\n1) " + ValidationError.INVALID_HEARING_ID_DETAILS
                 + "\n1) " + ValidationError.PARTIES_NOTIFIED_ALREADY_SET),
-        @ApiResponse(code = 404,
-            message = "One or more of the following reasons:"
-                + "\n1) " + ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND
-                + "\n2) " + ValidationError.PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH)
+        @ApiResponse(code = 404, message = ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND)
     })
     public PartiesNotifiedResponses getPartiesNotified(@PathVariable("id") Long hearingId) {
         accessControlService.verifyAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
