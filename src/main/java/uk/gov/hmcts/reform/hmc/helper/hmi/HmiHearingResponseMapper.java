@@ -192,8 +192,39 @@ public class HmiHearingResponseMapper {
             }
             hearingDayDetailsEntity.setRoomId(hearingSession.getHearingRoom().getLocationName());
             hearingDayDetailsEntities.add(hearingDayDetailsEntity);
+            mapHearingAttendeeDetailsFromSessionDetails(hearingSession.getHearingAttendees());
+            mapHearingDayPanelFromSessionDetails(hearingSession.getHearingJohs());
         }
         return hearingDayDetailsEntities;
+    }
+
+    private ArrayList<HearingAttendeeDetailsEntity> mapHearingAttendeeDetailsFromSessionDetails(
+        List<HearingAttendee> hearingAttendees) {
+        ArrayList<HearingAttendeeDetailsEntity> hearingAttendeeDetailsEntities = new ArrayList<>();
+
+        for (HearingAttendee hearingAttendee : hearingAttendees) {
+            HearingAttendeeDetailsEntity hearingAttendeeDetailsEntity = new HearingAttendeeDetailsEntity();
+            hearingAttendeeDetailsEntity.setPartyId(hearingAttendee.getEntityId());
+            if (hearingAttendee.getHearingChannel() != null) {
+                hearingAttendeeDetailsEntity.setPartySubChannelType(hearingAttendee.getHearingChannel().getCode());
+            }
+            hearingAttendeeDetailsEntities.add(hearingAttendeeDetailsEntity);
+        }
+
+        return hearingAttendeeDetailsEntities;
+    }
+
+    private ArrayList<HearingDayPanelEntity> mapHearingDayPanelFromSessionDetails(List<HearingJoh> hearingJohs) {
+        ArrayList<HearingDayPanelEntity> hearingDayPanelEntities = new ArrayList<>();
+        if (hearingJohs != null) {
+            for (HearingJoh hearingJoh : hearingJohs) {
+                HearingDayPanelEntity hearingDayPanelEntity = new HearingDayPanelEntity();
+                hearingDayPanelEntity.setPanelUserId(hearingJoh.getJohCode());
+                hearingDayPanelEntity.setIsPresiding(hearingJoh.getIsPresiding());
+                hearingDayPanelEntities.add(hearingDayPanelEntity);
+            }
+        }
+        return hearingDayPanelEntities;
     }
 
     private HearingDayDetailsEntity mapHearingDayDetailsEntity(HearingResponse hearing) {
