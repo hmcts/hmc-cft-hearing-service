@@ -35,11 +35,3 @@ ALTER TABLE ONLY public.actual_attendee_individual_detail ADD COLUMN created_dat
 --
 
 ALTER TABLE ONLY public.hearing ADD COLUMN updated_date_time timestamp without time zone;
-ALTER TABLE ONLY public.actual_hearing ADD COLUMN updated_date_time timestamp without time zone;
-ALTER TABLE ONLY public.actual_hearing_day ADD COLUMN updated_date_time timestamp without time zone;
-ALTER TABLE ONLY public.actual_hearing_party ADD COLUMN updated_date_time timestamp without time zone;
-ALTER TABLE ONLY public.actual_hearing_day_pauses ADD COLUMN updated_date_time timestamp without time zone;
-ALTER TABLE ONLY public.actual_party_relationship_detail ADD COLUMN updated_date_time timestamp without time zone;
-ALTER TABLE ONLY public.actual_attendee_individual_detail ADD COLUMN updated_date_time timestamp without time zone;
-
-
