@@ -366,11 +366,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() != null) {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
         }
-        if (hearingDetails.getHearingWindow().getDateRangeStart() != null
-            && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() != null) {
-            throw new BadRequestException(INVALID_HEARING_WINDOW);
-        }
-        if (hearingDetails.getHearingWindow().getDateRangeEnd() != null
+        if ((hearingDetails.getHearingWindow().getDateRangeEnd() != null
+            || hearingDetails.getHearingWindow().getDateRangeStart() != null)
             && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() != null) {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
         }
