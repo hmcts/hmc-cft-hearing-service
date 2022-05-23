@@ -175,13 +175,12 @@ public class HearingManagementController {
     @PostMapping(path = "/hearingActualsCompletion/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Hearing successfully created"),
+        @ApiResponse(code = 200, message = "Success (with no content)"),
         @ApiResponse(code = 404, message = ValidationError.HEARING_ACTUALS_ID_NOT_FOUND),
         @ApiResponse(code = 400,
             message = "One or more of the following reasons:"
                 + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
                 + "\n2) " + ValidationError.HEARING_ACTUALS_INVALID_STATUS
-                + "\n3) " + ValidationError.HEARING_ACTUALS_MISSING_HEARING_DAY
                 + "\n4) " + ValidationError.HEARING_ACTUALS_UN_EXPRECTED
                 + "\n5) " + ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME),
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)

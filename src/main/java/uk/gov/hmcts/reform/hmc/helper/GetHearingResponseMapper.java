@@ -220,7 +220,6 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             hearingResponse.setListAssistTransactionID(
                 hearingResponseEntity.getListAssistTransactionId());
             hearingResponse.setReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
-            hearingResponse.setResponseVersion(hearingResponseEntity.getHearingResponseId());
             hearingResponse.setLaCaseStatus(ListAssistCaseStatus.getLabel(
                 hearingResponseEntity.getListingCaseStatus()));
             hearingResponse.setListingStatus(ListingStatus.getLabel(hearingResponseEntity.getListingStatus()));

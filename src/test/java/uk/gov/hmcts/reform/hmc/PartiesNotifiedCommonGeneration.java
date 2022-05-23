@@ -32,7 +32,6 @@ public class PartiesNotifiedCommonGeneration {
 
     protected PartiesNotifiedResponse generateResponse(Long hearingResponseId) {
         PartiesNotifiedResponse response = new PartiesNotifiedResponse();
-        response.setResponseVersion(2);
         response.setResponseReceivedDateTime(LocalDateTime.now().minusDays(hearingResponseId));
         response.setRequestVersion(1);
         response.setPartiesNotified(LocalDateTime.now().plusDays(2).plusHours(2));
@@ -64,7 +63,6 @@ public class PartiesNotifiedCommonGeneration {
     protected HearingResponseEntity generateResponseEntity(Long hearingResponseId) {
         HearingResponseEntity entity = new HearingResponseEntity();
         entity.setHearingResponseId(hearingResponseId);
-        entity.setResponseVersion(2);
         entity.setRequestTimeStamp(LocalDateTime.now().minusDays(hearingResponseId));
         entity.setRequestVersion(1);
         logger.debug("hearingResponseEntity: {}", entity);
