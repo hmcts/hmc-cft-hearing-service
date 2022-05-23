@@ -19,7 +19,7 @@
       "actualDayParties": [
         {
           "partyRole": 43334,
-          "individualDetails" : {
+          "actualIndividualDetails" : {
             "firstName": "WitnessForeName2",
             "lastName": "WitnessLastName2"
           },
@@ -45,7 +45,7 @@
       "actualDayParties": [
         {
           "partyRole": 43334,
-          "individualDetails" : {
+          "actualIndividualDetails" : {
             "firstName": "WitnessForeName2",
             "lastName": "WitnessLastName2"
           },

@@ -543,7 +543,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn400_WhenMissingPartyIndividualFirstName() throws Exception {
             verifyErrorOnMissingNode(HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_NOT_EMPTY,
                                      "$['actualHearingDays'][0]['actualDayParties'][0]"
-                                         + "['individualDetails']['firstName']");
+                                         + "['actualIndividualDetails']['firstName']");
         }
 
         @Test
@@ -551,7 +551,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn400_WhenPartyIndividualFirstNameTooLong() throws Exception {
             verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_MAX_LENGTH,
                                           "$['actualHearingDays'][0]['actualDayParties'][0]"
-                                              + "['individualDetails']['firstName']",
+                                              + "['actualIndividualDetails']['firstName']",
                                           101);
         }
 
@@ -560,7 +560,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn400_WhenMissingPartyIndividualLastName() throws Exception {
             verifyErrorOnMissingNode(HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_NOT_EMPTY,
                                      "$['actualHearingDays'][0]['actualDayParties'][0]"
-                                         + "['individualDetails']['lastName']");
+                                         + "['actualIndividualDetails']['lastName']");
         }
 
         @Test
@@ -568,7 +568,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn400_WhenPartyIndividualLastNameTooLong() throws Exception {
             verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_MAX_LENGTH,
                                           "$['actualHearingDays'][0]['actualDayParties'][0]"
-                                              + "['individualDetails']['lastName']",
+                                              + "['actualIndividualDetails']['lastName']",
                                           101);
         }
 
