@@ -45,9 +45,6 @@ public class ActualHearingDayEntity implements Serializable {
     @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
-    @Column(name = "updated_date_time")
-    private LocalDateTime updatedDateTime;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actual_hearing_id")
     private ActualHearingEntity actualHearing;
@@ -65,8 +62,4 @@ public class ActualHearingDayEntity implements Serializable {
         createdDateTime = LocalDateTime.now();
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        updatedDateTime = LocalDateTime.now();
-    }
 }

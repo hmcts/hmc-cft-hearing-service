@@ -56,9 +56,6 @@ public class ActualHearingEntity implements Serializable {
     @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
-    @Column(name = "updated_date_time")
-    private LocalDateTime updatedDateTime;
-
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "hearing_response_id")
     private HearingResponseEntity hearingResponse;
@@ -72,8 +69,4 @@ public class ActualHearingEntity implements Serializable {
         createdDateTime = LocalDateTime.now();
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        updatedDateTime = LocalDateTime.now();
-    }
 }

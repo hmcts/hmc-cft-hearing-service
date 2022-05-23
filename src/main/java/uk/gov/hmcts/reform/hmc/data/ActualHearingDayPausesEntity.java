@@ -35,9 +35,6 @@ public class ActualHearingDayPausesEntity {
     @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
-    @Column(name = "updated_date_time")
-    private LocalDateTime updatedDateTime;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actual_hearing_day_id")
     private ActualHearingDayEntity actualHearingDay;
@@ -47,8 +44,4 @@ public class ActualHearingDayPausesEntity {
         createdDateTime = LocalDateTime.now();
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        updatedDateTime = LocalDateTime.now();
-    }
 }

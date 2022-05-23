@@ -36,9 +36,6 @@ public class ActualPartyRelationshipDetailEntity implements Serializable {
     @Column(name = "created_date_time")
     private LocalDateTime createdDateTime;
 
-    @Column(name = "updated_date_time")
-    private LocalDateTime updatedDateTime;
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "target_actual_party_id")
     private ActualHearingPartyEntity targetActualParty;
@@ -52,8 +49,4 @@ public class ActualPartyRelationshipDetailEntity implements Serializable {
         createdDateTime = LocalDateTime.now();
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        updatedDateTime = LocalDateTime.now();
-    }
 }
