@@ -85,7 +85,10 @@ public class HmiHearingResponseMapper {
         if (HearingStatus.valueOf(hearing.getStatus()) != EXCEPTION) {
             hmcHearingUpdate.setHearingResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
             hmcHearingUpdate.setHearingEventBroadcastDateTime(LocalDateTime.now(Clock.systemUTC()));
-            hmcHearingUpdate.setHearingListingStatus(ListingStatus.valueOf(hearingResponseEntity.getListingStatus()));
+            if (hearingResponseEntity.getListingStatus() != null) {
+                hmcHearingUpdate.setHearingListingStatus(
+                    ListingStatus.valueOf(hearingResponseEntity.getListingStatus()));
+            }
             hmcHearingUpdate.setNextHearingDate(hearingResponseEntity.getHearingDayDetails().get(0).getStartDateTime());
             hmcHearingUpdate.setHearingVenueId(hearingResponseEntity.getHearingDayDetails().get(0).getVenueId());
             for (HearingDayPanelEntity hearingDayPanelEntity :
