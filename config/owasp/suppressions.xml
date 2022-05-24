@@ -26,6 +26,10 @@
     </notes>
     <cve>CVE-2022-22965</cve>
     <cve>CVE-2020-36518</cve>
+    <cve>CVE-2022-29885</cve>
+    <cve>CVE-2022-24823</cve>
+    <cve>CVE-2022-22971</cve>
+    <cve>CVE-2022-22970</cve>
   </suppress>
   <suppress until="2022-06-25">
     <notes><![CDATA[
@@ -54,8 +58,6 @@
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
     <cve>CVE-2022-29885</cve>
-    <cve>CVE-2022-22970</cve>
-    <cve>CVE-2022-22971</cve>
   </suppress>
 
 </suppressions>
