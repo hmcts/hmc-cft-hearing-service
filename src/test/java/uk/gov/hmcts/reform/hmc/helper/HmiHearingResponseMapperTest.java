@@ -186,7 +186,7 @@ class HmiHearingResponseMapperTest {
     }
 
     @Test
-    void mapHmiHearingToEntityWhenHearingHasMissingOptionalFields_hman_198_204() {
+    void mapHmiHearingToEntityWhenHearingHasMissingOptionalFields_hman_204() {
         HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
             generateHmiHearing_WithMissingOptionalFields(),
             generateHearingEntity("AWAITING_LISTING", 1)

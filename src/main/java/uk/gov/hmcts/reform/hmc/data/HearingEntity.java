@@ -123,8 +123,7 @@ public class HearingEntity {
                     HearingResponseEntity latestHearingResponse = hearingResponse.get();
                     Optional<HearingDayDetailsEntity> hearingDayDetails =
                         latestHearingResponse.getEarliestHearingDayDetails();
-                    if (latestHearingResponse.hasHearingDayDetails()
-                        && hearingDayDetails.isPresent()) {
+                    if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
                         HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
                         if (hearingDayDetailsEntity.getStartDateTime() != null
                             && LocalDate.now().isAfter(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
