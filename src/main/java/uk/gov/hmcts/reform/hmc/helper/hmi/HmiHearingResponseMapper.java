@@ -192,8 +192,12 @@ public class HmiHearingResponseMapper {
             }
             hearingDayDetailsEntity.setRoomId(hearingSession.getHearingRoom().getLocationName());
             hearingDayDetailsEntities.add(hearingDayDetailsEntity);
-            mapHearingAttendeeDetailsFromSessionDetails(hearingSession.getHearingAttendees());
-            mapHearingDayPanelFromSessionDetails(hearingSession.getHearingJohs());
+            if (hearingSession.getHearingAttendees() != null) {
+                mapHearingAttendeeDetailsFromSessionDetails(hearingSession.getHearingAttendees());
+            }
+            if (hearingSession.getHearingJohs() != null) {
+                mapHearingDayPanelFromSessionDetails(hearingSession.getHearingJohs());
+            }
         }
         return hearingDayDetailsEntities;
     }
