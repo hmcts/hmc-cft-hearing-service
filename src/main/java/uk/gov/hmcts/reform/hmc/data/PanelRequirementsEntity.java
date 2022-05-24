@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,18 +11,18 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Table(name = "panel_requirements")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class PanelRequirementsEntity {
+public class PanelRequirementsEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -36,12 +36,4 @@ public class PanelRequirementsEntity {
 
     @Column(name = "role_type")
     private String roleType;
-
-    @Column(name = "created_date_time")
-    private LocalDateTime createdDateTime;
-
-    @PrePersist
-    public void prePersist() {
-        createdDateTime = LocalDateTime.now();
-    }
 }

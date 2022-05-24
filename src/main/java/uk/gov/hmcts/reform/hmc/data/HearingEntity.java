@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
@@ -22,7 +23,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
@@ -32,12 +32,13 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 @Table(name = "hearing")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class HearingEntity {
+public class HearingEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -53,9 +54,6 @@ public class HearingEntity {
 
     @Column(name = "error_description")
     private String errorDescription;
-
-    @Column(name = "created_date_time")
-    private LocalDateTime createdDateTime;
 
     @Column(name = "updated_date_time")
     private LocalDateTime updatedDateTime;
@@ -76,11 +74,6 @@ public class HearingEntity {
 
     @Column(name = "is_linked_flag")
     private Boolean isLinkedFlag;
-
-    @PrePersist
-    public void prePersist() {
-        createdDateTime = LocalDateTime.now();
-    }
 
     @PreUpdate
     public void preUpdate() {

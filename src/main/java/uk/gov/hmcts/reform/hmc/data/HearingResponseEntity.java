@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -21,18 +22,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Table(name = "hearing_response")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @SecondaryTable(name = "hearing",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "hearing_id")})
-public class HearingResponseEntity {
+public class HearingResponseEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -51,9 +52,6 @@ public class HearingResponseEntity {
 
     @Column(name = "list_assist_transaction_id", nullable = false)
     private String listAssistTransactionId;
-
-    @Column(name = "created_date_time")
-    private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hearing_id")
@@ -92,10 +90,5 @@ public class HearingResponseEntity {
 
     public boolean hasHearingDayDetails() {
         return getHearingDayDetails() != null && !getHearingDayDetails().isEmpty();
-    }
-
-    @PrePersist
-    public void prePersist() {
-        createdDateTime = LocalDateTime.now();
     }
 }

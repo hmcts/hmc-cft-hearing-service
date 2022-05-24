@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 
@@ -15,14 +16,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 
 @Table(name = "linked_group_details_audit")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class LinkedGroupDetailsAudit {
+public class LinkedGroupDetailsAudit extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -59,14 +60,6 @@ public class LinkedGroupDetailsAudit {
 
     @Column(name = "status", nullable = false)
     private String status;
-
-    @Column(name = "created_date_time")
-    private LocalDateTime createdDateTime;
-
-    @PrePersist
-    public void prePersist() {
-        createdDateTime = LocalDateTime.now();
-    }
 
 }
 
