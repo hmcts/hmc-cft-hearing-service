@@ -21,7 +21,7 @@
         {
           "actualPartyId": "123",
           "partyRole": "43333",
-          "actualIndividualDetails" : {
+          "individualDetails" : {
             "firstName": "WitnessForeName1",
             "lastName": "WitnessLastName1"
           },
@@ -44,7 +44,7 @@
         {
           "actualPartyId": "123",
           "partyRole": "43333",
-          "actualIndividualDetails" : {
+          "individualDetails" : {
             "firstName": "WitnessForeName1",
             "lastName": "WitnessLastName1"
           },
@@ -67,7 +67,7 @@
         {
           "actualPartyId": "123",
           "partyRole": "43333",
-          "actualIndividualDetails" : {
+          "individualDetails" : {
             "firstName": "WitnessForeName2",
             "lastName": "WitnessLastName2"
           },

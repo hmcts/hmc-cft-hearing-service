@@ -20,7 +20,7 @@
         {
           "actualPartyId": "1",
           "partyRole": "RoleType1",
-          "actualIndividualDetails": {
+          "individualDetails": {
             "firstName": "TestFirstName",
             "lastName": "TestLastName"
           },
@@ -47,7 +47,7 @@
         {
           "actualPartyId": "1",
           "partyRole": "RoleType1",
-          "actualIndividualDetails": {
+          "individualDetails": {
             "firstName": "TestFirstName",
             "lastName": "TestLastName"
           },
@@ -58,7 +58,7 @@
         {
           "actualPartyId": "2",
           "partyRole": "RoleType2",
-          "actualIndividualDetails": {
+          "individualDetails": {
             "firstName": "TestRepFirstName",
             "lastName": "TestRepLastName"
           },

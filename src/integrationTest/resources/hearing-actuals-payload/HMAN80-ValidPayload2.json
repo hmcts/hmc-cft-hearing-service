@@ -15,7 +15,7 @@
         {
           "actualPartyId": "124",
           "partyRole": "43334",
-          "actualIndividualDetails" : {
+          "individualDetails" : {
             "firstName": "WitnessForeName2",
             "lastName": "WitnessLastName2"
           },
@@ -39,7 +39,7 @@
         {
           "actualPartyId": "124",
           "partyRole": "43334",
-          "actualIndividualDetails" : {
+          "individualDetails" : {
             "firstName": "WitnessForeName2",
             "lastName": "WitnessLastName2"
           },
@@ -49,7 +49,9 @@
         {
           "actualPartyId": "125",
           "partyRole": "43335",
-          "actualOrganisationName" : "BooHaa Organisation",
+          "organisationDetails" : {
+            "name": "BooHaa Organisation"
+          },
           "partyChannelSubType": "fictitious organisation",
           "didNotAttendFlag": false
         }
