@@ -1,5 +1,9 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
 import com.azure.messaging.servicebus.ServiceBusReceiverClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageType;
@@ -166,10 +171,7 @@ class InboundQueueServiceTest {
                                                    + "      },\n"
                                                    + "      \"isPresiding\": false\n"
                                                    + "    }],\n"
-                                                   + "    \"hearingSessions\": {\n"
-                                                   + "      \"key\": \"<key>\",\n"
-                                                   + "      \"value\": \"<value>\"\n"
-                                                   + "    }\n"
+                                                   + "    \"hearingSessions\": []\n"
                                                    + "  }\n"
                                                    + "}");
 
@@ -208,7 +210,17 @@ class InboundQueueServiceTest {
             when(hearingRepository.findById(2000000000L))
                 .thenReturn(java.util.Optional.of(hearingEntity));
 
+            ListAppender<ILoggingEvent> listAppender = setupLogger();
+
             inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, exception);
+
+            List<ILoggingEvent> logsList = listAppender.list;
+            assertEquals(2, logsList.size());
+            assertEquals(Level.ERROR, logsList.get(0).getLevel());
+            assertEquals("Error processing message with Hearing id 2000000000 exception was "
+                             + exception.getMessage(), logsList.get(0).getMessage());
+            assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(1).getMessage());
+
             verify(hearingRepository, times(1)).findById(2000000000L);
             verify(hearingRepository, times(1)).save(any());
         }
@@ -236,6 +248,71 @@ class InboundQueueServiceTest {
                 inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage));
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
 
+        }
+
+        @Test
+        void shouldThrowHearingNotFoundExceptionTestTest() throws JsonProcessingException{
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(HEARING_ID, "2000000000");
+            applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
+
+            JsonNode data = OBJECT_MAPPER.convertValue(
+                generateErrorDetails("Unable to create case", 2000),
+                JsonNode.class);
+
+            HearingEntity hearingEntity = generateHearingEntity(2000000000L);
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L))
+                .thenReturn(java.util.Optional.of(hearingEntity));
+            when(hmiHearingResponseMapper.mapHmiHearingErrorToEntity(any(), any())).thenReturn(hearingEntity);
+            when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
+                .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
+            when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(data);
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any());
+
+            ListAppender<ILoggingEvent> listAppender = setupLogger();
+
+            inboundQueueService.processMessage(data, applicationProperties, client, serviceBusReceivedMessage);
+
+            assertDynatraceLogMessage(listAppender, "2000000000");
+        }
+
+        @Test
+        void shouldThrowHearingNotFoundExceptionTest() throws JsonProcessingException{
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(HEARING_ID, "2000000000");
+            applicationProperties.put(MESSAGE_TYPE, MessageType.LA_SYNC_HEARING_RESPONSE);
+
+//            JsonNode data = OBJECT_MAPPER.convertValue(
+//                generateSyncResponse(200, 20000, "unable to create case"),
+//                JsonNode.class);
+
+
+            JsonNode syncJsonNode = OBJECT_MAPPER.readTree("{\n"
+                                                                + " \"listAssistHttpStatus\": 200,\n"
+                                                                + " \"listAssistErrorCode\": 2000,\n"
+                                                                + " \"listAssistErrorDescription\": \"unable to create case\"\n"
+                                                                + "}");
+
+
+            HearingEntity hearingEntity = generateHearingEntity(2000000000L);
+            hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L))
+                .thenReturn(java.util.Optional.of(hearingEntity));
+            when(hmiHearingResponseMapper.mapHmiSyncResponseToEntity(any(), any())).thenReturn(hearingEntity);
+            when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
+                .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
+            when(hearingRepository.save(any()))
+                .thenReturn(hearingEntity);
+            when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(syncJsonNode);
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any());
+
+            ListAppender<ILoggingEvent> listAppender = setupLogger();
+
+            inboundQueueService.processMessage(syncJsonNode, applicationProperties, client, serviceBusReceivedMessage);
+
+            assertDynatraceLogMessage(listAppender, "2000000000");
         }
 
         @Test
@@ -577,5 +654,36 @@ class InboundQueueServiceTest {
         hmcHearingUpdate.setHmcStatus(status.name());
         hmcHearingResponse.setHearingUpdate(hmcHearingUpdate);
         return hmcHearingResponse;
+    }
+
+    private ErrorDetails generateErrorDetails(String description, int code) {
+        ErrorDetails errorDetails = new ErrorDetails();
+        errorDetails.setErrorDescription(description);
+        errorDetails.setErrorCode(code);
+        return errorDetails;
+    }
+
+//    private SyncResponse generateSyncResponse(int httpCode, int errorCode, String description) {
+//        SyncResponse syncResponse = new SyncResponse();
+//        syncResponse.setListAssistErrorCode(errorCode);
+//        syncResponse.setListAssistErrorDescription(description);
+//        syncResponse.setListAssistHttpStatus(httpCode);
+//        return syncResponse;
+//    }
+
+    private ListAppender<ILoggingEvent> setupLogger() {
+        Logger logger = (Logger) LoggerFactory.getLogger(InboundQueueServiceImpl.class);
+        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        listAppender.start();
+        logger.addAppender(listAppender);
+        return listAppender;
+    }
+
+    private void assertDynatraceLogMessage(ListAppender<ILoggingEvent> listAppender, String hearingID) {
+        List<ILoggingEvent> logsList = listAppender.list;
+        int finalErrorIndex = logsList.size() - 1;
+        assertEquals(Level.ERROR, logsList.get(finalErrorIndex).getLevel());
+        assertEquals("Hearing id: " + hearingID + " updated to status Exception",
+                     logsList.get(finalErrorIndex).getMessage());
     }
 }
