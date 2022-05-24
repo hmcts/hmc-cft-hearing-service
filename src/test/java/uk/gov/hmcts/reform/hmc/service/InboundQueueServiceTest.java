@@ -214,12 +214,7 @@ class InboundQueueServiceTest {
 
             inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, exception);
 
-            List<ILoggingEvent> logsList = listAppender.list;
-            assertEquals(2, logsList.size());
-            assertEquals(Level.ERROR, logsList.get(0).getLevel());
-            assertEquals("Error processing message with Hearing id 2000000000 exception was "
-                             + exception.getMessage(), logsList.get(0).getMessage());
-            assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(1).getMessage());
+            assertDynatraceLogMessage(listAppender, "2000000000");
 
             verify(hearingRepository, times(1)).findById(2000000000L);
             verify(hearingRepository, times(1)).save(any());
@@ -251,7 +246,7 @@ class InboundQueueServiceTest {
         }
 
         @Test
-        void shouldThrowHearingNotFoundExceptionTestTest() throws JsonProcessingException{
+        void shouldProcessErrorAndUpdateToException() throws JsonProcessingException {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "2000000000");
             applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
@@ -278,25 +273,21 @@ class InboundQueueServiceTest {
         }
 
         @Test
-        void shouldThrowHearingNotFoundExceptionTest() throws JsonProcessingException{
+        void shouldProcessHearingResponseFromListAssistAndUpdateToException() throws JsonProcessingException {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "2000000000");
             applicationProperties.put(MESSAGE_TYPE, MessageType.LA_SYNC_HEARING_RESPONSE);
 
-//            JsonNode data = OBJECT_MAPPER.convertValue(
-//                generateSyncResponse(200, 20000, "unable to create case"),
-//                JsonNode.class);
-
-
             JsonNode syncJsonNode = OBJECT_MAPPER.readTree("{\n"
                                                                 + " \"listAssistHttpStatus\": 200,\n"
                                                                 + " \"listAssistErrorCode\": 2000,\n"
-                                                                + " \"listAssistErrorDescription\": \"unable to create case\"\n"
+                                                                + " \"listAssistErrorDescription\": "
+                                                                + "      \"unable to create case\"\n"
                                                                 + "}");
-
 
             HearingEntity hearingEntity = generateHearingEntity(2000000000L);
             hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
+            when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(syncJsonNode);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L))
                 .thenReturn(java.util.Optional.of(hearingEntity));
@@ -305,7 +296,6 @@ class InboundQueueServiceTest {
                 .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
             when(hearingRepository.save(any()))
                 .thenReturn(hearingEntity);
-            when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(syncJsonNode);
             doNothing().when(messageSenderToTopicConfiguration).sendMessage(any());
 
             ListAppender<ILoggingEvent> listAppender = setupLogger();
@@ -662,14 +652,6 @@ class InboundQueueServiceTest {
         errorDetails.setErrorCode(code);
         return errorDetails;
     }
-
-//    private SyncResponse generateSyncResponse(int httpCode, int errorCode, String description) {
-//        SyncResponse syncResponse = new SyncResponse();
-//        syncResponse.setListAssistErrorCode(errorCode);
-//        syncResponse.setListAssistErrorDescription(description);
-//        syncResponse.setListAssistHttpStatus(httpCode);
-//        return syncResponse;
-//    }
 
     private ListAppender<ILoggingEvent> setupLogger() {
         Logger logger = (Logger) LoggerFactory.getLogger(InboundQueueServiceImpl.class);
