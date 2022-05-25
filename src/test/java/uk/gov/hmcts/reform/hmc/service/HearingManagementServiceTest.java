@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.hmc.helper.PartyRelationshipDetailsMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
@@ -366,6 +367,37 @@ class HearingManagementServiceTest {
         }
 
         @Test
+        void shouldPassIfHearingDetailsHasExpectedField_firstDateTimeMustBe() {
+            HearingRequest hearingRequest = new HearingRequest();
+            hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+            hearingRequest.getHearingDetails().getHearingWindow().setDateRangeStart(null);
+            hearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(null);
+            hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
+
+            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any()))
+                .willReturn(TestingUtil.hearingEntity());
+            given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
+            assertValidHearingResponse(response);
+        }
+
+        @Test
+        void shouldPassIfHearingDetailsHasExpectedFields() {
+            HearingRequest hearingRequest = new HearingRequest();
+            hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+            hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
+
+            assertNotNull(hearingRequest.getHearingDetails().getHearingWindow().getDateRangeStart());
+            assertNotNull(hearingRequest.getHearingDetails().getHearingWindow().getDateRangeEnd());
+
+            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any()))
+                .willReturn(TestingUtil.hearingEntity());
+            given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
+            assertValidHearingResponse(response);
+        }
+
+        @Test
         void shouldFailIfNullHearingRequest() {
             HearingRequest hearingRequest = null;
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
@@ -417,9 +449,7 @@ class HearingManagementServiceTest {
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
-            assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
-            assertEquals(POST_HEARING_STATUS, response.getStatus());
-            assertNotNull(response.getHearingRequestId());
+            assertValidHearingResponse(response);
         }
 
         @Test
@@ -456,9 +486,7 @@ class HearingManagementServiceTest {
             given(partyRelationshipDetailsMapper.modelToEntity(any(), any()))
                     .willReturn(partyRelationshipDetailsEntities);
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
-            assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
-            assertEquals(POST_HEARING_STATUS, response.getStatus());
-            assertNotNull(response.getHearingRequestId());
+            assertValidHearingResponse(response);
         }
 
         @Test
@@ -476,10 +504,7 @@ class HearingManagementServiceTest {
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
-            assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
-            assertEquals(POST_HEARING_STATUS, response.getStatus());
-            assertNotNull(response.getHearingRequestId());
-
+            assertValidHearingResponse(response);
         }
 
         @Test
@@ -496,9 +521,7 @@ class HearingManagementServiceTest {
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest);
-            assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
-            assertEquals(POST_HEARING_STATUS, response.getStatus());
-            assertNotNull(response.getHearingRequestId());
+            assertValidHearingResponse(response);
         }
 
         @Test
@@ -514,6 +537,12 @@ class HearingManagementServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest));
             assertEquals("Either Individual or Organisation details should be present", exception.getMessage());
+        }
+
+        private void assertValidHearingResponse(HearingResponse response) {
+            assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
+            assertEquals(POST_HEARING_STATUS, response.getStatus());
+            assertNotNull(response.getHearingRequestId());
         }
     }
 
