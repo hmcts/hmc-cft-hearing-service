@@ -34,7 +34,7 @@ public class CaseHearing {
 
     @Size(max = 60)
     @NotNull
-    private Long responseVersion;
+    private Integer requestVersion;
 
     @Size(max = 60)
     @NotNull
