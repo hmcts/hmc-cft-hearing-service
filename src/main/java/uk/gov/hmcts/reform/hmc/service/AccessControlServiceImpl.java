@@ -126,7 +126,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 .filter(roleAssignment -> requiredRoles.contains(roleAssignment.getRoleName()))
                 .collect(Collectors.toList());
 
-            if (requiredRoleAssignments.size() == 0) {
+            if (requiredRoleAssignments.isEmpty()) {
                 throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_MISSING_REQUIRED);
             }
         }
