@@ -229,6 +229,21 @@ class HearingEntityTest {
 
             assertEquals("LISTED", latestResponse);
         }
+
+        @Test
+        void shouldGetDefaultDerivedHearingResponseWhenStartDateIsAheadOfToday() {
+            LocalDateTime startDateTime = LocalDateTime.now().plusDays(1);
+            LocalDateTime endDateTime = LocalDateTime.of(2023, 5, 30, 11, 11);
+
+            HearingResponseEntity hearingResponse =
+                hearingResponseWithDayDetails(startDateTime, endDateTime);
+            HearingEntity hearing = new HearingEntity();
+            hearing.setHearingResponses(List.of(hearingResponse));
+            hearing.setStatus("LISTED");
+
+            String latestResponse = hearing.getDerivedHearingStatus();
+            assertEquals("LISTED", latestResponse);
+        }
     }
 
     private CaseHearingRequestEntity caseHearingRequest(int version) {

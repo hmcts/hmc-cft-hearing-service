@@ -28,7 +28,7 @@ public class HearingAttendeeDetailsEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "party_id", nullable = false)
+    @Column(name = "party_id")
     private String partyId;
 
     @Column(name = "party_sub_channel_type", nullable = false)

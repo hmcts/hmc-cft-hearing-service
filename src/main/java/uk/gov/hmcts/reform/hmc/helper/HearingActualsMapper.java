@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayParties;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPartyDetail;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPauseDayTime;
-import uk.gov.hmcts.reform.hmc.model.ActualHearingOrganisationDetail;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 
@@ -112,8 +111,8 @@ public class HearingActualsMapper {
         if (actualHearingDayParty.getActualPartyId() == null) {
             if (actualHearingDayParty.getIndividualDetails() != null) {
                 partyEntity.setPartyId(String.valueOf(actualHearingDayParty.getIndividualDetails().hashCode()));
-            } else if (actualHearingDayParty.getOrganisationDetails() != null) {
-                partyEntity.setPartyId(String.valueOf(actualHearingDayParty.getOrganisationDetails().hashCode()));
+            } else {
+                partyEntity.setPartyId(String.valueOf(actualHearingDayParty.getActualOrganisationName().hashCode()));
             }
         } else {
             partyEntity.setPartyId(actualHearingDayParty.getActualPartyId());
@@ -165,10 +164,7 @@ public class HearingActualsMapper {
             individualDetailEntity.setFirstName(individualDetails.getFirstName());
             individualDetailEntity.setLastName(individualDetails.getLastName());
         }
-        ActualHearingOrganisationDetail organisationDetails = actualHearingDayParty.getOrganisationDetails();
-        if (organisationDetails != null) {
-            individualDetailEntity.setPartyOrganisationName(organisationDetails.getName());
-        }
+        individualDetailEntity.setPartyOrganisationName(actualHearingDayParty.getActualOrganisationName());
         individualDetailEntity.setPartyActualSubChannelType(actualHearingDayParty.getPartyChannelSubType());
         individualDetailEntity.setActualHearingParty(partyEntity);
 
