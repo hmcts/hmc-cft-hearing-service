@@ -117,6 +117,12 @@ class AccessControlServiceTest {
     }
 
     @Test
+    void shouldNotThrowExceptionForVerifyAccessIsAccessControlEnabledIsFalse() {
+        when(applicationParams.isAccessControlEnabled()).thenReturn(false);
+        accessControlService.verifyAccess(1234L, Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER));
+    }
+
+    @Test
     void shouldThrowExceptionWhenStatusNotListedForACaseType() {
         stubRoleAssignments(RoleAssignmentAttributes.builder()
                                 .jurisdiction(Optional.of(JURISDICTION))
@@ -154,5 +160,21 @@ class AccessControlServiceTest {
             Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER),
             12345L
         );
+    }
+
+    @Test
+    void shouldNotThrowExceptionForVerifyCaseAccessIsAccessControlEnabledIsFalse() {
+        when(applicationParams.isAccessControlEnabled()).thenReturn(false);
+        accessControlService.verifyCaseAccess(
+            "1234",
+            Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER));
+    }
+
+    @Test
+    void shouldNotThrowExceptionForVerifyHearingCaseAccessIsAccessControlEnabledIsFalse() {
+        when(applicationParams.isAccessControlEnabled()).thenReturn(false);
+        accessControlService.verifyHearingCaseAccess(
+            12345L,
+            Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER));
     }
 }
