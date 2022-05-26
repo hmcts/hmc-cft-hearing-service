@@ -27,7 +27,7 @@ class GetHearingActualsResponseMapperTest {
                          .get(0).getOrganisationDetails().getCftOrganisationID());
         assertEquals("partyOrgName",
                      response.getHearingActuals().getActualHearingDays().get(0)
-                         .getActualDayParties().get(0).getActualOrganisationDetails().getName());
+                         .getActualDayParties().get(0).getActualOrganisationName());
     }
 
     @Test

@@ -23,8 +23,8 @@ public class ActualHearingDayParties implements Serializable {
     @Valid
     private ActualHearingDayPartyDetail individualDetails;
 
-    @Valid
-    private ActualHearingOrganisationDetail organisationDetails;
+    @Size(max = 200, message = ValidationError.HA_HEARING_DAY_ORGANISATION_NAME_MAX_LENGTH)
+    private String actualOrganisationName;
 
     @NotEmpty(message = ValidationError.HA_HEARING_DAY_PARTY_CHANNEL_NOT_EMPTY)
     @Size(max = 70, message = ValidationError.HA_HEARING_DAY_PARTY_CHANNEL_MAX_LENGTH)
