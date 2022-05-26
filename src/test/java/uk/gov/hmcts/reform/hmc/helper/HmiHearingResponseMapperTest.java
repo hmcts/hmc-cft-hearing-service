@@ -623,13 +623,6 @@ class HmiHearingResponseMapperTest {
         hearingJoh.setIsPresiding(true);
         hearing.setHearingJohs(new ArrayList<>(List.of(hearingJoh)));
 
-        HearingSession hearingSession = new HearingSession();
-        hearingSession.setHearingVenue(hearingVenue);
-        hearingSession.setHearingRoom(hearingRoom);
-        hearingSession.setHearingStartTime(LocalDateTime.parse("2021-08-10T12:20:00"));
-        hearingSession.setHearingEndTime(LocalDateTime.parse("2021-08-10T12:20:00"));
-        hearing.setHearingSessions(new ArrayList<>(List.of(hearingSession)));
-
         hearingResponse.setHearing(hearing);
         return hearingResponse;
     }
