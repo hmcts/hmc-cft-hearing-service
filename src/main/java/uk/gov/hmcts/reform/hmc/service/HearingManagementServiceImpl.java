@@ -356,13 +356,21 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validateHearingDetails(HearingDetails hearingDetails) {
+        validateHearingWindow(hearingDetails);
+
+        if (hearingDetails.getDuration() % 5 != 0) {
+            throw new BadRequestException(INVALID_DURATION_DETAILS);
+        }
+    }
+
+    private void validateHearingWindow(HearingDetails hearingDetails) {
         if (hearingDetails.getHearingWindow().getDateRangeEnd() == null
             && hearingDetails.getHearingWindow().getDateRangeStart() == null
             && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() == null) {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
         }
         if ((hearingDetails.getHearingWindow().getDateRangeEnd() != null
-                && hearingDetails.getHearingWindow().getDateRangeStart() != null)
+            && hearingDetails.getHearingWindow().getDateRangeStart() != null)
             && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() != null) {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
         }
@@ -370,10 +378,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             || hearingDetails.getHearingWindow().getDateRangeStart() != null)
             && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() != null) {
             throw new BadRequestException(INVALID_HEARING_WINDOW);
-        }
-
-        if (hearingDetails.getDuration() % 5 != 0) {
-            throw new BadRequestException(INVALID_DURATION_DETAILS);
         }
     }
 
