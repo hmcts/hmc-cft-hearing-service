@@ -234,6 +234,20 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenHearingStatusIsListed() throws Exception {
+        stubFor(WireMock.get(urlMatching("/cases/9372710950276235"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        mockMvc.perform(get(url + "/2000000011")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
+            .andReturn();
+    }
+
 
     @Test
     void shouldReturn404_WhenHearingIdIsInValidInDbAndParamIsFalse() throws Exception {
@@ -627,6 +641,14 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn200_WhenGetHearingsForValidCaseRefLuhn() throws Exception {
         mockMvc.perform(get("/hearings/9372710950276233")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
+            .andReturn();
+    }
+
+    @Test
+    void shouldReturn200_WhenGetHearingStatusIsListed() throws Exception {
+        mockMvc.perform(get("/hearings/9372710950276235")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
