@@ -67,5 +67,5 @@ public class Hearing {
 
     private List<HearingJoh> hearingJohs;
 
-    private JsonNode hearingSessions;
+    private List<HearingSession> hearingSessions;
 }
