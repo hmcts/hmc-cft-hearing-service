@@ -277,6 +277,15 @@ class GetHearingResponseMapperTest {
     }
 
     @Test
+    void toHearingsResponseWhenListingStatusIsMissing() {
+        HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
+        hearingEntity.getHearingResponses().get(0)
+            .setListingStatus(null);
+        GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
+        assertNull(response.getHearingResponse().getListingStatus());
+    }
+
+    @Test
     void toHearingsResponseWhenRequestIdIsNull() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity("LISTED");
         hearingEntity.getCaseHearingRequests().get(0)
@@ -387,8 +396,7 @@ class GetHearingResponseMapperTest {
                 LocalDate.of(2020, 12, 20),
                 unavailabilityRanges.getUnavailableFromDate()
             ),
-            () -> assertEquals(
-                "All Day",
+            () -> assertEquals("All Day",
                 unavailabilityRanges.getUnavailabilityType()
             ),
             () -> assertEquals("All Day", unavailabilityDow.getDowUnavailabilityType()),
