@@ -36,16 +36,16 @@ public class HearingDayDetailsEntity extends BaseEntity {
     @Column(name = "hearing_day_id")
     private Long hearingDayId;
 
-    @Column(name = "start_date_time", nullable = false)
+    @Column(name = "start_date_time")
     private LocalDateTime startDateTime;
 
-    @Column(name = "end_date_time", nullable = false)
+    @Column(name = "end_date_time")
     private LocalDateTime endDateTime;
 
-    @Column(name = "venue_id", nullable = false)
+    @Column(name = "venue_id")
     private String venueId;
 
-    @Column(name = "room_id", nullable = false)
+    @Column(name = "room_id")
     private String roomId;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -137,7 +137,8 @@ public class HearingEntity extends BaseEntity {
                         latestHearingResponse.getEarliestHearingDayDetails();
                     if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
                         HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
-                        if (LocalDate.now().isAfter(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
+                        if (hearingDayDetailsEntity.getStartDateTime() != null
+                            && LocalDate.now().isAfter(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
                             return "AWAITING_ACTUALS";
                         }
                     }

@@ -244,6 +244,15 @@ class GetHearingResponseMapperTest {
         assertHearingLocation(response.getHearingDetails().getHearingLocations().get(0));
     }
 
+    @Test
+    void toHearingsResponseWhenListingStatusIsMissing() {
+        HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
+        hearingEntity.getHearingResponses().get(0)
+            .setListingStatus(null);
+        GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
+        assertNull(response.getHearingResponse().getListingStatus());
+    }
+
     private void assertRequestDetails(RequestDetails requestDetails) {
         assertAll(
             () -> assertEquals("HEARING_REQUESTED", requestDetails.getStatus()),
