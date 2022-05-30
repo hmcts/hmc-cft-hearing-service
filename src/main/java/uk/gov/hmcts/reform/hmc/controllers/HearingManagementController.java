@@ -35,9 +35,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALID_LENGTH;
@@ -89,11 +86,7 @@ public class HearingManagementController {
     })
     public HearingResponse saveHearing(@RequestBody @Valid HearingRequest createHearingRequest) {
         accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER));
-        HearingResponse hearingResponse = hearingManagementService.saveHearingRequest(createHearingRequest);
-        hearingManagementService.sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest,
-                REQUEST_HEARING
-        );
-        return hearingResponse;
+        return hearingManagementService.saveHearingRequest(createHearingRequest);
     }
 
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -107,11 +100,8 @@ public class HearingManagementController {
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
                                          @RequestBody @Valid DeleteHearingRequest deleteRequest) {
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
-        HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
+        return hearingManagementService.deleteHearingRequest(
             hearingId, deleteRequest);
-        hearingManagementService.sendRequestToHmiAndQueue(deleteRequest, hearingId, DELETE_HEARING);
-
-        return hearingResponse;
     }
 
     /**
@@ -158,9 +148,7 @@ public class HearingManagementController {
     public HearingResponse updateHearing(@RequestBody @Valid UpdateHearingRequest hearingRequest,
                                          @PathVariable("id") Long hearingId) {
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
-        HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
-        hearingManagementService.sendRequestToHmiAndQueue(hearingId, hearingRequest, AMEND_HEARING);
-        return hearingResponse;
+        return hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
     }
 
     @PostMapping(path = "/hearingActualsCompletion/{id}")

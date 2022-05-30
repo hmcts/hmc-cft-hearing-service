@@ -385,6 +385,10 @@ public class TestingUtil {
         return request;
     }
 
+    public static UpdateHearingRequest updateHearingRequest() {
+        return updateHearingRequest(1);
+    }
+
     public static UpdateHearingRequest updateHearingRequest(int version) {
         UpdateHearingRequest request = new UpdateHearingRequest();
         HearingDetails hearingDetails = hearingDetails();
@@ -398,8 +402,17 @@ public class TestingUtil {
         return request;
     }
 
-    public static UpdateHearingRequest updateHearingRequest() {
-        return updateHearingRequest(1);
+    public static UpdateHearingRequest updateHearingRequestWithCaseSubType(int version) {
+        UpdateHearingRequest request = new UpdateHearingRequest();
+        HearingDetails hearingDetails = hearingDetails();
+        hearingDetails.setAmendReasonCode("reason");
+        request.setHearingDetails(hearingDetails);
+        request.setCaseDetails(caseDetailsWithCaseSubType());
+        request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        RequestDetails requestDetails = new RequestDetails();
+        requestDetails.setVersionNumber(version);
+        request.setRequestDetails(requestDetails);
+        return request;
     }
 
     public static UpdateHearingRequest validUpdateHearingRequest() {
@@ -431,6 +444,30 @@ public class TestingUtil {
         category.setCategoryValue("PROBATE");
         List<CaseCategory> caseCategories = new ArrayList<>();
         caseCategories.add(category);
+        caseDetails.setCaseCategories(caseCategories);
+        return caseDetails;
+    }
+
+    public static CaseDetails caseDetailsWithCaseSubType() {
+        CaseDetails caseDetails = new CaseDetails();
+        caseDetails.setHmctsServiceCode("ABA1");
+        caseDetails.setCaseRef(CASE_REFERENCE);
+        caseDetails.setCaseDeepLink("https://www.google.com");
+        caseDetails.setHmctsInternalCaseName("Internal case name");
+        caseDetails.setPublicCaseName("Public case name");
+        caseDetails.setCaseManagementLocationCode("CMLC123");
+        caseDetails.setCaseRestrictedFlag(false);
+        caseDetails.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));
+        CaseCategory category = new CaseCategory();
+        category.setCategoryType("CASETYPE");
+        category.setCategoryValue("PROBATE");
+        CaseCategory categorySubType = new CaseCategory();
+        categorySubType.setCategoryType("CASESUBTYPE");
+        categorySubType.setCategoryValue("PROBATE");
+        categorySubType.setCategoryParent("PROBATE");
+        List<CaseCategory> caseCategories = new ArrayList<>();
+        caseCategories.add(category);
+        caseCategories.add(categorySubType);
         caseDetails.setCaseCategories(caseCategories);
         return caseDetails;
     }
