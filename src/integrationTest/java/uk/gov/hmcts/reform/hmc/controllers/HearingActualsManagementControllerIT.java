@@ -337,9 +337,9 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingEndTime")
                                .value("2022-01-28T13:00:00"))
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].pauseDateTimes[0].pauseStartTime")
-                               .value("2022-01-28T12:00:00.000"))
+                               .value("2022-01-28T12:00:00"))
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].pauseDateTimes[0].pauseEndTime")
-                               .value("2022-01-28T12:30:00.000"))
+                               .value("2022-01-28T12:30:00"))
 
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualPartyId")
                                .value("P1"))
