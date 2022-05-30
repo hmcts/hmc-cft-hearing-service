@@ -37,7 +37,7 @@ public class HearingActualsMapper {
     }
 
     private List<ActualHearingDayEntity> toActualHearingDayEntities(List<ActualHearingDay> actualHearingDay,
-                                                                   ActualHearingEntity actualHearing) {
+                                                                    ActualHearingEntity actualHearing) {
         return actualHearingDay.stream()
             .map((ActualHearingDay day) -> toActualHearingDayEntity(day, actualHearing))
             .collect(Collectors.toList());
@@ -127,16 +127,20 @@ public class HearingActualsMapper {
                 ActualHearingPartyEntity matchingHearingPartyEntity =
                     getHearingPartyEntityByReference(representedPartyId, hearingPartyEntities);
 
-                ActualHearingPartyEntity sourceEntity =
-                    getHearingPartyEntityByReference(actualHearingDayParty.getActualPartyId(), hearingPartyEntities);
+                if (actualHearingDayParty.getActualPartyId() != null) {
+                    ActualHearingPartyEntity sourceEntity =
+                        getHearingPartyEntityByReference(
+                            actualHearingDayParty.getActualPartyId(),
+                            hearingPartyEntities);
 
-                ActualPartyRelationshipDetailEntity partyRelationshipDetail = ActualPartyRelationshipDetailEntity
-                    .builder()
-                    .targetActualParty(matchingHearingPartyEntity)
-                    .sourceActualParty(sourceEntity)
-                    .build();
+                    ActualPartyRelationshipDetailEntity partyRelationshipDetail = ActualPartyRelationshipDetailEntity
+                        .builder()
+                        .targetActualParty(matchingHearingPartyEntity)
+                        .sourceActualParty(sourceEntity)
+                        .build();
 
-                sourceEntity.setActualPartyRelationshipDetail(List.of(partyRelationshipDetail));
+                    sourceEntity.setActualPartyRelationshipDetail(List.of(partyRelationshipDetail));
+                }
             }
         }
         return hearingPartyEntities;
