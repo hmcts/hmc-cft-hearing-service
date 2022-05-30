@@ -357,11 +357,11 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath(
                     "$.hearingActuals.actualHearingDays[0].actualDayParties[0].individualDetails.firstName")
                                .value("Jane"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualPartyId")
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].actualPartyId")
                           .value("P2"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyRole")
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].partyRole")
                                .value("APP"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyChannelSubType")
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].partyChannelSubType")
                                .value("INTER"));
         }
 
