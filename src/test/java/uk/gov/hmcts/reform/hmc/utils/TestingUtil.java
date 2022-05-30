@@ -464,6 +464,7 @@ public class TestingUtil {
         CaseCategory categorySubType = new CaseCategory();
         categorySubType.setCategoryType("CASESUBTYPE");
         categorySubType.setCategoryValue("PROBATE");
+        categorySubType.setCategoryParent("PROBATE");
         List<CaseCategory> caseCategories = new ArrayList<>();
         caseCategories.add(category);
         caseCategories.add(categorySubType);
