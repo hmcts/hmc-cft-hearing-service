@@ -44,7 +44,7 @@ public class HearingResponseEntity extends BaseEntity {
     @Column(name = "received_date_time", nullable = false)
     private LocalDateTime requestTimeStamp;
 
-    @Column(name = "listing_status", nullable = false)
+    @Column(name = "listing_status")
     private String listingStatus;
 
     @Column(name = "listing_case_status", nullable = false)
