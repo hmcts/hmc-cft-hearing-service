@@ -42,9 +42,11 @@ public class PartiesNotifiedController {
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success"),
-        @ApiResponse(code = 400, message = ValidationError.INVALID_HEARING_ID_DETAILS),
-        @ApiResponse(code = 404, message = ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND
-        ),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 404,
+            message = "One or more of the following reasons:"
+                + "\n1) " + ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND
+                + "\n2) " + ValidationError.PARTIES_NOTIFIED_NO_SUCH_RESPONSE),
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
     public void putPartiesNotified(@RequestBody @Valid PartiesNotified partiesNotified,
@@ -64,7 +66,7 @@ public class PartiesNotifiedController {
         @ApiResponse(code = 400,
             message = "One or more of the following reasons:"
                 + "\n1) " + ValidationError.INVALID_HEARING_ID_DETAILS
-                + "\n1) " + ValidationError.PARTIES_NOTIFIED_ALREADY_SET),
+                + "\n2) " + ValidationError.PARTIES_NOTIFIED_ALREADY_SET),
         @ApiResponse(code = 404, message = ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND)
     })
     public PartiesNotifiedResponses getPartiesNotified(@PathVariable("id") Long hearingId) {
