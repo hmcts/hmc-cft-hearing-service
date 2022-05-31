@@ -32,7 +32,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_ORGANISATION_NAME_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_ORGANISATION_NAME_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PARTY_CHANNEL_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PARTY_CHANNEL_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PARTY_ID_MAX_LENGTH;
@@ -224,10 +223,10 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
                                .value(IsNull.nullValue()))
                 .andExpect(jsonPath(
-                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails.lastName")
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].individualDetails.lastName")
                                .value("WitnessLastName1"))
                 .andExpect(jsonPath(
-                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails.firstName")
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].individualDetails.firstName")
                                .value("WitnessForeName1"));
 
         }
@@ -291,10 +290,10 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
                                .value(IsNull.nullValue()))
                 .andExpect(jsonPath(
-                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails.lastName")
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].individualDetails.lastName")
                                .value("WitnessLastName1"))
                 .andExpect(jsonPath(
-                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualIndividualDetails.firstName")
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].individualDetails.firstName")
                                .value("WitnessForeName1"));
         }
 
@@ -575,17 +574,10 @@ class HearingActualsManagementControllerIT extends BaseTest {
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenMissingPartyOrganisationName() throws Exception {
-            verifyErrorOnMissingNode(HA_HEARING_DAY_ORGANISATION_NAME_NOT_EMPTY,
-                                     "$['actualHearingDays'][1]['actualDayParties'][2]['organisationDetails']['name']");
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenPartyOrganisationNameTooLong() throws Exception {
             verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_ORGANISATION_NAME_MAX_LENGTH,
                                           "$['actualHearingDays'][1]['actualDayParties'][2]"
-                                              + "['organisationDetails']['name']",
+                                              + "['actualOrganisationName']",
                                           201);
         }
 
