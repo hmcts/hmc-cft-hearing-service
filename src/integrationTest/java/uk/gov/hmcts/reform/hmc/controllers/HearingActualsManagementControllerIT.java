@@ -357,12 +357,21 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath(
                     "$.hearingActuals.actualHearingDays[0].actualDayParties[0].individualDetails.firstName")
                                .value("Jane"))
+                .andExpect(jsonPath(
+                "$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
+                          .value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].actualPartyId")
                           .value("P2"))
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].partyRole")
                                .value("APP"))
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].partyChannelSubType")
-                               .value("INTER"));
+                               .value("INTER"))
+                .andExpect(jsonPath(
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[2].representedParty")
+                               .value("P1"))
+                .andExpect(jsonPath(
+                "$.hearingActuals.actualHearingDays[0].actualDayParties[3].representedParty")
+                           .value("P2"));
         }
 
         // https://tools.hmcts.net/jira/browse/HHMAN-80 AC-09
