@@ -648,7 +648,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     void shouldReturn200_WhenGetHearingStatusIsListed() throws Exception {
-        mockMvc.perform(get("/hearings/9372710950276235")
+        mockMvc.perform(get("/hearings/9856815055686759")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();

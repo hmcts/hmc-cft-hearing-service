@@ -212,7 +212,7 @@ sonarqube {
       "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageReaderFromQueueConfiguration.java," +
       "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageSenderToTopicConfiguration.java," +
       "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageSenderToQueueConfiguration.java," +
-      "**/HmiHearingResponseMapper.java,**/SyncResponse.java"
+      "**/SyncResponse.java"
   }
 }
 
