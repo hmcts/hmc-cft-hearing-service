@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -152,5 +154,6 @@ public class CaseHearingRequestEntity extends BaseEntity {
     private CancellationReasonsEntity cancellationReason;
 
     @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingChannelsEntity> hearingChannels;
 }

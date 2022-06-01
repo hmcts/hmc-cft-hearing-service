@@ -399,9 +399,13 @@ class HearingManagementServiceIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void testGetHearings_WithValidCaseRefAndStatus() {
-        GetHearingsResponse response = hearingManagementService.getHearings("9372710950276233", "HEARING_REQUESTED");
+        GetHearingsResponse response = hearingManagementService.getHearings("9372710950276233",
+                                                                            "HEARING_REQUESTED");
         testGetHearings_WithValidCaseRefAndStatus_assertPart1(response);
         testGetHearings_WithValidCaseRefAndStatus_assertPart2(response);
+        assertEquals(2, response.getCaseHearings().get(0).getHearingChannels().size());
+        assertEquals("Paper",response.getCaseHearings().get(0).getHearingChannels().get(0).getChannelType());
+        assertEquals("Email",response.getCaseHearings().get(0).getHearingChannels().get(1).getChannelType());
     }
 
     void testGetHearings_WithValidCaseRefAndStatus_assertPart1(GetHearingsResponse response) {
