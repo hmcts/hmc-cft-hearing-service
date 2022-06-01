@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingChannel;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
@@ -253,6 +254,14 @@ class GetHearingResponseMapperTest {
         assertNull(response.getHearingResponse().getListingStatus());
     }
 
+    @Test
+    void toHearingsResponseWhenDataIsPresentWithHearingChannel() {
+        HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.IND);
+        hearingEntity.getCaseHearingRequests().get(0).setHearingChannels(TestingUtil.hearingChannelsEntity());
+        GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
+        assertHearingChannel(response.getHearingDetails().getHearingChannels());
+    }
+
     private void assertRequestDetails(RequestDetails requestDetails) {
         assertAll(
             () -> assertEquals("HEARING_REQUESTED", requestDetails.getStatus()),
@@ -395,5 +404,14 @@ class GetHearingResponseMapperTest {
             () -> assertEquals("cluster", hearingLocation.getLocationType())
         );
     }
+
+    private void assertHearingChannel(List<HearingChannel> hearingChannel) {
+        assertAll(
+            () -> assertEquals(2, hearingChannel.size()),
+            () -> assertEquals("someChannelType", hearingChannel.get(0).getChannelType()),
+            () -> assertEquals("someOtherChannelType", hearingChannel.get(1).getChannelType())
+        );
+    }
+
 
 }

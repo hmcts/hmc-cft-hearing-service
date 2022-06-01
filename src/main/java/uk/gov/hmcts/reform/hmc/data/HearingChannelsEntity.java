@@ -27,7 +27,7 @@ public class HearingChannelsEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "hearing_channels_id_seq")
-    @Column(name = "hearing_channels_id", nullable = false)
+    @Column(name = "hearing_channels_id")
     private Long hearingChannelsId;
 
     @Column(name = "hearing_channel_type", nullable = false)
@@ -35,5 +35,5 @@ public class HearingChannelsEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")
-    private CaseHearingRequestEntity caseHearingRequestId;
+    private CaseHearingRequestEntity caseHearing;
 }

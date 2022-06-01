@@ -8,6 +8,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingChannelsEntity;
 
 @Transactional(propagation = Propagation.REQUIRED)
 @Repository
-public interface ChannelTypeRepository extends CrudRepository<HearingChannelsEntity, Long> {
+public interface HearingChannelsRepository extends CrudRepository<HearingChannelsEntity, Long> {
 
 }

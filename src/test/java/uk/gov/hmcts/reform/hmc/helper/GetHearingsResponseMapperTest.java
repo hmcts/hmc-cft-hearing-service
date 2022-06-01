@@ -36,6 +36,8 @@ class GetHearingsResponseMapperTest {
         assertEquals("PanelUser1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getPanelMemberId());
         assertNull(response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getHearingJudgeId());
+        assertEquals("someChannelType",
+            response.getCaseHearings().get(0).getHearingChannels().get(0).getChannelType());
     }
 
     @Test

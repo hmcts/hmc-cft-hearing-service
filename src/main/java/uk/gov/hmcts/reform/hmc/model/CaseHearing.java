@@ -52,4 +52,8 @@ public class CaseHearing {
 
     private Boolean hearingIsLinkedFlag;
 
+    @Size(max = 70)
+    @NotNull
+    private List<HearingChannel> hearingChannels;
+
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.ContactDetailsEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingChannelsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingChannel;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
@@ -254,6 +256,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         hearingDetails.setLeadJudgeContractType(caseHearingRequestEntity.getLeadJudgeContractType());
         hearingDetails.setPanelRequirements(setPanelRequirements(hearingEntity));
         hearingDetails.setHearingIsLinkedFlag(hearingEntity.getIsLinkedFlag());
+        hearingDetails.setHearingChannels(setHearingChannel(caseHearingRequestEntity));
         return hearingDetails;
     }
 
@@ -393,6 +396,17 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             }
         }
         return hearingLocations;
+    }
+
+    private List<HearingChannel> setHearingChannel(CaseHearingRequestEntity caseHearingRequestEntity) {
+        List<HearingChannel> hearingChannels = new ArrayList<>();
+        for (HearingChannelsEntity hearingChannelsEntity: caseHearingRequestEntity.getHearingChannels()) {
+            HearingChannel hearingChannel = new HearingChannel();
+            hearingChannel.setChannelType(hearingChannelsEntity.getHearingChannelType());
+            hearingChannels.add(hearingChannel);
+        }
+
+        return hearingChannels;
     }
 
     private HearingWindow setHearingWindow(HearingEntity hearingEntity) {

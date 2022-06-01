@@ -151,4 +151,6 @@ public class CaseHearingRequestEntity extends BaseEntity {
     @OneToOne(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private CancellationReasonsEntity cancellationReason;
 
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<HearingChannelsEntity> hearingChannels;
 }

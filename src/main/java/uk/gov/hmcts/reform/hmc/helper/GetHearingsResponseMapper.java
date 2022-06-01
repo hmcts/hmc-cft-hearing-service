@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.hmc.helper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingChannelsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingChannel;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
             latestHearingResponseOpt.ifPresent(latestHearingResponse ->
                 setHearingDaySchedule(caseHearing, latestHearingResponse));
             setHearingGroupRequestId(entity, caseHearing);
+            setHearingChannels(entity, caseHearing);
             caseHearingList.add(caseHearing);
         }
         getHearingsResponse.setCaseHearings(caseHearingList);
@@ -91,6 +94,19 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         HearingEntity hearing = entity.getHearing();
         if (hearing.getLinkedGroupDetails() != null) {
             caseHearing.setHearingGroupRequestId(hearing.getLinkedGroupDetails().getLinkedGroupId().toString());
+        }
+    }
+
+    private void setHearingChannels(CaseHearingRequestEntity entity, CaseHearing caseHearing) {
+        List<HearingChannel> hearingChannels = new ArrayList<>();
+        List<HearingChannelsEntity> hearingChannelsEntities = entity.getHearingChannels();
+        if (hearingChannelsEntities != null) {
+            for (HearingChannelsEntity hearingChannelsEntity : hearingChannelsEntities) {
+                HearingChannel hearingChannel = new HearingChannel();
+                hearingChannel.setChannelType(hearingChannelsEntity.getHearingChannelType());
+                hearingChannels.add(hearingChannel);
+            }
+            caseHearing.setHearingChannels(hearingChannels);
         }
     }
 }

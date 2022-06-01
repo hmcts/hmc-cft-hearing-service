@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.hmc.model.HearingChannel;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,7 +44,7 @@ public class Listing {
 
     private List<ListingJoh> listingJohs;
 
-    private List<String> listingHearingChannels;
+    private List<HearingChannel> listingHearingChannels;
 
     private List<ListingLocation> listingLocations;
 

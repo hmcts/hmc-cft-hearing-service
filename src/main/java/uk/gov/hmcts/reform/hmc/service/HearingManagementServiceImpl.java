@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingChannel;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
@@ -46,8 +48,11 @@ import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -358,6 +363,23 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (hearingDetails.getDuration() % 5 != 0) {
             throw new BadRequestException(INVALID_DURATION_DETAILS);
         }
+
+        if (hearingDetails.getHearingChannels() != null) {
+            validateHearingChannels(hearingDetails);
+        }
+    }
+
+    private void validateHearingChannels(HearingDetails hearingDetails) {
+        Set<String> duplicateHearingChannelTypes = new HashSet<>();
+        List<HearingChannel> hearingChannels = hearingDetails.getHearingChannels()
+            .stream()
+            .filter(channels -> !duplicateHearingChannelTypes.add(channels.getChannelType()))
+            .collect(Collectors.toList());
+
+        if (!hearingChannels.isEmpty()) {
+            throw new BadRequestException(ValidationError.NON_UNIQUE_CHANNEL_TYPE);
+        }
+
     }
 
     @Override

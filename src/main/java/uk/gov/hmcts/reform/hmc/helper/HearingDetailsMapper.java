@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingChannelsEntity;
 import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelAuthorisationRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelRequirementsEntity;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.hmc.data.PanelSpecialismsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelUserRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
+import uk.gov.hmcts.reform.hmc.model.HearingChannel;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
@@ -34,6 +36,8 @@ public class HearingDetailsMapper {
 
     private PanelUserRequirementsMapper panelUserRequirementsMapper;
 
+    private HearingChannelsMapper hearingChannelsMapper;
+
     @Autowired
     public HearingDetailsMapper(NonStandardDurationsMapper nonStandardDurationsMapper,
                                 RequiredLocationsMapper requiredLocationsMapper,
@@ -41,7 +45,8 @@ public class HearingDetailsMapper {
                                 PanelRequirementsMapper panelRequirementsMapper,
                                 PanelAuthorisationRequirementsMapper panelAuthorisationRequirementsMapper,
                                 PanelSpecialismsMapper panelSpecialismsMapper,
-                                PanelUserRequirementsMapper panelUserRequirementsMapper) {
+                                PanelUserRequirementsMapper panelUserRequirementsMapper,
+                                HearingChannelsMapper hearingChannelsMapper) {
         this.nonStandardDurationsMapper = nonStandardDurationsMapper;
         this.requiredLocationsMapper = requiredLocationsMapper;
         this.requiredFacilitiesMapper = requiredFacilitiesMapper;
@@ -49,11 +54,14 @@ public class HearingDetailsMapper {
         this.panelAuthorisationRequirementsMapper = panelAuthorisationRequirementsMapper;
         this.panelSpecialismsMapper = panelSpecialismsMapper;
         this.panelUserRequirementsMapper = panelUserRequirementsMapper;
+        this.hearingChannelsMapper = hearingChannelsMapper;
     }
 
     public void mapHearingDetails(HearingDetails hearingDetails, CaseHearingRequestEntity caseHearingRequestEntity) {
         setRequiredLocations(hearingDetails.getHearingLocations(), caseHearingRequestEntity);
         setPanelDetails(hearingDetails, caseHearingRequestEntity);
+        setHearingChannels(hearingDetails.getHearingChannels(), caseHearingRequestEntity);
+
         if (hearingDetails.getFacilitiesRequired() != null) {
             setRequiredFacilities(hearingDetails.getFacilitiesRequired(), caseHearingRequestEntity);
         }
@@ -125,5 +133,12 @@ public class HearingDetailsMapper {
         final List<RequiredLocationsEntity> requiredLocationsEntities =
             requiredLocationsMapper.modelToEntity(hearingLocations, caseHearingRequestEntity);
         caseHearingRequestEntity.setRequiredLocations(requiredLocationsEntities);
+    }
+
+    private void setHearingChannels(List<HearingChannel> hearingChannels,
+                                    CaseHearingRequestEntity caseHearingRequestEntity) {
+        final List<HearingChannelsEntity> hearingChannelsEntities =
+            hearingChannelsMapper.modelToEntity(hearingChannels, caseHearingRequestEntity);
+        caseHearingRequestEntity.setHearingChannels(hearingChannelsEntities);
     }
 }

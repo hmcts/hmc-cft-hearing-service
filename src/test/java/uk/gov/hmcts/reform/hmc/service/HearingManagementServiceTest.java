@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
@@ -337,6 +338,21 @@ class HearingManagementServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest));
             assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
+        }
+
+        @Test
+        void shouldFailIfChannelTypeIsNotUnique() {
+            HearingRequest hearingRequest = new HearingRequest();
+            hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+            hearingRequest.setCaseDetails(TestingUtil.caseDetails());
+
+            assertEquals(2,hearingRequest.getHearingDetails().getHearingChannels().size());
+            hearingRequest.getHearingDetails().getHearingChannels().get(0).setChannelType("sameChannelType");
+            hearingRequest.getHearingDetails().getHearingChannels().get(1).setChannelType("sameChannelType");
+
+            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .saveHearingRequest(hearingRequest));
+            assertEquals(ValidationError.NON_UNIQUE_CHANNEL_TYPE, exception.getMessage());
         }
 
         @Test
@@ -1244,6 +1260,8 @@ class HearingManagementServiceTest {
                 .getAttendees().get(0).getHearingSubChannel());
             assertEquals("judge1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
                 .getHearingJudgeId());
+            assertEquals("someChannelType", response.getCaseHearings().get(0).getHearingChannels().get(0)
+                .getChannelType());
         }
 
         @Test

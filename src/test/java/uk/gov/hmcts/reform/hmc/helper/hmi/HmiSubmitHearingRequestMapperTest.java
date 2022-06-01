@@ -61,7 +61,7 @@ class HmiSubmitHearingRequestMapperTest {
         when(hmiCaseDetailsMapper.getCaseDetails(caseDetails, 1, HEARING_ID, Boolean.TRUE))
             .thenReturn(hmiCaseDetails);
         Listing listing = Listing.builder().build();
-        when(listingMapper.getListing(hearingDetails, Collections.singletonList(PREFERRED_HEARING_CHANNEL)))
+        when(listingMapper.getListing(hearingDetails))
                 .thenReturn(listing);
         HmiHearingRequest hmiHearingRequest = HmiHearingRequest.builder()
                 .caseDetails(hmiCaseDetails)
@@ -90,8 +90,7 @@ class HmiSubmitHearingRequestMapperTest {
                 updateHearingRequest.getRequestDetails().getVersionNumber() + 1, HEARING_ID, Boolean.TRUE))
                   .thenReturn(hmiCaseDetails);
         Listing listing = Listing.builder().build();
-        when(listingMapper.getListing(updateHearingRequest.getHearingDetails(),
-                Collections.singletonList(PREFERRED_HEARING_CHANNEL)))
+        when(listingMapper.getListing(updateHearingRequest.getHearingDetails()))
                 .thenReturn(listing);
         HmiHearingRequest hmiHearingRequest = HmiHearingRequest.builder()
                 .caseDetails(hmiCaseDetails)

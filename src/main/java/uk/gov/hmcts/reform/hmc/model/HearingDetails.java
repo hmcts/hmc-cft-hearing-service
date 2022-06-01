@@ -76,6 +76,10 @@ public class HearingDetails {
     @Size(max = 70, message = ValidationError.AMEND_REASON_CODE_MAX_LENGTH)
     private String amendReasonCode;
 
+    @Valid
+    @NotNull(message = ValidationError.HEARING_CHANNEL_EMPTY)
+    private List<HearingChannel> hearingChannels;
+
     public boolean isMultiDayHearing() {
         return getDuration() != null ? getDuration() > DURATION_OF_DAY : false;
     }
