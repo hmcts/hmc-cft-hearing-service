@@ -237,7 +237,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenHearingStatusIsListed() throws Exception {
-        stubFor(WireMock.get(urlMatching("/cases/9372710950276235"))
+        stubFor(WireMock.get(urlMatching("/cases/9856815055686759"))
                     .willReturn(okJson("{\n"
                                            + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
                                            + "\t\"case_type\": \"CaseType1\"\n"
