@@ -83,7 +83,7 @@ public class HearingManagementController {
         @ApiResponse(code = 400,
             message = "One or more of the following reasons:"
                 + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
-                + "\n2) " + ValidationError.INVALID_HEARING_WINDOW
+                + "\n2) " + ValidationError.HEARING_WINDOW_EMPTY_NULL
                 + "\n3) " + ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS
         )
     })

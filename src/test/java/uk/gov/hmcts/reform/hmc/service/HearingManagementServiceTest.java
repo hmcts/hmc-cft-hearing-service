@@ -326,7 +326,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest));
-            assertEquals("Hearing window details are required", exception.getMessage());
+            assertEquals(INVALID_HEARING_WINDOW, exception.getMessage());
         }
 
         @Test
@@ -338,7 +338,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest));
-            assertEquals("Hearing window details are required", exception.getMessage());
+            assertEquals(INVALID_HEARING_WINDOW, exception.getMessage());
         }
 
         @Test
@@ -350,7 +350,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest));
-            assertEquals("Hearing window details are required", exception.getMessage());
+            assertEquals(INVALID_HEARING_WINDOW, exception.getMessage());
         }
 
         @Test
@@ -362,7 +362,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest));
-            assertEquals("Hearing window details are required", exception.getMessage());
+            assertEquals(INVALID_HEARING_WINDOW, exception.getMessage());
         }
 
         @Test
