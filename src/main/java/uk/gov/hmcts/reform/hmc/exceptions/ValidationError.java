@@ -256,4 +256,5 @@ public final class ValidationError {
         + "70 " + CHARACTERS_LONG;
     public static final String INVALID_AMEND_REASON_CODE = "Amend reason code details are required";
 
+    public static final String INTERNAL_SERVER_ERROR = "Error occurred on the server";
 }

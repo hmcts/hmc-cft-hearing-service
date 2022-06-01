@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GetLinkedHearingGroupResponse;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
 
@@ -25,8 +26,8 @@ public class LinkedHearingGroupController {
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success (with content)"),
-        @ApiResponse(code = 400, message = "Invalid linked group id"),
-        @ApiResponse(code = 404, message = "Invalid linked group id"),
+        @ApiResponse(code = 400, message = ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS),
+        @ApiResponse(code = 404, message = ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS),
     })
     public GetLinkedHearingGroupResponse getLinkedHearingGroup(@PathVariable("id") String requestId) {
         return linkedHearingGroupService.getLinkedHearingGroupResponse(requestId);

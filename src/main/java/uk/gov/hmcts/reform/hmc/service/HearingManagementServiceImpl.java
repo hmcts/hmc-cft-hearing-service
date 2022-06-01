@@ -51,7 +51,10 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
@@ -156,7 +159,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
         validateHearingRequest(createHearingRequest);
-        return insertHearingRequest(createHearingRequest);
+        HearingResponse hearingResponse = insertHearingRequest(createHearingRequest);
+        sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest,
+                                 REQUEST_HEARING);
+        return hearingResponse;
     }
 
     @Override
@@ -173,18 +179,18 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate);
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
-        return getSaveHearingResponseDetails(hearingEntity);
+        HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
+        sendRequestToHmiAndQueue(hearingId, hearingRequest, AMEND_HEARING);
+        return saveHearingResponseDetails;
     }
 
-    @Override
-    public void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest, String messageType) {
+    private void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest, String messageType) {
         HmiSubmitHearingRequest hmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
             .mapRequest(hearingId, hearingRequest);
         sendRequestToQueue(hmiSubmitHearingRequest, hearingId, messageType);
     }
 
-    @Override
-    public void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest, Long hearingId, String messageType) {
+    private void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest, Long hearingId, String messageType) {
         HmiDeleteHearingRequest hmiDeleteHearingRequest = hmiDeleteHearingRequestMapper.mapRequest(hearingRequest);
         sendRequestToQueue(hmiDeleteHearingRequest, hearingId, messageType);
     }
@@ -370,7 +376,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(deleteRequest, existingHearing, existingHearing.getNextRequestVersion());
-        return getSaveHearingResponseDetails(hearingEntity);
+        HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
+        sendRequestToHmiAndQueue(deleteRequest, hearingId, DELETE_HEARING);
+        return saveHearingResponseDetails;
     }
 
     private void validateDeleteHearingStatus(Long hearingId) {

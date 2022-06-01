@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.hmc.client.hmi.HearingCode;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingJoh;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingRoom;
+import uk.gov.hmcts.reform.hmc.client.hmi.HearingSession;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingVenue;
 import uk.gov.hmcts.reform.hmc.client.hmi.MetaResponse;
@@ -118,6 +119,126 @@ class HmiHearingResponseMapperTest {
             () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(0)
                                  .getHearingDayPanel().get(0).getIsPresiding(), is(true))
         );
+    }
+
+    @Test
+    void mapHmiMultiDayHearingToEntity() {
+        HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
+            generateHmiMultiDayHearing("random", HearingCode.EXCEPTION, 1, ListingStatus.DRAFT),
+            generateHearingEntity("AWAITING_LISTING", 1)
+        );
+        assertAll(
+            () -> assertThat(response.getHearingResponses().size(), is(2)),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getListingTransactionId(),
+                is("transactionIdCaseHQ")
+            ),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getRequestTimeStamp(),
+                is(LocalDateTime.parse("2021-08-10T12:20:00"))
+            ),
+            () -> assertThat(response.getHearingResponses().get(1).getRequestVersion(), is(1)),
+            () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is(ListingStatus.DRAFT.name())),
+            () -> assertThat(response.getHearingResponses().get(1).getCancellationReasonType(), is("reason")),
+            () -> assertThat(response.getHearingResponses().get(1).getTranslatorRequired(), is(true)),
+            () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name())),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getHearingDayDetails().get(0).getStartDateTime(),
+                is(LocalDateTime.parse("2021-10-11T12:20:00"))
+            ),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getHearingDayDetails().get(0).getEndDateTime(),
+                is(LocalDateTime.parse("2021-10-12T12:20:00"))
+            ),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getHearingDayDetails().get(0).getRoomId(),
+                is("multiDayRoomName")
+            ),
+            () -> assertNull(response.getHearingResponses().get(1).getHearingDayDetails().get(0).getVenueId()),
+            () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(0)
+                                 .getHearingAttendeeDetails().get(0).getPartyId(), is("entityId")),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getHearingDayDetails().get(0)
+                    .getHearingAttendeeDetails().get(0).getPartySubChannelType(),
+                is("codeSubChannel")
+            ),
+            () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(0)
+                                 .getHearingDayPanel().get(0).getPanelUserId(), is("JohCode")),
+            () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(0)
+                                 .getHearingDayPanel().get(0).getIsPresiding(), is(true))
+        );
+    }
+
+    @Test
+    void mapHmiMultiSessionMultiDayHearingToEntity() {
+        HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
+            generateHmiMultiSessionMultiDayHearing("random", HearingCode.EXCEPTION, 1, ListingStatus.DRAFT),
+            generateHearingEntity("AWAITING_LISTING", 1)
+        );
+        assertAll(
+            () -> assertThat(response.getHearingResponses().size(), is(2)),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getListingTransactionId(),
+                is("transactionIdCaseHQ")
+            ),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getRequestTimeStamp(),
+                is(LocalDateTime.parse("2021-08-10T12:20:00"))
+            ),
+            () -> assertThat(response.getHearingResponses().get(1).getRequestVersion(), is(1)),
+            () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is(ListingStatus.DRAFT.name())),
+            () -> assertThat(response.getHearingResponses().get(1).getCancellationReasonType(), is("reason")),
+            () -> assertThat(response.getHearingResponses().get(1).getTranslatorRequired(), is(true)),
+            () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name())),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getHearingDayDetails().get(0).getStartDateTime(),
+                is(LocalDateTime.parse("2021-10-11T12:20:00"))
+            ),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getHearingDayDetails().get(0).getEndDateTime(),
+                is(LocalDateTime.parse("2021-10-12T12:20:00"))
+            ),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getHearingDayDetails().get(0).getRoomId(),
+                is("multiDayRoomName")
+            ),
+            () -> assertNull(response.getHearingResponses().get(1).getHearingDayDetails().get(0).getVenueId()),
+            () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(0)
+                                 .getHearingAttendeeDetails().get(0).getPartyId(), is("entityId")),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getHearingDayDetails().get(0)
+                    .getHearingAttendeeDetails().get(0).getPartySubChannelType(),
+                is("codeSubChannel")
+            ),
+            () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(0)
+                                 .getHearingDayPanel().get(0).getPanelUserId(), is("JohCode")),
+            () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(0)
+                                 .getHearingDayPanel().get(0).getIsPresiding(), is(true)),
+
+            () -> assertThat(
+                response.getHearingResponses().get(1).getHearingDayDetails().get(1).getStartDateTime(),
+                is(LocalDateTime.parse("2021-10-11T12:20:00"))
+            ),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getHearingDayDetails().get(1).getEndDateTime(),
+                is(LocalDateTime.parse("2021-10-12T12:20:00"))
+            ),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getHearingDayDetails().get(1).getRoomId(),
+                is("multiDayRoomName")
+            ),
+            () -> assertNull(response.getHearingResponses().get(1).getHearingDayDetails().get(1).getVenueId()),
+            () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(1)
+                                 .getHearingAttendeeDetails().get(0).getPartyId(), is("entityId")),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getHearingDayDetails().get(1)
+                    .getHearingAttendeeDetails().get(0).getPartySubChannelType(),
+                is("codeSubChannel")
+            ),
+            () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(1)
+                                 .getHearingDayPanel().get(0).getPanelUserId(), is("JohCode")),
+            () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(1)
+                                 .getHearingDayPanel().get(0).getIsPresiding(), is(true)));
     }
 
     @Test
@@ -538,6 +659,145 @@ class HmiHearingResponseMapperTest {
 
         hearingResponse.setHearing(hearing);
         return hearingResponse;
+    }
+
+    private HearingResponse generateHmiMultiDayHearing(String key,
+                                                       HearingCode hearingCode,
+                                                       int version,
+                                                       ListingStatus status) {
+        HearingResponse hearingResponse = new HearingResponse();
+
+        MetaResponse metaResponse = new MetaResponse();
+        metaResponse.setTimestamp(LocalDateTime.parse("2021-08-10T12:20:00"));
+        metaResponse.setTransactionIdCaseHQ("transactionIdCaseHQ");
+        hearingResponse.setMeta(metaResponse);
+
+        Hearing hearing = new Hearing();
+        hearing.setHearingCaseVersionId(version);
+        hearing.setHearingCancellationReason("reason");
+        hearing.setHearingStartTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        hearing.setHearingEndTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        hearing.setHearingTranslatorRequired(true);
+
+        uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus hearingStatus =
+            new uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus();
+        hearingStatus.setCode(status);
+        hearing.setHearingStatus(hearingStatus);
+
+        HearingCaseStatus hearingCaseStatus = new HearingCaseStatus();
+        hearingCaseStatus.setCode(String.valueOf(HearingCode.getNumber(hearingCode)));
+        hearing.setHearingCaseStatus(hearingCaseStatus);
+
+        HearingVenue hearingVenue = new HearingVenue();
+        VenueLocationReference venueLocationReference = new VenueLocationReference();
+        venueLocationReference.setKey(key);
+        venueLocationReference.setValue("value");
+        hearingVenue.setLocationReferences(new ArrayList<>(List.of(venueLocationReference)));
+        hearing.setHearingVenue(hearingVenue);
+
+        HearingRoom hearingRoom = new HearingRoom();
+        hearingRoom.setLocationName("multiDayRoomName");
+        hearing.setHearingRoom(hearingRoom);
+
+        HearingAttendee hearingAttendee = new HearingAttendee();
+        hearingAttendee.setEntityId("entityId");
+        HearingChannel hearingChannel = new HearingChannel();
+        hearingChannel.setCode("codeSubChannel");
+        hearingAttendee.setHearingChannel(hearingChannel);
+        hearing.setHearingAttendees(new ArrayList<>(List.of(hearingAttendee)));
+
+        HearingJoh hearingJoh = new HearingJoh();
+        hearingJoh.setJohCode("JohCode");
+        hearingJoh.setIsPresiding(true);
+        hearing.setHearingJohs(new ArrayList<>(List.of(hearingJoh)));
+
+        HearingSession hearingSession = generateHearingSession(hearingRoom,
+                                                               hearingVenue,
+                                                               List.of(hearingAttendee),
+                                                               List.of(hearingJoh));
+        hearing.setHearingSessions(List.of(hearingSession));
+
+        hearingResponse.setHearing(hearing);
+        return hearingResponse;
+    }
+
+    private HearingResponse generateHmiMultiSessionMultiDayHearing(String key,
+                                                       HearingCode hearingCode,
+                                                       int version,
+                                                       ListingStatus status) {
+        HearingResponse hearingResponse = new HearingResponse();
+
+        MetaResponse metaResponse = new MetaResponse();
+        metaResponse.setTimestamp(LocalDateTime.parse("2021-08-10T12:20:00"));
+        metaResponse.setTransactionIdCaseHQ("transactionIdCaseHQ");
+        hearingResponse.setMeta(metaResponse);
+
+        Hearing hearing = new Hearing();
+        hearing.setHearingCaseVersionId(version);
+        hearing.setHearingCancellationReason("reason");
+        hearing.setHearingStartTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        hearing.setHearingEndTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        hearing.setHearingTranslatorRequired(true);
+
+        uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus hearingStatus =
+            new uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus();
+        hearingStatus.setCode(status);
+        hearing.setHearingStatus(hearingStatus);
+
+        HearingCaseStatus hearingCaseStatus = new HearingCaseStatus();
+        hearingCaseStatus.setCode(String.valueOf(HearingCode.getNumber(hearingCode)));
+        hearing.setHearingCaseStatus(hearingCaseStatus);
+
+        HearingVenue hearingVenue = new HearingVenue();
+        VenueLocationReference venueLocationReference = new VenueLocationReference();
+        venueLocationReference.setKey(key);
+        venueLocationReference.setValue("value");
+        hearingVenue.setLocationReferences(new ArrayList<>(List.of(venueLocationReference)));
+        hearing.setHearingVenue(hearingVenue);
+
+        HearingRoom hearingRoom = new HearingRoom();
+        hearingRoom.setLocationName("multiDayRoomName");
+        hearing.setHearingRoom(hearingRoom);
+
+        HearingAttendee hearingAttendee = new HearingAttendee();
+        hearingAttendee.setEntityId("entityId");
+        HearingChannel hearingChannel = new HearingChannel();
+        hearingChannel.setCode("codeSubChannel");
+        hearingAttendee.setHearingChannel(hearingChannel);
+        hearing.setHearingAttendees(new ArrayList<>(List.of(hearingAttendee)));
+
+        HearingJoh hearingJoh = new HearingJoh();
+        hearingJoh.setJohCode("JohCode");
+        hearingJoh.setIsPresiding(true);
+        hearing.setHearingJohs(new ArrayList<>(List.of(hearingJoh)));
+
+        HearingSession hearingSession = generateHearingSession(hearingRoom,
+                                                               hearingVenue,
+                                                               List.of(hearingAttendee),
+                                                               List.of(hearingJoh));
+        HearingSession hearingSession1 = generateHearingSession(hearingRoom,
+                                                               hearingVenue,
+                                                               List.of(hearingAttendee),
+                                                               List.of(hearingJoh));
+        hearing.setHearingSessions(List.of(hearingSession, hearingSession1));
+
+        hearingResponse.setHearing(hearing);
+        return hearingResponse;
+    }
+
+    private HearingSession generateHearingSession(HearingRoom hearingRoom,
+                                                  HearingVenue hearingVenue,
+                                                  List<HearingAttendee> hearingAttendees,
+                                                  List<HearingJoh> hearingJohs) {
+        HearingSession hearingSession = new HearingSession();
+        hearingSession.setHearingStartTime(LocalDateTime.parse("2021-10-11T12:20:00"));
+        hearingSession.setHearingEndTime(LocalDateTime.parse("2021-10-12T12:20:00"));
+        hearingSession.setHearingRoom(hearingRoom);
+        hearingSession.setHearingVenue(hearingVenue);
+        hearingSession.setHearingAttendees(hearingAttendees);
+        hearingSession.setHearingJohs(hearingJohs);
+
+        return hearingSession;
     }
 
     private HearingResponse generateHmiHearing_WithMissingOptionalFields() {
