@@ -12,15 +12,18 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.TestFixtures;
+import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import wiremock.com.jayway.jsonpath.DocumentContext;
 import wiremock.com.jayway.jsonpath.JsonPath;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import javax.persistence.EntityManager;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -57,6 +60,9 @@ class HearingActualsManagementControllerIT extends BaseTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private EntityManager entityManager;
 
     private static final String URL = "/hearingActuals";
     private static final String INSERT_HEARING_ACTUALS = "classpath:sql/put-hearing-actuals.sql";
@@ -474,6 +480,32 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                                       actualHearingDay(LocalDate.of(2022, 1, 29)))))))
                 .andExpect(status().is(400))
                 .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldSupportMultipleRequests() throws Exception {
+            mockMvc.perform(put(URL + "/2000001000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
+                .andExpect(status().is(200))
+                .andReturn();
+
+            mockMvc.perform(put(URL + "/2000001000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN80-ValidPayload2.json")))
+                .andExpect(status().is(200))
+                .andReturn();
+
+            var numberOfActualHearingRecords = entityManager
+                .createNativeQuery("select * from actual_hearing where hearing_response_id = 2",
+                                   ActualHearingEntity.class)
+                .getResultList();
+
+            // Multiple requests should replace actual_hearing records and delete orphans, always resulting in 1
+            assertEquals(1, numberOfActualHearingRecords.size());
         }
     }
 

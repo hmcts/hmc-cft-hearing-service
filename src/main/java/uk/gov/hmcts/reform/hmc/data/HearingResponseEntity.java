@@ -69,7 +69,7 @@ public class HearingResponseEntity {
     @Convert(converter = JsonDataConverter.class)
     private JsonNode serviceData;
 
-    @OneToOne(mappedBy = "hearingResponse", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "hearingResponse", fetch = FetchType.EAGER, orphanRemoval = true)
     private ActualHearingEntity actualHearingEntity;
 
     @Column(name = "cancellation_reason_type")
