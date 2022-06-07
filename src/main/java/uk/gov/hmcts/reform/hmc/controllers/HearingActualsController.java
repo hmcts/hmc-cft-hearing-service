@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingActualsService;
@@ -35,8 +36,8 @@ public class HearingActualsController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiResponses(value = {
         @ApiResponse(code = 204, message = "Hearing id is valid"),
-        @ApiResponse(code = 404, message = "Hearing id not found"),
-        @ApiResponse(code = 400, message = "Invalid hearing id")
+        @ApiResponse(code = 404, message = ValidationError.HEARING_ID_NOT_FOUND),
+        @ApiResponse(code = 400, message = ValidationError.INVALID_HEARING_ID_DETAILS)
     })
     public ResponseEntity<HearingActualResponse> getHearingActuals(@PathVariable("id") Long hearingId) {
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(

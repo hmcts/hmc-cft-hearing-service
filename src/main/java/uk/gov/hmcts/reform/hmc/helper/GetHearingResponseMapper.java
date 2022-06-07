@@ -216,17 +216,19 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
     private HearingResponse setHearingResponse(HearingEntity hearingEntity) {
         HearingResponse hearingResponse = new HearingResponse();
         Optional<HearingResponseEntity> hearingResponseEntityOpt = hearingEntity.getLatestHearingResponse();
-        hearingResponseEntityOpt.ifPresent(hearingResponseEntity -> {
+        if (hearingResponseEntityOpt.isPresent()) {
+            HearingResponseEntity hearingResponseEntity = hearingResponseEntityOpt.get();
             hearingResponse.setListAssistTransactionID(
                 hearingResponseEntity.getListAssistTransactionId());
             hearingResponse.setReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
-            hearingResponse.setResponseVersion(hearingResponseEntity.getHearingResponseId());
             hearingResponse.setLaCaseStatus(ListAssistCaseStatus.getLabel(
                 hearingResponseEntity.getListingCaseStatus()));
-            hearingResponse.setListingStatus(ListingStatus.getLabel(hearingResponseEntity.getListingStatus()));
+            if (hearingResponseEntity.getListingStatus() != null) {
+                hearingResponse.setListingStatus(ListingStatus.getLabel(hearingResponseEntity.getListingStatus()));
+            }
             hearingResponse.setHearingCancellationReason(hearingResponseEntity.getCancellationReasonType());
             setHearingDaySchedule(hearingResponse, List.of(hearingResponseEntity));
-        });
+        }
         return hearingResponse;
     }
 

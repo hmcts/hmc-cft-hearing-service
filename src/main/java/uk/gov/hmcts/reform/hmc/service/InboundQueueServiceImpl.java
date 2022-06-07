@@ -91,7 +91,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 hearingEntity.setStatus(EXCEPTION.name());
                 hearingEntity.setErrorDescription(exception.getMessage());
                 hearingRepository.save(hearingEntity);
-                log.error("Updated Hearing id " + hearingId + " to status Exception");
+                log.error("Hearing id: " +  hearingId + " updated to status Exception");
             } else {
                 log.error("Hearing id " + hearingId + " not found");
             }
@@ -144,11 +144,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
                 //Service bus session has to completed first else it will try to re process the message
                 client.complete(message);
-                //                throw new ListAssistResponseException(
-                //                    hearingId,
-                //                    errorDetails.getErrorCode() + " "
-                //                        + errorDetails.getErrorDescription()
-                //                );
+                log.error("Hearing id: " +  hearingId + " updated to status Exception");
             }
         }
     }
@@ -185,7 +181,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             messageSenderToTopicConfiguration
                 .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString());
             if (hearingEntity.getStatus().equals(HearingStatus.EXCEPTION.name())) {
-                // TODO: Raise alert for Dynatrace (approach TBC)
+                log.error("Hearing id: " +  hearingId + " updated to status Exception");
             }
         }
     }
