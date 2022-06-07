@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -398,7 +397,7 @@ class HearingManagementServiceIT extends BaseTest {
             .getHearingDaySchedule().get(0).getAttendees().get(0).getHearingSubChannel());
     }
 
-    @Disabled("Will pass when executed on it's own")
+    @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void testGetHearings_WithValidCaseRefAndStatus() {
         GetHearingsResponse response = hearingManagementService.getHearings("9372710950276233",

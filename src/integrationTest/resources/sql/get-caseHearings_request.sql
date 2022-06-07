@@ -53,7 +53,7 @@ insert into hearing_attendee_details(id, hearing_day_id, party_id, party_sub_cha
 insert into hearing_attendee_details(id, hearing_day_id, party_id, party_sub_channel_type) values (3, 3, 'party2-1','subChannel2-1');
 insert into hearing_attendee_details(id, hearing_day_id, party_id, party_sub_channel_type) values (4, 4, 'party3-1','subChannel3-1');
 
-insert into hearing_channels(hearing_channels_id,hearing_channel_type,case_hearing_id) values (1, 'Paper', 103);
-insert into hearing_channels(hearing_channels_id,hearing_channel_type,case_hearing_id) values (2, 'Email', 103);
+insert into hearing_channels(hearing_channels_id,hearing_channel_type,case_hearing_id) values (1, 'Paper', 102);
+insert into hearing_channels(hearing_channels_id,hearing_channel_type,case_hearing_id) values (2, 'Email', 102);
 
 insert into hearing_attendee_details(id, hearing_day_id, party_id, party_sub_channel_type) values (5, 5, 'party3-1','subChannel3-1');
