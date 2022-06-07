@@ -33,6 +33,36 @@ class HearingActualsMapperTest {
     }
 
     @Test
+    void processHearingRequestToEntityWhenHearingOutcomeIsNull() {
+        ActualHearingDayPauseDayTime hearingDayPauseDayTime = TestingUtil.getHearingActualDayPause(
+            LocalDateTime.of(2022, 01, 28, 10, 00),
+            LocalDateTime.of(2022, 01, 28, 12, 00)
+        );
+        final String actualOrganisationName = "name";
+        ActualHearingDayParties hearingDayParty = TestingUtil.getHearingActualDayParties(
+            "1",
+            "RoleType1",
+            null,
+            actualOrganisationName,
+            "SubType1",
+            false,
+            null
+        );
+        HearingActual hearingActual = getHearingActualWithNoOutcome("2", List.of(hearingDayPauseDayTime),
+                                                       List.of(hearingDayParty)
+        );
+
+        HearingActualsMapper actualsMapper = new HearingActualsMapper();
+        ActualHearingEntity response = actualsMapper.toActualHearingEntity(hearingActual);
+
+        assertNull(response.getActualHearingType());
+        assertNull(response.getActualHearingIsFinalFlag());
+        assertNull(response.getHearingResultType());
+        assertNull(response.getHearingResultReasonType());
+        assertNull(response.getHearingResultDate());
+    }
+
+    @Test
     void processHearingRequestToEntityForOrg1DidNotAttendFalse() {
         ActualHearingDayPauseDayTime hearingDayPauseDayTime = TestingUtil.getHearingActualDayPause(
             LocalDateTime.of(2022, 01, 28, 10, 00),
@@ -489,6 +519,21 @@ class HearingActualsMapperTest {
             );
         HearingActual hearingActual = TestingUtil.getHearingActual(
             hearingOutcome,
+            List.of(actualHearingDay1, actualHearingDay2)
+        );
+        return hearingActual;
+    }
+
+    private HearingActual getHearingActualWithNoOutcome(String partyId,
+                                           List<ActualHearingDayPauseDayTime> hearingDayPauseDayTimes,
+                                           List<ActualHearingDayParties> hearingDayParties) {
+        ActualHearingDay actualHearingDay1 = generateHearingDay1(
+            hearingDayPauseDayTimes,
+            hearingDayParties
+        );
+        ActualHearingDay actualHearingDay2 = generateHearingDay2(partyId);
+        HearingActual hearingActual = TestingUtil.getHearingActual(
+            null,
             List.of(actualHearingDay1, actualHearingDay2)
         );
         return hearingActual;

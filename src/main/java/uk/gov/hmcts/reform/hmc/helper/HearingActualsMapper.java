@@ -25,12 +25,14 @@ public class HearingActualsMapper {
     public ActualHearingEntity toActualHearingEntity(HearingActual request) {
         ActualHearingEntity actualHearing = new ActualHearingEntity();
 
-        actualHearing.setActualHearingType(request.getHearingOutcome().getHearingType());
-        actualHearing.setActualHearingIsFinalFlag(request.getHearingOutcome().getHearingFinalFlag());
-        actualHearing.setHearingResultType(HearingResultType.getByLabel(
-            request.getHearingOutcome().getHearingResult()));
-        actualHearing.setHearingResultReasonType(request.getHearingOutcome().getHearingResultReasonType());
-        actualHearing.setHearingResultDate(request.getHearingOutcome().getHearingResultDate());
+        if (request.getHearingOutcome() != null) {
+            actualHearing.setActualHearingType(request.getHearingOutcome().getHearingType());
+            actualHearing.setActualHearingIsFinalFlag(request.getHearingOutcome().getHearingFinalFlag());
+            actualHearing.setHearingResultType(HearingResultType.getByLabel(
+                request.getHearingOutcome().getHearingResult()));
+            actualHearing.setHearingResultReasonType(request.getHearingOutcome().getHearingResultReasonType());
+            actualHearing.setHearingResultDate(request.getHearingOutcome().getHearingResultDate());
+        }
         actualHearing.setActualHearingDay(toActualHearingDayEntities(request.getActualHearingDays(), actualHearing));
 
         return actualHearing;
