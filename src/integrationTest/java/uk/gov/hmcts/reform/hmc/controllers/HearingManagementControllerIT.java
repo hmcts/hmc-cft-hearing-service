@@ -866,11 +866,12 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(8)))
+            .andExpect(jsonPath("$.errors", hasSize(9)))
             .andExpect(jsonPath("$.errors", hasItems(AUTO_LIST_FLAG_NULL_EMPTY, HEARING_TYPE_NULL_EMPTY,
                                                      HEARING_WINDOW_NULL, DURATION_EMPTY, HEARING_PRIORITY_TYPE,
                                                      HEARING_LOCATION_EMPTY, INVALID_HEARING_LOCATION,
-                                                     INVALID_PANEL_REQUIREMENTS
+                                                     INVALID_PANEL_REQUIREMENTS,
+                                                     HEARING_CHANNEL_EMPTY
             )))
             .andReturn();
     }
@@ -915,7 +916,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(20)))
+            .andExpect(jsonPath("$.errors", hasSize(21)))
             .andExpect(jsonPath("$.errors", hasItems(HEARING_TYPE_MAX_LENGTH, DURATION_MIN_VALUE,
                                                      NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG,
                                                      HEARING_PRIORITY_TYPE_MAX_LENGTH,
@@ -929,7 +930,7 @@ class HearingManagementControllerIT extends BaseTest {
                                                      MEMBER_ID_MAX_LENGTH, MEMBER_TYPE_MAX_LENGTH,
                                                      "Unsupported type for requirementType",
                                                      AMEND_REASON_CODE_MAX_LENGTH,
-                                                     MISSING_CHANNEL_TYPE
+                                                     HEARING_CHANNEL_EMPTY, MISSING_CHANNEL_TYPE
             )))
             .andReturn();
     }
