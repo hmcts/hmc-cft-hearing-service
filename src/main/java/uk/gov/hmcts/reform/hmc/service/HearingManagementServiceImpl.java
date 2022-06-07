@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -238,6 +239,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             entities = caseHearingRequestRepository.getHearingDetails(caseRef);
         }
         return getHearingsResponseMapper.toHearingsResponse(caseRef, entities);
+    }
+
+    @Override
+    public GetHearingsResponse getEmptyHearingsResponse(String caseRef) {
+        return getHearingsResponseMapper.toHearingsResponse(caseRef, Lists.newArrayList());
     }
 
     @Override
