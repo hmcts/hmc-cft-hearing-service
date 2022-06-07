@@ -1,0 +1,61 @@
+{
+  "hearingOutcome": {
+    "hearingType": "Witness Statement",
+    "hearingFinalFlag": false,
+    "hearingResult": "ADJOURNED",
+    "hearingResultReasonType": "Witness sick",
+    "hearingResultDate": "2022-02-01"
+  },
+  "actualHearingDays": [
+    {
+      "hearingDate": "2022-01-28",
+      "hearingStartTime": "2022-01-28T10:00:00.000",
+      "hearingEndTime": "2022-01-28T12:00:00.000",
+      "actualDayParties": [
+        {
+          "actualPartyId": "124",
+          "partyRole": "43334",
+          "individualDetails" : {
+            "firstName": "WitnessForeName2",
+            "lastName": "WitnessLastName2"
+          },
+          "partyChannelSubType": "present party",
+          "didNotAttendFlag": false
+        },
+        {
+          "actualPartyId": "125",
+          "partyRole": "43335",
+          "actualOrganisationName" : "BooHaa Organisation",
+          "partyChannelSubType": "fictitious organisation",
+          "didNotAttendFlag": false
+        }
+      ]
+    },
+    {
+      "hearingDate": "2022-01-29",
+      "hearingStartTime": "2022-01-29T10:00:00.000",
+      "hearingEndTime": "2022-01-29T10:30:00.000",
+      "actualDayParties": [
+        {
+          "actualPartyId": "124",
+          "partyRole": "43334",
+          "individualDetails" : {
+            "firstName": "WitnessForeName2",
+            "lastName": "WitnessLastName2"
+          },
+          "partyChannelSubType": "present party",
+          "didNotAttendFlag": true
+        },
+        {
+          "actualPartyId": "125",
+          "partyRole": "43335",
+          "organisationDetails" : {
+            "name": "BooHaa Organisation"
+          },
+          "partyChannelSubType": "fictitious organisation",
+          "didNotAttendFlag": false
+        }
+      ]
+    }
+  ]
+}

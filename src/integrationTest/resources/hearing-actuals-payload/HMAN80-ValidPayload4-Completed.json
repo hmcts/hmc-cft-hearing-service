@@ -1,0 +1,78 @@
+{
+  "hearingOutcome": {
+    "hearingType": "Witness Hearing",
+    "hearingFinalFlag": true,
+    "hearingResult": "COMPLETED",
+    "hearingResultDate": "2022-02-01"
+  },
+  "actualHearingDays": [
+    {
+      "hearingDate": "2022-01-28",
+      "hearingStartTime": "2022-01-28T10:00:00.000",
+      "hearingEndTime": "2022-01-28T15:00:00.000",
+      "pauseDateTimes": [
+        {
+          "pauseStartTime": "2022-01-28T12:00:00",
+          "pauseEndTime": "2022-01-28T12:30:00"
+        }
+      ],
+      "actualDayParties": [
+        {
+          "actualPartyId": "1",
+          "partyRole": "RoleType1",
+          "individualDetails": {
+            "firstName": "TestFirstName",
+            "lastName": "TestLastName"
+          },
+          "partyChannelSubType": "SubType1",
+          "didNotAttendFlag": false
+        }
+      ]
+    },
+    {
+      "hearingDate": "2022-01-29",
+      "hearingStartTime": "2022-01-29T10:00:00.000",
+      "hearingEndTime": "2022-01-29T17:30:00.000",
+      "pauseDateTimes": [
+        {
+          "pauseStartTime": "2022-01-29T12:00:00",
+          "pauseEndTime": "2022-01-29T12:30:00"
+        },
+        {
+          "pauseStartTime": "2022-01-29T15:00:00",
+          "pauseEndTime": "2022-01-29T15:30:00"
+        }
+      ],
+      "actualDayParties": [
+        {
+          "actualPartyId": "1",
+          "partyRole": "RoleType1",
+          "individualDetails": {
+            "firstName": "TestFirstName",
+            "lastName": "TestLastName"
+          },
+          "partyChannelSubType": "SubType2",
+          "didNotAttendFlag": true,
+          "representedParty": "2"
+        },
+        {
+          "actualPartyId": "2",
+          "partyRole": "RoleType2",
+          "individualDetails": {
+            "firstName": "TestRepFirstName",
+            "lastName": "TestRepLastName"
+          },
+          "partyChannelSubType": "SubType2",
+          "didNotAttendFlag": false
+        },
+        {
+          "actualPartyId": "3",
+          "partyRole": "RoleType3",
+          "actualOrganisationName" : "BooHaa Organisation",
+          "partyChannelSubType": "SubType2",
+          "didNotAttendFlag": false
+        }
+      ]
+    }
+  ]
+}

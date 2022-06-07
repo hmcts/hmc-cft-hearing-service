@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -50,7 +51,9 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         if (!hearingDayDetailEntities.isEmpty()) {
             for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
                 HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
-                setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
+                if (!CollectionUtils.isEmpty((detailEntity.getHearingDayPanel()))) {
+                    setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
+                }
                 setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
                 hearingDaySchedule.setHearingVenueId(detailEntity.getVenueId());
                 scheduleList.add(hearingDaySchedule);
@@ -72,16 +75,16 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
         caseHearing.setHearingId(entity.getHearing().getId());
         caseHearing.setHearingRequestDateTime(entity.getHearingRequestReceivedDateTime());
         caseHearing.setHearingType(entity.getHearingType());
-        caseHearing.setHmcStatus(entity.getHearing().getStatus());
+        caseHearing.setHmcStatus(entity.getHearing().getDerivedHearingStatus());
         caseHearing.setHearingIsLinkedFlag(entity.getHearing().getIsLinkedFlag());
         return caseHearing;
     }
 
     private void setHearingResponseDetails(CaseHearing caseHearing, HearingResponseEntity hearingResponseEntity) {
         caseHearing.setLastResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
-        caseHearing.setResponseVersion(hearingResponseEntity.getHearingResponseId());
         caseHearing.setHearingListingStatus(hearingResponseEntity.getListingStatus());
         caseHearing.setListAssistCaseStatus(hearingResponseEntity.getListingCaseStatus());
+        caseHearing.setRequestVersion(hearingResponseEntity.getRequestVersion());
     }
 
     private void setHearingGroupRequestId(CaseHearingRequestEntity entity, CaseHearing caseHearing) {

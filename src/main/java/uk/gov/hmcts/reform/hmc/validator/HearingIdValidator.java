@@ -4,6 +4,7 @@ import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.S
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -13,16 +14,14 @@ import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
-import java.util.Comparator;
+import java.time.LocalDate;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_VALID_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
-import static uk.gov.hmcts.reform.hmc.model.HearingResultType.ADJOURNED;
 import static uk.gov.hmcts.reform.hmc.model.HearingResultType.CANCELLED;
-import static uk.gov.hmcts.reform.hmc.model.HearingResultType.COMPLETED;
 
 @Component
 public class HearingIdValidator {
@@ -62,21 +61,24 @@ public class HearingIdValidator {
      * @param hearingIdStr hearing id string
      */
     public void isValidFormat(String hearingIdStr) {
-        if (hearingIdStr.length() != HEARING_ID_MAX_LENGTH || !StringUtils.isNumeric(hearingIdStr)
+        if (hearingIdStr.length() != HEARING_ID_VALID_LENGTH || !StringUtils.isNumeric(hearingIdStr)
                 || hearingIdStr.charAt(0) != '2') {
             throw new BadRequestException(INVALID_HEARING_ID_DETAILS);
         }
     }
 
-    public Optional<HearingResponseEntity> getHearingResponse(HearingEntity hearingEntity) {
-        Integer version = hearingEntity.getLatestRequestVersion();
-        Optional<HearingResponseEntity> hearingResponse = hearingEntity
-                .getHearingResponses().stream().filter(hearingResponseEntity ->
-                        hearingResponseEntity.getResponseVersion().equals(version))
-                .collect(Collectors.toList()).stream()
-                .max(Comparator.comparing(hearingResponseEntity -> hearingResponseEntity.getRequestTimeStamp()));
+    public LocalDate getLowestStartDateOfMostRecentHearingResponse(HearingEntity hearingEntity) {
+        Optional<HearingResponseEntity> hearingResponse = hearingEntity.getHearingResponseForLatestRequest();
 
-        return hearingResponse;
+        return getLowestDate(hearingResponse.orElseThrow(() -> new BadRequestException(
+            String.format(HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND, hearingEntity.getId()))));
+    }
+
+    public LocalDate getLowestDate(HearingResponseEntity hearingResponse) {
+        Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getEarliestHearingDayDetails();
+
+        return hearingDayDetails
+            .orElseThrow(() -> new BadRequestException("bad request")).getStartDateTime().toLocalDate();
     }
 
 
@@ -92,23 +94,10 @@ public class HearingIdValidator {
         }
     }
 
-    public void validateHearingResultType(Long hearingId, String errorMessage) {
-        Optional<ActualHearingEntity> entity = getActualHearing(hearingId);
-        if (entity.isPresent()) {
-            HearingResultType hearingResultType = entity.get().getHearingResultType();
-
-            if ((hearingResultType.getLabel().equals(COMPLETED.getLabel())
-                    || hearingResultType.getLabel().equals(ADJOURNED.getLabel()))
-                    && actualHearingDayRepository.findByActualHearing(entity.get()).isEmpty()) {
-                throw new BadRequestException(errorMessage);
-            }
-        }
-    }
-
     public Optional<ActualHearingEntity> getActualHearing(Long hearingId) {
-        Optional<HearingResponseEntity> hearingResponseEntity =
-                getHearingResponse(hearingRepository.findById(hearingId)
-                        .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND)));
+        Optional<HearingResponseEntity> hearingResponseEntity = hearingRepository.findById(hearingId)
+                        .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND))
+            .getHearingResponseForLatestRequest();
         if (hearingResponseEntity.isPresent()) {
             return actualHearingRepository.findByHearingResponse(hearingResponseEntity.get());
         }

@@ -14,6 +14,7 @@ DELETE FROM unavailability;
 DELETE FROM contact_details;
 DELETE FROM reasonable_adjustments;
 DELETE FROM contact_details;
+DELETE FROM party_relationship_details;
 DELETE FROM hearing_party;
 DELETE FROM panel_requirements;
 DELETE FROM panel_authorisation_requirements;

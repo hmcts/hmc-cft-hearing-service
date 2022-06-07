@@ -18,5 +18,4 @@ public interface LinkedHearingDetailsRepository extends CrudRepository<LinkedHea
 
     @Query("from LinkedHearingDetailsAudit lhd WHERE lhd.linkedGroup.requestId = :requestId ")
     List<LinkedHearingDetailsAudit> getLinkedHearingDetailsByRequestId(String requestId);
-
 }

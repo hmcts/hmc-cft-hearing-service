@@ -18,12 +18,24 @@ java:
           alias: CFT_HEARING_SERVICE_DB_PORT
         - name: cft-hearing-service-POSTGRES-DATABASE
           alias: CFT_HEARING_SERVICE_DB_NAME
+        - name: idam-hmc-cft-hearing-service-client-secret
+          alias: CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET
+        - name: hmc-cft-hearing-service-s2s-secret
+          alias: IDAM_KEY_CFT_HEARING_SERVICE
         - name: hmc-servicebus-connection-string
           alias: HMC_SERVICE_BUS_CONNECTION_STRING
         - name: hmc-queue-connection-string
           alias: HMC_QUEUE_CONNECTION_STRING
         - name: hmc-outbound-queue-connection-string
           alias: HMC_OUTBOUND_QUEUE_CONNECTION_STRING
+        - name: ClientId
+          alias: CLIENT_ID
+        - name: ClientSecret
+          alias: CLIENT_SECRET
+        - name: Scope
+          alias: SCOPE
+        - name: fh-get-token-url
+          alias: FH_GET_TOKEN_URL
   environment:
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified&sslmode=require&gssEncMode=disable"
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft-{{ .Values.global.environment }}
@@ -41,6 +53,12 @@ java:
     HTTP_CLIENT_MAX_CLIENT_PER_ROUTE: '20'
     HTTP_CLIENT_VALIDATE_AFTER_INACTIVITY: '2000'
     CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    HMI_BASE_URL: https://hmi-apim.test.platform.hmcts.net/hmi
+    HMI_SOURCE_SYSTEM: CFT
+    HMI_DESTINATION_SYSTEM: SNL
+    GRANT_TYPE: client_credentials
+    FH_BASE_URL: https://login.microsoftonline.com
 
 servicebus:
   enabled: false

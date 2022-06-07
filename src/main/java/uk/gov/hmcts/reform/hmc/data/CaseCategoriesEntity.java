@@ -40,6 +40,9 @@ public class CaseCategoriesEntity {
     @Column(name = "case_category_value")
     private String caseCategoryValue;
 
+    @Column(name = "case_category_parent")
+    private String caseCategoryParent;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")
     private CaseHearingRequestEntity caseHearing;

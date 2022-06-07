@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
-import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -33,6 +32,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 
 @Service
@@ -75,7 +75,28 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             hearingIdValidator.validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
             validateResponse(message, messageType, hearingId, client, serviceBusReceivedMessage);
         } else {
-            throw new MalformedMessageException(MISSING_HEARING_ID);
+            log.error("Error processing message, exception was " + MISSING_HEARING_ID);
+        }
+    }
+
+    @Override
+    public void catchExceptionAndUpdateHearing(Map<String, Object> applicationProperties, Exception exception) {
+        if (applicationProperties.containsKey(HEARING_ID)) {
+            Long hearingId = Long.valueOf(applicationProperties.get(HEARING_ID).toString());
+            log.error("Error processing message with Hearing id " + hearingId + " exception was "
+                          + exception.getMessage());
+            Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
+            if (hearingResult.isPresent()) {
+                HearingEntity hearingEntity = hearingResult.get();
+                hearingEntity.setStatus(EXCEPTION.name());
+                hearingEntity.setErrorDescription(exception.getMessage());
+                hearingRepository.save(hearingEntity);
+                log.error("Hearing id: " +  hearingId + " updated to status Exception");
+            } else {
+                log.error("Hearing id " + hearingId + " not found");
+            }
+        } else {
+            log.error("Error processing message " + MISSING_HEARING_ID);
         }
     }
 
@@ -123,11 +144,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
                 //Service bus session has to completed first else it will try to re process the message
                 client.complete(message);
-                //                throw new ListAssistResponseException(
-                //                    hearingId,
-                //                    errorDetails.getErrorCode() + " "
-                //                        + errorDetails.getErrorDescription()
-                //                );
+                log.error("Hearing id: " +  hearingId + " updated to status Exception");
             }
         }
     }
@@ -164,7 +181,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             messageSenderToTopicConfiguration
                 .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString());
             if (hearingEntity.getStatus().equals(HearingStatus.EXCEPTION.name())) {
-                // TODO: Raise alert for Dynatrace (approach TBC)
+                log.error("Hearing id: " +  hearingId + " updated to status Exception");
             }
         }
     }

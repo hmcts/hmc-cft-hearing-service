@@ -19,6 +19,7 @@ public class CaseCategoriesMapper {
             final CaseCategoriesEntity categoryEntity = new CaseCategoriesEntity();
             categoryEntity.setCategoryType(CaseCategoryType.getByLabel(category.getCategoryType()));
             categoryEntity.setCaseCategoryValue(category.getCategoryValue());
+            categoryEntity.setCaseCategoryParent(category.getCategoryParent());
             categoryEntity.setCaseHearing(caseHearingRequestEntity);
             caseCategoriesEntities.add(categoryEntity);
         }

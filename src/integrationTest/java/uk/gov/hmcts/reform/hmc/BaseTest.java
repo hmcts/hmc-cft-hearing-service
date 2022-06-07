@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -7,19 +8,33 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
+import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
+import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository;
 import uk.gov.hmcts.reform.hmc.repository.RoleAssignmentRepository;
 
+import java.util.List;
 import javax.inject.Inject;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignments;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 
 @SpringBootTest(classes = {
     Application.class,
@@ -52,6 +67,21 @@ public class BaseTest {
         when(authentication.getPrincipal()).thenReturn(jwt);
         SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
         ReflectionTestUtils.setField(applicationParams, "roleAssignmentServiceHost", hostUrl);
+
+        stubRoleAssignments();
+        stubFor(WireMock.get(urlMatching("/cases/.*"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+    }
+
+    @Configuration
+    static class WireMockTestConfiguration {
+        @Bean
+        public WireMockConfigurationCustomizer wireMockConfigurationCustomizer() {
+            return config -> config.extensions(new WiremockFixtures.ConnectionClosedTransformer());
+        }
     }
 
     private Jwt dummyJwt() {
@@ -59,5 +89,23 @@ public class BaseTest {
             .claim("aClaim", "aClaim")
             .header("aHeader", "aHeader")
             .build();
+    }
+
+    private void stubRoleAssignments() {
+        RoleAssignmentResponse response = new RoleAssignmentResponse();
+        response.setRoleAssignments(List.of(
+            stubGenericRoleAssignment(HEARING_MANAGER),
+            stubGenericRoleAssignment(HEARING_VIEWER),
+            stubGenericRoleAssignment(LISTED_HEARING_VIEWER)
+        ));
+        stubReturn200RoleAssignments(".*", response);
+    }
+
+    private RoleAssignmentResource stubGenericRoleAssignment(String roleName) {
+        RoleAssignmentResource resource = new RoleAssignmentResource();
+        resource.setRoleName(roleName);
+        resource.setRoleType("ORGANISATION");
+        resource.setAttributes(new RoleAssignmentAttributesResource());
+        return resource;
     }
 }

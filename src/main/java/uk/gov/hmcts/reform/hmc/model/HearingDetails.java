@@ -13,6 +13,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.FACILITIES_REQUIRED_MAX_LENGTH_MSG;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG;
 
@@ -70,9 +71,13 @@ public class HearingDetails {
     @NotNull(message = ValidationError.INVALID_PANEL_REQUIREMENTS)
     private PanelRequirements panelRequirements;
 
-    private Boolean hearingIsLinkedFlag = false;
+    private Boolean hearingIsLinkedFlag;
 
-    @Size(max = 70, message = ValidationError.LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH)
+    @Size(max = 70, message = ValidationError.AMEND_REASON_CODE_MAX_LENGTH)
     private String amendReasonCode;
+
+    public boolean isMultiDayHearing() {
+        return getDuration() != null ? getDuration() > DURATION_OF_DAY : false;
+    }
 
 }

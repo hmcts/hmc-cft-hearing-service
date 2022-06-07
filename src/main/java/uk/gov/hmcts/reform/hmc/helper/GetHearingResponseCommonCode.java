@@ -20,7 +20,6 @@ public class GetHearingResponseCommonCode {
         HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
         hearingDaySchedule.setHearingStartDateTime(detailEntity.getStartDateTime());
         hearingDaySchedule.setHearingEndDateTime(detailEntity.getEndDateTime());
-        hearingDaySchedule.setListAssistSessionId(detailEntity.getListAssistSessionId());
         hearingDaySchedule.setHearingVenueId(detailEntity.getVenueId());
         hearingDaySchedule.setHearingRoomId(detailEntity.getRoomId());
         return hearingDaySchedule;
@@ -77,6 +76,7 @@ public class GetHearingResponseCommonCode {
                 CaseCategory caseCategory = new CaseCategory();
                 caseCategory.setCategoryType(caseCategoriesEntity.getCategoryType().getLabel());
                 caseCategory.setCategoryValue(caseCategoriesEntity.getCaseCategoryValue());
+                caseCategory.setCategoryParent(caseCategoriesEntity.getCaseCategoryParent());
                 caseCategories.add(caseCategory);
             }
         }

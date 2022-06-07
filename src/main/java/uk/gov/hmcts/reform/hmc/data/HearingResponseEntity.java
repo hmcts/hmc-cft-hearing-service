@@ -42,7 +42,7 @@ public class HearingResponseEntity {
     @Column(name = "received_date_time", nullable = false)
     private LocalDateTime requestTimeStamp;
 
-    @Column(name = "listing_status", nullable = false)
+    @Column(name = "listing_status")
     private String listingStatus;
 
     @Column(name = "listing_case_status", nullable = false)
@@ -62,9 +62,6 @@ public class HearingResponseEntity {
     @Column(name = "request_version", nullable = false)
     private Integer requestVersion;
 
-    @Column(name = "response_version", nullable = false)
-    private Integer responseVersion;
-
     @Column(name = "parties_notified_datetime")
     private LocalDateTime partiesNotifiedDateTime;
 
@@ -72,7 +69,7 @@ public class HearingResponseEntity {
     @Convert(converter = JsonDataConverter.class)
     private JsonNode serviceData;
 
-    @OneToOne(mappedBy = "hearingResponse", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "hearingResponse", fetch = FetchType.EAGER, orphanRemoval = true)
     private ActualHearingEntity actualHearingEntity;
 
     @Column(name = "cancellation_reason_type")

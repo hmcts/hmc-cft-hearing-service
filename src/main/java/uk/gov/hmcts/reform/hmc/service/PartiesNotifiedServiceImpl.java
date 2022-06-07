@@ -19,7 +19,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ALREADY_SET;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_NO_SUCH_RESPONSE;
 
 @Service
 @Component
@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIE
 public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
 
     private final HearingResponseRepository hearingResponseRepository;
-    private HearingIdValidator hearingIdValidator;
+    private final HearingIdValidator hearingIdValidator;
 
     @Autowired
     public PartiesNotifiedServiceImpl(HearingResponseRepository hearingResponseRepository,
@@ -37,13 +37,14 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
     }
 
     @Override
-    public void getPartiesNotified(Long hearingId, int responseVersion, PartiesNotified partiesNotified) {
+    public void getPartiesNotified(Long hearingId, Integer requestVersion,
+                                   LocalDateTime receivedDateTime, PartiesNotified partiesNotified) {
         hearingIdValidator.validateHearingId(hearingId, PARTIES_NOTIFIED_ID_NOT_FOUND);
-        HearingResponseEntity hearingResponseEntity = hearingResponseRepository.getHearingResponse(hearingId);
-        if (hearingResponseEntity.getResponseVersion() != responseVersion) {
-            throw new PartiesNotifiedNotFoundException(PARTIES_NOTIFIED_RESPONSE_VERSION_MISMATCH);
-        } else if (hearingResponseEntity.getResponseVersion().equals(responseVersion)
-            && hearingResponseEntity.getPartiesNotifiedDateTime() != null) {
+        HearingResponseEntity hearingResponseEntity =
+                hearingResponseRepository.getHearingResponse(hearingId, requestVersion, receivedDateTime);
+        if (null == hearingResponseEntity) {
+            throw new PartiesNotifiedNotFoundException(PARTIES_NOTIFIED_NO_SUCH_RESPONSE);
+        } else if (hearingResponseEntity.getPartiesNotifiedDateTime() != null) {
             throw new PartiesNotifiedBadRequestException(PARTIES_NOTIFIED_ALREADY_SET);
         } else {
             hearingResponseEntity.setPartiesNotifiedDateTime(LocalDateTime.now());
@@ -73,7 +74,6 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
         List<PartiesNotifiedResponse> partiesNotified = new ArrayList<>();
         entities.forEach(e -> {
             PartiesNotifiedResponse response = new PartiesNotifiedResponse();
-            response.setResponseVersion(e.getResponseVersion());
             response.setResponseReceivedDateTime(e.getRequestTimeStamp());
             response.setRequestVersion(e.getRequestVersion());
             response.setPartiesNotified(e.getPartiesNotifiedDateTime());
@@ -82,7 +82,7 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
         });
         PartiesNotifiedResponses responses = new PartiesNotifiedResponses();
         responses.setResponses(partiesNotified);
-        responses.setHearingID(hearingId);
+        responses.setHearingID(hearingId.toString());
         return responses;
     }
 

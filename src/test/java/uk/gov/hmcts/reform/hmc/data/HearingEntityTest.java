@@ -185,6 +185,67 @@ class HearingEntityTest {
         }
     }
 
+
+    @Nested
+    class GetDerivedHearingResponse {
+
+        @Test
+        void shouldGetDerivedHearingResponseWithStatusUpdated() {
+            HearingEntity hearing = new HearingEntity();
+            LocalDateTime startDateTime = LocalDateTime.of(2022, 4, 27, 10, 10);
+            LocalDateTime endDateTime = LocalDateTime.of(2023, 5, 30, 11, 11);
+            HearingResponseEntity hearingResponse = hearingResponseWithDayDetails(startDateTime, endDateTime);
+            hearing.setHearingResponses(List.of(hearingResponse));
+            hearing.setStatus("LISTED");
+
+            String latestResponse = hearing.getDerivedHearingStatus();
+
+            assertEquals("AWAITING_ACTUALS", latestResponse);
+        }
+
+        @Test
+        void shouldGetDerivedHearingResponseWithStatusNotUpdated() {
+            HearingEntity hearing = new HearingEntity();
+            hearing.setStatus("HEARING_REQUESTED");
+
+            String latestResponse = hearing.getDerivedHearingStatus();
+
+            assertEquals("HEARING_REQUESTED", latestResponse);
+        }
+
+        @Test
+        void shouldGetDefaultDerivedHearingResponseWithNotUpdated() {
+            LocalDateTime startDateTime = LocalDateTime.now();
+            LocalDateTime endDateTime = LocalDateTime.of(2023, 5, 30, 11, 11);
+
+            HearingResponseEntity hearingResponse =
+                hearingResponseWithDayDetails(startDateTime, endDateTime);
+
+            HearingEntity hearing = new HearingEntity();
+            hearing.setHearingResponses(List.of(hearingResponse));
+            hearing.setStatus("LISTED");
+
+            String latestResponse = hearing.getDerivedHearingStatus();
+
+            assertEquals("LISTED", latestResponse);
+        }
+
+        @Test
+        void shouldGetDefaultDerivedHearingResponseWhenStartDateIsAheadOfToday() {
+            LocalDateTime startDateTime = LocalDateTime.now().plusDays(1);
+            LocalDateTime endDateTime = LocalDateTime.of(2023, 5, 30, 11, 11);
+
+            HearingResponseEntity hearingResponse =
+                hearingResponseWithDayDetails(startDateTime, endDateTime);
+            HearingEntity hearing = new HearingEntity();
+            hearing.setHearingResponses(List.of(hearingResponse));
+            hearing.setStatus("LISTED");
+
+            String latestResponse = hearing.getDerivedHearingStatus();
+            assertEquals("LISTED", latestResponse);
+        }
+    }
+
     private CaseHearingRequestEntity caseHearingRequest(int version) {
         CaseHearingRequestEntity caseHearingRequest = new CaseHearingRequestEntity();
         caseHearingRequest.setVersionNumber(version);
@@ -195,6 +256,20 @@ class HearingEntityTest {
         HearingResponseEntity hearingResponse = new HearingResponseEntity();
         hearingResponse.setRequestVersion(requestVersion);
         hearingResponse.setRequestTimeStamp(LocalDateTime.of(timestampYear, 1, 1, 12, 0));
+        return hearingResponse;
+    }
+
+    private HearingResponseEntity hearingResponseWithDayDetails(LocalDateTime startDateTime,
+                                                                LocalDateTime endDateTime) {
+        HearingResponseEntity hearingResponse = new HearingResponseEntity();
+        hearingResponse.setRequestVersion(1);
+        hearingResponse.setRequestTimeStamp(LocalDateTime.of(2000, 1, 1, 12, 0));
+
+        HearingDayDetailsEntity hearingDayDetailsEntity = new HearingDayDetailsEntity();
+        hearingDayDetailsEntity.setStartDateTime(startDateTime);
+        hearingDayDetailsEntity.setEndDateTime(endDateTime);
+        hearingResponse.setHearingDayDetails(List.of(hearingDayDetailsEntity));
+
         return hearingResponse;
     }
 }
