@@ -930,7 +930,7 @@ class HearingManagementControllerIT extends BaseTest {
                                                      MEMBER_ID_MAX_LENGTH, MEMBER_TYPE_MAX_LENGTH,
                                                      "Unsupported type for requirementType",
                                                      AMEND_REASON_CODE_MAX_LENGTH,
-                                                     HEARING_CHANNEL_EMPTY, MISSING_CHANNEL_TYPE
+                                                     MISSING_CHANNEL_TYPE
             )))
             .andReturn();
     }
