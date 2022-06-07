@@ -33,7 +33,7 @@ public class HearingChannelsEntity extends BaseEntity {
     @Column(name = "hearing_channel_type", nullable = false)
     private String hearingChannelType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "case_hearing_id")
     private CaseHearingRequestEntity caseHearing;
 }
