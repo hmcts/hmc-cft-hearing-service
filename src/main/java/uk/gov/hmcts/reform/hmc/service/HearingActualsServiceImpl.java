@@ -111,13 +111,17 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     }
 
     private void validateHearingResult(HearingActual request) {
-        if (!HEARING_RESULTS_REASONS.contains(request.getHearingOutcome().getHearingResult().toUpperCase())) {
-            throw new BadRequestException(HA_OUTCOME_RESULT_NOT_EMPTY);
-        }
-        if (HEARING_RESULTS_THAT_NEED_REASON_TYPE.contains(request.getHearingOutcome().getHearingResult().toUpperCase())
-            && StringUtils.isBlank(request.getHearingOutcome().getHearingResultReasonType())) {
-            throw new BadRequestException(String.format(HEARING_ACTUALS_MISSING_RESULT_TYPE,
-                                                        request.getHearingOutcome().getHearingResult()));
+        if (request.getHearingOutcome() != null) {
+            if (!HEARING_RESULTS_REASONS.contains(request.getHearingOutcome().getHearingResult().toUpperCase())) {
+                throw new BadRequestException(HA_OUTCOME_RESULT_NOT_EMPTY);
+            }
+            if (HEARING_RESULTS_THAT_NEED_REASON_TYPE.contains(request.getHearingOutcome().getHearingResult().toUpperCase())
+                && StringUtils.isBlank(request.getHearingOutcome().getHearingResultReasonType())) {
+                throw new BadRequestException(String.format(
+                    HEARING_ACTUALS_MISSING_RESULT_TYPE,
+                    request.getHearingOutcome().getHearingResult()
+                ));
+            }
         }
     }
 

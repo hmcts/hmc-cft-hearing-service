@@ -1199,6 +1199,13 @@ public class TestingUtil {
         return request;
     }
 
+    public static HearingActual hearingActualWithoutOutcome() {
+        HearingActual request = new HearingActual();
+        request.setActualHearingDays(List.of(actualHearingDay(LocalDate.of(2022, 1, 28))));
+
+        return request;
+    }
+
     public static HearingActual hearingActual(HearingActualsOutcome outcome, List<ActualHearingDay> actualHearingDays) {
         HearingActual request = new HearingActual();
         request.setHearingOutcome(outcome);

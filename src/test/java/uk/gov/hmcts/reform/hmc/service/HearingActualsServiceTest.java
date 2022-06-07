@@ -166,6 +166,29 @@ class HearingActualsServiceTest {
         }
 
         @Test
+        void shouldUpdateHearingActualsWhenOutcomeIsNull() {
+            given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearingEntity));
+            given(hearingEntity.getStatus()).willReturn(VALID_HEARING_STAUS);
+            given(hearingIdValidatorMock.getLowestStartDateOfMostRecentHearingResponse(hearingEntity))
+                .willReturn(LocalDate.of(2022, 1, 28));
+
+            HearingResponseEntity hearingResponseEntityMock = mock(HearingResponseEntity.class);
+            given(hearingEntity.getHearingResponseForLatestRequest())
+                .willReturn(Optional.of(hearingResponseEntityMock));
+
+            // mock insert
+            ActualHearingEntity actualHearingMock = mock(ActualHearingEntity.class);
+            HearingActual hearingActual = TestingUtil.hearingActualWithoutOutcome();
+            given(hearingActualsMapper.toActualHearingEntity(hearingActual)).willReturn(actualHearingMock);
+
+            hearingActualsService.updateHearingActuals(HEARING_ID, hearingActual);
+
+            verify(hearingIdValidatorMock).isValidFormat(HEARING_ID.toString());
+            verify(actualHearingRepository).save(actualHearingMock);
+            verify(hearingResponseRepository).save(hearingResponseEntityMock);
+        }
+
+        @Test
         void shouldThrowExceptionWhenInvalidHearingId() {
             doThrow(new BadRequestException(INVALID_HEARING_ID_DETAILS)).when(hearingIdValidatorMock)
                 .isValidFormat(anyString());
