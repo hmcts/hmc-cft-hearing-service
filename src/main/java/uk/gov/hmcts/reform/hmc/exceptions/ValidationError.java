@@ -103,7 +103,7 @@ public final class ValidationError {
     public static final String INVALID_PANEL_REQUIREMENTS = "Panel requirements are required";
     public static final String CATEGORY_VALUE = "category Value cannot be greater than 70 " + CHARACTERS_LONG;
     public static final String HEARING_WINDOW_EMPTY_NULL = "Hearing window details are required";
-    public static final String INVALID_HEARING_WINDOW = "Hearing window details are invalid";
+    public static final String HEARING_WINDOW_DETAILS_ARE_INVALID = "Hearing window details are invalid";
     public static final String INVALID_HEARING_LOCATION = "Hearing locations are required";
     public static final String INVALID_CASE_CATEGORIES = "Case categories are required";
     public static final String CASE_CATEGORY_EMPTY = "Case category can not be empty";
