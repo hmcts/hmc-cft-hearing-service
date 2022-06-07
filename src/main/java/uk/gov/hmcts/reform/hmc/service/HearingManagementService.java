@@ -20,6 +20,8 @@ public interface HearingManagementService {
 
     GetHearingsResponse getHearings(String caseRefId, String caseStatus);
 
+    GetHearingsResponse getEmptyHearingsResponse(String caseRefId);
+
     void sendResponse(String json);
 
     ResponseEntity hearingCompletion(Long hearingId);

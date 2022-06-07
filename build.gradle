@@ -211,8 +211,7 @@ sonarqube {
       "**/config/SecurityConfiguration.java," +
       "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageReaderFromQueueConfiguration.java," +
       "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageSenderToTopicConfiguration.java," +
-      "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageSenderToQueueConfiguration.java," +
-      "**/HmiHearingResponseMapper.java,**/InboundQueueServiceImpl.java,**/SyncResponse.java"
+      "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageSenderToQueueConfiguration.java"
   }
 }
 
@@ -391,8 +390,8 @@ dependencies {
   annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final', 'org.projectlombok:lombok:1.18.16', 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
   testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final', 'org.projectlombok:lombok:1.18.16', 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
-  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.0.2'
-  implementation group: 'com.azure', name: 'azure-core', version: '1.13.0'
+  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.8.0'
+  implementation group: 'com.azure', name: 'azure-core', version: '1.28.0'
   // CVE-2021-42550
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.10'

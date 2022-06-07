@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -32,6 +33,8 @@ import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,6 +45,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = HearingManagementController.class,
@@ -204,7 +209,8 @@ class HearingManagementControllerTest {
         @Test
         void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhn() {
             final String validCaseRef = "9372710950276233";
-            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef)).when(hearingManagementService)
+            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "HEARING_REQUESTED"))
+                .when(hearingManagementService)
                 .getHearings(any(), any());
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService);
@@ -215,15 +221,36 @@ class HearingManagementControllerTest {
         }
 
         @Test
+        void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefAndListedStatus() {
+            final String validCaseRef = "9372710950276233";
+            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "LISTED"))
+                .when(hearingManagementService)
+                .getHearings(any(), any());
+
+            List<String> rolesRequired = Lists.newArrayList(HEARING_VIEWER, LISTED_HEARING_VIEWER);
+            List<String> filteredRoleAssignments = Lists.newArrayList(LISTED_HEARING_VIEWER);
+
+            doReturn(filteredRoleAssignments).when(accessControlService).verifyCaseAccess(validCaseRef, rolesRequired);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
+            GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, null);
+            verify(hearingManagementService, times(1)).getHearings(validCaseRef, "LISTED");
+            assertEquals(hearingRequest.getCaseRef(), validCaseRef);
+            assertEquals(hearingRequest.getCaseHearings().get(0).getHmcStatus(), "LISTED");
+            assertTrue(hearingRequest.getCaseHearings().get(0).getHearingIsLinkedFlag());
+        }
+
+        @Test
         void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhnAndStatus() {
             final String validCaseRef = "9372710950276233";
             final String status = "UPDATED"; // for example
-            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef)).when(hearingManagementService)
-                .getHearings(any(), any());
+            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "HEARING_REQUESTED"))
+                .when(hearingManagementService)
+                .getEmptyHearingsResponse(any());
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService);
             GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, status);
-            verify(hearingManagementService, times(1)).getHearings(any(), any());
+            verify(hearingManagementService, times(1)).getEmptyHearingsResponse(validCaseRef);
             assertEquals(hearingRequest.getCaseRef(), validCaseRef);
             assertTrue(hearingRequest.getCaseHearings().get(0).getHearingIsLinkedFlag());
         }
