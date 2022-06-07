@@ -32,4 +32,5 @@ public final class Constants {
     public static final Integer DURATION_OF_DAY = 360;
     public static final String LIST_ASSIST = "ListAssist";
     public static final String ERROR = "ERROR";
+    public static final String LIST_ASSIST_SUCCESSFUL_RESPONSE = "Response received from ListAssist successfully";
 }

@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -289,6 +290,45 @@ class HearingActualsMapperTest {
         ActualHearingEntity response = actualsMapper.toActualHearingEntity(hearingActual);
 
         assertEquals(0, response.getActualHearingDay().get(0).getActualHearingDayPauses().size());
+    }
+
+    @Test
+    void processHearingRequestToEntityForIndWhenPartyIdIsNullAndRepresentedPartyIsNotNull() {
+        ActualHearingDayPartyDetail individualDetails = new ActualHearingDayPartyDetail();
+        individualDetails.setFirstName("fname");
+        individualDetails.setLastName("lname");
+        ActualHearingDayParties hearingDayParty1 = TestingUtil.getHearingActualDayParties(
+            null,
+            "RoleType1",
+            individualDetails,
+            null,
+            "SubType1",
+            false,
+            "P1"
+        );
+
+        ActualHearingDayParties hearingDayParty2 = TestingUtil.getHearingActualDayParties(
+            "P1",
+            "RoleType1",
+            individualDetails,
+            null,
+            "SubType1",
+            null,
+            null
+        );
+
+        HearingActual hearingActual = getHearingActual(individualDetails, null,
+                                                       "2", null,
+                                                       List.of(hearingDayParty1, hearingDayParty2)
+        );
+
+        HearingActualsMapper actualsMapper = new HearingActualsMapper();
+        ActualHearingEntity response = actualsMapper.toActualHearingEntity(hearingActual);
+
+        assertEquals(0, response.getActualHearingDay().get(0).getActualHearingDayPauses().size());
+        assertNotNull(response.getActualHearingDay().get(0).getActualHearingParty().get(0).getPartyId());
+        assertEquals("P1",response.getActualHearingDay().get(0).getActualHearingParty().get(1).getPartyId());
+
     }
 
     @Test

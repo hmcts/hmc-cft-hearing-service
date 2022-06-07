@@ -99,8 +99,7 @@ public class HearingActualsMapper {
 
         setOrGeneratePartyId(actualHearingDayParty, partyEntity);
         partyEntity.setActualPartyRoleType(actualHearingDayParty.getPartyRole());
-        partyEntity.setDidNotAttendFlag(actualHearingDayParty.getDidNotAttendFlag() != null
-                                            ? actualHearingDayParty.getDidNotAttendFlag() : false);
+        partyEntity.setDidNotAttendFlag(actualHearingDayParty.getDidNotAttendFlag());
         partyEntity.setActualAttendeeIndividualDetail(createIndividualDetail(actualHearingDayParty, partyEntity));
         partyEntity.setActualHearingDay(dayEntity);
         return partyEntity;
