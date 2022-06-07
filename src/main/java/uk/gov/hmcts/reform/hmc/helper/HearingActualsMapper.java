@@ -37,7 +37,7 @@ public class HearingActualsMapper {
     }
 
     private List<ActualHearingDayEntity> toActualHearingDayEntities(List<ActualHearingDay> actualHearingDay,
-                                                                   ActualHearingEntity actualHearing) {
+                                                                    ActualHearingEntity actualHearing) {
         return actualHearingDay.stream()
             .map((ActualHearingDay day) -> toActualHearingDayEntity(day, actualHearing))
             .collect(Collectors.toList());
@@ -99,8 +99,7 @@ public class HearingActualsMapper {
 
         setOrGeneratePartyId(actualHearingDayParty, partyEntity);
         partyEntity.setActualPartyRoleType(actualHearingDayParty.getPartyRole());
-        partyEntity.setDidNotAttendFlag(actualHearingDayParty.getDidNotAttendFlag() != null
-                                            ? actualHearingDayParty.getDidNotAttendFlag() : false);
+        partyEntity.setDidNotAttendFlag(actualHearingDayParty.getDidNotAttendFlag());
         partyEntity.setActualAttendeeIndividualDetail(createIndividualDetail(actualHearingDayParty, partyEntity));
         partyEntity.setActualHearingDay(dayEntity);
         return partyEntity;
@@ -111,8 +110,12 @@ public class HearingActualsMapper {
         if (actualHearingDayParty.getActualPartyId() == null) {
             if (actualHearingDayParty.getIndividualDetails() != null) {
                 partyEntity.setPartyId(String.valueOf(actualHearingDayParty.getIndividualDetails().hashCode()));
+                actualHearingDayParty.setActualPartyId(String.valueOf(actualHearingDayParty
+                                                                          .getIndividualDetails().hashCode()));
             } else {
                 partyEntity.setPartyId(String.valueOf(actualHearingDayParty.getActualOrganisationName().hashCode()));
+                actualHearingDayParty.setActualPartyId(String.valueOf(actualHearingDayParty
+                                                                          .getActualOrganisationName().hashCode()));
             }
         } else {
             partyEntity.setPartyId(actualHearingDayParty.getActualPartyId());
@@ -127,16 +130,20 @@ public class HearingActualsMapper {
                 ActualHearingPartyEntity matchingHearingPartyEntity =
                     getHearingPartyEntityByReference(representedPartyId, hearingPartyEntities);
 
-                ActualHearingPartyEntity sourceEntity =
-                    getHearingPartyEntityByReference(actualHearingDayParty.getActualPartyId(), hearingPartyEntities);
+                if (actualHearingDayParty.getActualPartyId() != null) {
+                    ActualHearingPartyEntity sourceEntity =
+                        getHearingPartyEntityByReference(
+                            actualHearingDayParty.getActualPartyId(),
+                            hearingPartyEntities);
 
-                ActualPartyRelationshipDetailEntity partyRelationshipDetail = ActualPartyRelationshipDetailEntity
-                    .builder()
-                    .targetActualParty(matchingHearingPartyEntity)
-                    .sourceActualParty(sourceEntity)
-                    .build();
+                    ActualPartyRelationshipDetailEntity partyRelationshipDetail = ActualPartyRelationshipDetailEntity
+                        .builder()
+                        .targetActualParty(matchingHearingPartyEntity)
+                        .sourceActualParty(sourceEntity)
+                        .build();
 
-                sourceEntity.setActualPartyRelationshipDetail(List.of(partyRelationshipDetail));
+                    sourceEntity.setActualPartyRelationshipDetail(List.of(partyRelationshipDetail));
+                }
             }
         }
         return hearingPartyEntities;

@@ -12,15 +12,18 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.TestFixtures;
+import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import wiremock.com.jayway.jsonpath.DocumentContext;
 import wiremock.com.jayway.jsonpath.JsonPath;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import javax.persistence.EntityManager;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -57,6 +60,9 @@ class HearingActualsManagementControllerIT extends BaseTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private EntityManager entityManager;
 
     private static final String URL = "/hearingActuals";
     private static final String INSERT_HEARING_ACTUALS = "classpath:sql/put-hearing-actuals.sql";
@@ -297,6 +303,83 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                .value("WitnessForeName1"));
         }
 
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS1})
+        void shouldReturn200_WhenActualPartyIdIsNullForHearingActualsUpdate()
+            throws Exception {
+            mockMvc.perform(get(URL + "/2000000000").contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingType").value("witness hearing"))
+                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingFinalFlag").value("true"))
+                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResult").value("COMPLETED"))
+                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResultReasonType")
+                               .value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResultDate").value("2022-02-15"))
+
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays", hasSize(2)))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingDate").value("2022-02-05"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[1].hearingDate").value("2022-02-06"));
+
+            mockMvc.perform(put(URL + "/2000000000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN-259-ValidPayload6-actualPartyId-null.json")))
+                .andExpect(status().is(200))
+                .andReturn();
+
+            mockMvc.perform(get(URL + "/2000000000").contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays", hasSize(1)))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingDate").value("2022-01-28"))
+
+                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingType").value("BBA3-DIR"))
+                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingFinalFlag").value("false"))
+                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResult").value("COMPLETED"))
+                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResultReasonType")
+                               .value(""))
+                .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingResultDate").value("2022-02-01"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingStartTime")
+                               .value("2022-01-28T08:00:00"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].hearingEndTime")
+                               .value("2022-01-28T13:00:00"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].pauseDateTimes[0].pauseStartTime")
+                               .value("2022-01-28T12:00:00"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].pauseDateTimes[0].pauseEndTime")
+                               .value("2022-01-28T12:30:00"))
+
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualPartyId")
+                               .value("P1"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyRole")
+                               .value("DEF"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyChannelSubType")
+                               .value("INTER"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].didNotAttendFlag")
+                               .value("false"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
+                               .value(IsNull.nullValue()))
+                .andExpect(jsonPath(
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].individualDetails.lastName")
+                               .value("Smith"))
+                .andExpect(jsonPath(
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].individualDetails.firstName")
+                               .value("Jane"))
+                .andExpect(jsonPath(
+                "$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
+                          .value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].actualPartyId")
+                          .value("P2"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].partyRole")
+                               .value("APP"))
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].partyChannelSubType")
+                               .value("INTER"))
+                .andExpect(jsonPath(
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[2].representedParty")
+                               .value("P1"))
+                .andExpect(jsonPath(
+                "$.hearingActuals.actualHearingDays[0].actualDayParties[3].representedParty")
+                           .value("P2"));
+        }
+
         // https://tools.hmcts.net/jira/browse/HHMAN-80 AC-09
         // https://tools.hmcts.net/jira/browse/HMAN-82 AC02
         @Test
@@ -397,6 +480,32 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                                       actualHearingDay(LocalDate.of(2022, 1, 29)))))))
                 .andExpect(status().is(400))
                 .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldSupportMultipleRequests() throws Exception {
+            mockMvc.perform(put(URL + "/2000001000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
+                .andExpect(status().is(200))
+                .andReturn();
+
+            mockMvc.perform(put(URL + "/2000001000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN80-ValidPayload2.json")))
+                .andExpect(status().is(200))
+                .andReturn();
+
+            var numberOfActualHearingRecords = entityManager
+                .createNativeQuery("select * from actual_hearing where hearing_response_id = 2",
+                                   ActualHearingEntity.class)
+                .getResultList();
+
+            // Multiple requests should replace actual_hearing records and delete orphans, always resulting in 1
+            assertEquals(1, numberOfActualHearingRecords.size());
         }
     }
 

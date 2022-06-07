@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_MISSING_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
@@ -101,8 +102,9 @@ class AccessControlServiceTest {
                                 .jurisdiction(Optional.of(JURISDICTION))
                                 .caseType(Optional.of(CASE_TYPE)), LISTED_HEARING_VIEWER);
         when(hearingRepository.getStatus(anyLong())).thenReturn(HearingStatus.UPDATE_REQUESTED.name());
+        List<String> requiredRoles = Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER);
         Exception exception = assertThrows(InvalidRoleAssignmentException.class, () -> accessControlService
-            .verifyAccess(1234L, Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER)));
+            .verifyAccess(1234L, requiredRoles));
         assertEquals(ROLE_ASSIGNMENT_MISSING_REQUIRED, exception.getMessage());
     }
 
@@ -112,6 +114,12 @@ class AccessControlServiceTest {
                                 .jurisdiction(Optional.of(JURISDICTION))
                                 .caseType(Optional.of(CASE_TYPE)), LISTED_HEARING_VIEWER);
         when(hearingRepository.getStatus(anyLong())).thenReturn(HearingStatus.LISTED.name());
+        accessControlService.verifyAccess(1234L, Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER));
+    }
+
+    @Test
+    void shouldNotThrowExceptionForVerifyAccessIsAccessControlEnabledIsFalse() {
+        when(applicationParams.isAccessControlEnabled()).thenReturn(false);
         accessControlService.verifyAccess(1234L, Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER));
     }
 
@@ -126,13 +134,11 @@ class AccessControlServiceTest {
             .jurisdiction(JURISDICTION)
             .build();
         when(dataStoreRepository.findCaseByCaseIdUsingExternalApi(anyString())).thenReturn(caseDetails);
-
+        List<String> requiredRoles = Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER);
         Exception exception = assertThrows(
             InvalidRoleAssignmentException.class,
             () -> accessControlService.verifyCaseAccess(
-                "1234",
-                Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER),
-                12345L
+                "1234", requiredRoles, 12345L
             )
         );
         assertEquals(ROLE_ASSIGNMENT_MISSING_REQUIRED, exception.getMessage());
@@ -149,11 +155,66 @@ class AccessControlServiceTest {
             .jurisdiction(JURISDICTION)
             .build();
         when(dataStoreRepository.findCaseByCaseIdUsingExternalApi(anyString())).thenReturn(caseDetails);
-
+        List<String> requiredRoles = Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER);
         accessControlService.verifyCaseAccess(
-            "1234",
-            Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER),
+            "1234", requiredRoles,
             12345L
         );
+    }
+
+    @Test
+    void shouldNotThrowExceptionForVerifyCaseAccessIsAccessControlEnabledIsFalse() {
+        when(applicationParams.isAccessControlEnabled()).thenReturn(false);
+        List<String> requiredRoles = Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER);
+        accessControlService.verifyCaseAccess(
+            "1234",
+            requiredRoles
+        );
+    }
+
+    @Test
+    void shouldNotThrowExceptionForVerifyHearingCaseAccessIsAccessControlEnabledIsFalse() {
+        when(applicationParams.isAccessControlEnabled()).thenReturn(false);
+        List<String> requiredRoles = Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER);
+        accessControlService.verifyHearingCaseAccess(
+            12345L,
+            requiredRoles
+        );
+    }
+
+    @Test
+    void shouldNotThrowExceptionForVerifyCaseAccessRequiredRolesIsEmpty() {
+        stubRoleAssignments(RoleAssignmentAttributes.builder()
+                                .jurisdiction(Optional.of(JURISDICTION))
+                                .caseType(Optional.of(CASE_TYPE)), LISTED_HEARING_VIEWER);
+        when(hearingRepository.getStatus(anyLong())).thenReturn(HearingStatus.LISTED.name());
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        when(dataStoreRepository.findCaseByCaseIdUsingExternalApi(anyString())).thenReturn(caseDetails);
+        List<String> requiredRoles = Lists.newArrayList();
+        Exception exception = assertThrows(
+            InvalidRoleAssignmentException.class,
+            () -> accessControlService.verifyCaseAccess(
+                "1234", requiredRoles)
+        );
+        assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenRoleAssignmentsIsEmpty() {
+        stubRoleAssignments(RoleAssignmentAttributes.builder()
+                                .jurisdiction(Optional.of(JURISDICTION))
+                                .caseType(Optional.of(CASE_TYPE)), HEARING_MANAGER);
+        when(hearingRepository.getStatus(anyLong())).thenReturn(HearingStatus.LISTED.name());
+        List<String> requiredRoles =  Lists.newArrayList(LISTED_HEARING_VIEWER);
+        Exception exception = assertThrows(
+            InvalidRoleAssignmentException.class,
+            () -> accessControlService.verifyAccess(
+                1234L, requiredRoles
+            )
+        );
+        assertEquals(ROLE_ASSIGNMENT_MISSING_REQUIRED, exception.getMessage());
     }
 }
