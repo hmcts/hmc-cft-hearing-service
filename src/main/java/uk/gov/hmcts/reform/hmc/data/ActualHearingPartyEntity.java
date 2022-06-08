@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,9 +19,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Table(name = "actual_hearing_party")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class ActualHearingPartyEntity implements Serializable {
+public class ActualHearingPartyEntity extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

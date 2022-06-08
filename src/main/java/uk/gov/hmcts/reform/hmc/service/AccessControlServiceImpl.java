@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,18 +72,22 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     @Override
-    public void verifyCaseAccess(String caseReference, List<String> requiredRoles) {
+    public List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles) {
         if (!applicationParams.isAccessControlEnabled()) {
-            return;
+            return Collections.emptyList();
         }
-        verifyCaseAccess(caseReference, requiredRoles, null);
+        return verifyCaseAccess(caseReference, requiredRoles, null);
     }
 
-    public void verifyCaseAccess(String caseReference, List<String> requiredRoles, Long hearingId) {
+    public List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles, Long hearingId) {
         List<RoleAssignment> filteredRoleAssignments = verifyRoleAccess(requiredRoles);
 
         DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
-        if (!checkRoleAssignmentMatchesCaseDetails(caseDetails, filteredRoleAssignments)) {
+        List<RoleAssignment> roleAssignmentsMatches = checkRoleAssignmentMatchesCaseDetails(
+            caseDetails,
+            filteredRoleAssignments
+        );
+        if (roleAssignmentsMatches.isEmpty()) {
             throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES);
         }
         verifyHearingStatus(
@@ -91,6 +96,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             caseDetails.getJurisdiction(),
             hearingId
         );
+        return roleAssignmentsMatches.stream().map(RoleAssignment::getRoleName).collect(Collectors.toList());
     }
 
     private List<RoleAssignment> verifyRoleAccess(List<String> requiredRoles) {
@@ -126,7 +132,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 .filter(roleAssignment -> requiredRoles.contains(roleAssignment.getRoleName()))
                 .collect(Collectors.toList());
 
-            if (requiredRoleAssignments.size() == 0) {
+            if (requiredRoleAssignments.isEmpty()) {
                 throw new InvalidRoleAssignmentException(ROLE_ASSIGNMENT_MISSING_REQUIRED);
             }
         }
@@ -158,11 +164,12 @@ public class AccessControlServiceImpl implements AccessControlService {
             .collect(Collectors.toList());
     }
 
-    private boolean checkRoleAssignmentMatchesCaseDetails(DataStoreCaseDetails caseDetails,
-                                                          List<RoleAssignment> roleAssignments) {
+    private List<RoleAssignment> checkRoleAssignmentMatchesCaseDetails(DataStoreCaseDetails caseDetails,
+                                                                       List<RoleAssignment> roleAssignments) {
         return roleAssignments.stream()
-            .anyMatch(roleAssignment -> checkJurisdiction(roleAssignment.getAttributes(), caseDetails.getJurisdiction())
-                && checkCaseType(roleAssignment.getAttributes(), caseDetails.getCaseTypeId()));
+            .filter(roleAssignment -> checkJurisdiction(roleAssignment.getAttributes(), caseDetails.getJurisdiction())
+                && checkCaseType(roleAssignment.getAttributes(), caseDetails.getCaseTypeId()))
+            .collect(Collectors.toList());
 
     }
 

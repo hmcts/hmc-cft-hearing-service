@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.data;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -18,12 +19,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Table(name = "actual_party_relationship_detail")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActualPartyRelationshipDetailEntity implements Serializable {
+public class ActualPartyRelationshipDetailEntity extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "actual_party_relationship_id_seq")

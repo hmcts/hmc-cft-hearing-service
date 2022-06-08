@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -21,9 +22,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Table(name = "actual_hearing_day")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class ActualHearingDayEntity implements Serializable {
+public class ActualHearingDayEntity extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
