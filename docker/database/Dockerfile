@@ -1,4 +1,6 @@
 FROM postgres:11.8
+ENV TZ="UTC"
+RUN date
 
 COPY init-db.sh /docker-entrypoint-initdb.d
 

@@ -35,10 +35,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_NO_SUCH_RESPONSE;
 
 @ExtendWith(MockitoExtension.class)
 class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
@@ -78,16 +81,22 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = generatePartiesNotified(jsonNode);
 
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingResponseRepository.getHearingResponse(2000000000L))
-                .thenReturn(generateHearingResponseEntity(2000000000L,
-                                                          1, null
+            final Long hearingId = 2000000000L;
+            final Integer requestVersion = 1;
+            final LocalDateTime receivedDateTime = LocalDateTime.now();
+            when(hearingRepository.existsById(hearingId)).thenReturn(true);
+            when(hearingResponseRepository.getHearingResponse(hearingId, requestVersion, receivedDateTime))
+                .thenReturn(generateHearingResponseEntity(hearingId,
+                                                          requestVersion,
+                                                            receivedDateTime,
+                                                            null
                 ));
 
-            partiesNotifiedService.getPartiesNotified(2000000000L, 1, partiesNotified);
-            verify(hearingRepository, times(1)).existsById(2000000000L);
+            partiesNotifiedService.getPartiesNotified(hearingId, requestVersion,
+                    receivedDateTime, partiesNotified);
+            verify(hearingRepository, times(1)).existsById(hearingId);
             verify(hearingResponseRepository, times(1))
-                .getHearingResponse(2000000000L);
+                .getHearingResponse(hearingId, requestVersion, receivedDateTime);
 
         }
 
@@ -97,8 +106,10 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = generatePartiesNotified(jsonNode);
 
+            LocalDateTime dateTime = LocalDateTime.now();
             Exception exception = assertThrows(BadRequestException.class, () ->
-                partiesNotifiedService.getPartiesNotified(1000000000L, 1, partiesNotified));
+                partiesNotifiedService.getPartiesNotified(1000000000L, 1,
+                        dateTime, partiesNotified));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
         }
 
@@ -106,15 +117,14 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
         void shouldFailWithNoResponseVersion() throws JsonProcessingException {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = generatePartiesNotified(jsonNode);
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingResponseRepository.getHearingResponse(2000000000L))
-                .thenReturn(generateHearingResponseEntity(2000000000L,
-                                                          14, null
-                ));
-
+            when(hearingRepository.existsById(anyLong())).thenReturn(true);
+            when(hearingResponseRepository.getHearingResponse(anyLong(), anyInt(), any()))
+                .thenReturn(null);
+            LocalDateTime dateTime = LocalDateTime.now();
             Exception exception = assertThrows(PartiesNotifiedNotFoundException.class, () ->
-                partiesNotifiedService.getPartiesNotified(2000000000L, 1, partiesNotified));
-            assertEquals("002 No such response version", exception.getMessage());
+                partiesNotifiedService.getPartiesNotified(2000000000L, 1,
+                        dateTime, partiesNotified));
+            assertEquals(PARTIES_NOTIFIED_NO_SUCH_RESPONSE, exception.getMessage());
         }
 
         @Test
@@ -123,8 +133,10 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             PartiesNotified partiesNotified = generatePartiesNotified(jsonNode);
             when(hearingRepository.existsById(2000000000L)).thenReturn(false);
 
+            LocalDateTime dateTime = LocalDateTime.now();
             Exception exception = assertThrows(HearingNotFoundException.class, () ->
-                partiesNotifiedService.getPartiesNotified(2000000000L, 1, partiesNotified));
+                partiesNotifiedService.getPartiesNotified(2000000000L, 1,
+                        dateTime, partiesNotified));
             assertEquals("001 No such id: 2000000000", exception.getMessage());
         }
 
@@ -132,14 +144,18 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
         void shouldFailWithAlreadySet() throws JsonProcessingException {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = generatePartiesNotified(jsonNode);
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingResponseRepository.getHearingResponse(2000000000L))
+            when(hearingRepository.existsById(anyLong())).thenReturn(true);
+            when(hearingResponseRepository.getHearingResponse(anyLong(), anyInt(), any()))
                 .thenReturn(generateHearingResponseEntity(2000000000L,
-                                                          1, LocalDateTime.now()
+                                                          1,
+                                                            LocalDateTime.now(),
+                                                            LocalDateTime.now()
                 ));
 
+            LocalDateTime dateTime = LocalDateTime.now();
             Exception exception = assertThrows(PartiesNotifiedBadRequestException.class, () ->
-                partiesNotifiedService.getPartiesNotified(2000000000L, 1, partiesNotified));
+                partiesNotifiedService.getPartiesNotified(2000000000L, 1,
+                        dateTime, partiesNotified));
             assertEquals("003 Already set", exception.getMessage());
         }
 
@@ -204,11 +220,13 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
     }
 
     private HearingResponseEntity generateHearingResponseEntity(Long hearingId,
-                                                                Integer responseVersion,
-                                                                LocalDateTime dateTime) {
+                                                                Integer requestVersion,
+                                                                LocalDateTime receivedDateTime,
+                                                                LocalDateTime partiesNotifiedDateTime) {
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
-        hearingResponseEntity.setResponseVersion(responseVersion);
-        hearingResponseEntity.setPartiesNotifiedDateTime(dateTime);
+        hearingResponseEntity.setRequestVersion(requestVersion);
+        hearingResponseEntity.setRequestTimeStamp(receivedDateTime);
+        hearingResponseEntity.setPartiesNotifiedDateTime(partiesNotifiedDateTime);
         hearingResponseEntity.setHearingResponseId(hearingId);
         return hearingResponseEntity;
     }

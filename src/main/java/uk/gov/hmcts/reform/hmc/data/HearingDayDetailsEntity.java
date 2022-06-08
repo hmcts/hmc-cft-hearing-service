@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -21,12 +22,13 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Table(name = "hearing_day_details")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @SecondaryTable(name = "HEARING_RESPONSE",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "hearing_response_id")})
-public class HearingDayDetailsEntity {
+public class HearingDayDetailsEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -34,16 +36,16 @@ public class HearingDayDetailsEntity {
     @Column(name = "hearing_day_id")
     private Long hearingDayId;
 
-    @Column(name = "start_date_time", nullable = false)
+    @Column(name = "start_date_time")
     private LocalDateTime startDateTime;
 
-    @Column(name = "end_date_time", nullable = false)
+    @Column(name = "end_date_time")
     private LocalDateTime endDateTime;
 
-    @Column(name = "venue_id", nullable = false)
+    @Column(name = "venue_id")
     private String venueId;
 
-    @Column(name = "room_id", nullable = false)
+    @Column(name = "room_id")
     private String roomId;
 
     @ManyToOne(fetch = FetchType.LAZY)

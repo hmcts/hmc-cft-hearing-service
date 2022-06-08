@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.Type;
@@ -18,10 +19,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Table(name = "linked_group_details")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LinkedGroupDetails {
+public class LinkedGroupDetails extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

@@ -6,7 +6,7 @@ public interface AccessControlService {
 
     void verifyAccess(Long hearingId, List<String> requiredRoles);
 
-    void verifyCaseAccess(String caseReference, List<String> requiredRoles);
+    List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles);
 
     void verifyHearingCaseAccess(Long hearingId, List<String> requiredRoles);
 

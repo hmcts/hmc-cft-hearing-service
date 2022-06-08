@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.LIST_ASSIST_SUCCESSFUL_RESPONSE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PENDING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
@@ -99,7 +100,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         try {
             futureHearingRepository.createLinkedHearingGroup(objectMapperService
                                                                  .convertObjectToJsonNode(linkedHearingGroup));
-            log.debug("Response received from ListAssist successfully");
+            log.debug(LIST_ASSIST_SUCCESSFUL_RESPONSE);
             linkedGroupDetailsRepository
                 .updateLinkedGroupDetailsStatus(linkedHearingGroup.getLinkedHearingGroup().getGroupClientReference(),
                                                 "ACTIVE");
@@ -133,7 +134,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         try {
             futureHearingRepository.updateLinkedHearingGroup(requestId, objectMapperService
                 .convertObjectToJsonNode(linkedHearingGroup));
-            log.info("Response received from ListAssist successfully");
+            log.info(LIST_ASSIST_SUCCESSFUL_RESPONSE);
             linkedGroupDetailsRepository.updateLinkedGroupDetailsStatus(requestId, "ACTIVE");
         } catch (BadFutureHearingRequestException requestException) {
             process400ResponseFromListAssistForLinkedHearing(
@@ -207,7 +208,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         saveLinkedGroupDetails(linkedGroupDetails);
         try {
             futureHearingRepository.deleteLinkedHearingGroup(requestId);
-            log.debug("Response received from ListAssist successfully");
+            log.debug(LIST_ASSIST_SUCCESSFUL_RESPONSE);
             linkedGroupDetailsRepository.delete(linkedGroupDetails);
         } catch (BadFutureHearingRequestException requestException) {
             process400ResponseFromListAssistForDeleteLinkedHearing(linkedGroupDetails);
@@ -261,8 +262,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         linkedGroupDetails.setStatus("PENDING");
         linkedGroupDetails.setRequestDateTime(LocalDateTime.now());
 
-        LinkedGroupDetails linkedGroupDetailsSaved = linkedGroupDetailsRepository.save(linkedGroupDetails);
-        return linkedGroupDetailsSaved;
+        return linkedGroupDetailsRepository.save(linkedGroupDetails);
     }
 
     private void updateHearingWithLinkGroup(HearingLinkGroupRequest hearingLinkGroupRequest,
