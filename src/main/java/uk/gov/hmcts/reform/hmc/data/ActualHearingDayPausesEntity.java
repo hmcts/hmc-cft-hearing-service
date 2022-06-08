@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -14,9 +15,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Table(name = "actual_hearing_day_pauses")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class ActualHearingDayPausesEntity {
+public class ActualHearingDayPausesEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
