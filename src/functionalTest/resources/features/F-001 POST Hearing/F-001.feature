@@ -1,4 +1,4 @@
-@F-001
+@F-001 @Smoke
 Feature: F-001: Create hearing request
 
   Background:
