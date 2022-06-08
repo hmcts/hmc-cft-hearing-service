@@ -1,0 +1,71 @@
+{
+  "hearingOutcome":{
+    "hearingType":"BBA3-DIR",
+    "hearingFinalFlag":false,
+    "hearingResult":"ADJOURNED",
+    "hearingResultReasonType":"BBA3-119",
+    "hearingResultDate": "2022-02-01"
+  },
+  "actualHearingDays": [
+    {
+      "hearingDate": "2022-01-28",
+      "hearingStartTime": "2022-01-28T08:00:00",
+      "hearingEndTime": "2022-01-28T13:00:00",
+      "pauseDateTimes": [
+        {
+
+        }
+      ],
+      "actualDayParties":[
+        {
+          "individualDetails":{
+            "firstName":"Jane",
+            "lastName":"Smith"
+          },
+          "actualOrganisationName":null,
+          "actualPartyId":"Party1",
+          "didNotAttendFlag":false,
+          "partyChannelSubType":"INTER",
+          "partyRole":"APP",
+          "representedParty":null
+        },
+        {
+          "individualDetails":{
+            "firstName":"DWP",
+            "lastName":"Representative"
+          },
+          "actualOrganisationName":null,
+          "actualPartyId":"Party2",
+          "didNotAttendFlag":false,
+          "partyChannelSubType":"INTER",
+          "partyRole":"DEF",
+          "representedParty":null
+        },
+        {
+          "individualDetails":{
+            "firstName":"asdf",
+            "lastName":"asdf"
+          },
+          "actualOrganisationName":null,
+          "actualPartyId":"180210121",
+          "didNotAttendFlag":false,
+          "partyChannelSubType":"TELCVP",
+          "partyRole":"JOPA",
+          "representedParty":"Party1"
+        },
+        {
+          "individualDetails":{
+            "firstName":"zcxv",
+            "lastName":"zxcv"
+          },
+          "actualOrganisationName":null,
+          "actualPartyId":"224031751",
+          "didNotAttendFlag":false,
+          "partyChannelSubType":"TELOTHER",
+          "partyRole":"OTPA",
+          "representedParty":"Party2"
+        }
+      ]
+    }
+  ]
+}

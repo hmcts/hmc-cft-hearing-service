@@ -238,6 +238,26 @@ class HearingActualsManagementControllerIT extends BaseTest {
         }
 
         @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn200_WhenSuppliedValidPayloadForMultiplePutRequests()
+            throws Exception {
+            mockMvc.perform(put(URL + "/2000000000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN-276-ValidPayload7-actualPartyId-NotNull.json")))
+                .andExpect(status().is(200))
+                .andReturn();
+
+            mockMvc.perform(put(URL + "/2000000000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN-276-ValidPayload7-actualPartyId-NotNull.json")))
+                .andExpect(status().is(200))
+                .andReturn();
+        }
+
+
+        @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS1})
         void shouldReturn200_WhenSuppliedValidPayloadForHearingActualsUpdate()
             throws Exception {
