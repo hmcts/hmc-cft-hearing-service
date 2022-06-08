@@ -1281,7 +1281,7 @@ class HearingManagementServiceTest {
             when(caseHearingRequestRepository.getHearingDetailsWithStatus("12345", "HEARING_REQUESTED"))
                 .thenReturn(entities);
             given(getHearingsResponseMapper.toHearingsResponse("12345", entities))
-                .willReturn(TestingUtil.getHearingsResponseWhenDataIsPresent("12345"));
+                .willReturn(TestingUtil.getHearingsResponseWhenDataIsPresent("12345", "HEARING_REQUESTED"));
             GetHearingsResponse response = hearingManagementService.getHearings("12345",
                     "HEARING_REQUESTED");
             assertEquals("12345", response.getCaseRef());
