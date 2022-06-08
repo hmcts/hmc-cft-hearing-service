@@ -82,9 +82,9 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
 
     private void setHearingResponseDetails(CaseHearing caseHearing, HearingResponseEntity hearingResponseEntity) {
         caseHearing.setLastResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
-        caseHearing.setResponseVersion(hearingResponseEntity.getHearingResponseId());
         caseHearing.setHearingListingStatus(hearingResponseEntity.getListingStatus());
         caseHearing.setListAssistCaseStatus(hearingResponseEntity.getListingCaseStatus());
+        caseHearing.setRequestVersion(hearingResponseEntity.getRequestVersion());
     }
 
     private void setHearingGroupRequestId(CaseHearingRequestEntity entity, CaseHearing caseHearing) {

@@ -1,0 +1,78 @@
+{
+  "hearingOutcome": {
+    "hearingType": "BBA3-DIR",
+    "hearingFinalFlag": false,
+    "hearingResult": "COMPLETED",
+    "hearingResultReasonType": "",
+    "hearingResultDate": "2022-02-01"
+  },
+  "actualHearingDays": [
+    {
+      "hearingDate": "2022-01-28",
+      "hearingStartTime": "2022-01-28T08:00:00",
+      "hearingEndTime": "2022-01-28T13:00:00",
+      "pauseDateTimes": [
+        {
+          "pauseStartTime": "2022-01-28T12:00:00.000",
+          "pauseEndTime": "2022-01-28T12:30:00.000"
+        }
+      ],
+      "actualDayParties": [
+        {
+          "individualDetails": {
+            "firstName": "Jane",
+            "lastName": "Smith"
+          },
+          "organisationDetails": {
+            "name": null
+          },
+          "actualPartyId": "P1",
+          "didNotAttendFlag": false,
+          "partyChannelSubType": "INTER",
+          "partyRole": "DEF",
+          "representedParty": null
+        },
+        {
+          "individualDetails": {
+            "firstName": "DWP",
+            "lastName": "Representative"
+          },
+          "organisationDetails": {
+            "name": null
+          },
+          "actualPartyId": "P2",
+          "didNotAttendFlag": false,
+          "partyChannelSubType": "INTER",
+          "partyRole": "APP",
+          "representedParty": null
+        },
+        {
+          "individualDetails": {
+            "firstName": "abc",
+            "lastName": "abc"
+          },
+          "organisationDetails": {
+            "name": null
+          },
+          "didNotAttendFlag": false,
+          "partyChannelSubType": "INTER",
+          "partyRole": "APPL",
+          "representedParty": "P1"
+        },
+        {
+          "individualDetails": {
+            "firstName": "efg",
+            "lastName": "efg"
+          },
+          "organisationDetails": {
+            "name": null
+          },
+          "didNotAttendFlag": false,
+          "partyChannelSubType": "TEL",
+          "partyRole": "JOPA",
+          "representedParty": "P2"
+        }
+      ]
+    }
+  ]
+}

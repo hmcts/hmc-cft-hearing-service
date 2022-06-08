@@ -21,9 +21,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID_VALID_LENGT
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
-import static uk.gov.hmcts.reform.hmc.model.HearingResultType.ADJOURNED;
 import static uk.gov.hmcts.reform.hmc.model.HearingResultType.CANCELLED;
-import static uk.gov.hmcts.reform.hmc.model.HearingResultType.COMPLETED;
 
 @Component
 public class HearingIdValidator {
@@ -93,19 +91,6 @@ public class HearingIdValidator {
         Optional<ActualHearingEntity> entity = getActualHearing(hearingId);
         if (entity.isEmpty()) {
             throw new BadRequestException(errorMessage);
-        }
-    }
-
-    public void validateHearingResultType(Long hearingId, String errorMessage) {
-        Optional<ActualHearingEntity> entity = getActualHearing(hearingId);
-        if (entity.isPresent()) {
-            HearingResultType hearingResultType = entity.get().getHearingResultType();
-
-            if ((hearingResultType.getLabel().equals(COMPLETED.getLabel())
-                    || hearingResultType.getLabel().equals(ADJOURNED.getLabel()))
-                    && actualHearingDayRepository.findByActualHearing(entity.get()).isEmpty()) {
-                throw new BadRequestException(errorMessage);
-            }
         }
     }
 

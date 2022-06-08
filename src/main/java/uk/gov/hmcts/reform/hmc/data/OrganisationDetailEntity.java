@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,12 +16,13 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Table(name = "organisation_detail")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @SecondaryTable(name = "hearing_party",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "TECH_PARTY_ID")})
-public class OrganisationDetailEntity {
+public class OrganisationDetailEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

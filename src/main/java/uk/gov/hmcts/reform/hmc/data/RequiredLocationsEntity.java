@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.LocationType;
 
@@ -19,12 +20,13 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Table(name = "required_locations")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class RequiredLocationsEntity {
+public class RequiredLocationsEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
