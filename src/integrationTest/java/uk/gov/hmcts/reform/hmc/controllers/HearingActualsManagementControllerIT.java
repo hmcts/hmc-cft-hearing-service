@@ -244,16 +244,13 @@ class HearingActualsManagementControllerIT extends BaseTest {
             mockMvc.perform(put(URL + "/2000000000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
-                                    "hearing-actuals-payload/HMAN-276-ValidPayload7-actualPartyId-NotNull.json")))
+                                    "hearing-actuals-payload/hearing-actuals-payload/HMAN-276-ValidPayload7.json")))
                 .andExpect(status().is(200))
                 .andReturn();
 
-            mockMvc.perform(put(URL + "/2000000000")
-                                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .content(TestFixtures.fromFileAsString(
-                                    "hearing-actuals-payload/HMAN-276-ValidPayload7-actualPartyId-NotNull.json")))
-                .andExpect(status().is(200))
-                .andReturn();
+            mockMvc.perform(get(URL + "/2000000000").contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200));
+
         }
 
 
