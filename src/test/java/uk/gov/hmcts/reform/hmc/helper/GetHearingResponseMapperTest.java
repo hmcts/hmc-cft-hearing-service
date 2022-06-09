@@ -294,6 +294,7 @@ class GetHearingResponseMapperTest {
         assertHearingChannel(response.getHearingDetails().getHearingChannels());
     }
 
+    @Test
     void toHearingsResponseWhenRequestIdIsNull() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity("LISTED");
         hearingEntity.getCaseHearingRequests().get(0)
