@@ -62,11 +62,12 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_UN_EXPECTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_DETAILS_ARE_INVALID;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_EMPTY_NULL;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DURATION_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_WINDOW;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_VERSION_NUMBER;
@@ -362,13 +363,28 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validateHearingDetails(HearingDetails hearingDetails) {
+        validateHearingWindow(hearingDetails);
+
+        if (hearingDetails.getDuration() % 5 != 0) {
+            throw new BadRequestException(INVALID_DURATION_DETAILS);
+        }
+    }
+
+    private void validateHearingWindow(HearingDetails hearingDetails) {
         if (hearingDetails.getHearingWindow().getDateRangeEnd() == null
             && hearingDetails.getHearingWindow().getDateRangeStart() == null
             && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() == null) {
-            throw new BadRequestException(INVALID_HEARING_WINDOW);
+            throw new BadRequestException(HEARING_WINDOW_EMPTY_NULL);
         }
-        if (hearingDetails.getDuration() % 5 != 0) {
-            throw new BadRequestException(INVALID_DURATION_DETAILS);
+        if ((hearingDetails.getHearingWindow().getDateRangeEnd() != null
+            && hearingDetails.getHearingWindow().getDateRangeStart() != null)
+            && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() != null) {
+            throw new BadRequestException(HEARING_WINDOW_DETAILS_ARE_INVALID);
+        }
+        if ((hearingDetails.getHearingWindow().getDateRangeEnd() != null
+            || hearingDetails.getHearingWindow().getDateRangeStart() != null)
+            && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() != null) {
+            throw new BadRequestException(HEARING_WINDOW_DETAILS_ARE_INVALID);
         }
     }
 
