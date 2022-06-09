@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.hmc.data.PanelSpecialismsEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelUserRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
-import uk.gov.hmcts.reform.hmc.model.HearingChannel;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
@@ -135,7 +134,7 @@ public class HearingDetailsMapper {
         caseHearingRequestEntity.setRequiredLocations(requiredLocationsEntities);
     }
 
-    private void setHearingChannels(List<HearingChannel> hearingChannels,
+    private void setHearingChannels(List<String> hearingChannels,
                                     CaseHearingRequestEntity caseHearingRequestEntity) {
         final List<HearingChannelsEntity> hearingChannelsEntities =
             hearingChannelsMapper.modelToEntity(hearingChannels, caseHearingRequestEntity);

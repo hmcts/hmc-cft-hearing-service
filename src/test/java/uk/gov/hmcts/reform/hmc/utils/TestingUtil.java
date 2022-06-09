@@ -48,7 +48,6 @@ import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.model.HearingActualsOutcome;
-import uk.gov.hmcts.reform.hmc.model.HearingChannel;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
@@ -107,11 +106,7 @@ public class TestingUtil {
         hearingDetails.setNonStandardHearingDurationReasons(List.of("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
         hearingDetails.setHearingIsLinkedFlag(Boolean.TRUE);
-        HearingChannel hearingChannel1 = new HearingChannel();
-        hearingChannel1.setChannelType("someChannelType");
-        HearingChannel hearingChannel2 = new HearingChannel();
-        hearingChannel2.setChannelType("someOtherChannelType");
-        hearingDetails.setHearingChannels(List.of(hearingChannel1,hearingChannel2));
+        hearingDetails.setHearingChannels(getHearingChannelsList());
         HearingLocation location1 = new HearingLocation();
         location1.setLocationType(LocationType.CLUSTER.getLabel());
         location1.setLocationId("Location Id");
@@ -245,6 +240,10 @@ public class TestingUtil {
         HearingChannelsEntity hce2 = new HearingChannelsEntity();
         hce2.setHearingChannelType("someOtherChannelType");
         return List.of(hce1,hce2);
+    }
+
+    public static List<String> getHearingChannelsList() {
+        return List.of("someChannelType", "someOtherChannelType");
     }
 
     public static IndividualDetails individualDetails() {
@@ -549,9 +548,7 @@ public class TestingUtil {
         attendeeList.add(attendee);
         schedule.setAttendees(attendeeList);
         caseHearing.setHearingDaySchedule(List.of(schedule));
-        HearingChannel hearingChannel = new HearingChannel();
-        hearingChannel.setChannelType("someChannelType");
-        caseHearing.setHearingChannels(List.of(hearingChannel));
+        caseHearing.setHearingChannels(getHearingChannelsList());
         List<CaseHearing> caseHearingList = new ArrayList<>();
         caseHearingList.add(caseHearing);
         getHearingsResponse.setCaseHearings(caseHearingList);
@@ -575,8 +572,6 @@ public class TestingUtil {
         entity.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
         entity.getHearing().getHearingResponses().get(0)
             .setHearingDayDetails(List.of(hearingDayDetailsEntities()));
-        HearingChannel hearingChannel = new HearingChannel();
-        hearingChannel.setChannelType("someChannelType");
         entity.setHearingChannels(hearingChannelsEntity());
         return entity;
     }
@@ -1144,9 +1139,7 @@ public class TestingUtil {
         hearingDetails.getPanelRequirements().setPanelSpecialisms(List.of("Specialism 1"));
         hearingDetails.setHearingIsLinkedFlag(false);
         hearingDetails.setPanelRequirements(panelRequirementsList());
-        HearingChannel hearingChannel = new HearingChannel();
-        hearingChannel.setChannelType("someChannelType");
-        hearingDetails.setHearingChannels(List.of(hearingChannel));
+        hearingDetails.setHearingChannels(getHearingChannelsList());
         return hearingDetails;
     }
 

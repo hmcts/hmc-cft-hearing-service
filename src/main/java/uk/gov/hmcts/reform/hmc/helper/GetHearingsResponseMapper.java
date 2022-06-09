@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
-import uk.gov.hmcts.reform.hmc.model.HearingChannel;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 
 import java.util.ArrayList;
@@ -98,13 +97,11 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
     }
 
     private void setHearingChannels(CaseHearingRequestEntity entity, CaseHearing caseHearing) {
-        List<HearingChannel> hearingChannels = new ArrayList<>();
+        List<String> hearingChannels = new ArrayList<>();
         List<HearingChannelsEntity> hearingChannelsEntities = entity.getHearingChannels();
-        if (hearingChannelsEntities != null) {
+        if (hearingChannelsEntities != null && !hearingChannelsEntities.isEmpty()) {
             for (HearingChannelsEntity hearingChannelsEntity : hearingChannelsEntities) {
-                HearingChannel hearingChannel = new HearingChannel();
-                hearingChannel.setChannelType(hearingChannelsEntity.getHearingChannelType());
-                hearingChannels.add(hearingChannel);
+                hearingChannels.add(hearingChannelsEntity.getHearingChannelType());
             }
             caseHearing.setHearingChannels(hearingChannels);
         }

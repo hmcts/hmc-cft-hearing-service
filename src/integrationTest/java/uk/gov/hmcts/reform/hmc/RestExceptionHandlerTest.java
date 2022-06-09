@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.ServiceException;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
-import uk.gov.hmcts.reform.hmc.model.HearingChannel;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
@@ -101,9 +100,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
-        HearingChannel hearingChannel = new HearingChannel();
-        hearingChannel.setChannelType("someChannelType");
-        hearingDetails.setHearingChannels(List.of(hearingChannel));
+        hearingDetails.setHearingChannels(List.of(""));
         CaseDetails caseDetails = new CaseDetails();
         caseDetails.setHmctsServiceCode("ABA1");
         caseDetails.setCaseRef("1111222233334444");

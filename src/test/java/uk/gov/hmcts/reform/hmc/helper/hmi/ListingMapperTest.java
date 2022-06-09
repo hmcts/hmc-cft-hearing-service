@@ -84,9 +84,9 @@ class ListingMapperTest {
         assertTrue(listing.getListingOtherConsiderations().contains(FACILITY_TYPE_1));
         assertTrue(listing.getListingOtherConsiderations().contains(FACILITY_TYPE_2));
 
-        assertEquals(1, listing.getListingHearingChannels().size());
+        assertEquals(2, listing.getListingHearingChannels().size());
         assertEquals(AMEND_REASON_CODE, listing.getAmendReasonCode());
-        assertEquals(HEARING_CHANNEL, listing.getListingHearingChannels().get(0).getChannelType());
+        assertEquals(HEARING_CHANNEL, listing.getListingHearingChannels().get(0));
         assertEquals(1, listing.getListingLocations().size());
         assertEquals(LOCAL_DATE_TIME.minusDays(1).toLocalDate(), listing.getListingStartDate());
         assertEquals(LOCAL_DATE_TIME.plusDays(1).toLocalDate(), listing.getListingEndDate());
@@ -132,8 +132,8 @@ class ListingMapperTest {
         assertEquals(false, listing.getListingPrivateFlag());
         assertEquals(1, listing.getListingJohs().size());
         assertEquals(listingJoh, listing.getListingJohs().get(0));
-        assertEquals(1, listing.getListingHearingChannels().size());
-        assertEquals(HEARING_CHANNEL, listing.getListingHearingChannels().get(0).getChannelType());
+        assertEquals(2, listing.getListingHearingChannels().size());
+        assertTrue(listing.getListingHearingChannels().contains(HEARING_CHANNEL));
         assertEquals(1, listing.getListingLocations().size());
         assertNull(listing.getListingStartDate());
         assertNull(listing.getListingEndDate());
@@ -177,8 +177,8 @@ class ListingMapperTest {
         assertEquals(false, listing.getListingPrivateFlag());
         assertEquals(1, listing.getListingJohs().size());
         assertEquals(listingJoh, listing.getListingJohs().get(0));
-        assertEquals(1, listing.getListingHearingChannels().size());
-        assertEquals(HEARING_CHANNEL, listing.getListingHearingChannels().get(0).getChannelType());
+        assertEquals(2, listing.getListingHearingChannels().size());
+        assertEquals(HEARING_CHANNEL, listing.getListingHearingChannels().get(0));
         assertEquals(1, listing.getListingLocations().size());
         assertNull(listing.getListingStartDate());
         assertNull(listing.getListingEndDate());

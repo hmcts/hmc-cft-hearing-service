@@ -54,6 +54,6 @@ public class CaseHearing {
 
     @Size(max = 70)
     @NotNull
-    private List<HearingChannel> hearingChannels;
+    private List<String> hearingChannels;
 
 }

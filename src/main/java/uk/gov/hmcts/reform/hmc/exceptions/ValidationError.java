@@ -77,7 +77,7 @@ public final class ValidationError {
     public static final String LAST_NAME_EMPTY = "Last name can not be empty";
     public static final String LAST_NAME_MAX_LENGTH = "Last name must not be more than 730 " + CHARACTERS_LONG;
     public static final String MISSING_CHANNEL_TYPE = "Hearing Channel Type can not be empty or null";
-    public static final String HEARING_CHANNEL_EMPTY = "Hearing Channel can not be empty or null";
+    public static final String HEARING_CHANNEL_EMPTY = "Hearing Channel must be present and not null or empty";
     public static final String NON_UNIQUE_CHANNEL_TYPE = "Non-Unique Channel Type";
     public static final String CHANNEL_TYPE_MAX_LENGTH = "Channel Type must not be more than 70 " + CHARACTERS_LONG;
     public static final String PREFERRED_HEARING_CHANNEL_MAX_LENGTH = "Preferred hearing channel must not be more than "

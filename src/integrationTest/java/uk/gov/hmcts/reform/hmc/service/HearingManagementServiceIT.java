@@ -405,8 +405,8 @@ class HearingManagementServiceIT extends BaseTest {
         testGetHearings_WithValidCaseRefAndStatus_assertPart1(response);
         testGetHearings_WithValidCaseRefAndStatus_assertPart2(response);
         assertEquals(2, response.getCaseHearings().get(0).getHearingChannels().size());
-        assertEquals("Paper",response.getCaseHearings().get(0).getHearingChannels().get(0).getChannelType());
-        assertEquals("Email",response.getCaseHearings().get(0).getHearingChannels().get(1).getChannelType());
+        assertTrue(response.getCaseHearings().get(0).getHearingChannels().contains("Paper"));
+        assertTrue(response.getCaseHearings().get(0).getHearingChannels().contains("Email"));
     }
 
     void testGetHearings_WithValidCaseRefAndStatus_assertPart1(GetHearingsResponse response) {

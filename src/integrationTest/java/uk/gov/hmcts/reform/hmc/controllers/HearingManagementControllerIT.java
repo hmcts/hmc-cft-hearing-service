@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.HearingChannel;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
@@ -131,7 +130,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LOCATION_ID_EMP
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MEMBER_ID_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MEMBER_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MEMBER_TYPE_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_CHANNEL_TYPE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NAME_NULL_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG;
@@ -899,8 +897,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().setListingComments("a".repeat(2001));
         hearingRequest.getHearingDetails().setHearingRequester("a".repeat(61));
         hearingRequest.getHearingDetails().setLeadJudgeContractType("a".repeat(71));
-        HearingChannel hearingChannel = new HearingChannel();
-        hearingRequest.getHearingDetails().setHearingChannels(List.of(hearingChannel));
+        hearingRequest.getHearingDetails().setHearingChannels(null);
         PanelRequirements panelRequirements = new PanelRequirements();
         List<String> listWithValueOver70Size = Collections.singletonList("a".repeat(71));
         panelRequirements.setRoleType(listWithValueOver70Size);
@@ -933,7 +930,7 @@ class HearingManagementControllerIT extends BaseTest {
                                                      MEMBER_ID_MAX_LENGTH, MEMBER_TYPE_MAX_LENGTH,
                                                      "Unsupported type for requirementType",
                                                      AMEND_REASON_CODE_MAX_LENGTH,
-                                                     MISSING_CHANNEL_TYPE
+                                                     HEARING_CHANNEL_EMPTY
             )))
             .andReturn();
     }

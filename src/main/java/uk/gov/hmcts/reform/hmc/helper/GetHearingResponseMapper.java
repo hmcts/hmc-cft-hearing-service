@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
-import uk.gov.hmcts.reform.hmc.model.HearingChannel;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
@@ -398,12 +397,10 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         return hearingLocations;
     }
 
-    private List<HearingChannel> setHearingChannel(CaseHearingRequestEntity caseHearingRequestEntity) {
-        List<HearingChannel> hearingChannels = new ArrayList<>();
+    private List<String> setHearingChannel(CaseHearingRequestEntity caseHearingRequestEntity) {
+        List<String> hearingChannels = new ArrayList<>();
         for (HearingChannelsEntity hearingChannelsEntity: caseHearingRequestEntity.getHearingChannels()) {
-            HearingChannel hearingChannel = new HearingChannel();
-            hearingChannel.setChannelType(hearingChannelsEntity.getHearingChannelType());
-            hearingChannels.add(hearingChannel);
+            hearingChannels.add(hearingChannelsEntity.getHearingChannelType());
         }
 
         return hearingChannels;
