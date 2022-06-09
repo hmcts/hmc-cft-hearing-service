@@ -24,9 +24,9 @@ java:
           alias: IDAM_KEY_CFT_HEARING_SERVICE
         - name: hmc-servicebus-connection-string
           alias: HMC_SERVICE_BUS_CONNECTION_STRING
-        - name: hmc-queue-connection-string
+        - name: hmc-servicebus-connection-string
           alias: HMC_QUEUE_CONNECTION_STRING
-        - name: hmc-outbound-queue-connection-string
+        - name: hmc-servicebus-connection-string
           alias: HMC_OUTBOUND_QUEUE_CONNECTION_STRING
         - name: ClientId
           alias: CLIENT_ID
