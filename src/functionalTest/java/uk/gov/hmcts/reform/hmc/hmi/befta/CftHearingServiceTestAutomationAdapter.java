@@ -1,9 +1,13 @@
 package uk.gov.hmcts.reform.hmc.hmi.befta;
 
 import uk.gov.hmcts.befta.BeftaTestDataLoader;
+import uk.gov.hmcts.befta.DefaultBeftaTestDataLoader;
 import uk.gov.hmcts.befta.DefaultTestAutomationAdapter;
+import uk.gov.hmcts.befta.data.UserData;
 import uk.gov.hmcts.befta.dse.ccd.DataLoaderToDefinitionStore;
 import uk.gov.hmcts.befta.util.BeftaUtils;
+
+import java.util.concurrent.ExecutionException;
 
 public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomationAdapter {
 
@@ -18,6 +22,21 @@ public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomatio
                 BeftaUtils.defaultLog("Will NOT create role assignments!");
             }
 
+        };
+    }
+
+    @Override
+    public void authenticate(UserData user, String preferredTokenClientId) throws ExecutionException {
+
+    }
+
+    @Override
+    public BeftaTestDataLoader getDataLoader() {
+        return new DefaultBeftaTestDataLoader() {
+            @Override
+            public void doLoadTestData() {
+
+            }
         };
     }
 }

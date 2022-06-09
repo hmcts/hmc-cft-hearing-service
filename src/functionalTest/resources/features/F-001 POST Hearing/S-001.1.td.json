@@ -2,6 +2,7 @@
   "_guid_": "S-001.1",
   "_extends_" : "CreateHearingRequestBase",
   "specs": [
+    "access to create a hearing request",
     "has the 200 OK code",
     "an active profile in CCD",
     "has 201 Created code",

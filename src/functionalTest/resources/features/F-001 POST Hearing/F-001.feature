@@ -1,9 +1,10 @@
-@F-001 @Smoke
+@F-001
 Feature: F-001: Create hearing request
 
   Background:
     Given an appropriate test context as detailed in the test data source
     Given a user with [an active profile in CCD]
+    Given a user with [access to create a hearing request],
     And a case that has just been created as in [CreateCase],
 
   @S-001.1
