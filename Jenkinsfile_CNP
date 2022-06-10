@@ -27,6 +27,9 @@ def dataStoreApiDevelopPr    = "PR-1260" // This doesn't change frequently, but 
 GradleBuilder builder = new GradleBuilder(this, product)
 
 def secrets = [
+  'rpx-${env}': [
+    secret('mc-idam-client-secret', 'BEFTA_OAUTH2_CLIENT_SECRET_OF_XUIWEBAPP')
+  ],
   'ccd-${env}': [
     secret('ccd-api-gateway-oauth2-client-secret', 'OAUTH2_CLIENT_SECRET'),
     secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
