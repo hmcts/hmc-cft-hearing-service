@@ -60,7 +60,8 @@
       },
       {
         "categoryType": "caseSubType",
-        "categoryValue": "BBA3-002CP"
+        "categoryValue": "BBA3-002CP",
+        "categoryParent": "BBA3-002"
       }
     ],
     "caseManagementLocationCode" : "CMLC123",
