@@ -5,6 +5,7 @@
   "method": "POST",
   "uri": "/hearing",
   "s2sClientId": "xui_webapp",
+  "userTokenClientId": "xuiwebapp",
   "specs": [
     "has the 200 OK code",
     "an active profile in CCD",
