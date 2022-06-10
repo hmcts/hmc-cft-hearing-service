@@ -26,11 +26,6 @@ public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomatio
     }
 
     @Override
-    public void authenticate(UserData user, String preferredTokenClientId) throws ExecutionException {
-
-    }
-
-    @Override
     public BeftaTestDataLoader getDataLoader() {
         return new DefaultBeftaTestDataLoader() {
             @Override
