@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,8 +53,7 @@ public class CaseHearing {
 
     private Boolean hearingIsLinkedFlag;
 
-    @Size(max = 70)
     @NotNull
-    private List<String> hearingChannels;
+    private List<@Size(max = 70, message = ValidationError.CHANNEL_TYPE_MAX_LENGTH)String> hearingChannels;
 
 }
