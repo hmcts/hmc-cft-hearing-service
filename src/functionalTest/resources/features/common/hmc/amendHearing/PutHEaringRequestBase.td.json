@@ -27,6 +27,7 @@
       },
       "hearingDetails": {
         "autolistFlag": true,
+        "amendReasonCode": "Amend reason",
         "hearingType": "Some hearing type",
         "hearingWindow": {
           "dateRangeStart": "2022-05-10",
