@@ -116,7 +116,7 @@ insert into actual_hearing_day(actual_hearing_day_id, hearing_date, start_date_t
 values (5, '2020-08-10 11:20:00', '2020-07-10 11:20:00', '2020-09-10 11:20:00', 5, null);
 
 insert into actual_hearing_day(actual_hearing_day_id, hearing_date, start_date_time, end_date_time, actual_hearing_id,not_required)
-values (6, '2020-08-10 11:20:00', '2020-07-10 11:20:00', '2020-09-10 11:20:00', 6, '');
+values (6, '2020-08-10 11:20:00', '2020-07-10 11:20:00', '2020-09-10 11:20:00', 6, null);
 
 insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (1, 1, 'panel1-1','true');
 insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (2, 1, 'panel1-2','false');
