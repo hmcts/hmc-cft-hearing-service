@@ -83,7 +83,14 @@
       "vulnerabilityDetails" : "A bit vulnerable",
       "hearingChannelEmail": ["hearing.channel@email.com"],
       "hearingChannelPhone": ["01234567890"],
-      "relatedParties" : [ ]
+      "relatedParties" : [{
+        "relatedPartyID" : "P7",
+        "relationshipType" : "p7 Sibling"
+      },
+      {
+        "relatedPartyID": "P8",
+        "relationshipType": "p8 sibling"
+      }]
     },
     "unavailabilityDOW": [
       {
@@ -95,7 +102,7 @@
       {
         "unavailableFromDate": "2022-05-08",
         "unavailableToDate": "2022-05-09",
-        "unavailabilityType": "all day"
+        "unavailabilityType": "All Day"
       }
     ]
   }]
