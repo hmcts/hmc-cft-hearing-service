@@ -106,17 +106,17 @@ values (6, 'Test Hearing Type', false, 'ADJOURNED', 'ADJOURNED reason', '2020-08
 insert into actual_hearing(actual_hearing_id, actual_hearing_type, actual_hearing_is_final_flag, hearing_result_type, hearing_result_reason_type, hearing_result_date, hearing_response_id)
 values (7, 'Test Hearing Type', false, 'COMPLETED', 'COMPLETED reason', '2020-08-10 11:20:00', 7);
 
-insert into actual_hearing_day(actual_hearing_day_id, hearing_date, start_date_time, end_date_time, actual_hearing_id)
-values (1, '2020-08-10 11:20:00', '2020-07-10 11:20:00', '2020-09-10 11:20:00', 1);
+insert into actual_hearing_day(actual_hearing_day_id, hearing_date, start_date_time, end_date_time, actual_hearing_id,not_required)
+values (1, '2020-08-10 11:20:00', '2020-07-10 11:20:00', '2020-09-10 11:20:00', 1, 'true');
 
-insert into actual_hearing_day(actual_hearing_day_id, hearing_date, start_date_time, end_date_time, actual_hearing_id)
-values (2, '2020-08-10 11:20:00', '2020-07-10 11:20:00', '2020-09-10 11:20:00', 2);
+insert into actual_hearing_day(actual_hearing_day_id, hearing_date, start_date_time, end_date_time, actual_hearing_id,not_required)
+values (2, '2020-08-10 11:20:00', '2020-07-10 11:20:00', '2020-09-10 11:20:00', 2, 'false');
 
-insert into actual_hearing_day(actual_hearing_day_id, hearing_date, start_date_time, end_date_time, actual_hearing_id)
-values (5, '2020-08-10 11:20:00', '2020-07-10 11:20:00', '2020-09-10 11:20:00', 5);
+insert into actual_hearing_day(actual_hearing_day_id, hearing_date, start_date_time, end_date_time, actual_hearing_id,not_required)
+values (5, '2020-08-10 11:20:00', '2020-07-10 11:20:00', '2020-09-10 11:20:00', 5, null);
 
-insert into actual_hearing_day(actual_hearing_day_id, hearing_date, start_date_time, end_date_time, actual_hearing_id)
-values (6, '2020-08-10 11:20:00', '2020-07-10 11:20:00', '2020-09-10 11:20:00', 6);
+insert into actual_hearing_day(actual_hearing_day_id, hearing_date, start_date_time, end_date_time, actual_hearing_id,not_required)
+values (6, '2020-08-10 11:20:00', '2020-07-10 11:20:00', '2020-09-10 11:20:00', 6, '');
 
 insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (1, 1, 'panel1-1','true');
 insert into hearing_day_panel(id, hearing_day_id, panel_user_id,is_presiding) values (2, 1, 'panel1-2','false');
