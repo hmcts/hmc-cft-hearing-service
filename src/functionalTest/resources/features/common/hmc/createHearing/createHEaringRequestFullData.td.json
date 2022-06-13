@@ -92,9 +92,6 @@
       {
         "DOW": "Monday",
         "DOWUnavailabilityType": "am"
-      }, {
-        "DOW" : null,
-        "DOWUnavailabilityType" : "All Day"
       }
     ],
     "unavailabilityRanges": [
