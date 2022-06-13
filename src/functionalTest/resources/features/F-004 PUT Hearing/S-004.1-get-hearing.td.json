@@ -31,7 +31,7 @@
           "lastName" : "Doe",
           "preferredHearingChannel" : "Channel 4",
           "interpreterLanguage" : "French",
-          "reasonableAdjustments" : [ "Ad1" ],
+          "reasonableAdjustments" : [ "Ad1", "Adjust2" ],
           "vulnerableFlag" : true,
           "vulnerabilityDetails" : "A bit vulnerable",
           "hearingChannelEmail": ["hearing.channel@email.com"],
@@ -43,15 +43,12 @@
         "unavailabilityRanges" : [ {
           "unavailableFromDate" : "2022-05-08",
           "unavailableToDate" : "2022-05-09",
-          "unavailabilityType" : null
+          "unavailabilityType" : "All Day"
         } ],
         "unavailabilityDOW" : [ {
           "DOW" : "Monday",
           "DOWUnavailabilityType" : "AM"
-        }, {
-          "DOW" : null,
-          "DOWUnavailabilityType" : "All Day"
-        } ]
+        }]
       } ],
       "hearingResponse": "[[ANYTHING_PRESENT]]"
     }
