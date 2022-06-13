@@ -44,5 +44,16 @@
     "caserestrictedFlag": true,
     "caseSLAStartDate": "2021-10-10"
   },
-  "partyDetails": [ ]
+  "partyDetails": [
+    {
+      "partyID": "P1",
+      "partyType": "IND",
+      "partyRole": "DEF",
+      "individualDetails": {
+        "title": "Mr",
+        "firstName": "Joe",
+        "lastName": "Bloggs"
+      }
+    }
+  ]
 }

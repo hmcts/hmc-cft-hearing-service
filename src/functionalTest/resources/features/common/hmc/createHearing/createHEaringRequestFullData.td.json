@@ -83,7 +83,7 @@
       "vulnerabilityDetails" : "A bit vulnerable",
       "hearingChannelEmail": ["hearing.channel@email.com"],
       "hearingChannelPhone": ["01234567890"],
-      "relatedParties" : [ ]
+      "relatedParties" : []
     },
     "unavailabilityDOW": [
       {

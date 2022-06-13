@@ -84,7 +84,21 @@
         "partyID" : "P1",
         "partyType" : "IND",
         "partyRole" : "DEF",
-        "individualDetails" : { },
+        "individualDetails" : {
+          "title" : "Mr",
+          "firstName" : "Joe",
+          "lastName" : "Bloggs",
+          "preferredHearingChannel" : "Channel 4",
+          "interpreterLanguage" : "French",
+          "reasonableAdjustments" : [ "Ad1", "Adjust2" ],
+          "vulnerableFlag" : true,
+          "vulnerabilityDetails" : "A bit vulnerable",
+          "hearingChannelEmail": ["hearing.channel@email.com"],
+          "hearingChannelPhone": ["01234567890"],
+          "relatedParties" : [ ],
+          "custodyStatus" : null,
+          "otherReasonableAdjustmentDetails" : null
+        },
         "unavailabilityRanges" : [ {
           "unavailableFromDate" : "2022-05-08",
           "unavailableToDate" : "2022-05-09",
