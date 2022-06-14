@@ -157,8 +157,6 @@ public final class ValidationError {
     public static final String HA_OUTCOME_REQUEST_DATE_NOT_EMPTY = "hearingResultDate cannot be null or empty";
 
     public static final String HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY = "hearingDate cannot be null or empty";
-    public static final String HA_HEARING_DAY_START_TIME_DATE_NOT_EMPTY = "hearingStartTime cannot be null or empty";
-    public static final String HA_HEARING_DAY_END_TIME_DATE_NOT_EMPTY = "hearingEndTime cannot be null or empty";
     public static final String HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY = "pauseStartTime cannot be null or empty";
     public static final String HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY = "pauseEndTime cannot be null or empty";
 
@@ -258,6 +256,4 @@ public final class ValidationError {
     public static final String INVALID_AMEND_REASON_CODE = "Amend reason code details are required";
 
     public static final String INTERNAL_SERVER_ERROR = "Error occurred on the server";
-    public static final String HEARING_ACTUALS_MISSING_HEARING_START_TIME = "005 missing hearingStartTime";
-    public static final String HEARING_ACTUALS_MISSING_HEARING_END_TIME = "006 missing hearingEndTime";
 }

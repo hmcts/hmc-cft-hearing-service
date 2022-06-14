@@ -28,7 +28,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_END_TIME_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_NOT_EMPTY;
@@ -43,7 +42,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_START_TIME_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_FINAL_FLAG_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REASON_TYPE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY;
@@ -533,6 +531,38 @@ class HearingActualsManagementControllerIT extends BaseTest {
         }
     }
 
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+    void shouldReturn200WhenHearingStartTimeIsNotPresentEndTimeIsPresentAndNotRequiredIsNotPresent() throws Exception {
+        String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
+        String preparedJson = deleteByJsonPath(json, "$['actualHearingDays'][0]['hearingStartTime']");
+        mockMvc.perform(put(URL + "/2000001000")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(TestFixtures.fromFileAsString(
+                                preparedJson)))
+            .andExpect(status().is(200))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+    void shouldReturn200WhenHearingEndTimeIsNotPresentAndStartTimeIsPresentAndNotRequiredIsNotPresent() throws Exception {
+        String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
+        String preparedJson = deleteByJsonPath(json, "$['actualHearingDays'][0]['hearingEndTime']");
+        mockMvc.perform(put(URL + "/2000001000")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(TestFixtures.fromFileAsString(
+                                preparedJson)))
+            .andExpect(status().is(200))
+            .andReturn();
+    }
+
+    private String deleteByJsonPath(String json, String path) {
+        DocumentContext jsonContext = JsonPath.parse(json);
+        jsonContext.delete(path);
+        return jsonContext.jsonString();
+    }
+
     @Nested
     @DisplayName("PutHearingActualsJsr303Validation")
     class PutHearingActualsJsr303Validation {
@@ -594,20 +624,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn400_WhenMissingHearingDaysHearingDate() throws Exception {
             verifyErrorOnMissingNode(HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY,
                                      "$['actualHearingDays'][0]['hearingDate']");
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenMissingHearingDaysHearingStartTime() throws Exception {
-            verifyErrorOnMissingNode(HA_HEARING_DAY_START_TIME_DATE_NOT_EMPTY,
-                                     "$['actualHearingDays'][0]['hearingStartTime']");
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenMissingHearingDaysHearingEndTime() throws Exception {
-            verifyErrorOnMissingNode(HA_HEARING_DAY_END_TIME_DATE_NOT_EMPTY,
-                                     "$['actualHearingDays'][0]['hearingEndTime']");
         }
 
         @Test
@@ -725,6 +741,70 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors", hasItem((expectedError))))
                 .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn400WhenHearingEndTimeIsNotPresentAndNotRequiredIsFalse() throws Exception {
+            String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
+            String preparedJson = deleteByJsonPath(json, "$['actualHearingDays'][0]['hearingEndTime']");
+            String preparedJsonAdd = addByJsonPath(preparedJson, "$['actualHearingDays'][0]['notRequired']", "false");
+            mockMvc.perform(put(URL + "/2000001000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(preparedJsonAdd))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItem(("006 missing hearingEndTime for 2022-01-28"))))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn400WhenHearingStartTimeIsNotPresentAndNotRequiredIsFalse() throws Exception {
+            String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
+            String preparedJson = deleteByJsonPath(json, "$['actualHearingDays'][0]['hearingStartTime']");
+            String preparedJsonAdd = addByJsonPath(preparedJson, "$['actualHearingDays'][0]['notRequired']", "false");
+            mockMvc.perform(put(URL + "/2000001000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(preparedJsonAdd))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItem(("005 missing hearingStartTime for 2022-01-28"))))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn400WhenHearingStartTimeIsNotPresentAndNotRequiredIsNotPresent() throws Exception {
+            String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
+            String preparedJson = deleteByJsonPath(json, "$['actualHearingDays'][0]['hearingStartTime']");
+            mockMvc.perform(put(URL + "/2000001000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(preparedJson))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItem(("005 missing hearingStartTime for 2022-01-28"))))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn400WhenHearingEndTimeIsNotPresentAndNotRequiredIsNotPresent() throws Exception {
+            String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
+            String preparedJson = deleteByJsonPath(json, "$['actualHearingDays'][0]['hearingEndTime']");
+            mockMvc.perform(put(URL + "/2000001000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(preparedJson))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItem(("006 missing hearingEndTime for 2022-01-28"))))
+                .andReturn();
+        }
+
+        private String addByJsonPath(String json, String path, String value) {
+            DocumentContext jsonContext = JsonPath.parse(json);
+            jsonContext.set(path, value);
+            return jsonContext.jsonString();
         }
 
         private String deleteByJsonPath(String json, String path) {

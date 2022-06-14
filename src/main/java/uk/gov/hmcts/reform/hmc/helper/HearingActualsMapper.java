@@ -68,7 +68,7 @@ public class HearingActualsMapper {
             }
             if (null == actualHearingDay.getHearingEndTime()) {
                 throw new BadRequestException(
-                    String.format("006 missing hearingEndTime %s", actualHearingDay.getHearingDate()));
+                    String.format("006 missing hearingEndTime for %s", actualHearingDay.getHearingDate()));
             }
         }
     }
