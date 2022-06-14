@@ -24,6 +24,21 @@ def definitionStoreDevelopPr = "PR-575"  // This doesn't change frequently, but 
 
 GradleBuilder builder = new GradleBuilder(this, product)
 
+def secrets = [
+  'hmc-${env}': [
+    secret('hmc-hearing-service-users-pwd', 'HMC_HEARING_SERVICE_USERS_PWD'),
+  ]
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   version    : '',
+   envVariable: envVar
+  ]
+}
+
 // env variables needed for BEFTA.
 //env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
 env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
