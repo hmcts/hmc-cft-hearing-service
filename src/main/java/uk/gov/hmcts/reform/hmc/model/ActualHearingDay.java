@@ -34,4 +34,6 @@ public class ActualHearingDay implements Serializable {
     @Valid
     private List<ActualHearingDayParties> actualDayParties;
 
+    private Boolean notRequired;
+
 }

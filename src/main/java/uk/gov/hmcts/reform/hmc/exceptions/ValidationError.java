@@ -258,4 +258,6 @@ public final class ValidationError {
     public static final String INVALID_AMEND_REASON_CODE = "Amend reason code details are required";
 
     public static final String INTERNAL_SERVER_ERROR = "Error occurred on the server";
+    public static final String HEARING_ACTUALS_MISSING_HEARING_START_TIME = "005 missing hearingStartTime";
+    public static final String HEARING_ACTUALS_MISSING_HEARING_END_TIME = "006 missing hearingEndTime";
 }
