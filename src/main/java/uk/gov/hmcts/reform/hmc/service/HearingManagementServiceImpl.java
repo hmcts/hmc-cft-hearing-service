@@ -192,9 +192,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         sendRequestToQueue(hmiSubmitHearingRequest, hearingId, messageType);
     }
 
-    private void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest, Long hearingId, String messageType) {
-        HmiDeleteHearingRequest hmiDeleteHearingRequest = hmiDeleteHearingRequestMapper.mapRequest(hearingRequest);
-        sendRequestToQueue(hmiDeleteHearingRequest, hearingId, messageType);
+    private void sendRequestToHmiAndQueue(Long hearingId, String messageType) {
+        sendRequestToQueue(hearingId, messageType);
     }
 
     private void validateHearingStatusForUpdate(Long hearingId) {
@@ -399,7 +398,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(deleteRequest, existingHearing, existingHearing.getNextRequestVersion());
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
-        sendRequestToHmiAndQueue(deleteRequest, hearingId, DELETE_HEARING);
+        sendRequestToHmiAndQueue(hearingId, DELETE_HEARING);
         return saveHearingResponseDetails;
     }
 
@@ -441,8 +440,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType);
     }
 
-    private void sendRequestToQueue(HmiDeleteHearingRequest hmiDeleteHearingRequest, Long hearingId,
-                                    String messageType) {
+    private void sendRequestToQueue(Long hearingId, String messageType) {
+        HmiDeleteHearingRequest hmiDeleteHearingRequest = hmiDeleteHearingRequestMapper.mapRequest();
         var jsonNode = objectMapperService.convertObjectToJsonNode(hmiDeleteHearingRequest);
         messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType);
     }
