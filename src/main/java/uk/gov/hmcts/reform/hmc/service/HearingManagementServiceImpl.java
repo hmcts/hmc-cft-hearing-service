@@ -192,10 +192,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         sendRequestToQueue(hmiSubmitHearingRequest, hearingId, messageType);
     }
 
-    private void sendRequestToHmiAndQueue(Long hearingId, String messageType) {
-        sendRequestToQueue(hearingId, messageType);
-    }
-
     private void validateHearingStatusForUpdate(Long hearingId) {
         String status = getStatus(hearingId);
         if (!PutHearingStatus.isValid(status) || validatePlannedStartDate(hearingId,status)) {
@@ -398,7 +394,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(deleteRequest, existingHearing, existingHearing.getNextRequestVersion());
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
-        sendRequestToHmiAndQueue(hearingId, DELETE_HEARING);
+        sendRequestToQueue(hearingId, DELETE_HEARING);
         return saveHearingResponseDetails;
     }
 
