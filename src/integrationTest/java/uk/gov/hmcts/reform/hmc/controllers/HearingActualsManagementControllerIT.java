@@ -591,34 +591,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
     }
 
 
-    @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-    void shouldReturn200WhenHearingStartTimeIsNotPresentEndTimeIsPresentAndNotRequiredIsNotPresent() throws Exception {
-        String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
-        String preparedJson = getString(
-            json,
-            "$['actualHearingDays'][0]['hearingStartTime']",
-            "$['actualHearingDays'][0]['notRequired']"
-        );
-        mockMvc.perform(put(URL + "/2000001000")
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(preparedJson))
-            .andExpect(status().is(200))
-            .andReturn();
-    }
 
-    @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-    void shouldReturn200WhenEndTimeIsNotPresentAndStartTimeIsPresentAndNotRequiredIsNotPresent() throws Exception {
-        String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
-        String preparedJson = deleteByJsonPath(json, "$['actualHearingDays'][0]['hearingEndTime']");
-        preparedJson = deleteByJsonPath(preparedJson, "$['actualHearingDays'][0]['notRequired']");
-        mockMvc.perform(put(URL + "/2000001000")
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(preparedJson))
-            .andExpect(status().is(200))
-            .andReturn();
-    }
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
@@ -938,6 +911,37 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andReturn();
         }
 
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn200WhenStartTimeIsNotPresentEndTimeIsPresentAndNotRequiredIsNotPresent() throws Exception {
+            String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
+            String preparedJson = getString(
+                json,
+                "$['actualHearingDays'][0]['hearingStartTime']",
+                "$['actualHearingDays'][0]['notRequired']"
+            );
+            mockMvc.perform(put(URL + "/2000001000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(preparedJson))
+                .andExpect(status().is(400))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn200WhenEndTimeIsNotPresentAndStartTimeIsPresentAndNotRequiredIsNotPresent() throws Exception {
+            String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
+            String preparedJson = getString(
+                json,
+                "$['actualHearingDays'][0]['hearingEndTime']",
+                "$['actualHearingDays'][0]['notRequired']"
+            );
+            mockMvc.perform(put(URL + "/2000001000")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(preparedJson))
+                .andExpect(status().is(400))
+                .andReturn();
+        }
 
         private String addByJsonPath(String json, String path, String value) {
             DocumentContext jsonContext = JsonPath.parse(json);
