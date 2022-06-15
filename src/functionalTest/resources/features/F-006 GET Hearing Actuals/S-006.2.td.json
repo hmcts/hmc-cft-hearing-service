@@ -1,0 +1,20 @@
+{
+  "_guid_": "S-006.1",
+  "_extends_" : "F-006_TestBase",
+
+  "specs": [
+    "an active profile in CCD",
+    "has 404 status code"
+  ],
+
+  "request": {
+    "pathVariables": {
+      "caseref": "1234567890"
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 404,
+    "responseMessage": "No hearing found for reference: ${caseref}"
+  }
+}

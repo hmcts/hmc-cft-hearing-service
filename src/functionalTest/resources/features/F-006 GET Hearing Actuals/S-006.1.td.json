@@ -1,0 +1,39 @@
+{
+  "_guid_": "S-006.1",
+  "_extends_" : "F-006_TestBase",
+
+  "specs": [
+    "has the 200 OK code",
+    "an active profile in CCD",
+    "has 200 status code",
+    "contains both hearings"
+  ],
+
+  "request": {
+    "pathVariables": {
+      "caseref": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 200,
+    "responseMessage": "OK",
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    },
+    "body" : {
+      "hmcStatus": "STATUS",
+      "caseDetails": {
+
+      },
+      "hearingPlanned": {
+        "plannedHearingType": "hearing type",
+        "plannedHearingDays": []
+      },
+      "hearingActuals": []
+    }
+  }
+}
