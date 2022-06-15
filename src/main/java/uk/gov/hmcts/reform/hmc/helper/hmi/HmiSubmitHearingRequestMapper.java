@@ -30,6 +30,7 @@ public class HmiSubmitHearingRequestMapper {
         if (hearingRequest instanceof UpdateHearingRequest) {
             UpdateHearingRequest request = (UpdateHearingRequest) hearingRequest;
             if (null != request.getRequestDetails()) {
+                request.getHearingDetails().setAmendReasonCode("AMEND");
                 versionNumber = request.getRequestDetails().getVersionNumber() + 1;
             }
         }
