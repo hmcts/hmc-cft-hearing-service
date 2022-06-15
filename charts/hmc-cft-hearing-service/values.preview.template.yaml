@@ -13,7 +13,7 @@ java:
     CFT_HEARING_SERVICE_DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
     CFT_HEARING_SERVICE_DB_PORT: 5432
-    HMC_ACCESS_CONTROL_ENABLED: false
+    HMC_ACCESS_CONTROL_ENABLED: true
   postgresql:
     enabled: true
   secrets:
