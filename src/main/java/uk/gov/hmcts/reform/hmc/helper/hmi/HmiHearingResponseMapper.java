@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingAttendee;
@@ -23,8 +25,11 @@ import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_LISTING;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_SUBMITTED;
@@ -40,10 +45,12 @@ public class HmiHearingResponseMapper {
         List<HearingSession> hearingSessions = hearing.getHearing().getHearingSessions();
         if (hearingSessions != null && !hearingSessions.isEmpty()) {
 
+            List<HearingSession> uniqueHearingSessionsPerDay = findUniqueHearingSessionsPerDay(hearingSessions);
+
             // put total attendees and panels here to save later?
             List<HearingDayDetailsEntity> hearingDayDetailsEntitiesList = new ArrayList<>();
 
-            for (HearingSession hearingSession : hearingSessions) {
+            for (HearingSession hearingSession : uniqueHearingSessionsPerDay) {
                 List<HearingDayDetailsEntity> hearingDayDetailsEntities =
                     mapHearingDayDetailsFromSessionDetails(hearingSession);
                 List<HearingAttendeeDetailsEntity> hearingAttendeeDetailsEntities =
@@ -76,6 +83,24 @@ public class HmiHearingResponseMapper {
         hearingEntity.getHearingResponses().add(hearingResponseEntity);
         hearingEntity.setStatus(getHearingStatus(hearing, hearingEntity).name());
         return hearingEntity;
+    }
+
+    private List<HearingSession> findUniqueHearingSessionsPerDay(List<HearingSession> hearingSessions) {
+        MultiValuedMap<LocalDateTime, HearingSession> uniqueDays = new ArrayListValuedHashMap<>();
+
+        hearingSessions.stream().forEach(hearingSession ->
+                uniqueDays.put(hearingSession.getHearingStartTime().truncatedTo(ChronoUnit.DAYS), hearingSession));
+
+        return uniqueDays.keySet().stream().map(date -> {
+            HearingSession hearingSessionWithEarliestStartTime =
+                    uniqueDays.get(date).stream().min(Comparator.comparing(HearingSession::getHearingStartTime)).get();
+            HearingSession hearingSessionWithLatestEndTime =
+                    uniqueDays.get(date).stream().max(Comparator.comparing(HearingSession::getHearingEndTime)).get();
+
+            hearingSessionWithEarliestStartTime.setHearingEndTime(hearingSessionWithLatestEndTime.getHearingEndTime());
+
+            return hearingSessionWithEarliestStartTime;
+        }).collect(Collectors.toList());
     }
 
     private void setHearingDayDetails(HearingResponseEntity hearingResponseEntity,
