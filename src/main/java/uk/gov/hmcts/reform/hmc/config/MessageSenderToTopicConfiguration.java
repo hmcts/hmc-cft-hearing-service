@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_SERVICE_CODE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
 
 @Slf4j
 @Component
