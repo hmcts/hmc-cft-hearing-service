@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.constants.Constants;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
@@ -104,5 +105,24 @@ class HmiSubmitHearingRequestMapperTest {
         HmiSubmitHearingRequest actualHmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
                 .mapRequest(HEARING_ID, updateHearingRequest);
         assertEquals(expectedHmiSubmitHearingRequest, actualHmiSubmitHearingRequest);
+    }
+
+    @Test
+    void shouldReturnAmendReasonCodeForUpdateHearingRequest() {
+        Entity entity = Entity.builder().build();
+        HmiCaseDetails hmiCaseDetails = HmiCaseDetails.builder().build();
+        Listing listing = Listing.builder()
+            .amendReasonCode(Constants.AMEND_REASON_CODE)
+            .build();
+
+        HmiHearingRequest hmiHearingRequest = HmiHearingRequest.builder()
+            .caseDetails(hmiCaseDetails)
+            .listing(listing)
+            .entities(Collections.singletonList(entity))
+            .build();
+        HmiSubmitHearingRequest expectedHmiSubmitHearingRequest = HmiSubmitHearingRequest.builder()
+            .hearingRequest(hmiHearingRequest)
+            .build();
+        assertEquals("AMEND", expectedHmiSubmitHearingRequest.getHearingRequest().getListing().getAmendReasonCode());
     }
 }
