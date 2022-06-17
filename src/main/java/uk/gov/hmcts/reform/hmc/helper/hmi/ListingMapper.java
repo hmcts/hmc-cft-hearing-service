@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingMultiDay;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
 
@@ -15,15 +16,12 @@ public class ListingMapper {
 
     private final ListingJohsMapper listingJohsMapper;
     private final ListingLocationsMapper listingLocationsMapper;
-    private final ListingOtherConsiderationsMapper listingOtherConsiderationsMapper;
 
     @Autowired
     public ListingMapper(ListingJohsMapper listingJohsMapper,
-                         ListingLocationsMapper listingLocationsMapper,
-                         ListingOtherConsiderationsMapper listingOtherConsiderationsMapper) {
+                         ListingLocationsMapper listingLocationsMapper) {
         this.listingJohsMapper = listingJohsMapper;
         this.listingLocationsMapper = listingLocationsMapper;
-        this.listingOtherConsiderationsMapper = listingOtherConsiderationsMapper;
     }
 
     public Listing getListing(HearingDetails hearingDetails) {
@@ -43,11 +41,8 @@ public class ListingMapper {
             .amendReasonCode(hearingDetails.getAmendReasonCode())
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
-            .listingOtherConsiderations(
-                    listingOtherConsiderationsMapper.getListingOtherConsiderations(
-                            hearingDetails.getHearingInWelshFlag(),
-                            hearingDetails.getFacilitiesRequired())
-                    )
+            .listingOtherConsiderations(getListingOtherConsiderations(hearingDetails.getFacilitiesRequired()))
+            .listingWelshHearingFlag(hearingDetails.getHearingInWelshFlag())
             .build();
         if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
             listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
@@ -94,6 +89,14 @@ public class ListingMapper {
 
     private int getWeeks(Integer hearingDetailsDuration) {
         return (hearingDetailsDuration / (360 * 5));
+    }
+
+    private List<String> getListingOtherConsiderations(List<String> facilityTypes) {
+        List<String> listOtherConsiderations = new ArrayList<>();
+        if (facilityTypes != null) {
+            listOtherConsiderations.addAll(facilityTypes);
+        }
+        return listOtherConsiderations;
     }
 
 }
