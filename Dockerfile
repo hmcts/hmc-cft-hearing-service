@@ -1,4 +1,5 @@
 FROM adoptopenjdk:11-jre-hotspot as builder
+USER hmcts
 ARG JAR_FILE=build/libs/hmc-cft-hearing-service.jar
 COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
