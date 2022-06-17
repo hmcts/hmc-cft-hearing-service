@@ -1,5 +1,5 @@
 FROM postgres:11.8
-USER hmcts
+USER postgres
 ENV TZ="UTC"
 RUN date
 
