@@ -7,6 +7,7 @@ DELETE FROM actual_hearing;
 DELETE FROM non_standard_durations;
 DELETE FROM required_locations;
 DELETE FROM required_facilities;
+DELETE FROM hearing_channels;
 DELETE FROM case_categories;
 DELETE FROM individual_detail;
 DELETE FROM organisation_detail;

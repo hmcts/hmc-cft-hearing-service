@@ -286,6 +286,14 @@ class GetHearingResponseMapperTest {
     }
 
     @Test
+    void toHearingsResponseWhenDataIsPresentWithHearingChannel() {
+        HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.IND);
+        hearingEntity.getCaseHearingRequests().get(0).setHearingChannels(TestingUtil.hearingChannelsEntity());
+        GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
+        assertHearingChannels(response.getHearingDetails().getHearingChannels());
+    }
+
+    @Test
     void toHearingsResponseWhenRequestIdIsNull() {
         HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity("LISTED");
         hearingEntity.getCaseHearingRequests().get(0)
@@ -464,5 +472,14 @@ class GetHearingResponseMapperTest {
             () -> assertEquals("cluster", hearingLocation.getLocationType())
         );
     }
+
+    private void assertHearingChannels(List<String> hearingChannel) {
+        assertAll(
+            () -> assertEquals(2, hearingChannel.size()),
+            () -> assertEquals("someChannelType", hearingChannel.get(0)),
+            () -> assertEquals("someOtherChannelType", hearingChannel.get(1))
+        );
+    }
+
 
 }
