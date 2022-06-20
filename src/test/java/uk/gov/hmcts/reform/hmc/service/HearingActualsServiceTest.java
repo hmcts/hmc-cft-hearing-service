@@ -31,10 +31,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -166,30 +168,27 @@ class HearingActualsServiceTest {
         void shouldUpdateHearingActuals() {
             given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearingEntity));
             given(hearingEntity.getStatus()).willReturn(VALID_HEARING_STAUS);
-            given(hearingIdValidatorMock.getLowestStartDateOfMostRecentHearingResponse(hearingEntity))
-                .willReturn(LocalDate.of(2022, 1, 28));
 
             HearingResponseEntity hearingResponseEntityMock = mock(HearingResponseEntity.class);
             given(hearingEntity.getHearingResponseForLatestRequest())
                     .willReturn(Optional.of(hearingResponseEntityMock));
 
-            // WHY NEEDED NOW? 2022-06-18
-            final LocalDateTime earliestHearingDate = LocalDateTime.of(2022, 1, 22, 10,
-                    30, 00);
-            HearingDayDetailsEntity hearingDayDetailsEntity = new HearingDayDetailsEntity();
-            hearingDayDetailsEntity.setStartDateTime(earliestHearingDate);
+            HearingDayDetailsEntity hearingDayDetailsEntity = mock(HearingDayDetailsEntity.class);
             given(hearingResponseEntityMock.getEarliestHearingDayDetails()).willReturn(
                     Optional.of(hearingDayDetailsEntity));
+            given(hearingResponseEntityMock.getEarliestHearingDayDetails().get().getStartDateTime())
+                    .willReturn(LocalDateTime.of(2022, 1, 22, 10,30, 00));
 
             // mock insert
             ActualHearingEntity actualHearingMock = mock(ActualHearingEntity.class);
             HearingActual hearingActual = TestingUtil.hearingActual();
-            given(hearingActualsMapperMock.toActualHearingEntity(hearingActual)).willReturn(actualHearingMock);
 
-            hearingActualsService.updateHearingActuals(HEARING_ID, hearingActual);
+            given(actualHearingRepository.save(any())).willReturn(actualHearingMock);
+            given(hearingResponseRepository.save(any())).willReturn(hearingResponseEntityMock);
 
-            verify(actualHearingRepository).save(actualHearingMock);
-            verify(hearingResponseRepository).save(hearingResponseEntityMock);
+            assertDoesNotThrow(() -> {
+                hearingActualsService.updateHearingActuals(HEARING_ID, hearingActual);
+            });
         }
 
         @Test

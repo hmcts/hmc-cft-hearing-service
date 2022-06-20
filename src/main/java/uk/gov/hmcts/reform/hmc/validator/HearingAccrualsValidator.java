@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.HearingActualsOutcome;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
-import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingOutcome;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,17 +41,6 @@ public class HearingAccrualsValidator {
         if (null != hearingOutcome && null != hearingOutcome.getHearingResult()) {
             validateHearingResult(hearingOutcome.getHearingResult());
             validateHearingResult(hearingOutcome.getHearingResult(), hearingOutcome.getHearingResultReasonType());
-        }
-    }
-
-    public void validateHearingResult(HearingOutcome hearingOutcome) {
-        if (null != hearingOutcome && null != hearingOutcome.getHearingResult()) {
-            HearingResultType hearingResultType = null;
-            if (hearingOutcome.getHearingResult() instanceof HearingResultType) {
-                hearingResultType = (HearingResultType) hearingOutcome.getHearingResult();
-            }
-            validateHearingResult(hearingResultType);
-            validateHearingResult(hearingResultType, hearingOutcome.getHearingResultReasonType());
         }
     }
 
@@ -165,7 +153,7 @@ public class HearingAccrualsValidator {
                     ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY));
         } else if (hearingResultDate.isBefore(LocalDate.now().plusDays(1))) {
             throw new BadRequestException(List.of(ValidationError.HA_OUTCOME_DETAIlS_NOT_VALID,
-                    ValidationError.HA_OUTCOME_REQUEST_DATE_MUST_BE_IN_THE_FUTURE));
+                    ValidationError.HA_OUTCOME_REQUEST_DATE_MUST_BE_IN_THE_FUTURE, hearingResultDate.toString()));
         }
     }
 
