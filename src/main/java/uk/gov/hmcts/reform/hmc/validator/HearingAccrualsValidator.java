@@ -46,8 +46,7 @@ public class HearingAccrualsValidator {
 
     public void validateHearingResult(String hearingResult) {
         if (!HEARING_RESULTS_REASONS.contains(hearingResult.toUpperCase())) {
-            throw new BadRequestException(List.of(ValidationError.HA_OUTCOME_DETAIlS_NOT_VALID,
-                    HA_OUTCOME_RESULT_NOT_EMPTY));
+            throw new BadRequestException(HA_OUTCOME_RESULT_NOT_EMPTY);
         }
     }
 
@@ -55,8 +54,7 @@ public class HearingAccrualsValidator {
         if (HEARING_RESULTS_THAT_NEED_REASON_TYPE.contains(
                 hearingResult.toUpperCase())
                 && StringUtils.isBlank(hearingResultReasonType)) {
-            throw new BadRequestException(List.of(ValidationError.HA_OUTCOME_DETAIlS_NOT_VALID,
-                    String.format(HEARING_ACTUALS_MISSING_RESULT_TYPE, hearingResult)));
+            throw new BadRequestException(String.format(HEARING_ACTUALS_MISSING_RESULT_TYPE, hearingResult));
         }
     }
 
@@ -64,15 +62,13 @@ public class HearingAccrualsValidator {
         if (null != hearingResultType && HEARING_RESULTS_THAT_NEED_REASON_TYPE.contains(
                 hearingResultType.getLabel().toUpperCase())
                 && StringUtils.isBlank(hearingResultReasonType)) {
-            throw new BadRequestException(List.of(ValidationError.HA_OUTCOME_DETAIlS_NOT_VALID,
-                    String.format(HEARING_ACTUALS_MISSING_RESULT_TYPE, hearingResultType)));
+            throw new BadRequestException(String.format(HEARING_ACTUALS_MISSING_RESULT_TYPE, hearingResultType));
         }
     }
 
     public void validateHearingResult(HearingResultType hearingResultType) {
         if (null == hearingResultType) {
-            throw new BadRequestException(List.of(ValidationError.HA_OUTCOME_DETAIlS_NOT_VALID,
-                    ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY));
+            throw new BadRequestException(ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY);
         }
     }
 
@@ -125,35 +121,29 @@ public class HearingAccrualsValidator {
 
     public void validateActualHearingType(String actualHearingType) {
         if (StringUtils.isBlank(actualHearingType)) {
-            throw new BadRequestException(List.of(ValidationError.HA_OUTCOME_DETAIlS_NOT_VALID,
-                    ValidationError.HA_OUTCOME_TYPE_NOT_EMPTY));
+            throw new BadRequestException(ValidationError.HA_OUTCOME_TYPE_NOT_EMPTY);
         } else if (actualHearingType.length() > 40) {
-            throw new BadRequestException(List.of(ValidationError.HA_OUTCOME_DETAIlS_NOT_VALID,
-                    ValidationError.HA_OUTCOME_TYPE_MAX_LENGTH));
+            throw new BadRequestException(ValidationError.HA_OUTCOME_TYPE_MAX_LENGTH);
         }
     }
 
     public void validateActualHearingIsFinalFlag(Boolean actualHearingIsFinalFlag) {
         if (null == actualHearingIsFinalFlag) {
-            throw new BadRequestException(List.of(ValidationError.HA_OUTCOME_DETAIlS_NOT_VALID,
-                    ValidationError.HA_OUTCOME_FINAL_FLAG_NOT_EMPTY));
+            throw new BadRequestException(ValidationError.HA_OUTCOME_FINAL_FLAG_NOT_EMPTY);
         }
     }
 
     public void validateHearingResultReasonType(String hearingResultReasonType) {
         if (null != hearingResultReasonType && hearingResultReasonType.length() > 70) {
-            throw new BadRequestException(List.of(ValidationError.HA_OUTCOME_DETAIlS_NOT_VALID,
-                    ValidationError.HA_OUTCOME_REASON_TYPE_MAX_LENGTH));
+            throw new BadRequestException(ValidationError.HA_OUTCOME_REASON_TYPE_MAX_LENGTH);
         }
     }
 
     public void validateHearingResultDate(LocalDate hearingResultDate) {
         if (null == hearingResultDate) {
-            throw new BadRequestException(List.of(ValidationError.HA_OUTCOME_DETAIlS_NOT_VALID,
-                    ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY));
+            throw new BadRequestException(ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY);
         } else if (hearingResultDate.isBefore(LocalDate.now().plusDays(1))) {
-            throw new BadRequestException(List.of(ValidationError.HA_OUTCOME_DETAIlS_NOT_VALID,
-                    ValidationError.HA_OUTCOME_REQUEST_DATE_MUST_BE_IN_THE_FUTURE, hearingResultDate.toString()));
+            throw new BadRequestException(ValidationError.HA_OUTCOME_REQUEST_DATE_MUST_BE_IN_THE_FUTURE);
         }
     }
 

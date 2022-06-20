@@ -78,7 +78,7 @@ values (8, 4, '2021-01-10 11:20:00', '2020-08-10 11:20:00', 'venue1-2', 'room1-2
 insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
 values (9, 5, '2021-01-10 11:20:00', '2021-08-10 11:20:00', 'venue1-1', 'room1-1');
 insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
-values (10, 5, '2021-01-10 11:20:00', '2020-08-10 11:20:00', 'venue1-2', 'room1-2');
+values (10, 5, '2023-01-10 11:20:00', '2023-08-10 11:20:00', 'venue1-2', 'room1-2');
 
 insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
 values (11, 6, '2021-01-10 11:20:00', '2021-08-10 11:20:00', 'venue1-1', 'room1-1');
@@ -98,7 +98,7 @@ insert into actual_hearing(actual_hearing_id, actual_hearing_type, actual_hearin
 values (4, 'Test Hearing Type', false, 'ADJOURNED', 'ADJOURNED reason', '2020-08-10 11:20:00', 4);
 
 insert into actual_hearing(actual_hearing_id, actual_hearing_type, actual_hearing_is_final_flag, hearing_result_type, hearing_result_reason_type, hearing_result_date, hearing_response_id)
-values (5, 'Test Hearing Type', false, 'CANCELLED', 'CANCELLED reason', '2020-08-10 11:20:00', 5);
+values (5, 'Test Hearing Type', false, 'CANCELLED', 'CANCELLED reason', '2022-08-10 11:20:00', 5);
 
 insert into actual_hearing(actual_hearing_id, actual_hearing_type, actual_hearing_is_final_flag, hearing_result_type, hearing_result_reason_type, hearing_result_date, hearing_response_id)
 values (6, 'Test Hearing Type', false, 'ADJOURNED', 'ADJOURNED reason', '2020-08-10 11:20:00', 6);
