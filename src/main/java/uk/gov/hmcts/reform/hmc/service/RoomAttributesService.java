@@ -4,7 +4,7 @@ import uk.gov.hmcts.reform.hmc.model.RoomAttribute;
 
 public interface RoomAttributesService {
 
-    RoomAttribute findByReasonableAdjustmentCode();
+    RoomAttribute findByReasonableAdjustmentCode(String reasonableAdjustmentCode);
 
-    RoomAttribute findByRoomAttributeCode();
+    RoomAttribute findByRoomAttributeCode(String roomAttributeCode);
 }
