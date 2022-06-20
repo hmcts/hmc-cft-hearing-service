@@ -406,7 +406,6 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     void testGetHearings_WithValidCaseRefAndStatus_assertPart1(GetHearingsResponse response) {
-        final String my_null_value = null;
         assertEquals("9372710950276233", response.getCaseRef());
         assertEquals("ABA1", response.getHmctsServiceCode());
         assertEquals(2, response.getCaseHearings().size());
@@ -433,10 +432,10 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("panel3-1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getPanelMemberId());
         assertNull(response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getHearingJudgeId());
-        assertNull(my_null_value, response.getCaseHearings().get(1).getHearingDaySchedule().get(0).getPanelMemberId());
+        assertNull(response.getCaseHearings().get(1).getHearingDaySchedule().get(0).getPanelMemberId());
         assertEquals("panel1-1", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getHearingJudgeId());
-        assertNull(my_null_value, response.getCaseHearings().get(1).getHearingDaySchedule().get(1).getHearingJudgeId());
+        assertNull(response.getCaseHearings().get(1).getHearingDaySchedule().get(1).getHearingJudgeId());
         assertEquals("panel1-2", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(1).getPanelMemberId());
         assertEquals(1, response.getCaseHearings().get(0)
