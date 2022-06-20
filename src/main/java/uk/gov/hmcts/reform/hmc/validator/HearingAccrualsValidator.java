@@ -142,8 +142,8 @@ public class HearingAccrualsValidator {
     public void validateHearingResultDate(LocalDate hearingResultDate) {
         if (null == hearingResultDate) {
             throw new BadRequestException(ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY);
-        } else if (hearingResultDate.isBefore(LocalDate.now().plusDays(1))) {
-            throw new BadRequestException(ValidationError.HA_OUTCOME_REQUEST_DATE_MUST_BE_IN_THE_FUTURE);
+        } else if (hearingResultDate.isAfter(LocalDate.now())) {
+            throw new BadRequestException(ValidationError.HA_OUTCOME_REQUEST_DATE_MUST_BE_PAST_OR_PRESENT);
         }
     }
 

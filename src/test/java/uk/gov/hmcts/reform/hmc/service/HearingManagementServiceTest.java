@@ -1548,7 +1548,7 @@ class HearingManagementServiceTest {
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
             when(actualHearingEntity.getHearingResultType()).thenReturn(COMPLETED);
             when(actualHearingEntity.getActualHearingType()).thenReturn("HEARING TYPE TEST 1");
-            when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().plusDays(3));
+            when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(3));
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId);
@@ -1572,7 +1572,7 @@ class HearingManagementServiceTest {
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
             when(actualHearingEntity.getHearingResultType()).thenReturn(CANCELLED);
             when(actualHearingEntity.getActualHearingType()).thenReturn("TYPE 32");
-            when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().plusDays(13));
+            when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(13));
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             ActualHearingDayEntity actualHearingDay = mock(ActualHearingDayEntity.class);
@@ -1597,7 +1597,7 @@ class HearingManagementServiceTest {
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
             when(actualHearingEntity.getHearingResultType()).thenReturn(CANCELLED);
-            when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().plusDays(3));
+            when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(3));
             when(actualHearingEntity.getActualHearingType()).thenReturn("TYPE 22");
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));

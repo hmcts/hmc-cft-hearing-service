@@ -106,7 +106,7 @@ class HearingAccrualsValidatorTest {
         actualHearing.setActualHearingType("Test 111");
         actualHearing.setHearingResultType(HearingResultType.ADJOURNED);
         actualHearing.setHearingResultReasonType("REASON TYPE 78");
-        actualHearing.setHearingResultDate(LocalDate.now().plusDays(7));
+        actualHearing.setHearingResultDate(LocalDate.now().minusDays(7));
         return actualHearing;
     }
 
