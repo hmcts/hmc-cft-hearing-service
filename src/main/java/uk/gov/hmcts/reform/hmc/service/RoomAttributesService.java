@@ -2,9 +2,11 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import uk.gov.hmcts.reform.hmc.model.RoomAttribute;
 
+import java.util.Optional;
+
 public interface RoomAttributesService {
 
-    RoomAttribute findByReasonableAdjustmentCode(String reasonableAdjustmentCode);
+    Optional<RoomAttribute> findByReasonableAdjustmentCode(String reasonableAdjustmentCode);
 
-    RoomAttribute findByRoomAttributeCode(String roomAttributeCode);
+    Optional<RoomAttribute> findByRoomAttributeCode(String roomAttributeCode);
 }
