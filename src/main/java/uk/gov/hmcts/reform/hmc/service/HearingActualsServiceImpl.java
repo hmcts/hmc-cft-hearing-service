@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
-import uk.gov.hmcts.reform.hmc.validator.HearingAccrualsValidator;
+import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.Optional;
@@ -36,7 +36,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     private final HearingActualsMapper hearingActualsMapper;
     private final GetHearingActualsResponseMapper getHearingActualsResponseMapper;
     private final HearingIdValidator hearingIdValidator;
-    private final HearingAccrualsValidator hearingAccrualsValidator;
+    private final HearingActualsValidator hearingActualsValidator;
 
     @Autowired
     public HearingActualsServiceImpl(HearingRepository hearingRepository,
@@ -45,14 +45,14 @@ public class HearingActualsServiceImpl implements HearingActualsService {
                                      GetHearingActualsResponseMapper getHearingActualsResponseMapper,
                                      HearingActualsMapper hearingActualsMapper,
                                      HearingIdValidator hearingIdValidator,
-                                     HearingAccrualsValidator hearingAccrualsValidator) {
+                                     HearingActualsValidator hearingActualsValidator) {
         this.hearingRepository = hearingRepository;
         this.hearingResponseRepository = hearingResponseRepository;
         this.actualHearingRepository = actualHearingRepository;
         this.getHearingActualsResponseMapper = getHearingActualsResponseMapper;
         this.hearingIdValidator = hearingIdValidator;
         this.hearingActualsMapper = hearingActualsMapper;
-        this.hearingAccrualsValidator = hearingAccrualsValidator;
+        this.hearingActualsValidator = hearingActualsValidator;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         hearingIdValidator.isValidFormat(hearingId.toString());
         HearingEntity hearing = getHearing(hearingId);
         String hearingStatus = hearing.getStatus();
-        hearingAccrualsValidator.validateHearingStatusForActuals(hearingStatus);
+        hearingActualsValidator.validateHearingStatusForActuals(hearingStatus);
         validateRequestPayload(request, hearing);
 
         Optional<HearingResponseEntity> latestVersionHearingResponse = hearing.getHearingResponseForLatestRequest();
@@ -91,11 +91,11 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     }
 
     private void validateRequestPayload(HearingActual request, HearingEntity hearing) {
-        hearingAccrualsValidator.validateHearingActualDaysNotInTheFuture(request.getActualHearingDays());
-        hearingAccrualsValidator.validateDuplicateHearingActualDays(request.getActualHearingDays());
-        hearingAccrualsValidator.validateHearingActualDaysNotBeforeFirstHearingDate(request.getActualHearingDays(),
+        hearingActualsValidator.validateHearingActualDaysNotInTheFuture(request.getActualHearingDays());
+        hearingActualsValidator.validateDuplicateHearingActualDays(request.getActualHearingDays());
+        hearingActualsValidator.validateHearingActualDaysNotBeforeFirstHearingDate(request.getActualHearingDays(),
                 hearing);
-        hearingAccrualsValidator.validateHearingResult(request.getHearingOutcome());
+        hearingActualsValidator.validateHearingResult(request.getHearingOutcome());
     }
 
     private HearingEntity getHearing(Long hearingId) {

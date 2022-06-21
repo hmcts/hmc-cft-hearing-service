@@ -42,7 +42,7 @@ import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
-import uk.gov.hmcts.reform.hmc.validator.HearingAccrualsValidator;
+import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
@@ -91,7 +91,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
     private final ApplicationParams applicationParams;
     private final HearingIdValidator hearingIdValidator;
-    private final HearingAccrualsValidator hearingAccrualsValidator;
+    private final HearingActualsValidator hearingActualsValidator;
     private final LinkedHearingValidator linkedHearingValidator;
     private final HearingRepository hearingRepository;
     private final PartyRelationshipDetailsMapper partyRelationshipDetailsMapper;
@@ -114,7 +114,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HearingIdValidator hearingIdValidator,
                                         LinkedHearingValidator linkedHearingValidator,
                                         PartyRelationshipDetailsMapper partyRelationshipDetailsMapper,
-                                        HearingAccrualsValidator hearingAccrualsValidator) {
+                                        HearingActualsValidator hearingActualsValidator) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -132,7 +132,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.hearingIdValidator = hearingIdValidator;
         this.linkedHearingValidator = linkedHearingValidator;
         this.partyRelationshipDetailsMapper = partyRelationshipDetailsMapper;
-        this.hearingAccrualsValidator = hearingAccrualsValidator;
+        this.hearingActualsValidator = hearingActualsValidator;
     }
 
     @Override
@@ -255,7 +255,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     public ResponseEntity hearingCompletion(Long hearingId) {
         hearingIdValidator.validateHearingId(hearingId, HEARING_ACTUALS_ID_NOT_FOUND);
         linkedHearingValidator.validateHearingActualsStatus(hearingId, HEARING_ACTUALS_INVALID_STATUS);
-        hearingAccrualsValidator.validateHearingOutcomeInformation(hearingId);
+        hearingActualsValidator.validateHearingOutcomeInformation(hearingId);
         hearingIdValidator.validateCancelHearingResultType(hearingId, HEARING_ACTUALS_UN_EXPECTED);
         updateStatus(hearingId);
         return ResponseEntity.status(HttpStatus.OK).build();

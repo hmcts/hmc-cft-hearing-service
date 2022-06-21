@@ -35,13 +35,13 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REQU
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_TYPE_MAX_LENGTH;
 
-class HearingAccrualsValidatorTest {
+class HearingActualsValidatorTest {
 
     @InjectMocks
     private HearingIdValidator hearingIdValidator;
 
     @InjectMocks
-    private HearingAccrualsValidator hearingAccrualsValidator;
+    private HearingActualsValidator hearingActualsValidator;
 
     @Mock
     private HearingRepository hearingRepository;
@@ -54,7 +54,7 @@ class HearingAccrualsValidatorTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        hearingAccrualsValidator = new HearingAccrualsValidator(hearingIdValidator);
+        hearingActualsValidator = new HearingActualsValidator(hearingIdValidator);
     }
 
     @Test
@@ -65,7 +65,7 @@ class HearingAccrualsValidatorTest {
         expectedHearing.setCaseHearingRequests(generateCaseHearingRequests(expectedHearing));
         when(hearingRepository.findById(VALID_HEARING_ID)).thenReturn(Optional.of(expectedHearing));
         when(hearingRepository.existsById(VALID_HEARING_ID)).thenReturn(true);
-        Exception exception = assertThrows(BadRequestException.class, () -> hearingAccrualsValidator
+        Exception exception = assertThrows(BadRequestException.class, () -> hearingActualsValidator
                 .validateHearingOutcomeInformation(VALID_HEARING_ID));
         assertTrue(exception.getMessage().contains(ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME));
     }
@@ -82,7 +82,7 @@ class HearingAccrualsValidatorTest {
         when(hearingRepository.findById(VALID_HEARING_ID)).thenReturn(Optional.of(expectedHearing));
         when(hearingRepository.existsById(VALID_HEARING_ID)).thenReturn(true);
         when(actualHearingRepository.findByHearingResponse(any())).thenReturn(actualHearing);
-        hearingAccrualsValidator
+        hearingActualsValidator
                 .validateHearingOutcomeInformation(VALID_HEARING_ID);
     }
 
@@ -90,7 +90,7 @@ class HearingAccrualsValidatorTest {
     void shouldThrowExceptionWhenHasHearingResultTypeIsNull() {
         HearingResultType hearingResultType = null;
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingAccrualsValidator.validateHearingResult(hearingResultType);
+            hearingActualsValidator.validateHearingResult(hearingResultType);
         });
         assertTrue(exception.getMessage().contains(HA_OUTCOME_RESULT_NOT_EMPTY));
     }
@@ -99,7 +99,7 @@ class HearingAccrualsValidatorTest {
     void shouldNotThrowExceptionWhenHasHearingResultTypeIsNotNull() {
         HearingResultType hearingResultType = HearingResultType.ADJOURNED;
         assertDoesNotThrow(() -> {
-            hearingAccrualsValidator.validateHearingResult(hearingResultType);
+            hearingActualsValidator.validateHearingResult(hearingResultType);
         });
     }
 
@@ -107,7 +107,7 @@ class HearingAccrualsValidatorTest {
     void shouldThrowExceptionWhenHasHearingResultStringIsNull() {
         String hearingResult = null;
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingAccrualsValidator.validateHearingResult(hearingResult);
+            hearingActualsValidator.validateHearingResult(hearingResult);
         });
         assertTrue(exception.getMessage().contains(HA_OUTCOME_RESULT_NOT_EMPTY));
     }
@@ -116,7 +116,7 @@ class HearingAccrualsValidatorTest {
     void shouldThrowExceptionWhenHasHearingResultStringIsInvalid() {
         String hearingResult = "INVALID";
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingAccrualsValidator.validateHearingResult(hearingResult);
+            hearingActualsValidator.validateHearingResult(hearingResult);
         });
         assertTrue(exception.getMessage().contains(HA_OUTCOME_RESULT_NOT_EMPTY));
     }
@@ -125,7 +125,7 @@ class HearingAccrualsValidatorTest {
     void shouldNotErrorWhenHasHearingResultStringIsAdjourned() {
         String hearingResult = HearingResultType.ADJOURNED.getLabel();
         assertDoesNotThrow(() -> {
-            hearingAccrualsValidator.validateHearingResult(hearingResult);
+            hearingActualsValidator.validateHearingResult(hearingResult);
         });
     }
 
@@ -133,7 +133,7 @@ class HearingAccrualsValidatorTest {
     void shouldNotErrorWhenHasHearingResultStringIsCancelled() {
         String hearingResult = HearingResultType.CANCELLED.getLabel();
         assertDoesNotThrow(() -> {
-            hearingAccrualsValidator.validateHearingResult(hearingResult);
+            hearingActualsValidator.validateHearingResult(hearingResult);
         });
     }
 
@@ -141,14 +141,14 @@ class HearingAccrualsValidatorTest {
     void shouldNotErrorWhenHasHearingResultStringIsCompleted() {
         String hearingResult = HearingResultType.COMPLETED.getLabel();
         assertDoesNotThrow(() -> {
-            hearingAccrualsValidator.validateHearingResult(hearingResult);
+            hearingActualsValidator.validateHearingResult(hearingResult);
         });
     }
 
     @Test
     void shouldThrowExceptionWhenHasHearingResultTypeIsAdjournedAndNoHearingResultReasonType() {
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingAccrualsValidator.validateHearingResult(HearingResultType.ADJOURNED, null);
+            hearingActualsValidator.validateHearingResult(HearingResultType.ADJOURNED, null);
         });
         assertTrue(exception.getMessage().contains("ADJOURNED result requires a hearingResultReasonType"));
     }
@@ -157,7 +157,7 @@ class HearingAccrualsValidatorTest {
     void shouldNotThrowExceptionWhenHasHearingResultTypeIsNullAndNoHearingResultReasonType() {
         HearingResultType hearingResultType = null;
         assertDoesNotThrow(() -> {
-            hearingAccrualsValidator.validateHearingResult(hearingResultType, null);
+            hearingActualsValidator.validateHearingResult(hearingResultType, null);
         });
     }
 
@@ -165,7 +165,7 @@ class HearingAccrualsValidatorTest {
     void shouldThrowExceptionWhenHasHearingResultOfAdjournedWithoutHearingResultReasonType() {
 
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingAccrualsValidator.validateHearingResult("ADJOURNED", null);
+            hearingActualsValidator.validateHearingResult("ADJOURNED", null);
         });
         assertTrue(exception.getMessage().contains("ADJOURNED result requires a hearingResultReasonType"));
     }
@@ -173,7 +173,7 @@ class HearingAccrualsValidatorTest {
     @Test
     void shouldNotErrorWhenHasValidHearingIsFinalFlag() {
         assertDoesNotThrow(() -> {
-            hearingAccrualsValidator.validateActualHearingIsFinalFlag(Boolean.TRUE);
+            hearingActualsValidator.validateActualHearingIsFinalFlag(Boolean.TRUE);
         });
     }
 
@@ -181,7 +181,7 @@ class HearingAccrualsValidatorTest {
     void shouldThrowExceptionWhenHasNullHearingIsFinalFlag() {
 
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingAccrualsValidator.validateActualHearingIsFinalFlag(null);
+            hearingActualsValidator.validateActualHearingIsFinalFlag(null);
         });
         assertTrue(exception.getMessage().contains(HA_OUTCOME_FINAL_FLAG_NOT_EMPTY));
     }
@@ -191,7 +191,7 @@ class HearingAccrualsValidatorTest {
     void shouldNotThrowErrorWhenHasHearingTypeIs40CharsOrLess() {
         final String random40Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN";
         assertDoesNotThrow(() -> {
-            hearingAccrualsValidator.validateActualHearingType(random40Chars);
+            hearingActualsValidator.validateActualHearingType(random40Chars);
         });
     }
 
@@ -199,7 +199,7 @@ class HearingAccrualsValidatorTest {
     void shouldThrowErrorWhenHasHearingTypeIsMoreThan40Chars() {
         final String random41Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNO";
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingAccrualsValidator.validateActualHearingType(random41Chars);
+            hearingActualsValidator.validateActualHearingType(random41Chars);
         });
         assertTrue(exception.getMessage().contains(HA_OUTCOME_TYPE_MAX_LENGTH));
     }
@@ -208,7 +208,7 @@ class HearingAccrualsValidatorTest {
     void shouldNotThrowErrorWhenHasHearingResultReasonTypeIs70CharsOrLess() {
         final String random70Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGH";
         assertDoesNotThrow(() -> {
-            hearingAccrualsValidator.validateHearingResultReasonType(random70Chars);
+            hearingActualsValidator.validateHearingResultReasonType(random70Chars);
         });
     }
 
@@ -216,7 +216,7 @@ class HearingAccrualsValidatorTest {
     void shouldThrowErrorWhenHasHearingResultReasonTypeIsMoreThan70Chars() {
         final String random71Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGH1";
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingAccrualsValidator.validateHearingResultReasonType(random71Chars);
+            hearingActualsValidator.validateHearingResultReasonType(random71Chars);
         });
         assertTrue(exception.getMessage().contains(HA_OUTCOME_REASON_TYPE_MAX_LENGTH));
     }
@@ -224,21 +224,21 @@ class HearingAccrualsValidatorTest {
     @Test
     void shouldNotErrorWhenHasHearingResultDateIsToday() {
         assertDoesNotThrow(() -> {
-            hearingAccrualsValidator.validateHearingResultDate(LocalDate.now());
+            hearingActualsValidator.validateHearingResultDate(LocalDate.now());
         });
     }
 
     @Test
     void shouldNotErrorWhenHasHearingResultDateIsThreeDaysAgo() {
         assertDoesNotThrow(() -> {
-            hearingAccrualsValidator.validateHearingResultDate(LocalDate.now().minusDays(3));
+            hearingActualsValidator.validateHearingResultDate(LocalDate.now().minusDays(3));
         });
     }
 
     @Test
     void shouldThrowErrorWhenHasHearingResultDateIsNull() {
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingAccrualsValidator.validateHearingResultDate(null);
+            hearingActualsValidator.validateHearingResultDate(null);
         });
         assertTrue(exception.getMessage().contains(HA_OUTCOME_REQUEST_DATE_NOT_EMPTY));
     }
@@ -246,7 +246,7 @@ class HearingAccrualsValidatorTest {
     @Test
     void shouldThrowErrorWhenHasHearingResultDateIsInTheFuture() {
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingAccrualsValidator.validateHearingResultDate(LocalDate.now().plusDays(1));
+            hearingActualsValidator.validateHearingResultDate(LocalDate.now().plusDays(1));
         });
         assertTrue(exception.getMessage().contains(HA_OUTCOME_REQUEST_DATE_MUST_BE_PAST_OR_PRESENT));
     }

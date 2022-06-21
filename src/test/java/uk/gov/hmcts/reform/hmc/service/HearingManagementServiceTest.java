@@ -76,7 +76,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
-import uk.gov.hmcts.reform.hmc.validator.HearingAccrualsValidator;
+import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
@@ -207,7 +207,7 @@ class HearingManagementServiceTest {
 
     LinkedHearingValidator linkedHearingValidator;
 
-    HearingAccrualsValidator hearingAccrualsValidator;
+    HearingActualsValidator hearingActualsValidator;
 
     JsonNode jsonNode = mock(JsonNode.class);
 
@@ -218,7 +218,7 @@ class HearingManagementServiceTest {
                 actualHearingDayRepository);
         linkedHearingValidator = new LinkedHearingValidator(hearingIdValidator, hearingRepository,
                       linkedGroupDetailsRepository, linkedHearingDetailsRepository);
-        hearingAccrualsValidator = new HearingAccrualsValidator(hearingIdValidator);
+        hearingActualsValidator = new HearingActualsValidator(hearingIdValidator);
         accessControlService = new AccessControlServiceImpl(roleAssignmentService,
                                                             securityUtils,
                                                             dataStoreRepository,
@@ -244,7 +244,7 @@ class HearingManagementServiceTest {
                 hearingIdValidator,
                 linkedHearingValidator,
                 partyRelationshipDetailsMapper,
-                hearingAccrualsValidator);
+                    hearingActualsValidator);
     }
 
 
@@ -975,7 +975,7 @@ class HearingManagementServiceTest {
                     actualHearingDayRepository);
             linkedHearingValidator = new LinkedHearingValidator(hearingIdValidator, hearingRepository,
                     linkedGroupDetailsRepository, linkedHearingDetailsRepository);
-            hearingAccrualsValidator = new HearingAccrualsValidator(hearingIdValidator);
+            hearingActualsValidator = new HearingActualsValidator(hearingIdValidator);
             accessControlService = new AccessControlServiceImpl(roleAssignmentService,
                     securityUtils,
                     dataStoreRepository,
@@ -1001,7 +1001,7 @@ class HearingManagementServiceTest {
                             hearingIdValidator,
                             linkedHearingValidator,
                             partyRelationshipDetailsMapper,
-                            hearingAccrualsValidator);
+                            hearingActualsValidator);
         }
 
 

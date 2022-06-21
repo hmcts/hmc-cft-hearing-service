@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
-import uk.gov.hmcts.reform.hmc.validator.HearingAccrualsValidator;
+import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDate;
@@ -71,7 +71,7 @@ class HearingActualsServiceTest {
     private HearingResponseRepository hearingResponseRepository;
 
     @Mock
-    HearingAccrualsValidator hearingAccrualsValidatorMock;
+    HearingActualsValidator hearingActualsValidatorMock;
 
     @Mock
     HearingIdValidator hearingIdValidatorMock;
@@ -79,7 +79,7 @@ class HearingActualsServiceTest {
     @Mock
     HearingActualsMapper hearingActualsMapperMock;
 
-    HearingAccrualsValidator hearingAccrualsValidator;
+    HearingActualsValidator hearingActualsValidator;
 
     HearingIdValidator hearingIdValidator;
 
@@ -91,7 +91,7 @@ class HearingActualsServiceTest {
         HearingActualsMapper hearingActualsMapper = new HearingActualsMapper();
         HearingIdValidator hearingIdValidator = new HearingIdValidator(hearingRepository,
                 actualHearingRepository, actualHearingDayRepository);
-        HearingAccrualsValidator hearingAccrualsValidator = new HearingAccrualsValidator(hearingIdValidator);
+        HearingActualsValidator hearingActualsValidator = new HearingActualsValidator(hearingIdValidator);
         hearingActualsService =
             new HearingActualsServiceImpl(
                 hearingRepository,
@@ -100,7 +100,7 @@ class HearingActualsServiceTest {
                 getHearingActualsResponseMapper,
                 hearingActualsMapper,
                 hearingIdValidator,
-                hearingAccrualsValidator
+                    hearingActualsValidator
             );
     }
 
@@ -150,7 +150,7 @@ class HearingActualsServiceTest {
         public void setUp() {
             HearingIdValidator hearingIdValidator = new HearingIdValidator(hearingRepository,
                     actualHearingRepository, actualHearingDayRepository);
-            HearingAccrualsValidator hearingAccrualsValidator = new HearingAccrualsValidator(hearingIdValidator);
+            HearingActualsValidator hearingActualsValidator = new HearingActualsValidator(hearingIdValidator);
             HearingActualsMapper hearingActualsMapper = new HearingActualsMapper();
             hearingActualsService =
                 new HearingActualsServiceImpl(
@@ -160,7 +160,7 @@ class HearingActualsServiceTest {
                     getHearingActualsResponseMapper,
                     hearingActualsMapper,
                     hearingIdValidator,
-                    hearingAccrualsValidator
+                        hearingActualsValidator
                 );
         }
 

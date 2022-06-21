@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS;
 
 @Component
-public class HearingAccrualsValidator {
+public class HearingActualsValidator {
     private final HearingIdValidator hearingIdValidator;
     private static final List<String> ALLOWED_ACTUALS_STATUSES = List.of("LISTED",
             "UPDATE_REQUESTED",
@@ -33,7 +33,7 @@ public class HearingAccrualsValidator {
     public static final List<String> HEARING_RESULTS_THAT_NEED_REASON_TYPE = List.of("ADJOURNED", "CANCELLED");
 
     @Autowired
-    public HearingAccrualsValidator(HearingIdValidator hearingIdValidator) {
+    public HearingActualsValidator(HearingIdValidator hearingIdValidator) {
         this.hearingIdValidator = hearingIdValidator;
     }
 
