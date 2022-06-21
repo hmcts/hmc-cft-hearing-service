@@ -9,16 +9,21 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
+import uk.gov.hmcts.reform.hmc.model.RoomAttribute;
+import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingJoh;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingLocation;
+import uk.gov.hmcts.reform.hmc.service.RoomAttributesService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,6 +44,9 @@ class ListingMapperTest {
     @InjectMocks
     private ListingMapper listingMapper;
 
+    @Mock
+    private RoomAttributesService roomAttributesService;
+
     private static final String HEARING_PRIORITY_TYPE = "Priority type";
     private static final String HEARING_TYPE = "Some hearing type";
     private static final String LISTING_COMMENTS = "Some listing comments";
@@ -53,7 +61,7 @@ class ListingMapperTest {
         ListingJoh listingJoh = generateListingJoh();
         ListingLocation listingLocation = generateListingLocation();
         HearingDetails hearingDetails = buildHearingDetails(150);
-        Listing listing = listingMapper.getListing(hearingDetails);
+        Listing listing = buildListing(hearingDetails);
 
         assertListingLocations(listingLocation, listing.getListingLocations());
         assertListingJohs(listingJoh, listing.getListingJohs());
@@ -96,7 +104,7 @@ class ListingMapperTest {
 
         ListingJoh listingJoh = generateListingJoh();
         ListingLocation listingLocation = generateListingLocation();
-        Listing listing = listingMapper.getListing(hearingDetails);
+        Listing listing = buildListing(hearingDetails);
 
         assertListingLocations(listingLocation, listing.getListingLocations());
         assertListingJohs(listingJoh, listing.getListingJohs());
@@ -135,7 +143,7 @@ class ListingMapperTest {
         hearingDetails.setHearingWindow(hearingWindow);
         ListingJoh listingJoh = generateListingJoh();
         ListingLocation listingLocation = generateListingLocation();
-        Listing listing = listingMapper.getListing(hearingDetails);
+        Listing listing = buildListing(hearingDetails);
 
         assertListingLocations(listingLocation, listing.getListingLocations());
         assertListingJohs(listingJoh, listing.getListingJohs());
@@ -162,7 +170,8 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingForMultiDayHearingDurationLessThan360() {
         HearingDetails hearingDetails = buildHearingDetails(300);
-        Listing listing = listingMapper.getListing(hearingDetails);
+        Entity entity = Entity.builder().build();
+        Listing listing = buildListing(hearingDetails);
         assertEquals(300, listing.getListingDuration());
         assertNull(listing.getListingMultiDay());
     }
@@ -170,7 +179,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs360() {
         HearingDetails hearingDetails = buildHearingDetails(360);
-        Listing listing = listingMapper.getListing(hearingDetails);
+        Listing listing = buildListing(hearingDetails);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertNull(listing.getListingMultiDay());
     }
@@ -178,7 +187,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs720() {
         HearingDetails hearingDetails = buildHearingDetails(720);
-        Listing listing = listingMapper.getListing(hearingDetails);
+        Listing listing = buildListing(hearingDetails);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(0, listing.getListingMultiDay().getWeeks());
         assertEquals(2, listing.getListingMultiDay().getDays());
@@ -188,7 +197,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs1800() {
         HearingDetails hearingDetails = buildHearingDetails(1800);
-        Listing listing = listingMapper.getListing(hearingDetails);
+        Listing listing = buildListing(hearingDetails);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(1, listing.getListingMultiDay().getWeeks());
         assertEquals(0, listing.getListingMultiDay().getDays());
@@ -198,7 +207,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs2160() {
         HearingDetails hearingDetails = buildHearingDetails(2160);
-        Listing listing = listingMapper.getListing(hearingDetails);
+        Listing listing = buildListing(hearingDetails);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(1, listing.getListingMultiDay().getWeeks());
         assertEquals(1, listing.getListingMultiDay().getDays());
@@ -208,11 +217,25 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs2165() {
         HearingDetails hearingDetails = buildHearingDetails(2165);
-        Listing listing = listingMapper.getListing(hearingDetails);
+        Listing listing = buildListing(hearingDetails);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(1, listing.getListingMultiDay().getWeeks());
         assertEquals(1, listing.getListingMultiDay().getDays());
         assertEquals(5, listing.getListingMultiDay().getHours());
+    }
+
+    @Test
+    void shouldReturnListingWithRoomAttribute() {
+        HearingDetails hearingDetails = buildHearingDetails(150);
+        hearingDetails.setFacilitiesRequired(List.of("LF234", "5"));
+        Optional<RoomAttribute> roomAttribute1 = TestingUtil.getRoomAttribute("code1", "44043",false);
+        Optional<RoomAttribute> roomAttribute2 = TestingUtil.getRoomAttribute("code2", "LF234",true);
+        when(roomAttributesService.findByReasonableAdjustmentCode(any()))
+            .thenReturn(roomAttribute1);
+        when(roomAttributesService.findByRoomAttributeCode(any()))
+            .thenReturn(roomAttribute2);
+        Listing listing = buildListing(hearingDetails);
+        assertNotNull(listing.getRoomAttributes());
     }
 
     private void assertListingJohs(ListingJoh listingJoh, List<ListingJoh> listingJohList) {
@@ -256,5 +279,9 @@ class ListingMapperTest {
         ListingJoh listingJoh = ListingJoh.builder().build();
         when(listingJohsMapper.getListingJohs(any())).thenReturn(Collections.singletonList(listingJoh));
         return listingJoh;
+    }
+
+    private Listing buildListing(HearingDetails hearingDetails) {
+        return listingMapper.getListing(hearingDetails,List.of(TestingUtil.getEntity()));
     }
 }
