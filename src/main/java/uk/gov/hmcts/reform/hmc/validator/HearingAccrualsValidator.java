@@ -45,13 +45,19 @@ public class HearingAccrualsValidator {
     }
 
     public void validateHearingResult(String hearingResult) {
-        if (!HEARING_RESULTS_REASONS.contains(hearingResult.toUpperCase())) {
+        if (null == hearingResult || !HEARING_RESULTS_REASONS.contains(hearingResult.toUpperCase())) {
             throw new BadRequestException(HA_OUTCOME_RESULT_NOT_EMPTY);
         }
     }
 
+    public void validateHearingResult(HearingResultType hearingResultType) {
+        if (null == hearingResultType) {
+            throw new BadRequestException(ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY);
+        }
+    }
+
     public void validateHearingResult(String hearingResult, String hearingResultReasonType) {
-        if (HEARING_RESULTS_THAT_NEED_REASON_TYPE.contains(
+        if (null != hearingResult && HEARING_RESULTS_THAT_NEED_REASON_TYPE.contains(
                 hearingResult.toUpperCase())
                 && StringUtils.isBlank(hearingResultReasonType)) {
             throw new BadRequestException(String.format(HEARING_ACTUALS_MISSING_RESULT_TYPE, hearingResult));
@@ -63,12 +69,6 @@ public class HearingAccrualsValidator {
                 hearingResultType.getLabel().toUpperCase())
                 && StringUtils.isBlank(hearingResultReasonType)) {
             throw new BadRequestException(String.format(HEARING_ACTUALS_MISSING_RESULT_TYPE, hearingResultType));
-        }
-    }
-
-    public void validateHearingResult(HearingResultType hearingResultType) {
-        if (null == hearingResultType) {
-            throw new BadRequestException(ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY);
         }
     }
 
@@ -115,6 +115,8 @@ public class HearingAccrualsValidator {
         validateActualHearingType(actualHearingEntity.getActualHearingType());
         validateActualHearingIsFinalFlag(actualHearingEntity.getActualHearingIsFinalFlag());
         validateHearingResult(actualHearingEntity.getHearingResultType());
+        validateHearingResult(actualHearingEntity.getHearingResultType(),
+                actualHearingEntity.getHearingResultReasonType());
         validateHearingResultReasonType(actualHearingEntity.getHearingResultReasonType());
         validateHearingResultDate(actualHearingEntity.getHearingResultDate());
     }

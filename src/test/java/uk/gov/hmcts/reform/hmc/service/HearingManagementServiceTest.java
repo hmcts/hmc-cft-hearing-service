@@ -1572,6 +1572,7 @@ class HearingManagementServiceTest {
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
             when(actualHearingEntity.getHearingResultType()).thenReturn(CANCELLED);
             when(actualHearingEntity.getActualHearingType()).thenReturn("TYPE 32");
+            when(actualHearingEntity.getHearingResultReasonType()).thenReturn("MADE UP REASON");
             when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(13));
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
@@ -1599,6 +1600,7 @@ class HearingManagementServiceTest {
             when(actualHearingEntity.getHearingResultType()).thenReturn(CANCELLED);
             when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(3));
             when(actualHearingEntity.getActualHearingType()).thenReturn("TYPE 22");
+            when(actualHearingEntity.getHearingResultReasonType()).thenReturn("MADE UP REASON");
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             when(actualHearingDayRepository.findByActualHearing(any(ActualHearingEntity.class)))
