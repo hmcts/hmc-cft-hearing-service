@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
@@ -74,41 +75,19 @@ public class CaseHearingRequestMapper {
                                                   HearingEntity hearingEntity,
                                                   Integer requestVersion,
                                                   CaseHearingRequestEntity  caseHearingCurrent) {
-        CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
-        caseHearingRequestEntity.setAutoListFlag(caseHearingCurrent.getAutoListFlag());
-        caseHearingRequestEntity.setHearingType(caseHearingCurrent.getHearingType());
-        caseHearingRequestEntity.setRequiredDurationInMinutes(caseHearingCurrent.getRequiredDurationInMinutes());
-        caseHearingRequestEntity.setHearingPriorityType(caseHearingCurrent.getHearingPriorityType());
-        caseHearingRequestEntity.setNumberOfPhysicalAttendees(caseHearingCurrent.getNumberOfPhysicalAttendees());
-        caseHearingRequestEntity.setHearingInWelshFlag(caseHearingCurrent.getHearingInWelshFlag());
-        caseHearingRequestEntity.setPrivateHearingRequiredFlag(caseHearingCurrent.getPrivateHearingRequiredFlag());
-        caseHearingRequestEntity.setLeadJudgeContractType(caseHearingCurrent.getLeadJudgeContractType());
-        caseHearingRequestEntity.setFirstDateTimeOfHearingMustBe(caseHearingCurrent.getFirstDateTimeOfHearingMustBe());
-        caseHearingRequestEntity.setHmctsServiceCode(caseHearingCurrent.getHmctsServiceCode());
-        caseHearingRequestEntity.setCaseReference(caseHearingCurrent.getCaseReference());
-        caseHearingRequestEntity.setExternalCaseReference(caseHearingCurrent.getExternalCaseReference());
-        caseHearingRequestEntity.setCaseUrlContextPath(caseHearingCurrent.getCaseUrlContextPath());
-        caseHearingRequestEntity.setHmctsInternalCaseName(caseHearingCurrent.getHmctsInternalCaseName());
-        caseHearingRequestEntity.setPublicCaseName(caseHearingCurrent.getPublicCaseName());
-        caseHearingRequestEntity.setAdditionalSecurityRequiredFlag(caseHearingCurrent
-                                                                       .getAdditionalSecurityRequiredFlag());
-        caseHearingRequestEntity.setOwningLocationId(caseHearingCurrent.getOwningLocationId());
-        caseHearingRequestEntity.setCaseRestrictedFlag(caseHearingCurrent.getCaseRestrictedFlag());
-        caseHearingRequestEntity.setCaseSlaStartDate(caseHearingCurrent.getCaseSlaStartDate());
-        caseHearingRequestEntity.setVersionNumber(requestVersion);
-        caseHearingRequestEntity.setInterpreterBookingRequiredFlag(caseHearingCurrent
-                                                                       .getInterpreterBookingRequiredFlag());
-        caseHearingRequestEntity.setListingComments(caseHearingCurrent.getListingComments());
-        caseHearingRequestEntity.setRequester(caseHearingCurrent.getRequester());
-        caseHearingRequestEntity.setHearingWindowStartDateRange(caseHearingCurrent.getHearingWindowStartDateRange());
-        caseHearingRequestEntity.setHearingWindowEndDateRange(caseHearingCurrent.getHearingWindowEndDateRange());
-        caseHearingRequestEntity.setHearingRequestReceivedDateTime(currentTime());
-        caseHearingRequestEntity.setAmendReasonCode(caseHearingCurrent.getAmendReasonCode());
-        caseHearingRequestEntity.setCancellationReason(setCancellationReasonsEntity(deleteHearingRequest
+        CaseHearingRequestEntity caseHearingRequestNew = new CaseHearingRequestEntity();
+        BeanUtils.copyProperties(
+            caseHearingCurrent,
+            caseHearingRequestNew,
+            "caseHearingID"
+        );
+        caseHearingRequestNew.setVersionNumber(requestVersion);
+        caseHearingRequestNew.setCancellationReason(setCancellationReasonsEntity(deleteHearingRequest
                                                                                         .getCancellationReasonCode(),
-                                                                                    caseHearingRequestEntity));
-        caseHearingRequestEntity.setHearing(hearingEntity);
-        return caseHearingRequestEntity;
+                                                                                 caseHearingRequestNew));
+        caseHearingRequestNew.setHearingRequestReceivedDateTime(currentTime());
+        caseHearingRequestNew.setHearing(hearingEntity);
+        return caseHearingRequestNew;
     }
 
     public void mapCaseCategories(List<CaseCategory> caseCategories,
