@@ -3,11 +3,17 @@ package uk.gov.hmcts.reform.hmc.helper.hmi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.RoomAttribute;
+import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingMultiDay;
+import uk.gov.hmcts.reform.hmc.service.RoomAttributesService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
 
@@ -16,15 +22,18 @@ public class ListingMapper {
 
     private final ListingJohsMapper listingJohsMapper;
     private final ListingLocationsMapper listingLocationsMapper;
+    private final RoomAttributesService roomAttributesService;
 
     @Autowired
     public ListingMapper(ListingJohsMapper listingJohsMapper,
-                         ListingLocationsMapper listingLocationsMapper) {
+                         ListingLocationsMapper listingLocationsMapper,
+                         RoomAttributesService roomAttributesService) {
         this.listingJohsMapper = listingJohsMapper;
         this.listingLocationsMapper = listingLocationsMapper;
+        this.roomAttributesService = roomAttributesService;
     }
 
-    public Listing getListing(HearingDetails hearingDetails) {
+    public Listing getListing(HearingDetails hearingDetails, List<Entity> entities) {
 
         Listing listing = Listing.builder()
             .listingAutoCreateFlag(hearingDetails.getAutoListFlag())
@@ -44,6 +53,9 @@ public class ListingMapper {
             .listingOtherConsiderations(getListingOtherConsiderations(hearingDetails.getFacilitiesRequired()))
             .listingWelshHearingFlag(hearingDetails.getHearingInWelshFlag())
             .build();
+
+        checkAndPopulateValues(entities, hearingDetails, listing);
+
         if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
             listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
         }
@@ -89,6 +101,32 @@ public class ListingMapper {
 
     private int getWeeks(Integer hearingDetailsDuration) {
         return (hearingDetailsDuration / (360 * 5));
+    }
+
+    private void checkAndPopulateValues(List<Entity> entities, HearingDetails hearingDetails, Listing listing) {
+        // change the variable names
+        List<String> locs = new ArrayList<>(); // rename locs to facilityTypes
+        Set<String> roomAttributesSet = new HashSet<>();
+        entities.forEach(entity -> {
+            if (entity.getEntityOtherConsiderations() != null && !entity.getEntityOtherConsiderations().isEmpty()) {
+                for (String pir : entity.getEntityOtherConsiderations()) { // rename pir to reasonableAdjustment
+                    // rename ratRac to roomAttribute
+                    Optional<RoomAttribute> ratRac = roomAttributesService.findByReasonableAdjustmentCode(pir);
+                    ratRac.ifPresent(roomAttribute -> roomAttributesSet.add(roomAttribute.getRoomAttributeCode()));
+                }
+                for (String facility : hearingDetails.getFacilitiesRequired()) {
+                    // rename ratRocs to roomAttribute
+                    Optional<RoomAttribute> ratRocs = roomAttributesService.findByRoomAttributeCode(facility);
+                    if (ratRocs.isPresent() && ratRocs.get().isFacility()) {
+                        roomAttributesSet.add(ratRocs.get().getRoomAttributeCode());
+                    } else {
+                        locs.add(facility);
+                    }
+                }
+            }
+        });
+        listing.setRoomAttributes(new ArrayList<>(roomAttributesSet));
+        listing.setListingOtherConsiderations(getListingOtherConsiderations(locs));
     }
 
     private List<String> getListingOtherConsiderations(List<String> facilityTypes) {
