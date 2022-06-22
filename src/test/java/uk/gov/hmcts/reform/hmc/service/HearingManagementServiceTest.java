@@ -59,7 +59,6 @@ import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.model.hmi.CancellationReason;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiCaseDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
@@ -946,9 +945,7 @@ class HearingManagementServiceTest {
             hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
             hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
             HmiDeleteHearingRequest hmiDeleteHearingRequest = getHmiDeleteHearingRequest();
-            when(hmiDeleteHearingRequestMapper.mapRequest(
-                any()
-            )).thenReturn(hmiDeleteHearingRequest);
+            when(hmiDeleteHearingRequestMapper.mapRequest()).thenReturn(hmiDeleteHearingRequest);
             when(objectMapperService.convertObjectToJsonNode(hmiDeleteHearingRequest)).thenReturn(jsonNode);
         }
     }
@@ -1588,7 +1585,6 @@ class HearingManagementServiceTest {
         Entity entity = Entity.builder().build();
 
         return HmiDeleteHearingRequest.builder()
-            .cancellationReason(new CancellationReason())
             .build();
     }
 
