@@ -156,6 +156,20 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     @Override
     public Object clone() throws CloneNotSupportedException {
         CaseHearingRequestEntity cloned = (CaseHearingRequestEntity)super.clone();
+        cloneCaseCategories(cloned);
+        cloneNonStandardDurations(cloned);
+        cloneRequiredLocations(cloned);
+        cloneRequiredFacilities(cloned);
+        cloneHearingParties(cloned);
+        clonePanelRequirements(cloned);
+        clonePanelAuthorisationRequirements(cloned);
+        clonePanelSpecialisms(cloned);
+        clonePanelUserRequirements(cloned);
+        cloned.setCaseHearingID(null);
+        return cloned;
+    }
+
+    private void cloneCaseCategories(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
         //CaseCategories
         List<CaseCategoriesEntity> caseCategoriesList = new ArrayList<>();
         if (null != cloned.getCaseCategories()) {
@@ -167,91 +181,9 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
             }
         }
         cloned.setCaseCategories(caseCategoriesList);
+    }
 
-        //nonStandardDuration
-        List<NonStandardDurationsEntity> nonStandardDurationsList = new ArrayList<>();
-        if (null != cloned.getNonStandardDurations()) {
-            for (NonStandardDurationsEntity nsde : cloned.getNonStandardDurations()) {
-                NonStandardDurationsEntity clonedSubValue = (NonStandardDurationsEntity)nsde.clone();
-                clonedSubValue.setId(null);
-                clonedSubValue.setCaseHearing(cloned);
-                nonStandardDurationsList.add(clonedSubValue);
-            }
-        }
-        cloned.setNonStandardDurations(nonStandardDurationsList);
-
-        //RequiredLocationsEntity
-        List<RequiredLocationsEntity> requiredLocationsList = new ArrayList<>();
-        if (null != cloned.getRequiredLocations()) {
-            for (RequiredLocationsEntity rle : cloned.getRequiredLocations()) {
-                RequiredLocationsEntity clonedSubValue = (RequiredLocationsEntity)rle.clone();
-                clonedSubValue.setId(null);
-                clonedSubValue.setCaseHearing(cloned);
-                requiredLocationsList.add(clonedSubValue);
-            }
-        }
-        cloned.setRequiredLocations(requiredLocationsList);
-
-        //RequiredFacilitiesEntity
-        List<RequiredFacilitiesEntity> requiredFacilitiesList = new ArrayList<>();
-        if (null != cloned.getRequiredFacilities()) {
-            for (RequiredFacilitiesEntity rfe : cloned.getRequiredFacilities()) {
-                RequiredFacilitiesEntity clonedSubValue = (RequiredFacilitiesEntity)rfe.clone();
-                clonedSubValue.setId(null);
-                clonedSubValue.setCaseHearing(cloned);
-                requiredFacilitiesList.add(clonedSubValue);
-            }
-        }
-        cloned.setRequiredFacilities(requiredFacilitiesList);
-
-        //HearingPartyEntity
-        List<HearingPartyEntity> hearingPartiesList = new ArrayList<>();
-        if (null != cloned.getHearingParties()) {
-            for (HearingPartyEntity hp : cloned.getHearingParties()) {
-                HearingPartyEntity clonedSubValue = (HearingPartyEntity)hp.clone();
-                clonedSubValue.setTechPartyId(null);
-                clonedSubValue.setCaseHearing(cloned);
-                hearingPartiesList.add(clonedSubValue);
-            }
-        }
-        cloned.setHearingParties(hearingPartiesList);
-
-        //PanelRequirementsEntity
-        List<PanelRequirementsEntity> panelRequirementsList = new ArrayList<>();
-        if (null != cloned.getPanelRequirements()) {
-            for (PanelRequirementsEntity pre : cloned.getPanelRequirements()) {
-                PanelRequirementsEntity clonedSubValue = (PanelRequirementsEntity)pre.clone();
-                clonedSubValue.setId(null);
-                clonedSubValue.setCaseHearing(cloned);
-                panelRequirementsList.add(clonedSubValue);
-            }
-        }
-        cloned.setPanelRequirements(panelRequirementsList);
-
-        //PanelAuthorisationRequirementsEntity
-        List<PanelAuthorisationRequirementsEntity> panelAuthorisationRequirementsList = new ArrayList<>();
-        if (null != cloned.getPanelAuthorisationRequirements()) {
-            for (PanelAuthorisationRequirementsEntity par : cloned.getPanelAuthorisationRequirements()) {
-                PanelAuthorisationRequirementsEntity clonedSubValue = (PanelAuthorisationRequirementsEntity)par.clone();
-                clonedSubValue.setId(null);
-                clonedSubValue.setCaseHearing(cloned);
-                panelAuthorisationRequirementsList.add(clonedSubValue);
-            }
-        }
-        cloned.setPanelAuthorisationRequirements(panelAuthorisationRequirementsList);
-
-        //PanelSpecialismsEntity
-        List<PanelSpecialismsEntity> panelSpecialismsList = new ArrayList<>();
-        if (null != cloned.getPanelSpecialisms()) {
-            for (PanelSpecialismsEntity pse : cloned.getPanelSpecialisms()) {
-                PanelSpecialismsEntity clonedSubValue = (PanelSpecialismsEntity)pse.clone();
-                clonedSubValue.setId(null);
-                clonedSubValue.setCaseHearing(cloned);
-                panelSpecialismsList.add(clonedSubValue);
-            }
-        }
-        cloned.setPanelSpecialisms(panelSpecialismsList);
-
+    private void clonePanelUserRequirements(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
         //PanelUserRequirementsEntity
         List<PanelUserRequirementsEntity> panelUserRequirementsList = new ArrayList<>();
         if (null != cloned.getPanelUserRequirements()) {
@@ -263,7 +195,103 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
             }
         }
         cloned.setPanelUserRequirements(panelUserRequirementsList);
-        cloned.setCaseHearingID(null);
-        return cloned;
+    }
+
+    private void clonePanelSpecialisms(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //PanelSpecialismsEntity
+        List<PanelSpecialismsEntity> panelSpecialismsList = new ArrayList<>();
+        if (null != cloned.getPanelSpecialisms()) {
+            for (PanelSpecialismsEntity pse : cloned.getPanelSpecialisms()) {
+                PanelSpecialismsEntity clonedSubValue = (PanelSpecialismsEntity)pse.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                panelSpecialismsList.add(clonedSubValue);
+            }
+        }
+        cloned.setPanelSpecialisms(panelSpecialismsList);
+    }
+
+    private void clonePanelAuthorisationRequirements(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //PanelAuthorisationRequirementsEntity
+        List<PanelAuthorisationRequirementsEntity> panelAuthorisationRequirementsList = new ArrayList<>();
+        if (null != cloned.getPanelAuthorisationRequirements()) {
+            for (PanelAuthorisationRequirementsEntity par : cloned.getPanelAuthorisationRequirements()) {
+                PanelAuthorisationRequirementsEntity clonedSubValue = (PanelAuthorisationRequirementsEntity)par.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                panelAuthorisationRequirementsList.add(clonedSubValue);
+            }
+        }
+        cloned.setPanelAuthorisationRequirements(panelAuthorisationRequirementsList);
+    }
+
+    private void clonePanelRequirements(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //PanelRequirementsEntity
+        List<PanelRequirementsEntity> panelRequirementsList = new ArrayList<>();
+        if (null != cloned.getPanelRequirements()) {
+            for (PanelRequirementsEntity pre : cloned.getPanelRequirements()) {
+                PanelRequirementsEntity clonedSubValue = (PanelRequirementsEntity)pre.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                panelRequirementsList.add(clonedSubValue);
+            }
+        }
+        cloned.setPanelRequirements(panelRequirementsList);
+    }
+
+    private void cloneHearingParties(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //HearingPartyEntity
+        List<HearingPartyEntity> hearingPartiesList = new ArrayList<>();
+        if (null != cloned.getHearingParties()) {
+            for (HearingPartyEntity hp : cloned.getHearingParties()) {
+                HearingPartyEntity clonedSubValue = (HearingPartyEntity)hp.clone();
+                clonedSubValue.setTechPartyId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                hearingPartiesList.add(clonedSubValue);
+            }
+        }
+        cloned.setHearingParties(hearingPartiesList);
+    }
+
+    private void cloneRequiredFacilities(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //RequiredFacilitiesEntity
+        List<RequiredFacilitiesEntity> requiredFacilitiesList = new ArrayList<>();
+        if (null != cloned.getRequiredFacilities()) {
+            for (RequiredFacilitiesEntity rfe : cloned.getRequiredFacilities()) {
+                RequiredFacilitiesEntity clonedSubValue = (RequiredFacilitiesEntity)rfe.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                requiredFacilitiesList.add(clonedSubValue);
+            }
+        }
+        cloned.setRequiredFacilities(requiredFacilitiesList);
+    }
+
+    private void cloneRequiredLocations(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //RequiredLocationsEntity
+        List<RequiredLocationsEntity> requiredLocationsList = new ArrayList<>();
+        if (null != cloned.getRequiredLocations()) {
+            for (RequiredLocationsEntity rle : cloned.getRequiredLocations()) {
+                RequiredLocationsEntity clonedSubValue = (RequiredLocationsEntity)rle.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                requiredLocationsList.add(clonedSubValue);
+            }
+        }
+        cloned.setRequiredLocations(requiredLocationsList);
+    }
+
+    private void cloneNonStandardDurations(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //nonStandardDuration
+        List<NonStandardDurationsEntity> nonStandardDurationsList = new ArrayList<>();
+        if (null != cloned.getNonStandardDurations()) {
+            for (NonStandardDurationsEntity nsde : cloned.getNonStandardDurations()) {
+                NonStandardDurationsEntity clonedSubValue = (NonStandardDurationsEntity)nsde.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                nonStandardDurationsList.add(clonedSubValue);
+            }
+        }
+        cloned.setNonStandardDurations(nonStandardDurationsList);
     }
 }

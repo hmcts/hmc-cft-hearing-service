@@ -75,7 +75,14 @@ public class HearingPartyEntity extends BaseEntity implements Serializable, Clon
     @Override
     public Object clone() throws CloneNotSupportedException {
         HearingPartyEntity cloned = (HearingPartyEntity)super.clone();
+        cloneUnavailability(cloned);
+        cloneContactDetails(cloned);
+        cloneReasonableAdjustments(cloned);
+        clonePartyRelationshipDetails(cloned);
+        return cloned;
+    }
 
+    private void cloneUnavailability(HearingPartyEntity cloned) throws CloneNotSupportedException {
         //UnavailabilityEntity
         List<UnavailabilityEntity> unavailabilityEntityList = new ArrayList<>();
         if (null != cloned.getUnavailabilityEntity()) {
@@ -87,7 +94,9 @@ public class HearingPartyEntity extends BaseEntity implements Serializable, Clon
             }
         }
         cloned.setUnavailabilityEntity(unavailabilityEntityList);
+    }
 
+    private void cloneContactDetails(HearingPartyEntity cloned) throws CloneNotSupportedException {
         //ContactDetailsEntity
         List<ContactDetailsEntity> contactDetailsEntityList = new ArrayList<>();
         if (null != cloned.getContactDetailsEntity()) {
@@ -99,7 +108,9 @@ public class HearingPartyEntity extends BaseEntity implements Serializable, Clon
             }
         }
         cloned.setContactDetailsEntity(contactDetailsEntityList);
+    }
 
+    private void cloneReasonableAdjustments(HearingPartyEntity cloned) throws CloneNotSupportedException {
         //ReasonableAdjustmentsEntity
         List<ReasonableAdjustmentsEntity> reasonableAdjustmentsEntityList = new ArrayList<>();
         if (null != cloned.getReasonableAdjustmentsEntity()) {
@@ -111,7 +122,9 @@ public class HearingPartyEntity extends BaseEntity implements Serializable, Clon
             }
         }
         cloned.setReasonableAdjustmentsEntity(reasonableAdjustmentsEntityList);
+    }
 
+    private void clonePartyRelationshipDetails(HearingPartyEntity cloned) throws CloneNotSupportedException {
         //PartyRelationshipDetailsEntity
         List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntityList = new ArrayList<>();
         if (null != cloned.getPartyRelationshipDetailsEntity()) {
@@ -122,7 +135,5 @@ public class HearingPartyEntity extends BaseEntity implements Serializable, Clon
             }
         }
         cloned.setPartyRelationshipDetailsEntity(partyRelationshipDetailsEntityList);
-
-        return cloned;
     }
 }
