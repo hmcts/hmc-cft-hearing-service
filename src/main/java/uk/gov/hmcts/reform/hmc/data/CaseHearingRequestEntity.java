@@ -211,7 +211,8 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         cloned.setPanelSpecialisms(panelSpecialismsList);
     }
 
-    private void clonePanelAuthorisationRequirements(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+    private void clonePanelAuthorisationRequirements(CaseHearingRequestEntity cloned)
+        throws CloneNotSupportedException {
         //PanelAuthorisationRequirementsEntity
         List<PanelAuthorisationRequirementsEntity> panelAuthorisationRequirementsList = new ArrayList<>();
         if (null != cloned.getPanelAuthorisationRequirements()) {
