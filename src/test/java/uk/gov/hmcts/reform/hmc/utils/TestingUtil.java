@@ -446,17 +446,21 @@ public class TestingUtil {
         return request;
     }
 
-    public static Entity getEntity() {
+    public static Entity getEntity(List<String> reasonableAdjustment) {
         return Entity.builder()
             .entityId("entityId")
-            .entityOtherConsiderations(List.of("RA0019","RA0045"))
+            .entityOtherConsiderations(reasonableAdjustment)
             .build();
     }
 
-    public static Optional<RoomAttribute> getRoomAttribute(String rom,String rac,Boolean facility) {
+    public static Optional<RoomAttribute> getRoomAttribute(String roomAttributeCode,
+                                                           String roomAttributeName,
+                                                           String reasonableAdjustmentCode,
+                                                           Boolean facility) {
         RoomAttribute roomAttribute = RoomAttribute.builder()
-            .roomAttributeCode(rom)
-            .reasonableAdjustmentCode(rac)
+            .roomAttributeCode(roomAttributeCode)
+            .roomAttributeName(roomAttributeName)
+            .reasonableAdjustmentCode(reasonableAdjustmentCode)
             .facility(facility)
             .build();
         return Optional.of(roomAttribute);

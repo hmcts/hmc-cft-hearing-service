@@ -50,11 +50,17 @@ public class ListingMapper {
             .amendReasonCode(hearingDetails.getAmendReasonCode())
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
-            .listingOtherConsiderations(getListingOtherConsiderations(hearingDetails.getFacilitiesRequired()))
             .listingWelshHearingFlag(hearingDetails.getHearingInWelshFlag())
             .build();
 
-        checkAndPopulateValues(entities, hearingDetails, listing);
+        if (entities != null) {
+            // change lar to roomAttributes (plural!)
+            List<String> lar = checkAgainstRoomAttributes(entities, hearingDetails);
+            if (lar.isEmpty() && hearingDetails.getFacilitiesRequired() != null) {
+                listing.setListingOtherConsiderations(hearingDetails.getFacilitiesRequired());
+            }
+            listing.setRoomAttributes(lar);
+        }
 
         if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
             listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
@@ -103,38 +109,25 @@ public class ListingMapper {
         return (hearingDetailsDuration / (360 * 5));
     }
 
-    private void checkAndPopulateValues(List<Entity> entities, HearingDetails hearingDetails, Listing listing) {
+    private List<String> checkAgainstRoomAttributes(List<Entity> entities, HearingDetails hearingDetails) {
         // change the variable names
-        List<String> locs = new ArrayList<>(); // rename locs to facilityTypes
-        Set<String> roomAttributesSet = new HashSet<>();
+        Set<String> lar = new HashSet<>();// change lar to roomAttributes (plural!)
         entities.forEach(entity -> {
             if (entity.getEntityOtherConsiderations() != null && !entity.getEntityOtherConsiderations().isEmpty()) {
                 for (String pir : entity.getEntityOtherConsiderations()) { // rename pir to reasonableAdjustment
-                    // rename ratRac to roomAttribute
+                    // rename ratRac to roomAttributeByRac
                     Optional<RoomAttribute> ratRac = roomAttributesService.findByReasonableAdjustmentCode(pir);
-                    ratRac.ifPresent(roomAttribute -> roomAttributesSet.add(roomAttribute.getRoomAttributeCode()));
+                    ratRac.ifPresent(roomAttribute -> lar.add(roomAttribute.getRoomAttributeCode()));
                 }
                 for (String facility : hearingDetails.getFacilitiesRequired()) {
-                    // rename ratRocs to roomAttribute
-                    Optional<RoomAttribute> ratRocs = roomAttributesService.findByRoomAttributeCode(facility);
-                    if (ratRocs.isPresent() && ratRocs.get().isFacility()) {
-                        roomAttributesSet.add(ratRocs.get().getRoomAttributeCode());
-                    } else {
-                        locs.add(facility);
+                    // rename ratRoc to roomAttributeByRoc
+                    Optional<RoomAttribute> ratRoc = roomAttributesService.findByRoomAttributeCode(facility);
+                    if (ratRoc.isPresent() && ratRoc.get().isFacility()) {
+                        lar.add(ratRoc.get().getRoomAttributeCode());
                     }
                 }
             }
         });
-        listing.setRoomAttributes(new ArrayList<>(roomAttributesSet));
-        listing.setListingOtherConsiderations(getListingOtherConsiderations(locs));
+        return new ArrayList<>(lar);
     }
-
-    private List<String> getListingOtherConsiderations(List<String> facilityTypes) {
-        List<String> listOtherConsiderations = new ArrayList<>();
-        if (null != facilityTypes) {
-            listOtherConsiderations.addAll(facilityTypes);
-        }
-        return listOtherConsiderations;
-    }
-
 }
