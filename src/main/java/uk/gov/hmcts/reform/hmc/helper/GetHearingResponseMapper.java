@@ -199,9 +199,9 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
     private void updateContactDetails(HearingPartyEntity hearingPartyEntity, IndividualDetails individualDetails) {
         List<String> emails = new ArrayList<>();
         List<String> phoneNumbers = new ArrayList<>();
-        if (null != hearingPartyEntity.getContactDetails()
-            && !hearingPartyEntity.getContactDetails().isEmpty()) {
-            for (ContactDetailsEntity contactDetailsEntity : hearingPartyEntity.getContactDetails()) {
+        if (null != hearingPartyEntity.getContactDetailsEntity()
+            && !hearingPartyEntity.getContactDetailsEntity().isEmpty()) {
+            for (ContactDetailsEntity contactDetailsEntity : hearingPartyEntity.getContactDetailsEntity()) {
                 if (contactDetailsEntity.getContactType().equalsIgnoreCase(EMAIL_TYPE)) {
                     emails.add(contactDetailsEntity.getContactDetails());
                 } else {

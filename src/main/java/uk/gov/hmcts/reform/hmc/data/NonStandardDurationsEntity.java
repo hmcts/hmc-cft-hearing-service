@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Table(name = "non_standard_durations")
 @EqualsAndHashCode(callSuper = true)
@@ -22,7 +23,7 @@ import javax.persistence.Table;
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class NonStandardDurationsEntity extends BaseEntity {
+public class NonStandardDurationsEntity extends BaseEntity implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -37,4 +38,8 @@ public class NonStandardDurationsEntity extends BaseEntity {
     @JoinColumn(name = "case_hearing_id")
     private CaseHearingRequestEntity caseHearing;
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.hmc.data;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,7 +30,7 @@ import javax.persistence.Table;
 @SecondaryTable(name = "HEARING",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "hearing_id")})
-public class CaseHearingRequestEntity extends BaseEntity {
+public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -150,5 +152,120 @@ public class CaseHearingRequestEntity extends BaseEntity {
 
     @OneToOne(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private CancellationReasonsEntity cancellationReason;
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        CaseHearingRequestEntity cloned = (CaseHearingRequestEntity)super.clone();
+        //CaseCategories
+        List<CaseCategoriesEntity> caseCategories = new ArrayList<>();
+        if (null != cloned.getCaseCategories()) {
+            for (CaseCategoriesEntity cce : cloned.getCaseCategories()) {
+                CaseCategoriesEntity clonedSubValue = (CaseCategoriesEntity)cce.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                caseCategories.add(clonedSubValue);
+            }
+        }
+        cloned.setCaseCategories(caseCategories);
+
+        //nonStandardDuration
+        List<NonStandardDurationsEntity> nonStandardDurations = new ArrayList<>();
+        if (null != cloned.getNonStandardDurations()) {
+            for (NonStandardDurationsEntity nsde : cloned.getNonStandardDurations()) {
+                NonStandardDurationsEntity clonedSubValue = (NonStandardDurationsEntity)nsde.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                nonStandardDurations.add(clonedSubValue);
+            }
+        }
+        cloned.setNonStandardDurations(nonStandardDurations);
+
+        //RequiredLocationsEntity
+        List<RequiredLocationsEntity> requiredLocations = new ArrayList<>();
+        if (null != cloned.getRequiredLocations()) {
+            for (RequiredLocationsEntity rle : cloned.getRequiredLocations()) {
+                RequiredLocationsEntity clonedSubValue = (RequiredLocationsEntity)rle.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                requiredLocations.add(clonedSubValue);
+            }
+        }
+        cloned.setRequiredLocations(requiredLocations);
+
+        //RequiredFacilitiesEntity
+        List<RequiredFacilitiesEntity> requiredFacilities = new ArrayList<>();
+        if (null != cloned.getRequiredFacilities()) {
+            for (RequiredFacilitiesEntity rfe : cloned.getRequiredFacilities()) {
+                RequiredFacilitiesEntity clonedSubValue = (RequiredFacilitiesEntity)rfe.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                requiredFacilities.add(clonedSubValue);
+            }
+        }
+        cloned.setRequiredFacilities(requiredFacilities);
+
+        //HearingPartyEntity
+        List<HearingPartyEntity> hearingParties = new ArrayList<>();
+        if (null != cloned.getHearingParties()) {
+            for (HearingPartyEntity hp : cloned.getHearingParties()) {
+                HearingPartyEntity clonedSubValue = (HearingPartyEntity)hp.clone();
+                clonedSubValue.setTechPartyId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                hearingParties.add(clonedSubValue);
+            }
+        }
+        cloned.setHearingParties(hearingParties);
+
+        //PanelRequirementsEntity
+        List<PanelRequirementsEntity> panelRequirements = new ArrayList<>();
+        if (null != cloned.getPanelRequirements()) {
+            for (PanelRequirementsEntity pre : cloned.getPanelRequirements()) {
+                PanelRequirementsEntity clonedSubValue = (PanelRequirementsEntity)pre.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                panelRequirements.add(clonedSubValue);
+            }
+        }
+        cloned.setPanelRequirements(panelRequirements);
+
+        //PanelAuthorisationRequirementsEntity
+        List<PanelAuthorisationRequirementsEntity> panelAuthorisationRequirements = new ArrayList<>();
+        if (null != cloned.getPanelAuthorisationRequirements()) {
+            for (PanelAuthorisationRequirementsEntity par : cloned.getPanelAuthorisationRequirements()) {
+                PanelAuthorisationRequirementsEntity clonedSubValue = (PanelAuthorisationRequirementsEntity)par.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                panelAuthorisationRequirements.add(clonedSubValue);
+            }
+        }
+        cloned.setPanelAuthorisationRequirements(panelAuthorisationRequirements);
+
+        //PanelSpecialismsEntity
+        List<PanelSpecialismsEntity> panelSpecialisms = new ArrayList<>();
+        if (null != cloned.getPanelSpecialisms()) {
+            for (PanelSpecialismsEntity pse : cloned.getPanelSpecialisms()) {
+                PanelSpecialismsEntity clonedSubValue = (PanelSpecialismsEntity)pse.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                panelSpecialisms.add(clonedSubValue);
+            }
+        }
+        cloned.setPanelSpecialisms(panelSpecialisms);
+
+        //PanelUserRequirementsEntity
+        List<PanelUserRequirementsEntity> panelUserRequirements = new ArrayList<>();
+        if (null != cloned.getPanelUserRequirements()) {
+            for (PanelUserRequirementsEntity pure : cloned.getPanelUserRequirements()) {
+                PanelUserRequirementsEntity clonedSubValue = (PanelUserRequirementsEntity)pure.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                panelUserRequirements.add(clonedSubValue);
+            }
+        }
+        cloned.setPanelUserRequirements(panelUserRequirements);
+        cloned.setCaseHearingID(null);
+        return cloned;
+    }
+
 
 }

@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -29,7 +31,7 @@ import javax.persistence.Table;
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class HearingPartyEntity extends BaseEntity {
+public class HearingPartyEntity extends BaseEntity implements Serializable, Cloneable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")
@@ -67,9 +69,60 @@ public class HearingPartyEntity extends BaseEntity {
     @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<ReasonableAdjustmentsEntity> reasonableAdjustmentsEntity;
 
-    @OneToMany(mappedBy = "hearingParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<ContactDetailsEntity> contactDetails;
-
     @OneToMany(mappedBy = "sourceTechParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntity;
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        HearingPartyEntity cloned = (HearingPartyEntity)super.clone();
+
+        //UnavailabilityEntity
+        List<UnavailabilityEntity> unavailabilityEntityList = new ArrayList<>();
+        if (null != cloned.getUnavailabilityEntity()) {
+            for (UnavailabilityEntity ue : cloned.getUnavailabilityEntity()) {
+                UnavailabilityEntity clonedSubValue = (UnavailabilityEntity)ue.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setHearingParty(cloned);
+                unavailabilityEntityList.add(clonedSubValue);
+            }
+        }
+        cloned.setUnavailabilityEntity(unavailabilityEntityList);
+
+        //ContactDetailsEntity
+        List<ContactDetailsEntity> contactDetailsEntityList = new ArrayList<>();
+        if (null != cloned.getContactDetailsEntity()) {
+            for (ContactDetailsEntity cde : cloned.getContactDetailsEntity()) {
+                ContactDetailsEntity clonedSubValue = (ContactDetailsEntity)cde.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setHearingParty(cloned);
+                contactDetailsEntityList.add(clonedSubValue);
+            }
+        }
+        cloned.setContactDetailsEntity(contactDetailsEntityList);
+
+        //ReasonableAdjustmentsEntity
+        List<ReasonableAdjustmentsEntity> reasonableAdjustmentsEntityList = new ArrayList<>();
+        if (null != cloned.getReasonableAdjustmentsEntity()) {
+            for (ReasonableAdjustmentsEntity rae : cloned.getReasonableAdjustmentsEntity()) {
+                ReasonableAdjustmentsEntity clonedSubValue = (ReasonableAdjustmentsEntity)rae.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setHearingParty(cloned);
+                reasonableAdjustmentsEntityList.add(clonedSubValue);
+            }
+        }
+        cloned.setReasonableAdjustmentsEntity(reasonableAdjustmentsEntityList);
+
+        //PartyRelationshipDetailsEntity
+        List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntityList = new ArrayList<>();
+        if (null != cloned.getPartyRelationshipDetailsEntity()) {
+            for (PartyRelationshipDetailsEntity prde : cloned.getPartyRelationshipDetailsEntity()) {
+                PartyRelationshipDetailsEntity clonedSubValue = (PartyRelationshipDetailsEntity)prde.clone();
+                clonedSubValue.setPartyRelationshipDetailsId(null);
+                partyRelationshipDetailsEntityList.add(clonedSubValue);
+            }
+        }
+        cloned.setPartyRelationshipDetailsEntity(partyRelationshipDetailsEntityList);
+
+        return cloned;
+    }
 }

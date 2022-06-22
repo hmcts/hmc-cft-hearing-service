@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
@@ -75,12 +74,12 @@ public class CaseHearingRequestMapper {
                                                   HearingEntity hearingEntity,
                                                   Integer requestVersion,
                                                   CaseHearingRequestEntity  caseHearingCurrent) {
-        CaseHearingRequestEntity caseHearingRequestNew = new CaseHearingRequestEntity();
-        BeanUtils.copyProperties(
-            caseHearingCurrent,
-            caseHearingRequestNew,
-            "caseHearingID"
-        );
+        CaseHearingRequestEntity caseHearingRequestNew = null;
+        try{
+            caseHearingRequestNew = (CaseHearingRequestEntity)caseHearingCurrent.clone();
+        } catch (CloneNotSupportedException e) {
+
+        }
         caseHearingRequestNew.setVersionNumber(requestVersion);
         caseHearingRequestNew.setCancellationReason(setCancellationReasonsEntity(deleteHearingRequest
                                                                                         .getCancellationReasonCode(),

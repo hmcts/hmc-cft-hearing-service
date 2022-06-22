@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Table(name = "party_relationship_details")
 @EqualsAndHashCode(callSuper = true)
@@ -24,7 +25,7 @@ import javax.persistence.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PartyRelationshipDetailsEntity extends BaseEntity {
+public class PartyRelationshipDetailsEntity extends BaseEntity implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -42,4 +43,9 @@ public class PartyRelationshipDetailsEntity extends BaseEntity {
 
     @Column(name = "relationship_type")
     private String relationshipType;
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }
