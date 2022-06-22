@@ -186,41 +186,6 @@ class HearingActualsValidatorTest {
         assertTrue(exception.getMessage().contains(HA_OUTCOME_FINAL_FLAG_NOT_EMPTY));
     }
 
-
-    @Test
-    void shouldNotThrowErrorWhenHasHearingTypeIs40CharsOrLess() {
-        final String random40Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN";
-        assertDoesNotThrow(() -> {
-            hearingActualsValidator.validateActualHearingType(random40Chars);
-        });
-    }
-
-    @Test
-    void shouldThrowErrorWhenHasHearingTypeIsMoreThan40Chars() {
-        final String random41Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNO";
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingActualsValidator.validateActualHearingType(random41Chars);
-        });
-        assertTrue(exception.getMessage().contains(HA_OUTCOME_TYPE_MAX_LENGTH));
-    }
-
-    @Test
-    void shouldNotThrowErrorWhenHasHearingResultReasonTypeIs70CharsOrLess() {
-        final String random70Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGH";
-        assertDoesNotThrow(() -> {
-            hearingActualsValidator.validateHearingResultReasonType(random70Chars);
-        });
-    }
-
-    @Test
-    void shouldThrowErrorWhenHasHearingResultReasonTypeIsMoreThan70Chars() {
-        final String random71Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGH1";
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingActualsValidator.validateHearingResultReasonType(random71Chars);
-        });
-        assertTrue(exception.getMessage().contains(HA_OUTCOME_REASON_TYPE_MAX_LENGTH));
-    }
-
     @Test
     void shouldNotErrorWhenHasHearingResultDateIsToday() {
         assertDoesNotThrow(() -> {
