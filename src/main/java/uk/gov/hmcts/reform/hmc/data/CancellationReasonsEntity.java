@@ -14,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Table(name = "cancellation_reasons")
 @EqualsAndHashCode(callSuper = true)
@@ -22,7 +23,7 @@ import javax.persistence.Table;
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class CancellationReasonsEntity extends BaseEntity {
+public class CancellationReasonsEntity extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
