@@ -969,6 +969,7 @@ class HearingManagementServiceTest {
     @Nested
     @DisplayName("updateHearing")
     class UpdateHearing {
+        @BeforeEach
         public void setUp() {
             MockitoAnnotations.openMocks(this);
             hearingIdValidator = new HearingIdValidator(hearingRepository, actualHearingRepository,

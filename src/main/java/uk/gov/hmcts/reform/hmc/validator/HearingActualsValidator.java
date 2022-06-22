@@ -124,8 +124,6 @@ public class HearingActualsValidator {
     public void validateActualHearingType(String actualHearingType) {
         if (StringUtils.isBlank(actualHearingType)) {
             throw new BadRequestException(ValidationError.HA_OUTCOME_TYPE_NOT_EMPTY);
-        } else if (actualHearingType.length() > 40) {
-            throw new BadRequestException(ValidationError.HA_OUTCOME_TYPE_MAX_LENGTH);
         }
     }
 
@@ -144,8 +142,6 @@ public class HearingActualsValidator {
     public void validateHearingResultDate(LocalDate hearingResultDate) {
         if (null == hearingResultDate) {
             throw new BadRequestException(ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY);
-        } else if (hearingResultDate.isAfter(LocalDate.now())) {
-            throw new BadRequestException(ValidationError.HA_OUTCOME_REQUEST_DATE_MUST_BE_PAST_OR_PRESENT);
         }
     }
 
