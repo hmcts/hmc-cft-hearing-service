@@ -6,16 +6,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
-import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingJoh;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingLocation;
+import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,154 +36,83 @@ class ListingMapperTest {
     @Mock
     private ListingLocationsMapper listingLocationsMapper;
 
-    @Mock
-    private ListingOtherConsiderationsMapper listingOtherConsiderationsMapper;
-
     @InjectMocks
     private ListingMapper listingMapper;
 
-    private static final String HEARING_PRIORITY_TYPE = "HearingPriorityType";
-    private static final String HEARING_TYPE = "HearingType";
-    private static final String LISTING_COMMENTS = "ListingComments";
-    private static final String HEARING_REQUESTER = "HearingRequester";
-    private static final String ROLE_TYPE = "RoleType";
-    private static final String HEARING_CHANNEL = "Email";
-    private static final String AMEND_REASON_CODE = "code";
+    private static final String HEARING_PRIORITY_TYPE = "Priority type";
+    private static final String HEARING_TYPE = "Some hearing type";
+    private static final String LISTING_COMMENTS = "Some listing comments";
+    private static final String HEARING_REQUESTER = "Some judge";
+    private static final String ROLE_TYPE = "RoleType1";
+    private static final String HEARING_CHANNEL = "someChannelType";
+    private static final String AMEND_REASON_CODE = "reason";
+    private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
 
     @Test
     void shouldReturnListingWithBothHearingWindowFieldsAndRoleType() {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setFirstDateTimeMustBe(localDateTime);
-        hearingWindow.setDateRangeStart(localDateTime.minusDays(1).toLocalDate());
-        hearingWindow.setDateRangeEnd(localDateTime.plusDays(1).toLocalDate());
-        HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(true);
-        hearingDetails.setHearingPriorityType(HEARING_PRIORITY_TYPE);
-        hearingDetails.setHearingType(HEARING_TYPE);
-        hearingDetails.setDuration(150);
-        hearingDetails.setHearingWindow(hearingWindow);
-        hearingDetails.setNumberOfPhysicalAttendees(2);
-        hearingDetails.setListingComments(LISTING_COMMENTS);
-        hearingDetails.setHearingRequester(HEARING_REQUESTER);
-        hearingDetails.setAmendReasonCode(AMEND_REASON_CODE);
-        hearingDetails.setPrivateHearingRequiredFlag(false);
-        PanelRequirements panelRequirements = new PanelRequirements();
-        PanelPreference panelPreference = new PanelPreference();
-        panelRequirements.setPanelPreferences(Collections.singletonList(panelPreference));
-        panelRequirements.setRoleType(Collections.singletonList(ROLE_TYPE));
-        hearingDetails.setPanelRequirements(panelRequirements);
-        ListingLocation listingLocation = ListingLocation.builder().build();
-        listingLocation.setLocationId("court Id");
-        listingLocation.setLocationType(COURT);
-        listingLocation.setLocationReferenceType(EPIMS);
-        when(listingLocationsMapper.getListingLocations(any())).thenReturn(Collections.singletonList(listingLocation));
-        HearingLocation hearingLocation = new HearingLocation();
-        hearingDetails.setHearingLocations(Collections.singletonList(hearingLocation));
-        ListingJoh listingJoh = ListingJoh.builder().build();
+        ListingJoh listingJoh = generateListingJoh();
+        ListingLocation listingLocation = generateListingLocation();
+        HearingDetails hearingDetails = buildHearingDetails(150);
+        Listing listing = listingMapper.getListing(hearingDetails);
 
-        Boolean hearingInWelsh = Boolean.TRUE;
-        String facilityType1 = "consideration 1";
-        String facilityType2 = "consideration 2";
-        List<String> facilityTypes = new ArrayList<>();
-        facilityTypes.add(facilityType1);
-        facilityTypes.add(facilityType2);
-        List<String> otherConsiderations = generateOtherConsiderations(hearingInWelsh, facilityTypes);
-
-        when(listingJohsMapper.getListingJohs(any())).thenReturn(Collections.singletonList(listingJoh));
-        when(listingOtherConsiderationsMapper.getListingOtherConsiderations(any(), any()))
-            .thenReturn(otherConsiderations);
-
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        assertListingLocations(listingLocation, listing.getListingLocations());
+        assertListingJohs(listingJoh, listing.getListingJohs());
+        assertOtherConsiderations(listing.getListingOtherConsiderations());
 
         assertEquals(true, listing.getListingAutoCreateFlag());
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
         assertEquals(HEARING_TYPE, listing.getListingType());
         assertEquals(150, listing.getListingDuration());
         assertNull(listing.getListingMultiDay());
-        assertEquals(localDateTime, listing.getListingDate());
-        assertEquals(2, listing.getListingNumberAttendees());
+        assertEquals(LOCAL_DATE_TIME, listing.getListingDate());
+        assertEquals(4, listing.getListingNumberAttendees());
         assertEquals(LISTING_COMMENTS, listing.getListingComments());
         assertEquals(HEARING_REQUESTER, listing.getListingRequestedBy());
         assertEquals(false, listing.getListingPrivateFlag());
-
-        assertEquals(1, listing.getListingJohs().size());
-        assertEquals(listingJoh, listing.getListingJohs().get(0));
-
-        assertEquals(3, listing.getListingOtherConsiderations().size());
-        assertTrue(listing.getListingOtherConsiderations().contains(hearingInWelsh.toString()));
-        assertTrue(listing.getListingOtherConsiderations().contains(facilityType1));
-        assertTrue(listing.getListingOtherConsiderations().contains(facilityType2));
-
-        assertEquals(1, listing.getListingHearingChannels().size());
+        assertEquals(false, listing.getListingWelshHearingFlag());
+        assertEquals(2, listing.getListingHearingChannels().size());
         assertEquals(AMEND_REASON_CODE, listing.getAmendReasonCode());
         assertEquals(HEARING_CHANNEL, listing.getListingHearingChannels().get(0));
-        assertEquals(1, listing.getListingLocations().size());
-        assertEquals(listingLocation, listing.getListingLocations().get(0));
-        assertEquals(localDateTime.minusDays(1).toLocalDate(), listing.getListingStartDate());
-        assertEquals(localDateTime.plusDays(1).toLocalDate(), listing.getListingEndDate());
-        assertEquals(1, listing.getListingJohTiers().size());
+        assertEquals(LOCAL_DATE_TIME.minusDays(1).toLocalDate(), listing.getListingStartDate());
+        assertEquals(LOCAL_DATE_TIME.plusDays(1).toLocalDate(), listing.getListingEndDate());
+        assertEquals(2, listing.getListingJohTiers().size());
         assertEquals(ROLE_TYPE, listing.getListingJohTiers().get(0));
-        assertEquals("court Id", listing.getListingLocations().get(0).getLocationId());
-        assertEquals(EPIMS, listing.getListingLocations().get(0).getLocationReferenceType());
-        assertEquals(COURT, listing.getListingLocations().get(0).getLocationType());
-    }
-
-    private List<String> generateOtherConsiderations(Boolean hearingInWelsh,
-                                                     List<String> facilityTypes) {
-        List<String> otherConsiderations = new ArrayList<>();
-        otherConsiderations.add(hearingInWelsh.toString());
-        facilityTypes.forEach(e -> otherConsiderations.add(e));
-        return otherConsiderations;
     }
 
     @Test
     void shouldReturnListingWithHearingWindowFieldsAndRoleTypeNull() {
-        LocalDateTime localDateTime = LocalDateTime.now();
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setFirstDateTimeMustBe(localDateTime);
+        hearingWindow.setFirstDateTimeMustBe(LOCAL_DATE_TIME);
         hearingWindow.setDateRangeStart(null);
         hearingWindow.setDateRangeEnd(null);
-        HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(true);
-        hearingDetails.setHearingPriorityType(HEARING_PRIORITY_TYPE);
-        hearingDetails.setHearingType(HEARING_TYPE);
-        hearingDetails.setDuration(360);
-        hearingDetails.setHearingWindow(hearingWindow);
-        hearingDetails.setNumberOfPhysicalAttendees(2);
-        hearingDetails.setListingComments(LISTING_COMMENTS);
-        hearingDetails.setHearingRequester(HEARING_REQUESTER);
-        hearingDetails.setPrivateHearingRequiredFlag(false);
         PanelRequirements panelRequirements = new PanelRequirements();
         PanelPreference panelPreference = new PanelPreference();
         panelRequirements.setPanelPreferences(Collections.singletonList(panelPreference));
         panelRequirements.setRoleType(null);
+        HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
         hearingDetails.setPanelRequirements(panelRequirements);
-        ListingLocation listingLocation = ListingLocation.builder().build();
-        when(listingLocationsMapper.getListingLocations(any())).thenReturn(Collections.singletonList(listingLocation));
-        HearingLocation hearingLocation = new HearingLocation();
-        hearingDetails.setHearingLocations(Collections.singletonList(hearingLocation));
-        ListingJoh listingJoh = ListingJoh.builder().build();
-        when(listingJohsMapper.getListingJohs(any())).thenReturn(Collections.singletonList(listingJoh));
+        hearingDetails.setPanelRequirements(panelRequirements);
+        hearingDetails.setHearingWindow(hearingWindow);
 
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        ListingJoh listingJoh = generateListingJoh();
+        ListingLocation listingLocation = generateListingLocation();
+        Listing listing = listingMapper.getListing(hearingDetails);
+
+        assertListingLocations(listingLocation, listing.getListingLocations());
+        assertListingJohs(listingJoh, listing.getListingJohs());
 
         assertEquals(true, listing.getListingAutoCreateFlag());
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
         assertEquals(HEARING_TYPE, listing.getListingType());
         assertEquals(360, listing.getListingDuration());
         assertNull(listing.getListingMultiDay());
-        assertEquals(localDateTime, listing.getListingDate());
-        assertEquals(2, listing.getListingNumberAttendees());
+        assertEquals(LOCAL_DATE_TIME, listing.getListingDate());
+        assertEquals(4, listing.getListingNumberAttendees());
         assertEquals(LISTING_COMMENTS, listing.getListingComments());
         assertEquals(HEARING_REQUESTER, listing.getListingRequestedBy());
         assertEquals(false, listing.getListingPrivateFlag());
-        assertEquals(1, listing.getListingJohs().size());
-        assertEquals(listingJoh, listing.getListingJohs().get(0));
-        assertEquals(1, listing.getListingHearingChannels().size());
-        assertEquals(HEARING_CHANNEL, listing.getListingHearingChannels().get(0));
-        assertEquals(1, listing.getListingLocations().size());
-        assertEquals(listingLocation, listing.getListingLocations().get(0));
+        assertEquals(2, listing.getListingHearingChannels().size());
+        assertTrue(listing.getListingHearingChannels().contains(HEARING_CHANNEL));
         assertNull(listing.getListingStartDate());
         assertNull(listing.getListingEndDate());
         assertNull(listing.getListingJohTiers());
@@ -192,34 +120,25 @@ class ListingMapperTest {
 
     @Test
     void shouldReturnListingWithNoRoleTypeWhenEmpty() {
-        LocalDateTime localDateTime = LocalDateTime.now();
         HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setFirstDateTimeMustBe(localDateTime);
+        hearingWindow.setFirstDateTimeMustBe(LOCAL_DATE_TIME);
         hearingWindow.setDateRangeStart(null);
         hearingWindow.setDateRangeEnd(null);
-        HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(true);
-        hearingDetails.setHearingPriorityType(HEARING_PRIORITY_TYPE);
-        hearingDetails.setHearingType(HEARING_TYPE);
-        hearingDetails.setDuration(365);
-        hearingDetails.setHearingWindow(hearingWindow);
-        hearingDetails.setNumberOfPhysicalAttendees(2);
-        hearingDetails.setListingComments(LISTING_COMMENTS);
-        hearingDetails.setHearingRequester(HEARING_REQUESTER);
-        hearingDetails.setPrivateHearingRequiredFlag(false);
         PanelRequirements panelRequirements = new PanelRequirements();
         PanelPreference panelPreference = new PanelPreference();
         panelRequirements.setPanelPreferences(Collections.singletonList(panelPreference));
-        hearingDetails.setPanelRequirements(panelRequirements);
-        panelRequirements.setRoleType(Collections.emptyList());
-        ListingLocation listingLocation = ListingLocation.builder().build();
-        when(listingLocationsMapper.getListingLocations(any())).thenReturn(Collections.singletonList(listingLocation));
-        HearingLocation hearingLocation = new HearingLocation();
-        hearingDetails.setHearingLocations(Collections.singletonList(hearingLocation));
-        ListingJoh listingJoh = ListingJoh.builder().build();
-        when(listingJohsMapper.getListingJohs(any())).thenReturn(Collections.singletonList(listingJoh));
+        panelRequirements.setRoleType(null);
 
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        HearingDetails hearingDetails = buildHearingDetails(365);
+        hearingDetails.setPanelRequirements(panelRequirements);
+        hearingDetails.setPanelRequirements(panelRequirements);
+        hearingDetails.setHearingWindow(hearingWindow);
+        ListingJoh listingJoh = generateListingJoh();
+        ListingLocation listingLocation = generateListingLocation();
+        Listing listing = listingMapper.getListing(hearingDetails);
+
+        assertListingLocations(listingLocation, listing.getListingLocations());
+        assertListingJohs(listingJoh, listing.getListingJohs());
 
         assertEquals(true, listing.getListingAutoCreateFlag());
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
@@ -228,17 +147,13 @@ class ListingMapperTest {
         assertEquals(0, listing.getListingMultiDay().getWeeks());
         assertEquals(1, listing.getListingMultiDay().getDays());
         assertEquals(5, listing.getListingMultiDay().getHours());
-        assertEquals(localDateTime, listing.getListingDate());
-        assertEquals(2, listing.getListingNumberAttendees());
+        assertEquals(LOCAL_DATE_TIME, listing.getListingDate());
+        assertEquals(4, listing.getListingNumberAttendees());
         assertEquals(LISTING_COMMENTS, listing.getListingComments());
         assertEquals(HEARING_REQUESTER, listing.getListingRequestedBy());
         assertEquals(false, listing.getListingPrivateFlag());
-        assertEquals(1, listing.getListingJohs().size());
-        assertEquals(listingJoh, listing.getListingJohs().get(0));
-        assertEquals(1, listing.getListingHearingChannels().size());
+        assertEquals(2, listing.getListingHearingChannels().size());
         assertEquals(HEARING_CHANNEL, listing.getListingHearingChannels().get(0));
-        assertEquals(1, listing.getListingLocations().size());
-        assertEquals(listingLocation, listing.getListingLocations().get(0));
         assertNull(listing.getListingStartDate());
         assertNull(listing.getListingEndDate());
         assertNull(listing.getListingJohTiers());
@@ -247,7 +162,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingForMultiDayHearingDurationLessThan360() {
         HearingDetails hearingDetails = buildHearingDetails(300);
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        Listing listing = listingMapper.getListing(hearingDetails);
         assertEquals(300, listing.getListingDuration());
         assertNull(listing.getListingMultiDay());
     }
@@ -255,7 +170,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs360() {
         HearingDetails hearingDetails = buildHearingDetails(360);
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        Listing listing = listingMapper.getListing(hearingDetails);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertNull(listing.getListingMultiDay());
     }
@@ -263,7 +178,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs720() {
         HearingDetails hearingDetails = buildHearingDetails(720);
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        Listing listing = listingMapper.getListing(hearingDetails);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(0, listing.getListingMultiDay().getWeeks());
         assertEquals(2, listing.getListingMultiDay().getDays());
@@ -273,7 +188,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs1800() {
         HearingDetails hearingDetails = buildHearingDetails(1800);
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        Listing listing = listingMapper.getListing(hearingDetails);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(1, listing.getListingMultiDay().getWeeks());
         assertEquals(0, listing.getListingMultiDay().getDays());
@@ -283,7 +198,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs2160() {
         HearingDetails hearingDetails = buildHearingDetails(2160);
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        Listing listing = listingMapper.getListing(hearingDetails);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(1, listing.getListingMultiDay().getWeeks());
         assertEquals(1, listing.getListingMultiDay().getDays());
@@ -293,46 +208,53 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs2165() {
         HearingDetails hearingDetails = buildHearingDetails(2165);
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        Listing listing = listingMapper.getListing(hearingDetails);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(1, listing.getListingMultiDay().getWeeks());
         assertEquals(1, listing.getListingMultiDay().getDays());
         assertEquals(5, listing.getListingMultiDay().getHours());
     }
 
+    private void assertListingJohs(ListingJoh listingJoh, List<ListingJoh> listingJohList) {
+        assertEquals(1, listingJohList.size());
+        assertEquals(listingJoh, listingJohList.get(0));
+    }
+
+    private void assertOtherConsiderations(List<String> otherConsiderationsList) {
+        assertEquals(2, otherConsiderationsList.size());
+        assertTrue(otherConsiderationsList.contains("facility1"));
+        assertTrue(otherConsiderationsList.contains("facility2"));
+    }
+
+    private void assertListingLocations(ListingLocation listingLocation, List<ListingLocation> listingLocations) {
+        assertEquals(listingLocation, listingLocations.get(0));
+        assertEquals(1, listingLocations.size());
+        assertEquals("court Id", listingLocations.get(0).getLocationId());
+        assertEquals(EPIMS, listingLocations.get(0).getLocationReferenceType());
+        assertEquals(COURT, listingLocations.get(0).getLocationType());
+    }
+
     private HearingDetails buildHearingDetails(int duration) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        HearingWindow hearingWindow = new HearingWindow();
-        hearingWindow.setDateRangeStart(localDateTime.minusDays(1).toLocalDate());
-        hearingWindow.setDateRangeEnd(localDateTime.plusDays(1).toLocalDate());
-        HearingDetails hearingDetails = new HearingDetails();
+        HearingDetails hearingDetails = TestingUtil.hearingDetailsWithAllFields();
         hearingDetails.setDuration(duration);
-        hearingDetails.setHearingWindow(hearingWindow);
-        PanelRequirements panelRequirements = new PanelRequirements();
-        PanelPreference panelPreference = new PanelPreference();
-        panelRequirements.setPanelPreferences(Collections.singletonList(panelPreference));
-        panelRequirements.setRoleType(Collections.singletonList(ROLE_TYPE));
-        hearingDetails.setPanelRequirements(panelRequirements);
+        hearingDetails.getHearingWindow().setFirstDateTimeMustBe(LOCAL_DATE_TIME);
+        hearingDetails.getHearingWindow().setDateRangeStart(LOCAL_DATE_TIME.minusDays(1).toLocalDate());
+        hearingDetails.getHearingWindow().setDateRangeEnd(LOCAL_DATE_TIME.plusDays(1).toLocalDate());
+        return hearingDetails;
+    }
+
+    private ListingLocation generateListingLocation() {
         ListingLocation listingLocation = ListingLocation.builder().build();
         listingLocation.setLocationId("court Id");
         listingLocation.setLocationType(COURT);
         listingLocation.setLocationReferenceType(EPIMS);
         when(listingLocationsMapper.getListingLocations(any())).thenReturn(Collections.singletonList(listingLocation));
-        HearingLocation hearingLocation = new HearingLocation();
-        hearingDetails.setHearingLocations(Collections.singletonList(hearingLocation));
+        return listingLocation;
+    }
+
+    private ListingJoh generateListingJoh() {
         ListingJoh listingJoh = ListingJoh.builder().build();
-
-        Boolean hearingInWelsh = Boolean.TRUE;
-        String facilityType1 = "consideration 1";
-        String facilityType2 = "consideration 2";
-        List<String> facilityTypes = new ArrayList<>();
-        facilityTypes.add(facilityType1);
-        facilityTypes.add(facilityType2);
-        List<String> otherConsiderations = generateOtherConsiderations(hearingInWelsh, facilityTypes);
-
         when(listingJohsMapper.getListingJohs(any())).thenReturn(Collections.singletonList(listingJoh));
-        when(listingOtherConsiderationsMapper.getListingOtherConsiderations(any(), any()))
-            .thenReturn(otherConsiderations);
-        return hearingDetails;
+        return listingJoh;
     }
 }

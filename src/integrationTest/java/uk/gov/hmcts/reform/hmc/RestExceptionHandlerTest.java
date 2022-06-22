@@ -100,6 +100,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
+        hearingDetails.setHearingChannels(List.of(""));
         CaseDetails caseDetails = new CaseDetails();
         caseDetails.setHmctsServiceCode("ABA1");
         caseDetails.setCaseRef("1111222233334444");

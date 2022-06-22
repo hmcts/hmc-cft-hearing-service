@@ -16,18 +16,15 @@ public class ListingMapper {
 
     private final ListingJohsMapper listingJohsMapper;
     private final ListingLocationsMapper listingLocationsMapper;
-    private final ListingOtherConsiderationsMapper listingOtherConsiderationsMapper;
 
     @Autowired
     public ListingMapper(ListingJohsMapper listingJohsMapper,
-                         ListingLocationsMapper listingLocationsMapper,
-                         ListingOtherConsiderationsMapper listingOtherConsiderationsMapper) {
+                         ListingLocationsMapper listingLocationsMapper) {
         this.listingJohsMapper = listingJohsMapper;
         this.listingLocationsMapper = listingLocationsMapper;
-        this.listingOtherConsiderationsMapper = listingOtherConsiderationsMapper;
     }
 
-    public Listing getListing(HearingDetails hearingDetails, List<String> preferredHearingChannels) {
+    public Listing getListing(HearingDetails hearingDetails) {
 
         Listing listing = Listing.builder()
             .listingAutoCreateFlag(hearingDetails.getAutoListFlag())
@@ -39,16 +36,13 @@ public class ListingMapper {
             .listingRequestedBy(hearingDetails.getHearingRequester())
             .listingPrivateFlag(hearingDetails.getPrivateHearingRequiredFlag())
             .listingJohs(listingJohsMapper.getListingJohs(hearingDetails.getPanelRequirements()))
-            .listingHearingChannels(preferredHearingChannels)
+            .listingHearingChannels(hearingDetails.getHearingChannels())
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
             .amendReasonCode(hearingDetails.getAmendReasonCode())
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
-            .listingOtherConsiderations(
-                    listingOtherConsiderationsMapper.getListingOtherConsiderations(
-                            hearingDetails.getHearingInWelshFlag(),
-                            hearingDetails.getFacilitiesRequired())
-                    )
+            .listingOtherConsiderations(getListingOtherConsiderations(hearingDetails.getFacilitiesRequired()))
+            .listingWelshHearingFlag(hearingDetails.getHearingInWelshFlag())
             .build();
         if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
             listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
@@ -95,6 +89,14 @@ public class ListingMapper {
 
     private int getWeeks(Integer hearingDetailsDuration) {
         return (hearingDetailsDuration / (360 * 5));
+    }
+
+    private List<String> getListingOtherConsiderations(List<String> facilityTypes) {
+        List<String> listOtherConsiderations = new ArrayList<>();
+        if (null != facilityTypes) {
+            listOtherConsiderations.addAll(facilityTypes);
+        }
+        return listOtherConsiderations;
     }
 
 }
