@@ -8,8 +8,8 @@
 
   "users": {
     "invokingUser": {
-      "username": "master.caseworker@gmail.com",
-      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
+      "username": "hmc.superuser@gmail.com",
+      "password": "[[$HMC_HEARING_SERVICE_USERS_PWD]]"
     }
   },
   "request": {
