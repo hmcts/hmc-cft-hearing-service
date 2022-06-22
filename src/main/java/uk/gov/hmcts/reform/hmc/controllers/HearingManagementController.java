@@ -136,18 +136,18 @@ public class HearingManagementController {
                                                String ccdCaseRef,
                                            @RequestParam(required = false)
                                                String status) {
-//        List<String> filteredRoleAssignments =
-//            accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
-//                HEARING_VIEWER,
-//                LISTED_HEARING_VIEWER));
-//
-//        if (hasOnlyListedHearingViewerRoles(filteredRoleAssignments)) {
-//            if ((status == null || HearingStatus.LISTED.name().equals(status))) {
-//                status = HearingStatus.LISTED.name();
-//            } else {
-//                return hearingManagementService.getEmptyHearingsResponse(ccdCaseRef);
-//            }
-//        }
+        List<String> filteredRoleAssignments =
+            accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
+                HEARING_VIEWER,
+                LISTED_HEARING_VIEWER));
+
+        if (hasOnlyListedHearingViewerRoles(filteredRoleAssignments)) {
+            if ((status == null || HearingStatus.LISTED.name().equals(status))) {
+                status = HearingStatus.LISTED.name();
+            } else {
+                return hearingManagementService.getEmptyHearingsResponse(ccdCaseRef);
+            }
+        }
 
         return hearingManagementService.getHearings(ccdCaseRef, status);
     }
