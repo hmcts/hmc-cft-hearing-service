@@ -76,7 +76,7 @@ public class CaseHearingRequestMapper {
                                                   HearingEntity hearingEntity,
                                                   Integer requestVersion,
                                                   CaseHearingRequestEntity caseHearingCurrent) {
-        CaseHearingRequestEntity caseHearingRequestNew = null;
+        CaseHearingRequestEntity caseHearingRequestNew = new CaseHearingRequestEntity();
         try {
             caseHearingRequestNew = (CaseHearingRequestEntity) caseHearingCurrent.clone();
         } catch (CloneNotSupportedException e) {
