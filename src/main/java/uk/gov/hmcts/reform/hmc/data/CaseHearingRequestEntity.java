@@ -266,6 +266,4 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         cloned.setCaseHearingID(null);
         return cloned;
     }
-
-
 }
