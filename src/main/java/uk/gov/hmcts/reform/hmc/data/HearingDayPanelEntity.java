@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.data;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,7 +15,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
-import java.io.Serializable;
 
 @Table(name = "hearing_day_panel")
 @EqualsAndHashCode(callSuper = true)
