@@ -33,7 +33,7 @@ public class ListingMapper {
         this.roomAttributesService = roomAttributesService;
     }
 
-    public Listing getListing(HearingDetails hearingDetails, List<Entity> entities) {
+    public Listing getListing(HearingDetails hearingDetails, List<Entity> entitiesList) {
 
         Listing listing = Listing.builder()
             .listingAutoCreateFlag(hearingDetails.getAutoListFlag())
@@ -53,13 +53,17 @@ public class ListingMapper {
             .listingWelshHearingFlag(hearingDetails.getHearingInWelshFlag())
             .build();
 
-        if (entities != null) {
-            // change lar to roomAttributes (plural!)
-            List<String> lar = checkAgainstRoomAttributes(entities, hearingDetails);
-            if (lar.isEmpty() && hearingDetails.getFacilitiesRequired() != null) {
+        if (entitiesList != null) {
+            List<String> roomAttributesList = checkAgainstRoomAttributes(entitiesList, hearingDetails);
+            if (roomAttributesList.isEmpty() && hearingDetails.getFacilitiesRequired() != null) {
                 listing.setListingOtherConsiderations(hearingDetails.getFacilitiesRequired());
+            } else {
+                listing.setListingOtherConsiderations(List.of());
+                listing.setRoomAttributes(roomAttributesList);
             }
-            listing.setRoomAttributes(lar);
+        } else {
+            listing.setListingOtherConsiderations(List.of());
+            listing.setRoomAttributes(List.of());
         }
 
         if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
@@ -109,25 +113,26 @@ public class ListingMapper {
         return (hearingDetailsDuration / (360 * 5));
     }
 
-    private List<String> checkAgainstRoomAttributes(List<Entity> entities, HearingDetails hearingDetails) {
-        // change the variable names
-        Set<String> lar = new HashSet<>();// change lar to roomAttributes (plural!)
-        entities.forEach(entity -> {
+    private List<String> checkAgainstRoomAttributes(List<Entity> entityList, HearingDetails hearingDetails) {
+        Set<String> roomAttributesSet = new HashSet<>();
+        entityList.forEach(entity -> {
             if (entity.getEntityOtherConsiderations() != null && !entity.getEntityOtherConsiderations().isEmpty()) {
-                for (String pir : entity.getEntityOtherConsiderations()) { // rename pir to reasonableAdjustment
-                    // rename ratRac to roomAttributeByRac
-                    Optional<RoomAttribute> ratRac = roomAttributesService.findByReasonableAdjustmentCode(pir);
-                    ratRac.ifPresent(roomAttribute -> lar.add(roomAttribute.getRoomAttributeCode()));
+                for (String reasonableAdjustment : entity.getEntityOtherConsiderations()) {
+                    Optional<RoomAttribute> roomAttributeByReasonableAdjustment =
+                        roomAttributesService.findByReasonableAdjustmentCode(reasonableAdjustment);
+                    roomAttributeByReasonableAdjustment.ifPresent(
+                        roomAttribute
+                            -> roomAttributesSet.add(roomAttribute.getRoomAttributeCode()));
                 }
                 for (String facility : hearingDetails.getFacilitiesRequired()) {
-                    // rename ratRoc to roomAttributeByRoc
-                    Optional<RoomAttribute> ratRoc = roomAttributesService.findByRoomAttributeCode(facility);
-                    if (ratRoc.isPresent() && ratRoc.get().isFacility()) {
-                        lar.add(ratRoc.get().getRoomAttributeCode());
+                    Optional<RoomAttribute> roomAttributeByAttributeCode =
+                        roomAttributesService.findByRoomAttributeCode(facility);
+                    if (roomAttributeByAttributeCode.isPresent() && roomAttributeByAttributeCode.get().isFacility()) {
+                        roomAttributesSet.add(roomAttributeByAttributeCode.get().getRoomAttributeCode());
                     }
                 }
             }
         });
-        return new ArrayList<>(lar);
+        return new ArrayList<>(roomAttributesSet);
     }
 }

@@ -85,7 +85,6 @@ class ListingMapperTest {
         assertEquals(LOCAL_DATE_TIME.plusDays(1).toLocalDate(), listing.getListingEndDate());
         assertEquals(2, listing.getListingJohTiers().size());
         assertEquals(ROLE_TYPE, listing.getListingJohTiers().get(0));
-        assertNotNull(listing.getRoomAttributes());
     }
 
     @Test
@@ -233,6 +232,14 @@ class ListingMapperTest {
     }
 
     @Test
+    void shouldReturnEmptyListingFieldsIfEntitiesListIsNul() {
+        HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
+        Listing listing = listingMapper.getListing(hearingDetails,null);
+        assertTrue(listing.getListingOtherConsiderations().isEmpty());
+        assertTrue(listing.getRoomAttributes().isEmpty());
+    }
+
+    @Test
     void shouldReturnListingWithRoomAttributeAC01() {
         HearingDetails hearingDetails = buildHearingDetails(150);
         hearingDetails.setFacilitiesRequired(List.of("ReasonableAdjustment1"));
@@ -262,7 +269,7 @@ class ListingMapperTest {
     }
 
     @Test
-    void shouldReturnListingWithRoomAttributeAC03() {
+    void shouldReturnListingWithOtherConsiderationsAC03() {
         HearingDetails hearingDetails = buildHearingDetails(150);
         hearingDetails.setFacilitiesRequired(List.of("RoomCode1"));
         Optional<RoomAttribute> roomAttribute =
@@ -277,7 +284,7 @@ class ListingMapperTest {
     }
 
     @Test
-    void shouldReturnListingWithRoomAttributeAC04() {
+    void shouldReturnListingWithOtherConsiderationsAC04() {
         HearingDetails hearingDetails = buildHearingDetails(150);
         hearingDetails.setFacilitiesRequired(List.of("randomReasonableAdjustment"));
         Optional<RoomAttribute> roomAttribute =
@@ -291,7 +298,6 @@ class ListingMapperTest {
         assertNotNull(listing.getListingOtherConsiderations());
         assertTrue(listing.getListingOtherConsiderations().contains("randomReasonableAdjustment"));
     }
-
 
     private void assertListingJohs(ListingJoh listingJoh, List<ListingJoh> listingJohList) {
         assertEquals(1, listingJohList.size());
