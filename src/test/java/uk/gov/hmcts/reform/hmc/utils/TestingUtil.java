@@ -661,7 +661,7 @@ public class TestingUtil {
 
     public static ActualHearingDayParties getHearingActualDayParties(
         String partyId, String partyRole, ActualHearingDayPartyDetail individualDetails,
-            String actualOrganisationName, String partyChannelSubType, Boolean didNotAttendFlag,
+        String actualOrganisationName, String partyChannelSubType, Boolean didNotAttendFlag,
         String representedParty) {
         ActualHearingDayParties actualHearingDayParties = new ActualHearingDayParties();
         actualHearingDayParties.setActualPartyId(partyId);
@@ -794,9 +794,11 @@ public class TestingUtil {
         caseHearingRequestEntity.setOwningLocationId("locationId");
         caseHearingRequestEntity.setCaseRestrictedFlag(true);
         caseHearingRequestEntity.setCaseSlaStartDate(LocalDate.of(2000, 01, 01));
-        caseHearingRequestEntity.setHearingParties(List.of(hearingPartyEntitySetReference("reference2"),
-                                                                 hearingPartyEntitySetReference("reference"),
-                                                                 hearingPartyEntitySetReference("reference2")));
+        caseHearingRequestEntity.setHearingParties(List.of(
+            hearingPartyEntitySetReference("reference2"),
+            hearingPartyEntitySetReference("reference"),
+            hearingPartyEntitySetReference("reference2")
+        ));
         caseHearingRequestEntity.setCaseCategories(caseCategoriesEntities());
 
         hearingEntity.getHearingResponses().get(0).setActualHearingEntity(actualHearingEntity(PartyType.ORG));
@@ -976,10 +978,12 @@ public class TestingUtil {
         entity.setContactDetailsEntity(List.of(contactDetailsEntity_Email()));
         entity.setOrganisationDetailEntity(organisationDetailEntity());
         entity.setReasonableAdjustmentsEntity(List.of(reasonableAdjustmentsEntity()));
-        entity.setPartyRelationshipDetailsEntity(List.of(partyRelationshipDetailsEntity(
-            "P1", "A"),
-                                                         partyRelationshipDetailsEntity(
-                                                             "P2", "B")));
+        entity.setPartyRelationshipDetailsEntity(List.of(
+            partyRelationshipDetailsEntity(
+                "P1", "A"),
+            partyRelationshipDetailsEntity(
+                "P2", "B")
+        ));
 
         return entity;
     }
@@ -1007,7 +1011,8 @@ public class TestingUtil {
         entity.setReasonableAdjustmentsEntity(List.of(reasonableAdjustmentsEntity()));
         entity.setPartyRelationshipDetailsEntity(List.of(
             partyRelationshipDetailsEntity("P1", "A"),
-                partyRelationshipDetailsEntity("P2", "B")));
+            partyRelationshipDetailsEntity("P2", "B")
+        ));
         return entity;
     }
 
@@ -1018,9 +1023,9 @@ public class TestingUtil {
         targetHearingPartyEntity.setPartyReference(targetTechPartyId);
 
         return PartyRelationshipDetailsEntity.builder()
-                .targetTechParty(targetHearingPartyEntity)
-                .relationshipType(relationshipType)
-                .build();
+            .targetTechParty(targetHearingPartyEntity)
+            .relationshipType(relationshipType)
+            .build();
     }
 
     public static CaseHearingRequestEntity caseHearingRequestEntityWithPartyOrg() {
@@ -1053,13 +1058,13 @@ public class TestingUtil {
         return entity1;
     }
 
-    private static RequiredFacilitiesEntity requiredFacilitiesEntity(){
+    private static RequiredFacilitiesEntity requiredFacilitiesEntity() {
         RequiredFacilitiesEntity entity = new RequiredFacilitiesEntity();
         entity.setFacilityType("string");
         return entity;
     }
 
-    private static RequiredLocationsEntity requiredLocationsEntity(){
+    private static RequiredLocationsEntity requiredLocationsEntity() {
         RequiredLocationsEntity entity = new RequiredLocationsEntity();
         entity.setLocationLevelType(LocationType.COURT);
         return entity;
@@ -1226,15 +1231,23 @@ public class TestingUtil {
     }
 
     public static HearingActual hearingActualWithDuplicatedHearingDate() {
-        return hearingActual(hearingActualsOutcome(),
-                             List.of(actualHearingDay(LocalDate.of(2022, 3, 23)),
-                                           actualHearingDay(LocalDate.of(2022, 3, 23))));
+        return hearingActual(
+            hearingActualsOutcome(),
+            List.of(
+                actualHearingDay(LocalDate.of(2022, 3, 23)),
+                actualHearingDay(LocalDate.of(2022, 3, 23))
+            )
+        );
     }
 
     public static HearingActual hearingActualWithHearingDateInFuture() {
-        return hearingActual(hearingActualsOutcome(),
-                             List.of(actualHearingDay(LocalDate.of(2022, 3, 23)),
-                                           actualHearingDay(LocalDate.of(2922, 3, 23))));
+        return hearingActual(
+            hearingActualsOutcome(),
+            List.of(
+                actualHearingDay(LocalDate.of(2022, 3, 23)),
+                actualHearingDay(LocalDate.of(2922, 3, 23))
+            )
+        );
     }
 
     public static HearingActual hearingActualWithHearingDates(List<ActualHearingDay> actualHearingDays) {

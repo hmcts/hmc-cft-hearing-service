@@ -14,9 +14,14 @@ class CaseHearingRequestEntityTest {
         void shouldMatchOnBasicField() throws CloneNotSupportedException {
             CaseHearingRequestEntity caseHearingRequest1 = TestingUtil.caseHearingRequestEntityWithPartyOrgForClone();
             CaseHearingRequestEntity response = (CaseHearingRequestEntity) caseHearingRequest1.clone();
-            assertEquals(response.getHearingParties().get(0).getPartyReference(), TestingUtil.caseHearingRequestEntityWithPartyOrg().getHearingParties().get(0).getPartyReference());
-            assertEquals(response.getHearingParties().get(0).getPartyRoleType(), TestingUtil.caseHearingRequestEntityWithPartyOrg().getHearingParties().get(0).getPartyRoleType());
-            assertEquals(response.getHearingParties().get(0).getPartyType(), TestingUtil.caseHearingRequestEntityWithPartyOrg().getHearingParties().get(0).getPartyType());
+            assertEquals(response.getHearingParties().get(0).getPartyReference(),
+                         TestingUtil.caseHearingRequestEntityWithPartyOrg()
+                             .getHearingParties().get(0).getPartyReference());
+            assertEquals(response.getHearingParties().get(0).getPartyRoleType(),
+                         TestingUtil.caseHearingRequestEntityWithPartyOrg()
+                             .getHearingParties().get(0).getPartyRoleType());
+            assertEquals(response.getHearingParties().get(0).getPartyType(),
+                         TestingUtil.caseHearingRequestEntityWithPartyOrg().getHearingParties().get(0).getPartyType());
             assertEquals(1, response.getCaseCategories().size());
             assertEquals(1, response.getHearingParties().size());
             assertEquals(1, response.getNonStandardDurations().size());
