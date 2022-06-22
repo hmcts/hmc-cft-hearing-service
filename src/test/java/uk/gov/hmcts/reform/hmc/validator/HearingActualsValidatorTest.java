@@ -29,11 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_FINAL_FLAG_NOT_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REASON_TYPE_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REQUEST_DATE_MUST_BE_PAST_OR_PRESENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_TYPE_MAX_LENGTH;
 
 class HearingActualsValidatorTest {
 
@@ -206,14 +203,6 @@ class HearingActualsValidatorTest {
             hearingActualsValidator.validateHearingResultDate(null);
         });
         assertTrue(exception.getMessage().contains(HA_OUTCOME_REQUEST_DATE_NOT_EMPTY));
-    }
-
-    @Test
-    void shouldThrowErrorWhenHasHearingResultDateIsInTheFuture() {
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingActualsValidator.validateHearingResultDate(LocalDate.now().plusDays(1));
-        });
-        assertTrue(exception.getMessage().contains(HA_OUTCOME_REQUEST_DATE_MUST_BE_PAST_OR_PRESENT));
     }
 
     protected void generateHearingResponseEntity(Integer requestVersion, HearingEntity hearingEntity,
