@@ -40,7 +40,8 @@ def secrets = [
     secret('hmc-servicebus-connection-string', 'HMC_SERVICE_BUS_CONNECTION_STRING'),
     secret('hmc-queue-connection-string', 'HMC_QUEUE_CONNECTION_STRING'),
     secret('hmc-outbound-queue-connection-string', 'HMC_OUTBOUND_QUEUE_CONNECTION_STRING'),
-    secret('hmc-fta-password', 'HMC_FTA_PASSWORD')
+    secret('hmc-fta-password', 'HMC_FTA_PASSWORD'),
+    secret('hmc-hearing-service-users-pwd', 'HMC_HEARING_SERVICE_USERS_PWD'),
 
   ],
   's2s-${env}': [
