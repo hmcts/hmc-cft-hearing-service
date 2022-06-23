@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.hmc.repository.HearingDayDetailsRepository;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl;
 
-import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +31,7 @@ import java.util.Map;
 import java.util.Spliterator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.inject.Inject;
 
 import static java.time.LocalDateTime.parse;
 import static java.util.stream.StreamSupport.stream;
