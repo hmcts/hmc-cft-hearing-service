@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,7 +24,7 @@ import javax.persistence.Table;
 @Entity
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LinkedGroupDetails extends BaseEntity {
+public class LinkedGroupDetails extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

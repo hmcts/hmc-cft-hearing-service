@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -28,7 +29,7 @@ import javax.persistence.Table;
 @SecondaryTable(name = "HEARING_RESPONSE",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "hearing_response_id")})
-public class HearingDayDetailsEntity extends BaseEntity {
+public class HearingDayDetailsEntity extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

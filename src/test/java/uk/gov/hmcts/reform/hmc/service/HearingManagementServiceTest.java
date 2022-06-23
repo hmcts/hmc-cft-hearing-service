@@ -855,8 +855,9 @@ class HearingManagementServiceTest {
                 CANCELLATION_REQUESTED,
                 1
             );
+            DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
-            when(hearingMapper.modelToEntity(any(), any(), any())).thenReturn(hearingEntity);
+            when(hearingMapper.modelToEntity(eq(deleteHearingRequest), any(), any(), any())).thenReturn(hearingEntity);
             mockDeleteRequest();
 
             HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
@@ -924,8 +925,9 @@ class HearingManagementServiceTest {
                 DeleteHearingStatus.HEARING_REQUESTED.name(),
                 1
             );
+            DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
-            when(hearingMapper.modelToEntity(any(), any(), any())).thenReturn(hearingEntity);
+            when(hearingMapper.modelToEntity(eq(deleteHearingRequest), any(), any(), any())).thenReturn(hearingEntity);
 
             DeleteHearingRequest hearingRequest = TestingUtil.deleteHearingRequest();
             mockDeleteRequest();
@@ -958,7 +960,7 @@ class HearingManagementServiceTest {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
             final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
-            mockValidHearing(hearingId, versionNumber);
+            mockValidHearing(hearingId, versionNumber, hearingRequest);
             mockSubmitRequest();
 
             HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
@@ -989,7 +991,7 @@ class HearingManagementServiceTest {
             hearingEntity.setHearingResponses(Arrays.asList(hearingResponseEntity));
 
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
-            when(hearingMapper.modelToEntity(any(), any(), any(), any())).thenReturn(hearingEntity);
+            when(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any())).thenReturn(hearingEntity);
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
@@ -1010,7 +1012,7 @@ class HearingManagementServiceTest {
                                                                 versionNumber
             );
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
-            when(hearingMapper.modelToEntity(any(), any(), any(), any())).thenReturn(hearingEntity);
+            when(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any())).thenReturn(hearingEntity);
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
@@ -1090,7 +1092,7 @@ class HearingManagementServiceTest {
                                                                 hearingRequest.getRequestDetails().getVersionNumber()
             );
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
-            when(hearingMapper.modelToEntity(any(), any(), any(), any())).thenReturn(hearingEntity);
+            when(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any())).thenReturn(hearingEntity);
             mockSubmitRequest();
 
             HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
@@ -1191,7 +1193,7 @@ class HearingManagementServiceTest {
 
             final long hearingId = 2000000000L;
             final int versionNumber = request.getRequestDetails().getVersionNumber();
-            mockValidHearing(hearingId, versionNumber);
+            mockValidHearing(hearingId, versionNumber, request);
             mockSubmitRequest();
 
             HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, request);
@@ -1226,7 +1228,7 @@ class HearingManagementServiceTest {
 
             final long hearingId = 2000000000L;
             final int versionNumber = request.getRequestDetails().getVersionNumber();
-            mockValidHearing(hearingId, versionNumber);
+            mockValidHearing(hearingId, versionNumber, request);
             mockSubmitRequest();
 
             HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, request);
@@ -1261,7 +1263,7 @@ class HearingManagementServiceTest {
 
             final long hearingId = 2000000000L;
             final int versionNumber = request.getRequestDetails().getVersionNumber();
-            mockValidHearing(hearingId, versionNumber);
+            mockValidHearing(hearingId, versionNumber, request);
             mockSubmitRequest();
 
             HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, request);
@@ -1303,7 +1305,7 @@ class HearingManagementServiceTest {
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
         }
 
-        private int mockValidHearing(long hearingId, int versionNumber) {
+        private int mockValidHearing(long hearingId, int versionNumber, UpdateHearingRequest hearingRequest) {
 
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
@@ -1312,7 +1314,7 @@ class HearingManagementServiceTest {
                                                                 versionNumber
             );
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
-            when(hearingMapper.modelToEntity(any(), any(), any(), any())).thenReturn(hearingEntity);
+            when(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any())).thenReturn(hearingEntity);
             return versionNumber;
         }
     }
