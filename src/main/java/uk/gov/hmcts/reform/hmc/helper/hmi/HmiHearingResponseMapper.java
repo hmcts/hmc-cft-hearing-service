@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingAttendee;
@@ -25,12 +23,13 @@ import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_LISTING;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
@@ -86,10 +85,11 @@ public class HmiHearingResponseMapper {
     }
 
     private List<HearingSession> findUniqueHearingSessionsPerDay(List<HearingSession> hearingSessions) {
-        MultiValuedMap<LocalDateTime, HearingSession> uniqueDays = new ArrayListValuedHashMap<>();
 
-        hearingSessions.stream().forEach(hearingSession ->
-                uniqueDays.put(hearingSession.getHearingStartTime().truncatedTo(ChronoUnit.DAYS), hearingSession));
+        final Map<LocalDateTime, List<HearingSession>> uniqueDays = hearingSessions.stream()
+                .collect(
+                        Collectors.groupingBy(hearingSession ->
+                                hearingSession.getHearingStartTime().truncatedTo(DAYS)));
 
         return uniqueDays.keySet().stream().map(date -> {
             HearingSession hearingSessionWithEarliestStartTime =
