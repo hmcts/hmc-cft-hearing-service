@@ -23,7 +23,7 @@ import javax.persistence.Table;
 @SecondaryTable(name = "hearing_party",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "TECH_PARTY_ID")})
-public class IndividualDetailEntity extends BaseEntity implements Serializable {
+public class IndividualDetailEntity extends BaseEntity implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -62,4 +62,8 @@ public class IndividualDetailEntity extends BaseEntity implements Serializable {
     @Column(name = "custody_status")
     private String custodyStatus;
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

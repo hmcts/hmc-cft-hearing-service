@@ -18,6 +18,9 @@ class HearingPartyEntityTest {
             assertEquals(1, response.getReasonableAdjustmentsEntity().size());
             assertEquals(1, response.getContactDetailsEntity().size());
             assertEquals(2, response.getPartyRelationshipDetailsEntity().size());
+            assertEquals("name", response.getOrganisationDetailEntity().getOrganisationName());
+            assertEquals("code", response.getOrganisationDetailEntity().getOrganisationTypeCode());
+            assertEquals("reference", response.getOrganisationDetailEntity().getHmctsOrganisationReference());
         }
     }
 }
