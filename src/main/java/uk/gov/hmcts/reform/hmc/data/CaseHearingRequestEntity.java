@@ -2,12 +2,15 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -252,6 +255,32 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
             }
         }
         cloned.setHearingParties(hearingPartiesList);
+
+        for (HearingPartyEntity hp : cloned.getHearingParties()) {
+            if (!CollectionUtils.isEmpty(hp.getPartyRelationshipDetailsEntity())) {
+                for (PartyRelationshipDetailsEntity prde : hp.getPartyRelationshipDetailsEntity()) {
+                    prde.setTargetTechParty(getHearingPartyEntityByReference(
+                        hp.getPartyReference(),
+                        cloned.getHearingParties()
+                    ));
+                }
+            }
+        }
+    }
+
+    private HearingPartyEntity getHearingPartyEntityByReference(String relatedPartyId,
+                                                                List<HearingPartyEntity> hearingPartyEntities) {
+
+        final List<HearingPartyEntity> matchingHearingPartyEntities = hearingPartyEntities.stream()
+            .filter(hearingPartyEntity -> relatedPartyId.equals(hearingPartyEntity.getPartyReference()))
+            .collect(Collectors.toList());
+
+        if (matchingHearingPartyEntities.size() != 1) {
+            throw new BadRequestException(
+                String.format("Cannot find unique PartyID with value %s", relatedPartyId));
+        }
+
+        return matchingHearingPartyEntities.get(0);
     }
 
     private void cloneRequiredFacilities(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
