@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GetHearingsResponseMapperTest {
 
@@ -36,6 +37,7 @@ class GetHearingsResponseMapperTest {
         assertEquals("PanelUser1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getPanelMemberId());
         assertNull(response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getHearingJudgeId());
+        assertTrue(response.getCaseHearings().get(0).getHearingChannels().contains("someChannelType"));
     }
 
     @Test

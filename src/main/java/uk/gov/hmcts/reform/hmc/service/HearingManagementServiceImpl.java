@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
@@ -46,9 +47,12 @@ import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.transaction.Transactional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -359,6 +363,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private void validateHearingDetails(HearingDetails hearingDetails) {
         validateHearingWindow(hearingDetails);
+        validateHearingChannels(hearingDetails);
 
         if (hearingDetails.getDuration() % 5 != 0) {
             throw new BadRequestException(INVALID_DURATION_DETAILS);
@@ -380,6 +385,27 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             || hearingDetails.getHearingWindow().getDateRangeStart() != null)
             && hearingDetails.getHearingWindow().getFirstDateTimeMustBe() != null) {
             throw new BadRequestException(HEARING_WINDOW_DETAILS_ARE_INVALID);
+        }
+    }
+
+    private void validateHearingChannels(HearingDetails hearingDetails) {
+        if (hearingDetails.getHearingChannels() == null) {
+            throw new BadRequestException(ValidationError.HEARING_CHANNEL_EMPTY);
+        }
+
+        if (hearingDetails.getHearingChannels().isEmpty()) {
+            throw new BadRequestException(ValidationError.MISSING_CHANNEL_TYPE);
+        }
+
+        Set<String> duplicateHearingChannel = new HashSet<>();
+        List<String> hearingChannels = new ArrayList<>();
+        for (String hearingChannel: hearingDetails.getHearingChannels()) {
+            if (!duplicateHearingChannel.add(hearingChannel)) {
+                hearingChannels.add(hearingChannel);
+            }
+        }
+        if (!hearingChannels.isEmpty()) {
+            throw new BadRequestException(ValidationError.NON_UNIQUE_CHANNEL_TYPE);
         }
     }
 

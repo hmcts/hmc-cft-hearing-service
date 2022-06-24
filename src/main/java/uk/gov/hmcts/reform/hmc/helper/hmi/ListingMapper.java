@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingMultiDay;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
 
@@ -27,7 +26,7 @@ public class ListingMapper {
         this.listingOtherConsiderationsMapper = listingOtherConsiderationsMapper;
     }
 
-    public Listing getListing(HearingDetails hearingDetails, List<String> preferredHearingChannels) {
+    public Listing getListing(HearingDetails hearingDetails) {
 
         Listing listing = Listing.builder()
             .listingAutoCreateFlag(hearingDetails.getAutoListFlag())
@@ -39,7 +38,7 @@ public class ListingMapper {
             .listingRequestedBy(hearingDetails.getHearingRequester())
             .listingPrivateFlag(hearingDetails.getPrivateHearingRequiredFlag())
             .listingJohs(listingJohsMapper.getListingJohs(hearingDetails.getPanelRequirements()))
-            .listingHearingChannels(preferredHearingChannels)
+            .listingHearingChannels(hearingDetails.getHearingChannels())
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
             .amendReasonCode(hearingDetails.getAmendReasonCode())
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
