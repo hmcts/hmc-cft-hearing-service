@@ -70,7 +70,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_EMPTY_NULL;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DURATION_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
@@ -363,6 +362,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private void validateHearingDetails(HearingDetails hearingDetails) {
         validateHearingWindow(hearingDetails);
+        validateHearingChannels(hearingDetails);
     }
 
     private void validateHearingWindow(HearingDetails hearingDetails) {
