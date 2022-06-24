@@ -44,12 +44,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_START_TIME_DATE_NOT_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_FINAL_FLAG_NOT_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REASON_TYPE_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_TYPE_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_TYPE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.actualHearingDay;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingActualsOutcome;
 
@@ -536,58 +530,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
     @Nested
     @DisplayName("PutHearingActualsJsr303Validation")
     class PutHearingActualsJsr303Validation {
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenMissingOutcomeHearingType() throws Exception {
-            verifyErrorOnMissingNode(HA_OUTCOME_TYPE_NOT_EMPTY,
-                                     "$['hearingOutcome']['hearingType']");
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenHearingTypeTooLong() throws Exception {
-            verifyErrorOnTooLongNodeValue(HA_OUTCOME_TYPE_MAX_LENGTH,
-                                          "$['hearingOutcome']['hearingType']",
-                                          41);
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenMissingOutcomeFinalFlag() throws Exception {
-            verifyErrorOnMissingNode(HA_OUTCOME_FINAL_FLAG_NOT_EMPTY,
-                                     "$['hearingOutcome']['hearingFinalFlag']");
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenMissingOutcomeHearingResult() throws Exception {
-            verifyErrorOnMissingNode(HA_OUTCOME_RESULT_NOT_EMPTY,
-                                     "$['hearingOutcome']['hearingResult']");
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenHearingResultInvalid() throws Exception {
-            verifyErrorOnTooLongNodeValue(HA_OUTCOME_RESULT_NOT_EMPTY,
-                                          "$['hearingOutcome']['hearingResult']",
-                                          5);
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenHearingResultReasonTypeTooLong() throws Exception {
-            verifyErrorOnTooLongNodeValue(HA_OUTCOME_REASON_TYPE_MAX_LENGTH,
-                                          "$['hearingOutcome']['hearingResultReasonType']",
-                                          71,
-                                          "HMAN80-ValidPayload2.json");
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenMissingOutcomeResultDate() throws Exception {
-            verifyErrorOnMissingNode(HA_OUTCOME_REQUEST_DATE_NOT_EMPTY,
-                                     "$['hearingOutcome']['hearingResultDate']");
-        }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
