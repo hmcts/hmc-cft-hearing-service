@@ -417,8 +417,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         HearingEntity existingHearing = hearingRepository.findById(hearingId)
             .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
+        CaseHearingRequestEntity caseHearingRequestEntity = existingHearing.getLatestCaseHearingRequest();
         HearingEntity hearingEntity = hearingMapper
-            .modelToEntity(deleteRequest, existingHearing, existingHearing.getNextRequestVersion());
+            .modelToEntity(deleteRequest, existingHearing, existingHearing.getNextRequestVersion(),
+                           caseHearingRequestEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
         sendRequestToQueue(hearingId, DELETE_HEARING);
         return saveHearingResponseDetails;

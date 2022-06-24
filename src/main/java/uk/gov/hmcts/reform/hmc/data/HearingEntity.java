@@ -6,6 +6,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ import static java.util.stream.Collectors.toList;
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class HearingEntity extends BaseEntity {
+public class HearingEntity extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

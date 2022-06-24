@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.data;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,7 +23,7 @@ import javax.persistence.Table;
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class NonStandardDurationsEntity extends BaseEntity {
+public class NonStandardDurationsEntity extends BaseEntity implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -37,4 +38,8 @@ public class NonStandardDurationsEntity extends BaseEntity {
     @JoinColumn(name = "case_hearing_id")
     private CaseHearingRequestEntity caseHearing;
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }
