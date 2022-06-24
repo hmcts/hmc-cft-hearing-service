@@ -51,6 +51,7 @@ import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
@@ -1119,6 +1120,20 @@ class HearingManagementServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .updateHearingRequest(2000000000L, request));
             assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
+        }
+
+        @Test
+        void updateHearingRequestShouldThrowErrorWhenHearingWindowFieldsAreNull() {
+            final UpdateHearingRequest request = new UpdateHearingRequest();
+            HearingDetails hearingDetails = new HearingDetails();
+            hearingDetails.setAutoListFlag(true);
+            hearingDetails.setAmendReasonCode("reason");
+            HearingWindow hearingWindow = new HearingWindow();
+            hearingDetails.setHearingWindow(hearingWindow);
+            request.setHearingDetails(hearingDetails);
+            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .updateHearingRequest(2000000000L, request));
+            assertEquals(HEARING_WINDOW_EMPTY_NULL, exception.getMessage());
         }
 
         @Test
