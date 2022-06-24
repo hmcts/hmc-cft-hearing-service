@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 
@@ -206,6 +206,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         this.panelSpecialisms = original.panelSpecialisms;
         this.panelUserRequirements = original.panelUserRequirements;
         this.cancellationReason = original.cancellationReason;
+        this.hearingChannels = original.hearingChannels;
     }
 
     @Override
@@ -295,12 +296,12 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         cloned.setPanelRequirements(panelRequirementsList);
     }
 
-    private void cloneHearingParties(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+    private void cloneHearingParties(CaseHearingRequestEntity cloned) {
         //HearingPartyEntity
         List<HearingPartyEntity> hearingPartiesList = new ArrayList<>();
         if (null != cloned.getHearingParties()) {
             for (HearingPartyEntity hp : cloned.getHearingParties()) {
-                HearingPartyEntity clonedSubValue = (HearingPartyEntity)hp.clone();
+                HearingPartyEntity clonedSubValue = new HearingPartyEntity(hp);
                 clonedSubValue.setTechPartyId(null);
                 clonedSubValue.setCaseHearing(cloned);
                 hearingPartiesList.add(clonedSubValue);
@@ -377,11 +378,11 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         cloned.setNonStandardDurations(nonStandardDurationsList);
     }
 
-    private void cloneHearingChannels(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+    private void cloneHearingChannels(CaseHearingRequestEntity cloned) {
         List<HearingChannelsEntity> hearingChannelsList = new ArrayList<>();
         if (null != cloned.getHearingChannels()) {
             for (HearingChannelsEntity hce : cloned.getHearingChannels()) {
-                HearingChannelsEntity clonedSubValue = (HearingChannelsEntity)hce.clone();
+                HearingChannelsEntity clonedSubValue = new HearingChannelsEntity(hce);
                 clonedSubValue.setHearingChannelsId(null);
                 clonedSubValue.setCaseHearing(cloned);
                 hearingChannelsList.add(clonedSubValue);
