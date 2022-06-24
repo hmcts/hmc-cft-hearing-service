@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.RequirementType;
 
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -24,10 +24,11 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@NoArgsConstructor
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class PanelUserRequirementsEntity extends BaseEntity implements Serializable, Cloneable {
+public class PanelUserRequirementsEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -50,8 +51,11 @@ public class PanelUserRequirementsEntity extends BaseEntity implements Serializa
     @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
     private RequirementType requirementType;
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public PanelUserRequirementsEntity(PanelUserRequirementsEntity original) {
+        this.id = original.id;
+        this.caseHearing = original.caseHearing;
+        this.judicialUserId = original.judicialUserId;
+        this.userType = original.userType;
+        this.requirementType = original.requirementType;
     }
 }

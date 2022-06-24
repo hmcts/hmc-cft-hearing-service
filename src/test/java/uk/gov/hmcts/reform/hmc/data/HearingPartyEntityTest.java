@@ -11,9 +11,9 @@ class HearingPartyEntityTest {
     @Nested
     class GetClone {
         @Test
-        void shouldMatchOnBasicField() throws CloneNotSupportedException {
+        void shouldMatchOnBasicField() {
             HearingPartyEntity hearingPartyEntity = TestingUtil.hearingPartyEntityForClone();
-            HearingPartyEntity response = (HearingPartyEntity) hearingPartyEntity.clone();
+            HearingPartyEntity response = new HearingPartyEntity(hearingPartyEntity);
             assertEquals(2, response.getUnavailabilityEntity().size());
             assertEquals(1, response.getReasonableAdjustmentsEntity().size());
             assertEquals(1, response.getContactDetailsEntity().size());

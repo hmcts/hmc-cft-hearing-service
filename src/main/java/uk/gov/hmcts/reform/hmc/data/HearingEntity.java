@@ -39,7 +39,7 @@ import static java.util.stream.Collectors.toList;
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class HearingEntity extends BaseEntity implements Serializable {
+public class HearingEntity extends BaseEntity implements Cloneable, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

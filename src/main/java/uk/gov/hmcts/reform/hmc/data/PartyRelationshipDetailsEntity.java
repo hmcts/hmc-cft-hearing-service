@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,7 +24,7 @@ import javax.persistence.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PartyRelationshipDetailsEntity extends BaseEntity implements Serializable, Cloneable {
+public class PartyRelationshipDetailsEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -44,8 +43,10 @@ public class PartyRelationshipDetailsEntity extends BaseEntity implements Serial
     @Column(name = "relationship_type")
     private String relationshipType;
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public PartyRelationshipDetailsEntity(PartyRelationshipDetailsEntity original) {
+        this.partyRelationshipDetailsId = original.partyRelationshipDetailsId;
+        this.sourceTechParty = original.sourceTechParty;
+        this.targetTechParty = original.targetTechParty;
+        this.relationshipType = original.relationshipType;
     }
 }
