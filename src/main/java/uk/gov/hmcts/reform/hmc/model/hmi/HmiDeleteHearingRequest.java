@@ -11,6 +11,6 @@ import lombok.Data;
 public class HmiDeleteHearingRequest {
 
     @JsonProperty("_cancel")
-    private String cancellationReason;
+    private CancellationReason cancellationReason;
 
 }
