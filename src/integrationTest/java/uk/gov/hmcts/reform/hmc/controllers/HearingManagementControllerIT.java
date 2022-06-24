@@ -1287,8 +1287,8 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
 
         val response = result.getResponse().getContentAsString();
-        val hearingId = JsonPath.parse(response).read("$.hearingRequestID");
-        assertDurationForHearing(hearingId.toString(), expectedDuration);
+        val hearingId = JsonPath.parse(response).read("$.hearingRequestID").toString();
+        assertDurationForHearing(hearingId, expectedDuration);
     }
 
     private HearingRequest getHearingRequest(String partyId) {
@@ -1307,7 +1307,6 @@ class HearingManagementControllerIT extends BaseTest {
         return hearingRequest;
     }
 
-    @Test
     void assertDurationForHearing(String hearingId, Integer expectedDuration) throws Exception {
         mockMvc.perform(get("/hearing/" + hearingId)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
