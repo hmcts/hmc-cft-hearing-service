@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CaseCategoriesEntityTest {
+class CaseCategoriesEntityTest {
 
     @Nested
     class GetClone {
