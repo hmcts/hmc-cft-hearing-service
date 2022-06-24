@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED
 @Component
 public class HearingMapper {
 
+    private static final int ROUND_VALUE = 5;
     private final CaseHearingRequestMapper caseHearingRequestMapper;
 
     private PartyDetailMapper partyDetailMapper;
@@ -36,6 +37,12 @@ public class HearingMapper {
                                        HearingEntity hearingEntity,
                                        Integer requestVersion,
                                        String status) {
+
+
+        hearingRequest.getHearingDetails().setDuration(
+            roundUpDuration(hearingRequest.getHearingDetails().getDuration())
+        );
+
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
             hearingRequest, hearingEntity, requestVersion);
         setHearingDetails(hearingRequest.getHearingDetails(), caseHearingRequestEntity);
@@ -69,5 +76,8 @@ public class HearingMapper {
         caseHearingRequestMapper.mapCaseCategories(caseDetails.getCaseCategories(), caseHearingRequestEntity);
     }
 
+    public Integer roundUpDuration(Integer duration) {
+        return (duration + ROUND_VALUE - 1) / ROUND_VALUE * ROUND_VALUE;
+    }
 }
 

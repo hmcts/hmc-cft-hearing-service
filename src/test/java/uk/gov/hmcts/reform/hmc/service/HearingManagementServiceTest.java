@@ -1111,20 +1111,6 @@ class HearingManagementServiceTest {
         }
 
         @Test
-        void updateHearingRequestShouldThrowErrorWhenHearingWindowFieldsAreNull() {
-            final UpdateHearingRequest request = new UpdateHearingRequest();
-            HearingDetails hearingDetails = new HearingDetails();
-            hearingDetails.setAutoListFlag(true);
-            hearingDetails.setAmendReasonCode("reason");
-            HearingWindow hearingWindow = new HearingWindow();
-            hearingDetails.setHearingWindow(hearingWindow);
-            request.setHearingDetails(hearingDetails);
-            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .updateHearingRequest(2000000000L, request));
-            assertEquals(HEARING_WINDOW_EMPTY_NULL, exception.getMessage());
-        }
-
-        @Test
         void updateHearingRequestShouldThrowErrorWhenPartyIndividualAndOrgDetailsNull() {
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);

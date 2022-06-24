@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
+import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
@@ -227,7 +229,7 @@ class ListingMapperTest {
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(0, listing.getListingMultiDay().getWeeks());
         assertEquals(1, listing.getListingMultiDay().getDays());
-        assertEquals(5, listing.getListingMultiDay().getHours());
+        assertEquals(1, listing.getListingMultiDay().getHours());
         assertEquals(localDateTime, listing.getListingDate());
         assertEquals(2, listing.getListingNumberAttendees());
         assertEquals(LISTING_COMMENTS, listing.getListingComments());
@@ -246,24 +248,21 @@ class ListingMapperTest {
 
     @Test
     void shouldReturnListingForMultiDayHearingDurationLessThan360() {
-        HearingDetails hearingDetails = buildHearingDetails(300);
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        Listing listing = getListing(300);
         assertEquals(300, listing.getListingDuration());
         assertNull(listing.getListingMultiDay());
     }
 
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs360() {
-        HearingDetails hearingDetails = buildHearingDetails(360);
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        Listing listing = getListing(360);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertNull(listing.getListingMultiDay());
     }
 
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs720() {
-        HearingDetails hearingDetails = buildHearingDetails(720);
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        Listing listing = getListing(720);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(0, listing.getListingMultiDay().getWeeks());
         assertEquals(2, listing.getListingMultiDay().getDays());
@@ -272,8 +271,7 @@ class ListingMapperTest {
 
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs1800() {
-        HearingDetails hearingDetails = buildHearingDetails(1800);
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        Listing listing = getListing(1800);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(1, listing.getListingMultiDay().getWeeks());
         assertEquals(0, listing.getListingMultiDay().getDays());
@@ -282,8 +280,7 @@ class ListingMapperTest {
 
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs2160() {
-        HearingDetails hearingDetails = buildHearingDetails(2160);
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        Listing listing = getListing(2160);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(1, listing.getListingMultiDay().getWeeks());
         assertEquals(1, listing.getListingMultiDay().getDays());
@@ -292,13 +289,68 @@ class ListingMapperTest {
 
     @Test
     void shouldReturnListingForMultiDayHearingDurationIs2165() {
-        HearingDetails hearingDetails = buildHearingDetails(2165);
-        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        Listing listing = getListing(2165);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(1, listing.getListingMultiDay().getWeeks());
         assertEquals(1, listing.getListingMultiDay().getDays());
-        assertEquals(5, listing.getListingMultiDay().getHours());
+        assertEquals(1, listing.getListingMultiDay().getHours());
     }
+
+
+
+    @Test
+    void shouldReturnListingForMultiDayHearingDurationWithManyValues() {
+        Listing listing = getListing(361);
+        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
+        assertEquals(0, listing.getListingMultiDay().getWeeks());
+        assertEquals(1, listing.getListingMultiDay().getDays());
+        assertEquals(1, listing.getListingMultiDay().getHours());
+
+        listing = getListing(369);
+        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
+        assertEquals(0, listing.getListingMultiDay().getWeeks());
+        assertEquals(1, listing.getListingMultiDay().getDays());
+        assertEquals(1, listing.getListingMultiDay().getHours());
+
+        listing = getListing(725);
+        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
+        assertEquals(0, listing.getListingMultiDay().getWeeks());
+        assertEquals(2, listing.getListingMultiDay().getDays());
+        assertEquals(1, listing.getListingMultiDay().getHours());
+
+        listing = getListing(730);
+        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
+        assertEquals(0, listing.getListingMultiDay().getWeeks());
+        assertEquals(2, listing.getListingMultiDay().getDays());
+        assertEquals(1, listing.getListingMultiDay().getHours());
+
+        listing = getListing(425);
+        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
+        assertEquals(0, listing.getListingMultiDay().getWeeks());
+        assertEquals(1, listing.getListingMultiDay().getDays());
+        assertEquals(2, listing.getListingMultiDay().getHours());
+
+        listing = getListing(476);
+        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
+        assertEquals(0, listing.getListingMultiDay().getWeeks());
+        assertEquals(1, listing.getListingMultiDay().getDays());
+        assertEquals(2, listing.getListingMultiDay().getHours());
+
+        listing = getListing(485);
+        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
+        assertEquals(0, listing.getListingMultiDay().getWeeks());
+        assertEquals(1, listing.getListingMultiDay().getDays());
+        assertEquals(3, listing.getListingMultiDay().getHours());
+    }
+
+    private Listing getListing(int duration) {
+        val hearingMapper =
+            new HearingMapper(null, null, null);
+        HearingDetails hearingDetails = buildHearingDetails(hearingMapper.roundUpDuration(duration));
+        Listing listing = listingMapper.getListing(hearingDetails, Collections.singletonList(HEARING_CHANNEL));
+        return listing;
+    }
+
 
     private HearingDetails buildHearingDetails(int duration) {
         LocalDateTime localDateTime = LocalDateTime.now();
