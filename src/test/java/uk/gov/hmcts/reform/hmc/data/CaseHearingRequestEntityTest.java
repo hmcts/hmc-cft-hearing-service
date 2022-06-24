@@ -33,11 +33,4 @@ class CaseHearingRequestEntityTest {
         }
     }
 
-
-    private CaseHearingRequestEntity caseHearingRequest(int version) {
-        CaseHearingRequestEntity caseHearingRequest = new CaseHearingRequestEntity();
-        caseHearingRequest.setVersionNumber(version);
-        return caseHearingRequest;
-    }
-
 }
