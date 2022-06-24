@@ -1,34 +1,12 @@
 {
   "_guid_": "S-002.1",
-  "productName": "HMC CFT Hearing Service",
-  "operationName": "delete hearing",
-  "method": "DELETE",
-  "uri": "/hearing/{hearingID}",
-  "s2sClientId": "xui_webapp",
+  "_extends_" : "deleteHearingRequestBase",
   "specs": [
     "has the 200 OK code",
     "has a versionNumber of 2",
     "has a status of CANCELLATION_REQUESTED",
     "an active profile in CCD"
   ],
-  "users": {
-    "invokingUser": {
-      "username": "master.caseworker@gmail.com",
-      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
-    }
-  },
-  "request": {
-    "headers": {
-      "_extends_": "Common_Request_Headers"
-    },
-    "pathVariables": {
-      "hearingID" : "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
-    },
-    "body":
-    {
-      "cancellationReasonCode": "test"
-    }
-  },
   "expectedResponse": {
     "responseCode": 200,
     "responseMessage": "OK",

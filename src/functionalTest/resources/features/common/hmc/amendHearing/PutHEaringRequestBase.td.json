@@ -25,6 +25,9 @@
         "versionNumber": 1
       },
       "hearingDetails": {
+        "hearingChannels": [
+          "INTER"
+        ],
         "autolistFlag": true,
         "amendReasonCode": "Amend reason",
         "hearingType": "Some hearing type",

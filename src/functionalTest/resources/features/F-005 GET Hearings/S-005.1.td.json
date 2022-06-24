@@ -36,24 +36,26 @@
         "hearingType" : "Some hearing type",
         "hmcStatus" : "HEARING_REQUESTED",
         "lastResponseReceivedDateTime" : null,
-        "responseVersion" : null,
+        "requestVersion" : null,
         "hearingListingStatus" : null,
         "listAssistCaseStatus" : null,
         "hearingDaySchedule" : null,
         "hearingGroupRequestId" : null,
         "hearingIsLinkedFlag" : false,
+        "hearingChannels" : [ "INTER" ],
         "hearingID" : "[[ANY_NUMBER_NOT_NULLABLE]]"
       }, {
         "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
         "hearingType" : "Some hearing type",
         "hmcStatus" : "HEARING_REQUESTED",
         "lastResponseReceivedDateTime" : null,
-        "responseVersion" : null,
+        "requestVersion" : null,
         "hearingListingStatus" : null,
         "listAssistCaseStatus" : null,
         "hearingDaySchedule" : null,
         "hearingGroupRequestId" : null,
         "hearingIsLinkedFlag" : false,
+          "hearingChannels" : [ "INTER" ],
         "hearingID" : "[[ANY_NUMBER_NOT_NULLABLE]]"
       } ],
       "hmctsServiceCode" : "[[ANYTHING_PRESENT]]"

@@ -27,7 +27,8 @@
       },
       "caseDetails": "[[ANYTHING_PRESENT]]",
       "hearingDetails" : "[[ANYTHING_PRESENT]]",
-      "hearingResponse": "[[ANYTHING_PRESENT]]"
+      "hearingResponse": "[[ANYTHING_PRESENT]]",
+      "partyDetails": "[[ANYTHING_PRESENT]]"
     }
   }
 }

@@ -77,6 +77,7 @@
           "panelSpecialisms" : [ "Specialism 1" ]
         },
         "hearingIsLinkedFlag" : false,
+        "hearingChannels" : [ "INTER" ],
         "multiDayHearing" : false,
         "autolistFlag" : true
       },
