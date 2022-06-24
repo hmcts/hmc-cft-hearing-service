@@ -53,13 +53,13 @@ public class ListingMapper {
             .listingWelshHearingFlag(hearingDetails.getHearingInWelshFlag())
             .build();
 
-        if (entitiesList != null) {
-            List<String> roomAttributesList = checkAgainstRoomAttributes(entitiesList, hearingDetails);
-            if (roomAttributesList.isEmpty() && hearingDetails.getFacilitiesRequired() != null) {
+        if (entitiesList != null && !entitiesList.isEmpty()
+            && hearingDetails.getFacilitiesRequired() != null
+            && !hearingDetails.getFacilitiesRequired().isEmpty()) {
+
+            if (!areRoomAttributesFound(entitiesList, hearingDetails, listing)) {
                 listing.setListingOtherConsiderations(hearingDetails.getFacilitiesRequired());
-            } else {
-                listing.setListingOtherConsiderations(List.of());
-                listing.setRoomAttributes(roomAttributesList);
+                listing.setRoomAttributes(List.of());
             }
         } else {
             listing.setListingOtherConsiderations(List.of());
@@ -113,26 +113,53 @@ public class ListingMapper {
         return (hearingDetailsDuration / (360 * 5));
     }
 
-    private List<String> checkAgainstRoomAttributes(List<Entity> entityList, HearingDetails hearingDetails) {
+    private boolean areRoomAttributesFound(List<Entity> entityList,
+                                         HearingDetails hearingDetails,
+                                         Listing listing) {
         Set<String> roomAttributesSet = new HashSet<>();
+        Set<String> otherConsiderationsSet = new HashSet<>();
         entityList.forEach(entity -> {
             if (entity.getEntityOtherConsiderations() != null && !entity.getEntityOtherConsiderations().isEmpty()) {
-                for (String reasonableAdjustment : entity.getEntityOtherConsiderations()) {
-                    Optional<RoomAttribute> roomAttributeByReasonableAdjustment =
-                        roomAttributesService.findByReasonableAdjustmentCode(reasonableAdjustment);
-                    roomAttributeByReasonableAdjustment.ifPresent(
-                        roomAttribute
-                            -> roomAttributesSet.add(roomAttribute.getRoomAttributeCode()));
-                }
-                for (String facility : hearingDetails.getFacilitiesRequired()) {
-                    Optional<RoomAttribute> roomAttributeByAttributeCode =
-                        roomAttributesService.findByRoomAttributeCode(facility);
-                    if (roomAttributeByAttributeCode.isPresent() && roomAttributeByAttributeCode.get().isFacility()) {
-                        roomAttributesSet.add(roomAttributeByAttributeCode.get().getRoomAttributeCode());
-                    }
-                }
+                roomAttributesSet.addAll(getRoomAttributesByReasonableAdjustment(entity));
+                otherConsiderationsSet.addAll(getRoomAttributeByAttributeCode(
+                    roomAttributesSet,
+                    hearingDetails.getFacilitiesRequired()));
             }
         });
-        return new ArrayList<>(roomAttributesSet);
+
+        if (roomAttributesSet.isEmpty() && otherConsiderationsSet.isEmpty()) {
+            return false;
+        } else {
+            listing.setRoomAttributes((new ArrayList<>(roomAttributesSet)));
+            listing.setListingOtherConsiderations(new ArrayList<>(otherConsiderationsSet));
+            return true;
+        }
     }
+
+    private List<String> getRoomAttributesByReasonableAdjustment(Entity entity) {
+        List<String> roomAttributesList = new ArrayList<>();
+        for (String reasonableAdjustment : entity.getEntityOtherConsiderations()) {
+            Optional<RoomAttribute> roomAttributeByReasonableAdjustment =
+                roomAttributesService.findByReasonableAdjustmentCode(reasonableAdjustment);
+            roomAttributeByReasonableAdjustment.ifPresent(
+                roomAttribute
+                    -> roomAttributesList.add(roomAttribute.getRoomAttributeCode()));
+        }
+        return roomAttributesList;
+    }
+
+    private List<String> getRoomAttributeByAttributeCode(Set<String> roomAttributesSet, List<String> facilityTypes) {
+        List<String> otherConsiderationsList = new ArrayList<>();
+        for (String facility : facilityTypes) {
+            Optional<RoomAttribute> roomAttributeByAttributeCode =
+                roomAttributesService.findByRoomAttributeCode(facility);
+            if (roomAttributeByAttributeCode.isPresent() && roomAttributeByAttributeCode.get().isFacility()) {
+                roomAttributesSet.add(roomAttributeByAttributeCode.get().getRoomAttributeCode());
+            } else {
+                otherConsiderationsList.add(facility);
+            }
+        }
+        return otherConsiderationsList;
+    }
+
 }
