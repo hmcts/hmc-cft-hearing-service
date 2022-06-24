@@ -39,7 +39,9 @@ import static java.util.stream.Collectors.toList;
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class HearingEntity extends BaseEntity implements Cloneable, Serializable {
+public class HearingEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 5837513924648640249L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -125,7 +127,7 @@ public class HearingEntity extends BaseEntity implements Cloneable, Serializable
     }
 
     public String getDerivedHearingStatus() {
-        String hearingStatus = null;
+        String hearingStatus = "";
         switch (this.status) {
             case "LISTED":
             case "UPDATE_REQUESTED":

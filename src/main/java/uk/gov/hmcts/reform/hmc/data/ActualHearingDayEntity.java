@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +25,9 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class ActualHearingDayEntity extends BaseEntity {
+public class ActualHearingDayEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 7977056936948346510L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

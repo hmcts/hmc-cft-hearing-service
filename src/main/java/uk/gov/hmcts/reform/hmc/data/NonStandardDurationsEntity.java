@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ import javax.persistence.Table;
 @Entity
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
