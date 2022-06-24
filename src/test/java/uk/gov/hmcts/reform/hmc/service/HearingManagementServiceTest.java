@@ -246,12 +246,6 @@ class HearingManagementServiceTest {
                     hearingActualsValidator);
     }
 
-    public static final String JURISDICTION = "Jurisdiction1";
-    public static final String CASE_TYPE = "CaseType1";
-    public static final String USER_ID = "UserId";
-    public static final String ROLE_NAME = "hearing-manager";
-    public static final String ROLE_TYPE = "ORGANISATION";
-    private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
 
     @Nested
     @DisplayName("SendResponseToTopic")
