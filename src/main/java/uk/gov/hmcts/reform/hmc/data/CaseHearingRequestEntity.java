@@ -219,7 +219,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     }
 
     private void cloneCaseCategories(CaseHearingRequestEntity cloned) {
-        //CaseCategories
+        //CaseCategoriesActualHearingPartyEntity.java
         List<CaseCategoriesEntity> caseCategoriesList = new ArrayList<>();
         if (null != cloned.getCaseCategories()) {
             for (CaseCategoriesEntity cce : cloned.getCaseCategories()) {
