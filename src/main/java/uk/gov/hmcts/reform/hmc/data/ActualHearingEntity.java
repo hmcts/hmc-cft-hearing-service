@@ -7,6 +7,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -26,7 +27,9 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class ActualHearingEntity extends BaseEntity {
+public class ActualHearingEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = -6230201524807926703L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

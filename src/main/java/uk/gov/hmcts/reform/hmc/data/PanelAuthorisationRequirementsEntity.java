@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,7 +25,9 @@ import javax.persistence.Table;
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class PanelAuthorisationRequirementsEntity extends BaseEntity {
+public class PanelAuthorisationRequirementsEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 7526815208919075769L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

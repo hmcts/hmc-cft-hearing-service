@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.RequirementType;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -28,7 +29,9 @@ import javax.persistence.Table;
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class PanelUserRequirementsEntity extends BaseEntity {
+public class PanelUserRequirementsEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = -4730336666389556107L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
