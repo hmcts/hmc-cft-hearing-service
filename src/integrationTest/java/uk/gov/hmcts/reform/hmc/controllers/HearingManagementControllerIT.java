@@ -95,6 +95,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_UN_EXPECTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_CHANNEL_EMAIL_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_CHANNEL_EMAIL_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_CHANNEL_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_CHANNEL_PHONE_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_CHANNEL_PHONE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_LOCATION_EMPTY;
@@ -866,11 +867,12 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(8)))
+            .andExpect(jsonPath("$.errors", hasSize(9)))
             .andExpect(jsonPath("$.errors", hasItems(AUTO_LIST_FLAG_NULL_EMPTY, HEARING_TYPE_NULL_EMPTY,
                                                      HEARING_WINDOW_NULL, DURATION_EMPTY, HEARING_PRIORITY_TYPE,
                                                      HEARING_LOCATION_EMPTY, INVALID_HEARING_LOCATION,
-                                                     INVALID_PANEL_REQUIREMENTS
+                                                     INVALID_PANEL_REQUIREMENTS,
+                                                     HEARING_CHANNEL_EMPTY
             )))
             .andReturn();
     }
@@ -895,6 +897,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().setListingComments("a".repeat(2001));
         hearingRequest.getHearingDetails().setHearingRequester("a".repeat(61));
         hearingRequest.getHearingDetails().setLeadJudgeContractType("a".repeat(71));
+        hearingRequest.getHearingDetails().setHearingChannels(null);
         PanelRequirements panelRequirements = new PanelRequirements();
         List<String> listWithValueOver70Size = Collections.singletonList("a".repeat(71));
         panelRequirements.setRoleType(listWithValueOver70Size);
@@ -913,7 +916,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(20)))
+            .andExpect(jsonPath("$.errors", hasSize(21)))
             .andExpect(jsonPath("$.errors", hasItems(HEARING_TYPE_MAX_LENGTH, DURATION_MIN_VALUE,
                                                      NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG,
                                                      HEARING_PRIORITY_TYPE_MAX_LENGTH,
@@ -926,7 +929,8 @@ class HearingManagementControllerIT extends BaseTest {
                                                      PANEL_SPECIALISMS_MAX_LENGTH_MSG, MEMBER_ID_EMPTY,
                                                      MEMBER_ID_MAX_LENGTH, MEMBER_TYPE_MAX_LENGTH,
                                                      "Unsupported type for requirementType",
-                                                     AMEND_REASON_CODE_MAX_LENGTH
+                                                     AMEND_REASON_CODE_MAX_LENGTH,
+                                                     HEARING_CHANNEL_EMPTY
             )))
             .andReturn();
     }
@@ -1103,6 +1107,20 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.errors", hasSize(1)))
             .andExpect(jsonPath("$.errors", hasItem((HEARING_WINDOW_DETAILS_ARE_INVALID))))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn400WhenHearingChannelFieldIsNull() throws Exception {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.getHearingDetails().setHearingChannels(null);
+        mockMvc.perform(put(url + "/2000000000")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem((HEARING_CHANNEL_EMPTY))))
             .andReturn();
     }
 

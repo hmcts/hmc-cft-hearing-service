@@ -400,9 +400,13 @@ class HearingManagementServiceIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void testGetHearings_WithValidCaseRefAndStatus() {
-        GetHearingsResponse response = hearingManagementService.getHearings("9372710950276233", "HEARING_REQUESTED");
+        GetHearingsResponse response = hearingManagementService.getHearings("9372710950276233",
+                                                                            "HEARING_REQUESTED");
         testGetHearings_WithValidCaseRefAndStatus_assertPart1(response);
         testGetHearings_WithValidCaseRefAndStatus_assertPart2(response);
+        assertEquals(2, response.getCaseHearings().get(0).getHearingChannels().size());
+        assertTrue(response.getCaseHearings().get(0).getHearingChannels().contains("Paper"));
+        assertTrue(response.getCaseHearings().get(0).getHearingChannels().contains("Email"));
     }
 
     void testGetHearings_WithValidCaseRefAndStatus_assertPart1(GetHearingsResponse response) {
@@ -432,10 +436,10 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("panel3-1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getPanelMemberId());
         assertNull(response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getHearingJudgeId());
-        assertNull(null, response.getCaseHearings().get(1).getHearingDaySchedule().get(0).getPanelMemberId());
+        assertNull(response.getCaseHearings().get(1).getHearingDaySchedule().get(0).getPanelMemberId());
         assertEquals("panel1-1", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getHearingJudgeId());
-        assertNull(null, response.getCaseHearings().get(1).getHearingDaySchedule().get(1).getHearingJudgeId());
+        assertNull(response.getCaseHearings().get(1).getHearingDaySchedule().get(1).getHearingJudgeId());
         assertEquals("panel1-2", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(1).getPanelMemberId());
         assertEquals(1, response.getCaseHearings().get(0)
