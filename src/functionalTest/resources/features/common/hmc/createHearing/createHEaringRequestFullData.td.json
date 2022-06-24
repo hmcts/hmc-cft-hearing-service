@@ -6,6 +6,9 @@
     "versionNumber" : 1
   },
   "hearingDetails" : {
+    "hearingChannels": [
+      "INTER"
+    ],
     "autolistFlag" : true,
     "hearingType" : "Some hearing type",
     "hearingWindow": {

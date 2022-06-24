@@ -16,8 +16,7 @@
   ],
   "users": {
     "invokingUser": {
-      "username": "hmc.superuser@gmail.com",
-      "password": "[[$HMC_HEARING_SERVICE_USERS_PWD]]"
+      "_extends_": "HmcSuperuser"
     }
   },
   "request": {
