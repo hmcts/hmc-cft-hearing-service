@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.data;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,7 +23,9 @@ import javax.persistence.Table;
 @SecondaryTable(name = "HEARING_DAY_DETAILS",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "hearing_day_id")})
-public class HearingDayPanelEntity extends BaseEntity {
+public class HearingDayPanelEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = -5104107251904201708L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

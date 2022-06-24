@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,7 +25,9 @@ import javax.persistence.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PartyRelationshipDetailsEntity extends BaseEntity {
+public class PartyRelationshipDetailsEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = -4983833617462382058L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

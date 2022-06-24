@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import java.io.Serializable;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,7 +24,9 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class ActualHearingPartyEntity extends BaseEntity {
+public class ActualHearingPartyEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = -7066394300898450286L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
