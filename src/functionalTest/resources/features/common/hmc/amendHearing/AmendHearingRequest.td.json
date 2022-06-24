@@ -12,12 +12,11 @@
       "hearingID": "${[scenarioContext][siblingContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
     },
     "body": {
-      "_extends_" : "createHearingRequestFullData",
       "requestDetails": {
         "versionNumber": 1
       },
       "hearingDetails": {
-        "amendReasonCode": "test for amend hearing reqest"
+        "amendReasonCode": "test for amend hearing request"
       },
       "caseDetails": {
         "caseRef": "${[scenarioContext][siblingContexts][CreateCase][testData][actualResponse][body][id]}",
