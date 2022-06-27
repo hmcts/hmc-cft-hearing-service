@@ -271,53 +271,30 @@ class ListingMapperTest {
 
     @Test
     void shouldReturnListingForMultiDayHearingDurationWithManyValues() {
-        Listing listing = getListing(361);
-        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
-        assertEquals(0, listing.getListingMultiDay().getWeeks());
-        assertEquals(1, listing.getListingMultiDay().getDays());
-        assertEquals(1, listing.getListingMultiDay().getHours());
 
-        listing = getListing(369);
-        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
-        assertEquals(0, listing.getListingMultiDay().getWeeks());
-        assertEquals(1, listing.getListingMultiDay().getDays());
-        assertEquals(1, listing.getListingMultiDay().getHours());
+        testCalculatedListingForDurationValue(361, 0, 1, 1);
+        testCalculatedListingForDurationValue(369, 0, 1, 1);
+        testCalculatedListingForDurationValue(725, 0, 2, 1);
+        testCalculatedListingForDurationValue(730, 0, 2, 1);
+        testCalculatedListingForDurationValue(425, 0, 1, 2);
+        testCalculatedListingForDurationValue(476, 0, 1, 2);
+        testCalculatedListingForDurationValue(485, 0, 1, 3);
+    }
 
-        listing = getListing(725);
+    private void testCalculatedListingForDurationValue(Integer duration,
+                                                       Integer expectedWeeks,
+                                                       Integer expectedDays,
+                                                       Integer expectedHours
+    ) {
+        val listing = getListing(duration);
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
-        assertEquals(0, listing.getListingMultiDay().getWeeks());
-        assertEquals(2, listing.getListingMultiDay().getDays());
-        assertEquals(1, listing.getListingMultiDay().getHours());
-
-        listing = getListing(730);
-        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
-        assertEquals(0, listing.getListingMultiDay().getWeeks());
-        assertEquals(2, listing.getListingMultiDay().getDays());
-        assertEquals(1, listing.getListingMultiDay().getHours());
-
-        listing = getListing(425);
-        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
-        assertEquals(0, listing.getListingMultiDay().getWeeks());
-        assertEquals(1, listing.getListingMultiDay().getDays());
-        assertEquals(2, listing.getListingMultiDay().getHours());
-
-        listing = getListing(476);
-        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
-        assertEquals(0, listing.getListingMultiDay().getWeeks());
-        assertEquals(1, listing.getListingMultiDay().getDays());
-        assertEquals(2, listing.getListingMultiDay().getHours());
-
-        listing = getListing(485);
-        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
-        assertEquals(0, listing.getListingMultiDay().getWeeks());
-        assertEquals(1, listing.getListingMultiDay().getDays());
-        assertEquals(3, listing.getListingMultiDay().getHours());
+        assertEquals(expectedWeeks, listing.getListingMultiDay().getWeeks());
+        assertEquals(expectedDays, listing.getListingMultiDay().getDays());
+        assertEquals(expectedHours, listing.getListingMultiDay().getHours());
     }
 
     private Listing getListing(int duration) {
-        val hearingMapper =
-            new HearingMapper(null, null, null);
-        HearingDetails hearingDetails = buildHearingDetails(hearingMapper.roundUpDuration(duration));
+        val hearingDetails = buildHearingDetails(HearingMapper.roundUpDuration(duration));
         Listing listing = listingMapper.getListing(hearingDetails);
         return listing;
     }

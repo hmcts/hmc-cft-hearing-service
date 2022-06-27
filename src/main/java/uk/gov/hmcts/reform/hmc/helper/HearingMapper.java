@@ -77,7 +77,7 @@ public class HearingMapper {
         caseHearingRequestMapper.mapCaseCategories(caseDetails.getCaseCategories(), caseHearingRequestEntity);
     }
 
-    public Integer roundUpDuration(Integer duration) {
+    public static Integer roundUpDuration(Integer duration) {
         return (duration + ROUND_VALUE - 1) / ROUND_VALUE * ROUND_VALUE;
     }
 }
