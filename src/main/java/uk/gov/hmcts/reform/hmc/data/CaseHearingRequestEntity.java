@@ -296,12 +296,12 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         cloned.setPanelRequirements(panelRequirementsList);
     }
 
-    private void cloneHearingParties(CaseHearingRequestEntity cloned) {
+    private void cloneHearingParties(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
         //HearingPartyEntity
         List<HearingPartyEntity> hearingPartiesList = new ArrayList<>();
         if (null != cloned.getHearingParties()) {
             for (HearingPartyEntity hp : cloned.getHearingParties()) {
-                HearingPartyEntity clonedSubValue = new HearingPartyEntity(hp);
+                HearingPartyEntity clonedSubValue = (HearingPartyEntity)hp.clone();
                 clonedSubValue.setTechPartyId(null);
                 clonedSubValue.setCaseHearing(cloned);
                 hearingPartiesList.add(clonedSubValue);
