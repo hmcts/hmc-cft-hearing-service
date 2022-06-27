@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_END_TIME_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_NOT_EMPTY;
@@ -42,12 +43,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_FINAL_FLAG_NOT_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REASON_TYPE_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_TYPE_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_TYPE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.actualHearingDay;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingActualsOutcome;
 
@@ -159,10 +154,8 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(
                                     TestingUtil.hearingActualWithHearingDates(
-                                        Arrays.asList(
-                                            actualHearingDay(LocalDate.of(2022, 1, 28)),
-                                            actualHearingDay(LocalDate.of(2022, 1, 29))
-                                        )))))
+                                        Arrays.asList(actualHearingDay(LocalDate.of(2022, 1, 28)),
+                                                      actualHearingDay(LocalDate.of(2022, 1, 29)))))))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors", hasItem(("003 invalid date"))))
@@ -179,11 +172,8 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                 .content(objectMapper.writeValueAsString(
                                     TestingUtil.hearingActual(
                                         hearingActualsOutcome("ADJOURNED", null),
-                                        Arrays.asList(
-                                            actualHearingDay(LocalDate.of(2022, 1, 28)),
-                                            actualHearingDay(LocalDate.of(2022, 1, 29))
-                                        )
-                                    ))))
+                                        Arrays.asList(actualHearingDay(LocalDate.of(2022, 1, 28)),
+                                                      actualHearingDay(LocalDate.of(2022, 1, 29)))))))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors", hasItem(("ADJOURNED result requires a hearingResultReasonType"))))
@@ -391,10 +381,10 @@ class HearingActualsManagementControllerIT extends BaseTest {
                     "$.hearingActuals.actualHearingDays[0].actualDayParties[0].individualDetails.firstName")
                                .value("Jane"))
                 .andExpect(jsonPath(
-                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
-                               .value(IsNull.nullValue()))
+                "$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
+                          .value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].actualPartyId")
-                               .value("P2"))
+                          .value("P2"))
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].partyRole")
                                .value("APP"))
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].partyChannelSubType")
@@ -403,8 +393,8 @@ class HearingActualsManagementControllerIT extends BaseTest {
                     "$.hearingActuals.actualHearingDays[0].actualDayParties[2].representedParty")
                                .value("P1"))
                 .andExpect(jsonPath(
-                    "$.hearingActuals.actualHearingDays[0].actualDayParties[3].representedParty")
-                               .value("P2"));
+                "$.hearingActuals.actualHearingDays[0].actualDayParties[3].representedParty")
+                           .value("P2"));
         }
 
         // https://tools.hmcts.net/jira/browse/HHMAN-80 AC-09
@@ -503,11 +493,8 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                 .content(objectMapper.writeValueAsString(
                                     TestingUtil.hearingActual(
                                         hearingActualsOutcome("CANCELLED", null),
-                                        Arrays.asList(
-                                            actualHearingDay(LocalDate.of(2022, 1, 28)),
-                                            actualHearingDay(LocalDate.of(2022, 1, 29))
-                                        )
-                                    ))))
+                                        Arrays.asList(actualHearingDay(LocalDate.of(2022, 1, 28)),
+                                                      actualHearingDay(LocalDate.of(2022, 1, 29)))))))
                 .andExpect(status().is(400))
                 .andReturn();
         }
@@ -530,10 +517,8 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andReturn();
 
             var numberOfActualHearingRecords = entityManager
-                .createNativeQuery(
-                    "select * from actual_hearing where hearing_response_id = 2",
-                    ActualHearingEntity.class
-                )
+                .createNativeQuery("select * from actual_hearing where hearing_response_id = 2",
+                                   ActualHearingEntity.class)
                 .getResultList();
 
             // Multiple requests should replace actual_hearing records and delete orphans, always resulting in 1
@@ -632,210 +617,130 @@ class HearingActualsManagementControllerIT extends BaseTest {
     @Nested
     @DisplayName("PutHearingActualsJsr303Validation")
     class PutHearingActualsJsr303Validation {
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenMissingOutcomeHearingType() throws Exception {
-            verifyErrorOnMissingNode(
-                HA_OUTCOME_TYPE_NOT_EMPTY,
-                "$['hearingOutcome']['hearingType']"
-            );
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenHearingTypeTooLong() throws Exception {
-            verifyErrorOnTooLongNodeValue(
-                HA_OUTCOME_TYPE_MAX_LENGTH,
-                "$['hearingOutcome']['hearingType']",
-                41
-            );
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenMissingOutcomeFinalFlag() throws Exception {
-            verifyErrorOnMissingNode(
-                HA_OUTCOME_FINAL_FLAG_NOT_EMPTY,
-                "$['hearingOutcome']['hearingFinalFlag']"
-            );
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenMissingOutcomeHearingResult() throws Exception {
-            verifyErrorOnMissingNode(
-                HA_OUTCOME_RESULT_NOT_EMPTY,
-                "$['hearingOutcome']['hearingResult']"
-            );
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenHearingResultInvalid() throws Exception {
-            verifyErrorOnTooLongNodeValue(
-                HA_OUTCOME_RESULT_NOT_EMPTY,
-                "$['hearingOutcome']['hearingResult']",
-                5
-            );
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenHearingResultReasonTypeTooLong() throws Exception {
-            verifyErrorOnTooLongNodeValue(
-                HA_OUTCOME_REASON_TYPE_MAX_LENGTH,
-                "$['hearingOutcome']['hearingResultReasonType']",
-                71,
-                "HMAN80-ValidPayload2.json"
-            );
-        }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenMissingOutcomeResultDate() throws Exception {
-            verifyErrorOnMissingNode(
-                HA_OUTCOME_REQUEST_DATE_NOT_EMPTY,
-                "$['hearingOutcome']['hearingResultDate']"
-            );
-        }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenMissingHearingDaysHearingDate() throws Exception {
-            verifyErrorOnMissingNode(
-                HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY,
-                "$['actualHearingDays'][0]['hearingDate']"
-            );
+            verifyErrorOnMissingNode(HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['hearingDate']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn400_WhenMissingHearingDaysHearingStartTime() throws Exception {
+            verifyErrorOnMissingNode(HA_HEARING_DAY_START_TIME_DATE_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['hearingStartTime']");
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn400_WhenMissingHearingDaysHearingEndTime() throws Exception {
+            verifyErrorOnMissingNode(HA_HEARING_DAY_END_TIME_DATE_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['hearingEndTime']");
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenMissingHearingPauseStartTime() throws Exception {
-            verifyErrorOnMissingNode(
-                HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY,
-                "$['actualHearingDays'][0]['pauseDateTimes'][0]['pauseStartTime']"
-            );
+            verifyErrorOnMissingNode(HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['pauseDateTimes'][0]['pauseStartTime']");
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenMissingHearingPauseEndTime() throws Exception {
-            verifyErrorOnMissingNode(
-                HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY,
-                "$['actualHearingDays'][0]['pauseDateTimes'][0]['pauseEndTime']"
-            );
+            verifyErrorOnMissingNode(HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['pauseDateTimes'][0]['pauseEndTime']");
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenActualPartyIdTooLong() throws Exception {
-            verifyErrorOnTooLongNodeValue(
-                HA_HEARING_DAY_PARTY_ID_MAX_LENGTH,
-                "$['actualHearingDays'][0]['actualDayParties'][0]['actualPartyId']",
-                41
-            );
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_PARTY_ID_MAX_LENGTH,
+                                          "$['actualHearingDays'][0]['actualDayParties'][0]['actualPartyId']",
+                                          41);
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenMissingPartyRole() throws Exception {
-            verifyErrorOnMissingNode(
-                HA_HEARING_DAY_PARTY_ROLE_NOT_EMPTY,
-                "$['actualHearingDays'][0]['actualDayParties'][0]['partyRole']"
-            );
+            verifyErrorOnMissingNode(HA_HEARING_DAY_PARTY_ROLE_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['actualDayParties'][0]['partyRole']");
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenPartyRoleTooLong() throws Exception {
-            verifyErrorOnTooLongNodeValue(
-                HA_HEARING_DAY_PARTY_ROLE_MAX_LENGTH,
-                "$['actualHearingDays'][0]['actualDayParties'][0]['partyRole']",
-                41
-            );
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_PARTY_ROLE_MAX_LENGTH,
+                                          "$['actualHearingDays'][0]['actualDayParties'][0]['partyRole']",
+                                          41);
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenMissingPartyChannelSubType() throws Exception {
-            verifyErrorOnMissingNode(
-                HA_HEARING_DAY_PARTY_CHANNEL_NOT_EMPTY,
-                "$['actualHearingDays'][0]['actualDayParties'][0]['partyChannelSubType']"
-            );
+            verifyErrorOnMissingNode(HA_HEARING_DAY_PARTY_CHANNEL_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['actualDayParties'][0]['partyChannelSubType']");
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenPartyChannelSubTypeTooLong() throws Exception {
-            verifyErrorOnTooLongNodeValue(
-                HA_HEARING_DAY_PARTY_CHANNEL_MAX_LENGTH,
-                "$['actualHearingDays'][0]['actualDayParties'][0]['partyChannelSubType']",
-                71
-            );
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_PARTY_CHANNEL_MAX_LENGTH,
+                                          "$['actualHearingDays'][0]['actualDayParties'][0]['partyChannelSubType']",
+                                          71);
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenRepresentedPartyTooLong() throws Exception {
-            verifyErrorOnTooLongNodeValue(
-                HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH,
-                "$['actualHearingDays'][1]['actualDayParties'][0]"
-                    + "['representedParty']",
-                41
-            );
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH,
+                                          "$['actualHearingDays'][1]['actualDayParties'][0]"
+                                              + "['representedParty']",
+                                          41);
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenMissingPartyIndividualFirstName() throws Exception {
-            verifyErrorOnMissingNode(
-                HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_NOT_EMPTY,
-                "$['actualHearingDays'][0]['actualDayParties'][0]"
-                    + "['individualDetails']['firstName']"
-            );
+            verifyErrorOnMissingNode(HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['actualDayParties'][0]"
+                                         + "['individualDetails']['firstName']");
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenPartyIndividualFirstNameTooLong() throws Exception {
-            verifyErrorOnTooLongNodeValue(
-                HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_MAX_LENGTH,
-                "$['actualHearingDays'][0]['actualDayParties'][0]"
-                    + "['individualDetails']['firstName']",
-                101
-            );
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_MAX_LENGTH,
+                                          "$['actualHearingDays'][0]['actualDayParties'][0]"
+                                              + "['individualDetails']['firstName']",
+                                          101);
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenMissingPartyIndividualLastName() throws Exception {
-            verifyErrorOnMissingNode(
-                HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_NOT_EMPTY,
-                "$['actualHearingDays'][0]['actualDayParties'][0]"
-                    + "['individualDetails']['lastName']"
-            );
+            verifyErrorOnMissingNode(HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_NOT_EMPTY,
+                                     "$['actualHearingDays'][0]['actualDayParties'][0]"
+                                         + "['individualDetails']['lastName']");
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenPartyIndividualLastNameTooLong() throws Exception {
-            verifyErrorOnTooLongNodeValue(
-                HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_MAX_LENGTH,
-                "$['actualHearingDays'][0]['actualDayParties'][0]"
-                    + "['individualDetails']['lastName']",
-                101
-            );
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_INDIVIDUAL_LAST_NAME_MAX_LENGTH,
+                                          "$['actualHearingDays'][0]['actualDayParties'][0]"
+                                              + "['individualDetails']['lastName']",
+                                          101);
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenPartyOrganisationNameTooLong() throws Exception {
-            verifyErrorOnTooLongNodeValue(
-                HA_HEARING_DAY_ORGANISATION_NAME_MAX_LENGTH,
-                "$['actualHearingDays'][1]['actualDayParties'][2]"
-                    + "['actualOrganisationName']",
-                201
-            );
+            verifyErrorOnTooLongNodeValue(HA_HEARING_DAY_ORGANISATION_NAME_MAX_LENGTH,
+                                          "$['actualHearingDays'][1]['actualDayParties'][2]"
+                                              + "['actualOrganisationName']",
+                                          201);
         }
 
         private void verifyErrorOnMissingNode(String expectedError, String pathToDelete) throws Exception {
