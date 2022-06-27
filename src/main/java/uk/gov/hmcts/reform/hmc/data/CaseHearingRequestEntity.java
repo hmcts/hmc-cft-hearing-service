@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -177,6 +178,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         clonePanelUserRequirements(cloned);
         cloneHearingChannels(cloned);
         cloned.setCaseHearingID(null);
+        cloned.setAmendReasonCodes(Collections.emptyList());
         return cloned;
     }
 
