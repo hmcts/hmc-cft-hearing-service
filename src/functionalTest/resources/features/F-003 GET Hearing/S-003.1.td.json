@@ -1,12 +1,10 @@
 {
   "_guid_": "S-003.1",
   "_extends_" : "GetHearingRequestPositiveGeneric",
-
   "specs": [
     "has the 200 OK code",
     "an active profile in CCD"
   ],
-
   "request": {
     "pathVariables": {
       "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"

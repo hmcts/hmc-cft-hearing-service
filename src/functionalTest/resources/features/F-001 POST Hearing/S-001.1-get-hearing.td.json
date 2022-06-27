@@ -5,7 +5,6 @@
     "to verify versionNumber=1 and status=HEARING_REQUESTED"
 
   ],
-  "s2sClientId": "xui_webapp",
   "request": {
     "pathVariables": {
       "hearingID": "${[scenarioContext][parentContext][testData][actualResponse][body][hearingRequestID]}"

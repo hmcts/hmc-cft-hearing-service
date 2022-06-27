@@ -7,7 +7,6 @@
     "has 201 Created code",
     "has a versionNumber of 1",
     "has a status of HEARING_REQUESTED"
-
   ],
   "request": {
     "body": {

@@ -1,10 +1,6 @@
 {
   "_guid_": "S-004.6",
-  "productName": "HMC CFT Hearing Service",
-  "operationName": "amend hearing",
-  "method": "PUT",
-  "uri": "/hearing/{hearingID}",
-  "s2sClientId": "xui_webapp",
+  "_extends_" : "PutHearingRequestBase",
   "specs": [
     "contains only the mandatory fields",
     "has the 201 code",
@@ -12,18 +8,7 @@
     "has a versionNumber of 2",
     "has a status of HEARING_REQUESTED"
   ],
-  "users": {
-    "invokingUser": {
-      "_extends_": "HmcSuperuser"
-    }
-  },
   "request": {
-    "headers": {
-      "_extends_": "Common_Request_Headers"
-    },
-    "pathVariables": {
-      "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
-    },
     "body": {
       "requestDetails": {
         "requestTimeStamp": "2021-08-10T12:20:00.000Z",

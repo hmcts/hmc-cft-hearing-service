@@ -5,7 +5,6 @@
   "method": "GET",
   "uri": "/hearings/{caseref}",
   "s2sClientId": "xui_webapp",
-
   "users": {
     "invokingUser": {
       "_extends_": "HmcSuperuser"

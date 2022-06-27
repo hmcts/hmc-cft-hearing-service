@@ -7,7 +7,6 @@ Feature: F-003: Get hearing request
     And a case that has just been created as in [CreateCase],
 
     @S-003.1
-#      TODO CHECK HOW DIFFERENCE RESPONSE SHOULD BE TO INPUT DATA FROM CREATE HEARING ONCE HMAN-130 IS DONE
   Scenario: successfully get hearing request
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
