@@ -68,6 +68,7 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -85,6 +86,7 @@ public class TestingUtil {
 
     public static final String CASE_REFERENCE = "1111222233334444";
     public static final String INVALID_CASE_REFERENCE = "1111222233334445";
+    public static final List<String> CANCELLATION_REASON_CODES = List.of("test 1", "test 2");
     public static Long ID = 2000000000L;
 
     private TestingUtil() {
@@ -395,7 +397,7 @@ public class TestingUtil {
 
     public static DeleteHearingRequest deleteHearingRequest() {
         DeleteHearingRequest request = new DeleteHearingRequest();
-        request.setCancellationReasonCode("test");
+        request.setCancellationReasonCodes(CANCELLATION_REASON_CODES);
         return request;
     }
 

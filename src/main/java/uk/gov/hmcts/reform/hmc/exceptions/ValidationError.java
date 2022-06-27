@@ -117,7 +117,7 @@ public final class ValidationError {
         + "be present";
     public static final String INVALID_CANCELLATION_REASON_CODE = "Cancellation Reason code details are not present";
     public static final String CANCELLATION_REASON_CODE_MAX_LENGTH_MSG = "Cancellation Reason code "
-        + "length cannot be greater than 100 characters";
+        + "length must be at least 1 and no greater than 100 characters";
     public static final String INVALID_VERSION_NUMBER = "Invalid version number";
     public static final String INVALID_HEARING_ID_DETAILS = "Invalid hearing Id";
     public static final String CASE_NOT_FOUND = "Case could not be found";

@@ -462,7 +462,7 @@ public class HearingResponsePactUtil {
 
     private static DeleteHearingRequest generateDeleteHearingRequest() {
         DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
-        deleteHearingRequest.setCancellationReasonCode("REASONCODE25");
+        deleteHearingRequest.setCancellationReasonCodes(List.of("REASONCODE25"));
         return  deleteHearingRequest;
     }
 
