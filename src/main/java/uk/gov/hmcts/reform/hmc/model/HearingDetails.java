@@ -72,8 +72,9 @@ public class HearingDetails {
 
     private Boolean hearingIsLinkedFlag;
 
-    @Size(max = 70, message = ValidationError.AMEND_REASON_CODE_MAX_LENGTH)
-    private String amendReasonCode;
+    @Valid
+    @NotEmpty(message = ValidationError.INVALID_AMEND_REASON_CODE)
+    private List<@Size(max = 70, message = ValidationError.AMEND_REASON_CODE_MAX_LENGTH) String> amendReasonCodes;
 
     @Valid
     @NotNull(message = ValidationError.HEARING_CHANNEL_EMPTY)

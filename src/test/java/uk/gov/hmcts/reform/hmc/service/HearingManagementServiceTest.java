@@ -1127,7 +1127,7 @@ class HearingManagementServiceTest {
             final UpdateHearingRequest request = new UpdateHearingRequest();
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
-            hearingDetails.setAmendReasonCode("reason");
+            hearingDetails.setAmendReasonCodes(List.of("reason"));
             HearingWindow hearingWindow = new HearingWindow();
             hearingDetails.setHearingWindow(hearingWindow);
             request.setHearingDetails(hearingDetails);

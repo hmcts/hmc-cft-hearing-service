@@ -49,7 +49,7 @@ class ListingMapperTest {
     private static final String HEARING_REQUESTER = "Some judge";
     private static final String ROLE_TYPE = "RoleType1";
     private static final String HEARING_CHANNEL = "someChannelType";
-    private static final String AMEND_REASON_CODE = "reason";
+    private static final String AMEND_REASON_CODE = "reason 1,reason 2";
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
     private static final Boolean hearingInWelsh = Boolean.TRUE;
     private static final String FACILITY_TYPE_1 = "consideration 1";

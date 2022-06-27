@@ -121,9 +121,6 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     @Column(name = "hearing_request_received_date_time", nullable = false)
     private LocalDateTime hearingRequestReceivedDateTime;
 
-    @Column(name = "amend_reason_code")
-    private String amendReasonCode;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
@@ -162,6 +159,10 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingChannelsEntity> hearingChannels;
 
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<ChangeReasonsEntity> amendReasonCodes;
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         CaseHearingRequestEntity cloned = (CaseHearingRequestEntity)super.clone();
@@ -175,6 +176,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         clonePanelSpecialisms(cloned);
         clonePanelUserRequirements(cloned);
         cloneHearingChannels(cloned);
+        cloneAmendReasonCodes(cloned);
         cloned.setCaseHearingID(null);
         return cloned;
     }
@@ -343,5 +345,18 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
             }
         }
         cloned.setHearingChannels(hearingChannelsList);
+    }
+
+    private void cloneAmendReasonCodes(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        List<ChangeReasonsEntity> changeReasonsEntityList = new ArrayList<>();
+        if (null != cloned.getAmendReasonCodes()) {
+            for (ChangeReasonsEntity hce : cloned.getAmendReasonCodes()) {
+                ChangeReasonsEntity clonedSubValue = (ChangeReasonsEntity) hce.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                changeReasonsEntityList.add(clonedSubValue);
+            }
+        }
+        cloned.setAmendReasonCodes(changeReasonsEntityList);
     }
 }

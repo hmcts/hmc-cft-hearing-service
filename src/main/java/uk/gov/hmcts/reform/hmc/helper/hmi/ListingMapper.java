@@ -40,7 +40,8 @@ public class ListingMapper {
             .listingJohs(listingJohsMapper.getListingJohs(hearingDetails.getPanelRequirements()))
             .listingHearingChannels(hearingDetails.getHearingChannels())
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
-            .amendReasonCode(hearingDetails.getAmendReasonCode())
+            .amendReasonCode(hearingDetails.getAmendReasonCodes() == null ? null :
+                    String.join(",", hearingDetails.getAmendReasonCodes()))
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
             .listingOtherConsiderations(
