@@ -282,28 +282,6 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
-    void testUpdateHearingRequest_WhenAmendReasonIsEmpty() {
-        UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
-        request.getHearingDetails().setAmendReasonCodes(Collections.emptyList());
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.updateHearingRequest(2000000024L, request);
-        });
-        assertEquals(INVALID_AMEND_REASON_CODE, exception.getMessage());
-    }
-
-    @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
-    void testUpdateHearingRequest_WhenAmendReasonIsNull() {
-        UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
-        request.getHearingDetails().setAmendReasonCodes(null);
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.updateHearingRequest(2000000024L, request);
-        });
-        assertEquals(INVALID_AMEND_REASON_CODE, exception.getMessage());
-    }
-
-    @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
     void testUpdateHearingCompletion_WithValidData() {
         ResponseEntity responseEntity = hearingManagementService.hearingCompletion(2000000000L);
