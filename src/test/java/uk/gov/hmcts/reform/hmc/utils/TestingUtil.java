@@ -107,7 +107,6 @@ public class TestingUtil {
         hearingDetails.setHearingPriorityType("Priority type");
         hearingDetails.setHearingIsLinkedFlag(Boolean.TRUE);
         hearingDetails.setHearingChannels(getHearingChannelsList());
-        hearingDetails.setAmendReasonCodes(List.of("reason 1"));
         HearingLocation location1 = new HearingLocation();
         location1.setLocationType(LocationType.CLUSTER.getLabel());
         location1.setLocationId("Location Id");

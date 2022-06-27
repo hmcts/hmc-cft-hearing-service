@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AMEND_REASON_CODE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.FACILITIES_REQUIRED_MAX_LENGTH_MSG;
 
 @Data
@@ -72,9 +73,7 @@ public class HearingDetails {
 
     private Boolean hearingIsLinkedFlag;
 
-    @Valid
-    @NotEmpty(message = ValidationError.INVALID_AMEND_REASON_CODE)
-    private List<@Size(max = 70, message = ValidationError.AMEND_REASON_CODE_MAX_LENGTH) String> amendReasonCodes;
+    private List<@Size(min = 1, max = 70, message = AMEND_REASON_CODE_MAX_LENGTH) String> amendReasonCodes;
 
     @Valid
     @NotNull(message = ValidationError.HEARING_CHANNEL_EMPTY)

@@ -785,9 +785,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn400_WhenUpdateHearingRequestHasNoAmendReasonCodes() throws Exception {
-        UpdateHearingRequest updateHearingRequest = new UpdateHearingRequest();
-        updateHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
-        updateHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        UpdateHearingRequest updateHearingRequest = TestingUtil.validUpdateHearingRequest();
         updateHearingRequest.getHearingDetails().setAmendReasonCodes(Collections.emptyList());
         updateHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         stubReturn400WhileValidateHearingObject(updateHearingRequest);
@@ -796,6 +794,23 @@ class HearingManagementControllerIT extends BaseTest {
                 .content(objectMapper.writeValueAsString(updateHearingRequest)))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasItem(INVALID_AMEND_REASON_CODE)))
+                .andReturn();
+
+        assertFalse(changeReasonsRepository.findAll().iterator().hasNext());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn400_WhenUpdateHearingRequestHasEmptyStringAmendReasonCodes() throws Exception {
+        UpdateHearingRequest updateHearingRequest = TestingUtil.validUpdateHearingRequest();
+        updateHearingRequest.getHearingDetails().setAmendReasonCodes(List.of("", "reason"));
+        updateHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        stubReturn400WhileValidateHearingObject(updateHearingRequest);
+        mockMvc.perform(put(url + "/2000000000")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(updateHearingRequest)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem(AMEND_REASON_CODE_MAX_LENGTH)))
                 .andReturn();
 
         assertFalse(changeReasonsRepository.findAll().iterator().hasNext());
@@ -908,13 +923,12 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(10)))
+            .andExpect(jsonPath("$.errors", hasSize(9)))
             .andExpect(jsonPath("$.errors", hasItems(AUTO_LIST_FLAG_NULL_EMPTY, HEARING_TYPE_NULL_EMPTY,
                                                      HEARING_WINDOW_NULL, DURATION_EMPTY, HEARING_PRIORITY_TYPE,
                                                      HEARING_LOCATION_EMPTY, INVALID_HEARING_LOCATION,
                                                      INVALID_PANEL_REQUIREMENTS,
-                                                     HEARING_CHANNEL_EMPTY,
-                                                     INVALID_AMEND_REASON_CODE
+                                                     HEARING_CHANNEL_EMPTY
             )))
             .andReturn();
     }
