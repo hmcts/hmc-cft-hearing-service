@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.hmc.model.CaseCategoryType.CASETYPE;
 import static uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType.ALL;
+import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingChannelsEntity;
 
 class CaseHearingRequestEntityTest {
 
@@ -42,6 +43,7 @@ class CaseHearingRequestEntityTest {
     @Test
     void testClone() throws CloneNotSupportedException {
         CaseHearingRequestEntity entity = TestingUtil.caseHearingRequestEntityWithPartyOrgForClone();
+        entity.setHearingChannels(hearingChannelsEntity());
         CaseHearingRequestEntity cloned = (CaseHearingRequestEntity) entity.clone();
         assert1(cloned);
         assert2(cloned);
@@ -61,6 +63,8 @@ class CaseHearingRequestEntityTest {
         assertEquals("judge1", cloned.getPanelUserRequirements().get(0).getJudicialUserId());
         assertEquals(RequirementType.MUSTINC, cloned.getPanelUserRequirements().get(0).getRequirementType());
         assertEquals("Type 1", cloned.getPanelUserRequirements().get(0).getUserType());
+        assertEquals("someChannelType", cloned.getHearingChannels().get(0).getHearingChannelType());
+        assertEquals("someOtherChannelType", cloned.getHearingChannels().get(1).getHearingChannelType());
     }
 
     private void assert2(CaseHearingRequestEntity cloned) {
