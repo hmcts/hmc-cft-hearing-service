@@ -165,6 +165,8 @@ public final class ValidationError {
             "hearingResultDate must be past or present";
 
     public static final String HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY = "hearingDate cannot be null or empty";
+    public static final String HA_HEARING_DAY_START_TIME_DATE_NOT_EMPTY = "hearingStartTime cannot be null or empty";
+    public static final String HA_HEARING_DAY_END_TIME_DATE_NOT_EMPTY = "hearingEndTime cannot be null or empty";
     public static final String HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY = "pauseStartTime cannot be null or empty";
     public static final String HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY = "pauseEndTime cannot be null or empty";
 
