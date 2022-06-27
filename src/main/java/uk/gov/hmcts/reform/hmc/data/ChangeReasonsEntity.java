@@ -23,7 +23,9 @@ import javax.persistence.Table;
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class ChangeReasonsEntity extends BaseEntity implements Serializable, Cloneable {
+public class ChangeReasonsEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 4353447468967037802L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -37,9 +39,4 @@ public class ChangeReasonsEntity extends BaseEntity implements Serializable, Clo
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")
     private CaseHearingRequestEntity caseHearing;
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
 }
