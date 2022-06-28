@@ -360,7 +360,7 @@ class GetHearingResponseMapperTest {
 
     private void assertHearingResponse(HearingResponse hearingResponse) {
         assertAll(
-            () -> assertEquals(ListAssistCaseStatus.CASE_CREATED.label, hearingResponse.getLaCaseStatus()),
+            () -> assertEquals(ListAssistCaseStatus.CASE_CREATED.name(), hearingResponse.getLaCaseStatus()),
             () -> assertEquals(ListingStatus.FIXED.label, hearingResponse.getListingStatus()),
             () -> assertEquals("Cancelled Reason 1", hearingResponse.getHearingCancellationReason())
         );
