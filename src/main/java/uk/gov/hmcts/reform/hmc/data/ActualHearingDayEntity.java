@@ -36,11 +36,14 @@ public class ActualHearingDayEntity extends BaseEntity implements Serializable {
     @Column(name = "hearing_date", nullable = false)
     private LocalDate hearingDate;
 
-    @Column(name = "start_date_time", nullable = false)
+    @Column(name = "start_date_time")
     private LocalDateTime startDateTime;
 
-    @Column(name = "end_date_time", nullable = false)
+    @Column(name = "end_date_time")
     private LocalDateTime endDateTime;
+
+    @Column(name = "not_required")
+    private Boolean notRequired;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actual_hearing_id")
