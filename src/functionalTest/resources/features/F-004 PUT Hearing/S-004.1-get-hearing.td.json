@@ -10,15 +10,45 @@
     }
   },
   "expectedResponse": {
-    "_extends_": "GetHearingResponseBase",
+    "_extends_": "Common_200_Response",
     "body": {
       "requestDetails": {
         "timestamp": "[[ANYTHING_PRESENT]]",
         "status": "HEARING_REQUESTED",
-        "versionNumber": 2
+        "versionNumber": 2,
+        "hearingRequestID" : "[[ANYTHING_PRESENT]]"
       },
       "caseDetails": "[[ANYTHING_PRESENT]]",
       "hearingDetails" : "[[ANYTHING_PRESENT]]",
+      "partyDetails" : [ {
+        "partyID" : "P1",
+        "partyType" : "IND",
+        "partyRole" : "DEF",
+        "individualDetails" : {
+          "title" : "Mr",
+          "firstName" : "John",
+          "lastName" : "Doe",
+          "preferredHearingChannel" : "Channel 4",
+          "interpreterLanguage" : "French",
+          "reasonableAdjustments" : [ "Ad1", "Adjust2" ],
+          "vulnerableFlag" : true,
+          "vulnerabilityDetails" : "A bit vulnerable",
+          "hearingChannelEmail": ["hearing.channel@email.com"],
+          "hearingChannelPhone": ["01234567890"],
+          "relatedParties" : [ ],
+          "custodyStatus" : null,
+          "otherReasonableAdjustmentDetails" : null
+        },
+        "unavailabilityRanges" : [ {
+          "unavailableFromDate" : "2022-05-08",
+          "unavailableToDate" : "2022-05-09",
+          "unavailabilityType" : "All Day"
+        } ],
+        "unavailabilityDOW" : [ {
+          "DOW" : "Monday",
+          "DOWUnavailabilityType" : "AM"
+        }]
+      } ],
       "hearingResponse": "[[ANYTHING_PRESENT]]"
     }
   }
