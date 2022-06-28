@@ -53,10 +53,7 @@ public class ListingMapper {
             .listingWelshHearingFlag(hearingDetails.getHearingInWelshFlag())
             .build();
 
-        if (entitiesList != null && !entitiesList.isEmpty()
-            && hearingDetails.getFacilitiesRequired() != null
-            && !hearingDetails.getFacilitiesRequired().isEmpty()) {
-
+        if (entitiesList != null && !entitiesList.isEmpty()) {
             if (!areRoomAttributesFound(entitiesList, hearingDetails, listing)) {
                 listing.setListingOtherConsiderations(hearingDetails.getFacilitiesRequired());
                 listing.setRoomAttributes(List.of());
