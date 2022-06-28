@@ -151,6 +151,7 @@ public final class ValidationError {
     public static final String HEARING_ACTUALS_UN_EXPECTED = "004 unexpected hearing day actuals";
     public static final String HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND = "No response found on the hearing %s";
 
+    public static final String HA_OUTCOME_DETAIlS_NOT_VALID = "hearingOutcome details not valid";
     public static final String HA_OUTCOME_TYPE_NOT_EMPTY = "hearingType cannot be null or empty";
     public static final String HA_OUTCOME_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;
     public static final String HA_OUTCOME_FINAL_FLAG_NOT_EMPTY = "hearingFinalFlag has to be provided";
@@ -160,9 +161,10 @@ public final class ValidationError {
         + CHARACTERS_LONG;
     public static final String HA_OUTCOME_REQUEST_DATE_NOT_EMPTY = "hearingResultDate cannot be null or empty";
 
+    public static final String HA_OUTCOME_REQUEST_DATE_MUST_BE_PAST_OR_PRESENT =
+            "hearingResultDate must be past or present";
+
     public static final String HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY = "hearingDate cannot be null or empty";
-    public static final String HA_HEARING_DAY_START_TIME_DATE_NOT_EMPTY = "hearingStartTime cannot be null or empty";
-    public static final String HA_HEARING_DAY_END_TIME_DATE_NOT_EMPTY = "hearingEndTime cannot be null or empty";
     public static final String HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY = "pauseStartTime cannot be null or empty";
     public static final String HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY = "pauseEndTime cannot be null or empty";
 

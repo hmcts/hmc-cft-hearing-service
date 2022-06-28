@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
+@Slf4j
 public class CaseHearingRequestMapper {
 
     private final CaseCategoriesMapper caseCategoriesMapper;
@@ -72,14 +74,23 @@ public class CaseHearingRequestMapper {
 
     public CaseHearingRequestEntity modelToEntity(DeleteHearingRequest deleteHearingRequest,
                                                   HearingEntity hearingEntity,
-                                                  Integer requestVersion) {
-        CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
-        caseHearingRequestEntity.setVersionNumber(requestVersion);
-        caseHearingRequestEntity.setHearingRequestReceivedDateTime(currentTime());
-        caseHearingRequestEntity.setCancellationReason(setCancellationReasonsEntity(deleteHearingRequest
-            .getCancellationReasonCode(), caseHearingRequestEntity));
-        caseHearingRequestEntity.setHearing(hearingEntity);
-        return caseHearingRequestEntity;
+                                                  Integer requestVersion,
+                                                  CaseHearingRequestEntity caseHearingCurrent) {
+        CaseHearingRequestEntity caseHearingRequestNew = new CaseHearingRequestEntity();
+        try {
+            caseHearingRequestNew = (CaseHearingRequestEntity) caseHearingCurrent.clone();
+        } catch (CloneNotSupportedException e) {
+            log.error("Error while reading the response:{}", e.getMessage());
+        }
+        caseHearingRequestNew.setVersionNumber(requestVersion);
+        caseHearingRequestNew.setCancellationReason(setCancellationReasonsEntity(
+            deleteHearingRequest
+                .getCancellationReasonCode(),
+            caseHearingRequestNew
+        ));
+        caseHearingRequestNew.setHearingRequestReceivedDateTime(currentTime());
+        caseHearingRequestNew.setHearing(hearingEntity);
+        return caseHearingRequestNew;
     }
 
     public void mapCaseCategories(List<CaseCategory> caseCategories,
