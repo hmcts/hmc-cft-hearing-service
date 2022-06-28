@@ -232,7 +232,7 @@ class ListingMapperTest {
     }
 
     @Test
-    void shouldReturnEmptyListingFieldsIfEntitiesListIsNul() {
+    void shouldReturnEmptyListingFieldsIfEntitiesListIsNull() {
         HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
         Listing listing = listingMapper.getListing(hearingDetails,null);
         assertTrue(listing.getListingOtherConsiderations().isEmpty());
