@@ -10,19 +10,6 @@
     }
   },
   "expectedResponse": {
-    "responseCode": 200,
-    "responseMessage": "OK",
-    "body": {
-      "requestDetails": {
-        "timestamp": "[[ANYTHING_PRESENT]]",
-        "status": "HEARING_REQUESTED",
-        "versionNumber": 1,
-        "hearingRequestID" : "[[ANYTHING_PRESENT]]"
-      },
-      "caseDetails": "[[ANYTHING_PRESENT]]",
-      "hearingDetails" : "[[ANYTHING_PRESENT]]",
-      "partyDetails" : "[[ANYTHING_PRESENT]]",
-      "hearingResponse": "[[ANYTHING_PRESENT]]"
-    }
+    "partyDetails" : "[[ANYTHING_PRESENT]]"
   }
 }

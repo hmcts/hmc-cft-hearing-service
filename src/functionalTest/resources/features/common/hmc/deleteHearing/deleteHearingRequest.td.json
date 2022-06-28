@@ -5,15 +5,5 @@
     "pathVariables": {
       "hearingID" : "${[scenarioContext][siblingContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
     }
-  },
-  "expectedResponse": {
-    "responseCode": 200,
-    "responseMessage": "OK",
-    "body": {
-      "hearingRequestID": "[[ANYTHING_PRESENT]]",
-      "status": "CANCELLATION_REQUESTED",
-      "timeStamp": "[[ANYTHING_PRESENT]]",
-      "versionNumber": 2
-    }
   }
 }
