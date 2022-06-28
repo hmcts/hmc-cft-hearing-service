@@ -135,7 +135,7 @@ class HearingIdValidatorTest {
         assertEquals("Invalid hearing Id", exception.getMessage());
     }
 
-    private HearingEntity generateHearing(Long id, String status, LinkedGroupDetails groupDetails, Long linkedOrder) {
+    protected HearingEntity generateHearing(Long id, String status, LinkedGroupDetails groupDetails, Long linkedOrder) {
         HearingEntity hearing = new HearingEntity();
         hearing.setId(id);
         hearing.setStatus(status);

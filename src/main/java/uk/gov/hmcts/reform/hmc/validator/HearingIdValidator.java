@@ -81,17 +81,8 @@ public class HearingIdValidator {
             .orElseThrow(() -> new BadRequestException("bad request")).getStartDateTime().toLocalDate();
     }
 
-
     public String getStatus(Long hearingId) {
         return hearingRepository.getStatus(hearingId);
-    }
-
-
-    public void validateHearingOutcomeInformation(Long hearingId, String errorMessage) {
-        Optional<ActualHearingEntity> entity = getActualHearing(hearingId);
-        if (entity.isEmpty()) {
-            throw new BadRequestException(errorMessage);
-        }
     }
 
     public Optional<ActualHearingEntity> getActualHearing(Long hearingId) {

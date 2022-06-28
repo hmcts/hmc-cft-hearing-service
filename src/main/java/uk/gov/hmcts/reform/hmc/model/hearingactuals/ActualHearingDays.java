@@ -20,4 +20,5 @@ public class ActualHearingDays {
     private LocalDateTime hearingEndTime;
     private List<PauseDateTimes> pauseDateTimes;
     private List<ActualDayParty> actualDayParties;
+    private Boolean notRequired;
 }
