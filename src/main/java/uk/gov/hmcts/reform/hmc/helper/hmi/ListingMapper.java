@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
-import lombok.val;
 import io.jsonwebtoken.lang.Collections;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.constants.Constants;
