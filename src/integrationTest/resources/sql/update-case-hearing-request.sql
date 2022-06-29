@@ -22,6 +22,8 @@ INSERT INTO required_facilities(case_hearing_id, facility_type, id) VALUES (100,
 
 INSERT INTO required_locations(case_hearing_id, location_level_type, location_id, id) VALUES (100, 'COURT', 'CLUSTER', 100);
 
+INSERT INTO hearing_channels(hearing_channels_id, hearing_channel_type, case_hearing_id) VALUES(100, 'someChannelType', 100);
+
 INSERT INTO hearing_party(case_hearing_id, tech_party_id, party_reference, party_type, party_role_type) VALUES (100, 100, 'P1', 'IND', 'DEF');
 INSERT INTO hearing_party(case_hearing_id, tech_party_id, party_reference, party_type, party_role_type) VALUES (100, 200, 'P2', 'IND', 'DEF');
 

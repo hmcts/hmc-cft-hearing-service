@@ -69,7 +69,7 @@ class BeanValidatorTest {
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
-        assertEquals(10, violations.size());
+        assertEquals(11, violations.size());
         assertTrue(validationErrors.contains(ValidationError.AUTO_LIST_FLAG_NULL_EMPTY));
         assertTrue(validationErrors.contains(ValidationError.HEARING_TYPE_MAX_LENGTH));
         assertTrue(validationErrors.contains(ValidationError.HEARING_WINDOW_NULL));
@@ -78,6 +78,7 @@ class BeanValidatorTest {
         assertTrue(validationErrors.contains(ValidationError.NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE));
         assertTrue(validationErrors.contains(ValidationError.LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH));
         assertTrue(validationErrors.contains(ValidationError.HEARING_LOCATION_EMPTY));
+        assertTrue(validationErrors.contains(ValidationError.HEARING_CHANNEL_EMPTY));
     }
 
     @Test

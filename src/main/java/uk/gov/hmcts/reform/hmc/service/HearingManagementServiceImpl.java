@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
@@ -42,13 +43,17 @@ import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
+import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.transaction.Transactional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -90,6 +95,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
     private final ApplicationParams applicationParams;
     private final HearingIdValidator hearingIdValidator;
+    private final HearingActualsValidator hearingActualsValidator;
     private final LinkedHearingValidator linkedHearingValidator;
     private final HearingRepository hearingRepository;
     private final PartyRelationshipDetailsMapper partyRelationshipDetailsMapper;
@@ -111,7 +117,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         ApplicationParams applicationParams,
                                         HearingIdValidator hearingIdValidator,
                                         LinkedHearingValidator linkedHearingValidator,
-                                        PartyRelationshipDetailsMapper partyRelationshipDetailsMapper) {
+                                        PartyRelationshipDetailsMapper partyRelationshipDetailsMapper,
+                                        HearingActualsValidator hearingActualsValidator) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -129,6 +136,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.hearingIdValidator = hearingIdValidator;
         this.linkedHearingValidator = linkedHearingValidator;
         this.partyRelationshipDetailsMapper = partyRelationshipDetailsMapper;
+        this.hearingActualsValidator = hearingActualsValidator;
     }
 
     @Override
@@ -192,11 +200,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         sendRequestToQueue(hmiSubmitHearingRequest, hearingId, messageType);
     }
 
-    private void sendRequestToHmiAndQueue(DeleteHearingRequest hearingRequest, Long hearingId, String messageType) {
-        HmiDeleteHearingRequest hmiDeleteHearingRequest = hmiDeleteHearingRequestMapper.mapRequest(hearingRequest);
-        sendRequestToQueue(hmiDeleteHearingRequest, hearingId, messageType);
-    }
-
     private void validateHearingStatusForUpdate(Long hearingId) {
         String status = getStatus(hearingId);
         if (!PutHearingStatus.isValid(status) || validatePlannedStartDate(hearingId,status)) {
@@ -251,7 +254,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     public ResponseEntity hearingCompletion(Long hearingId) {
         hearingIdValidator.validateHearingId(hearingId, HEARING_ACTUALS_ID_NOT_FOUND);
         linkedHearingValidator.validateHearingActualsStatus(hearingId, HEARING_ACTUALS_INVALID_STATUS);
-        hearingIdValidator.validateHearingOutcomeInformation(hearingId, HEARING_ACTUALS_MISSING_HEARING_OUTCOME);
+        hearingActualsValidator.validateHearingOutcomeInformation(hearingId);
         hearingIdValidator.validateCancelHearingResultType(hearingId, HEARING_ACTUALS_UN_EXPECTED);
         updateStatus(hearingId);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -325,14 +328,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private void validateHearingRequest(UpdateHearingRequest hearingRequest) {
         validateHearingRequestDetails(hearingRequest);
         validateHearingDetails(hearingRequest.getHearingDetails());
-        validateAmendReasonCodeForUpdate(hearingRequest.getHearingDetails().getAmendReasonCode());
+        validateAmendReasonCodesForUpdate(hearingRequest.getHearingDetails().getAmendReasonCodes());
         if (hearingRequest.getPartyDetails() != null) {
             validatePartyDetails(hearingRequest.getPartyDetails());
         }
     }
 
-    private void validateAmendReasonCodeForUpdate(String amendReasonCode) {
-        if (amendReasonCode == null || amendReasonCode.isEmpty()) {
+    private void validateAmendReasonCodesForUpdate(List<String> amendReasonCodes) {
+        if (amendReasonCodes == null || amendReasonCodes.isEmpty()) {
             throw new BadRequestException(INVALID_AMEND_REASON_CODE);
         }
     }
@@ -364,6 +367,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private void validateHearingDetails(HearingDetails hearingDetails) {
         validateHearingWindow(hearingDetails);
+        validateHearingChannels(hearingDetails);
 
         if (hearingDetails.getDuration() % 5 != 0) {
             throw new BadRequestException(INVALID_DURATION_DETAILS);
@@ -388,6 +392,27 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
+    private void validateHearingChannels(HearingDetails hearingDetails) {
+        if (hearingDetails.getHearingChannels() == null) {
+            throw new BadRequestException(ValidationError.HEARING_CHANNEL_EMPTY);
+        }
+
+        if (hearingDetails.getHearingChannels().isEmpty()) {
+            throw new BadRequestException(ValidationError.MISSING_CHANNEL_TYPE);
+        }
+
+        Set<String> duplicateHearingChannel = new HashSet<>();
+        List<String> hearingChannels = new ArrayList<>();
+        for (String hearingChannel: hearingDetails.getHearingChannels()) {
+            if (!duplicateHearingChannel.add(hearingChannel)) {
+                hearingChannels.add(hearingChannel);
+            }
+        }
+        if (!hearingChannels.isEmpty()) {
+            throw new BadRequestException(ValidationError.NON_UNIQUE_CHANNEL_TYPE);
+        }
+    }
+
     @Override
     @Transactional
     public HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest) {
@@ -396,10 +421,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         HearingEntity existingHearing = hearingRepository.findById(hearingId)
             .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
+        CaseHearingRequestEntity caseHearingRequestEntity = existingHearing.getLatestCaseHearingRequest();
         HearingEntity hearingEntity = hearingMapper
-            .modelToEntity(deleteRequest, existingHearing, existingHearing.getNextRequestVersion());
+            .modelToEntity(deleteRequest, existingHearing, existingHearing.getNextRequestVersion(),
+                           caseHearingRequestEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
-        sendRequestToHmiAndQueue(deleteRequest, hearingId, DELETE_HEARING);
+        sendRequestToQueue(hearingId, DELETE_HEARING);
         return saveHearingResponseDetails;
     }
 
@@ -441,8 +468,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType);
     }
 
-    private void sendRequestToQueue(HmiDeleteHearingRequest hmiDeleteHearingRequest, Long hearingId,
-                                    String messageType) {
+    private void sendRequestToQueue(Long hearingId, String messageType) {
+        HmiDeleteHearingRequest hmiDeleteHearingRequest = hmiDeleteHearingRequestMapper.mapRequest();
         var jsonNode = objectMapperService.convertObjectToJsonNode(hmiDeleteHearingRequest);
         messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType);
     }
