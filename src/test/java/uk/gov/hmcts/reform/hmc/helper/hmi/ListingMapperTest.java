@@ -64,20 +64,7 @@ class ListingMapperTest {
         HearingDetails hearingDetails = buildHearingDetails(150);
         Listing listing = listingMapper.getListing(hearingDetails);
 
-        assertEquals(listingLocation, listing.getListingLocations().get(0));
-        assertEquals(true, listing.getListingAutoCreateFlag());
-        assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
-        assertEquals(HEARING_TYPE, listing.getListingType());
-        assertEquals(150, listing.getListingDuration());
-        assertNull(listing.getListingMultiDay());
-        assertEquals(LOCAL_DATE_TIME, listing.getListingDate());
-        assertEquals(4, listing.getListingNumberAttendees());
-        assertEquals(LISTING_COMMENTS, listing.getListingComments());
-        assertEquals(HEARING_REQUESTER, listing.getListingRequestedBy());
-        assertEquals(false, listing.getListingPrivateFlag());
-
-        assertEquals(1, listing.getListingJohs().size());
-        assertEquals(listingJoh, listing.getListingJohs().get(0));
+        assert1(listingJoh, listingLocation, listing, 150);
 
         assertEquals(3, listing.getListingOtherConsiderations().size());
         assertTrue(listing.getListingOtherConsiderations().contains(hearingInWelsh.toString()));
@@ -119,25 +106,8 @@ class ListingMapperTest {
         ListingLocation listingLocation = generateListingLocation();
         Listing listing = listingMapper.getListing(hearingDetails);
 
-        assertEquals(listingLocation, listing.getListingLocations().get(0));
-        assertEquals(true, listing.getListingAutoCreateFlag());
-        assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
-        assertEquals(HEARING_TYPE, listing.getListingType());
-        assertEquals(360, listing.getListingDuration());
-        assertNull(listing.getListingMultiDay());
-        assertEquals(LOCAL_DATE_TIME, listing.getListingDate());
-        assertEquals(4, listing.getListingNumberAttendees());
-        assertEquals(LISTING_COMMENTS, listing.getListingComments());
-        assertEquals(HEARING_REQUESTER, listing.getListingRequestedBy());
-        assertEquals(false, listing.getListingPrivateFlag());
-        assertEquals(1, listing.getListingJohs().size());
-        assertEquals(listingJoh, listing.getListingJohs().get(0));
-        assertEquals(2, listing.getListingHearingChannels().size());
-        assertTrue(listing.getListingHearingChannels().contains(HEARING_CHANNEL));
-        assertEquals(1, listing.getListingLocations().size());
-        assertNull(listing.getListingStartDate());
-        assertNull(listing.getListingEndDate());
-        assertNull(listing.getListingJohTiers());
+        assert1(listingJoh, listingLocation, listing, 360);
+        assert2(listing);
     }
 
     @Test
@@ -241,6 +211,32 @@ class ListingMapperTest {
         assertEquals(5, listing.getListingMultiDay().getHours());
     }
 
+    @Test
+    void shouldReturnListingIfHearingWindowNotPresent() {
+        HearingDetails hearingDetails = buildHearingDetailsWithNoHearingWindow(2165);
+        Listing listing = listingMapper.getListing(hearingDetails);
+        assertNull(listing.getListingDate());
+        assertNull(listing.getListingStartDate());
+        assertNull(listing.getListingEndDate());
+        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
+        assertEquals(1, listing.getListingMultiDay().getWeeks());
+        assertEquals(1, listing.getListingMultiDay().getDays());
+        assertEquals(5, listing.getListingMultiDay().getHours());
+    }
+
+    private HearingDetails buildHearingDetailsWithNoHearingWindow(int duration) {
+        PanelRequirements panelRequirements = new PanelRequirements();
+        PanelPreference panelPreference = new PanelPreference();
+        panelRequirements.setPanelPreferences(Collections.singletonList(panelPreference));
+        panelRequirements.setRoleType(null);
+        HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
+        hearingDetails.setPanelRequirements(panelRequirements);
+        hearingDetails.setPanelRequirements(panelRequirements);
+        hearingDetails.setHearingWindow(null);
+        hearingDetails.setDuration(duration);
+        return hearingDetails;
+    }
+
     private HearingDetails buildHearingDetails(int duration) {
         HearingDetails hearingDetails = TestingUtil.hearingDetailsWithAllFields();
         hearingDetails.setDuration(duration);
@@ -271,5 +267,31 @@ class ListingMapperTest {
         when(listingJohsMapper.getListingJohs(any())).thenReturn(Collections.singletonList(listingJoh));
         when(listingOtherConsiderationsMapper.getListingOtherConsiderations(any(), any()))
             .thenReturn(otherConsiderations);
+    }
+
+    private void assert2(Listing listing) {
+        assertEquals(2, listing.getListingHearingChannels().size());
+        assertTrue(listing.getListingHearingChannels().contains(HEARING_CHANNEL));
+        assertEquals(1, listing.getListingLocations().size());
+        assertNull(listing.getListingStartDate());
+        assertNull(listing.getListingEndDate());
+        assertNull(listing.getListingJohTiers());
+    }
+
+    private void assert1(ListingJoh listingJoh, ListingLocation listingLocation, Listing listing, int i) {
+        assertEquals(listingLocation, listing.getListingLocations().get(0));
+        assertEquals(true, listing.getListingAutoCreateFlag());
+        assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
+        assertEquals(HEARING_TYPE, listing.getListingType());
+        assertEquals(i, listing.getListingDuration());
+        assertNull(listing.getListingMultiDay());
+        assertEquals(LOCAL_DATE_TIME, listing.getListingDate());
+        assertEquals(4, listing.getListingNumberAttendees());
+        assertEquals(LISTING_COMMENTS, listing.getListingComments());
+        assertEquals(HEARING_REQUESTER, listing.getListingRequestedBy());
+        assertEquals(false, listing.getListingPrivateFlag());
+
+        assertEquals(1, listing.getListingJohs().size());
+        assertEquals(listingJoh, listing.getListingJohs().get(0));
     }
 }

@@ -46,8 +46,6 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setHearingInWelshFlag(hearingDetails.getHearingInWelshFlag());
         caseHearingRequestEntity.setPrivateHearingRequiredFlag(hearingDetails.getPrivateHearingRequiredFlag());
         caseHearingRequestEntity.setLeadJudgeContractType(hearingDetails.getLeadJudgeContractType());
-        caseHearingRequestEntity.setFirstDateTimeOfHearingMustBe(hearingDetails.getHearingWindow()
-                                                                     .getFirstDateTimeMustBe());
         caseHearingRequestEntity.setHmctsServiceCode(caseDetails.getHmctsServiceCode());
         caseHearingRequestEntity.setCaseReference(caseDetails.getCaseRef());
         caseHearingRequestEntity.setExternalCaseReference(caseDetails.getExternalCaseReference());
@@ -62,13 +60,17 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setInterpreterBookingRequiredFlag(caseDetails.getCaseInterpreterRequiredFlag());
         caseHearingRequestEntity.setListingComments(hearingDetails.getListingComments());
         caseHearingRequestEntity.setRequester(hearingDetails.getHearingRequester());
-        caseHearingRequestEntity.setHearingWindowStartDateRange(hearingDetails.getHearingWindow()
-                                                                    .getDateRangeStart());
-        caseHearingRequestEntity.setHearingWindowEndDateRange(hearingDetails.getHearingWindow()
-                                                                  .getDateRangeEnd());
         caseHearingRequestEntity.setHearingRequestReceivedDateTime(currentTime());
         caseHearingRequestEntity.setHearing(hearingEntity);
         caseHearingRequestEntity.setAmendReasonCode(hearingDetails.getAmendReasonCode());
+        if (hearingDetails.getHearingWindow() != null) {
+            caseHearingRequestEntity.setFirstDateTimeOfHearingMustBe(hearingDetails.getHearingWindow()
+                                                                         .getFirstDateTimeMustBe());
+            caseHearingRequestEntity.setHearingWindowStartDateRange(hearingDetails.getHearingWindow()
+                                                                        .getDateRangeStart());
+            caseHearingRequestEntity.setHearingWindowEndDateRange(hearingDetails.getHearingWindow()
+                                                                      .getDateRangeEnd());
+        }
         return caseHearingRequestEntity;
     }
 

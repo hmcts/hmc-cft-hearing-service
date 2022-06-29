@@ -1355,5 +1355,27 @@ public class TestingUtil {
         return pauseDayTime;
     }
 
+    public static UpdateHearingRequest updateHearingRequestWithoutHearingWindow(int version) {
+        HearingDetails hearingDetails = new HearingDetails();
+        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setHearingType("Some hearing type");
+        hearingDetails.setDuration(360);
+        hearingDetails.setHearingPriorityType("Priority type");
+        HearingLocation location1 = new HearingLocation();
+        location1.setLocationType(LocationType.CLUSTER.getLabel());
+        location1.setLocationId("Location Id");
+        List<HearingLocation> hearingLocations = new ArrayList<>();
+        hearingLocations.add(location1);
+        hearingDetails.setHearingLocations(hearingLocations);
+        hearingDetails.setHearingChannels(getHearingChannelsList());
+        UpdateHearingRequest request = new UpdateHearingRequest();
+        request.setHearingDetails(hearingDetails);
+        request.setCaseDetails(caseDetails());
+        request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        RequestDetails requestDetails = new RequestDetails();
+        requestDetails.setVersionNumber(version);
+        request.setRequestDetails(requestDetails);
+        return request;
+    }
 }
 
