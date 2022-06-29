@@ -328,14 +328,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private void validateHearingRequest(UpdateHearingRequest hearingRequest) {
         validateHearingRequestDetails(hearingRequest);
         validateHearingDetails(hearingRequest.getHearingDetails());
-        validateAmendReasonCodeForUpdate(hearingRequest.getHearingDetails().getAmendReasonCode());
+        validateAmendReasonCodesForUpdate(hearingRequest.getHearingDetails().getAmendReasonCodes());
         if (hearingRequest.getPartyDetails() != null) {
             validatePartyDetails(hearingRequest.getPartyDetails());
         }
     }
 
-    private void validateAmendReasonCodeForUpdate(String amendReasonCode) {
-        if (amendReasonCode == null || amendReasonCode.isEmpty()) {
+    private void validateAmendReasonCodesForUpdate(List<String> amendReasonCodes) {
+        if (amendReasonCodes == null || amendReasonCodes.isEmpty()) {
             throw new BadRequestException(INVALID_AMEND_REASON_CODE);
         }
     }
