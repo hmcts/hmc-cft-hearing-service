@@ -75,6 +75,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
+import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
@@ -90,6 +91,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -128,6 +130,15 @@ import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingPartyEntityInd;
 
 @ExtendWith(MockitoExtension.class)
 class HearingManagementServiceTest {
+
+    public static final String JURISDICTION = "Jurisdiction1";
+    public static final String CASE_TYPE = "CaseType1";
+    public static final String USER_ID = "UserId";
+    public static final String ROLE_NAME = "hearing-manager";
+    public static final String ROLE_TYPE = "ORGANISATION";
+    public static final String VALID_HEARING_STATUS = "UPDATE_REQUESTED";
+    public static final long INVALID_HEARING_ID = 1000000000L;
+    public static final Long HEARING_ID = 2000000000L;
 
     @InjectMocks
     private HearingManagementServiceImpl hearingManagementService;
@@ -183,9 +194,6 @@ class HearingManagementServiceTest {
     @Mock
     ActualHearingDayRepository  actualHearingDayRepository;
 
-    @Mock
-    LinkedHearingValidator linkedHearingValidator;
-
     AccessControlServiceImpl accessControlService;
 
     @Mock
@@ -196,15 +204,20 @@ class HearingManagementServiceTest {
 
     HearingIdValidator hearingIdValidator;
 
+    LinkedHearingValidator linkedHearingValidator;
+
+    HearingActualsValidator hearingActualsValidator;
+
     JsonNode jsonNode = mock(JsonNode.class);
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        linkedHearingValidator = new LinkedHearingValidator(hearingIdValidator, hearingRepository,
-                      linkedGroupDetailsRepository, linkedHearingDetailsRepository);
         hearingIdValidator = new HearingIdValidator(hearingRepository, actualHearingRepository,
                 actualHearingDayRepository);
+        linkedHearingValidator = new LinkedHearingValidator(hearingIdValidator, hearingRepository,
+                      linkedGroupDetailsRepository, linkedHearingDetailsRepository);
+        hearingActualsValidator = new HearingActualsValidator(hearingIdValidator);
         accessControlService = new AccessControlServiceImpl(roleAssignmentService,
                                                             securityUtils,
                                                             dataStoreRepository,
@@ -229,15 +242,10 @@ class HearingManagementServiceTest {
                 applicationParams,
                 hearingIdValidator,
                 linkedHearingValidator,
-                partyRelationshipDetailsMapper);
+                partyRelationshipDetailsMapper,
+                    hearingActualsValidator);
     }
 
-    public static final String JURISDICTION = "Jurisdiction1";
-    public static final String CASE_TYPE = "CaseType1";
-    public static final String USER_ID = "UserId";
-    public static final String ROLE_NAME = "hearing-manager";
-    public static final String ROLE_TYPE = "ORGANISATION";
-    private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
 
     @Nested
     @DisplayName("SendResponseToTopic")
@@ -317,6 +325,9 @@ class HearingManagementServiceTest {
     @Nested
     @DisplayName("saveHearing")
     class SaveHearing {
+
+
+
         @Test
         void shouldFailAsHearingWindowDetailsNotPresent() {
             HearingRequest hearingRequest = new HearingRequest();
@@ -968,6 +979,45 @@ class HearingManagementServiceTest {
     @Nested
     @DisplayName("updateHearing")
     class UpdateHearing {
+        @BeforeEach
+        public void setUp() {
+            MockitoAnnotations.openMocks(this);
+            hearingIdValidator = new HearingIdValidator(hearingRepository, actualHearingRepository,
+                    actualHearingDayRepository);
+            linkedHearingValidator = new LinkedHearingValidator(hearingIdValidator, hearingRepository,
+                    linkedGroupDetailsRepository, linkedHearingDetailsRepository);
+            hearingActualsValidator = new HearingActualsValidator(hearingIdValidator);
+            accessControlService = new AccessControlServiceImpl(roleAssignmentService,
+                    securityUtils,
+                    dataStoreRepository,
+                    caseHearingRequestRepository,
+                    hearingRepository,
+                    applicationParams);
+            hearingManagementService =
+                    new HearingManagementServiceImpl(
+                            roleAssignmentService,
+                            securityUtils,
+                            dataStoreRepository,
+                            hearingRepository,
+                            hearingMapper,
+                            caseHearingRequestRepository,
+                            hmiSubmitHearingRequestMapper,
+                            getHearingsResponseMapper,
+                            getHearingResponseMapper,
+                            messageSenderToTopicConfiguration,
+                            objectMapperService,
+                            hmiDeleteHearingRequestMapper,
+                            messageSenderToQueueConfiguration,
+                            applicationParams,
+                            hearingIdValidator,
+                            linkedHearingValidator,
+                            partyRelationshipDetailsMapper,
+                            hearingActualsValidator);
+        }
+
+
+
+
         @Test
         void updateHearingRequestShouldPassWithValidDetails() {
             final long hearingId = 2000000000L;
@@ -1127,7 +1177,7 @@ class HearingManagementServiceTest {
             final UpdateHearingRequest request = new UpdateHearingRequest();
             HearingDetails hearingDetails = new HearingDetails();
             hearingDetails.setAutoListFlag(true);
-            hearingDetails.setAmendReasonCode("reason");
+            hearingDetails.setAmendReasonCodes(List.of("reason"));
             HearingWindow hearingWindow = new HearingWindow();
             hearingDetails.setHearingWindow(hearingWindow);
             request.setHearingDetails(hearingDetails);
@@ -1451,13 +1501,18 @@ class HearingManagementServiceTest {
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
+
             when(actualHearingEntity.getHearingResultType()).thenReturn(ADJOURNED);
+            when(actualHearingEntity.getActualHearingIsFinalFlag()).thenReturn(Boolean.FALSE);
+            when(actualHearingEntity.getActualHearingType()).thenReturn("TYPE 1");
+            when(actualHearingEntity.getHearingResultReasonType()).thenReturn("REASON 1");
+
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
-            ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId);
-            verify(hearingRepository, times(1)).save(any(HearingEntity.class));
-            assertNotNull(responseEntity);
-            assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+            Exception exception = assertThrows(BadRequestException.class, () ->
+                    hearingManagementService.hearingCompletion(hearingId));
+
+            assertTrue(exception.getMessage().contains(ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY));
         }
 
         @Test
@@ -1474,6 +1529,8 @@ class HearingManagementServiceTest {
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
             when(actualHearingEntity.getHearingResultType()).thenReturn(COMPLETED);
+            when(actualHearingEntity.getActualHearingType()).thenReturn("HEARING TYPE TEST 1");
+            when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(3));
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId);
@@ -1496,6 +1553,9 @@ class HearingManagementServiceTest {
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
             when(actualHearingEntity.getHearingResultType()).thenReturn(CANCELLED);
+            when(actualHearingEntity.getActualHearingType()).thenReturn("TYPE 32");
+            when(actualHearingEntity.getHearingResultReasonType()).thenReturn("MADE UP REASON");
+            when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(13));
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             ActualHearingDayEntity actualHearingDay = mock(ActualHearingDayEntity.class);
@@ -1520,6 +1580,9 @@ class HearingManagementServiceTest {
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
             when(actualHearingEntity.getHearingResultType()).thenReturn(CANCELLED);
+            when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(3));
+            when(actualHearingEntity.getActualHearingType()).thenReturn("TYPE 22");
+            when(actualHearingEntity.getHearingResultReasonType()).thenReturn("MADE UP REASON");
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             when(actualHearingDayRepository.findByActualHearing(any(ActualHearingEntity.class)))
@@ -1529,6 +1592,17 @@ class HearingManagementServiceTest {
             assertNotNull(responseEntity);
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         }
+    }
+
+    protected void generateHearingResponseEntity(Integer requestVersion, HearingEntity hearingEntity,
+                                                 ActualHearingEntity actualHearingEntity) {
+        HearingResponseEntity responseEntity = new HearingResponseEntity();
+        responseEntity.setCancellationReasonType("Test Reason Type");
+        responseEntity.setRequestVersion(requestVersion);
+        responseEntity.setHearing(hearingEntity);
+        responseEntity.setActualHearingEntity(actualHearingEntity);
+        hearingEntity.setHearingResponses(List.of(responseEntity));
+        actualHearingEntity.setHearingResponse(responseEntity);
     }
 
     /**

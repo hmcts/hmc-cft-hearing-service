@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.helper.hmi;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.hmc.constants.Constants;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiHearingRequest;
@@ -31,7 +30,6 @@ public class HmiSubmitHearingRequestMapper {
         if (hearingRequest instanceof UpdateHearingRequest) {
             UpdateHearingRequest request = (UpdateHearingRequest) hearingRequest;
             if (null != request.getRequestDetails()) {
-                request.getHearingDetails().setAmendReasonCode(Constants.AMEND_REASON_CODE);
                 versionNumber = request.getRequestDetails().getVersionNumber() + 1;
             }
         }

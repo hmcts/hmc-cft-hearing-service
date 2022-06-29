@@ -77,6 +77,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             actualHearingDay.setHearingEndTime(actualHearingDayEntity.getEndDateTime());
             setPauseDateTimes(actualHearingDayEntity, actualHearingDay);
             setActualDayParties(actualHearingDayEntity, actualHearingDay);
+            actualHearingDay.setNotRequired(actualHearingDayEntity.getNotRequired());
             actualHearingDays.add(actualHearingDay);
         }
         hearingActual.setActualHearingDays(actualHearingDays);
