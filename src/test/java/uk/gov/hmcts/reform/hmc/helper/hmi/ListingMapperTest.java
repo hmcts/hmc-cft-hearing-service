@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.COURT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.EPIMS;
@@ -49,7 +50,6 @@ class ListingMapperTest {
     private static final String HEARING_REQUESTER = "Some judge";
     private static final String ROLE_TYPE = "RoleType1";
     private static final String HEARING_CHANNEL = "someChannelType";
-    private static final String AMEND_REASON_CODE = "reason";
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
     private static final Boolean hearingInWelsh = Boolean.TRUE;
     private static final String FACILITY_TYPE_1 = "consideration 1";

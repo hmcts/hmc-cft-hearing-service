@@ -69,7 +69,6 @@ public class CaseHearingRequestMapper {
                                                                   .getDateRangeEnd());
         caseHearingRequestEntity.setHearingRequestReceivedDateTime(currentTime());
         caseHearingRequestEntity.setHearing(hearingEntity);
-        caseHearingRequestEntity.setAmendReasonCode(hearingDetails.getAmendReasonCode());
         return caseHearingRequestEntity;
     }
 

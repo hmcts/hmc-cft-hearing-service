@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
+import uk.gov.hmcts.reform.hmc.data.ChangeReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
@@ -37,6 +38,7 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
+import uk.gov.hmcts.reform.hmc.repository.ChangeReasonsRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
@@ -119,6 +121,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_INTERNAL_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_INTERNAL_CASE_NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_SERVICE_CODE_EMPTY_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INTERPRETER_LANGUAGE_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CANCELLATION_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_CATEGORIES;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_DETAILS;
@@ -192,6 +195,9 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Autowired
     private CancellationReasonsRepository cancellationReasonsRepository;
+
+    @Autowired
+    private ChangeReasonsRepository changeReasonsRepository;
 
     private static final String url = "/hearing";
     public static final String USER_ID = "e8275d41-7f22-4ee7-8ed3-14644d6db096";
@@ -823,6 +829,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.hearingRequestID").value("2000000000"))
             .andExpect(jsonPath("$.timeStamp").value(IsNull.notNullValue()))
             .andReturn();
+        assertChangeReasons();
     }
 
     @Test
@@ -843,6 +850,49 @@ class HearingManagementControllerIT extends BaseTest {
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(201))
             .andReturn();
+        assertChangeReasons();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn400_WhenUpdateHearingRequestHasNoAmendReasonCodes() throws Exception {
+        UpdateHearingRequest updateHearingRequest = TestingUtil.validUpdateHearingRequest();
+        updateHearingRequest.getHearingDetails().setAmendReasonCodes(Collections.emptyList());
+        updateHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        stubReturn400WhileValidateHearingObject(updateHearingRequest);
+        mockMvc.perform(put(url + "/2000000000")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(updateHearingRequest)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem(INVALID_AMEND_REASON_CODE)))
+                .andReturn();
+
+        assertFalse(changeReasonsRepository.findAll().iterator().hasNext());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn400_WhenUpdateHearingRequestHasEmptyStringAmendReasonCodes() throws Exception {
+        UpdateHearingRequest updateHearingRequest = TestingUtil.validUpdateHearingRequest();
+        updateHearingRequest.getHearingDetails().setAmendReasonCodes(List.of("", "reason"));
+        updateHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        stubReturn400WhileValidateHearingObject(updateHearingRequest);
+        mockMvc.perform(put(url + "/2000000000")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(updateHearingRequest)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem(AMEND_REASON_CODE_MAX_LENGTH)))
+                .andReturn();
+
+        assertFalse(changeReasonsRepository.findAll().iterator().hasNext());
+    }
+
+    private void assertChangeReasons() {
+        final Spliterator<ChangeReasonsEntity> spliterator = changeReasonsRepository.findAll().spliterator();
+        assertEquals(2, spliterator.estimateSize());
+        assertTrue(StreamSupport.stream(spliterator, false)
+                .map(ChangeReasonsEntity::getChangeReasonType).collect(Collectors.toList())
+                .containsAll(List.of("reason 1", "reason 2")));
     }
 
     @Test
@@ -960,7 +1010,7 @@ class HearingManagementControllerIT extends BaseTest {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         hearingRequest.getHearingDetails().setHearingType("a".repeat(41));
         hearingRequest.getHearingDetails().setDuration(-1);
-        hearingRequest.getHearingDetails().setAmendReasonCode("a".repeat(71));
+        hearingRequest.getHearingDetails().setAmendReasonCodes(List.of("a".repeat(71)));
         List<String> nonStandardHearingDurationReasonsList = Collections.singletonList("a".repeat(71));
         hearingRequest.getHearingDetails().setNonStandardHearingDurationReasons(nonStandardHearingDurationReasonsList);
         hearingRequest.getHearingDetails().setHearingPriorityType("a".repeat(61));

@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -120,9 +121,6 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     @Column(name = "hearing_request_received_date_time", nullable = false)
     private LocalDateTime hearingRequestReceivedDateTime;
 
-    @Column(name = "amend_reason_code")
-    private String amendReasonCode;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
@@ -161,6 +159,10 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingChannelsEntity> hearingChannels;
 
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<ChangeReasonsEntity> amendReasonCodes;
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         CaseHearingRequestEntity cloned = (CaseHearingRequestEntity)super.clone();
@@ -175,6 +177,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         clonePanelUserRequirements(cloned);
         cloneHearingChannels(cloned);
         cloned.setCaseHearingID(null);
+        cloned.setAmendReasonCodes(Collections.emptyList());
         return cloned;
     }
 
