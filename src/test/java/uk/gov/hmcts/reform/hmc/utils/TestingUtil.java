@@ -1356,26 +1356,36 @@ public class TestingUtil {
     }
 
     public static UpdateHearingRequest updateHearingRequestWithoutHearingWindow(int version) {
+        UpdateHearingRequest request = new UpdateHearingRequest();
+        HearingDetails hearingDetails = hearingDetailsWithoutHearingWindow();
+        hearingDetails.setAmendReasonCodes(List.of("reason 1", "reason 2"));
+        request.setHearingDetails(hearingDetails);
+        CaseDetails caseDetails = getValidCaseDetails();
+        request.setCaseDetails(caseDetails);
+        request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        RequestDetails requestDetails = new RequestDetails();
+        requestDetails.setVersionNumber(1);
+        request.setRequestDetails(requestDetails);
+        return request;
+    }
+
+    public static HearingDetails hearingDetailsWithoutHearingWindow() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
         hearingDetails.setHearingType("Some hearing type");
         hearingDetails.setDuration(360);
+        hearingDetails.setNonStandardHearingDurationReasons(List.of("First reason", "Second reason"));
         hearingDetails.setHearingPriorityType("Priority type");
+        hearingDetails.setHearingIsLinkedFlag(Boolean.TRUE);
+        hearingDetails.setHearingChannels(getHearingChannelsList());
         HearingLocation location1 = new HearingLocation();
         location1.setLocationType(LocationType.CLUSTER.getLabel());
         location1.setLocationId("Location Id");
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
-        hearingDetails.setHearingChannels(getHearingChannelsList());
-        UpdateHearingRequest request = new UpdateHearingRequest();
-        request.setHearingDetails(hearingDetails);
-        request.setCaseDetails(caseDetails());
-        request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
-        RequestDetails requestDetails = new RequestDetails();
-        requestDetails.setVersionNumber(version);
-        request.setRequestDetails(requestDetails);
-        return request;
+        hearingDetails.setFacilitiesRequired(List.of("facility1", "facility2"));
+        return hearingDetails;
     }
 }
 
