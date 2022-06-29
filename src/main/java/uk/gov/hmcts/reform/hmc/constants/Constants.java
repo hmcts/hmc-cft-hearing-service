@@ -33,5 +33,5 @@ public final class Constants {
     public static final String LIST_ASSIST = "ListAssist";
     public static final String ERROR = "ERROR";
     public static final String LIST_ASSIST_SUCCESSFUL_RESPONSE = "Response received from ListAssist successfully";
-    public static final String HMCTS_SERVICE_CODE = "hmctsServiceCode";
+    public static final String HMCTS_SERVICE_ID = "hmctsServiceId";
 }
