@@ -24,6 +24,9 @@ import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -152,7 +155,7 @@ class HearingManagementServiceIT extends BaseTest {
     void testValidateHearingRequest_WhenAmendReasonCodeIsNotNull() {
         HearingRequest createHearingRequest = new HearingRequest();
         HearingDetails hearingDetails = TestingUtil.hearingDetails();
-        hearingDetails.setAmendReasonCode("Amend Reason");
+        hearingDetails.setAmendReasonCodes(List.of("Amend Reason", "Amend Reason 2"));
         createHearingRequest.setHearingDetails(hearingDetails);
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         createHearingRequest.setCaseDetails(TestingUtil.caseDetailsWithCaseSubType());
@@ -282,7 +285,7 @@ class HearingManagementServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
     void testUpdateHearingRequest_WhenAmendReasonIsEmpty() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
-        request.getHearingDetails().setAmendReasonCode("");
+        request.getHearingDetails().setAmendReasonCodes(Collections.emptyList());
         Exception exception = assertThrows(BadRequestException.class, () -> {
             hearingManagementService.updateHearingRequest(2000000024L, request);
         });
@@ -293,7 +296,7 @@ class HearingManagementServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
     void testUpdateHearingRequest_WhenAmendReasonIsNull() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
-        request.getHearingDetails().setAmendReasonCode(null);
+        request.getHearingDetails().setAmendReasonCodes(null);
         Exception exception = assertThrows(BadRequestException.class, () -> {
             hearingManagementService.updateHearingRequest(2000000024L, request);
         });
@@ -400,9 +403,13 @@ class HearingManagementServiceIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void testGetHearings_WithValidCaseRefAndStatus() {
-        GetHearingsResponse response = hearingManagementService.getHearings("9372710950276233", "HEARING_REQUESTED");
+        GetHearingsResponse response = hearingManagementService.getHearings("9372710950276233",
+                                                                            "HEARING_REQUESTED");
         testGetHearings_WithValidCaseRefAndStatus_assertPart1(response);
         testGetHearings_WithValidCaseRefAndStatus_assertPart2(response);
+        assertEquals(2, response.getCaseHearings().get(0).getHearingChannels().size());
+        assertTrue(response.getCaseHearings().get(0).getHearingChannels().contains("Paper"));
+        assertTrue(response.getCaseHearings().get(0).getHearingChannels().contains("Email"));
     }
 
     void testGetHearings_WithValidCaseRefAndStatus_assertPart1(GetHearingsResponse response) {

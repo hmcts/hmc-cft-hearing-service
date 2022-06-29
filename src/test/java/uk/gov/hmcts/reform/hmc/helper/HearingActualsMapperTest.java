@@ -376,6 +376,52 @@ class HearingActualsMapperTest {
         assertEquals("Cannot find unique PartyID with value 10", exception.getMessage());
     }
 
+    @Test
+    void processHearingOutcomeIsNotNull() {
+
+        ActualHearingDayPauseDayTime hearingDayPauseDayTime = TestingUtil.getHearingActualDayPause(
+                LocalDateTime.of(2022, 01, 28, 10, 00),
+                LocalDateTime.of(2022, 01, 28, 12, 00)
+        );
+        final String actualOrganisationName = "name";
+        ActualHearingDayParties hearingDayParty = TestingUtil.getHearingActualDayParties(
+                null,
+                "RoleType1",
+                null,
+                actualOrganisationName,
+                "SubType1",
+                null,
+                null
+        );
+
+        HearingActualsOutcome hearingOutcome = new HearingActualsOutcome();
+        hearingOutcome.setHearingResult(HearingResultType.COMPLETED.getLabel());
+        hearingOutcome.setHearingType("witness hearing");
+        hearingOutcome.setHearingFinalFlag(true);
+        hearingOutcome.setHearingResultDate(LocalDate.of(2022, 02, 01));
+        hearingOutcome.setHearingResultReasonType("hearing Reason");
+
+        HearingActual hearingActual = getHearingActual(null, actualOrganisationName,
+                "2", List.of(hearingDayPauseDayTime),
+                List.of(hearingDayParty)
+        );
+        hearingActual.setHearingOutcome(hearingOutcome);;
+
+        HearingActualsMapper actualsMapper = new HearingActualsMapper();
+        ActualHearingEntity response = actualsMapper.toActualHearingEntity(hearingActual);
+
+        assertCommonFields(response);
+        assertEquals(
+                "name",
+                response.getActualHearingDay().get(0).getActualHearingParty().get(0)
+                        .getActualAttendeeIndividualDetail().getPartyOrganisationName()
+        );
+        assertNull(response.getActualHearingDay().get(0).getActualHearingParty().get(0)
+                .getActualAttendeeIndividualDetail().getFirstName());
+        assertNull(response.getActualHearingDay().get(0).getActualHearingParty().get(0)
+                .getActualAttendeeIndividualDetail().getLastName());
+    }
+
     private void assertCommonFields(ActualHearingEntity response) {
         assertEquals("witness hearing", response.getActualHearingType());
         assertTrue(response.getActualHearingIsFinalFlag());

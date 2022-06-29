@@ -25,12 +25,24 @@ public class HearingActualsMapper {
     public ActualHearingEntity toActualHearingEntity(HearingActual request) {
         ActualHearingEntity actualHearing = new ActualHearingEntity();
 
-        actualHearing.setActualHearingType(request.getHearingOutcome().getHearingType());
-        actualHearing.setActualHearingIsFinalFlag(request.getHearingOutcome().getHearingFinalFlag());
-        actualHearing.setHearingResultType(HearingResultType.getByLabel(
-            request.getHearingOutcome().getHearingResult()));
-        actualHearing.setHearingResultReasonType(request.getHearingOutcome().getHearingResultReasonType());
-        actualHearing.setHearingResultDate(request.getHearingOutcome().getHearingResultDate());
+        if (null != request.getHearingOutcome()) {
+            if (null != request.getHearingOutcome().getHearingType()) {
+                actualHearing.setActualHearingType(request.getHearingOutcome().getHearingType());
+            }
+            if (null != request.getHearingOutcome().getHearingFinalFlag()) {
+                actualHearing.setActualHearingIsFinalFlag(request.getHearingOutcome().getHearingFinalFlag());
+            }
+            if (null != request.getHearingOutcome().getHearingResult()) {
+                actualHearing.setHearingResultType(HearingResultType.getByLabel(
+                        request.getHearingOutcome().getHearingResult()));
+            }
+            if (null != request.getHearingOutcome().getHearingResultReasonType()) {
+                actualHearing.setHearingResultReasonType(request.getHearingOutcome().getHearingResultReasonType());
+            }
+            if (null != request.getHearingOutcome().getHearingResultDate()) {
+                actualHearing.setHearingResultDate(request.getHearingOutcome().getHearingResultDate());
+            }
+        }
         actualHearing.setActualHearingDay(toActualHearingDayEntities(request.getActualHearingDays(), actualHearing));
 
         return actualHearing;
@@ -54,8 +66,23 @@ public class HearingActualsMapper {
             toActualHearingDayPausesEntities(actualHearingDay.getPauseDateTimes(), actualHearingDayEntity));
         actualHearingDayEntity.setActualHearingParty(
             toActualHearingPartyEntities(actualHearingDay.getActualDayParties(), actualHearingDayEntity));
+        setNotRequired(actualHearingDayEntity, actualHearingDay);
         actualHearingDayEntity.setActualHearing(actualHearing);
         return actualHearingDayEntity;
+    }
+
+    private void setNotRequired(ActualHearingDayEntity actualHearingDayEntity, ActualHearingDay actualHearingDay) {
+        actualHearingDayEntity.setNotRequired(actualHearingDay.getNotRequired());
+        if (null == actualHearingDay.getNotRequired() || !actualHearingDay.getNotRequired()) {
+            if (null == actualHearingDay.getHearingStartTime()) {
+                throw new BadRequestException(
+                    String.format("005 missing hearingStartTime for %s", actualHearingDay.getHearingDate()));
+            }
+            if (null == actualHearingDay.getHearingEndTime()) {
+                throw new BadRequestException(
+                    String.format("006 missing hearingEndTime for %s", actualHearingDay.getHearingDate()));
+            }
+        }
     }
 
     private List<ActualHearingDayPausesEntity> toActualHearingDayPausesEntities(
@@ -134,7 +161,8 @@ public class HearingActualsMapper {
                     ActualHearingPartyEntity sourceEntity =
                         getHearingPartyEntityByReference(
                             actualHearingDayParty.getActualPartyId(),
-                            hearingPartyEntities);
+                            hearingPartyEntities
+                        );
 
                     ActualPartyRelationshipDetailEntity partyRelationshipDetail = ActualPartyRelationshipDetailEntity
                         .builder()

@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -33,7 +35,7 @@ import javax.persistence.Table;
 @SecondaryTable(name = "hearing",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "hearing_id")})
-public class HearingResponseEntity extends BaseEntity {
+public class HearingResponseEntity extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -59,6 +61,7 @@ public class HearingResponseEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "hearingResponse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonSerialize
     private List<HearingDayDetailsEntity> hearingDayDetails;
 
     @Column(name = "request_version", nullable = false)
@@ -69,6 +72,7 @@ public class HearingResponseEntity extends BaseEntity {
 
     @Column(name = "service_data", columnDefinition = "jsonb")
     @Convert(converter = JsonDataConverter.class)
+    @SuppressWarnings("java:S2789")
     private JsonNode serviceData;
 
     @OneToOne(mappedBy = "hearingResponse", fetch = FetchType.EAGER, orphanRemoval = true)
