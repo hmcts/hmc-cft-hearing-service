@@ -62,7 +62,6 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setRequester(hearingDetails.getHearingRequester());
         caseHearingRequestEntity.setHearingRequestReceivedDateTime(currentTime());
         caseHearingRequestEntity.setHearing(hearingEntity);
-        caseHearingRequestEntity.setAmendReasonCode(hearingDetails.getAmendReasonCode());
         if (hearingDetails.getHearingWindow() != null) {
             caseHearingRequestEntity.setFirstDateTimeOfHearingMustBe(hearingDetails.getHearingWindow()
                                                                          .getFirstDateTimeMustBe());
