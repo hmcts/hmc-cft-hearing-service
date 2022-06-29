@@ -29,7 +29,7 @@
           "INTER"
         ],
         "autolistFlag": true,
-        "amendReasonCode": "Amend reason",
+        "amendReasonCodes": ["Amend reason"],
         "hearingType": "Some hearing type",
         "hearingWindow": {
           "dateRangeStart": "2022-05-10",

@@ -16,7 +16,7 @@
         "versionNumber": 1
       },
       "hearingDetails": {
-        "amendReasonCode": "test for amend hearing request"
+        "amendReasonCodes": ["test for amend hearing request"]
       },
       "caseDetails": {
         "caseRef": "${[scenarioContext][siblingContexts][CreateCase][testData][actualResponse][body][id]}",
