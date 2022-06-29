@@ -8,8 +8,10 @@ import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
+import uk.gov.hmcts.reform.hmc.data.ChangeReasonsEntity;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -35,6 +37,9 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-caseHearings_request.sql";
 
     private static final String UN_NOTIFIED_HEARINGS_DATA_SCRIPT = "classpath:sql/unNotified-hearings-request.sql";
+
+    private static final String INSERT_CASE_HEARING_CHANGE_REASONS_DATA_SCRIPT =
+            "classpath:sql/insert-case_hearing_request_change_reasons.sql";
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
@@ -155,4 +160,18 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
         assertEquals(2L, results);
     }
 
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_CHANGE_REASONS_DATA_SCRIPT})
+    void testGetChangeReasons() {
+        CaseHearingRequestEntity caseHearing = caseHearingRequestRepository.getLatestCaseHearingRequest(2000000011L);
+        final List<ChangeReasonsEntity> changeReasonsEntities = caseHearing.getAmendReasonCodes();
+        assertNotNull(changeReasonsEntities);
+        assertEquals(3, changeReasonsEntities.size());
+        final List<String> changeReasons =
+                changeReasonsEntities.stream()
+                        .map(ChangeReasonsEntity::getChangeReasonType)
+                        .collect(Collectors.toList());
+
+        assertTrue(changeReasons.containsAll(List.of("reason 1", "reason 2", "reason 3")));
+    }
 }
