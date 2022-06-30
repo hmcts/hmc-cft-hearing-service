@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelUserRequirementsEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
@@ -361,7 +360,7 @@ class GetHearingResponseMapperTest {
     private void assertHearingResponse(HearingResponse hearingResponse) {
         assertAll(
             () -> assertEquals(ListAssistCaseStatus.CASE_CREATED.label, hearingResponse.getLaCaseStatus()),
-            () -> assertEquals(ListingStatus.FIXED.label, hearingResponse.getListingStatus()),
+            () -> assertEquals("Fixed", hearingResponse.getListingStatus()),
             () -> assertEquals("Cancelled Reason 1", hearingResponse.getHearingCancellationReason())
         );
     }

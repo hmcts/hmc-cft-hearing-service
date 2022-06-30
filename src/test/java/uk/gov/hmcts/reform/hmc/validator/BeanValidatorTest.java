@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
@@ -236,7 +237,35 @@ class BeanValidatorTest {
         assertTrue(validationErrors.contains(ValidationError.LIST_ASSIST_TRANSACTION_ID_MAX_LENGTH));
         assertTrue(validationErrors.contains(ValidationError.HEARING_CANCELLATION_REASON_MAX_LENGTH));
         assertTrue(validationErrors.contains("Unsupported type for laCaseStatus"));
-        assertTrue(validationErrors.contains("Unsupported type for listingStatus"));
+        assertTrue(validationErrors.contains(ValidationError.HEARING_STATUS_CODE_NULL));
+    }
+
+    @Test
+    void shouldHave_HearingResponseListingStatusMaxLengthViolation() {
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setListAssistTransactionID("a".repeat(40));
+        hearingResponse.setHearingCancellationReason("a".repeat(40));
+        hearingResponse.setLaCaseStatus(ListAssistCaseStatus.AWAITING_LISTING.name());
+        hearingResponse.setListingStatus("a".repeat(31));
+        Set<ConstraintViolation<HearingResponse>> violations = validator.validate(hearingResponse);
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+        assertTrue(validationErrors.contains(ValidationError.HEARING_STATUS_CODE_LENGTH));
+    }
+
+    @Test
+    void shouldPass_HearingResponse() {
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setListAssistTransactionID("a".repeat(40));
+        hearingResponse.setHearingCancellationReason("a".repeat(40));
+        hearingResponse.setLaCaseStatus(ListAssistCaseStatus.AWAITING_LISTING.name());
+        hearingResponse.setListingStatus("a".repeat(30));
+        Set<ConstraintViolation<HearingResponse>> violations = validator.validate(hearingResponse);
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
+        assertTrue(violations.isEmpty());
     }
 
     @Test
