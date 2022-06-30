@@ -1,0 +1,30 @@
+{
+  "_guid_": "GetHearingRequestBase",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "get hearing",
+  "method": "GET",
+  "uri": "/hearing/{hearingID}",
+  "s2sClientId": "xui_webapp",
+  "specs": [
+    "has the 200 OK code",
+    "an active profile in CCD"
+  ],
+  "users": {
+    "invokingUser": {
+      "_extends_": "HmcSuperuser"
+    }
+  },
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    }
+  },
+  "expectedResponse": {
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    }
+  }
+}
