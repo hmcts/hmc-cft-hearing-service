@@ -5,6 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.Hearing;
@@ -33,9 +36,15 @@ import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+import static java.time.LocalDateTime.of;
+import static java.time.LocalDateTime.parse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -52,7 +61,7 @@ import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SU
 class HmiHearingResponseMapperTest {
 
 
-    private HmiHearingResponseMapper hmiHearingResponseMapper;
+    private static HmiHearingResponseMapper hmiHearingResponseMapper;
 
     @BeforeEach
     public void setUp() {
@@ -87,7 +96,7 @@ class HmiHearingResponseMapperTest {
             ),
             () -> assertThat(
                 response.getHearingResponses().get(1).getRequestTimeStamp(),
-                is(LocalDateTime.parse("2021-08-10T12:20:00"))
+                is(parse("2021-08-10T12:20:00"))
             ),
             () -> assertThat(response.getHearingResponses().get(1).getRequestVersion(), is(1)),
             () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is(ListingStatus.DRAFT.name())),
@@ -96,11 +105,11 @@ class HmiHearingResponseMapperTest {
             () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name())),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getStartDateTime(),
-                is(LocalDateTime.parse("2021-08-10T12:20:00"))
+                is(parse("2021-08-10T12:20:00"))
             ),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getEndDateTime(),
-                is(LocalDateTime.parse("2021-08-10T12:20:00"))
+                is(parse("2021-08-10T12:20:00"))
             ),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getRoomId(),
@@ -135,7 +144,7 @@ class HmiHearingResponseMapperTest {
             ),
             () -> assertThat(
                 response.getHearingResponses().get(1).getRequestTimeStamp(),
-                is(LocalDateTime.parse("2021-08-10T12:20:00"))
+                is(parse("2021-08-10T12:20:00"))
             ),
             () -> assertThat(response.getHearingResponses().get(1).getRequestVersion(), is(1)),
             () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is(ListingStatus.DRAFT.name())),
@@ -144,11 +153,11 @@ class HmiHearingResponseMapperTest {
             () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name())),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getStartDateTime(),
-                is(LocalDateTime.parse("2021-10-11T12:20:00"))
+                is(parse("2021-10-11T12:20:00"))
             ),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getEndDateTime(),
-                is(LocalDateTime.parse("2021-10-12T12:20:00"))
+                is(parse("2021-10-12T12:20:00"))
             ),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getRoomId(),
@@ -183,7 +192,7 @@ class HmiHearingResponseMapperTest {
             ),
             () -> assertThat(
                 response.getHearingResponses().get(1).getRequestTimeStamp(),
-                is(LocalDateTime.parse("2021-08-10T12:20:00"))
+                is(parse("2021-08-10T12:20:00"))
             ),
             () -> assertThat(response.getHearingResponses().get(1).getRequestVersion(), is(1)),
             () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is(ListingStatus.DRAFT.name())),
@@ -192,11 +201,11 @@ class HmiHearingResponseMapperTest {
             () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name())),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getStartDateTime(),
-                is(LocalDateTime.parse("2021-10-11T12:20:00"))
+                is(parse("2021-10-11T12:20:00"))
             ),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getEndDateTime(),
-                is(LocalDateTime.parse("2021-10-12T12:20:00"))
+                is(parse("2021-10-12T12:20:00"))
             ),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getRoomId(),
@@ -213,32 +222,137 @@ class HmiHearingResponseMapperTest {
             () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(0)
                                  .getHearingDayPanel().get(0).getPanelUserId(), is("JohCode")),
             () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(0)
-                                 .getHearingDayPanel().get(0).getIsPresiding(), is(true)),
-
-            () -> assertThat(
-                response.getHearingResponses().get(1).getHearingDayDetails().get(1).getStartDateTime(),
-                is(LocalDateTime.parse("2021-10-11T12:20:00"))
-            ),
-            () -> assertThat(
-                response.getHearingResponses().get(1).getHearingDayDetails().get(1).getEndDateTime(),
-                is(LocalDateTime.parse("2021-10-12T12:20:00"))
-            ),
-            () -> assertThat(
-                response.getHearingResponses().get(1).getHearingDayDetails().get(1).getRoomId(),
-                is("multiDayRoomName")
-            ),
-            () -> assertNull(response.getHearingResponses().get(1).getHearingDayDetails().get(1).getVenueId()),
-            () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(1)
-                                 .getHearingAttendeeDetails().get(0).getPartyId(), is("entityId")),
-            () -> assertThat(
-                response.getHearingResponses().get(1).getHearingDayDetails().get(1)
-                    .getHearingAttendeeDetails().get(0).getPartySubChannelType(),
-                is("codeSubChannel")
-            ),
-            () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(1)
-                                 .getHearingDayPanel().get(0).getPanelUserId(), is("JohCode")),
-            () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(1)
                                  .getHearingDayPanel().get(0).getIsPresiding(), is(true)));
+    }
+
+    private static HearingSession createHearingSession(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        final HearingSession hearingSession = new HearingSession();
+        hearingSession.setHearingStartTime(startDateTime);
+        hearingSession.setHearingEndTime(endDateTime);
+
+        return hearingSession;
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideMultipleHearingSessions")
+    void mapHmiMultiSessionMultiDayHearingToEntitySingleHearingSessionPerDay(List<LocalDateTime> startTimes,
+                                                                             List<LocalDateTime> endTimes,
+                                                                             List<HearingSession> expectedSessions) {
+        assertEquals(startTimes.size(), endTimes.size());
+
+        final HearingResponse hearingResponse = generateHmiMultiSessionMultiDayHearing(
+                "random", HearingCode.EXCEPTION, 1, ListingStatus.DRAFT, startTimes.size());
+
+        final List<HearingSession> existingSessions = hearingResponse.getHearing().getHearingSessions();
+
+        for (int i = 0; i < existingSessions.size(); i++) {
+            HearingSession hearingSession = existingSessions.get(i);
+            hearingSession.setHearingStartTime(startTimes.get(i));
+            hearingSession.setHearingEndTime(endTimes.get(i));
+        }
+
+        HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(hearingResponse,
+                generateHearingEntity("AWAITING_LISTING", 1)
+        );
+        assertAll(
+                () -> assertThat(response.getHearingResponses().size(), is(2)),
+                () -> assertThat(
+                        response.getHearingResponses().get(1).getListingTransactionId(),
+                        is("transactionIdCaseHQ")
+                ),
+                () -> assertThat(
+                        response.getHearingResponses().get(1).getRequestTimeStamp(),
+                        is(parse("2021-08-10T12:20:00"))
+                ),
+                () -> assertThat(response.getHearingResponses().get(1).getRequestVersion(), is(1)),
+                () -> assertThat(response.getHearingResponses().get(1).getListingStatus(),
+                        is(ListingStatus.DRAFT.name())),
+                () -> assertThat(response.getHearingResponses().get(1).getCancellationReasonType(), is("reason")),
+                () -> assertThat(response.getHearingResponses().get(1).getTranslatorRequired(), is(true)),
+                () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name())),
+                () -> assertThat(
+                        response.getHearingResponses().get(1).getHearingDayDetails().size(),
+                        is(expectedSessions.size())
+                ),
+                () -> assertHearingDayDetails(response.getHearingResponses().get(1), expectedSessions)
+        );
+    }
+
+    private static Stream<Arguments> provideMultipleHearingSessions() {
+
+        return Stream.of(
+                // a hearing session with same date
+                Arguments.of(
+                        List.of(parse("2022-01-05T09:45:02"),
+                                parse("2022-01-05T09:45:01"),
+                                parse("2022-01-05T10:46:03")
+                        ),
+                        List.of(parse("2022-01-05T13:30:01"),
+                                parse("2022-01-05T13:50:30"),
+                                parse("2022-01-05T13:29:59")
+                        ),
+                        List.of(
+                                createHearingSession(parse("2022-01-05T09:45:01"), parse("2022-01-05T13:50:30"))
+                        )
+                ),
+                // a hearing session with different date
+                Arguments.of(
+                        List.of(parse("2022-05-16T10:45:09"),
+                                parse("2022-05-16T11:39:10")
+                        ),
+                        List.of(parse("2022-05-16T15:37:16"),
+                                parse("2022-05-16T17:09:53")
+                        ),
+                        List.of(
+                                createHearingSession(parse("2022-05-16T10:45:09"), parse("2022-05-16T17:09:53"))
+                        )
+                ),
+                // hearing session with same date and different dates
+                Arguments.of(
+                        List.of(parse("2022-02-10T10:30:00"),
+                                parse("2022-02-10T12:00:00"),
+                                parse("2022-02-10T14:30:00"),
+                                parse("2022-02-11T10:35:00"),
+                                parse("2022-02-11T12:40:00"),
+                                parse("2022-02-12T14:50:00")
+                        ),
+
+                        List.of(parse("2022-02-10T10:30:00"),
+                                parse("2022-02-10T12:00:00"),
+                                parse("2022-02-10T14:30:00"),
+                                parse("2022-02-11T10:36:00"),
+                                parse("2022-02-11T12:40:00"),
+                                parse("2022-02-12T16:57:00")
+                        ),
+
+                        List.of(
+                                createHearingSession(parse("2022-02-10T10:30:00"), parse("2022-02-10T14:30:00")),
+                                createHearingSession(parse("2022-02-11T10:35:00"), parse("2022-02-11T12:40:00")),
+                                createHearingSession(parse("2022-02-12T14:50:00"), parse("2022-02-12T16:57:00"))
+                        )
+                )
+        );
+    }
+
+    private static void assertHearingDayDetails(HearingResponseEntity hearingResponseEntity,
+                                                List<HearingSession> hearingSessions) {
+
+        hearingResponseEntity.getHearingDayDetails().forEach(hearingDayDetailsEntity -> {
+                assertThat(hearingSessions.stream()
+                        .anyMatch(hearingSession ->
+                                hearingSession.getHearingStartTime().equals(hearingDayDetailsEntity.getStartDateTime())
+                                && hearingSession.getHearingEndTime().equals(hearingDayDetailsEntity.getEndDateTime())),
+                                    is(true));
+
+                assertThat(hearingDayDetailsEntity.getRoomId(), is("multiDayRoomName"));
+                assertThat(hearingDayDetailsEntity.getVenueId(), is(nullValue()));
+                assertThat(hearingDayDetailsEntity.getHearingAttendeeDetails().get(0).getPartyId(), is("entityId"));
+                assertThat(hearingDayDetailsEntity.getHearingAttendeeDetails().get(0).getPartySubChannelType(),
+                        is("codeSubChannel"));
+                assertThat(hearingDayDetailsEntity.getHearingDayPanel().get(0).getPanelUserId(), is("JohCode"));
+                assertThat(hearingDayDetailsEntity.getHearingDayPanel().get(0).getIsPresiding(), is(true));
+            }
+        );
     }
 
     @Test
@@ -255,7 +369,7 @@ class HmiHearingResponseMapperTest {
             ),
             () -> assertThat(
                 response.getHearingResponses().get(1).getRequestTimeStamp(),
-                is(LocalDateTime.parse("2021-08-10T12:20:00"))
+                is(parse("2021-08-10T12:20:00"))
             ),
             () -> assertThat(response.getHearingResponses().get(1).getRequestVersion(), is(1)),
             () -> assertThat(response.getHearingResponses().get(1).getListingStatus(), is(ListingStatus.DRAFT.name())),
@@ -264,11 +378,11 @@ class HmiHearingResponseMapperTest {
             () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name())),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getStartDateTime(),
-                is(LocalDateTime.parse("2021-08-10T12:20:00"))
+                is(parse("2021-08-10T12:20:00"))
             ),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getEndDateTime(),
-                is(LocalDateTime.parse("2021-08-10T12:20:00"))
+                is(parse("2021-08-10T12:20:00"))
             ),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().get(0).getRoomId(),
@@ -426,20 +540,20 @@ class HmiHearingResponseMapperTest {
     void mapHmiHearingToEntityToHmcModel() {
         HmcHearingResponse response = hmiHearingResponseMapper.mapEntityToHmcModel(
             generateHearingResponseEntity(1,
-                                          LocalDateTime.of(2019, 1, 10, 11, 20, 00),
+                                          of(2019, 1, 10, 11, 20, 00),
                                           ListingStatus.DRAFT.name(),
-                                          LocalDateTime.of(2019, 1, 10, 11, 20, 00),
+                                          of(2019, 1, 10, 11, 20, 00),
                                           "12", true, "11", HearingCode.LISTED.name()),
             generateHearingEntity("AWAITING_LISTING", 1, 1L)
         );
         assertAll(
             () -> assertThat(response.getHearingID(), is("1")),
             () -> assertThat(response.getHearingUpdate().getHearingResponseReceivedDateTime(),
-                             is(LocalDateTime.parse("2019-01-10T11:20"))),
+                             is(parse("2019-01-10T11:20"))),
             () -> assertThat(response.getHearingUpdate().getHmcStatus(), is("AWAITING_LISTING")),
             () -> assertThat(response.getHearingUpdate().getHearingListingStatus(), is(ListingStatus.DRAFT)),
             () -> assertThat(response.getHearingUpdate().getNextHearingDate(),
-                             is(LocalDateTime.parse("2019-01-10T11:20"))),
+                             is(parse("2019-01-10T11:20"))),
             () -> assertThat(response.getHearingUpdate().getHearingVenueId(), is("12")),
             () -> assertThat(response.getHearingUpdate().getHearingJudgeId(), is("11")),
             () -> assertThat(response.getHearingUpdate().getListAssistCaseStatus(), is(HearingCode.LISTED.name()))
@@ -624,8 +738,8 @@ class HmiHearingResponseMapperTest {
         Hearing hearing = new Hearing();
         hearing.setHearingCaseVersionId(version);
         hearing.setHearingCancellationReason("reason");
-        hearing.setHearingStartTime(LocalDateTime.parse("2021-08-10T12:20:00"));
-        hearing.setHearingEndTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        hearing.setHearingStartTime(parse("2021-08-10T12:20:00"));
+        hearing.setHearingEndTime(parse("2021-08-10T12:20:00"));
         hearing.setHearingTranslatorRequired(true);
 
         HearingStatus hearingStatus = new HearingStatus();
@@ -668,15 +782,15 @@ class HmiHearingResponseMapperTest {
         HearingResponse hearingResponse = new HearingResponse();
 
         MetaResponse metaResponse = new MetaResponse();
-        metaResponse.setTimestamp(LocalDateTime.parse("2021-08-10T12:20:00"));
+        metaResponse.setTimestamp(parse("2021-08-10T12:20:00"));
         metaResponse.setTransactionIdCaseHQ("transactionIdCaseHQ");
         hearingResponse.setMeta(metaResponse);
 
         Hearing hearing = new Hearing();
         hearing.setHearingCaseVersionId(version);
         hearing.setHearingCancellationReason("reason");
-        hearing.setHearingStartTime(LocalDateTime.parse("2021-08-10T12:20:00"));
-        hearing.setHearingEndTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        hearing.setHearingStartTime(parse("2021-08-10T12:20:00"));
+        hearing.setHearingEndTime(parse("2021-08-10T12:20:00"));
         hearing.setHearingTranslatorRequired(true);
 
         uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus hearingStatus =
@@ -721,26 +835,27 @@ class HmiHearingResponseMapperTest {
         return hearingResponse;
     }
 
-    private HearingResponse generateHmiMultiSessionMultiDayHearing(String key,
-                                                       HearingCode hearingCode,
-                                                       int version,
-                                                       ListingStatus status) {
+    private static HearingResponse generateHmiMultiSessionMultiDayHearing(String key,
+                                                                   HearingCode hearingCode,
+                                                                   int version,
+                                                                   ListingStatus status,
+                                                                   int numHearingSessions) {
         HearingResponse hearingResponse = new HearingResponse();
 
         MetaResponse metaResponse = new MetaResponse();
-        metaResponse.setTimestamp(LocalDateTime.parse("2021-08-10T12:20:00"));
+        metaResponse.setTimestamp(parse("2021-08-10T12:20:00"));
         metaResponse.setTransactionIdCaseHQ("transactionIdCaseHQ");
         hearingResponse.setMeta(metaResponse);
 
         Hearing hearing = new Hearing();
         hearing.setHearingCaseVersionId(version);
         hearing.setHearingCancellationReason("reason");
-        hearing.setHearingStartTime(LocalDateTime.parse("2021-08-10T12:20:00"));
-        hearing.setHearingEndTime(LocalDateTime.parse("2021-08-10T12:20:00"));
+        hearing.setHearingStartTime(parse("2021-08-10T12:20:00"));
+        hearing.setHearingEndTime(parse("2021-08-10T12:20:00"));
         hearing.setHearingTranslatorRequired(true);
 
         uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus hearingStatus =
-            new uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus();
+                new uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus();
         hearingStatus.setCode(status);
         hearing.setHearingStatus(hearingStatus);
 
@@ -771,27 +886,33 @@ class HmiHearingResponseMapperTest {
         hearingJoh.setIsPresiding(true);
         hearing.setHearingJohs(new ArrayList<>(List.of(hearingJoh)));
 
-        HearingSession hearingSession = generateHearingSession(hearingRoom,
-                                                               hearingVenue,
-                                                               List.of(hearingAttendee),
-                                                               List.of(hearingJoh));
-        HearingSession hearingSession1 = generateHearingSession(hearingRoom,
-                                                               hearingVenue,
-                                                               List.of(hearingAttendee),
-                                                               List.of(hearingJoh));
-        hearing.setHearingSessions(List.of(hearingSession, hearingSession1));
+        final List<HearingSession> hearingSessions =
+                IntStream.range(0, numHearingSessions).mapToObj(i -> generateHearingSession(hearingRoom,
+                hearingVenue,
+                List.of(hearingAttendee),
+                List.of(hearingJoh)))
+                .collect(Collectors.toList());
+
+        hearing.setHearingSessions(hearingSessions);
 
         hearingResponse.setHearing(hearing);
         return hearingResponse;
     }
 
-    private HearingSession generateHearingSession(HearingRoom hearingRoom,
+    private HearingResponse generateHmiMultiSessionMultiDayHearing(String key,
+                                                       HearingCode hearingCode,
+                                                       int version,
+                                                       ListingStatus status) {
+        return generateHmiMultiSessionMultiDayHearing(key, hearingCode, version, status, 2);
+    }
+
+    private static HearingSession generateHearingSession(HearingRoom hearingRoom,
                                                   HearingVenue hearingVenue,
                                                   List<HearingAttendee> hearingAttendees,
                                                   List<HearingJoh> hearingJohs) {
         HearingSession hearingSession = new HearingSession();
-        hearingSession.setHearingStartTime(LocalDateTime.parse("2021-10-11T12:20:00"));
-        hearingSession.setHearingEndTime(LocalDateTime.parse("2021-10-12T12:20:00"));
+        hearingSession.setHearingStartTime(parse("2021-10-11T12:20:00"));
+        hearingSession.setHearingEndTime(parse("2021-10-12T12:20:00"));
         hearingSession.setHearingRoom(hearingRoom);
         hearingSession.setHearingVenue(hearingVenue);
         hearingSession.setHearingAttendees(hearingAttendees);
@@ -817,7 +938,7 @@ class HmiHearingResponseMapperTest {
 
     private MetaResponse generateMetaResponse() {
         MetaResponse metaResponse = new MetaResponse();
-        metaResponse.setTimestamp(LocalDateTime.parse("2021-08-10T12:20:00"));
+        metaResponse.setTimestamp(parse("2021-08-10T12:20:00"));
         metaResponse.setTransactionIdCaseHQ("transactionIdCaseHQ");
         return metaResponse;
     }
@@ -828,7 +949,7 @@ class HmiHearingResponseMapperTest {
         return  hearingCaseStatus;
     }
 
-    private HearingEntity generateHearingEntity(String status, int version) {
+    private static HearingEntity generateHearingEntity(String status, int version) {
         HearingEntity hearingEntity = new HearingEntity();
         CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         caseHearingRequestEntity.setVersionNumber(version);
