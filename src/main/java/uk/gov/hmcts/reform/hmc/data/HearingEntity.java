@@ -41,6 +41,8 @@ import static java.util.stream.Collectors.toList;
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
 public class HearingEntity extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 5837513924648640249L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "hearing_id_seq")
@@ -125,7 +127,7 @@ public class HearingEntity extends BaseEntity implements Serializable {
     }
 
     public String getDerivedHearingStatus() {
-        String hearingStatus = null;
+        String hearingStatus = "";
         switch (this.status) {
             case "LISTED":
             case "UPDATE_REQUESTED":

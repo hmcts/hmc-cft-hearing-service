@@ -1032,7 +1032,7 @@ public class TestingUtil {
         return entity;
     }
 
-    private static PartyRelationshipDetailsEntity partyRelationshipDetailsEntity(String targetTechPartyId,
+    public static PartyRelationshipDetailsEntity partyRelationshipDetailsEntity(String targetTechPartyId,
                                                                                  String relationshipType) {
 
         HearingPartyEntity targetHearingPartyEntity = new HearingPartyEntity();
