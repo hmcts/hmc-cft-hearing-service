@@ -10,6 +10,7 @@
       "hearingDate": "2022-01-28",
       "hearingStartTime": "2022-01-28T10:00:00.000",
       "hearingEndTime": "2022-01-28T15:00:00.000",
+      "notRequired" : "true",
       "pauseDateTimes": [
         {
           "pauseStartTime": "2022-01-28T12:00:00",
@@ -68,9 +69,7 @@
         {
           "actualPartyId": "3",
           "partyRole": "RoleType3",
-          "organisationDetails" : {
-            "name": "BooHaa Organisation"
-          },
+          "actualOrganisationName" : "BooHaa Organisation",
           "partyChannelSubType": "SubType2",
           "didNotAttendFlag": false
         }

@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PartiesNotifiedResponse {
 
-    private Integer responseVersion;
-
     private LocalDateTime responseReceivedDateTime;
 
     private Integer requestVersion;

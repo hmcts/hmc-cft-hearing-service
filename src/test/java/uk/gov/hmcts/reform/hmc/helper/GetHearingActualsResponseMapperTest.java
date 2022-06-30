@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
@@ -13,11 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.HEARING_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.LISTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.UPDATE_SUBMITTED;
 
 class GetHearingActualsResponseMapperTest {
 
     @Test
-    void toHearingsResponseWhenDataIsPresentForOrgDetails() throws JsonProcessingException {
+    void toHearingsResponseWhenDataIsPresentForOrgDetails()  {
         HearingActualResponse response = getHearingActualResponse(HEARING_REQUESTED.name());
         assertCommonFields(response);
         assertEquals("name",
@@ -28,7 +28,21 @@ class GetHearingActualsResponseMapperTest {
                          .get(0).getOrganisationDetails().getCftOrganisationID());
         assertEquals("partyOrgName",
                      response.getHearingActuals().getActualHearingDays().get(0)
-                         .getActualDayParties().get(0).getActualOrganisationDetails().get(0).getName());
+                         .getActualDayParties().get(0).getActualOrganisationName());
+    }
+
+    @Test
+    void toHearingsResponseWhenDataIsPresentForOrgDetails1()  {
+        HearingActualResponse response = getHearingActualResponse(UPDATE_SUBMITTED.name());
+        assertEquals("name",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties()
+                         .get(0).getOrganisationDetails().getName());
+        assertEquals("reference",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties()
+                         .get(0).getOrganisationDetails().getCftOrganisationID());
+        assertEquals("partyOrgName",
+                     response.getHearingActuals().getActualHearingDays().get(0)
+                         .getActualDayParties().get(0).getActualOrganisationName());
     }
 
     @Test
@@ -121,15 +135,15 @@ class GetHearingActualsResponseMapperTest {
                                                                   .getHearingsEntityForHearingActualsIndividual());
         assertCommonFields(response);
         assertEquals("mr", response.getHearingPlanned().getPlannedHearingDays()
-            .get(0).getParties().get(0).getIndividualDetails().get(0).getTitle());
+            .get(0).getParties().get(0).getIndividualDetails().getTitle());
         assertEquals("joe", response.getHearingPlanned().getPlannedHearingDays()
-            .get(0).getParties().get(0).getIndividualDetails().get(0).getFirstName());
+            .get(0).getParties().get(0).getIndividualDetails().getFirstName());
         assertEquals("bloggs", response.getHearingPlanned().getPlannedHearingDays()
-            .get(0).getParties().get(0).getIndividualDetails().get(0).getLastName());
+            .get(0).getParties().get(0).getIndividualDetails().getLastName());
         assertEquals("firstName", response.getHearingActuals().getActualHearingDays()
-            .get(0).getActualDayParties().get(0).getActualIndividualDetails().get(0).getFirstName());
+            .get(0).getActualDayParties().get(0).getActualIndividualDetails().getFirstName());
         assertEquals("lastName", response.getHearingActuals().getActualHearingDays()
-            .get(0).getActualDayParties().get(0).getActualIndividualDetails().get(0).getLastName());
+            .get(0).getActualDayParties().get(0).getActualIndividualDetails().getLastName());
     }
 
     private void assertCommonFields(HearingActualResponse response) {
@@ -181,7 +195,7 @@ class GetHearingActualsResponseMapperTest {
         assertEquals(LocalDateTime.parse("2021-08-10T12:20:00"),
                      response.getHearingActuals().getActualHearingDays().get(0).getPauseDateTimes()
                          .get(0).getPauseEndTime());
-        assertEquals(1,
+        assertEquals("1",
                      response.getHearingActuals().getActualHearingDays().get(0).getActualDayParties()
                          .get(0).getActualPartyId());
         assertEquals("roleType", response.getHearingActuals()

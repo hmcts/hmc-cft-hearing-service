@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 public class PartiesNotifiedResponses {
 
-    private Long hearingID;
+    private String hearingID;
 
     private List<PartiesNotifiedResponse> responses;
 

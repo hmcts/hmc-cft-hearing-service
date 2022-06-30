@@ -126,6 +126,8 @@ class LinkedHearingGroupServiceTest {
     @Mock
     ObjectMapperService objectMapper;
 
+    @Mock
+    AccessControlService accessControlService;
 
     @BeforeEach
     public void setUp() {
@@ -143,7 +145,8 @@ class LinkedHearingGroupServiceTest {
                                                     linkedGroupDetailsAuditMapper,
                                                     linkedHearingDetailsAuditMapper,
                                                     futureHearingRepository,
-                                                    objectMapper
+                                                    objectMapper,
+                                                    accessControlService
         );
     }
 

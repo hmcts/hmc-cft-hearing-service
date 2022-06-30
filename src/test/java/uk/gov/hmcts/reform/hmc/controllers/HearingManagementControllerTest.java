@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -28,22 +29,24 @@ import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
+import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = HearingManagementController.class,
@@ -62,6 +65,9 @@ class HearingManagementControllerTest {
     @MockBean
     private HearingManagementService hearingManagementService;
 
+    @MockBean
+    private AccessControlService accessControlService;
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -79,10 +85,9 @@ class HearingManagementControllerTest {
 
             HearingResponse hearingResponse = generateHearingResponse();
             when(hearingManagementService.saveHearingRequest(hearingRequest)).thenReturn(hearingResponse);
-            doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(
-                hearingResponse.getHearingRequestId(), hearingRequest, REQUEST_HEARING);
 
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             controller.saveHearing(hearingRequest);
             verify(hearingManagementService, times(1)).saveHearingRequest(any());
         }
@@ -94,13 +99,10 @@ class HearingManagementControllerTest {
             hearingRequest.setCaseDetails(null);
 
             HearingResponse hearingResponse = generateHearingResponse();
-            doNothing().when(hearingManagementService).verifyAccess(any());
             when(hearingManagementService.saveHearingRequest(hearingRequest)).thenReturn(hearingResponse);
-            doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(1L, hearingRequest,
-                                                                                REQUEST_HEARING
-            );
 
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             controller.saveHearing(hearingRequest);
             verify(hearingManagementService, times(1)).saveHearingRequest(any());
         }
@@ -112,15 +114,11 @@ class HearingManagementControllerTest {
 
             HearingResponse hearingResponse = generateHearingResponse();
             when(hearingManagementService.saveHearingRequest(hearingRequest)).thenReturn(hearingResponse);
-            doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(
-                hearingResponse.getHearingRequestId(), hearingRequest,
-                REQUEST_HEARING
-            );
 
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             controller.saveHearing(hearingRequest);
             verify(hearingManagementService, times(1)).saveHearingRequest(any());
-            verify(hearingManagementService, times(1)).verifyAccess(any());
         }
 
 
@@ -131,15 +129,11 @@ class HearingManagementControllerTest {
 
             HearingResponse hearingResponse = generateHearingResponse();
             when(hearingManagementService.saveHearingRequest(hearingRequest)).thenReturn(hearingResponse);
-            doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(
-                hearingResponse.getHearingRequestId(), hearingRequest,
-                REQUEST_HEARING
-            );
 
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             controller.saveHearing(hearingRequest);
             verify(hearingManagementService, times(1)).saveHearingRequest(any());
-            verify(hearingManagementService, times(1)).verifyAccess(any());
         }
 
         @Test
@@ -152,19 +146,11 @@ class HearingManagementControllerTest {
             HearingResponse hearingResponse = new HearingResponse();
             hearingResponse.setHearingRequestId(1L);
             when(hearingManagementService.saveHearingRequest(hearingRequest)).thenReturn(hearingResponse);
-            doNothing().when(hearingManagementService).verifyAccess(
-                hearingRequest.getCaseDetails().getCaseRef());
-            doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(
-                hearingResponse.getHearingRequestId(), hearingRequest,
-                REQUEST_HEARING
-            );
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             controller.saveHearing(hearingRequest);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
-            orderVerifier.verify(hearingManagementService).verifyAccess("caseReference");
             orderVerifier.verify(hearingManagementService).saveHearingRequest(hearingRequest);
-            orderVerifier.verify(hearingManagementService)
-                .sendRequestToHmiAndQueue(1L, hearingRequest, REQUEST_HEARING);
             verifyNoMoreInteractions(hearingManagementService);
         }
     }
@@ -174,14 +160,16 @@ class HearingManagementControllerTest {
     class GetHearing {
         @Test
         void shouldReturn204_whenRequestIdIsValid() {
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             controller.getHearing(1234L, true);
             verify(hearingManagementService, times(1)).getHearingRequest(any(), anyBoolean());
         }
 
         @Test
         void shouldReturn200_whenRequestIdIsValid() {
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             controller.getHearing(1234L, false);
             verify(hearingManagementService, times(1)).getHearingRequest(any(), anyBoolean());
         }
@@ -194,7 +182,8 @@ class HearingManagementControllerTest {
         void shouldReturn200_whenDeleteRequestIdIsValid() {
             doReturn(TestingUtil.deleteHearingResponse()).when(hearingManagementService)
                 .deleteHearingRequest(any(), any());
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             controller.deleteHearing(1234L, TestingUtil.deleteHearingRequest());
             verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());
         }
@@ -207,7 +196,8 @@ class HearingManagementControllerTest {
             HearingResponse hearingResponse = generateHearingResponse();
             when(hearingManagementService.deleteHearingRequest(any(), any())).thenReturn(hearingResponse);
 
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             controller.deleteHearing(1234L, request);
             verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());
         }
@@ -219,9 +209,11 @@ class HearingManagementControllerTest {
         @Test
         void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhn() {
             final String validCaseRef = "9372710950276233";
-            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef)).when(hearingManagementService)
+            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "HEARING_REQUESTED"))
+                .when(hearingManagementService)
                 .getHearings(any(), any());
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, null);
             verify(hearingManagementService, times(1)).getHearings(any(), any());
             assertEquals(hearingRequest.getCaseRef(), validCaseRef);
@@ -229,14 +221,36 @@ class HearingManagementControllerTest {
         }
 
         @Test
+        void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefAndListedStatus() {
+            final String validCaseRef = "9372710950276233";
+            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "LISTED"))
+                .when(hearingManagementService)
+                .getHearings(any(), any());
+
+            List<String> rolesRequired = Lists.newArrayList(HEARING_VIEWER, LISTED_HEARING_VIEWER);
+            List<String> filteredRoleAssignments = Lists.newArrayList(LISTED_HEARING_VIEWER);
+
+            doReturn(filteredRoleAssignments).when(accessControlService).verifyCaseAccess(validCaseRef, rolesRequired);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
+            GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, null);
+            verify(hearingManagementService, times(1)).getHearings(validCaseRef, "LISTED");
+            assertEquals(hearingRequest.getCaseRef(), validCaseRef);
+            assertEquals(hearingRequest.getCaseHearings().get(0).getHmcStatus(), "LISTED");
+            assertTrue(hearingRequest.getCaseHearings().get(0).getHearingIsLinkedFlag());
+        }
+
+        @Test
         void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhnAndStatus() {
             final String validCaseRef = "9372710950276233";
             final String status = "UPDATED"; // for example
-            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef)).when(hearingManagementService)
-                .getHearings(any(), any());
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "HEARING_REQUESTED"))
+                .when(hearingManagementService)
+                .getEmptyHearingsResponse(any());
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, status);
-            verify(hearingManagementService, times(1)).getHearings(any(), any());
+            verify(hearingManagementService, times(1)).getEmptyHearingsResponse(validCaseRef);
             assertEquals(hearingRequest.getCaseRef(), validCaseRef);
             assertTrue(hearingRequest.getCaseHearings().get(0).getHearingIsLinkedFlag());
         }
@@ -252,15 +266,11 @@ class HearingManagementControllerTest {
             HearingResponse hearingResponse = generateHearingResponse();
             when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest)).thenReturn(hearingResponse);
 
-            doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(1L, hearingRequest,
-                                                                                AMEND_HEARING
-            );
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             controller.updateHearing(hearingRequest, hearingId);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
             orderVerifier.verify(hearingManagementService).updateHearingRequest(hearingId, hearingRequest);
-            orderVerifier.verify(hearingManagementService)
-                .sendRequestToHmiAndQueue(hearingId, hearingRequest, AMEND_HEARING);
             verifyNoMoreInteractions(hearingManagementService);
         }
 
@@ -271,15 +281,11 @@ class HearingManagementControllerTest {
             HearingResponse hearingResponse = generateHearingResponse();
             when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest)).thenReturn(hearingResponse);
 
-            doNothing().when(hearingManagementService).sendRequestToHmiAndQueue(1L, hearingRequest,
-                                                                                AMEND_HEARING
-            );
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             controller.updateHearing(hearingRequest, hearingId);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
             orderVerifier.verify(hearingManagementService).updateHearingRequest(hearingId, hearingRequest);
-            orderVerifier.verify(hearingManagementService)
-                .sendRequestToHmiAndQueue(hearingId, hearingRequest, AMEND_HEARING);
             verifyNoMoreInteractions(hearingManagementService);
         }
     }
@@ -291,7 +297,8 @@ class HearingManagementControllerTest {
         @Test
         void shouldInvokeHearingCompletion() {
             final long hearingId = 2000000000L;
-            HearingManagementController controller = new HearingManagementController(hearingManagementService);
+            HearingManagementController controller = new HearingManagementController(hearingManagementService,
+                                                                                     accessControlService);
             controller.hearingCompletion(hearingId);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
             orderVerifier.verify(hearingManagementService).hearingCompletion(hearingId);

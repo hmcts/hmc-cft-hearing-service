@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -14,9 +15,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Table(name = "actual_attendee_individual_detail")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class ActualAttendeeIndividualDetailEntity implements Serializable {
+public class ActualAttendeeIndividualDetailEntity extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -39,5 +41,6 @@ public class ActualAttendeeIndividualDetailEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actual_party_id")
     private ActualHearingPartyEntity actualHearingParty;
+
 
 }

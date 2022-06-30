@@ -93,7 +93,7 @@ public class PartyDetailMapper {
     }
 
     private void setIndividualDetails(IndividualDetails individualDetails, HearingPartyEntity hearingPartyEntity) {
-        final List<IndividualDetailEntity> individualDetailEntity =
+        final IndividualDetailEntity individualDetailEntity =
             individualDetailMapper.modelToEntity(individualDetails, hearingPartyEntity);
         hearingPartyEntity.setIndividualDetailEntity(individualDetailEntity);
     }
@@ -109,7 +109,7 @@ public class PartyDetailMapper {
     private void setContactDetails(IndividualDetails individualDetails, HearingPartyEntity hearingPartyEntity) {
         final List<ContactDetailsEntity> contactDetailsEntity =
             contactDetailMapper.modelToEntity(individualDetails, hearingPartyEntity);
-        hearingPartyEntity.setContactDetails(contactDetailsEntity);
+        hearingPartyEntity.setContactDetailsEntity(contactDetailsEntity);
 
     }
 }
