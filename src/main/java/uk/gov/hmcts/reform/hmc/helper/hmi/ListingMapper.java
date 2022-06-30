@@ -1,13 +1,14 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
+import io.jsonwebtoken.lang.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.hmc.constants.Constants;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingMultiDay;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
 
@@ -27,7 +28,7 @@ public class ListingMapper {
         this.listingOtherConsiderationsMapper = listingOtherConsiderationsMapper;
     }
 
-    public Listing getListing(HearingDetails hearingDetails, List<String> preferredHearingChannels) {
+    public Listing getListing(HearingDetails hearingDetails) {
 
         Listing listing = Listing.builder()
             .listingAutoCreateFlag(hearingDetails.getAutoListFlag())
@@ -39,9 +40,8 @@ public class ListingMapper {
             .listingRequestedBy(hearingDetails.getHearingRequester())
             .listingPrivateFlag(hearingDetails.getPrivateHearingRequiredFlag())
             .listingJohs(listingJohsMapper.getListingJohs(hearingDetails.getPanelRequirements()))
-            .listingHearingChannels(preferredHearingChannels)
+            .listingHearingChannels(hearingDetails.getHearingChannels())
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
-            .amendReasonCode(hearingDetails.getAmendReasonCode())
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
             .listingOtherConsiderations(
@@ -67,6 +67,11 @@ public class ListingMapper {
         } else {
             listing.setListingDuration(hearingDetails.getDuration());
         }
+
+        if (!Collections.isEmpty(hearingDetails.getAmendReasonCodes())) {
+            listing.setAmendReasonCode(Constants.AMEND_REASON_CODE);
+        }
+
         return listing;
     }
 

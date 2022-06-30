@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.constants.Constants;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
@@ -61,7 +62,7 @@ class HmiSubmitHearingRequestMapperTest {
         when(hmiCaseDetailsMapper.getCaseDetails(caseDetails, 1, HEARING_ID, Boolean.TRUE))
             .thenReturn(hmiCaseDetails);
         Listing listing = Listing.builder().build();
-        when(listingMapper.getListing(hearingDetails, Collections.singletonList(PREFERRED_HEARING_CHANNEL)))
+        when(listingMapper.getListing(hearingDetails))
                 .thenReturn(listing);
         HmiHearingRequest hmiHearingRequest = HmiHearingRequest.builder()
                 .caseDetails(hmiCaseDetails)
@@ -90,8 +91,7 @@ class HmiSubmitHearingRequestMapperTest {
                 updateHearingRequest.getRequestDetails().getVersionNumber() + 1, HEARING_ID, Boolean.TRUE))
                   .thenReturn(hmiCaseDetails);
         Listing listing = Listing.builder().build();
-        when(listingMapper.getListing(updateHearingRequest.getHearingDetails(),
-                Collections.singletonList(PREFERRED_HEARING_CHANNEL)))
+        when(listingMapper.getListing(updateHearingRequest.getHearingDetails()))
                 .thenReturn(listing);
         HmiHearingRequest hmiHearingRequest = HmiHearingRequest.builder()
                 .caseDetails(hmiCaseDetails)
@@ -104,5 +104,24 @@ class HmiSubmitHearingRequestMapperTest {
         HmiSubmitHearingRequest actualHmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
                 .mapRequest(HEARING_ID, updateHearingRequest);
         assertEquals(expectedHmiSubmitHearingRequest, actualHmiSubmitHearingRequest);
+    }
+
+    @Test
+    void shouldReturnAmendReasonCodeForUpdateHearingRequest() {
+        Entity entity = Entity.builder().build();
+        HmiCaseDetails hmiCaseDetails = HmiCaseDetails.builder().build();
+        Listing listing = Listing.builder()
+            .amendReasonCode(Constants.AMEND_REASON_CODE)
+            .build();
+
+        HmiHearingRequest hmiHearingRequest = HmiHearingRequest.builder()
+            .caseDetails(hmiCaseDetails)
+            .listing(listing)
+            .entities(Collections.singletonList(entity))
+            .build();
+        HmiSubmitHearingRequest expectedHmiSubmitHearingRequest = HmiSubmitHearingRequest.builder()
+            .hearingRequest(hmiHearingRequest)
+            .build();
+        assertEquals("AMEND", expectedHmiSubmitHearingRequest.getHearingRequest().getListing().getAmendReasonCode());
     }
 }
