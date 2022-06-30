@@ -35,6 +35,8 @@ import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.time.LocalDateTime.parse;
@@ -238,7 +240,7 @@ class HmiHearingResponseMapperTest {
         assertEquals(startTimes.size(), endTimes.size());
 
         final HearingResponse hearingResponse = generateHmiMultiSessionMultiDayHearing(
-            "random", HearingCode.EXCEPTION, 1, "Draft");
+            "random", HearingCode.EXCEPTION, 1, "Draft", startTimes.size());
 
         final List<HearingSession> existingSessions = hearingResponse.getHearing().getHearingSessions();
 
@@ -844,10 +846,11 @@ class HmiHearingResponseMapperTest {
             return hearingResponse;
         }
 
-        private HearingResponse generateHmiMultiSessionMultiDayHearing (String key,
-            HearingCode hearingCode,
-        int version,
-        String status){
+    private static HearingResponse generateHmiMultiSessionMultiDayHearing(String key,
+                                                                          HearingCode hearingCode,
+                                                                          int version,
+                                                                          String status,
+                                                                          int numHearingSessions) {
             HearingResponse hearingResponse = new HearingResponse();
 
             MetaResponse metaResponse = new MetaResponse();
@@ -894,28 +897,31 @@ class HmiHearingResponseMapperTest {
             hearingJoh.setIsPresiding(true);
             hearing.setHearingJohs(new ArrayList<>(List.of(hearingJoh)));
 
-            HearingSession hearingSession = generateHearingSession(
-                hearingRoom,
-                hearingVenue,
-                List.of(hearingAttendee),
-                List.of(hearingJoh)
-            );
-            HearingSession hearingSession1 = generateHearingSession(
-                hearingRoom,
-                hearingVenue,
-                List.of(hearingAttendee),
-                List.of(hearingJoh)
-            );
-            hearing.setHearingSessions(List.of(hearingSession, hearingSession1));
+        final List<HearingSession> hearingSessions =
+            IntStream.range(0, numHearingSessions).mapToObj(i -> generateHearingSession(hearingRoom,
+                                                                                        hearingVenue,
+                                                                                        List.of(hearingAttendee),
+                                                                                        List.of(hearingJoh)))
+                .collect(Collectors.toList());
+
+        hearing.setHearingSessions(hearingSessions);
 
             hearingResponse.setHearing(hearing);
             return hearingResponse;
         }
 
-        private HearingSession generateHearingSession (HearingRoom hearingRoom,
-            HearingVenue hearingVenue,
-            List < HearingAttendee > hearingAttendees,
-            List < HearingJoh > hearingJohs){
+    private HearingResponse generateHmiMultiSessionMultiDayHearing(String key,
+                                                                   HearingCode hearingCode,
+                                                                   int version,
+                                                                   String status) {
+        return generateHmiMultiSessionMultiDayHearing(key, hearingCode, version, status, 2);
+    }
+
+
+    private static HearingSession generateHearingSession(HearingRoom hearingRoom,
+                                                         HearingVenue hearingVenue,
+                                                         List<HearingAttendee> hearingAttendees,
+                                                         List<HearingJoh> hearingJohs){
             HearingSession hearingSession = new HearingSession();
             hearingSession.setHearingStartTime(LocalDateTime.parse("2021-10-11T12:20:00"));
             hearingSession.setHearingEndTime(LocalDateTime.parse("2021-10-12T12:20:00"));
