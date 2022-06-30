@@ -65,7 +65,6 @@ class ListingMapperTest {
 
         assertListingLocations(listingLocation, listing.getListingLocations());
         assertListingJohs(listingJoh, listing.getListingJohs());
-        assertOtherConsiderations(listing.getListingOtherConsiderations());
 
         assertEquals(true, listing.getListingAutoCreateFlag());
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
@@ -302,12 +301,6 @@ class ListingMapperTest {
     private void assertListingJohs(ListingJoh listingJoh, List<ListingJoh> listingJohList) {
         assertEquals(1, listingJohList.size());
         assertEquals(listingJoh, listingJohList.get(0));
-    }
-
-    private void assertOtherConsiderations(List<String> otherConsiderationsList) {
-        assertEquals(2, otherConsiderationsList.size());
-        assertTrue(otherConsiderationsList.contains("facility1"));
-        assertTrue(otherConsiderationsList.contains("facility2"));
     }
 
     private void assertListingLocations(ListingLocation listingLocation, List<ListingLocation> listingLocations) {

@@ -53,16 +53,6 @@ public class ListingMapper {
             .listingWelshHearingFlag(hearingDetails.getHearingInWelshFlag())
             .build();
 
-        if (entitiesList != null && !entitiesList.isEmpty()) {
-            if (!areRoomAttributesFound(entitiesList, hearingDetails, listing)) {
-                listing.setListingOtherConsiderations(hearingDetails.getFacilitiesRequired());
-                listing.setRoomAttributes(List.of());
-            }
-        } else {
-            listing.setListingOtherConsiderations(List.of());
-            listing.setRoomAttributes(List.of());
-        }
-
         if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
             listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
         }
@@ -79,6 +69,16 @@ public class ListingMapper {
             listing.setListingMultiDay(calculateMultiDayDurations(hearingDetails.getDuration()));
         } else {
             listing.setListingDuration(hearingDetails.getDuration());
+        }
+
+        if (entitiesList != null && !entitiesList.isEmpty()) {
+            if (!areRoomAttributesFound(entitiesList, hearingDetails, listing)) {
+                listing.setListingOtherConsiderations(List.of());
+                listing.setRoomAttributes(List.of());
+            }
+        } else {
+            listing.setListingOtherConsiderations(List.of());
+            listing.setRoomAttributes(List.of());
         }
         return listing;
     }
@@ -111,54 +111,65 @@ public class ListingMapper {
     }
 
     private boolean areRoomAttributesFound(List<Entity> entityList,
-                                         HearingDetails hearingDetails,
-                                         Listing listing) {
+                                           HearingDetails hearingDetails,
+                                           Listing listing) {
         Set<String> roomAttributesSet = new HashSet<>();
         Set<String> otherConsiderationsSet = new HashSet<>();
         entityList.forEach(entity -> {
-            roomAttributesSet.addAll(getRoomAttributesByReasonableAdjustment(entity));
-            otherConsiderationsSet.addAll(getRoomAttributeByAttributeCode(
-                roomAttributesSet,
-                hearingDetails.getFacilitiesRequired()));
+            List<String> roomAttributesByReasonableAdjustmentList =
+                getRoomAttributesByReasonableAdjustmentCode(entity);
+            List<String> roomAttributesByAttributeCodeList =
+                getRoomAttributesByAttributeCode(hearingDetails.getFacilitiesRequired());
+            if (!roomAttributesByReasonableAdjustmentList.isEmpty()) {
+                roomAttributesSet.addAll(roomAttributesByReasonableAdjustmentList);
+            } else if (!roomAttributesByAttributeCodeList.isEmpty()) {
+                roomAttributesSet.addAll(roomAttributesByAttributeCodeList);
+            } else {
+                if (hearingDetails.getFacilitiesRequired() != null
+                    && !hearingDetails.getFacilitiesRequired().isEmpty()) {
+                    otherConsiderationsSet.addAll(hearingDetails.getFacilitiesRequired());
+                }
+            }
         });
 
-        if (roomAttributesSet.isEmpty() && otherConsiderationsSet.isEmpty()) {
-            return false;
-        } else {
-            listing.setRoomAttributes((new ArrayList<>(roomAttributesSet)));
-            listing.setListingOtherConsiderations(new ArrayList<>(otherConsiderationsSet));
+        if (!roomAttributesSet.isEmpty() || !otherConsiderationsSet.isEmpty()) {
+            if (!roomAttributesSet.isEmpty()) {
+                listing.setRoomAttributes(new ArrayList<>(roomAttributesSet));
+            }
+            if (!otherConsiderationsSet.isEmpty()) {
+                listing.setListingOtherConsiderations(new ArrayList<>(otherConsiderationsSet));
+            }
             return true;
         }
+        return false;
     }
 
-    private List<String> getRoomAttributesByReasonableAdjustment(Entity entity) {
-        List<String> roomAttributesList = new ArrayList<>();
+    private List<String> getRoomAttributesByReasonableAdjustmentCode(Entity entity) {
+        List<String> roomAttributesCodeList = new ArrayList<>();
         if (entity.getEntityOtherConsiderations() != null && !entity.getEntityOtherConsiderations().isEmpty()) {
             for (String reasonableAdjustment : entity.getEntityOtherConsiderations()) {
                 Optional<RoomAttribute> roomAttributeByReasonableAdjustment =
                     roomAttributesService.findByReasonableAdjustmentCode(reasonableAdjustment);
                 roomAttributeByReasonableAdjustment.ifPresent(
                     roomAttribute
-                        -> roomAttributesList.add(roomAttribute.getRoomAttributeCode()));
+                        -> roomAttributesCodeList.add(roomAttribute.getRoomAttributeCode()));
             }
         }
-        return roomAttributesList;
+        return roomAttributesCodeList;
     }
 
-    private List<String> getRoomAttributeByAttributeCode(Set<String> roomAttributesSet, List<String> facilityTypes) {
-        List<String> otherConsiderationsList = new ArrayList<>();
+    private List<String> getRoomAttributesByAttributeCode(List<String> facilityTypes) {
+        List<String> roomAttributesCodeList = new ArrayList<>();
         if (facilityTypes != null && !facilityTypes.isEmpty()) {
             for (String facility : facilityTypes) {
                 Optional<RoomAttribute> roomAttributeByAttributeCode =
                     roomAttributesService.findByRoomAttributeCode(facility);
                 if (roomAttributeByAttributeCode.isPresent() && roomAttributeByAttributeCode.get().isFacility()) {
-                    roomAttributesSet.add(roomAttributeByAttributeCode.get().getRoomAttributeCode());
-                } else {
-                    otherConsiderationsList.add(facility);
+                    roomAttributesCodeList.add(roomAttributeByAttributeCode.get().getRoomAttributeCode());
                 }
             }
         }
-        return otherConsiderationsList;
+        return roomAttributesCodeList;
     }
 
 }
