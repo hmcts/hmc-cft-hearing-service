@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.util.CollectionUtils;
@@ -33,10 +34,13 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@NoArgsConstructor
 @SecondaryTable(name = "HEARING",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "hearing_id")})
 public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, Serializable {
+
+    private static final long serialVersionUID = -3590902739857407292L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -164,6 +168,49 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ChangeReasonsEntity> amendReasonCodes;
 
+    public CaseHearingRequestEntity(CaseHearingRequestEntity original) {
+        this.caseHearingID = original.caseHearingID;
+        this.autoListFlag = original.autoListFlag;
+        this.hearingType = original.hearingType;
+        this.requiredDurationInMinutes = original.requiredDurationInMinutes;
+        this.hearingPriorityType = original.hearingPriorityType;
+        this.numberOfPhysicalAttendees = original.numberOfPhysicalAttendees;
+        this.hearingInWelshFlag = original.hearingInWelshFlag;
+        this.privateHearingRequiredFlag = original.privateHearingRequiredFlag;
+        this.leadJudgeContractType = original.leadJudgeContractType;
+        this.firstDateTimeOfHearingMustBe = original.firstDateTimeOfHearingMustBe;
+        this.hmctsServiceCode = original.hmctsServiceCode;
+        this.caseReference = original.caseReference;
+        this.externalCaseReference = original.externalCaseReference;
+        this.caseUrlContextPath = original.caseUrlContextPath;
+        this.hmctsInternalCaseName = original.hmctsInternalCaseName;
+        this.publicCaseName = original.publicCaseName;
+        this.additionalSecurityRequiredFlag = original.additionalSecurityRequiredFlag;
+        this.owningLocationId = original.owningLocationId;
+        this.caseRestrictedFlag = original.caseRestrictedFlag;
+        this.caseSlaStartDate = original.caseSlaStartDate;
+        this.versionNumber = original.versionNumber;
+        this.interpreterBookingRequiredFlag = original.interpreterBookingRequiredFlag;
+        this.listingComments = original.listingComments;
+        this.requester = original.requester;
+        this.hearingWindowStartDateRange = original.hearingWindowStartDateRange;
+        this.hearingWindowEndDateRange = original.hearingWindowEndDateRange;
+        this.hearingRequestReceivedDateTime = original.hearingRequestReceivedDateTime;
+        this.hearing = original.hearing;
+        this.nonStandardDurations = original.nonStandardDurations;
+        this.requiredLocations = original.requiredLocations;
+        this.requiredFacilities = original.requiredFacilities;
+        this.caseCategories = original.caseCategories;
+        this.hearingParties = original.hearingParties;
+        this.panelRequirements = original.panelRequirements;
+        this.panelAuthorisationRequirements = original.panelAuthorisationRequirements;
+        this.panelSpecialisms = original.panelSpecialisms;
+        this.panelUserRequirements = original.panelUserRequirements;
+        this.cancellationReason = original.cancellationReason;
+        this.hearingChannels = original.hearingChannels;
+        this.amendReasonCodes = original.amendReasonCodes;
+    }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         CaseHearingRequestEntity cloned = (CaseHearingRequestEntity)super.clone();
@@ -182,12 +229,12 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         return cloned;
     }
 
-    private void cloneCaseCategories(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+    private void cloneCaseCategories(CaseHearingRequestEntity cloned)  {
         //CaseCategories
         List<CaseCategoriesEntity> caseCategoriesList = new ArrayList<>();
         if (null != cloned.getCaseCategories()) {
             for (CaseCategoriesEntity cce : cloned.getCaseCategories()) {
-                CaseCategoriesEntity clonedSubValue = (CaseCategoriesEntity)cce.clone();
+                CaseCategoriesEntity clonedSubValue = new CaseCategoriesEntity(cce);
                 clonedSubValue.setId(null);
                 clonedSubValue.setCaseHearing(cloned);
                 caseCategoriesList.add(clonedSubValue);
@@ -196,12 +243,12 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         cloned.setCaseCategories(caseCategoriesList);
     }
 
-    private void clonePanelUserRequirements(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+    private void clonePanelUserRequirements(CaseHearingRequestEntity cloned) {
         //PanelUserRequirementsEntity
         List<PanelUserRequirementsEntity> panelUserRequirementsList = new ArrayList<>();
         if (null != cloned.getPanelUserRequirements()) {
             for (PanelUserRequirementsEntity pure : cloned.getPanelUserRequirements()) {
-                PanelUserRequirementsEntity clonedSubValue = (PanelUserRequirementsEntity)pure.clone();
+                PanelUserRequirementsEntity clonedSubValue = new PanelUserRequirementsEntity(pure);
                 clonedSubValue.setId(null);
                 clonedSubValue.setCaseHearing(cloned);
                 panelUserRequirementsList.add(clonedSubValue);
@@ -210,12 +257,12 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         cloned.setPanelUserRequirements(panelUserRequirementsList);
     }
 
-    private void clonePanelSpecialisms(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+    private void clonePanelSpecialisms(CaseHearingRequestEntity cloned) {
         //PanelSpecialismsEntity
         List<PanelSpecialismsEntity> panelSpecialismsList = new ArrayList<>();
         if (null != cloned.getPanelSpecialisms()) {
             for (PanelSpecialismsEntity pse : cloned.getPanelSpecialisms()) {
-                PanelSpecialismsEntity clonedSubValue = (PanelSpecialismsEntity)pse.clone();
+                PanelSpecialismsEntity clonedSubValue = new PanelSpecialismsEntity(pse);
                 clonedSubValue.setId(null);
                 clonedSubValue.setCaseHearing(cloned);
                 panelSpecialismsList.add(clonedSubValue);
@@ -224,13 +271,12 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         cloned.setPanelSpecialisms(panelSpecialismsList);
     }
 
-    private void clonePanelAuthorisationRequirements(CaseHearingRequestEntity cloned)
-        throws CloneNotSupportedException {
+    private void clonePanelAuthorisationRequirements(CaseHearingRequestEntity cloned) {
         //PanelAuthorisationRequirementsEntity
         List<PanelAuthorisationRequirementsEntity> panelAuthorisationRequirementsList = new ArrayList<>();
         if (null != cloned.getPanelAuthorisationRequirements()) {
             for (PanelAuthorisationRequirementsEntity par : cloned.getPanelAuthorisationRequirements()) {
-                PanelAuthorisationRequirementsEntity clonedSubValue = (PanelAuthorisationRequirementsEntity)par.clone();
+                PanelAuthorisationRequirementsEntity clonedSubValue = new PanelAuthorisationRequirementsEntity(par);
                 clonedSubValue.setId(null);
                 clonedSubValue.setCaseHearing(cloned);
                 panelAuthorisationRequirementsList.add(clonedSubValue);
@@ -239,12 +285,12 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         cloned.setPanelAuthorisationRequirements(panelAuthorisationRequirementsList);
     }
 
-    private void clonePanelRequirements(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+    private void clonePanelRequirements(CaseHearingRequestEntity cloned) {
         //PanelRequirementsEntity
         List<PanelRequirementsEntity> panelRequirementsList = new ArrayList<>();
         if (null != cloned.getPanelRequirements()) {
             for (PanelRequirementsEntity pre : cloned.getPanelRequirements()) {
-                PanelRequirementsEntity clonedSubValue = (PanelRequirementsEntity)pre.clone();
+                PanelRequirementsEntity clonedSubValue = new PanelRequirementsEntity(pre);
                 clonedSubValue.setId(null);
                 clonedSubValue.setCaseHearing(cloned);
                 panelRequirementsList.add(clonedSubValue);
@@ -293,12 +339,12 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         return matchingHearingPartyEntities.get(0);
     }
 
-    private void cloneRequiredFacilities(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+    private void cloneRequiredFacilities(CaseHearingRequestEntity cloned) {
         //RequiredFacilitiesEntity
         List<RequiredFacilitiesEntity> requiredFacilitiesList = new ArrayList<>();
         if (null != cloned.getRequiredFacilities()) {
             for (RequiredFacilitiesEntity rfe : cloned.getRequiredFacilities()) {
-                RequiredFacilitiesEntity clonedSubValue = (RequiredFacilitiesEntity)rfe.clone();
+                RequiredFacilitiesEntity clonedSubValue =  new RequiredFacilitiesEntity(rfe);
                 clonedSubValue.setId(null);
                 clonedSubValue.setCaseHearing(cloned);
                 requiredFacilitiesList.add(clonedSubValue);
@@ -307,12 +353,12 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         cloned.setRequiredFacilities(requiredFacilitiesList);
     }
 
-    private void cloneRequiredLocations(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+    private void cloneRequiredLocations(CaseHearingRequestEntity cloned) {
         //RequiredLocationsEntity
         List<RequiredLocationsEntity> requiredLocationsList = new ArrayList<>();
         if (null != cloned.getRequiredLocations()) {
             for (RequiredLocationsEntity rle : cloned.getRequiredLocations()) {
-                RequiredLocationsEntity clonedSubValue = (RequiredLocationsEntity)rle.clone();
+                RequiredLocationsEntity clonedSubValue = new RequiredLocationsEntity(rle);
                 clonedSubValue.setId(null);
                 clonedSubValue.setCaseHearing(cloned);
                 requiredLocationsList.add(clonedSubValue);
@@ -321,12 +367,12 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         cloned.setRequiredLocations(requiredLocationsList);
     }
 
-    private void cloneNonStandardDurations(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+    private void cloneNonStandardDurations(CaseHearingRequestEntity cloned) {
         //nonStandardDuration
         List<NonStandardDurationsEntity> nonStandardDurationsList = new ArrayList<>();
         if (null != cloned.getNonStandardDurations()) {
             for (NonStandardDurationsEntity nsde : cloned.getNonStandardDurations()) {
-                NonStandardDurationsEntity clonedSubValue = (NonStandardDurationsEntity)nsde.clone();
+                NonStandardDurationsEntity clonedSubValue = new NonStandardDurationsEntity(nsde);
                 clonedSubValue.setId(null);
                 clonedSubValue.setCaseHearing(cloned);
                 nonStandardDurationsList.add(clonedSubValue);
@@ -335,11 +381,11 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         cloned.setNonStandardDurations(nonStandardDurationsList);
     }
 
-    private void cloneHearingChannels(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+    private void cloneHearingChannels(CaseHearingRequestEntity cloned) {
         List<HearingChannelsEntity> hearingChannelsList = new ArrayList<>();
         if (null != cloned.getHearingChannels()) {
             for (HearingChannelsEntity hce : cloned.getHearingChannels()) {
-                HearingChannelsEntity clonedSubValue = (HearingChannelsEntity)hce.clone();
+                HearingChannelsEntity clonedSubValue = new HearingChannelsEntity(hce);
                 clonedSubValue.setHearingChannelsId(null);
                 clonedSubValue.setCaseHearing(cloned);
                 hearingChannelsList.add(clonedSubValue);

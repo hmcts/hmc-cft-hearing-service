@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 
@@ -28,10 +29,13 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@NoArgsConstructor
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
 public class HearingPartyEntity extends BaseEntity implements Serializable, Cloneable {
+
+    private static final long serialVersionUID = -1378995263864233869L;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")
@@ -72,6 +76,20 @@ public class HearingPartyEntity extends BaseEntity implements Serializable, Clon
     @OneToMany(mappedBy = "sourceTechParty", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntity;
 
+    public HearingPartyEntity(HearingPartyEntity original) {
+        this.caseHearing = original.caseHearing;
+        this.techPartyId = original.techPartyId;
+        this.partyReference = original.partyReference;
+        this.partyType = original.partyType;
+        this.partyRoleType = original.partyRoleType;
+        this.individualDetailEntity =  original.individualDetailEntity;
+        this.organisationDetailEntity =  original.organisationDetailEntity;
+        this.unavailabilityEntity =  original.unavailabilityEntity;
+        this.contactDetailsEntity =  original.contactDetailsEntity;
+        this.reasonableAdjustmentsEntity =  original.reasonableAdjustmentsEntity;
+        this.partyRelationshipDetailsEntity =  original.partyRelationshipDetailsEntity;
+    }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         HearingPartyEntity cloned = (HearingPartyEntity) super.clone();
@@ -85,33 +103,33 @@ public class HearingPartyEntity extends BaseEntity implements Serializable, Clon
         return cloned;
     }
 
-    private void cloneIndividualDetails(HearingPartyEntity cloned) throws CloneNotSupportedException {
+    private void cloneIndividualDetails(HearingPartyEntity cloned) {
         //IndividualDetailEntity
         if (null != cloned.getIndividualDetailEntity()) {
-            IndividualDetailEntity clonedSubValue = (IndividualDetailEntity) cloned.getIndividualDetailEntity().clone();
+            IndividualDetailEntity clonedSubValue = new IndividualDetailEntity(cloned.getIndividualDetailEntity());
             clonedSubValue.setId(null);
             clonedSubValue.setHearingParty(cloned);
             cloned.setIndividualDetailEntity(clonedSubValue);
         }
     }
 
-    private void cloneOrganisationDetails(HearingPartyEntity cloned) throws CloneNotSupportedException {
+    private void cloneOrganisationDetails(HearingPartyEntity cloned) {
         //OrganisationDetailEntity
         if (null != cloned.getOrganisationDetailEntity()) {
             OrganisationDetailEntity clonedSubValue =
-                (OrganisationDetailEntity) cloned.getOrganisationDetailEntity().clone();
+                 new OrganisationDetailEntity(cloned.getOrganisationDetailEntity());
             clonedSubValue.setId(null);
             clonedSubValue.setHearingParty(cloned);
             cloned.setOrganisationDetailEntity(clonedSubValue);
         }
     }
 
-    private void cloneUnavailability(HearingPartyEntity cloned) throws CloneNotSupportedException {
+    private void cloneUnavailability(HearingPartyEntity cloned) {
         //UnavailabilityEntity
         List<UnavailabilityEntity> unavailabilityEntityList = new ArrayList<>();
         if (null != cloned.getUnavailabilityEntity()) {
             for (UnavailabilityEntity ue : cloned.getUnavailabilityEntity()) {
-                UnavailabilityEntity clonedSubValue = (UnavailabilityEntity) ue.clone();
+                UnavailabilityEntity clonedSubValue = new UnavailabilityEntity(ue);
                 clonedSubValue.setId(null);
                 clonedSubValue.setHearingParty(cloned);
                 unavailabilityEntityList.add(clonedSubValue);
@@ -120,12 +138,12 @@ public class HearingPartyEntity extends BaseEntity implements Serializable, Clon
         cloned.setUnavailabilityEntity(unavailabilityEntityList);
     }
 
-    private void cloneContactDetails(HearingPartyEntity cloned) throws CloneNotSupportedException {
+    private void cloneContactDetails(HearingPartyEntity cloned) {
         //ContactDetailsEntity
         List<ContactDetailsEntity> contactDetailsEntityList = new ArrayList<>();
         if (null != cloned.getContactDetailsEntity()) {
             for (ContactDetailsEntity cde : cloned.getContactDetailsEntity()) {
-                ContactDetailsEntity clonedSubValue = (ContactDetailsEntity) cde.clone();
+                ContactDetailsEntity clonedSubValue =  new ContactDetailsEntity(cde);
                 clonedSubValue.setId(null);
                 clonedSubValue.setHearingParty(cloned);
                 contactDetailsEntityList.add(clonedSubValue);
@@ -134,12 +152,12 @@ public class HearingPartyEntity extends BaseEntity implements Serializable, Clon
         cloned.setContactDetailsEntity(contactDetailsEntityList);
     }
 
-    private void cloneReasonableAdjustments(HearingPartyEntity cloned) throws CloneNotSupportedException {
+    private void cloneReasonableAdjustments(HearingPartyEntity cloned) {
         //ReasonableAdjustmentsEntity
         List<ReasonableAdjustmentsEntity> reasonableAdjustmentsEntityList = new ArrayList<>();
         if (null != cloned.getReasonableAdjustmentsEntity()) {
             for (ReasonableAdjustmentsEntity rae : cloned.getReasonableAdjustmentsEntity()) {
-                ReasonableAdjustmentsEntity clonedSubValue = (ReasonableAdjustmentsEntity) rae.clone();
+                ReasonableAdjustmentsEntity clonedSubValue = new ReasonableAdjustmentsEntity(rae);
                 clonedSubValue.setId(null);
                 clonedSubValue.setHearingParty(cloned);
                 reasonableAdjustmentsEntityList.add(clonedSubValue);
@@ -148,12 +166,12 @@ public class HearingPartyEntity extends BaseEntity implements Serializable, Clon
         cloned.setReasonableAdjustmentsEntity(reasonableAdjustmentsEntityList);
     }
 
-    private void clonePartyRelationshipDetails(HearingPartyEntity cloned) throws CloneNotSupportedException {
+    private void clonePartyRelationshipDetails(HearingPartyEntity cloned) {
         //PartyRelationshipDetailsEntity
         List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntityList = new ArrayList<>();
         if (null != cloned.getPartyRelationshipDetailsEntity()) {
             for (PartyRelationshipDetailsEntity prde : cloned.getPartyRelationshipDetailsEntity()) {
-                PartyRelationshipDetailsEntity clonedSubValue = (PartyRelationshipDetailsEntity) prde.clone();
+                PartyRelationshipDetailsEntity clonedSubValue = new PartyRelationshipDetailsEntity(prde);
                 clonedSubValue.setPartyRelationshipDetailsId(null);
                 clonedSubValue.setSourceTechParty(cloned);
                 partyRelationshipDetailsEntityList.add(clonedSubValue);
