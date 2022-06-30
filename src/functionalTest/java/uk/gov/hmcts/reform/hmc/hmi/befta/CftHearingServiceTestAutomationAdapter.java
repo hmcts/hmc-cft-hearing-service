@@ -3,32 +3,23 @@ package uk.gov.hmcts.reform.hmc.hmi.befta;
 import uk.gov.hmcts.befta.BeftaTestDataLoader;
 import uk.gov.hmcts.befta.DefaultBeftaTestDataLoader;
 import uk.gov.hmcts.befta.DefaultTestAutomationAdapter;
-import uk.gov.hmcts.befta.data.UserData;
-import uk.gov.hmcts.befta.player.BackEndFunctionalTestScenarioContext;
-
-import java.util.concurrent.ExecutionException;
+import uk.gov.hmcts.befta.dse.ccd.DataLoaderToDefinitionStore;
+import uk.gov.hmcts.befta.util.BeftaUtils;
 
 public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomationAdapter {
 
-
     @Override
-    public String getNewS2SToken() {
-        return null;
-    }
+    protected BeftaTestDataLoader buildTestDataLoader() {
+        return new DataLoaderToDefinitionStore(this,
+                                               DataLoaderToDefinitionStore.VALID_CCD_TEST_DEFINITIONS_PATH) {
 
-    @Override
-    public String getNewS2SToken(String clientId) {
-        return null;
-    }
+            @Override
+            protected void createRoleAssignment(String resource, String filename) {
+                // Do not create role assignments.
+                BeftaUtils.defaultLog("Will NOT create role assignments!");
+            }
 
-    @Override
-    public void authenticate(UserData user, String preferredTokenClientId) throws ExecutionException {
-
-    }
-
-    @Override
-    public Object calculateCustomValue(BackEndFunctionalTestScenarioContext scenarioContext, Object key) {
-        return null;
+        };
     }
 
     @Override
@@ -37,11 +28,6 @@ public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomatio
             @Override
             public void doLoadTestData() {
 
-            }
-
-            @Override
-            public boolean isTestDataLoadedForCurrentRound() {
-                return false;
             }
         };
     }
