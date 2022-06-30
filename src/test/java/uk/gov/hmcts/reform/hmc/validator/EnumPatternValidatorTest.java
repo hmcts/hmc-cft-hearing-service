@@ -7,7 +7,7 @@ import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
-import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
@@ -58,7 +58,8 @@ class EnumPatternValidatorTest {
     @Test
     void whenInvalidLocationTypeIsNull() {
         HearingLocation location = new HearingLocation();
-        setLocation(location, "Id", null);
+        location.setLocationId("Id");
+        location.setLocationType(null);
         Set<ConstraintViolation<HearingLocation>> violations = validator.validate(location);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -67,15 +68,11 @@ class EnumPatternValidatorTest {
         assertEquals("Unsupported type for locationType", validationErrors.get(0));
     }
 
-    private void setLocation(HearingLocation location, String id, String o) {
-        location.setLocationId(id);
-        location.setLocationType(o);
-    }
-
     @Test
     void whenInvalidLocationTypeIsEmpty() {
         HearingLocation location = new HearingLocation();
-        setLocation(location, "Id", "");
+        location.setLocationId("Id");
+        location.setLocationType("");
         Set<ConstraintViolation<HearingLocation>> violations = validator.validate(location);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -87,7 +84,8 @@ class EnumPatternValidatorTest {
     @Test
     void whenInvalidLocationIdIsEmpty() {
         HearingLocation location = new HearingLocation();
-        setLocation(location, "", LocationType.CLUSTER.toString());
+        location.setLocationId("");
+        location.setLocationType(LocationType.CLUSTER.toString());
         Set<ConstraintViolation<HearingLocation>> violations = validator.validate(location);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -99,7 +97,8 @@ class EnumPatternValidatorTest {
     @Test
     void whenInvalidLocationType() {
         HearingLocation location = new HearingLocation();
-        setLocation(location, "Loc", "Loc");
+        location.setLocationId("Loc");
+        location.setLocationType("Loc");
         Set<ConstraintViolation<HearingLocation>> violations = validator.validate(location);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -236,7 +235,7 @@ class EnumPatternValidatorTest {
     void whenInvalidListAssistCaseStatusIsEmpty() {
         HearingResponse hearingResponse = new HearingResponse();
         hearingResponse.setLaCaseStatus("");
-        hearingResponse.setListingStatus("Fixed");
+        hearingResponse.setListingStatus(ListingStatus.FIXED.name());
         Set<ConstraintViolation<HearingResponse>> violations = validator.validate(hearingResponse);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -261,7 +260,7 @@ class EnumPatternValidatorTest {
             validationErrors.add(e.getMessage());
             logger.info(e.getMessage());
         });
-        assertTrue(validationErrors.contains(ValidationError.HEARING_STATUS_CODE_NULL));
+        assertTrue(validationErrors.contains("Unsupported type for listingStatus"));
     }
 
     @Test

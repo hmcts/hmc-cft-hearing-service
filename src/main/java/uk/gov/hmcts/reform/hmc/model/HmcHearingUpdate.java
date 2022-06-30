@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDateTime;
@@ -25,8 +26,7 @@ public class HmcHearingUpdate {
     private String hmcStatus;
 
     @NotNull(message = ValidationError.LISTING_STATUS_NULL)
-    @Size(max = 30, message = ValidationError.HEARING_LISTING_STATUS_CODE_LENGTH)
-    private String hearingListingStatus;
+    private ListingStatus hearingListingStatus;
 
     private LocalDateTime nextHearingDate;
 
