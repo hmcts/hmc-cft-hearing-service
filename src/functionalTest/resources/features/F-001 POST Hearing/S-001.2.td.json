@@ -1,0 +1,34 @@
+{
+  "_guid_": "S-001.2",
+  "_extends_" : "CreateHearingRequestBase",
+  "specs": [
+    "has the 200 OK code",
+    "an active profile in CCD",
+    "has 201 Created code",
+    "has a versionNumber of 1",
+    "has a status of HEARING_REQUESTED"
+  ],
+  "request": {
+    "body": {
+      "_extends_": "createHearingRequestDataMandatoryOnly",
+      "caseDetails": {
+        "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
+      }
+    }
+  },
+  "expectedResponse": {
+    "_extends_": "Common_201_Response",
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    },
+    "body": {
+      "hearingRequestID": "[[ANYTHING_PRESENT]]",
+      "status": "HEARING_REQUESTED",
+      "timeStamp": "[[ANYTHING_PRESENT]]",
+      "versionNumber": 1
+    }
+  }
+}

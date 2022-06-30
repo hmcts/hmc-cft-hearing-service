@@ -1,0 +1,27 @@
+{
+  "_guid_": "S-004.2-get-hearing",
+  "_extends_" : "GetHearingRequestPositiveGeneric",
+  "specs": [
+    "to get hearing to show version number hasn't been incremented"
+  ],
+  "request": {
+    "pathVariables": {
+      "hearingID" : "${[scenarioContext][siblingContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    }
+  },
+  "expectedResponse": {
+    "_extends_": "Common_200_Response",
+    "body": {
+      "requestDetails": {
+        "timestamp": "[[ANYTHING_PRESENT]]",
+        "status": "HEARING_REQUESTED",
+        "versionNumber": 1,
+        "hearingRequestID" : "[[ANYTHING_PRESENT]]"
+      },
+      "caseDetails": "[[ANYTHING_PRESENT]]",
+      "hearingDetails" : "[[ANYTHING_PRESENT]]",
+      "partyDetails" : "[[ANYTHING_PRESENT]]",
+      "hearingResponse": "[[ANYTHING_PRESENT]]"
+    }
+  }
+}

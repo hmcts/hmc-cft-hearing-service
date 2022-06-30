@@ -1,0 +1,18 @@
+{
+  "_guid_": "F-005_TestBase",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "Search for hearings",
+  "method": "GET",
+  "uri": "/hearings/{caseref}",
+  "s2sClientId": "xui_webapp",
+  "users": {
+    "invokingUser": {
+      "_extends_": "HmcSuperuser"
+    }
+  },
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    }
+  }
+}
