@@ -32,8 +32,11 @@ DELETE FROM actual_hearing_day;
 DELETE FROM actual_hearing;
 DELETE FROM hearing_response;
 DELETE FROM cancellation_reasons;
+DELETE FROM change_reasons;
 DELETE FROM case_hearing_request;
 DELETE FROM linked_hearing_details_audit;
 DELETE FROM linked_group_details_audit;
 DELETE FROM hearing;
 DELETE FROM linked_group_details;
+
+ALTER SEQUENCE public.case_hearing_id_seq RESTART WITH 1;

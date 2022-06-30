@@ -406,7 +406,7 @@ public class TestingUtil {
     public static UpdateHearingRequest updateHearingRequest(int version) {
         UpdateHearingRequest request = new UpdateHearingRequest();
         HearingDetails hearingDetails = hearingDetails();
-        hearingDetails.setAmendReasonCode("reason");
+        hearingDetails.setAmendReasonCodes(List.of("reason"));
         request.setHearingDetails(hearingDetails);
         request.setCaseDetails(caseDetails());
         request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
@@ -419,7 +419,7 @@ public class TestingUtil {
     public static UpdateHearingRequest updateHearingRequestWithCaseSubType(int version) {
         UpdateHearingRequest request = new UpdateHearingRequest();
         HearingDetails hearingDetails = hearingDetails();
-        hearingDetails.setAmendReasonCode("reason");
+        hearingDetails.setAmendReasonCodes(List.of("reason"));
         request.setHearingDetails(hearingDetails);
         request.setCaseDetails(caseDetailsWithCaseSubType());
         request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
@@ -432,7 +432,7 @@ public class TestingUtil {
     public static UpdateHearingRequest validUpdateHearingRequest() {
         UpdateHearingRequest request = new UpdateHearingRequest();
         HearingDetails hearingDetails = hearingDetails();
-        hearingDetails.setAmendReasonCode("reason");
+        hearingDetails.setAmendReasonCodes(List.of("reason 1", "reason 2"));
         request.setHearingDetails(hearingDetails);
         CaseDetails caseDetails = getValidCaseDetails();
         request.setCaseDetails(caseDetails);
@@ -1167,7 +1167,7 @@ public class TestingUtil {
     public static HearingDetails hearingDetailsWithAllFields() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(true);
-        hearingDetails.setAmendReasonCode("reason");
+        hearingDetails.setAmendReasonCodes(List.of("reason 1", "reason 2"));
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
         hearingWindow.setDateRangeEnd(LocalDate.parse("2017-03-01"));
