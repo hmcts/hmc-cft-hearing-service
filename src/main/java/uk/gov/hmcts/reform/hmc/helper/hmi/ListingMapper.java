@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
+import io.jsonwebtoken.lang.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.hmc.constants.Constants;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.RoomAttribute;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
@@ -47,7 +49,6 @@ public class ListingMapper {
             .listingJohs(listingJohsMapper.getListingJohs(hearingDetails.getPanelRequirements()))
             .listingHearingChannels(hearingDetails.getHearingChannels())
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
-            .amendReasonCode(hearingDetails.getAmendReasonCode())
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
             .listingWelshHearingFlag(hearingDetails.getHearingInWelshFlag())
@@ -70,7 +71,6 @@ public class ListingMapper {
         } else {
             listing.setListingDuration(hearingDetails.getDuration());
         }
-
         if (entitiesList != null && !entitiesList.isEmpty()) {
             if (!areRoomAttributesFound(entitiesList, hearingDetails, listing)) {
                 listing.setListingOtherConsiderations(List.of());
@@ -80,6 +80,10 @@ public class ListingMapper {
             listing.setListingOtherConsiderations(List.of());
             listing.setRoomAttributes(List.of());
         }
+        if (!Collections.isEmpty(hearingDetails.getAmendReasonCodes())) {
+            listing.setAmendReasonCode(Constants.AMEND_REASON_CODE);
+        }
+
         return listing;
     }
 

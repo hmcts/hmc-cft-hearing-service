@@ -26,6 +26,9 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActualPartyRelationshipDetailEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 7682399478560625882L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "actual_party_relationship_id_seq")

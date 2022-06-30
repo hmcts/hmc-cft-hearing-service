@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
 
@@ -24,10 +25,13 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@NoArgsConstructor
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class CaseCategoriesEntity extends BaseEntity implements Serializable, Cloneable {
+public class CaseCategoriesEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 3631552987002525237L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -50,8 +54,11 @@ public class CaseCategoriesEntity extends BaseEntity implements Serializable, Cl
     @JoinColumn(name = "case_hearing_id")
     private CaseHearingRequestEntity caseHearing;
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public CaseCategoriesEntity(CaseCategoriesEntity original) {
+        this.id = original.id;
+        this.categoryType = original.categoryType;
+        this.caseCategoryValue = original.caseCategoryValue;
+        this.caseCategoryParent = original.caseCategoryParent;
+        this.caseHearing = original.caseHearing;
     }
 }

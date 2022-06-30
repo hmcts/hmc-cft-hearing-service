@@ -1,0 +1,18 @@
+{
+  "_guid_": "S-002.3",
+  "_extends_" : "deleteHearingRequestBase",
+  "specs": [
+    "has the 200 OK code",
+    "has a versionNumber of 3",
+    "has a status of CANCELLATION_REQUESTED",
+    "an active profile in CCD"
+  ],
+  "expectedResponse": {
+    "responseCode": 400,
+    "responseMessage": "OK",
+    "body": {
+      "status" : "BAD_REQUEST",
+      "errors" : [ "Invalid hearing state for DELETE" ]
+    }
+  }
+}
