@@ -1,0 +1,194 @@
+[
+  {
+    "roomAttributeCode": "1",
+    "roomAttributeName": "Custody Cell",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "2",
+    "roomAttributeName": "DJ Chambers",
+    "reasonableAdjustmentCode": null,
+    "facility": false
+  },
+  {
+    "roomAttributeCode": "3",
+    "roomAttributeName": "Hearing Loop",
+    "reasonableAdjustmentCode": "RA0043",
+    "facility": false
+  },
+  {
+    "roomAttributeCode": "4",
+    "roomAttributeName": "Private Discussions",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "5",
+    "roomAttributeName": "Common Area Restriction",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "6",
+    "roomAttributeName": "Linked to Cells",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "7",
+    "roomAttributeName": "Linked Rooms",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "8",
+    "roomAttributeName": "Upper Gallery",
+    "reasonableAdjustmentCode": null,
+    "facility": false
+  },
+  {
+    "roomAttributeCode": "9",
+    "roomAttributeName": "Witness Room",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "10",
+    "roomAttributeName": "Witness Screen",
+    "reasonableAdjustmentCode": "SM0002",
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "11",
+    "roomAttributeName": "Secure Dock",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "12",
+    "roomAttributeName": "Private Interior Room",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "13",
+    "roomAttributeName": "Weekday Extended Hours",
+    "reasonableAdjustmentCode": null,
+    "facility": false
+  },
+  {
+    "roomAttributeCode": "14",
+    "roomAttributeName": "Children’s Room",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "15",
+    "roomAttributeName": "Video Conferencing",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "16",
+    "roomAttributeName": "DOM1 Connection",
+    "reasonableAdjustmentCode": null,
+    "facility": false
+  },
+  {
+    "roomAttributeCode": "17",
+    "roomAttributeName": "Wireless Internet Access",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "18",
+    "roomAttributeName": "First Aid Available",
+    "reasonableAdjustmentCode": null,
+    "facility": false
+  },
+  {
+    "roomAttributeCode": "19",
+    "roomAttributeName": "Security Search",
+    "reasonableAdjustmentCode": null,
+    "facility": false
+  },
+  {
+    "roomAttributeCode": "20",
+    "roomAttributeName": "Prison Video Link",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "21",
+    "roomAttributeName": "Interpreter headsets",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "22",
+    "roomAttributeName": "Projector",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "23",
+    "roomAttributeName": "Evidence Camera",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "24",
+    "roomAttributeName": "Printer",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "25",
+    "roomAttributeName": "Video Conference Trolley",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "26",
+    "roomAttributeName": "Laptop",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "27",
+    "roomAttributeName": "DVD/CD Player",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "28",
+    "roomAttributeName": "Teleconference Equipment",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "29",
+    "roomAttributeName": "Printer",
+    "reasonableAdjustmentCode": null,
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "30",
+    "roomAttributeName": "Wheelchair Access",
+    "reasonableAdjustmentCode": "RA0019",
+    "facility": false
+  },
+  {
+    "roomAttributeCode": "31",
+    "roomAttributeName": "Infrared receiver",
+    "reasonableAdjustmentCode": "RA0044",
+    "facility": false
+  },
+  {
+    "roomAttributeCode": "32",
+    "roomAttributeName": "Induction loop",
+    "reasonableAdjustmentCode": "RA0045",
+    "facility": false
+  }
+]

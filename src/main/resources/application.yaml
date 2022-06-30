@@ -100,6 +100,9 @@ jms:
 access-control:
   enabled: ${HMC_ACCESS_CONTROL_ENABLED:true}
 
+room-attributes:
+  file: ${ROOM_ATTRIBUTES_FILE:classpath:room-attributes.json}
+
 role:
   assignment:
     api:
