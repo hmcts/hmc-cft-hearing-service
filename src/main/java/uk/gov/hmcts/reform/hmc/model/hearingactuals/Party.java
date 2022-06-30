@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.hmc.model.hearingactuals;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 public class Party {
@@ -13,7 +11,7 @@ public class Party {
 
     private String partyRole;
 
-    private List<IndividualDetails> individualDetails;
+    private IndividualDetails individualDetails;
 
     private OrganisationDetails organisationDetails;
 

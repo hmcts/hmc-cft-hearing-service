@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,12 +17,13 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Table(name = "reasonable_adjustments")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @SecondaryTable(name = "hearing_party",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "TECH_PARTY_ID")})
-public class ReasonableAdjustmentsEntity {
+public class ReasonableAdjustmentsEntity extends BaseEntity implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -35,4 +38,8 @@ public class ReasonableAdjustmentsEntity {
     @JoinColumn(name = "tech_party_id")
     private HearingPartyEntity hearingParty;
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

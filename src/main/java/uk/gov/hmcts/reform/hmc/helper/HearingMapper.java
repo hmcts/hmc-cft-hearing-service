@@ -49,9 +49,10 @@ public class HearingMapper {
 
     public HearingEntity modelToEntity(DeleteHearingRequest hearingRequest,
                                        HearingEntity hearingEntity,
-                                       Integer requestVersion) {
-        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
-            hearingRequest, hearingEntity, requestVersion);
+                                       Integer requestVersion,
+                                       CaseHearingRequestEntity caseHearingRequestEntity) {
+        caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
+            hearingRequest, hearingEntity, requestVersion, caseHearingRequestEntity);
         hearingEntity.setStatus(CANCELLATION_REQUESTED);
         hearingEntity.getCaseHearingRequests().add(caseHearingRequestEntity);
         return hearingEntity;

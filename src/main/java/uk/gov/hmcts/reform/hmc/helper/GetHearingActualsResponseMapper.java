@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import lombok.val;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayPausesEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingPartyEntity;
-import uk.gov.hmcts.reform.hmc.data.ActualPartyRelationshipDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.ActualDayParty;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.ActualHearingDays;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.ActualIndividualDetails;
-import uk.gov.hmcts.reform.hmc.model.hearingactuals.ActualOrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActual;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingOutcome;
@@ -78,6 +77,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             actualHearingDay.setHearingEndTime(actualHearingDayEntity.getEndDateTime());
             setPauseDateTimes(actualHearingDayEntity, actualHearingDay);
             setActualDayParties(actualHearingDayEntity, actualHearingDay);
+            actualHearingDay.setNotRequired(actualHearingDayEntity.getNotRequired());
             actualHearingDays.add(actualHearingDay);
         }
         hearingActual.setActualHearingDays(actualHearingDays);
@@ -88,37 +88,27 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         List<ActualDayParty> actualDayParties = new ArrayList<>();
         for (ActualHearingPartyEntity actualHearingPartyEntity : actualHearingDayEntity.getActualHearingParty()) {
             ActualDayParty actualDayParty = new ActualDayParty();
-            actualDayParty.setActualPartyId(Integer.valueOf(actualHearingPartyEntity.getPartyId()));
+            actualDayParty.setActualPartyId(actualHearingPartyEntity.getPartyId());
             actualDayParty.setPartyRole(actualHearingPartyEntity.getActualPartyRoleType());
             actualDayParty.setDidNotAttendFlag(actualHearingPartyEntity.getDidNotAttendFlag());
-            for (ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity
-                : actualHearingPartyEntity.getActualPartyRelationshipDetail()) {
-                if (actualHearingPartyEntity.getActualPartyId()
-                    .equals(actualPartyRelationshipDetailEntity.getActualHearingParty().getActualPartyId())) {
-                    actualDayParty.setRepresentedParty(actualPartyRelationshipDetailEntity
-                                                           .getTargetActualPartyId().toString());
-                }
+            if (!CollectionUtils.isEmpty(actualHearingPartyEntity.getActualPartyRelationshipDetail())) {
+                // Only one represented party can be returned, so use the first
+                actualDayParty.setRepresentedParty(actualHearingPartyEntity
+                                                       .getActualPartyRelationshipDetail().get(0)
+                                                       .getTargetActualParty()
+                                                       .getPartyId());
             }
 
-            List<ActualIndividualDetails> individualDetailsList = new ArrayList<>();
-            List<ActualOrganisationDetails> organisationDetailsList = new ArrayList<>();
-            for (ActualAttendeeIndividualDetailEntity individualDetailEntity
-                : actualHearingPartyEntity.getActualAttendeeIndividualDetail()) {
-                actualDayParty.setPartyChannelSubType(individualDetailEntity.getPartyActualSubChannelType());
-                if (individualDetailEntity.getPartyOrganisationName() == null) {
-                    ActualIndividualDetails individualDetails = new ActualIndividualDetails();
-                    individualDetails.setFirstName(individualDetailEntity.getFirstName());
-                    individualDetails.setLastName(individualDetailEntity.getLastName());
-                    individualDetailsList.add(individualDetails);
+            ActualAttendeeIndividualDetailEntity individualDetailEntity = actualHearingPartyEntity
+                .getActualAttendeeIndividualDetail();
+            actualDayParty.setPartyChannelSubType(individualDetailEntity.getPartyActualSubChannelType());
 
-                } else {
-                    ActualOrganisationDetails organisationDetails = new ActualOrganisationDetails();
-                    organisationDetails.setName(individualDetailEntity.getPartyOrganisationName());
-                    organisationDetailsList.add(organisationDetails);
-                }
-            }
-            actualDayParty.setActualIndividualDetails(individualDetailsList);
-            actualDayParty.setActualOrganisationDetails(organisationDetailsList);
+            ActualIndividualDetails individualDetails = new ActualIndividualDetails();
+            individualDetails.setFirstName(individualDetailEntity.getFirstName());
+            individualDetails.setLastName(individualDetailEntity.getLastName());
+            actualDayParty.setActualIndividualDetails(individualDetails);
+            actualDayParty.setActualOrganisationName(individualDetailEntity.getPartyOrganisationName());
+
             actualDayParties.add(actualDayParty);
         }
         actualHearingDay.setActualDayParties(actualDayParties);
@@ -210,17 +200,15 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         return organisationDetails;
     }
 
-    private ArrayList<IndividualDetails> setIndividualDetails(HearingPartyEntity hearingPartyEntity) {
-        ArrayList<IndividualDetails> individualDetailsArrayList = new ArrayList<>();
+    private IndividualDetails setIndividualDetails(HearingPartyEntity hearingPartyEntity) {
+        IndividualDetails individualDetails = null;
         if (hearingPartyEntity.getIndividualDetailEntity() != null) {
-            for (IndividualDetailEntity individualDetailEntity : hearingPartyEntity.getIndividualDetailEntity()) {
-                IndividualDetails individualDetails = new IndividualDetails();
-                individualDetails.setTitle(individualDetailEntity.getTitle());
-                individualDetails.setFirstName(individualDetailEntity.getFirstName());
-                individualDetails.setLastName(individualDetailEntity.getLastName());
-                individualDetailsArrayList.add(individualDetails);
-            }
+            individualDetails = new IndividualDetails();
+            IndividualDetailEntity individualDetailEntity = hearingPartyEntity.getIndividualDetailEntity();
+            individualDetails.setTitle(individualDetailEntity.getTitle());
+            individualDetails.setFirstName(individualDetailEntity.getFirstName());
+            individualDetails.setLastName(individualDetailEntity.getLastName());
         }
-        return individualDetailsArrayList;
+        return individualDetails;
     }
 }

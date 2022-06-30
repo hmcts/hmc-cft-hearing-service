@@ -1,10 +1,19 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,12 +30,13 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Table(name = "case_hearing_request")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @SecondaryTable(name = "HEARING",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "hearing_id")})
-public class CaseHearingRequestEntity {
+public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -112,9 +122,6 @@ public class CaseHearingRequestEntity {
     @Column(name = "hearing_request_received_date_time", nullable = false)
     private LocalDateTime hearingRequestReceivedDateTime;
 
-    @Column(name = "amend_reason_code")
-    private String amendReasonCode;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
@@ -149,4 +156,195 @@ public class CaseHearingRequestEntity {
     @OneToOne(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private CancellationReasonsEntity cancellationReason;
 
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<HearingChannelsEntity> hearingChannels;
+
+    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<ChangeReasonsEntity> amendReasonCodes;
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        CaseHearingRequestEntity cloned = (CaseHearingRequestEntity)super.clone();
+        cloneCaseCategories(cloned);
+        cloneNonStandardDurations(cloned);
+        cloneRequiredLocations(cloned);
+        cloneRequiredFacilities(cloned);
+        cloneHearingParties(cloned);
+        clonePanelRequirements(cloned);
+        clonePanelAuthorisationRequirements(cloned);
+        clonePanelSpecialisms(cloned);
+        clonePanelUserRequirements(cloned);
+        cloneHearingChannels(cloned);
+        cloned.setCaseHearingID(null);
+        cloned.setAmendReasonCodes(Collections.emptyList());
+        return cloned;
+    }
+
+    private void cloneCaseCategories(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //CaseCategories
+        List<CaseCategoriesEntity> caseCategoriesList = new ArrayList<>();
+        if (null != cloned.getCaseCategories()) {
+            for (CaseCategoriesEntity cce : cloned.getCaseCategories()) {
+                CaseCategoriesEntity clonedSubValue = (CaseCategoriesEntity)cce.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                caseCategoriesList.add(clonedSubValue);
+            }
+        }
+        cloned.setCaseCategories(caseCategoriesList);
+    }
+
+    private void clonePanelUserRequirements(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //PanelUserRequirementsEntity
+        List<PanelUserRequirementsEntity> panelUserRequirementsList = new ArrayList<>();
+        if (null != cloned.getPanelUserRequirements()) {
+            for (PanelUserRequirementsEntity pure : cloned.getPanelUserRequirements()) {
+                PanelUserRequirementsEntity clonedSubValue = (PanelUserRequirementsEntity)pure.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                panelUserRequirementsList.add(clonedSubValue);
+            }
+        }
+        cloned.setPanelUserRequirements(panelUserRequirementsList);
+    }
+
+    private void clonePanelSpecialisms(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //PanelSpecialismsEntity
+        List<PanelSpecialismsEntity> panelSpecialismsList = new ArrayList<>();
+        if (null != cloned.getPanelSpecialisms()) {
+            for (PanelSpecialismsEntity pse : cloned.getPanelSpecialisms()) {
+                PanelSpecialismsEntity clonedSubValue = (PanelSpecialismsEntity)pse.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                panelSpecialismsList.add(clonedSubValue);
+            }
+        }
+        cloned.setPanelSpecialisms(panelSpecialismsList);
+    }
+
+    private void clonePanelAuthorisationRequirements(CaseHearingRequestEntity cloned)
+        throws CloneNotSupportedException {
+        //PanelAuthorisationRequirementsEntity
+        List<PanelAuthorisationRequirementsEntity> panelAuthorisationRequirementsList = new ArrayList<>();
+        if (null != cloned.getPanelAuthorisationRequirements()) {
+            for (PanelAuthorisationRequirementsEntity par : cloned.getPanelAuthorisationRequirements()) {
+                PanelAuthorisationRequirementsEntity clonedSubValue = (PanelAuthorisationRequirementsEntity)par.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                panelAuthorisationRequirementsList.add(clonedSubValue);
+            }
+        }
+        cloned.setPanelAuthorisationRequirements(panelAuthorisationRequirementsList);
+    }
+
+    private void clonePanelRequirements(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //PanelRequirementsEntity
+        List<PanelRequirementsEntity> panelRequirementsList = new ArrayList<>();
+        if (null != cloned.getPanelRequirements()) {
+            for (PanelRequirementsEntity pre : cloned.getPanelRequirements()) {
+                PanelRequirementsEntity clonedSubValue = (PanelRequirementsEntity)pre.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                panelRequirementsList.add(clonedSubValue);
+            }
+        }
+        cloned.setPanelRequirements(panelRequirementsList);
+    }
+
+    private void cloneHearingParties(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //HearingPartyEntity
+        List<HearingPartyEntity> hearingPartiesList = new ArrayList<>();
+        if (null != cloned.getHearingParties()) {
+            for (HearingPartyEntity hp : cloned.getHearingParties()) {
+                HearingPartyEntity clonedSubValue = (HearingPartyEntity)hp.clone();
+                clonedSubValue.setTechPartyId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                hearingPartiesList.add(clonedSubValue);
+            }
+        }
+        cloned.setHearingParties(hearingPartiesList);
+
+        for (HearingPartyEntity hp : cloned.getHearingParties()) {
+            if (!CollectionUtils.isEmpty(hp.getPartyRelationshipDetailsEntity())) {
+                for (PartyRelationshipDetailsEntity prde : hp.getPartyRelationshipDetailsEntity()) {
+                    prde.setTargetTechParty(getHearingPartyEntityByReference(
+                        hp.getPartyReference(),
+                        cloned.getHearingParties()
+                    ));
+                }
+            }
+        }
+    }
+
+    private HearingPartyEntity getHearingPartyEntityByReference(String relatedPartyId,
+                                                                List<HearingPartyEntity> hearingPartyEntities) {
+
+        final List<HearingPartyEntity> matchingHearingPartyEntities = hearingPartyEntities.stream()
+            .filter(hearingPartyEntity -> relatedPartyId.equals(hearingPartyEntity.getPartyReference()))
+            .collect(Collectors.toList());
+
+        if (matchingHearingPartyEntities.size() != 1) {
+            throw new BadRequestException(
+                String.format("Cannot find unique PartyID with value %s", relatedPartyId));
+        }
+
+        return matchingHearingPartyEntities.get(0);
+    }
+
+    private void cloneRequiredFacilities(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //RequiredFacilitiesEntity
+        List<RequiredFacilitiesEntity> requiredFacilitiesList = new ArrayList<>();
+        if (null != cloned.getRequiredFacilities()) {
+            for (RequiredFacilitiesEntity rfe : cloned.getRequiredFacilities()) {
+                RequiredFacilitiesEntity clonedSubValue = (RequiredFacilitiesEntity)rfe.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                requiredFacilitiesList.add(clonedSubValue);
+            }
+        }
+        cloned.setRequiredFacilities(requiredFacilitiesList);
+    }
+
+    private void cloneRequiredLocations(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //RequiredLocationsEntity
+        List<RequiredLocationsEntity> requiredLocationsList = new ArrayList<>();
+        if (null != cloned.getRequiredLocations()) {
+            for (RequiredLocationsEntity rle : cloned.getRequiredLocations()) {
+                RequiredLocationsEntity clonedSubValue = (RequiredLocationsEntity)rle.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                requiredLocationsList.add(clonedSubValue);
+            }
+        }
+        cloned.setRequiredLocations(requiredLocationsList);
+    }
+
+    private void cloneNonStandardDurations(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        //nonStandardDuration
+        List<NonStandardDurationsEntity> nonStandardDurationsList = new ArrayList<>();
+        if (null != cloned.getNonStandardDurations()) {
+            for (NonStandardDurationsEntity nsde : cloned.getNonStandardDurations()) {
+                NonStandardDurationsEntity clonedSubValue = (NonStandardDurationsEntity)nsde.clone();
+                clonedSubValue.setId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                nonStandardDurationsList.add(clonedSubValue);
+            }
+        }
+        cloned.setNonStandardDurations(nonStandardDurationsList);
+    }
+
+    private void cloneHearingChannels(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+        List<HearingChannelsEntity> hearingChannelsList = new ArrayList<>();
+        if (null != cloned.getHearingChannels()) {
+            for (HearingChannelsEntity hce : cloned.getHearingChannels()) {
+                HearingChannelsEntity clonedSubValue = (HearingChannelsEntity)hce.clone();
+                clonedSubValue.setHearingChannelsId(null);
+                clonedSubValue.setCaseHearing(cloned);
+                hearingChannelsList.add(clonedSubValue);
+            }
+        }
+        cloned.setHearingChannels(hearingChannelsList);
+    }
 }
