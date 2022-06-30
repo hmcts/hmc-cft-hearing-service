@@ -76,6 +76,10 @@ public final class ValidationError {
     public static final String FIRST_NAME_MAX_LENGTH = "First name must not be more than 100 " + CHARACTERS_LONG;
     public static final String LAST_NAME_EMPTY = "Last name can not be empty";
     public static final String LAST_NAME_MAX_LENGTH = "Last name must not be more than 730 " + CHARACTERS_LONG;
+    public static final String MISSING_CHANNEL_TYPE = "Hearing Channel Type can not be empty or null";
+    public static final String HEARING_CHANNEL_EMPTY = "Hearing Channel must be present and not null or empty";
+    public static final String NON_UNIQUE_CHANNEL_TYPE = "Non-Unique Channel Type";
+    public static final String CHANNEL_TYPE_MAX_LENGTH = "Channel Type must not be more than 70 " + CHARACTERS_LONG;
     public static final String PREFERRED_HEARING_CHANNEL_MAX_LENGTH = "Preferred hearing channel must not be more than "
         + "70 " + CHARACTERS_LONG;
     public static final String INTERPRETER_LANGUAGE_MAX_LENGTH = "Interpreter language must not be more than 10 "
@@ -102,7 +106,8 @@ public final class ValidationError {
         + "than 70 " + CHARACTERS_LONG;
     public static final String INVALID_PANEL_REQUIREMENTS = "Panel requirements are required";
     public static final String CATEGORY_VALUE = "category Value cannot be greater than 70 " + CHARACTERS_LONG;
-    public static final String INVALID_HEARING_WINDOW = "Hearing window details are required";
+    public static final String HEARING_WINDOW_EMPTY_NULL = "Hearing window details are required";
+    public static final String HEARING_WINDOW_DETAILS_ARE_INVALID = "Hearing window details are invalid";
     public static final String INVALID_HEARING_LOCATION = "Hearing locations are required";
     public static final String INVALID_CASE_CATEGORIES = "Case categories are required";
     public static final String CASE_CATEGORY_EMPTY = "Case category can not be empty";
@@ -143,9 +148,10 @@ public final class ValidationError {
     public static final String HEARING_ACTUALS_MISSING_RESULT_TYPE = "%s result requires a hearingResultReasonType";
     public static final String HEARING_ACTUALS_MISSING_HEARING_OUTCOME = "005 missing hearing outcome";
     public static final String HEARING_ACTUALS_MISSING_HEARING_DAY = "003 missing hearing day actuals";
-    public static final String HEARING_ACTUALS_UN_EXPRECTED = "004 unexpected hearing day actuals";
+    public static final String HEARING_ACTUALS_UN_EXPECTED = "004 unexpected hearing day actuals";
     public static final String HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND = "No response found on the hearing %s";
 
+    public static final String HA_OUTCOME_DETAIlS_NOT_VALID = "hearingOutcome details not valid";
     public static final String HA_OUTCOME_TYPE_NOT_EMPTY = "hearingType cannot be null or empty";
     public static final String HA_OUTCOME_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;
     public static final String HA_OUTCOME_FINAL_FLAG_NOT_EMPTY = "hearingFinalFlag has to be provided";
@@ -155,9 +161,10 @@ public final class ValidationError {
         + CHARACTERS_LONG;
     public static final String HA_OUTCOME_REQUEST_DATE_NOT_EMPTY = "hearingResultDate cannot be null or empty";
 
+    public static final String HA_OUTCOME_REQUEST_DATE_MUST_BE_PAST_OR_PRESENT =
+            "hearingResultDate must be past or present";
+
     public static final String HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY = "hearingDate cannot be null or empty";
-    public static final String HA_HEARING_DAY_START_TIME_DATE_NOT_EMPTY = "hearingStartTime cannot be null or empty";
-    public static final String HA_HEARING_DAY_END_TIME_DATE_NOT_EMPTY = "hearingEndTime cannot be null or empty";
     public static final String HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY = "pauseStartTime cannot be null or empty";
     public static final String HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY = "pauseEndTime cannot be null or empty";
 
@@ -252,8 +259,9 @@ public final class ValidationError {
     public static final String LIST_ASSIST_FAILED_TO_RESPOND = "006 List Assist failed to respond";
     public static final String LIST_ASSIST_CASE_STATUS_NULL = "List assist case status can not be null or empty";
     public static final String INVALID_DURATION_DETAILS = "Invalid duration details";
-    public static final String AMEND_REASON_CODE_MAX_LENGTH = "Amend reason code must not be more than "
+    public static final String AMEND_REASON_CODE_MAX_LENGTH = "Amend reason code must be at least 1 but no more than "
         + "70 " + CHARACTERS_LONG;
     public static final String INVALID_AMEND_REASON_CODE = "Amend reason code details are required";
 
+    public static final String INTERNAL_SERVER_ERROR = "Error occurred on the server";
 }

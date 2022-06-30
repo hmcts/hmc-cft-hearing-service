@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 
@@ -19,9 +20,10 @@ import javax.persistence.Table;
 
 
 @Table(name = "linked_group_details_audit")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class LinkedGroupDetailsAudit {
+public class LinkedGroupDetailsAudit extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

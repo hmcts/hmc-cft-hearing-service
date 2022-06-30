@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.hmc.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -26,12 +29,13 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Table(name = "hearing_response")
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @SecondaryTable(name = "hearing",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "hearing_id")})
-public class HearingResponseEntity {
+public class HearingResponseEntity extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -42,7 +46,7 @@ public class HearingResponseEntity {
     @Column(name = "received_date_time", nullable = false)
     private LocalDateTime requestTimeStamp;
 
-    @Column(name = "listing_status", nullable = false)
+    @Column(name = "listing_status")
     private String listingStatus;
 
     @Column(name = "listing_case_status", nullable = false)
@@ -57,6 +61,7 @@ public class HearingResponseEntity {
 
     @OneToMany(mappedBy = "hearingResponse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonSerialize
     private List<HearingDayDetailsEntity> hearingDayDetails;
 
     @Column(name = "request_version", nullable = false)
@@ -67,9 +72,10 @@ public class HearingResponseEntity {
 
     @Column(name = "service_data", columnDefinition = "jsonb")
     @Convert(converter = JsonDataConverter.class)
+    @SuppressWarnings("java:S2789")
     private JsonNode serviceData;
 
-    @OneToOne(mappedBy = "hearingResponse", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "hearingResponse", fetch = FetchType.EAGER, orphanRemoval = true)
     private ActualHearingEntity actualHearingEntity;
 
     @Column(name = "cancellation_reason_type")

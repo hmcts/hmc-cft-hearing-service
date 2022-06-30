@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.HEARING_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.LISTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.UPDATE_SUBMITTED;
 
 class GetHearingActualsResponseMapperTest {
 
@@ -27,7 +28,21 @@ class GetHearingActualsResponseMapperTest {
                          .get(0).getOrganisationDetails().getCftOrganisationID());
         assertEquals("partyOrgName",
                      response.getHearingActuals().getActualHearingDays().get(0)
-                         .getActualDayParties().get(0).getActualOrganisationDetails().getName());
+                         .getActualDayParties().get(0).getActualOrganisationName());
+    }
+
+    @Test
+    void toHearingsResponseWhenDataIsPresentForOrgDetails1()  {
+        HearingActualResponse response = getHearingActualResponse(UPDATE_SUBMITTED.name());
+        assertEquals("name",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties()
+                         .get(0).getOrganisationDetails().getName());
+        assertEquals("reference",
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties()
+                         .get(0).getOrganisationDetails().getCftOrganisationID());
+        assertEquals("partyOrgName",
+                     response.getHearingActuals().getActualHearingDays().get(0)
+                         .getActualDayParties().get(0).getActualOrganisationName());
     }
 
     @Test

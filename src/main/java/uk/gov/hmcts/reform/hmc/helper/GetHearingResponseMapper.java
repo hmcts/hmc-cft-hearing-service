@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.ContactDetailsEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingChannelsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
@@ -199,9 +200,9 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
     private void updateContactDetails(HearingPartyEntity hearingPartyEntity, IndividualDetails individualDetails) {
         List<String> emails = new ArrayList<>();
         List<String> phoneNumbers = new ArrayList<>();
-        if (null != hearingPartyEntity.getContactDetails()
-            && !hearingPartyEntity.getContactDetails().isEmpty()) {
-            for (ContactDetailsEntity contactDetailsEntity : hearingPartyEntity.getContactDetails()) {
+        if (null != hearingPartyEntity.getContactDetailsEntity()
+            && !hearingPartyEntity.getContactDetailsEntity().isEmpty()) {
+            for (ContactDetailsEntity contactDetailsEntity : hearingPartyEntity.getContactDetailsEntity()) {
                 if (contactDetailsEntity.getContactType().equalsIgnoreCase(EMAIL_TYPE)) {
                     emails.add(contactDetailsEntity.getContactDetails());
                 } else {
@@ -216,16 +217,19 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
     private HearingResponse setHearingResponse(HearingEntity hearingEntity) {
         HearingResponse hearingResponse = new HearingResponse();
         Optional<HearingResponseEntity> hearingResponseEntityOpt = hearingEntity.getLatestHearingResponse();
-        hearingResponseEntityOpt.ifPresent(hearingResponseEntity -> {
+        if (hearingResponseEntityOpt.isPresent()) {
+            HearingResponseEntity hearingResponseEntity = hearingResponseEntityOpt.get();
             hearingResponse.setListAssistTransactionID(
                 hearingResponseEntity.getListAssistTransactionId());
             hearingResponse.setReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
             hearingResponse.setLaCaseStatus(ListAssistCaseStatus.getLabel(
                 hearingResponseEntity.getListingCaseStatus()));
-            hearingResponse.setListingStatus(ListingStatus.getLabel(hearingResponseEntity.getListingStatus()));
+            if (hearingResponseEntity.getListingStatus() != null) {
+                hearingResponse.setListingStatus(ListingStatus.getLabel(hearingResponseEntity.getListingStatus()));
+            }
             hearingResponse.setHearingCancellationReason(hearingResponseEntity.getCancellationReasonType());
             setHearingDaySchedule(hearingResponse, List.of(hearingResponseEntity));
-        });
+        }
         return hearingResponse;
     }
 
@@ -251,6 +255,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         hearingDetails.setLeadJudgeContractType(caseHearingRequestEntity.getLeadJudgeContractType());
         hearingDetails.setPanelRequirements(setPanelRequirements(hearingEntity));
         hearingDetails.setHearingIsLinkedFlag(hearingEntity.getIsLinkedFlag());
+        hearingDetails.setHearingChannels(setHearingChannel(caseHearingRequestEntity));
         return hearingDetails;
     }
 
@@ -390,6 +395,15 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             }
         }
         return hearingLocations;
+    }
+
+    private List<String> setHearingChannel(CaseHearingRequestEntity caseHearingRequestEntity) {
+        List<String> hearingChannels = new ArrayList<>();
+        for (HearingChannelsEntity hearingChannelsEntity: caseHearingRequestEntity.getHearingChannels()) {
+            hearingChannels.add(hearingChannelsEntity.getHearingChannelType());
+        }
+
+        return hearingChannels;
     }
 
     private HearingWindow setHearingWindow(HearingEntity hearingEntity) {

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
+import uk.gov.hmcts.reform.hmc.constants.Constants;
 import uk.gov.hmcts.reform.hmc.model.hmi.CancellationReason;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
 
@@ -18,19 +18,13 @@ class HmiDeleteHearingRequestMapperTest {
 
     @Test
     void shouldReturnHmiDeleteHearingRequestForDeleteHearingRequest() {
-        DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
-        deleteHearingRequest.setCancellationReasonCode("AMADEUPONE");
-
-        CancellationReason cancellationReason = new CancellationReason();
-        cancellationReason.setCancellationReasonCode(deleteHearingRequest.getCancellationReasonCode());
-
         HmiDeleteHearingRequest expectedHmiDeleteHearingRequest = HmiDeleteHearingRequest.builder()
-                .cancellationReason(cancellationReason)
+            .cancellationReason(new CancellationReason(Constants.CANCEL))
                 .build();
 
         HmiDeleteHearingRequest actualHmiDeleteHearingRequest =
                 hmiDeleteHearingRequestMapper
-                .mapRequest(deleteHearingRequest);
+                .mapRequest();
         assertEquals(expectedHmiDeleteHearingRequest, actualHmiDeleteHearingRequest);
     }
 

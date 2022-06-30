@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.ActualDayParty;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.ActualHearingDays;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.ActualIndividualDetails;
-import uk.gov.hmcts.reform.hmc.model.hearingactuals.ActualOrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActual;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingOutcome;
@@ -78,6 +77,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             actualHearingDay.setHearingEndTime(actualHearingDayEntity.getEndDateTime());
             setPauseDateTimes(actualHearingDayEntity, actualHearingDay);
             setActualDayParties(actualHearingDayEntity, actualHearingDay);
+            actualHearingDay.setNotRequired(actualHearingDayEntity.getNotRequired());
             actualHearingDays.add(actualHearingDay);
         }
         hearingActual.setActualHearingDays(actualHearingDays);
@@ -102,16 +102,13 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             ActualAttendeeIndividualDetailEntity individualDetailEntity = actualHearingPartyEntity
                 .getActualAttendeeIndividualDetail();
             actualDayParty.setPartyChannelSubType(individualDetailEntity.getPartyActualSubChannelType());
-            if (individualDetailEntity.getPartyOrganisationName() == null) {
-                ActualIndividualDetails individualDetails = new ActualIndividualDetails();
-                individualDetails.setFirstName(individualDetailEntity.getFirstName());
-                individualDetails.setLastName(individualDetailEntity.getLastName());
-                actualDayParty.setActualIndividualDetails(individualDetails);
-            } else {
-                ActualOrganisationDetails organisationDetails = new ActualOrganisationDetails();
-                organisationDetails.setName(individualDetailEntity.getPartyOrganisationName());
-                actualDayParty.setActualOrganisationDetails(organisationDetails);
-            }
+
+            ActualIndividualDetails individualDetails = new ActualIndividualDetails();
+            individualDetails.setFirstName(individualDetailEntity.getFirstName());
+            individualDetails.setLastName(individualDetailEntity.getLastName());
+            actualDayParty.setActualIndividualDetails(individualDetails);
+            actualDayParty.setActualOrganisationName(individualDetailEntity.getPartyOrganisationName());
+
             actualDayParties.add(actualDayParty);
         }
         actualHearingDay.setActualDayParties(actualDayParties);
