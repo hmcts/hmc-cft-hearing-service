@@ -196,7 +196,6 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         this.hearingWindowStartDateRange = original.hearingWindowStartDateRange;
         this.hearingWindowEndDateRange = original.hearingWindowEndDateRange;
         this.hearingRequestReceivedDateTime = original.hearingRequestReceivedDateTime;
-        this.amendReasonCode = original.amendReasonCode;
         this.hearing = original.hearing;
         this.nonStandardDurations = original.nonStandardDurations;
         this.requiredLocations = original.requiredLocations;
@@ -209,6 +208,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         this.panelUserRequirements = original.panelUserRequirements;
         this.cancellationReason = original.cancellationReason;
         this.hearingChannels = original.hearingChannels;
+        this.amendReasonCodes = original.amendReasonCodes;
     }
 
     @Override
@@ -229,12 +229,12 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         return cloned;
     }
 
-    private void cloneCaseCategories(CaseHearingRequestEntity cloned) throws CloneNotSupportedException {
+    private void cloneCaseCategories(CaseHearingRequestEntity cloned)  {
         //CaseCategories
         List<CaseCategoriesEntity> caseCategoriesList = new ArrayList<>();
         if (null != cloned.getCaseCategories()) {
             for (CaseCategoriesEntity cce : cloned.getCaseCategories()) {
-                CaseCategoriesEntity clonedSubValue = (CaseCategoriesEntity)cce.clone();
+                CaseCategoriesEntity clonedSubValue = new CaseCategoriesEntity(cce);
                 clonedSubValue.setId(null);
                 clonedSubValue.setCaseHearing(cloned);
                 caseCategoriesList.add(clonedSubValue);
