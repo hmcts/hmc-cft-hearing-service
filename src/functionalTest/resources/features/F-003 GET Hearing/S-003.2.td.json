@@ -1,0 +1,22 @@
+{
+  "_guid_": "S-003.2",
+  "_extends_": "GetHearingRequestBase",
+  "specs": [
+    "has the 204 OK code",
+    "an active profile in CCD",
+    "has no payload",
+    "uses the query param isValid=true"
+  ],
+  "request": {
+    "queryParams": {
+      "isValid": "true"
+    },
+    "pathVariables": {
+      "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    }
+  },
+  "expectedResponse": {
+    "responseCode": 204,
+    "responseMessage": "OK"
+  }
+}

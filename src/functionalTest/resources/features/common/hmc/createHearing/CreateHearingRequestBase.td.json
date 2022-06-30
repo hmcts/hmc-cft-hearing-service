@@ -1,0 +1,32 @@
+{
+  "_guid_": "CreateHearingRequestBase",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "create hearing",
+  "method": "POST",
+  "uri": "/hearing",
+  "s2sClientId": "xui_webapp",
+  "userTokenClientId": "xuiwebapp",
+  "specs": [
+    "has the 200 OK code",
+    "an active profile in CCD",
+    "has 201 Created code",
+    "has a versionNumber of 1",
+    "has a status of HEARING_REQUESTED"
+
+  ],
+  "users": {
+    "invokingUser": {
+      "_extends_": "HmcSuperuser"
+    }
+  },
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    },
+    "body": {
+    }
+  },
+  "expectedResponse": {
+
+  }
+}
