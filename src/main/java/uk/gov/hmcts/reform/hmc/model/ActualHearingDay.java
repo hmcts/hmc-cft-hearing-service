@@ -20,11 +20,9 @@ public class ActualHearingDay implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate hearingDate;
 
-    @NotNull(message = ValidationError.HA_HEARING_DAY_START_TIME_DATE_NOT_EMPTY)
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime hearingStartTime;
 
-    @NotNull(message = ValidationError.HA_HEARING_DAY_END_TIME_DATE_NOT_EMPTY)
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime hearingEndTime;
 
@@ -33,5 +31,7 @@ public class ActualHearingDay implements Serializable {
 
     @Valid
     private List<ActualHearingDayParties> actualDayParties;
+
+    private Boolean notRequired;
 
 }

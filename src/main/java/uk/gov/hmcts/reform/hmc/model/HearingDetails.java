@@ -14,8 +14,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AMEND_REASON_CODE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.FACILITIES_REQUIRED_MAX_LENGTH_MSG;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG;
 
 @Data
 @NoArgsConstructor
@@ -37,7 +37,7 @@ public class HearingDetails {
     @Min(value = 0, message = ValidationError.DURATION_MIN_VALUE)
     private Integer duration;
 
-    private List<@Size(max = 70, message = NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG) String>
+    private List<@Size(max = 70, message = ValidationError.NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG) String>
         nonStandardHearingDurationReasons;
 
     @NotEmpty(message = ValidationError.HEARING_PRIORITY_TYPE)
@@ -73,8 +73,11 @@ public class HearingDetails {
 
     private Boolean hearingIsLinkedFlag;
 
-    @Size(max = 70, message = ValidationError.AMEND_REASON_CODE_MAX_LENGTH)
-    private String amendReasonCode;
+    private List<@Size(min = 1, max = 70, message = AMEND_REASON_CODE_MAX_LENGTH) String> amendReasonCodes;
+
+    @Valid
+    @NotNull(message = ValidationError.HEARING_CHANNEL_EMPTY)
+    private List<@Size(max = 70, message = ValidationError.CHANNEL_TYPE_MAX_LENGTH)String> hearingChannels;
 
     public boolean isMultiDayHearing() {
         return getDuration() != null ? getDuration() > DURATION_OF_DAY : false;
