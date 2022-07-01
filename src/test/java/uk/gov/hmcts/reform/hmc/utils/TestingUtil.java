@@ -64,9 +64,11 @@ import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.RequirementType;
+import uk.gov.hmcts.reform.hmc.model.RoomAttribute;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -75,6 +77,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
@@ -441,6 +444,26 @@ public class TestingUtil {
         requestDetails.setVersionNumber(1);
         request.setRequestDetails(requestDetails);
         return request;
+    }
+
+    public static Entity getEntity(List<String> reasonableAdjustment) {
+        return Entity.builder()
+            .entityId("entityId")
+            .entityOtherConsiderations(reasonableAdjustment)
+            .build();
+    }
+
+    public static Optional<RoomAttribute> getRoomAttribute(String roomAttributeCode,
+                                                           String roomAttributeName,
+                                                           String reasonableAdjustmentCode,
+                                                           Boolean facility) {
+        RoomAttribute roomAttribute = RoomAttribute.builder()
+            .roomAttributeCode(roomAttributeCode)
+            .roomAttributeName(roomAttributeName)
+            .reasonableAdjustmentCode(reasonableAdjustmentCode)
+            .facility(facility)
+            .build();
+        return Optional.of(roomAttribute);
     }
 
     public static CaseDetails caseDetails() {
