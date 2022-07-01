@@ -51,6 +51,7 @@ public class ListingMapper {
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
+            .listingWelshHearingFlag(hearingDetails.getHearingInWelshFlag())
             .build();
 
         if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {

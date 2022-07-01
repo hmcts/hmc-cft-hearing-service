@@ -76,6 +76,7 @@ class ListingMapperTest {
         assertEquals(LISTING_COMMENTS, listing.getListingComments());
         assertEquals(HEARING_REQUESTER, listing.getListingRequestedBy());
         assertEquals(false, listing.getListingPrivateFlag());
+        assertEquals(false, listing.getListingWelshHearingFlag());
         assertEquals(2, listing.getListingHearingChannels().size());
         assertEquals(AMEND_REASON_CODE, listing.getAmendReasonCode());
         assertEquals(HEARING_CHANNEL, listing.getListingHearingChannels().get(0));
