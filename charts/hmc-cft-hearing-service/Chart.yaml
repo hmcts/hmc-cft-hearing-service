@@ -10,7 +10,6 @@ dependencies:
   - name: java
     version: 3.7.3
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-  - name: servicebus
-    version: 0.3.0
+  - name: hmc
+    version: 0.0.1
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: servicebus.enabled

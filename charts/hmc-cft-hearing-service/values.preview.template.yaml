@@ -34,16 +34,6 @@ java:
         - name: hmc-cft-hearing-service-s2s-secret
           alias: IDAM_KEY_CFT_HEARING_SERVICE
 
-servicebus:
-  enabled: true
-  teamName: CCD
-  resourceGroup: hmc-aks
-  serviceplan: standard
-  setup:
-    topics:
-      - name: hmc-to-cft
-    subscriptions:
-      - name: hmc-subs-to-cft
-    queues:
-      - name: hmc-from-hmi
-      - name: hmc-to-hmi
+hmc:
+  servicebus:
+    enabled: true
