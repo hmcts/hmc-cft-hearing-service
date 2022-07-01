@@ -12,13 +12,23 @@
   <!--End of false positives section -->
 
   <suppress>
-    <notes> Spring </notes>
+    <notes> To fix, upgrade org.springframework.boot to 2.7+ and amend relevant classes </notes>
     <cve>CVE-2022-22970</cve>
     <cve>CVE-2022-22971</cve>
+    <cve>CVE-2022-22969</cve>
+    <cve>CVE-2022-22976</cve>
+    <cve>CVE-2021-22119</cve>
+    <cve>CVE-2021-22112</cve>
+    <cve>CVE-2018-1258</cve>
   </suppress>
 
   <suppress>
-    <notes> </notes>
+    <notes> Fix: upgrade org.springframework.security to 5.6+ and amend relevant classes </notes>
+    <cve>CVE-2022-22978</cve>
+  </suppress>
+
+  <suppress>
+    <notes> tomcat-embed </notes>
     <cve>CVE-2022-34305</cve>
     <cve>CVE-2022-29885</cve>
   </suppress>
@@ -29,17 +39,6 @@
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j\-api@.*$</packageUrl>
     <cve>CVE-2022-33915</cve>
-  </suppress>
-
-  <suppress>
-    <notes><![CDATA[
-   file name: spring-boot-starter-oauth2-resource-server-2.4.4.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-oauth2\-resource\-server@.*$</packageUrl>
-    <cve>CVE-2022-22978</cve>
-    <cve>CVE-2018-1258</cve>
-    <cve>CVE-2021-22112</cve>
-    <cve>CVE-2022-22976</cve>
   </suppress>
 
 </suppressions>
