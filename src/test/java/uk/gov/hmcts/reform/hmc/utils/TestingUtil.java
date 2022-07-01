@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayParties;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPartyDetail;
@@ -940,7 +939,7 @@ public class TestingUtil {
         entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00"));
         entity.setHearingResponseId(2L);
         entity.setRequestVersion(10);
-        entity.setListingStatus(ListingStatus.FIXED.name());
+        entity.setListingStatus("Fixed");
         entity.setListingCaseStatus(ListAssistCaseStatus.CASE_CREATED.name());
         entity.setCancellationReasonType("Cancelled Reason 1");
         entity.setHearingDayDetails(List.of(hearingDayDetailsEntity()));
@@ -954,7 +953,7 @@ public class TestingUtil {
         entity.setRequestVersion(requestVersion);
         entity.setRequestTimeStamp(requestTimestamp);
         entity.setHearingResponseId(2L);
-        entity.setListingStatus(ListingStatus.FIXED.name());
+        entity.setListingStatus("Fixed");
         entity.setListingCaseStatus(ListAssistCaseStatus.CASE_CREATED.name());
         entity.setCancellationReasonType("Cancelled Reason 1");
         entity.setHearingDayDetails(hearingDayDetailsEntities);
