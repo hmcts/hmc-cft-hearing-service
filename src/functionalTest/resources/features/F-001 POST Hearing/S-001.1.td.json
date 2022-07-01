@@ -7,7 +7,6 @@
     "has 201 Created code",
     "has a versionNumber of 1",
     "has a status of HEARING_REQUESTED"
-
   ],
   "request": {
     "body": {
@@ -18,8 +17,7 @@
     }
   },
   "expectedResponse": {
-    "responseCode": 201,
-    "responseMessage": "OK",
+    "_extends_": "Common_201_Response",
     "headers": {
       "Content-Length": "[[ANYTHING_PRESENT]]",
       "Content-Type": "application/vnd.spring-boot.actuator.v3+json",

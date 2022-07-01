@@ -53,7 +53,6 @@ Feature: F-004: Amend hearing request
     And the response has all other details as expected,
 #    And a call [to verify the values have been updated] will get the expected response as in [S-004.1-get-hearing].
 
-
   @S-004.5
   Scenario: cannot amend hearing request in the CANCELLATION_REQUESTED state
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],

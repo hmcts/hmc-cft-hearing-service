@@ -5,6 +5,9 @@
     "requestTimeStamp":"2021-08-10T12:20:00.000Z"
   },
   "hearingDetails": {
+    "hearingChannels": [
+      "INTER"
+    ],
     "autolistFlag": true,
     "hearingType": "Some hearing type",
     "hearingWindow": {

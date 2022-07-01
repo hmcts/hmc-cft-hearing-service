@@ -1,23 +1,19 @@
 {
   "_guid_": "S-005.1",
   "_extends_" : "F-005_TestBase",
-
   "specs": [
     "has the 200 OK code",
     "an active profile in CCD",
     "has 200 status code",
     "contains both hearings"
   ],
-
   "request": {
     "pathVariables": {
       "caseref": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
     }
   },
-
   "expectedResponse": {
-    "responseCode": 200,
-    "responseMessage": "OK",
+    "_extends_": "Common_200_Response",
     "headers": {
       "Content-Length": "[[ANYTHING_PRESENT]]",
       "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
@@ -36,24 +32,26 @@
         "hearingType" : "Some hearing type",
         "hmcStatus" : "HEARING_REQUESTED",
         "lastResponseReceivedDateTime" : null,
-        "responseVersion" : null,
+        "requestVersion" : null,
         "hearingListingStatus" : null,
         "listAssistCaseStatus" : null,
         "hearingDaySchedule" : null,
         "hearingGroupRequestId" : null,
         "hearingIsLinkedFlag" : false,
+        "hearingChannels" : [ "INTER" ],
         "hearingID" : "[[ANY_NUMBER_NOT_NULLABLE]]"
       }, {
         "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
         "hearingType" : "Some hearing type",
         "hmcStatus" : "HEARING_REQUESTED",
         "lastResponseReceivedDateTime" : null,
-        "responseVersion" : null,
+        "requestVersion" : null,
         "hearingListingStatus" : null,
         "listAssistCaseStatus" : null,
         "hearingDaySchedule" : null,
         "hearingGroupRequestId" : null,
         "hearingIsLinkedFlag" : false,
+          "hearingChannels" : [ "INTER" ],
         "hearingID" : "[[ANY_NUMBER_NOT_NULLABLE]]"
       } ],
       "hmctsServiceCode" : "[[ANYTHING_PRESENT]]"

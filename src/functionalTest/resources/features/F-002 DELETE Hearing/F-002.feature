@@ -6,7 +6,6 @@ Feature: F-002: Delete hearing request
     Given a user with [an active profile in CCD],
     And a case that has just been created as in [CreateCase],
 
-
   @S-002.1
   Scenario: successfully delete hearing request
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
@@ -18,7 +17,6 @@ Feature: F-002: Delete hearing request
     And the response [has a status of CANCELLATION_REQUESTED],
     And the response has all other details as expected,
     And a call [to verify versionNumber=2 and status=CANCELLATION_REQUESTED] will get the expected response as in [S-002.1-get-hearing].
-
 
   @S-002.2
   Scenario: successfully delete hearing request in UPDATE_REQUESTED state
@@ -42,7 +40,4 @@ Feature: F-002: Delete hearing request
     Then a negative response is received,
     And the response [has a status of CANCELLATION_REQUESTED],
     And the response has all other details as expected,
-    And a call [to verify versionNumber=2 and status=CANCELLATION_REQUESTED] will get the expected response as in [S-002.1-get-hearing].
-
-
-
+    And a call [to verify versionNumber=2 and status=CANCELLATION_REQUESTED] will get the expected response as in [S-002.1-get-hearing]

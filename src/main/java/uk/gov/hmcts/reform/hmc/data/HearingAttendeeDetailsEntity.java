@@ -23,7 +23,9 @@ import javax.persistence.Table;
 @SecondaryTable(name = "HEARING_DAY_DETAILS",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "hearing_day_id")})
-public class HearingAttendeeDetailsEntity extends BaseEntity implements Serializable {
+public class HearingAttendeeDetailsEntity extends BaseEntity implements Serializable  {
+
+    private static final long serialVersionUID = -2090910835541795958L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,

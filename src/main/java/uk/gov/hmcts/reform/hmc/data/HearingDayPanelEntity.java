@@ -25,6 +25,8 @@ import javax.persistence.Table;
         @PrimaryKeyJoinColumn(name = "hearing_day_id")})
 public class HearingDayPanelEntity extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -5104107251904201708L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "hearing_day_panel_seq")

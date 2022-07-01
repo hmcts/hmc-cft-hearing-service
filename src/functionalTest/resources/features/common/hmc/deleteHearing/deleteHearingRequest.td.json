@@ -7,8 +7,7 @@
     }
   },
   "expectedResponse": {
-    "responseCode": 200,
-    "responseMessage": "OK",
+    "_extends_": "Common_200_Response",
     "body": {
       "hearingRequestID": "[[ANYTHING_PRESENT]]",
       "status": "CANCELLATION_REQUESTED",

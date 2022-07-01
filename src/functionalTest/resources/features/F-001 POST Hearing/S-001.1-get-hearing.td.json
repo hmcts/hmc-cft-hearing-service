@@ -5,15 +5,13 @@
     "to verify versionNumber=1 and status=HEARING_REQUESTED"
 
   ],
-  "s2sClientId": "xui_webapp",
   "request": {
     "pathVariables": {
       "hearingID": "${[scenarioContext][parentContext][testData][actualResponse][body][hearingRequestID]}"
     }
   },
   "expectedResponse": {
-    "responseCode": 200,
-    "responseMessage": "OK",
+    "_extends_": "Common_200_Response",
     "headers": {
       "Cache-Control" : "no-cache, no-store, max-age=0, must-revalidate",
       "Connection" : "keep-alive",

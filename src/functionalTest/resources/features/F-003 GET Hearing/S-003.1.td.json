@@ -1,20 +1,17 @@
 {
   "_guid_": "S-003.1",
   "_extends_" : "GetHearingRequestPositiveGeneric",
-
   "specs": [
     "has the 200 OK code",
     "an active profile in CCD"
   ],
-
   "request": {
     "pathVariables": {
       "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
     }
   },
   "expectedResponse": {
-    "responseCode": 200,
-    "responseMessage": "OK",
+    "_extends_": "Common_200_Response",
     "body": {
       "requestDetails": {
         "hearingRequestID" : "[[ANYTHING_PRESENT]]"
@@ -77,6 +74,7 @@
           "panelSpecialisms" : [ "Specialism 1" ]
         },
         "hearingIsLinkedFlag" : false,
+        "hearingChannels" : [ "INTER" ],
         "multiDayHearing" : false,
         "autolistFlag" : true
       },

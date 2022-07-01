@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -20,10 +21,13 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@NoArgsConstructor
 @SecondaryTable(name = "hearing_party",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "TECH_PARTY_ID")})
-public class OrganisationDetailEntity extends BaseEntity implements Serializable, Cloneable {
+public class OrganisationDetailEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 1283927209461686116L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -44,8 +48,11 @@ public class OrganisationDetailEntity extends BaseEntity implements Serializable
     @JoinColumn(name = "tech_party_id")
     private HearingPartyEntity hearingParty;
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public OrganisationDetailEntity(OrganisationDetailEntity original) {
+        this.id = original.id;
+        this.organisationName = original.organisationName;
+        this.organisationTypeCode = original.organisationTypeCode;
+        this.hmctsOrganisationReference = original.hmctsOrganisationReference;
+        this.hearingParty = original.hearingParty;
     }
 }
