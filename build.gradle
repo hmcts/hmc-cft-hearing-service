@@ -225,7 +225,7 @@ def versions = [
   reformLogging   : '5.1.7',
   restAssured     : '4.2.1',
   springBoot      : springBoot.class.package.implementationVersion,
-  springCloud     : '2020.0.1',
+  springCloud     : '3.0.5',
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.2',
   netty           : '4.1.77.Final',
@@ -268,10 +268,6 @@ dependencyManagement {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
       entry 'tomcat-embed-websocket'
-    }
-    dependencySet(group: 'org.springframework.cloud', version: '3.0.5') {
-      entry 'spring-cloud-openfeign-core'
-      entry 'spring-cloud-starter-openfeign'
     }
   }
 }
@@ -397,6 +393,10 @@ dependencies {
   // CVE-2021-42550
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.10'
+
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springCloud
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign-core', version: versions.springCloud
+
   // Explicitly set versions of io.netty components to resolve CVE-2021-37136 and CVE-2021-37137
   implementation group: 'io.netty', name: 'netty-buffer', version: versions.netty
   implementation group: 'io.netty', name: 'netty-codec', version: versions.netty
