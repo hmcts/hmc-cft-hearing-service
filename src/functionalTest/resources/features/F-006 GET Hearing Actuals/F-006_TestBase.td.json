@@ -7,7 +7,9 @@
   "s2sClientId": "xui_webapp",
 
   "users": {
-    "_extends_": "HmcSuperuser"
+    "invokingUser": {
+      "_extends_": "HmcSuperuser"
+    }
   },
   "request": {
     "headers": {
