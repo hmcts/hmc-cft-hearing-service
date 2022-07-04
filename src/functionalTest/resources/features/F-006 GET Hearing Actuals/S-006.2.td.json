@@ -4,7 +4,7 @@
 
   "specs": [
     "an active profile in CCD",
-    "has 400 status code"
+    "has 404 status code"
   ],
 
   "request": {
@@ -17,8 +17,8 @@
     "responseCode": 404,
     "responseMessage": "Bad Request",
     "body" : {
-      "status" : "BAD_REQUEST",
-      "errors" : [ "Invalid hearing Id" ]
+      "status" : "NOT_REQUEST",
+      "errors" : [ "No hearing found for reference: 2000000400" ]
     }
   }
 }

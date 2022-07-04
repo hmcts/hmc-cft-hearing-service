@@ -9,8 +9,8 @@
 
   "users": {
     "invokingUser": {
-      "username": "hmc.superuser@gmail.com",
-      "password": "INCORRECT"
+      "username": "master.caseworker@gmail.com",
+      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
     }
   },
 
@@ -21,6 +21,6 @@
   },
 
   "expectedResponse": {
-    "responseCode": 401
+    "responseCode": 403
   }
 }
