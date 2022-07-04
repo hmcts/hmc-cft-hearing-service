@@ -15,10 +15,10 @@
 
   "expectedResponse": {
     "responseCode": 404,
-    "responseMessage": "Bad Request",
+    "responseMessage": "Not Found",
     "body" : {
       "status" : "NOT_FOUND",
-      "errors" : [ "No hearing found for reference: 2000000400" ]
+      "errors" : [ "001 No such id: 2000000400" ]
     }
   }
 }

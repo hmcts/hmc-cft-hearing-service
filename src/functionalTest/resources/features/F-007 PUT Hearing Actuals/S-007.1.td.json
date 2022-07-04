@@ -20,7 +20,7 @@
     },
     "body" : {
       "hearingRequestID": "[[ANYTHING_PRESENT]]",
-      "status": "HEARING_REQUESTED",
+      "status": "UPDATE_REQUESTED",
       "timeStamp": "[[ANYTHING_PRESENT]]",
       "versionNumber": 2
     }
