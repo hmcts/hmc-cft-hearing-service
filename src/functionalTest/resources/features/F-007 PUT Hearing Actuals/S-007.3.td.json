@@ -1,6 +1,6 @@
 {
   "_guid_": "S-007.3",
-  "_extends_" : "F-007_TestBase",
+  "_extends_" : "PutHearingActualsRequestBase",
 
   "specs": [
     "an active profile in CCD",

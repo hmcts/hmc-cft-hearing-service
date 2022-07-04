@@ -9,12 +9,6 @@
     "contains both hearings"
   ],
 
-  "request": {
-    "pathVariables": {
-      "id": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
-    }
-  },
-
   "expectedResponse": {
     "responseCode": 200,
     "responseMessage": "OK",
