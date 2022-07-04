@@ -17,12 +17,12 @@ Feature: F-006: Search for hearings
     And the response has all other details as expected.
 
   @S-006.2
-  Scenario: Should return 404 no such ID
+  Scenario: Should return 400 no such ID
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [Search for hearing actuals] operation of [HMC CFT Hearing Service],
     Then a negative response is received,
-    And the response [has 404 status code],
+    And the response [has 400 status code],
     And the response has all other details as expected.
 
   @S-006.3
