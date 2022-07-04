@@ -25,7 +25,9 @@ import javax.persistence.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PartyRelationshipDetailsEntity extends BaseEntity implements Serializable, Cloneable {
+public class PartyRelationshipDetailsEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = -4983833617462382058L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -44,8 +46,10 @@ public class PartyRelationshipDetailsEntity extends BaseEntity implements Serial
     @Column(name = "relationship_type")
     private String relationshipType;
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public PartyRelationshipDetailsEntity(PartyRelationshipDetailsEntity original) {
+        this.partyRelationshipDetailsId = original.partyRelationshipDetailsId;
+        this.sourceTechParty = original.sourceTechParty;
+        this.targetTechParty = original.targetTechParty;
+        this.relationshipType = original.relationshipType;
     }
 }

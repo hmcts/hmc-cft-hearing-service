@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -20,10 +21,13 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@NoArgsConstructor
 @SecondaryTable(name = "hearing_party",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "TECH_PARTY_ID")})
-public class IndividualDetailEntity extends BaseEntity implements Serializable, Cloneable {
+public class IndividualDetailEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = -4817549124719790363L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -62,8 +66,17 @@ public class IndividualDetailEntity extends BaseEntity implements Serializable, 
     @Column(name = "custody_status")
     private String custodyStatus;
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public IndividualDetailEntity(IndividualDetailEntity original) {
+        this.id = original.id;
+        this.vulnerabilityDetails = original.vulnerabilityDetails;
+        this.vulnerableFlag = original.vulnerableFlag;
+        this.interpreterLanguage = original.interpreterLanguage;
+        this.channelType = original.channelType;
+        this.lastName = original.lastName;
+        this.firstName = original.firstName;
+        this.title = original.title;
+        this.hearingParty = original.hearingParty;
+        this.otherReasonableAdjustmentDetails = original.otherReasonableAdjustmentDetails;
+        this.custodyStatus = original.custodyStatus;
     }
 }

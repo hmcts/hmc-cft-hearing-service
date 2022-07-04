@@ -1,0 +1,18 @@
+{
+  "_guid_": "deleteHearingRequest",
+  "_extends_": "deleteHearingRequestBase",
+  "request": {
+    "pathVariables": {
+      "hearingID" : "${[scenarioContext][siblingContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    }
+  },
+  "expectedResponse": {
+    "_extends_": "Common_200_Response",
+    "body": {
+      "hearingRequestID": "[[ANYTHING_PRESENT]]",
+      "status": "CANCELLATION_REQUESTED",
+      "timeStamp": "[[ANYTHING_PRESENT]]",
+      "versionNumber": 2
+    }
+  }
+}

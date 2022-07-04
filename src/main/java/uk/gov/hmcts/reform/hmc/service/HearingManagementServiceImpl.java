@@ -365,7 +365,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validateHearingDetails(HearingDetails hearingDetails) {
-        validateHearingWindow(hearingDetails);
+        if (hearingDetails.getHearingWindow() != null) {
+            validateHearingWindow(hearingDetails);
+        }
         validateHearingChannels(hearingDetails);
     }
 
@@ -448,13 +450,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public void sendResponse(String json) {
-        sendRspToTopic(json);
+    public void sendResponse(String json, String hmctsServiceId) {
+        sendRspToTopic(json, hmctsServiceId);
     }
 
-    private void sendRspToTopic(Object response) {
+    private void sendRspToTopic(Object response, String hmctsServiceId) {
         var jsonNode = objectMapperService.convertObjectToJsonNode(response);
-        messageSenderToTopicConfiguration.sendMessage(jsonNode.toString());
+        messageSenderToTopicConfiguration.sendMessage(jsonNode.toString(), hmctsServiceId);
     }
 
     private void sendRequestToQueue(HmiSubmitHearingRequest hmiSubmitHearingRequest, Long hearingId,

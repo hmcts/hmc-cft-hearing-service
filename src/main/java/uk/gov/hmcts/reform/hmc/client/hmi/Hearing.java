@@ -34,6 +34,7 @@ public class Hearing {
 
     private JsonNode hearingType;
 
+    @Valid
     private HearingStatus hearingStatus;
 
     @Size(max = 70, message = ValidationError.HEARING_CANCELLATION_REASON_LENGTH)

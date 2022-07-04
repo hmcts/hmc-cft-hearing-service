@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
@@ -335,7 +334,7 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals(1, response.getCaseHearings().get(0).getRequestVersion());
         assertEquals(1, response.getCaseHearings().get(1).getRequestVersion());
         assertEquals(1, response.getCaseHearings().get(2).getRequestVersion());
-        assertEquals(ListingStatus.FIXED.name(), response.getCaseHearings().get(1).getHearingListingStatus());
+        assertEquals("FIXED", response.getCaseHearings().get(1).getHearingListingStatus());
         assertEquals(ListAssistCaseStatus.LISTED.name(), response.getCaseHearings().get(1).getListAssistCaseStatus());
         assertEquals(1, response.getCaseHearings().get(1).getHearingDaySchedule().size());
         assertEquals("venue3-1", response.getCaseHearings().get(1)
@@ -412,7 +411,7 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("HEARING_REQUESTED", response.getCaseHearings().get(0).getHmcStatus());
         assertEquals(1, response.getCaseHearings().get(0).getRequestVersion());
         assertEquals(1, response.getCaseHearings().get(1).getRequestVersion());
-        assertEquals(ListingStatus.FIXED.name(), response.getCaseHearings().get(0).getHearingListingStatus());
+        assertEquals("FIXED", response.getCaseHearings().get(0).getHearingListingStatus());
         assertEquals(ListAssistCaseStatus.LISTED.name(),
                 response.getCaseHearings().get(0).getListAssistCaseStatus());
         assertEquals(2, response.getCaseHearings().get(1).getHearingDaySchedule().size());

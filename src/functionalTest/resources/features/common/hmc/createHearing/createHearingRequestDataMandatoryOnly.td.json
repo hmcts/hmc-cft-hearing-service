@@ -1,0 +1,62 @@
+{
+  "_guid_" : "createHearingRequestDataMandatoryOnly",
+
+  "requestDetails" : {
+    "requestTimeStamp":"2021-08-10T12:20:00.000Z"
+  },
+  "hearingDetails": {
+    "hearingChannels": [
+      "INTER"
+    ],
+    "autolistFlag": true,
+    "hearingType": "Some hearing type",
+    "hearingWindow": {
+      "dateRangeStart": "2022-05-10",
+      "dateRangeEnd": "2023-05-10"
+    },
+    "duration": 60,
+    "hearingPriorityType": "Priority type",
+    "hearingLocations": [
+      {
+        "locationType": "court",
+        "locationId": "685391"
+      }
+    ],
+    "panelRequirements": {
+    }
+  },
+  "caseDetails": {
+    "hmctsServiceCode": "1234",
+    "caseRef": "1641911514704411",
+    "requestTimeStamp": "2000-08-10T12:20:00.000Z",
+    "caseDeepLink": "https://www.google.com",
+    "hmctsInternalCaseName": "Internal case name",
+    "publicCaseName": "Public case name",
+    "caseCategories": [
+      {
+        "categoryType": "caseType",
+        "categoryValue": "BBA3-002"
+      },
+      {
+        "categoryType": "caseSubType",
+        "categoryValue": "BBA3-002CP",
+        "categoryParent": "BBA3-002"
+      }
+    ],
+    "caseManagementLocationCode": "CMLC123",
+    "caserestrictedFlag": true,
+    "caseSLAStartDate": "2021-10-10"
+  },
+  "partyDetails": [
+    {
+      "partyID": "P1",
+      "partyType": "IND",
+      "partyRole": "DEF",
+      "individualDetails": {
+        "title": "Mr",
+        "firstName": "Joe",
+        "lastName": "Bloggs"
+      }
+    }
+  ]
+}
