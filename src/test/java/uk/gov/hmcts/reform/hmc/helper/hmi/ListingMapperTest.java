@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
+import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
@@ -362,5 +364,36 @@ class ListingMapperTest {
 
     private Listing buildListing(HearingDetails hearingDetails,Entity entity) {
         return listingMapper.getListing(hearingDetails,List.of(entity));
+    }
+
+
+    @Test
+    void shouldReturnListingForMultiDayHearingDurationWithManyValues() {
+
+        testCalculatedListingForDurationValue(361, 0, 1, 1);
+        testCalculatedListingForDurationValue(369, 0, 1, 1);
+        testCalculatedListingForDurationValue(725, 0, 2, 1);
+        testCalculatedListingForDurationValue(730, 0, 2, 1);
+        testCalculatedListingForDurationValue(425, 0, 1, 2);
+        testCalculatedListingForDurationValue(476, 0, 1, 2);
+        testCalculatedListingForDurationValue(485, 0, 1, 3);
+    }
+
+    private void testCalculatedListingForDurationValue(Integer duration,
+                                                       Integer expectedWeeks,
+                                                       Integer expectedDays,
+                                                       Integer expectedHours
+    ) {
+        val listing = getListing(duration);
+        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
+        assertEquals(expectedWeeks, listing.getListingMultiDay().getWeeks());
+        assertEquals(expectedDays, listing.getListingMultiDay().getDays());
+        assertEquals(expectedHours, listing.getListingMultiDay().getHours());
+    }
+
+    private Listing getListing(int duration) {
+        val hearingDetails = buildHearingDetails(HearingMapper.roundUpDuration(duration));
+        Listing listing = listingMapper.getListing(hearingDetails, null);
+        return listing;
     }
 }
