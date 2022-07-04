@@ -1,0 +1,72 @@
+{
+  "_guid_": "PutHearingActualsRequestBase",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "amend hearing actuals",
+  "method": "PUT",
+  "uri": "/hearingActuals/{id}",
+  "s2sClientId": "xui_webapp",
+  "specs": [
+  ],
+  "users": {
+    "invokingUser": {
+      "_extends_": "HmcSuperuser"
+    }
+  },
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    },
+    "pathVariables": {
+      "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    },
+
+    "body": {
+      "hearingOutcome": {
+        "hearingType": "Witness Statement",
+        "hearingFinalFlag": "false",
+        "hearingResult": "COMPLETED",
+        "hearingResultReasonType": "Nothing more to hear" ,
+        "hearingResultDate": "2022-02-01"
+      },
+      "actualHearingDays": [
+        {
+          "hearingDate": "2022-01-28",
+          "hearingStartTime": "2022-01-28T10:00:00",
+          "hearingEndTime": "2022-01-28T15:00:00",
+          "pauseDateTimes": [
+            {
+              "pauseStartTime": "2022-01-28T12:00:00",
+              "pauseEndTime": "2022-01-28T12:30:00"
+            }
+          ],
+          "actualDayParties": [
+            {
+              "actualPartyId": "123",
+              "partyRole": "43333",
+              "individualDetails": {
+                "firstName": "WitnessForeName1",
+                "lastName": "WitnessLastName1"
+              },
+              "actualOrganisationName": "<actualOrganisationName>",
+              "partyChannelSubType": "claiming party",
+              "didNotAttendFlag": "false",
+              "representedParty": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "expectedResponse": {
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    }
+  }
+}
+
+
+
+

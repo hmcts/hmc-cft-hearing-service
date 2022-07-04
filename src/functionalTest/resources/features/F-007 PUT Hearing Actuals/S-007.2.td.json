@@ -1,0 +1,24 @@
+{
+  "_guid_": "S-007.2",
+  "_extends_" : "F-007_TestBase",
+
+  "specs": [
+    "an active profile in CCD",
+    "has 404 status code"
+  ],
+
+  "request": {
+    "pathVariables": {
+      "id": "2000000400"
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 404,
+    "responseMessage": "Bad Request",
+    "body" : {
+      "status" : "NOT_FOUND",
+      "errors" : [ "No hearing found for reference: 2000000400" ]
+    }
+  }
+}
