@@ -25,15 +25,33 @@
       "Request-Context": "[[ANY_NULLABLE]]"
     },
     "body" : {
-      "hmcStatus": "STATUS",
-      "caseDetails": {
-
+      "hmcStatus" : "HEARING_REQUESTED",
+      "caseDetails" : {
+        "hmctsServiceCode" : "ABA1",
+        "caseRef" : "1656935505578767",
+        "externalCaseReference" : "EXT/REF123",
+        "caseDeepLink" : "https://www.google.com",
+        "hmctsInternalCaseName" : "Internal case name",
+        "publicCaseName" : "Public case name",
+        "caseAdditionalSecurityFlag" : true,
+        "caseInterpreterRequiredFlag" : true,
+        "caseCategories" : [ {
+          "categoryType" : "caseType",
+          "categoryValue" : "BBA3-002"
+        }, {
+          "categoryType" : "caseSubType",
+          "categoryValue" : "BBA3-002CP",
+          "categoryParent" : "BBA3-002"
+        } ],
+        "caseManagementLocationCode" : "CMLC123",
+        "caserestrictedFlag" : true,
+        "caseSLAStartDate" : "2021-10-10"
       },
-      "hearingPlanned": {
-        "plannedHearingType": "hearing type",
-        "plannedHearingDays": []
+      "hearingPlanned" : {
+        "plannedHearingType" : "Some hearing type",
+        "plannedHearingDays" : [ ]
       },
-      "hearingActuals": []
+      "hearingActuals" : null
     }
   }
 }

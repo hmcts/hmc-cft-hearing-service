@@ -9,7 +9,7 @@
 
   "users": {
     "invokingUser": {
-      "username": "master.caseworker@gmail.com",
+      "_extends_": "HmcSuperuser",
       "password": "INCORRECT"
     }
   },

@@ -15,6 +15,10 @@
 
   "expectedResponse": {
     "responseCode": 404,
-    "responseMessage": "No hearing found for reference: ${caseref}"
+    "responseMessage": "Bad Request",
+    "body" : {
+      "status" : "BAD_REQUEST",
+      "errors" : [ "Invalid hearing Id" ]
+    }
   }
 }
