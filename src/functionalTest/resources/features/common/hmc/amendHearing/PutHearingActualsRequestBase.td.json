@@ -17,7 +17,7 @@
       "_extends_": "Common_Request_Headers"
     },
     "pathVariables": {
-      "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+      "id": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
     },
 
     "body": {

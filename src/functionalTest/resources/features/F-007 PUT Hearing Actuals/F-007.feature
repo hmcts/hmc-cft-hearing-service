@@ -22,7 +22,7 @@ Feature: F-007: PUT hearing actuals
   Scenario: Should return 400 no such ID
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
-    And it is submitted to call the [Search for hearing actuals] operation of [HMC CFT Hearing Service],
+    And it is submitted to call the [amend hearing actuals] operation of [HMC CFT Hearing Service],
     Then a negative response is received,
     And the response [has 404 status code],
     And the response has all other details as expected.
@@ -31,7 +31,7 @@ Feature: F-007: PUT hearing actuals
   Scenario: Should return 403 unauthorised
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
-    And it is submitted to call the [Search for hearing actuals] operation of [HMC CFT Hearing Service],
+    And it is submitted to call the [amend hearing actuals] operation of [HMC CFT Hearing Service],
     Then a negative response is received,
     And the response [has 403 status code],
     And the response has all other details as expected.
