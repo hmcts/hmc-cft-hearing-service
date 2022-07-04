@@ -17,7 +17,7 @@
     "responseCode": 404,
     "responseMessage": "Bad Request",
     "body" : {
-      "status" : "NOT_REQUEST",
+      "status" : "NOT_FOUND",
       "errors" : [ "No hearing found for reference: 2000000400" ]
     }
   }
