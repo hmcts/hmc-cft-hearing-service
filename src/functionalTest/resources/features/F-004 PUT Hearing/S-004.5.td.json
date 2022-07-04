@@ -1,0 +1,31 @@
+{
+  "_guid_": "S-004.5",
+  "_extends_" : "PutHearingRequestBase",
+  "specs": [
+    "has the 400 code",
+    "an active profile in CCD",
+    "has a versionNumber of 3",
+    "has a status of UPDATE_REQUESTED"
+  ],
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    },
+    "body": {
+      "requestDetails": {
+        "versionNumber": 2
+      }
+    },
+    "pathVariables": {
+      "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    }
+  },
+  "expectedResponse": {
+    "responseCode" : 400,
+    "responseMessage" : "Bad Request",
+    "body": {
+      "status" : "BAD_REQUEST",
+      "errors" : [ "Invalid hearing state for PUT" ]
+    }
+  }
+}

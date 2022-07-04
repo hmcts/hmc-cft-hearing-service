@@ -1,0 +1,25 @@
+{
+  "_guid_": "S-002.1",
+  "_extends_" : "deleteHearingRequestBase",
+  "specs": [
+    "has the 200 OK code",
+    "has a versionNumber of 2",
+    "has a status of CANCELLATION_REQUESTED",
+    "an active profile in CCD"
+  ],
+  "expectedResponse": {
+    "_extends_": "Common_200_Response",
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    },
+    "body": {
+      "hearingRequestID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+      "status": "CANCELLATION_REQUESTED",
+      "timeStamp": "[[ANYTHING_PRESENT]]",
+      "versionNumber": 2
+    }
+  }
+}

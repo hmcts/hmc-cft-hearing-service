@@ -5,6 +5,7 @@
   "operationName": "Healthcheck",
   "method": "GET",
   "uri": "/health",
+  "s2sClientId": "xui_webapp",
   "specs": [
     "has the 200 OK code"
   ],

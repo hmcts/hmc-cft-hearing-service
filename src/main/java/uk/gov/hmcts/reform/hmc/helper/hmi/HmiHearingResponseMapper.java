@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
@@ -24,8 +23,12 @@ import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_LISTING;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
@@ -40,10 +43,12 @@ public class HmiHearingResponseMapper {
         List<HearingSession> hearingSessions = hearing.getHearing().getHearingSessions();
         if (hearingSessions != null && !hearingSessions.isEmpty()) {
 
+            List<HearingSession> uniqueHearingSessionsPerDay = findUniqueHearingSessionsPerDay(hearingSessions);
+
             // put total attendees and panels here to save later?
             List<HearingDayDetailsEntity> hearingDayDetailsEntitiesList = new ArrayList<>();
 
-            for (HearingSession hearingSession : hearingSessions) {
+            for (HearingSession hearingSession : uniqueHearingSessionsPerDay) {
                 List<HearingDayDetailsEntity> hearingDayDetailsEntities =
                     mapHearingDayDetailsFromSessionDetails(hearingSession);
                 List<HearingAttendeeDetailsEntity> hearingAttendeeDetailsEntities =
@@ -76,6 +81,25 @@ public class HmiHearingResponseMapper {
         hearingEntity.getHearingResponses().add(hearingResponseEntity);
         hearingEntity.setStatus(getHearingStatus(hearing, hearingEntity).name());
         return hearingEntity;
+    }
+
+    private List<HearingSession> findUniqueHearingSessionsPerDay(List<HearingSession> hearingSessions) {
+
+        final Map<LocalDateTime, List<HearingSession>> uniqueDays = hearingSessions.stream()
+                .collect(
+                        Collectors.groupingBy(hearingSession ->
+                                hearingSession.getHearingStartTime().truncatedTo(DAYS)));
+
+        return uniqueDays.keySet().stream().map(date -> {
+            HearingSession hearingSessionWithEarliestStartTime =
+                    uniqueDays.get(date).stream().min(Comparator.comparing(HearingSession::getHearingStartTime)).get();
+            HearingSession hearingSessionWithLatestEndTime =
+                    uniqueDays.get(date).stream().max(Comparator.comparing(HearingSession::getHearingEndTime)).get();
+
+            hearingSessionWithEarliestStartTime.setHearingEndTime(hearingSessionWithLatestEndTime.getHearingEndTime());
+
+            return hearingSessionWithEarliestStartTime;
+        }).collect(Collectors.toList());
     }
 
     private void setHearingDayDetails(HearingResponseEntity hearingResponseEntity,
@@ -128,8 +152,7 @@ public class HmiHearingResponseMapper {
             hmcHearingUpdate.setHearingResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
             hmcHearingUpdate.setHearingEventBroadcastDateTime(LocalDateTime.now(Clock.systemUTC()));
             if (hearingResponseEntity.getListingStatus() != null) {
-                hmcHearingUpdate.setHearingListingStatus(
-                    ListingStatus.valueOf(hearingResponseEntity.getListingStatus()));
+                hmcHearingUpdate.setHearingListingStatus(hearingResponseEntity.getListingStatus());
             }
             hmcHearingUpdate.setNextHearingDate(hearingResponseEntity.getHearingDayDetails().get(0).getStartDateTime());
             hmcHearingUpdate.setHearingVenueId(hearingResponseEntity.getHearingDayDetails().get(0).getVenueId());
@@ -278,7 +301,7 @@ public class HmiHearingResponseMapper {
         hearingResponseEntity.setRequestVersion(hearingResponse.getHearing().getHearingCaseVersionId());
         if (hearingResponse.getHearing().getHearingStatus() != null
             && hearingResponse.getHearing().getHearingStatus().getCode() != null) {
-            hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode().name());
+            hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode());
         }
         hearingResponseEntity.setCancellationReasonType(hearingResponse.getHearing().getHearingCancellationReason());
         hearingResponseEntity.setTranslatorRequired(hearingResponse.getHearing().getHearingTranslatorRequired());

@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayParties;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPartyDetail;
@@ -64,9 +63,11 @@ import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.RequirementType;
+import uk.gov.hmcts.reform.hmc.model.RoomAttribute;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -75,6 +76,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
@@ -441,6 +443,26 @@ public class TestingUtil {
         requestDetails.setVersionNumber(1);
         request.setRequestDetails(requestDetails);
         return request;
+    }
+
+    public static Entity getEntity(List<String> reasonableAdjustment) {
+        return Entity.builder()
+            .entityId("entityId")
+            .entityOtherConsiderations(reasonableAdjustment)
+            .build();
+    }
+
+    public static Optional<RoomAttribute> getRoomAttribute(String roomAttributeCode,
+                                                           String roomAttributeName,
+                                                           String reasonableAdjustmentCode,
+                                                           Boolean facility) {
+        RoomAttribute roomAttribute = RoomAttribute.builder()
+            .roomAttributeCode(roomAttributeCode)
+            .roomAttributeName(roomAttributeName)
+            .reasonableAdjustmentCode(reasonableAdjustmentCode)
+            .facility(facility)
+            .build();
+        return Optional.of(roomAttribute);
     }
 
     public static CaseDetails caseDetails() {
@@ -917,7 +939,7 @@ public class TestingUtil {
         entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00"));
         entity.setHearingResponseId(2L);
         entity.setRequestVersion(10);
-        entity.setListingStatus(ListingStatus.FIXED.name());
+        entity.setListingStatus("Fixed");
         entity.setListingCaseStatus(ListAssistCaseStatus.CASE_CREATED.name());
         entity.setCancellationReasonType("Cancelled Reason 1");
         entity.setHearingDayDetails(List.of(hearingDayDetailsEntity()));
@@ -931,7 +953,7 @@ public class TestingUtil {
         entity.setRequestVersion(requestVersion);
         entity.setRequestTimeStamp(requestTimestamp);
         entity.setHearingResponseId(2L);
-        entity.setListingStatus(ListingStatus.FIXED.name());
+        entity.setListingStatus("Fixed");
         entity.setListingCaseStatus(ListAssistCaseStatus.CASE_CREATED.name());
         entity.setCancellationReasonType("Cancelled Reason 1");
         entity.setHearingDayDetails(hearingDayDetailsEntities);
@@ -1032,7 +1054,7 @@ public class TestingUtil {
         return entity;
     }
 
-    private static PartyRelationshipDetailsEntity partyRelationshipDetailsEntity(String targetTechPartyId,
+    public static PartyRelationshipDetailsEntity partyRelationshipDetailsEntity(String targetTechPartyId,
                                                                                  String relationshipType) {
 
         HearingPartyEntity targetHearingPartyEntity = new HearingPartyEntity();
