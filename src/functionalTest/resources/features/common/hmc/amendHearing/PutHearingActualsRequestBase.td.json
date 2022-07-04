@@ -47,7 +47,6 @@
                 "firstName": "WitnessForeName1",
                 "lastName": "WitnessLastName1"
               },
-              "actualOrganisationName": "<actualOrganisationName>",
               "partyChannelSubType": "claiming party",
               "didNotAttendFlag": "false",
               "representedParty": null

@@ -1,13 +1,14 @@
 {
-  "_guid_": "S-007.1",
-  "_extends_" : "PutHearingActualsRequestBase",
-
+  "_guid_": "CreateHearingActualRequest",
+  "_extends_" : "CreateHearingRequestBase",
   "specs": [
-    "an active profile in CCD",
-    "has the 201 code",
-    "UPDATE_REQUESTED"
+    "to create a hearing actual request"
   ],
-
+  "request": {
+    "body": {
+      "_extends_": "createHearingRequestFullData"
+    }
+  },
   "expectedResponse": {
     "responseCode": 201,
     "responseMessage": "OK",
@@ -17,11 +18,11 @@
       "Date": "[[ANYTHING_PRESENT]]",
       "Request-Context": "[[ANY_NULLABLE]]"
     },
-    "body" : {
+    "body": {
       "hearingRequestID": "[[ANYTHING_PRESENT]]",
       "status": "UPDATE_REQUESTED",
       "timeStamp": "[[ANYTHING_PRESENT]]",
-      "versionNumber": 2
+      "versionNumber": 1
     }
   }
 }
