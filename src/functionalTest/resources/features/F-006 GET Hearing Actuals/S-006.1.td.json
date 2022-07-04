@@ -28,7 +28,7 @@
       "hmcStatus" : "HEARING_REQUESTED",
       "caseDetails" : {
         "hmctsServiceCode" : "ABA1",
-        "caseRef" : "1656935505578767",
+        "caseRef" : "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
         "externalCaseReference" : "EXT/REF123",
         "caseDeepLink" : "https://www.google.com",
         "hmctsInternalCaseName" : "Internal case name",
