@@ -4,7 +4,7 @@
 
   "specs": [
     "an active profile in CCD",
-    "has 401 status code"
+    "has 403 status code"
   ],
 
   "users": {
