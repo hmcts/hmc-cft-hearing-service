@@ -366,7 +366,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validateHearingDetails(HearingDetails hearingDetails) {
-        validateHearingWindow(hearingDetails);
+        if (hearingDetails.getHearingWindow() != null) {
+            validateHearingWindow(hearingDetails);
+        }
         validateHearingChannels(hearingDetails);
 
         if (hearingDetails.getDuration() % 5 != 0) {

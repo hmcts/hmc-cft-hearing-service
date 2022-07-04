@@ -310,6 +310,32 @@ class ListingMapperTest {
         assertEquals(COURT, listingLocations.get(0).getLocationType());
     }
 
+    @Test
+    void shouldReturnListingIfHearingWindowNotPresent() {
+        HearingDetails hearingDetails = buildHearingDetailsWithNoHearingWindow(2165);
+        Listing listing = listingMapper.getListing(hearingDetails,null);
+        assertNull(listing.getListingDate());
+        assertNull(listing.getListingStartDate());
+        assertNull(listing.getListingEndDate());
+        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
+        assertEquals(1, listing.getListingMultiDay().getWeeks());
+        assertEquals(1, listing.getListingMultiDay().getDays());
+        assertEquals(5, listing.getListingMultiDay().getHours());
+    }
+
+    private HearingDetails buildHearingDetailsWithNoHearingWindow(int duration) {
+        PanelRequirements panelRequirements = new PanelRequirements();
+        PanelPreference panelPreference = new PanelPreference();
+        panelRequirements.setPanelPreferences(Collections.singletonList(panelPreference));
+        panelRequirements.setRoleType(null);
+        HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
+        hearingDetails.setPanelRequirements(panelRequirements);
+        hearingDetails.setPanelRequirements(panelRequirements);
+        hearingDetails.setHearingWindow(null);
+        hearingDetails.setDuration(duration);
+        return hearingDetails;
+    }
+
     private HearingDetails buildHearingDetails(int duration) {
         HearingDetails hearingDetails = TestingUtil.hearingDetailsWithAllFields();
         hearingDetails.setDuration(duration);

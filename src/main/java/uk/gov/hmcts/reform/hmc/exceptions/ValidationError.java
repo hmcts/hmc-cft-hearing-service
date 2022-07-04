@@ -9,7 +9,6 @@ public final class ValidationError {
     public static final String AUTO_LIST_FLAG_NULL_EMPTY = "Auto list flag can not be null or empty";
     public static final String HEARING_TYPE_NULL_EMPTY = "Hearing type can not be null or empty";
     public static final String HEARING_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;
-    public static final String HEARING_WINDOW_NULL = "Hearing window can not be null";
     public static final String DURATION_EMPTY = "Duration can not be empty";
     public static final String NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG = "Non standard hearing duration "
         + "reasons length cannot be greater than 70 " + CHARACTERS_LONG;

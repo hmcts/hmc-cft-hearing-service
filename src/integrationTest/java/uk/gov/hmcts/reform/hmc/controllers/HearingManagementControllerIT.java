@@ -114,7 +114,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_TYPE_MA
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_TYPE_NULL_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_DETAILS_ARE_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_EMPTY_NULL;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_NULL;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_INTERNAL_CASE_NAME_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_INTERNAL_CASE_NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_SERVICE_CODE_EMPTY_INVALID;
@@ -924,9 +923,9 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(9)))
+            .andExpect(jsonPath("$.errors", hasSize(8)))
             .andExpect(jsonPath("$.errors", hasItems(AUTO_LIST_FLAG_NULL_EMPTY, HEARING_TYPE_NULL_EMPTY,
-                                                     HEARING_WINDOW_NULL, DURATION_EMPTY, HEARING_PRIORITY_TYPE,
+                                                      DURATION_EMPTY, HEARING_PRIORITY_TYPE,
                                                      HEARING_LOCATION_EMPTY, INVALID_HEARING_LOCATION,
                                                      INVALID_PANEL_REQUIREMENTS,
                                                      HEARING_CHANNEL_EMPTY
@@ -1446,6 +1445,17 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(post(hearingCompletion + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn200WhenHearingWindowIsNotPresent() throws Exception {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequestWithoutHearingWindow(1);
+        mockMvc.perform(put(url + "/2000000000")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(201))
             .andReturn();
     }
 }

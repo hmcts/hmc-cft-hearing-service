@@ -41,7 +41,6 @@ public class ListingMapper {
             .listingAutoCreateFlag(hearingDetails.getAutoListFlag())
             .listingPriority(hearingDetails.getHearingPriorityType())
             .listingType(hearingDetails.getHearingType())
-            .listingDate(hearingDetails.getHearingWindow().getFirstDateTimeMustBe())
             .listingNumberAttendees(hearingDetails.getNumberOfPhysicalAttendees())
             .listingComments(hearingDetails.getListingComments())
             .listingRequestedBy(hearingDetails.getHearingRequester())
@@ -53,11 +52,14 @@ public class ListingMapper {
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
             .build();
 
-        if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
-            listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
-        }
-        if (hearingDetails.getHearingWindow().getDateRangeEnd() != null) {
-            listing.setListingEndDate(hearingDetails.getHearingWindow().getDateRangeEnd());
+        if (hearingDetails.getHearingWindow() != null) {
+            listing.setListingDate(hearingDetails.getHearingWindow().getFirstDateTimeMustBe());
+            if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
+                listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
+            }
+            if (hearingDetails.getHearingWindow().getDateRangeEnd() != null) {
+                listing.setListingEndDate(hearingDetails.getHearingWindow().getDateRangeEnd());
+            }
         }
         if (hearingDetails.getPanelRequirements().getRoleType() != null && !hearingDetails
             .getPanelRequirements().getRoleType().isEmpty()) {
