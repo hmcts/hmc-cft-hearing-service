@@ -223,7 +223,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             hearingResponse.setReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
             hearingResponse.setLaCaseStatus(hearingResponseEntity.getListingCaseStatus());
             if (hearingResponseEntity.getListingStatus() != null) {
-                hearingResponse.setListingStatus(ListingStatus.getLabel(hearingResponseEntity.getListingStatus()));
+                hearingResponse.setListingStatus(hearingResponseEntity.getListingStatus());
             }
             hearingResponse.setHearingCancellationReason(hearingResponseEntity.getCancellationReasonType());
             setHearingDaySchedule(hearingResponse, List.of(hearingResponseEntity));

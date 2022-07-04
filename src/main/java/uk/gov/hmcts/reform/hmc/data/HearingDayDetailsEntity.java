@@ -31,6 +31,8 @@ import javax.persistence.Table;
         @PrimaryKeyJoinColumn(name = "hearing_response_id")})
 public class HearingDayDetailsEntity extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -7404453999051585377L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "hearing_day_id_seq")

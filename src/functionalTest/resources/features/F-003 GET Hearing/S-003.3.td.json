@@ -1,0 +1,23 @@
+{
+  "_guid_": "S-003.3",
+  "_extends_": "GetHearingRequestBase",
+  "specs": [
+    "has the 404 code",
+    "an active profile in CCD",
+    "tries to get a non extant hearing",
+    "uses the query param isValid=true"
+  ],
+  "request": {
+    "pathVariables": {
+      "hearingID": "2900000099"
+    }
+  },
+  "expectedResponse": {
+    "responseCode": 404,
+    "responseMessage": "NOT FOUND",
+    "body" : {
+      "status" : "NOT_FOUND",
+      "errors" : [ "No hearing found for reference: 2900000099" ]
+    }
+  }
+}
