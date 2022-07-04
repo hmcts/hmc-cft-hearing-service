@@ -313,7 +313,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingIfHearingWindowNotPresent() {
         HearingDetails hearingDetails = buildHearingDetailsWithNoHearingWindow(2165);
-        Listing listing = listingMapper.getListing(hearingDetails);
+        Listing listing = listingMapper.getListing(hearingDetails,null);
         assertNull(listing.getListingDate());
         assertNull(listing.getListingStartDate());
         assertNull(listing.getListingEndDate());

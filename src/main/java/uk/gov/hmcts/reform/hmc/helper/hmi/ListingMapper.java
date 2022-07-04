@@ -52,11 +52,6 @@ public class ListingMapper {
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
             .build();
 
-        if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
-            listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
-        }
-        if (hearingDetails.getHearingWindow().getDateRangeEnd() != null) {
-            listing.setListingEndDate(hearingDetails.getHearingWindow().getDateRangeEnd());
         if (hearingDetails.getHearingWindow() != null) {
             listing.setListingDate(hearingDetails.getHearingWindow().getFirstDateTimeMustBe());
             if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
