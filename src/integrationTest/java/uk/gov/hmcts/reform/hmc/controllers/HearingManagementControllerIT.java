@@ -330,8 +330,7 @@ class HearingManagementControllerIT extends BaseTest {
         unavailabilityDowMonday.setDow("Monday");
         unavailabilityDowMonday.setDowUnavailabilityType(DayOfWeekUnAvailableType.ALL.label);
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
-        createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
-        createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
         stubSuccessfullyValidateHearingObject(createHearingRequest);
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
             .caseTypeId(CASE_TYPE)
