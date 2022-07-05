@@ -329,7 +329,7 @@ class HearingManagementControllerIT extends BaseTest {
         UnavailabilityDow unavailabilityDowMonday = new UnavailabilityDow();
         unavailabilityDowMonday.setDow("Monday");
         unavailabilityDowMonday.setDowUnavailabilityType(DayOfWeekUnAvailableType.ALL.label);
-        createHearingRequest.getPartyDetails().get(0).setUnavailabilityDow(List.of(unavailabilityDowMonday));
+        createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         stubSuccessfullyValidateHearingObject(createHearingRequest);
@@ -359,7 +359,7 @@ class HearingManagementControllerIT extends BaseTest {
         createHearingRequest.setCaseDetails(TestingUtil.getValidCaseDetails());
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
-        createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetailsIdNull());
+        createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
         stubSuccessfullyValidateHearingObject(createHearingRequest);
         RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(ROLE_NAME);
@@ -441,7 +441,7 @@ class HearingManagementControllerIT extends BaseTest {
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
-        createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+        createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil
                                                                                .relatedPartyMandatoryFieldMissing());
         stubReturn400WhileValidateHearingObject(createHearingRequest);
@@ -1354,7 +1354,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.setCaseDetails(TestingUtil.getValidCaseDetails());
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
-        hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getHearingDetails().setListingComments("a".repeat(2000));
         hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
             .get(0).setRelatedPartyID(partyId);

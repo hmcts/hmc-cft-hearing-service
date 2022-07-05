@@ -335,6 +335,46 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
+    void testUpdateHearingRequest_WhenIndividualDetailsAreInvalid() {
+        UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
+        request.setPartyDetails(TestingUtil.partyDetails());
+        request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        request.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.updateHearingRequest(2000000024L, request);
+        });
+        assertEquals(MISSING_INDIVIDUAL_DETAILS, exception.getMessage());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
+    void testUpdateHearingRequest_WhenPartyDetailsAreValid() {
+        UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
+        request.setPartyDetails(TestingUtil.partyDetails());
+        request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        request.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        HearingResponse response = hearingManagementService.updateHearingRequest(2000000024L, request);
+        assertEquals(2000000024L, response.getHearingRequestId());
+        assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
+        assertEquals(2, response.getVersionNumber());
+        assertNotNull(response.getTimeStamp());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
+    void testUpdateHearingRequest_WhenOrganisationDetailsAreInvalid() {
+        UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
+        request.setPartyDetails(TestingUtil.partyDetailsWithOrgType());
+        request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        request.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.updateHearingRequest(2000000024L, request);
+        });
+        assertEquals(MISSING_ORGANISATION_DETAILS, exception.getMessage());
+    }
+
+    @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
     void testUpdateHearingCompletion_WithValidData() {
         ResponseEntity responseEntity = hearingManagementService.hearingCompletion(2000000000L);
