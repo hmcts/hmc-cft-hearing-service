@@ -9,7 +9,6 @@ public final class ValidationError {
     public static final String AUTO_LIST_FLAG_NULL_EMPTY = "Auto list flag can not be null or empty";
     public static final String HEARING_TYPE_NULL_EMPTY = "Hearing type can not be null or empty";
     public static final String HEARING_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;
-    public static final String HEARING_WINDOW_NULL = "Hearing window can not be null";
     public static final String DURATION_EMPTY = "Duration can not be empty";
     public static final String NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG = "Non standard hearing duration "
         + "reasons length cannot be greater than 70 " + CHARACTERS_LONG;
@@ -260,7 +259,6 @@ public final class ValidationError {
     public static final String REJECTED_BY_LIST_ASSIST = "005 rejected by List Assist";
     public static final String LIST_ASSIST_FAILED_TO_RESPOND = "006 List Assist failed to respond";
     public static final String LIST_ASSIST_CASE_STATUS_NULL = "List assist case status can not be null or empty";
-    public static final String INVALID_DURATION_DETAILS = "Invalid duration details";
     public static final String AMEND_REASON_CODE_MAX_LENGTH = "Amend reason code must be at least 1 but no more than "
         + "70 " + CHARACTERS_LONG;
     public static final String INVALID_AMEND_REASON_CODE = "Amend reason code details are required";

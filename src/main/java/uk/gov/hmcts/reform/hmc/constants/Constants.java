@@ -35,6 +35,7 @@ public final class Constants {
     public static final String LIST_ASSIST_SUCCESSFUL_RESPONSE = "Response received from ListAssist successfully";
     public static final String CANCEL = "CNCL";
     public static final String AMEND_REASON_CODE = "AMEND";
+    public static final String HMCTS_SERVICE_ID = "hmctsServiceId";
     public static final String PARTY_DETAIL_INDIVIDUAL_PARTY_TYPE = "IND";
     public static final String PARTY_DETAIL_ORGANISATION_PARTY_TYPE = "ORG";
 }

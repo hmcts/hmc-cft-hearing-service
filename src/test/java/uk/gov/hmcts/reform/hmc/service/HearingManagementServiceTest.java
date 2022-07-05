@@ -255,10 +255,10 @@ class HearingManagementServiceTest {
             String json = "{\"query\": {\"match\": \"blah blah\"}}";
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any());
-            hearingManagementService.sendResponse(json);
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any(), any());
+            hearingManagementService.sendResponse(json, "test hmctsCode");
             verify(objectMapperService, times(1)).convertObjectToJsonNode(any());
-            verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any());
+            verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any(), any());
         }
     }
 

@@ -73,7 +73,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_EMPTY_NULL;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DURATION_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
@@ -380,12 +379,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void validateHearingDetails(HearingDetails hearingDetails) {
-        validateHearingWindow(hearingDetails);
-        validateHearingChannels(hearingDetails);
-
-        if (hearingDetails.getDuration() % 5 != 0) {
-            throw new BadRequestException(INVALID_DURATION_DETAILS);
+        if (hearingDetails.getHearingWindow() != null) {
+            validateHearingWindow(hearingDetails);
         }
+        validateHearingChannels(hearingDetails);
     }
 
     private void validateHearingWindow(HearingDetails hearingDetails) {
@@ -467,13 +464,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public void sendResponse(String json) {
-        sendRspToTopic(json);
+    public void sendResponse(String json, String hmctsServiceId) {
+        sendRspToTopic(json, hmctsServiceId);
     }
 
-    private void sendRspToTopic(Object response) {
+    private void sendRspToTopic(Object response, String hmctsServiceId) {
         var jsonNode = objectMapperService.convertObjectToJsonNode(response);
-        messageSenderToTopicConfiguration.sendMessage(jsonNode.toString());
+        messageSenderToTopicConfiguration.sendMessage(jsonNode.toString(), hmctsServiceId);
     }
 
     private void sendRequestToQueue(HmiSubmitHearingRequest hmiSubmitHearingRequest, Long hearingId,

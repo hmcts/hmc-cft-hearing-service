@@ -140,7 +140,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             hearingRepository.save(hearingToSave);
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingToSave);
             messageSenderToTopicConfiguration
-                .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString());
+                .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
+                             hmcHearingResponse.getHmctsServiceCode());
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
                 //Service bus session has to completed first else it will try to re process the message
                 client.complete(message);
@@ -163,7 +164,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             if (hearingEntity.isPresent()) {
                 HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity.get());
                 messageSenderToTopicConfiguration
-                    .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString());
+                    .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
+                                 hmcHearingResponse.getHmctsServiceCode());
             }
         }
     }
@@ -179,7 +181,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             HearingEntity hearingEntity = hearingRepository.save(hearingToSave);
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
             messageSenderToTopicConfiguration
-                .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString());
+                .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
+                             hmcHearingResponse.getHmctsServiceCode());
             if (hearingEntity.getStatus().equals(HearingStatus.EXCEPTION.name())) {
                 log.error("Hearing id: " +  hearingId + " updated to status Exception");
             }
