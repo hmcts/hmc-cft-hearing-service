@@ -1240,7 +1240,7 @@ class HearingManagementControllerIT extends BaseTest {
         UpdateHearingRequest hearingRequest = TestingUtil.validUpdateHearingRequest();
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
-        hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
+        hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
             .get(0).setRelatedPartyID("unknown");
         hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
