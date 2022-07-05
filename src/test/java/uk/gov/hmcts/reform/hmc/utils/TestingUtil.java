@@ -1164,7 +1164,7 @@ public class TestingUtil {
 
         PartyDetails partyDetails2 = new PartyDetails();
         partyDetails2.setPartyID("P2");
-        partyDetails2.setPartyType("IND");
+        partyDetails2.setPartyType("ORG");
         partyDetails2.setPartyRole("DEF2");
         if (isCftOrganisationIdNull) {
             partyDetails2.setOrganisationDetails(organisationDetailsIdNull());
