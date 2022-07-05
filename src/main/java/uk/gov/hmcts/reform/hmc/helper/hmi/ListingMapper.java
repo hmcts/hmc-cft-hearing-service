@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
 import io.jsonwebtoken.lang.Collections;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.constants.Constants;
@@ -41,7 +42,6 @@ public class ListingMapper {
             .listingAutoCreateFlag(hearingDetails.getAutoListFlag())
             .listingPriority(hearingDetails.getHearingPriorityType())
             .listingType(hearingDetails.getHearingType())
-            .listingDate(hearingDetails.getHearingWindow().getFirstDateTimeMustBe())
             .listingNumberAttendees(hearingDetails.getNumberOfPhysicalAttendees())
             .listingComments(hearingDetails.getListingComments())
             .listingRequestedBy(hearingDetails.getHearingRequester())
@@ -51,14 +51,16 @@ public class ListingMapper {
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
-            .listingWelshHearingFlag(hearingDetails.getHearingInWelshFlag())
             .build();
 
-        if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
-            listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
-        }
-        if (hearingDetails.getHearingWindow().getDateRangeEnd() != null) {
-            listing.setListingEndDate(hearingDetails.getHearingWindow().getDateRangeEnd());
+        if (hearingDetails.getHearingWindow() != null) {
+            listing.setListingDate(hearingDetails.getHearingWindow().getFirstDateTimeMustBe());
+            if (hearingDetails.getHearingWindow().getDateRangeStart() != null) {
+                listing.setListingStartDate(hearingDetails.getHearingWindow().getDateRangeStart());
+            }
+            if (hearingDetails.getHearingWindow().getDateRangeEnd() != null) {
+                listing.setListingEndDate(hearingDetails.getHearingWindow().getDateRangeEnd());
+            }
         }
         if (hearingDetails.getPanelRequirements().getRoleType() != null && !hearingDetails
             .getPanelRequirements().getRoleType().isEmpty()) {
@@ -103,7 +105,9 @@ public class ListingMapper {
     }
 
     private int getHours(Integer hearingDetailsDuration, int weeks, int days) {
-        return hearingDetailsDuration - (weeks * 360 * 5) - (days * 360);
+        val valueInMinutes = hearingDetailsDuration - (weeks * 360 * 5) - (days * 360);
+        val result = (valueInMinutes % 60 == 0) ? valueInMinutes / 60 : Math.floor(valueInMinutes / 60) + 1;
+        return Double.valueOf(result).intValue();
     }
 
     private int getDays(Integer hearingDetailsDuration, int weeks) {

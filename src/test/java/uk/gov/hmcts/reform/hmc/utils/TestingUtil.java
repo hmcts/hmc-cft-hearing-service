@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayParties;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPartyDetail;
@@ -940,7 +939,7 @@ public class TestingUtil {
         entity.setRequestTimeStamp(LocalDateTime.parse("2020-08-10T12:20:00"));
         entity.setHearingResponseId(2L);
         entity.setRequestVersion(10);
-        entity.setListingStatus(ListingStatus.FIXED.name());
+        entity.setListingStatus("Fixed");
         entity.setListingCaseStatus(ListAssistCaseStatus.CASE_CREATED.name());
         entity.setCancellationReasonType("Cancelled Reason 1");
         entity.setHearingDayDetails(List.of(hearingDayDetailsEntity()));
@@ -954,7 +953,7 @@ public class TestingUtil {
         entity.setRequestVersion(requestVersion);
         entity.setRequestTimeStamp(requestTimestamp);
         entity.setHearingResponseId(2L);
-        entity.setListingStatus(ListingStatus.FIXED.name());
+        entity.setListingStatus("Fixed");
         entity.setListingCaseStatus(ListAssistCaseStatus.CASE_CREATED.name());
         entity.setCancellationReasonType("Cancelled Reason 1");
         entity.setHearingDayDetails(hearingDayDetailsEntities);
@@ -1378,5 +1377,37 @@ public class TestingUtil {
         return pauseDayTime;
     }
 
+    public static UpdateHearingRequest updateHearingRequestWithoutHearingWindow(int version) {
+        UpdateHearingRequest request = new UpdateHearingRequest();
+        HearingDetails hearingDetails = hearingDetailsWithoutHearingWindow();
+        hearingDetails.setAmendReasonCodes(List.of("reason 1", "reason 2"));
+        request.setHearingDetails(hearingDetails);
+        CaseDetails caseDetails = getValidCaseDetails();
+        request.setCaseDetails(caseDetails);
+        request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        RequestDetails requestDetails = new RequestDetails();
+        requestDetails.setVersionNumber(1);
+        request.setRequestDetails(requestDetails);
+        return request;
+    }
+
+    public static HearingDetails hearingDetailsWithoutHearingWindow() {
+        HearingDetails hearingDetails = new HearingDetails();
+        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setHearingType("Some hearing type");
+        hearingDetails.setDuration(360);
+        hearingDetails.setNonStandardHearingDurationReasons(List.of("First reason", "Second reason"));
+        hearingDetails.setHearingPriorityType("Priority type");
+        hearingDetails.setHearingIsLinkedFlag(Boolean.TRUE);
+        hearingDetails.setHearingChannels(getHearingChannelsList());
+        HearingLocation location1 = new HearingLocation();
+        location1.setLocationType(LocationType.CLUSTER.getLabel());
+        location1.setLocationId("Location Id");
+        List<HearingLocation> hearingLocations = new ArrayList<>();
+        hearingLocations.add(location1);
+        hearingDetails.setHearingLocations(hearingLocations);
+        hearingDetails.setFacilitiesRequired(List.of("facility1", "facility2"));
+        return hearingDetails;
+    }
 }
 

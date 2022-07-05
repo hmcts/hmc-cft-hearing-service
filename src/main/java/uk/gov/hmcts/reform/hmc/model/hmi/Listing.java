@@ -57,7 +57,5 @@ public class Listing {
 
     private ListingMultiDay listingMultiDay;
 
-    private Boolean listingWelshHearingFlag;
-
     private List<String> roomAttributes;
 }
