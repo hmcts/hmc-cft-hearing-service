@@ -5,7 +5,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
-import com.azure.messaging.servicebus.ServiceBusReceiverClient;
+import com.azure.messaging.servicebus.ServiceBusReceivedMessageContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +37,8 @@ import static java.time.LocalDateTime.parse;
 import static java.util.stream.StreamSupport.stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 class MessageProcessorIT extends BaseTest {
 
@@ -50,8 +52,7 @@ class MessageProcessorIT extends BaseTest {
     private ServiceBusReceivedMessage message;
 
     @Mock
-    private ServiceBusReceiverClient client;
-
+    private ServiceBusReceivedMessageContext messageContext = mock(ServiceBusReceivedMessageContext.class);
 
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
         .modules(new Jdk8Module())
@@ -217,7 +218,14 @@ class MessageProcessorIT extends BaseTest {
         logger.addAppender(listAppender);
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
-        messageProcessor.processMessage(jsonNode, applicationProperties, client, message);
+
+        given(messageContext.getMessage()).willReturn(message);
+        given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+        try {
+            messageProcessor.processMessage(jsonNode, messageContext);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(2, logsList.size());
@@ -249,7 +257,10 @@ class MessageProcessorIT extends BaseTest {
                                                             + " \"errDesc\": \"unable to create case\"\n"
                                                             + "}");
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
-        messageProcessor.processMessage(errorJsonNode, applicationProperties, client, message);
+
+        given(messageContext.getMessage()).willReturn(message);
+        given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+        messageProcessor.processMessage(errorJsonNode, messageContext);
 
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(2, logsList.size());
@@ -280,7 +291,14 @@ class MessageProcessorIT extends BaseTest {
         loggerMessageProcessor.addAppender(listAppenderMessageProcessor);
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
-        messageProcessor.processMessage(jsonMisMatchOnRequestVersion, applicationProperties, client, message);
+
+        given(messageContext.getMessage()).willReturn(message);
+        given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+        try {
+            messageProcessor.processMessage(jsonMisMatchOnRequestVersion, messageContext);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(4, logsList.size());
@@ -319,7 +337,14 @@ class MessageProcessorIT extends BaseTest {
         loggerMessageProcessor.addAppender(listAppenderMessageProcessor);
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
-        messageProcessor.processMessage(jsonNode, applicationProperties, client, message);
+
+        given(messageContext.getMessage()).willReturn(message);
+        given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+        try {
+            messageProcessor.processMessage(jsonNode, messageContext);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(0, logsList.size());
@@ -348,7 +373,14 @@ class MessageProcessorIT extends BaseTest {
         loggerMessageProcessor.addAppender(listAppenderMessageProcessor);
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
-        messageProcessor.processMessage(jsonNode, applicationProperties, client, message);
+
+        given(messageContext.getMessage()).willReturn(message);
+        given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+        try {
+            messageProcessor.processMessage(jsonNode, messageContext);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(2, logsList.size());
@@ -380,7 +412,14 @@ class MessageProcessorIT extends BaseTest {
         loggerMessageProcessor.addAppender(listAppenderMessageProcessor);
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
-        messageProcessor.processMessage(jsonNode, applicationProperties, client, message);
+
+        given(messageContext.getMessage()).willReturn(message);
+        given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+        try {
+            messageProcessor.processMessage(jsonNode, messageContext);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
@@ -412,7 +451,14 @@ class MessageProcessorIT extends BaseTest {
         loggerMessageProcessor.addAppender(listAppenderMessageProcessor);
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
-        messageProcessor.processMessage(jsonNode, applicationProperties, client, message);
+
+        given(messageContext.getMessage()).willReturn(message);
+        given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+        try {
+            messageProcessor.processMessage(jsonNode, messageContext);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(3, logsList.size());
