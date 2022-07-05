@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
 import io.jsonwebtoken.lang.Collections;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.constants.Constants;
@@ -104,7 +105,9 @@ public class ListingMapper {
     }
 
     private int getHours(Integer hearingDetailsDuration, int weeks, int days) {
-        return hearingDetailsDuration - (weeks * 360 * 5) - (days * 360);
+        val valueInMinutes = hearingDetailsDuration - (weeks * 360 * 5) - (days * 360);
+        val result = (valueInMinutes % 60 == 0) ? valueInMinutes / 60 : Math.floor(valueInMinutes / 60) + 1;
+        return Double.valueOf(result).intValue();
     }
 
     private int getDays(Integer hearingDetailsDuration, int weeks) {

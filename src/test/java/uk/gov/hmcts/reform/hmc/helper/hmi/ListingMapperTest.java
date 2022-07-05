@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
+import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
@@ -152,7 +154,7 @@ class ListingMapperTest {
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(0, listing.getListingMultiDay().getWeeks());
         assertEquals(1, listing.getListingMultiDay().getDays());
-        assertEquals(5, listing.getListingMultiDay().getHours());
+        assertEquals(1, listing.getListingMultiDay().getHours());
         assertEquals(LOCAL_DATE_TIME, listing.getListingDate());
         assertEquals(4, listing.getListingNumberAttendees());
         assertEquals(LISTING_COMMENTS, listing.getListingComments());
@@ -218,7 +220,7 @@ class ListingMapperTest {
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(1, listing.getListingMultiDay().getWeeks());
         assertEquals(1, listing.getListingMultiDay().getDays());
-        assertEquals(5, listing.getListingMultiDay().getHours());
+        assertEquals(1, listing.getListingMultiDay().getHours());
     }
 
     @Test
@@ -272,7 +274,7 @@ class ListingMapperTest {
         hearingDetails.setFacilitiesRequired(List.of("RoomCode1"));
         Optional<RoomAttribute> roomAttribute =
             TestingUtil.getRoomAttribute("RoomCode1", "Name1",
-                "ReasonableAdjustment1", false);
+                                         "ReasonableAdjustment1", false);
 
         when(roomAttributesService.findByRoomAttributeCode("RoomCode1"))
             .thenReturn(roomAttribute);
@@ -287,7 +289,7 @@ class ListingMapperTest {
         hearingDetails.setFacilitiesRequired(List.of("randomReasonableAdjustment"));
         Optional<RoomAttribute> roomAttribute =
             TestingUtil.getRoomAttribute("RoomCode1", "Name1",
-                "ReasonableAdjustment1", false);
+                                         "ReasonableAdjustment1", false);
         when(roomAttributesService.findByRoomAttributeCode("randomReasonableAdjustment"))
             .thenReturn(Optional.empty());
         when(roomAttributesService.findByReasonableAdjustmentCode("randomReasonableAdjustment"))
@@ -320,7 +322,7 @@ class ListingMapperTest {
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
         assertEquals(1, listing.getListingMultiDay().getWeeks());
         assertEquals(1, listing.getListingMultiDay().getDays());
-        assertEquals(5, listing.getListingMultiDay().getHours());
+        assertEquals(1, listing.getListingMultiDay().getHours());
     }
 
     private HearingDetails buildHearingDetailsWithNoHearingWindow(int duration) {
@@ -362,5 +364,36 @@ class ListingMapperTest {
 
     private Listing buildListing(HearingDetails hearingDetails,Entity entity) {
         return listingMapper.getListing(hearingDetails,List.of(entity));
+    }
+
+
+    @Test
+    void shouldReturnListingForMultiDayHearingDurationWithManyValues() {
+
+        testCalculatedListingForDurationValue(361, 0, 1, 1);
+        testCalculatedListingForDurationValue(369, 0, 1, 1);
+        testCalculatedListingForDurationValue(725, 0, 2, 1);
+        testCalculatedListingForDurationValue(730, 0, 2, 1);
+        testCalculatedListingForDurationValue(425, 0, 1, 2);
+        testCalculatedListingForDurationValue(476, 0, 1, 2);
+        testCalculatedListingForDurationValue(485, 0, 1, 3);
+    }
+
+    private void testCalculatedListingForDurationValue(Integer duration,
+                                                       Integer expectedWeeks,
+                                                       Integer expectedDays,
+                                                       Integer expectedHours
+    ) {
+        val listing = getListing(duration);
+        assertEquals(DURATION_OF_DAY, listing.getListingDuration());
+        assertEquals(expectedWeeks, listing.getListingMultiDay().getWeeks());
+        assertEquals(expectedDays, listing.getListingMultiDay().getDays());
+        assertEquals(expectedHours, listing.getListingMultiDay().getHours());
+    }
+
+    private Listing getListing(int duration) {
+        val hearingDetails = buildHearingDetails(HearingMapper.roundUpDuration(duration));
+        Listing listing = listingMapper.getListing(hearingDetails, null);
+        return listing;
     }
 }
