@@ -218,12 +218,26 @@ public class TestingUtil {
     public static List<PartyDetails> partyDetails() {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
-        partyDetails1.setPartyType("ind");
+        partyDetails1.setPartyType("IND");
         partyDetails1.setPartyRole("DEF");
 
         PartyDetails partyDetails2 = new PartyDetails();
         partyDetails2.setPartyID("P2");
         partyDetails2.setPartyType("IND");
+        partyDetails2.setPartyRole("DEF2");
+
+        return List.of(partyDetails1, partyDetails2);
+    }
+
+    public static List<PartyDetails> partyDetailsWithOrgType() {
+        PartyDetails partyDetails1 = new PartyDetails();
+        partyDetails1.setPartyID("P1");
+        partyDetails1.setPartyType("ORG");
+        partyDetails1.setPartyRole("DEF");
+
+        PartyDetails partyDetails2 = new PartyDetails();
+        partyDetails2.setPartyID("P2");
+        partyDetails2.setPartyType("ORG");
         partyDetails2.setPartyRole("DEF2");
 
         return List.of(partyDetails1, partyDetails2);

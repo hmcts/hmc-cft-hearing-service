@@ -447,7 +447,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
             hearingRequest.setCaseDetails(TestingUtil.caseDetails());
             hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-            hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+            hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
 
             final HearingEntity hearingEntity = mock(HearingEntity.class);
@@ -484,7 +484,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
             hearingRequest.setCaseDetails(TestingUtil.caseDetails());
             hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-            hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+            hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
             mockSubmitRequest();
             given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any()))
@@ -519,7 +519,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
             hearingRequest.setCaseDetails(TestingUtil.caseDetails());
             hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-            hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+            hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(
                 TestingUtil.individualWithoutRelatedPartyDetails());
             mockSubmitRequest();
@@ -537,7 +537,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
             hearingRequest.setCaseDetails(TestingUtil.caseDetails());
             hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-            hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+            hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
             mockSubmitRequest();
             given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any()))
@@ -967,7 +967,7 @@ class HearingManagementServiceTest {
             hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
             hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
             hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-            hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+            hearingRequest.setPartyDetails(TestingUtil.partyDetailsWithOrgType());
             hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
             hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
             HmiDeleteHearingRequest hmiDeleteHearingRequest = getHmiDeleteHearingRequest();
@@ -1685,7 +1685,7 @@ class HearingManagementServiceTest {
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.setPartyDetails(TestingUtil.partyDetailsWithOrgType());
         hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         HmiSubmitHearingRequest hmiSubmitHearingRequest = getHmiSubmitHearingRequest();

@@ -59,6 +59,8 @@ import javax.transaction.Transactional;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.PARTY_DETAIL_INDIVIDUAL_PARTY_TYPE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.PARTY_DETAIL_ORGANISATION_PARTY_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
@@ -76,6 +78,8 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_VERSION_NUMBER;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_INDIVIDUAL_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_ORGANISATION_DETAILS;
 
 @Service
 @Slf4j
@@ -103,7 +107,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
                                         @Qualifier("defaultDataStoreRepository")
-                                                DataStoreRepository dataStoreRepository,
+                                            DataStoreRepository dataStoreRepository,
                                         HearingRepository hearingRepository,
                                         HearingMapper hearingMapper,
                                         CaseHearingRequestRepository caseHearingRequestRepository,
@@ -154,11 +158,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             }
         } else {
             HearingEntity hearingEntity = hearingRepository.findById(hearingId)
-                    .orElseThrow(() ->  new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
+                .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
             return ResponseEntity.noContent()
-                    .header("Latest-Hearing-Request-Version",
-                            String.valueOf(hearingEntity.getLatestRequestVersion()))
-                    .build();
+                .header(
+                    "Latest-Hearing-Request-Version",
+                    String.valueOf(hearingEntity.getLatestRequestVersion())
+                )
+                .build();
         }
     }
 
@@ -171,7 +177,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         validateHearingRequest(createHearingRequest);
         HearingResponse hearingResponse = insertHearingRequest(createHearingRequest);
         sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest,
-                                 REQUEST_HEARING);
+                                 REQUEST_HEARING
+        );
         return hearingResponse;
     }
 
@@ -202,7 +209,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private void validateHearingStatusForUpdate(Long hearingId) {
         String status = getStatus(hearingId);
-        if (!PutHearingStatus.isValid(status) || validatePlannedStartDate(hearingId,status)) {
+        if (!PutHearingStatus.isValid(status) || validatePlannedStartDate(hearingId, status)) {
             throw new BadRequestException(INVALID_PUT_HEARING_STATUS);
         }
     }
@@ -345,6 +352,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             if ((partyDetail.getIndividualDetails() != null && partyDetail.getOrganisationDetails() != null)
                 || (partyDetail.getIndividualDetails() == null && partyDetail.getOrganisationDetails() == null)) {
                 throw new BadRequestException(INVALID_ORG_INDIVIDUAL_DETAILS);
+            }
+            if (PARTY_DETAIL_INDIVIDUAL_PARTY_TYPE.equals(partyDetail.getPartyType())
+                && partyDetail.getIndividualDetails() == null) {
+                throw new BadRequestException(MISSING_INDIVIDUAL_DETAILS);
+            } else if (PARTY_DETAIL_ORGANISATION_PARTY_TYPE.equals(partyDetail.getPartyType())
+                && partyDetail.getOrganisationDetails() == null) {
+                throw new BadRequestException(MISSING_ORGANISATION_DETAILS);
             }
         }
     }
