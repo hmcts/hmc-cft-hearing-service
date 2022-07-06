@@ -1220,10 +1220,9 @@ class HearingManagementServiceTest {
 
         @Test
         void updateHearingRequestShouldNotErrorWhenPartyUnavailabilityDowIsNotPresent() {
-            PartyDetails partyDetails = new PartyDetails();
-            IndividualDetails individualDetails = new IndividualDetails();
-            individualDetails.setHearingChannelEmail(List.of("email"));
-            partyDetails.setIndividualDetails(individualDetails);
+            PartyDetails partyDetails = TestingUtil.partyDetails().get(0);
+            partyDetails.setIndividualDetails(TestingUtil.individualDetails());
+            partyDetails.getIndividualDetails().setHearingChannelEmail(List.of("email"));
             List<UnavailabilityDow> unavailabilityDowList = new ArrayList<>();
             partyDetails.setUnavailabilityDow(unavailabilityDowList);
             List<PartyDetails> partyDetailsList = new ArrayList<>();
@@ -1249,10 +1248,9 @@ class HearingManagementServiceTest {
 
         @Test
         void updateHearingRequestShouldNotErrorWhenPartyUnavailabilityRangesIsNotPresent() {
-            PartyDetails partyDetails = new PartyDetails();
-            IndividualDetails individualDetails = new IndividualDetails();
-            individualDetails.setHearingChannelEmail(List.of("email"));
-            partyDetails.setIndividualDetails(individualDetails);
+            PartyDetails partyDetails = TestingUtil.partyDetails().get(0);
+            partyDetails.setIndividualDetails(TestingUtil.individualDetails());
+            partyDetails.getIndividualDetails().setHearingChannelEmail(List.of("email"));
             List<UnavailabilityRanges> unavailabilityRanges = new ArrayList<>();
             partyDetails.setUnavailabilityRanges(unavailabilityRanges);
             List<PartyDetails> partyDetailsList = new ArrayList<>();
@@ -1278,12 +1276,13 @@ class HearingManagementServiceTest {
 
         @Test
         void updateHearingRequestShouldNotErrorWhenRelatedPartyDetailsAreNotPresent() {
-            PartyDetails partyDetails = new PartyDetails();
-            IndividualDetails individualDetails = new IndividualDetails();
+            PartyDetails partyDetails = TestingUtil.partyDetails().get(0);
+            IndividualDetails individualDetails = TestingUtil.individualDetails();
             individualDetails.setHearingChannelEmail(List.of("email"));
             List<RelatedParty> relatedParties = new ArrayList<>();
             individualDetails.setRelatedParties(relatedParties);
             partyDetails.setIndividualDetails(individualDetails);
+            partyDetails.getIndividualDetails().setRelatedParties(new ArrayList<>());
             List<PartyDetails> partyDetailsList = new ArrayList<>();
             partyDetailsList.add(partyDetails);
             RequestDetails requestDetails = new RequestDetails();

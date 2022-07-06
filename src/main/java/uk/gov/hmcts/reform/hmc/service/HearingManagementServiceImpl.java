@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
+import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
@@ -59,8 +60,6 @@ import javax.transaction.Transactional;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.PARTY_DETAIL_INDIVIDUAL_PARTY_TYPE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.PARTY_DETAIL_ORGANISATION_PARTY_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
@@ -352,10 +351,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                 || (partyDetail.getIndividualDetails() == null && partyDetail.getOrganisationDetails() == null)) {
                 throw new BadRequestException(INVALID_ORG_INDIVIDUAL_DETAILS);
             }
-            if (PARTY_DETAIL_INDIVIDUAL_PARTY_TYPE.equals(partyDetail.getPartyType())
+            if (PartyType.IND.getLabel().equals(partyDetail.getPartyType().toUpperCase())
                 && partyDetail.getIndividualDetails() == null) {
                 throw new BadRequestException(MISSING_INDIVIDUAL_DETAILS);
-            } else if (PARTY_DETAIL_ORGANISATION_PARTY_TYPE.equals(partyDetail.getPartyType())
+            } else if (PartyType.ORG.getLabel().equals(partyDetail.getPartyType())
                 && partyDetail.getOrganisationDetails() == null) {
                 throw new BadRequestException(MISSING_ORGANISATION_DETAILS);
             }
