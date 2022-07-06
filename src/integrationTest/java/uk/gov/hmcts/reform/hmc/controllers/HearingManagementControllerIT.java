@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
+import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.ChangeReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.repository.CancellationReasonsRepository;
 import uk.gov.hmcts.reform.hmc.repository.ChangeReasonsRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import wiremock.com.jayway.jsonpath.JsonPath;
@@ -120,6 +122,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_INTERNAL_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_SERVICE_CODE_EMPTY_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INTERPRETER_LANGUAGE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CANCELLATION_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_CATEGORIES;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
@@ -171,6 +174,7 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
+import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CANCELLATION_REASON_CODES;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
 
 class HearingManagementControllerIT extends BaseTest {
@@ -185,6 +189,10 @@ class HearingManagementControllerIT extends BaseTest {
 
     @MockBean
     private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
+
+
+    @Autowired
+    private CancellationReasonsRepository cancellationReasonsRepository;
 
     @Autowired
     private ChangeReasonsRepository changeReasonsRepository;
@@ -582,7 +590,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
-    void shouldReturn200_WhenDeleteHearingIdIsInValid() throws Exception {
+    void shouldReturn200_WhenDeleteHearingIdIsValid() throws Exception {
         DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
         mockMvc.perform(delete(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -593,6 +601,16 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.versionNumber").value(2))
             .andExpect(jsonPath("$.timeStamp").value(IsNull.notNullValue()))
             .andReturn();
+
+        final Spliterator<CancellationReasonsEntity> spliterator =
+                cancellationReasonsRepository.findAll().spliterator();
+
+        assertEquals(2, spliterator.getExactSizeIfKnown());
+
+        assertTrue(StreamSupport.stream(spliterator, false)
+                .map(CancellationReasonsEntity::getCancellationReasonType)
+                .collect(Collectors.toList())
+                .containsAll(CANCELLATION_REASON_CODES));
     }
 
     @Test
@@ -624,9 +642,9 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
-    void shouldReturn404_WhenCancellationReasonExceedsMaxLength() throws Exception {
+    void shouldReturn400_WhenCancellationReasonExceedsMaxLength() throws Exception {
         DeleteHearingRequest hearingRequest = new DeleteHearingRequest();
-        hearingRequest.setCancellationReasonCode("a".repeat(101));
+        hearingRequest.setCancellationReasonCodes(List.of("a".repeat(101)));
         mockMvc.perform(delete(url + "/2000000001")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -634,13 +652,63 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.errors", hasSize(1)))
             .andExpect(jsonPath("$.errors", hasItems(CANCELLATION_REASON_CODE_MAX_LENGTH_MSG)))
             .andReturn();
+
+        assertFalse(cancellationReasonsRepository.findAll().iterator().hasNext());
     }
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
-    void shouldReturn404_WhenCancellationReasonMaxLength() throws Exception {
+    void shouldReturn400_WhenCancellationReasonIsNull() throws Exception {
         DeleteHearingRequest hearingRequest = new DeleteHearingRequest();
-        hearingRequest.setCancellationReasonCode("a".repeat(100));
+        hearingRequest.setCancellationReasonCodes(null);
+        mockMvc.perform(delete(url + "/2000000001")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(hearingRequest)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItems(INVALID_CANCELLATION_REASON_CODE)))
+                .andReturn();
+
+        assertFalse(cancellationReasonsRepository.findAll().iterator().hasNext());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn400_WhenCancellationReasonIsEmpty() throws Exception {
+        DeleteHearingRequest hearingRequest = new DeleteHearingRequest();
+        hearingRequest.setCancellationReasonCodes(Collections.emptyList());
+        mockMvc.perform(delete(url + "/2000000001")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(hearingRequest)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItems(INVALID_CANCELLATION_REASON_CODE)))
+                .andReturn();
+
+        assertFalse(cancellationReasonsRepository.findAll().iterator().hasNext());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn400_WhenCancellationContainsAnEmptyString() throws Exception {
+        DeleteHearingRequest hearingRequest = new DeleteHearingRequest();
+        hearingRequest.setCancellationReasonCodes(List.of("reason", ""));
+        mockMvc.perform(delete(url + "/2000000001")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(hearingRequest)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItems(CANCELLATION_REASON_CODE_MAX_LENGTH_MSG)))
+                .andReturn();
+        assertFalse(cancellationReasonsRepository.findAll().iterator().hasNext());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn200_WhenCancellationReasonIsMaxLength() throws Exception {
+        DeleteHearingRequest hearingRequest = new DeleteHearingRequest();
+        final String cancellationReasonCode = "a".repeat(100);
+        hearingRequest.setCancellationReasonCodes(List.of(cancellationReasonCode));
         mockMvc.perform(delete(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -649,6 +717,9 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.status").value(CANCELLATION_REQUESTED))
             .andExpect(jsonPath("$.timeStamp").value(IsNull.notNullValue()))
             .andReturn();
+
+        assertEquals(cancellationReasonCode,
+                cancellationReasonsRepository.findAll().iterator().next().getCancellationReasonType());
     }
 
 
