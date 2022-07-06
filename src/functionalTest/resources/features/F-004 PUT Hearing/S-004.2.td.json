@@ -1,0 +1,25 @@
+{
+  "_guid_": "S-004.2",
+  "_extends_" : "PutHearingRequestBase",
+  "specs": [
+    "has the 400 code",
+    "an active profile in CCD",
+    "has an incorrect version number of 2"
+  ],
+  "request": {
+    "body": {
+      "requestDetails": {
+        "versionNumber": 2
+      }
+    }
+  },
+  "expectedResponse": {
+    "responseCode" : 400,
+    "responseMessage" : "Bad Request",
+
+    "body": {
+      "status" : "BAD_REQUEST",
+      "errors" : [ "Invalid version number" ]
+    }
+  }
+}

@@ -20,6 +20,8 @@ import javax.persistence.Table;
 @Data
 public class ActualAttendeeIndividualDetailEntity extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 6287971344884542654L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "actual_attendee_individual_detail_id_seq")

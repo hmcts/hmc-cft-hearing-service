@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseCategoryType;
@@ -69,10 +70,9 @@ class BeanValidatorTest {
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
-        assertEquals(11, violations.size());
+        assertEquals(10, violations.size());
         assertTrue(validationErrors.contains(ValidationError.AUTO_LIST_FLAG_NULL_EMPTY));
         assertTrue(validationErrors.contains(ValidationError.HEARING_TYPE_MAX_LENGTH));
-        assertTrue(validationErrors.contains(ValidationError.HEARING_WINDOW_NULL));
         assertTrue(validationErrors.contains(ValidationError.DURATION_MIN_VALUE));
         assertTrue(validationErrors.contains(ValidationError.HEARING_PRIORITY_TYPE));
         assertTrue(validationErrors.contains(ValidationError.NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE));
@@ -237,7 +237,35 @@ class BeanValidatorTest {
         assertTrue(validationErrors.contains(ValidationError.LIST_ASSIST_TRANSACTION_ID_MAX_LENGTH));
         assertTrue(validationErrors.contains(ValidationError.HEARING_CANCELLATION_REASON_MAX_LENGTH));
         assertTrue(validationErrors.contains("Unsupported type for laCaseStatus"));
-        assertTrue(validationErrors.contains("Unsupported type for listingStatus"));
+        assertTrue(validationErrors.contains(ValidationError.HEARING_STATUS_CODE_NULL));
+    }
+
+    @Test
+    void shouldHave_HearingResponseListingStatusMaxLengthViolation() {
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setListAssistTransactionID("a".repeat(40));
+        hearingResponse.setHearingCancellationReason("a".repeat(40));
+        hearingResponse.setLaCaseStatus(ListAssistCaseStatus.AWAITING_LISTING.name());
+        hearingResponse.setListingStatus("a".repeat(31));
+        Set<ConstraintViolation<HearingResponse>> violations = validator.validate(hearingResponse);
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+        assertTrue(validationErrors.contains(ValidationError.HEARING_STATUS_CODE_LENGTH));
+    }
+
+    @Test
+    void shouldPass_HearingResponse() {
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setListAssistTransactionID("a".repeat(40));
+        hearingResponse.setHearingCancellationReason("a".repeat(40));
+        hearingResponse.setLaCaseStatus(ListAssistCaseStatus.AWAITING_LISTING.name());
+        hearingResponse.setListingStatus("a".repeat(30));
+        Set<ConstraintViolation<HearingResponse>> violations = validator.validate(hearingResponse);
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
+        assertTrue(violations.isEmpty());
     }
 
     @Test
@@ -541,6 +569,17 @@ class BeanValidatorTest {
         groupDetails.setGroupComments("groupComments");
         groupDetails.setGroupLinkType("linkType");
         Set<ConstraintViolation<GroupDetails>> violations = validator.validate(groupDetails);
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    void shouldHave_NoHearingDetailsViolationAsHearingWindowOptional() {
+        HearingDetails hearingDetails = TestingUtil.hearingDetails();
+        hearingDetails.setHearingWindow(null);
+        hearingDetails.setPanelRequirements(TestingUtil.panelRequirements());
+        Set<ConstraintViolation<HearingDetails>> violations = validator.validate(hearingDetails);
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertTrue(violations.isEmpty());
     }
 

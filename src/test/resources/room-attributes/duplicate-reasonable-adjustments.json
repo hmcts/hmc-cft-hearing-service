@@ -1,0 +1,20 @@
+[
+  {
+    "roomAttributeCode": "RoomCode1",
+    "roomAttributeName": "Name1",
+    "reasonableAdjustmentCode": "DuplicateReasonableAdjustment",
+    "facility": false
+  },
+  {
+    "roomAttributeCode": "RoomCode2",
+    "roomAttributeName": "Name2",
+    "reasonableAdjustmentCode": "OtherCode",
+    "facility": true
+  },
+  {
+    "roomAttributeCode": "RoomCode3",
+    "roomAttributeName": "Name3",
+    "reasonableAdjustmentCode": "DuplicateReasonableAdjustment",
+    "facility": false
+  }
+]
