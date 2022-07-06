@@ -1,0 +1,35 @@
+{
+  "_guid_": "S-008.2",
+
+  "specs": [
+    "an active profile in CCD",
+    "has 400 status code",
+    "has incorrect request invocation"
+  ],
+
+  "request": {
+    "pathVariables": {
+      "caseref": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
+    },
+    "body": {
+      "incorrectField": "random",
+      "groupDetails": {
+        "groupName": "<groupName>",
+        "groupReason": "<groupReason>",
+        "groupLinkType": "<groupLinkType>",
+        "groupComments": "<groupComments>"
+      },
+      "hearingsInGroup": [
+        {
+          "hearingId": "<hearingId>",
+          "hearingOrder": "<hearingOrder>"
+        }
+      ]
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 400,
+    "responseMessage": "Bad Request"
+  }
+}
