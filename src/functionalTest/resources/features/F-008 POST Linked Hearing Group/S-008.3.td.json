@@ -1,5 +1,6 @@
 {
   "_guid_": "S-008.3",
+  "_extends_" : "F-008_TestBase",
 
   "specs": [
     "an active profile in CCD",

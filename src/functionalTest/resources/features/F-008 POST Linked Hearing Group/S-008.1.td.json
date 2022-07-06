@@ -1,5 +1,6 @@
 {
   "_guid_": "S-008.1",
+  "_extends_" : "F-008_TestBase",
 
   "specs": [
     "has the 200 OK code",
