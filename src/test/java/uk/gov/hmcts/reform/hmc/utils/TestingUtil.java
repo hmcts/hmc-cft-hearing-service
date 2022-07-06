@@ -79,6 +79,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.PARTY_DETAIL_INDIVIDUAL_PARTY_TYPE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.PARTY_DETAIL_ORGANISATION_PARTY_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_DOW_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_RANGE_TYPE;
@@ -218,12 +220,12 @@ public class TestingUtil {
     public static List<PartyDetails> partyDetails() {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
-        partyDetails1.setPartyType("IND");
+        partyDetails1.setPartyType(PARTY_DETAIL_INDIVIDUAL_PARTY_TYPE);
         partyDetails1.setPartyRole("DEF");
 
         PartyDetails partyDetails2 = new PartyDetails();
         partyDetails2.setPartyID("P2");
-        partyDetails2.setPartyType("IND");
+        partyDetails2.setPartyType(PARTY_DETAIL_INDIVIDUAL_PARTY_TYPE);
         partyDetails2.setPartyRole("DEF2");
 
         return List.of(partyDetails1, partyDetails2);
@@ -232,12 +234,12 @@ public class TestingUtil {
     public static List<PartyDetails> partyDetailsWithOrgType() {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
-        partyDetails1.setPartyType("ORG");
+        partyDetails1.setPartyType(PARTY_DETAIL_ORGANISATION_PARTY_TYPE);
         partyDetails1.setPartyRole("DEF");
 
         PartyDetails partyDetails2 = new PartyDetails();
         partyDetails2.setPartyID("P2");
-        partyDetails2.setPartyType("ORG");
+        partyDetails2.setPartyType(PARTY_DETAIL_ORGANISATION_PARTY_TYPE);
         partyDetails2.setPartyRole("DEF2");
 
         return List.of(partyDetails1, partyDetails2);
@@ -1156,7 +1158,7 @@ public class TestingUtil {
     private static List<PartyDetails> partyDetailsWith2Parties(boolean isCftOrganisationIdNull) {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
-        partyDetails1.setPartyType("ind");
+        partyDetails1.setPartyType(PARTY_DETAIL_INDIVIDUAL_PARTY_TYPE);
         partyDetails1.setPartyRole("DEF");
         partyDetails1.setIndividualDetails(allIndividualDetails());
         partyDetails1.setUnavailabilityDow(unavailabilityDowDetails());
@@ -1164,7 +1166,7 @@ public class TestingUtil {
 
         PartyDetails partyDetails2 = new PartyDetails();
         partyDetails2.setPartyID("P2");
-        partyDetails2.setPartyType("ORG");
+        partyDetails2.setPartyType(PARTY_DETAIL_ORGANISATION_PARTY_TYPE);
         partyDetails2.setPartyRole("DEF2");
         if (isCftOrganisationIdNull) {
             partyDetails2.setOrganisationDetails(organisationDetailsIdNull());
