@@ -14,9 +14,6 @@
   },
 
   "request": {
-    "pathVariables": {
-      "caseref": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
-    },
     "body": {
       "incorrectField": "random",
       "groupDetails": {
