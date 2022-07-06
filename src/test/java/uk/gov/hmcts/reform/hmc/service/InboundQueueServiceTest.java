@@ -268,7 +268,7 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(data);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
             given(messageContext.getMessage()).willReturn(message);
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             inboundQueueService.processMessage(data, messageContext);
@@ -300,11 +300,10 @@ class InboundQueueServiceTest {
                 .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
             when(hearingRepository.save(any()))
                 .thenReturn(hearingEntity);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
             given(messageContext.getMessage()).willReturn(message);
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             inboundQueueService.processMessage(syncJsonNode, messageContext);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
             ListAppender<ILoggingEvent> listAppender = setupLogger();
             assertDynatraceLogMessage(listAppender, "2000000000");
         }
@@ -469,7 +468,7 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.AWAITING_LISTING));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
             given(messageContext.getMessage()).willReturn(message);
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             inboundQueueService.processMessage(jsonNode, messageContext);
