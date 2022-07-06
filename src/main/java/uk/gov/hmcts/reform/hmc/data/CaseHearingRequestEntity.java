@@ -205,7 +205,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         this.panelAuthorisationRequirements = original.panelAuthorisationRequirements;
         this.panelSpecialisms = original.panelSpecialisms;
         this.panelUserRequirements = original.panelUserRequirements;
-        this.cancellationReason = original.cancellationReason;
+        this.cancellationReasons = original.cancellationReasons;
         this.hearingChannels = original.hearingChannels;
         this.amendReasonCodes = original.amendReasonCodes;
     }
