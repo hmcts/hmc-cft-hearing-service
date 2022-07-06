@@ -10,22 +10,23 @@
   "expectedResponse": {
     "responseCode": 200,
     "responseMessage": "OK",
-    "headers": {
-      "Content-Length": "[[ANYTHING_PRESENT]]",
-      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
-      "Date": "[[ANYTHING_PRESENT]]",
-      "Request-Context": "[[ANY_NULLABLE]]"
-    },
-    "body" : {
-      "hmcStatus": "STATUS",
-      "caseDetails": {
-
+    "body": {
+      "groupDetails": {
+        "groupName": "<groupName>",
+        "groupReason": "<groupReason>",
+        "groupLinkType": "<groupLinkType>",
+        "groupComments": "<groupComments>"
       },
-      "hearingPlanned": {
-        "plannedHearingType": "hearing type",
-        "plannedHearingDays": []
-      },
-      "hearingActuals": []
+      "hearingsInGroup": [
+        {
+          "hearingId": "<hearingId>",
+          "hearingOrder": "<hearingOrder>"
+        },
+        {
+          "hearingId": "<hearingId2>",
+          "hearingOrder": "<hearingOrder>"
+        }
+      ]
     }
   }
 }
