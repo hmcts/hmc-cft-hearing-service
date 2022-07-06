@@ -215,9 +215,7 @@ class InboundQueueServiceTest {
                 .thenReturn(java.util.Optional.of(hearingEntity));
 
             ListAppender<ILoggingEvent> listAppender = setupLogger();
-
             inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, exception);
-
             assertDynatraceLogMessage(listAppender, "2000000000");
 
             verify(hearingRepository, times(1)).findById(2000000000L);
@@ -271,8 +269,8 @@ class InboundQueueServiceTest {
             doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
             given(messageContext.getMessage()).willReturn(message);
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
-            inboundQueueService.processMessage(data, messageContext);
             ListAppender<ILoggingEvent> listAppender = setupLogger();
+            inboundQueueService.processMessage(data, messageContext);
             assertDynatraceLogMessage(listAppender, "2000000000");
         }
 
@@ -303,8 +301,8 @@ class InboundQueueServiceTest {
             doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
             given(messageContext.getMessage()).willReturn(message);
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
-            inboundQueueService.processMessage(syncJsonNode, messageContext);
             ListAppender<ILoggingEvent> listAppender = setupLogger();
+            inboundQueueService.processMessage(syncJsonNode, messageContext);
             assertDynatraceLogMessage(listAppender, "2000000000");
         }
 
@@ -472,7 +470,6 @@ class InboundQueueServiceTest {
             given(messageContext.getMessage()).willReturn(message);
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             inboundQueueService.processMessage(jsonNode, messageContext);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
             verify(hearingRepository).save(hearingEntity);
             verify(hmiHearingResponseMapper, times(1)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).existsById(2000000000L);
@@ -856,8 +853,8 @@ class InboundQueueServiceTest {
                                                        + "    }]\n"
                                                        + "  }\n"
                                                        + "}");
-        inboundQueueService.processMessage(jsonNode, messageContext);
         ListAppender<ILoggingEvent> listAppender = setupLogger();
+        inboundQueueService.processMessage(jsonNode, messageContext);
         assertLogMessageForHearingStatusMaxLength(listAppender,
                                                   "Violations are Hearing status code must not be more "
                                                       + "than 30 characters long");
@@ -960,8 +957,8 @@ class InboundQueueServiceTest {
                                                        + "    }]\n"
                                                        + "  }\n"
                                                        + "}");
-        inboundQueueService.processMessage(jsonNode, messageContext);
         ListAppender<ILoggingEvent> listAppender = setupLogger();
+        inboundQueueService.processMessage(jsonNode, messageContext);
         assertLogMessageForHearingStatusMaxLength(listAppender,
                                                   "Violations are Hearing status code can not be null "
                                                       + "or empty");
