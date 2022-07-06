@@ -90,7 +90,7 @@ public class BasePactTesting {
      */
     protected DeleteHearingRequest generateDeleteHearingRequest() {
         DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
-        deleteHearingRequest.setCancellationReasonCode("1XXX1");
+        deleteHearingRequest.setCancellationReasonCodes(List.of("1XXX1"));
         return deleteHearingRequest;
     }
 

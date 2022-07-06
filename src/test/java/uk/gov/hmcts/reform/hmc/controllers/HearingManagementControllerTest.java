@@ -191,7 +191,7 @@ class HearingManagementControllerTest {
         @Test
         void shouldReturn404_whenDeleteRequestIdIsInvalid() {
             DeleteHearingRequest request = TestingUtil.deleteHearingRequest();
-            request.setCancellationReasonCode("");
+            request.setCancellationReasonCodes(List.of(""));
 
             HearingResponse hearingResponse = generateHearingResponse();
             when(hearingManagementService.deleteHearingRequest(any(), any())).thenReturn(hearingResponse);
