@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
@@ -44,9 +43,6 @@ class MessageProcessorIT extends BaseTest {
 
     @Inject
     private HearingDayDetailsRepository hearingDayDetailsRepository;
-
-    @MockBean
-    private MessageSenderToTopicConfiguration messageSenderConfiguration;
 
     @Mock
     private ServiceBusReceivedMessage message;

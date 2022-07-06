@@ -12,7 +12,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
@@ -186,9 +185,6 @@ class HearingManagementControllerIT extends BaseTest {
 
     @MockBean
     private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
-
-    @Autowired
-    private ApplicationParams applicationParams;
 
     @Autowired
     private ChangeReasonsRepository changeReasonsRepository;
