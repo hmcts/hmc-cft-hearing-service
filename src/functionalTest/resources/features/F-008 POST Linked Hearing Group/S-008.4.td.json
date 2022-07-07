@@ -17,7 +17,7 @@
       },
       "hearingsInGroup": [
         {
-          "hearingId": "2000000171",
+          "hearingId": "${[scenarioContext][childContexts][CreateLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
           "hearingOrder": "1"
         }
       ]

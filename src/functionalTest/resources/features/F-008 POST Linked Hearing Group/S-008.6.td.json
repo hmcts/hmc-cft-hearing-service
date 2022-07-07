@@ -17,11 +17,11 @@
       },
       "hearingsInGroup": [
         {
-          "hearingId": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
+          "hearingId": "${[scenarioContext][childContexts][CreateLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
           "hearingOrder": "1"
         },
         {
-          "hearingId": "${}${[scenarioContext][childContexts][F-1018_CreateCasePreRequisiteCaseworkerBase][testData][actualResponse][body][id]}",
+          "hearingId": "${[scenarioContext][childContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
           "hearingOrder": "2"
         }
       ]
