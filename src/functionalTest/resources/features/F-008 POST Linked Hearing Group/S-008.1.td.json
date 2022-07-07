@@ -7,6 +7,13 @@
     "has 200 status code"
   ],
 
+  "users": {
+    "invokingUser": {
+      "username": "master.caseworker@gmail.com",
+      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
+    }
+  },
+
   "request": {
     "body": {
       "groupDetails": {
