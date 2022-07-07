@@ -11,10 +11,10 @@
   "request": {
     "body": {
       "groupDetails": {
-        "groupName": "<groupName>",
+        "groupName": "groupName",
         "groupReason": "reason",
-        "groupLinkType": "ORDERED",
-        "groupComments": "<groupComments>"
+        "groupLinkType": "Ordered",
+        "groupComments": "groupComments"
       },
       "hearingsInGroup": [
         {

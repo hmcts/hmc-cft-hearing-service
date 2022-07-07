@@ -17,9 +17,9 @@
   "request": {
     "body": {
       "groupDetails": {
-        "groupName": "<groupName>",
+        "groupName": "groupName",
         "groupReason": "reason",
-        "groupLinkType": "ORDERED",
+        "groupLinkType": "Ordered",
         "groupComments": "<groupComments>"
       },
       "hearingsInGroup": [
