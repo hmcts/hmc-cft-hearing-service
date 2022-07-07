@@ -17,11 +17,11 @@
       },
       "hearingsInGroup": [
         {
-          "hearingId": "2000000171",
+          "hearingId": "${[scenarioContext][childContexts][CreateLinkedHearingRequest][testData][actualResponse][body][id]}",
           "hearingOrder": "1"
         },
         {
-          "hearingId": "2000000172",
+          "hearingId": "${[scenarioContext][childContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][id]}",
           "hearingOrder": "2"
         }
       ]
@@ -34,18 +34,18 @@
     "body": {
       "groupDetails": {
         "groupName": "<groupName>",
-        "groupReason": "<groupReason>",
+        "groupReason": "reason",
         "groupLinkType": "<groupLinkType>",
         "groupComments": "<groupComments>"
       },
       "hearingsInGroup": [
         {
-          "hearingId": "<hearingId>",
-          "hearingOrder": "<hearingOrder>"
+          "hearingId": "${[scenarioContext][childContexts][CreateLinkedHearingRequest][testData][actualResponse][body][id]}",
+          "hearingOrder": "1"
         },
         {
-          "hearingId": "<hearingId2>",
-          "hearingOrder": "<hearingOrder>"
+          "hearingId": "${[scenarioContext][childContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][id]}",
+          "hearingOrder": "2"
         }
       ]
     }
