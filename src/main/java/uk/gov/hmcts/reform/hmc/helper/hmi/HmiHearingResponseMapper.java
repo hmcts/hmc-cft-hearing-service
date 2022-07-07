@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.ListingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
@@ -153,8 +152,7 @@ public class HmiHearingResponseMapper {
             hmcHearingUpdate.setHearingResponseReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
             hmcHearingUpdate.setHearingEventBroadcastDateTime(LocalDateTime.now(Clock.systemUTC()));
             if (hearingResponseEntity.getListingStatus() != null) {
-                hmcHearingUpdate.setHearingListingStatus(
-                    ListingStatus.valueOf(hearingResponseEntity.getListingStatus()));
+                hmcHearingUpdate.setHearingListingStatus(hearingResponseEntity.getListingStatus());
             }
             hmcHearingUpdate.setNextHearingDate(hearingResponseEntity.getHearingDayDetails().get(0).getStartDateTime());
             hmcHearingUpdate.setHearingVenueId(hearingResponseEntity.getHearingDayDetails().get(0).getVenueId());
@@ -303,7 +301,7 @@ public class HmiHearingResponseMapper {
         hearingResponseEntity.setRequestVersion(hearingResponse.getHearing().getHearingCaseVersionId());
         if (hearingResponse.getHearing().getHearingStatus() != null
             && hearingResponse.getHearing().getHearingStatus().getCode() != null) {
-            hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode().name());
+            hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode());
         }
         hearingResponseEntity.setCancellationReasonType(hearingResponse.getHearing().getHearingCancellationReason());
         hearingResponseEntity.setTranslatorRequired(hearingResponse.getHearing().getHearingTranslatorRequired());

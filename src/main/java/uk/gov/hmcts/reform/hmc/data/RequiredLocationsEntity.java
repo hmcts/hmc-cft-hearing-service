@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.LocationType;
 
@@ -24,10 +25,13 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@NoArgsConstructor
 @SecondaryTable(name = "CASE_HEARING_REQUEST",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
-public class RequiredLocationsEntity extends BaseEntity implements Serializable, Cloneable {
+public class RequiredLocationsEntity extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 1119281173095751231L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -47,9 +51,10 @@ public class RequiredLocationsEntity extends BaseEntity implements Serializable,
     @JoinColumn(name = "case_hearing_id")
     private CaseHearingRequestEntity caseHearing;
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public RequiredLocationsEntity(RequiredLocationsEntity original) {
+        this.id = original.id;
+        this.locationId = original.locationId;
+        this.locationLevelType = original.locationLevelType;
+        this.caseHearing = original.caseHearing;
     }
-
 }
