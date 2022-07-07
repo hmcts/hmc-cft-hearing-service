@@ -1,18 +1,11 @@
 {
-  "_guid_": "S-008.3",
+  "_guid_": "S-008.5",
   "_extends_" : "F-008_TestBase",
 
   "specs": [
     "an active profile in CCD",
-    "has 403 status code"
+    "has 400 status code"
   ],
-
-  "users": {
-    "invokingUser": {
-      "username": "master.caseworker@gmail.com",
-      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
-    }
-  },
 
   "request": {
     "body": {
@@ -28,7 +21,7 @@
           "hearingOrder": "1"
         },
         {
-          "hearingId": "2000000172",
+          "hearingId": "2000000171",
           "hearingOrder": "2"
         }
       ]
@@ -36,11 +29,11 @@
   },
 
   "expectedResponse": {
-    "responseCode": 403,
-    "responseMessage" : "Forbidden",
+    "responseCode": 400,
+    "responseMessage" : "Bad Request",
     "body" : {
-      "status" : "FORBIDDEN",
-      "errors" : "[[ANYTHING_PRESENT]]"
+      "status" : "BAD_REQUEST",
+      "errors" : [ "003 hearing request already in a group" ]
     }
   }
 }
