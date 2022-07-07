@@ -17,11 +17,11 @@
       },
       "hearingsInGroup": [
         {
-          "hearingId": "<hearingId>",
+          "hearingId": "2000000171",
           "hearingOrder": "1"
         },
         {
-          "hearingId": "<hearingId2>",
+          "hearingId": "2000000172",
           "hearingOrder": "2"
         }
       ]

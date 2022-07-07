@@ -24,12 +24,8 @@
       },
       "hearingsInGroup": [
         {
-          "hearingId": "<hearingId>",
+          "hearingId": "2000000171",
           "hearingOrder": "1"
-        },
-        {
-          "hearingId": "<hearingId2>",
-          "hearingOrder": "2"
         }
       ]
     }
