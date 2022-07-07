@@ -443,8 +443,9 @@ dependencies {
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
   integrationTestImplementation group: 'net.minidev', name: 'json-smart', version: '2.4.7'
-
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
+  integrationTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+  integrationTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
