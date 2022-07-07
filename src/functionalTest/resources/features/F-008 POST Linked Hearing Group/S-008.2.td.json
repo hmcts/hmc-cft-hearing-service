@@ -13,7 +13,7 @@
       "groupDetails": {
         "groupName": "groupName",
         "groupReason": "reason",
-        "groupLinkType": "Ordered",
+        "groupLinkType": "Same Slot",
         "groupComments": "groupComments"
       },
       "hearingsInGroup": [
