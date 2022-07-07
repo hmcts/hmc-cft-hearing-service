@@ -19,7 +19,7 @@
       "groupDetails": {
         "groupName": "<groupName>",
         "groupReason": "reason",
-        "groupLinkType": "<groupLinkType>",
+        "groupLinkType": "ORDERED",
         "groupComments": "<groupComments>"
       },
       "hearingsInGroup": [
