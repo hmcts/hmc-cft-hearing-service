@@ -10,17 +10,20 @@
 
   "request": {
     "body": {
-      "incorrectField": "random",
       "groupDetails": {
         "groupName": "<groupName>",
-        "groupReason": "<groupReason>",
+        "groupReason": "reason",
         "groupLinkType": "<groupLinkType>",
         "groupComments": "<groupComments>"
       },
       "hearingsInGroup": [
         {
           "hearingId": "<hearingId>",
-          "hearingOrder": "<hearingOrder>"
+          "hearingOrder": "1"
+        },
+        {
+          "hearingId": "<hearingId2>",
+          "hearingOrder": "2"
         }
       ]
     }

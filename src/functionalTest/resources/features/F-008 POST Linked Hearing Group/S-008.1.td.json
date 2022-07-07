@@ -7,6 +7,27 @@
     "has 200 status code"
   ],
 
+  "request": {
+    "body": {
+      "groupDetails": {
+        "groupName": "<groupName>",
+        "groupReason": "reason",
+        "groupLinkType": "<groupLinkType>",
+        "groupComments": "<groupComments>"
+      },
+      "hearingsInGroup": [
+        {
+          "hearingId": "<hearingId>",
+          "hearingOrder": "1"
+        },
+        {
+          "hearingId": "<hearingId2>",
+          "hearingOrder": "2"
+        }
+      ]
+    }
+  },
+
   "expectedResponse": {
     "responseCode": 200,
     "responseMessage": "OK",
