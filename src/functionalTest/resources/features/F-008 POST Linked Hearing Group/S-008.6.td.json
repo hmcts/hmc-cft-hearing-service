@@ -17,7 +17,7 @@
       },
       "hearingsInGroup": [
         {
-          "hearingId": "${[scenarioContext][childContexts][CreateLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingId": "${[scenarioContext][childContexts][CreateLinkedHearingRequestInvalidState][testData][actualResponse][body][hearingRequestID]}",
           "hearingOrder": "1"
         },
         {
@@ -33,7 +33,7 @@
     "responseMessage" : "Bad Request",
     "body" : {
       "status" : "BAD_REQUEST",
-      "errors" : [ "002 hearing request isLinked is False" ]
+      "errors" : [ "004 Invalid state for hearing request ${[scenarioContext][childContexts][CreateLinkedHearingRequestInvalidState][testData][actualResponse][body][hearingRequestID]}" ]
     }
   }
 }
