@@ -26,6 +26,8 @@ import javax.persistence.Table;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LinkedGroupDetails extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 9069607205338784728L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "linked_group_details_id_seq")

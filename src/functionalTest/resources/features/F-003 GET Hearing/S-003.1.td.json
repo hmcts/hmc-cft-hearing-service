@@ -41,8 +41,7 @@
         "hearingType" : "Some hearing type",
         "hearingWindow" : {
           "dateRangeStart" : "2022-05-10",
-          "dateRangeEnd" : "2023-05-10",
-          "firstDateTimeMustBe" : null
+          "dateRangeEnd" : "2023-05-10"
         },
         "duration" : 60,
         "nonStandardHearingDurationReasons" : [ "First reason", "Second reason" ],

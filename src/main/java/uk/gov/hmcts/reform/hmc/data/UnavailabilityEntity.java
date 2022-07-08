@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType;
 import uk.gov.hmcts.reform.hmc.model.DayOfWeekUnavailable;
@@ -26,10 +27,13 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@NoArgsConstructor
 @SecondaryTable(name = "hearing_party",
     pkJoinColumns = {
         @PrimaryKeyJoinColumn(name = "TECH_PARTY_ID")})
-public class UnavailabilityEntity extends BaseEntity implements Serializable, Cloneable {
+public class UnavailabilityEntity extends BaseEntity  implements Serializable {
+
+    private static final long serialVersionUID = 5423332025288476165L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -60,8 +64,13 @@ public class UnavailabilityEntity extends BaseEntity implements Serializable, Cl
     @JoinColumn(name = "tech_party_id")
     private HearingPartyEntity hearingParty;
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public UnavailabilityEntity(UnavailabilityEntity original) {
+        this.id = original.id;
+        this.dayOfWeekUnavailable = original.dayOfWeekUnavailable;
+        this.dayOfWeekUnavailableType = original.dayOfWeekUnavailableType;
+        this.startDate = original.startDate;
+        this.endDate = original.endDate;
+        this.unAvailabilityType = original.unAvailabilityType;
+        this.hearingParty = original.hearingParty;
     }
 }

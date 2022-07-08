@@ -25,6 +25,8 @@ import javax.persistence.Table;
         @PrimaryKeyJoinColumn(name = "CASE_HEARING_ID")})
 public class CancellationReasonsEntity extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -2368217815246644116L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "cancellation_reasons_id_seq")

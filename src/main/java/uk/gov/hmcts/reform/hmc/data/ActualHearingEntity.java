@@ -29,6 +29,8 @@ import javax.persistence.Table;
 @Data
 public class ActualHearingEntity extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -6230201524807926703L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
         generator = "actual_hearing_id_seq")
