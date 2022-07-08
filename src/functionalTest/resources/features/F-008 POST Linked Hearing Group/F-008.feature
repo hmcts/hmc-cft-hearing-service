@@ -58,7 +58,7 @@ Feature: F-008: Search for hearings
   @S-008.6 004 Invalid state for hearing request <hearingId>
   Scenario: Should return 400 insufficient requestIDs
     Given a successful call [to create a hearing request] as in [CreateLinkedHearingRequestInvalidState],
-    And a successful call [to amend a hearing request] as in [AmendHearingRequest],
+    And a successful call [to amend a hearing request] as in [AmendLinkedHearingRequestInvalidState],
     And another successful call [to create a hearing request] as in [CreateAnotherLinkedHearingRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [Create a group of linked hearing requests] operation of [HMC CFT Hearing Service],

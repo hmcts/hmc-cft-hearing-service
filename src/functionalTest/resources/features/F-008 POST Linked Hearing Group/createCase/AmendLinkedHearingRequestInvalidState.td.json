@@ -1,5 +1,5 @@
 {
-  "_guid_": "AmendLinkedHearingRequest",
+  "_guid_": "AmendLinkedHearingRequestInvalidState",
   "_extends_" : "PutHearingRequestBase",
   "specs": [
     "to amend a hearing request"
@@ -9,7 +9,7 @@
       "_extends_": "Common_Request_Headers"
     },
     "pathVariables": {
-      "hearingID": "${[scenarioContext][siblingContexts][CreateLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+      "hearingID": "${[scenarioContext][siblingContexts][CreateLinkedHearingRequestInvalidState][testData][actualResponse][body][hearingRequestID]}"
     },
     "body": {
       "requestDetails": {
