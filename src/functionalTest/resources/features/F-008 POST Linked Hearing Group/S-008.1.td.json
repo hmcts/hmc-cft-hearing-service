@@ -11,7 +11,7 @@
     "body": {
       "groupDetails": {
         "groupName": "groupName",
-        "groupReason": "reason",
+        "groupReason": "1",
         "groupLinkType": "Same Slot",
         "groupComments": "groupComments"
       },
