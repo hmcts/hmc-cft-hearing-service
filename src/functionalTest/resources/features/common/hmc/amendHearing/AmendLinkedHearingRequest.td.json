@@ -1,5 +1,5 @@
 {
-  "_guid_": "AmendHearingRequest",
+  "_guid_": "AmendLinkedHearingRequest",
   "_extends_" : "PutHearingRequestBase",
   "specs": [
     "to amend a hearing request"
