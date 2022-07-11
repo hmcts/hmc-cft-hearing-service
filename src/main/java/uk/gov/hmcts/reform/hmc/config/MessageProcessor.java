@@ -33,7 +33,6 @@ public class MessageProcessor {
     }
 
     public void processMessage(ServiceBusReceivedMessageContext messageContext) {
-        log.debug("processMessage messageContext");
         var processingResult = tryProcessMessage(messageContext);
         // TODO: decide if to use processingResult or remove it.
     }
@@ -65,19 +64,10 @@ public class MessageProcessor {
 
     private MessageProcessingResult tryProcessMessage(ServiceBusReceivedMessageContext messageContext) {
         try {
-            log.debug(
-                    "Started processing message with ID {} (delivery {})",
-                    messageContext.getMessage().getMessageId(),
-                    messageContext.getMessage().getDeliveryCount() + 1
-            );
-
             processMessage(
                     convertMessage(messageContext.getMessage().getBody()),
                     messageContext
             );
-
-            log.debug("Processed message with ID {} processed successfully",
-                    messageContext.getMessage().getMessageId());
             return new MessageProcessingResult(MessageProcessingResultType.SUCCESS);
 
             // TODO: decide what's Unrecoverable and what's Potentially Recoverable!
