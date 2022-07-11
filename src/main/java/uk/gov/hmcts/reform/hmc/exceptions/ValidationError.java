@@ -161,7 +161,7 @@ public final class ValidationError {
     public static final String HA_OUTCOME_REQUEST_DATE_NOT_EMPTY = "hearingResultDate cannot be null or empty";
 
     public static final String HA_OUTCOME_REQUEST_DATE_MUST_BE_PAST_OR_PRESENT =
-            "hearingResultDate must be past or present";
+        "hearingResultDate must be past or present";
 
     public static final String HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY = "hearingDate cannot be null or empty";
     public static final String HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY = "pauseStartTime cannot be null or empty";
@@ -204,20 +204,20 @@ public final class ValidationError {
     public static final String HEARINGS_IN_GROUP_SIZE = "001 Insufficient requestIds";
 
     public static final String HEARING_REQUEST_ID_MAX_LENGTH =
-            "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
+        "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
     public static final String HEARING_GROUP_REQUEST_ID_MAX_LENGTH =
-            "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
+        "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
     public static final String LIST_ASSIST_TRANSACTION_ID_MAX_LENGTH =
-            "List assist transaction id length cannot be greater than 40 " + CHARACTERS_LONG;
+        "List assist transaction id length cannot be greater than 40 " + CHARACTERS_LONG;
     public static final String HEARING_CANCELLATION_REASON_MAX_LENGTH =
-            "Hearing cancellation reason length cannot be greater than 40 " + CHARACTERS_LONG;
+        "Hearing cancellation reason length cannot be greater than 40 " + CHARACTERS_LONG;
 
 
     public static final String INVALID_LINKED_GROUP_REQUEST_ID_DETAILS = "Invalid linked group id";
     public static final String INVALID_STATE_FOR_HEARING_REQUEST
-            = "004 Invalid state for hearing request <hearingId>";
+        = "004 Invalid state for hearing request <hearingId>";
     public static final String INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST
-            = "008 Invalid state for unlinking hearing request <hearingId>";
+        = "008 Invalid state for unlinking hearing request <hearingId>";
     public static final String HEARING_REQUEST_CANNOT_BE_LINKED = "002 hearing request isLinked is False";
     public static final String INVALID_STATE_FOR_LINKED_GROUP = "007 group is in a <state> state";
     public static final String HEARING_REQUEST_ALREADY_LINKED = "003 hearing request already in a group";
@@ -264,4 +264,7 @@ public final class ValidationError {
     public static final String INVALID_AMEND_REASON_CODE = "Amend reason code details are required";
 
     public static final String INTERNAL_SERVER_ERROR = "Error occurred on the server";
+
+    public static final String MISSING_INDIVIDUAL_DETAILS = "Individual details are missing";
+    public static final String MISSING_ORGANISATION_DETAILS = "Organisation details are missing";
 }
