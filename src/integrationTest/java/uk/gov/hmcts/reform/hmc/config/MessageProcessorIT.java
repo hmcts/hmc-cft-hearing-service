@@ -271,7 +271,7 @@ class MessageProcessorIT extends BaseTest {
             logger.info("logsListMessageProcessor.size() is {}!", logsListMessageProcessor.size());
             logsListMessageProcessor.forEach(e -> {
                 logger.info(e.getMessage());
-            } );
+            });
         }
         assertEquals(0, logsListMessageProcessor.size());
     }
