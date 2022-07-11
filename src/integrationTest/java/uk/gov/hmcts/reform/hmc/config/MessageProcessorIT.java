@@ -267,6 +267,12 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(1).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
+        if (logsListMessageProcessor.size() != 0) {
+            logger.info("logsListMessageProcessor.size() is {}!", logsListMessageProcessor.size());
+            logsListMessageProcessor.forEach(e -> {
+                logger.info(e.getMessage());
+            } );
+        }
         assertEquals(0, logsListMessageProcessor.size());
     }
 
