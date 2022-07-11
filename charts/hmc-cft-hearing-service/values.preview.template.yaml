@@ -35,7 +35,8 @@ java:
           alias: IDAM_KEY_CFT_HEARING_SERVICE
 
 hmc:
-  servicebus:
-    enabled: true
-  hearingService:
-    enabled: false
+  hmc:
+    servicebus:
+      enabled: true
+    hearingService:
+      enabled: false

@@ -61,7 +61,8 @@ java:
     FH_BASE_URL: https://login.microsoftonline.com
 
 hmc:
-  hearingService:
-    enabled: false
-  servicebus:
-    enabled: false
+  hmc:
+    hearingService:
+      enabled: false
+    servicebus:
+      enabled: false
