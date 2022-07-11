@@ -267,8 +267,11 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(1).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
-        assertFalse(logsListMessageProcessor.contains(""));
-        assertTrue(logsListMessageProcessor.isEmpty());
+        assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.ERROR)));
+        assertTrue(logsListMessageProcessor
+                       .stream().anyMatch(log -> log.getMessage().contains("Processed message queue handle error")));
+        assertFalse(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.INFO)));
+        assertFalse(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.WARN)));
     }
 
     @Test
