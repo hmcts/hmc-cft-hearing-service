@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc;
 
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
@@ -13,20 +12,19 @@ import java.util.UUID;
 public class CftLibConfig implements CFTLibConfigurer {
 
     @Override
-    public void configure(CFTLib lib) {
+    public void configure(CFTLib lib) throws Exception {
         createCcdRoles(lib);
         createIdamUsers(lib);
         createRoleAssignments(lib);
     }
 
-    @SneakyThrows
-    private void createRoleAssignments(CFTLib lib) {
-            String roleAssignments = Files.readString(Paths.get("src/main/resources/cftlib-am-role-assignments.json"));
-            final String formattedRoleAssignments = String.format(roleAssignments, getUuid("hmc.superuser@gmail.com"),
-                    getUuid("hmc.hearing-manager@gmail.com"),
-                    getUuid("hmc.hearing-viewer@gmail.com"),
-                    getUuid("hmc.listed-hearing-viewer@gmail.com"));
-            lib.configureRoleAssignments(formattedRoleAssignments);
+    private void createRoleAssignments(CFTLib lib) throws Exception {
+        String roleAssignments = Files.readString(Paths.get("src/main/resources/cftlib-am-role-assignments.json"));
+        final String formattedRoleAssignments = String.format(roleAssignments, getUuid("hmc.superuser@gmail.com"),
+                getUuid("hmc.hearing-manager@gmail.com"),
+                getUuid("hmc.hearing-viewer@gmail.com"),
+                getUuid("hmc.listed-hearing-viewer@gmail.com"));
+        lib.configureRoleAssignments(formattedRoleAssignments);
     }
 
     private String getUuid(String email) {
