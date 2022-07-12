@@ -1,0 +1,55 @@
+{
+  "_guid_": "S-009.1",
+  "_extends_" : "F-009_TestBase",
+
+  "specs": [
+    "has the 200 OK code",
+    "an active profile in CCD"
+  ],
+
+  "request": {
+    "queryParams": {
+      "id": "${[scenarioContext][childContexts][CreateLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    },
+    "body": {
+      "groupDetails": {
+        "groupName": "groupName",
+        "groupReason": "1",
+        "groupLinkType": "Same Slot",
+        "groupComments": "groupComments"
+      },
+      "hearingsInGroup": [
+        {
+          "hearingId": "${[scenarioContext][childContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingOrder": "1"
+        },
+        {
+          "hearingId": "${[scenarioContext][childContexts][CreateThirdLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingOrder": "2"
+        }
+      ]
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 200,
+    "responseMessage": "OK",
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    },
+    "body" : {
+      "hmcStatus": "STATUS",
+      "caseDetails": {
+
+      },
+      "hearingPlanned": {
+        "plannedHearingType": "hearing type",
+        "plannedHearingDays": []
+      },
+      "hearingActuals": []
+    }
+  }
+}
