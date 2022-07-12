@@ -30,6 +30,7 @@ public class MessageSenderToTopicConfiguration {
                 .buildClient();
 
             log.debug("Connected to Topic {}", applicationParams.getExternalTopicName());
+            log.debug("Sending request for hearing Id :{} , {} ",hmctsServiceId, message);
             ServiceBusMessage serviceBusMessage = new ServiceBusMessage(message);
             serviceBusMessage.getApplicationProperties().put(HMCTS_SERVICE_ID, hmctsServiceId);
             senderClient.sendMessage(serviceBusMessage);
