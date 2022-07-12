@@ -22,17 +22,15 @@ public class MessageSenderToTopicConfiguration {
 
     public void sendMessage(String message, String hmctsServiceId) {
         try {
-
+            log.debug("Connected to Topic {}", applicationParams.getExternalTopicName());
             ServiceBusSenderClient senderClient = new ServiceBusClientBuilder()
                 .connectionString(applicationParams.getExternalConnectionString())
                 .sender()
                 .topicName(applicationParams.getExternalTopicName())
                 .buildClient();
-
-            log.debug("Connected to Topic {}", applicationParams.getExternalTopicName());
-            log.debug("Sending request for hearing Id :{} , {} ",hmctsServiceId, message);
             ServiceBusMessage serviceBusMessage = new ServiceBusMessage(message);
             serviceBusMessage.getApplicationProperties().put(HMCTS_SERVICE_ID, hmctsServiceId);
+            log.debug("Sending request for hearing Id :{} , {} ",hmctsServiceId, message);
             senderClient.sendMessage(serviceBusMessage);
             log.debug("Message has been sent to the topic {}", applicationParams.getExternalTopicName());
         } catch (Exception e) {
