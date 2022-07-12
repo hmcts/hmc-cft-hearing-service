@@ -22,9 +22,10 @@ public class MessageProcessor {
     private final InboundQueueService inboundQueueService;
     private static final String MESSAGE_TYPE = "message_type";
     public static final String MISSING_MESSAGE_TYPE = "Message is missing custom header message_type";
-    public static final String MESSAGE_PARSE_ERROR = "Unable to parse incoming message with id ";
+    public static final String MESSAGE_PARSE_ERROR = "Unable to parse incoming message with id {}, {}";
     public static final String MESSAGE_ERROR = "Error for message with id ";
     public static final String WITH_ERROR = " with error ";
+    public static final String MESSAGE_SUCCESS = "Message with id '{}' handled successfully";
 
     public MessageProcessor(ObjectMapper objectMapper,
                             InboundQueueService inboundQueueService) {
@@ -34,7 +35,9 @@ public class MessageProcessor {
 
     public void processMessage(ServiceBusReceivedMessageContext messageContext) {
         var processingResult = tryProcessMessage(messageContext);
-        // TODO: decide if to use processingResult or remove it.
+        if (processingResult.resultType.equals(MessageProcessingResultType.SUCCESS)) {
+            log.info(MESSAGE_SUCCESS, messageContext.getMessage().getMessageId());
+        }
     }
 
     public void processMessage(JsonNode message,
