@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.hmc.model;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -21,6 +21,6 @@ public class PanelPreference {
     private String memberType;
 
     @EnumPattern(enumClass = RequirementType.class, fieldName = "requirementType")
-    @ApiModelProperty(allowableValues = "MUSTINC, OPTINC, EXCLUDE")
+    @Schema(allowableValues = "MUSTINC, OPTINC, EXCLUDE")
     private String requirementType;
 }

@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.hmc.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -24,7 +24,7 @@ public class PartyDetails {
 
     @NotEmpty(message = ValidationError.PARTY_TYPE_EMPTY)
     @EnumPattern(enumClass = PartyType.class, fieldName = "partyType")
-    @ApiModelProperty(allowableValues = "IND, ORG")
+    @Schema(allowableValues = "IND, ORG")
     private String partyType;
 
     @NotEmpty(message = ValidationError.PARTY_ROLE_EMPTY)

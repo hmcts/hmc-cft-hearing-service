@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,9 +25,9 @@ public class LinkedHearingGroupController {
     @GetMapping(path = "/linkedHearingGroup/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success (with content)"),
-        @ApiResponse(code = 400, message = ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS),
-        @ApiResponse(code = 404, message = ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS),
+        @ApiResponse(responseCode = "200", description = "Success (with content)"),
+        @ApiResponse(responseCode = "400", description = ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS),
+        @ApiResponse(responseCode = "404", description = ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS),
     })
     public GetLinkedHearingGroupResponse getLinkedHearingGroup(@PathVariable("id") String requestId) {
         return linkedHearingGroupService.getLinkedHearingGroupResponse(requestId);
