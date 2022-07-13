@@ -73,7 +73,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         if (applicationProperties.containsKey(HEARING_ID)) {
             Long hearingId = Long.valueOf(applicationProperties.get(HEARING_ID).toString());
             hearingIdValidator.validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
-            validateResponse(message, messageType, hearingId, messageContext);
+            validateResponse(message, messageType, hearingId);
         } else {
             log.error("Error processing message, exception was " + MISSING_HEARING_ID);
         }
@@ -100,8 +100,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         }
     }
 
-    private void validateResponse(JsonNode message, MessageType messageType, Long hearingId,
-                                  ServiceBusReceivedMessageContext messageContext)
+    private void validateResponse(JsonNode message, MessageType messageType, Long hearingId)
         throws JsonProcessingException {
         if (messageType.equals(MessageType.HEARING_RESPONSE)) {
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
@@ -123,12 +122,11 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         } else if (messageType.equals(MessageType.ERROR)) {
             ErrorDetails errorResponse = objectMapper.treeToValue(message, ErrorDetails.class);
             log.debug("Successfully converted message to ErrorResponse " + errorResponse);
-            updateHearingAndStatus(hearingId, errorResponse, messageContext);
+            updateHearingAndStatus(hearingId, errorResponse);
         }
     }
 
-    private void updateHearingAndStatus(Long hearingId, ErrorDetails errorDetails,
-                                        ServiceBusReceivedMessageContext messageContext) {
+    private void updateHearingAndStatus(Long hearingId, ErrorDetails errorDetails) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiHearingErrorToEntity(
@@ -141,15 +139,13 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                              hmcHearingResponse.getHmctsServiceCode());
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
-                //Service bus session has to completed first else it will try to re process the message
-                messageContext.complete();
                 log.error("Hearing id: " +  hearingId + " updated to status Exception");
             }
         }
     }
 
     @Transactional
-    private void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse) {
+    public void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = null;
@@ -169,7 +165,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     }
 
     @Transactional
-    private void updateHearingAndStatus(Long hearingId, SyncResponse syncResponse) {
+    public void updateHearingAndStatus(Long hearingId, SyncResponse syncResponse) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiSyncResponseToEntity(
