@@ -10,6 +10,10 @@ management:
       base-path: /
       exposure:
         include: health, info, prometheus
+
+springdoc:
+  packagesToScan: uk.gov.hmcts.reform.hmc.controllers
+
 spring:
   application:
     name: HMC-CFT-Hearing-Service
