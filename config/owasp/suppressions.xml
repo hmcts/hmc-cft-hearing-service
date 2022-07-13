@@ -11,6 +11,7 @@
   </suppress>
   <!--End of false positives section -->
 
+  <!--Please add all the temporary suppressions under the below section-->
   <suppress>
     <notes>
       <![CDATA[Temporary suppressions pending investigation]]>
@@ -23,5 +24,6 @@
     <cve>CVE-2022-34305</cve>
     <cve>CVE-2022-33915</cve>
   </suppress>
+  <!--End of temporary suppressions section -->
 
 </suppressions>
