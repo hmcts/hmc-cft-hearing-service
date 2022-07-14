@@ -10,13 +10,13 @@ Feature: F-009: Put linked hearing group
   Scenario: List the expected parties as per the latest version of the hearing request-response together with any actuals currently captured.
     Given a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateAnotherLinkedHearingRequest],
-    And another successful call [to create a hearing request] as in [CreateThirdLinkedHearingRequest],
+    And another successful call [to create a hearing request] as in [CreateLinkedHearingGroupRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [Put linked hearing groups] operation of [HMC CFT Hearing Service],
     Then a positive response is received,
     And the response has all other details as expected.
 
-  @S-008.2
+  @S-009.2
   Scenario: Should return 403 unauthorised
     Given a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateAnotherLinkedHearingRequest],

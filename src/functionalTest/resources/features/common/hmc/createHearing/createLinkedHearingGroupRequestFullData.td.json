@@ -1,0 +1,21 @@
+{
+  "_guid_" : "createLinkedHearingGroupRequestFullData",
+
+  "groupDetails": {
+    "groupName": "groupName",
+    "groupReason": "1",
+    "groupLinkType": "Same Slot",
+    "groupComments": "groupComments"
+  },
+  "hearingsInGroup": [
+    {
+      "hearingId": "${[scenarioContext][childContexts][CreateLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+      "hearingOrder": "1"
+    },
+    {
+      "hearingId": "${[scenarioContext][childContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+      "hearingOrder": "2"
+    }
+  ]
+
+}

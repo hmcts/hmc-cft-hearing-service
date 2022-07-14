@@ -16,7 +16,7 @@
 
   "request": {
     "queryParams": {
-      "id": "${[scenarioContext][childContexts][CreateLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+      "id": "${[scenarioContext][childContexts][CreateLinkedHearingGroupRequest][testData][actualResponse][body][hearingGroupRequestId]}"
     },
     "body": {
       "groupDetails": {
