@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.repository;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.ActiveDirectoryApiClient;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.reform.hmc.client.futurehearing.AuthenticationRequest;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.AuthenticationResponse;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.HearingManagementInterfaceApiClient;
 
+@Slf4j
 @Repository("defaultFutureHearingRepository")
 public class DefaultFutureHearingRepository implements FutureHearingRepository {
 
@@ -35,6 +37,7 @@ public class DefaultFutureHearingRepository implements FutureHearingRepository {
 
     @Override
     public void createLinkedHearingGroup(JsonNode data) {
+        log.debug("Request sent to FH : {}", data.toString());
         String authorization = retrieveAuthToken().getAccessToken();
         hmiClient.createLinkedHearingGroup(BEARER + authorization, data);
     }
@@ -47,6 +50,7 @@ public class DefaultFutureHearingRepository implements FutureHearingRepository {
 
     @Override
     public void updateLinkedHearingGroup(String requestId, JsonNode data) {
+        log.debug("Request sent to FH : {}", data.toString());
         String authorization = retrieveAuthToken().getAccessToken();
         hmiClient.updateLinkedHearingGroup(BEARER + authorization, requestId, data);
     }
