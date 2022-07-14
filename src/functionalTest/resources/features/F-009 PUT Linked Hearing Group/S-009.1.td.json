@@ -20,11 +20,11 @@
       },
       "hearingsInGroup": [
         {
-          "hearingId": "${[scenarioContext][siblingContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingId": "${[scenarioContext][parentContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
           "hearingOrder": "1"
         },
         {
-          "hearingId": "${[scenarioContext][siblingContexts][CreateThirdLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingId": "${[scenarioContext][parentContexts][CreateThirdLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
           "hearingOrder": "2"
         }
       ]
