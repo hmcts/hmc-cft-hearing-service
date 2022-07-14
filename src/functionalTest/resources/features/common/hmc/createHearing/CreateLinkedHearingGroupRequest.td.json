@@ -1,9 +1,21 @@
 {
   "_guid_": "CreateLinkedHearingGroupRequest",
-  "_extends_" : "CreateHearingRequestBase",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "create linked group hearing",
+  "method": "POST",
+  "uri": "/linkedHearingGroup",
+  "s2sClientId": "xui_webapp",
+  "userTokenClientId": "xuiwebapp",
   "specs": [
     "to create a hearing request"
   ],
+
+  "users": {
+    "invokingUser": {
+      "_extends_": "HmcSuperuser"
+    }
+  },
+
   "request": {
     "body": {
       "_extends_": "createLinkedHearingGroupRequestFullData"
@@ -19,7 +31,7 @@
       "Request-Context": "[[ANY_NULLABLE]]"
     },
     "body": {
-      "hearingGroupRequestId": 12345
+      "hearingGroupRequestId": "[[ANYTHING_PRESENT]]"
     }
   }
 }
