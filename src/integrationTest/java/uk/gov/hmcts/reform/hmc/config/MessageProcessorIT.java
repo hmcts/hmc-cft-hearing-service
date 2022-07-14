@@ -273,7 +273,8 @@ class MessageProcessorIT extends BaseTest {
         // NOTE this should not account for any other exceptions.
         assertEquals(logsListMessageProcessor.stream().filter(log -> log.getLevel().equals(Level.ERROR)).count(),
                 logsListMessageProcessor.stream()
-                    .filter(log -> log.getThrowableProxy().getMessage().contains("The messaging entity")).count());
+                    .filter(log -> log.getThrowableProxy().getMessage().contains(
+                            "The messaging entity ('([^']|'')*') could not be found")).count());
         assertFalse(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.INFO)));
         assertFalse(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.WARN)));
     }
