@@ -275,7 +275,7 @@ class MessageProcessorIT extends BaseTest {
                 log -> log.getLevel().equals(Level.ERROR)).count(),
                 logsListMessageProcessor.stream().filter(
                         log -> log.getMessage().contains(
-            "The messaging entity 'sb://destination1.servicebus.windows.net/hmc-to-hmi' could not be found")).count());
+            "The messaging entity")).count());
         assertFalse(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.INFO)));
         assertFalse(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.WARN)));
     }
