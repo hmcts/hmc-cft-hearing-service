@@ -271,11 +271,9 @@ class MessageProcessorIT extends BaseTest {
         // There could be message entity not found error due to the way the pipeline structure works with our variables
         // so count the errors against the message entity not found error.
         // NOTE this should not account for any other exceptions.
-        assertEquals(logsListMessageProcessor.stream().filter(
-                log -> log.getLevel().equals(Level.ERROR)).count(),
-                logsListMessageProcessor.stream().filter(
-                        log -> log.getMessage().contains(
-            "The messaging entity")).count());
+        assertEquals(logsListMessageProcessor.stream().filter(log -> log.getLevel().equals(Level.ERROR)).count(),
+                logsListMessageProcessor.stream()
+                    .filter(log -> log.getThrowableProxy().getMessage().contains("The messaging entity")).count());
         assertFalse(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.INFO)));
         assertFalse(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.WARN)));
     }
