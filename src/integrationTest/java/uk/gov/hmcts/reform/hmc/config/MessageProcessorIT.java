@@ -267,6 +267,7 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(1).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
+        logsListMessageProcessor.forEach(System.out::print);
         // There could be message entity not found error due to the way the pipeline structure works with our variables
         // so count the errors against the message entity not found error.
         // NOTE this should not account for any other exceptions.
