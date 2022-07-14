@@ -274,14 +274,14 @@ class MessageProcessorIT extends BaseTest {
                 log -> log.getLevel().equals(Level.ERROR)).count(),
                 logsListMessageProcessor.stream().filter(
                         log -> log.getMessage().contains(
-                                "The messaging entity ('([^']|'')*') could not be found")).count());
+            "The messaging entity 'sb://destination1.servicebus.windows.net/hmc-to-hmi' could not be found")).count());
         assertFalse(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.INFO)));
         assertFalse(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.WARN)));
     }
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void shouldThrowMisMatchOnRequestVersion() {
+    void shouldThrowMismatchOnRequestVersion() {
         Map<String, Object> applicationProperties = new HashMap<>();
         applicationProperties.put(HEARING_ID, "2000000000");
         applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
