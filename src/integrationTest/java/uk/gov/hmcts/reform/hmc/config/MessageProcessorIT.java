@@ -440,10 +440,10 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
-        assertEquals(1, logsListMessageProcessor.size());
-        assertEquals(Level.ERROR, logsListMessageProcessor.get(0).getLevel());
-        assertEquals("Error for message with id null with error No hearing found for reference: 2000000001",
-                     logsListMessageProcessor.get(0).getMessage());
+        assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.ERROR)));
+        assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getMessage()
+                .matches(
+                        "Error for message with id null with error No hearing found for reference: 2000000001")));
     }
 
     @Test
@@ -484,10 +484,9 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Hearing id 1000000000 not found", logsList.get(2).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
-        assertEquals(1, logsListMessageProcessor.size());
-        assertEquals(Level.ERROR, logsListMessageProcessor.get(0).getLevel());
-        assertEquals("Error for message with id null with error Invalid hearing Id",
-                     logsListMessageProcessor.get(0).getMessage());
+        assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.ERROR)));
+        assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getMessage()
+                .matches("Error for message with id null with error Invalid hearing Id")));
     }
 
     @Test
