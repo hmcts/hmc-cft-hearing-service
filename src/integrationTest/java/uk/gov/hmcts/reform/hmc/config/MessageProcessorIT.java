@@ -53,8 +53,8 @@ class MessageProcessorIT extends BaseTest {
     private ServiceBusReceivedMessageContext messageContext = mock(ServiceBusReceivedMessageContext.class);
 
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
-            .modules(new Jdk8Module())
-            .build();
+        .modules(new Jdk8Module())
+        .build();
     private static final String MESSAGE_TYPE = "message_type";
     private static final String HEARING_ID = "hearing_id";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
