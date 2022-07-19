@@ -583,4 +583,15 @@ class BeanValidatorTest {
         assertTrue(violations.isEmpty());
     }
 
+    @Test
+    void shouldHave_NoHearingDetailsViolationAsListingAutoChangeReasonCodeOptional() {
+        HearingDetails hearingDetails = TestingUtil.hearingDetails();
+        hearingDetails.setListingAutoChangeReasonCode(null);
+        hearingDetails.setPanelRequirements(TestingUtil.panelRequirements());
+        Set<ConstraintViolation<HearingDetails>> violations = validator.validate(hearingDetails);
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
+        assertTrue(violations.isEmpty());
+    }
+
 }

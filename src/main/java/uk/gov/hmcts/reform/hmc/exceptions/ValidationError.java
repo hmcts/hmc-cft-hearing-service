@@ -21,6 +21,8 @@ public final class ValidationError {
     public static final String HEARING_LOCATION_EMPTY = "Hearing locations can not be empty";
     public static final String LISTING_COMMENTS_MAX_LENGTH = "Listing comments must not be more than 2000 "
         + CHARACTERS_LONG;
+    public static final String LISTING_REASON_CODE_MAX_LENGTH = "Listing comments must not be more than 70 "
+        + CHARACTERS_LONG;
     public static final String HEARING_REQUESTER_MAX_LENGTH = "Hearing requester must not be more than 60 "
         + CHARACTERS_LONG;
     public static final String LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH = "Lead judge contract type must not be more than "

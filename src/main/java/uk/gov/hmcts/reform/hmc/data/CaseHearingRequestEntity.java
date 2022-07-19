@@ -125,6 +125,9 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     @Column(name = "hearing_request_received_date_time", nullable = false)
     private LocalDateTime hearingRequestReceivedDateTime;
 
+    @Column(name = "listing_auto_change_reason_code", length = 70)
+    private String listingAutoChangeReasonCode;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.ChangeReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingChannelsEntity;
@@ -75,6 +76,10 @@ public class HearingDetailsMapper {
                 hearingDetails.getNonStandardHearingDurationReasons(),
                 caseHearingRequestEntity
             );
+        }
+        if (hearingDetails.getListingAutoChangeReasonCode() != null) {
+            caseHearingRequestEntity.setListingAutoChangeReasonCode(
+                ListingReasonCode.valueOf(hearingDetails.getListingAutoChangeReasonCode()).label);
         }
     }
 

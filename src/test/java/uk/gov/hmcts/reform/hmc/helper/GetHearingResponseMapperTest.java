@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelUserRequirementsEntity;
@@ -345,7 +346,9 @@ class GetHearingResponseMapperTest {
 
     private void assertHearingDetails(HearingDetails hearingDetails) {
         assertAll(
-            () -> assertEquals("Some hearing type", hearingDetails.getHearingType())
+            () -> assertEquals("Some hearing type", hearingDetails.getHearingType()),
+            () -> assertEquals(
+                ListingReasonCode.NO_MAPPING_AVAILABLE.label, hearingDetails.getListingAutoChangeReasonCode())
         );
     }
 
