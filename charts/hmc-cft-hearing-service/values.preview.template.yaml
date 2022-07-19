@@ -41,3 +41,8 @@ hmc:
       enabled: true
     hearingService:
       enabled: false
+      
+  hmc-hmi-outbound-adapter:
+    java:
+      environment:
+        LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CLIENT_FUTUREHEARING: DEBUG
