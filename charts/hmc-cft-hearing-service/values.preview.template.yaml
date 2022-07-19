@@ -46,14 +46,3 @@ hmc:
     java:
       environment:
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CLIENT_FUTUREHEARING: DEBUG
-      keyVaults:
-        hmc:
-          secrets:
-            - name: ClientId
-              alias: CLIENT_ID
-            - name: ClientSecret
-              alias: CLIENT_SECRET
-            - name: Scope
-              alias: SCOPE
-            - name: fh-get-token-url
-              alias: FH_GET_TOKEN_URL
