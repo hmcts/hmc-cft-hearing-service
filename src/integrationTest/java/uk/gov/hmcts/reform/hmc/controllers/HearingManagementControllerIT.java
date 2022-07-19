@@ -1060,7 +1060,8 @@ class HearingManagementControllerIT extends BaseTest {
                                                      "Unsupported type for requirementType",
                                                      AMEND_REASON_CODE_MAX_LENGTH,
                                                      HEARING_CHANNEL_EMPTY,
-                                                     LISTING_REASON_CODE_MAX_LENGTH
+                                                     LISTING_REASON_CODE_MAX_LENGTH,
+                                                     "Unsupported type or value for listingAutoChangeReasonCode"
             )))
             .andReturn();
     }
