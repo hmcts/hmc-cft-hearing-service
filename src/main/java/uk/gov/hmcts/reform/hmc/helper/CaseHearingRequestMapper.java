@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -84,9 +85,9 @@ public class CaseHearingRequestMapper {
             log.error("Error while reading the response:{}", e.getMessage());
         }
         caseHearingRequestNew.setVersionNumber(requestVersion);
-        caseHearingRequestNew.setCancellationReason(setCancellationReasonsEntity(
+        caseHearingRequestNew.setCancellationReasons(setCancellationReasonsEntities(
             deleteHearingRequest
-                .getCancellationReasonCode(),
+                .getCancellationReasonCodes(),
             caseHearingRequestNew
         ));
         caseHearingRequestNew.setHearingRequestReceivedDateTime(currentTime());
@@ -101,12 +102,15 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setCaseCategories(caseCategoriesEntities);
     }
 
-    private CancellationReasonsEntity setCancellationReasonsEntity(String cancellationReasonCode,
-                                                                   CaseHearingRequestEntity caseHearingRequestEntity) {
-        final CancellationReasonsEntity cancellationReasonsEntity = new CancellationReasonsEntity();
-        cancellationReasonsEntity.setCaseHearing(caseHearingRequestEntity);
-        cancellationReasonsEntity.setCancellationReasonType(cancellationReasonCode);
-        return cancellationReasonsEntity;
+    private List<CancellationReasonsEntity> setCancellationReasonsEntities(List<String> cancellationReasonCodes,
+                                                                           CaseHearingRequestEntity
+                                                                                   caseHearingRequestEntity) {
+        return cancellationReasonCodes.stream().map(cancellationReasonCode -> {
+            CancellationReasonsEntity cancellationReasonsEntity = new CancellationReasonsEntity();
+            cancellationReasonsEntity.setCaseHearing(caseHearingRequestEntity);
+            cancellationReasonsEntity.setCancellationReasonType(cancellationReasonCode);
+            return cancellationReasonsEntity;
+        }).collect(Collectors.toList());
     }
 
     private LocalDateTime currentTime() {
