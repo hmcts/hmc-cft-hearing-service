@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.constants.Constants;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
@@ -192,25 +193,34 @@ public class ListingMapper {
     }
 
     private void setAutoListFlag(HearingDetails hearingDetails, Long hearingId, Listing listing) {
-        Long caseHearingId = caseHearingRequestRepository.getCaseHearingId(hearingId);
-        Integer caseHearingLatestVersion = caseHearingRequestRepository.getLatestVersionNumber(hearingId);
+        CaseHearingRequestEntity requestEntity = caseHearingRequestRepository.getLatestCaseHearingRequest(hearingId);
         if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag())
             && !(reasonableAdjustmentIsMappedToRoomAttributes
                 && hearingDetails.getFacilitiesRequired().equals(listing.getRoomAttributes()))) {
-            caseHearingRequestRepository.updateAutoListFlag(hearingId,caseHearingLatestVersion, false);
             listing.setListingAutoCreateFlag(false);
-            caseHearingRequestRepository.updateListingAutoChangeReasonCode(
-                caseHearingId, caseHearingLatestVersion, ListingReasonCode.NO_MAPPING_AVAILABLE.label);
+            if (!isPostRequest(requestEntity)) {
+                caseHearingRequestRepository.updateAutoListFlag(hearingId,requestEntity.getVersionNumber(), false);
+                updateListingReasonCode(requestEntity.getCaseHearingID(), requestEntity.getVersionNumber());
+            }
         }
 
         if (hearingDetails.getListingAutoChangeReasonCode() != null) {
-            if (Boolean.FALSE.equals(hearingDetails.getAutoListFlag())) {
-                caseHearingRequestRepository.updateListingAutoChangeReasonCode(
-                    caseHearingId, caseHearingLatestVersion, hearingDetails.getListingAutoChangeReasonCode());
+            if (Boolean.FALSE.equals(hearingDetails.getAutoListFlag()) && !isPostRequest(requestEntity)) {
+                updateListingReasonCode(requestEntity.getCaseHearingID(),requestEntity.getVersionNumber());
             } else {
                 throw new BadRequestException(ValidationError.MUST_BE_FALSE_IF_YOU_SUPPLY_A_CHANGE_REASONCODE);
             }
         }
     }
 
+    private void updateListingReasonCode(Long caseHearingId, Integer caseHearingLatestVersion) {
+        caseHearingRequestRepository.updateListingAutoChangeReasonCode(
+            caseHearingId, caseHearingLatestVersion, ListingReasonCode.NO_MAPPING_AVAILABLE.label);
+    }
+
+    private Boolean isPostRequest(CaseHearingRequestEntity requestEntity) {
+        return requestEntity == null;
+    }
+
 }
+
