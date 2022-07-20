@@ -51,6 +51,7 @@ public class ListingMapper {
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
+            .listingLanguage(Boolean.TRUE.equals(hearingDetails.getHearingInWelshFlag()) ? "cym" : "ENG")
             .build();
 
         if (hearingDetails.getHearingWindow() != null) {

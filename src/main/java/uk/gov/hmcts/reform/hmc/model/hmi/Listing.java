@@ -57,5 +57,7 @@ public class Listing {
 
     private ListingMultiDay listingMultiDay;
 
+    private String listingLanguage;
+
     private List<String> roomAttributes;
 }
