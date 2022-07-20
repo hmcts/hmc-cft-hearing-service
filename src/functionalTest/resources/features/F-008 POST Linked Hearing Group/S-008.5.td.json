@@ -21,7 +21,7 @@
           "hearingOrder": "1"
         },
         {
-          "hearingId": "${[scenarioContext][childContexts][CreateLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingId": "${[scenarioContext][childContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
           "hearingOrder": "2"
         }
       ]
