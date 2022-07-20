@@ -211,6 +211,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         this.cancellationReasons = original.cancellationReasons;
         this.hearingChannels = original.hearingChannels;
         this.amendReasonCodes = original.amendReasonCodes;
+        this.listingAutoChangeReasonCode = original.listingAutoChangeReasonCode;
     }
 
     @Override

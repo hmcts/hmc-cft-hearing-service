@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -37,4 +38,16 @@ public interface CaseHearingRequestRepository extends CrudRepository<CaseHearing
 
     @Query("select count(hmctsServiceCode) from CaseHearingRequestEntity where hmctsServiceCode = :hmctsServiceCode")
     Long getHmctsServiceCodeCount(String hmctsServiceCode);
+
+    @Modifying
+    @Query("UPDATE CaseHearingRequestEntity chr SET chr.autoListFlag = :autoListFlag "
+        + "WHERE chr.caseHearingID = :caseHearingId and chr.versionNumber = :versionNumber")
+    void updateAutoListFlag(Long caseHearingId, Integer versionNumber, boolean autoListFlag);
+
+    @Modifying
+    @Query("UPDATE CaseHearingRequestEntity chr SET chr.listingAutoChangeReasonCode = :listingAutoChangeReasonCode "
+        + "WHERE chr.caseHearingID = :caseHearingId and chr.versionNumber = :versionNumber")
+    void updateListingAutoChangeReasonCode(Long caseHearingId,
+                                           Integer versionNumber,
+                                           String listingAutoChangeReasonCode);
 }
