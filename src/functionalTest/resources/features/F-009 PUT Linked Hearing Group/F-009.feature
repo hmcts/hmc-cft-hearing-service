@@ -4,17 +4,17 @@ Feature: F-009: Put linked hearing group
   Background:
     Given an appropriate test context as detailed in the test data source
     Given a user with [an active profile in CCD]
-    And a case that has just been created as in [CreateCase],
 
   @S-009.1
   Scenario: List the expected parties as per the latest version of the hearing request-response together with any actuals currently captured.
     Given a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateAnotherLinkedHearingRequest],
+    And another successful call [to create a hearing request] as in [CreateThirdLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateLinkedHearingGroupRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [Put linked hearing groups] operation of [HMC CFT Hearing Service],
     Then a positive response is received,
-    And the response has all other details as expected.
+    And a call [to verify versionNumber=1 and status=HEARING_REQUESTED] will get the expected response as in [S-009.1-get-linked-hearing].
 
   @S-009.2
   Scenario: Should return 403 unauthorised
@@ -50,17 +50,11 @@ Feature: F-009: Put linked hearing group
   @S-009.5 003 hearing request already in a group
   Scenario: Should return 400 insufficient requestIDs
     Given a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
-    When a request is prepared with appropriate values,
-    And it is submitted to call the [Put linked hearing groups] operation of [HMC CFT Hearing Service],
-    Then a negative response is received,
-    And the response [has 400 status code],
-    And the response has all other details as expected.
-
-  @S-009.6 004 Invalid state for hearing request <hearingId>
-  Scenario: Should return 400 insufficient requestIDs
-    Given a successful call [to create a hearing request] as in [CreateLinkedHearingRequestInvalidState],
-    And a successful call [to amend a hearing request] as in [AmendLinkedHearingRequestInvalidState],
     And another successful call [to create a hearing request] as in [CreateAnotherLinkedHearingRequest],
+    And another successful call [to create a hearing request] as in [CreateThirdLinkedHearingRequest],
+    And another successful call [to create a hearing request] as in [CreateFourthLinkedHearingRequest],
+    And another successful call [to create a hearing request] as in [CreateLinkedHearingGroupRequest],
+    And another successful call [to create a hearing request] as in [CreateAnotherLinkedHearingGroupRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [Put linked hearing groups] operation of [HMC CFT Hearing Service],
     Then a negative response is received,

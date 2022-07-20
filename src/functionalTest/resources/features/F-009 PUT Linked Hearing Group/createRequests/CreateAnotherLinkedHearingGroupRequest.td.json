@@ -1,5 +1,5 @@
 {
-  "_guid_": "CreateLinkedHearingGroupRequest",
+  "_guid_": "CreateAnotherLinkedHearingGroupRequest",
   "productName": "HMC CFT Hearing Service",
   "operationName": "create linked group hearing",
   "method": "POST",
@@ -21,7 +21,7 @@
       "_extends_": "Common_Request_Headers"
     },
     "body": {
-      "_extends_": "createLinkedHearingGroupRequestFullData"
+      "_extends_": "createAnotherLinkedHearingGroupRequestFullData"
     }
   },
   "expectedResponse": {

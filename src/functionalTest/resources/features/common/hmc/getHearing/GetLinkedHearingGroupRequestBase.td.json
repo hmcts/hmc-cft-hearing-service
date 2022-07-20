@@ -1,40 +1,33 @@
 {
-  "_guid_": "CreateLinkedHearingGroupRequest",
+  "_guid_": "GetLinkedHearingGroupRequestBase",
   "productName": "HMC CFT Hearing Service",
-  "operationName": "create linked group hearing",
-  "method": "POST",
-  "uri": "/linkedHearingGroup",
+  "operationName": "get hearing",
+  "method": "GET",
+  "uri": "/linkedHearingGroup/{id}",
   "s2sClientId": "xui_webapp",
-  "userTokenClientId": "xuiwebapp",
   "specs": [
-    "to create a hearing request"
+    "has the 200 OK code",
+    "an active profile in CCD"
   ],
-
   "users": {
     "invokingUser": {
       "_extends_": "HmcSuperuser"
     }
   },
-
   "request": {
     "headers": {
       "_extends_": "Common_Request_Headers"
-    },
-    "body": {
-      "_extends_": "createLinkedHearingGroupRequestFullData"
     }
   },
   "expectedResponse": {
-    "responseCode": 201,
-    "responseMessage": "OK",
     "headers": {
+      "Cache-Control" : "no-cache, no-store, max-age=0, must-revalidate",
+      "Connection" : "keep-alive",
       "Content-Length": "[[ANYTHING_PRESENT]]",
       "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
       "Date": "[[ANYTHING_PRESENT]]",
+      "Expires" : "[[ANYTHING_PRESENT]]",
       "Request-Context": "[[ANY_NULLABLE]]"
-    },
-    "body": {
-      "hearingGroupRequestId": "[[ANYTHING_PRESENT]]"
     }
   }
 }

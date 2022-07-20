@@ -20,11 +20,11 @@
       },
       "hearingsInGroup": [
         {
-          "hearingId": "${[scenarioContext][parentContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingId": "${[scenarioContext][childContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
           "hearingOrder": "1"
         },
         {
-          "hearingId": "${[scenarioContext][parentContexts][CreateThirdLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingId": "${[scenarioContext][childContexts][CreateThirdLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
           "hearingOrder": "2"
         }
       ]
@@ -39,17 +39,6 @@
       "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
       "Date": "[[ANYTHING_PRESENT]]",
       "Request-Context": "[[ANY_NULLABLE]]"
-    },
-    "body" : {
-      "hmcStatus": "STATUS",
-      "caseDetails": {
-
-      },
-      "hearingPlanned": {
-        "plannedHearingType": "hearing type",
-        "plannedHearingDays": []
-      },
-      "hearingActuals": []
     }
   }
 }
