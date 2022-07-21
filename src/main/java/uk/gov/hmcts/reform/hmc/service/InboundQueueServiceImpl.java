@@ -145,7 +145,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     }
 
     @Transactional
-    public void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse) {
+    private void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = null;
@@ -165,7 +165,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     }
 
     @Transactional
-    public void updateHearingAndStatus(Long hearingId, SyncResponse syncResponse) {
+    private void updateHearingAndStatus(Long hearingId, SyncResponse syncResponse) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiSyncResponseToEntity(
