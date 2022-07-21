@@ -198,14 +198,15 @@ public class ListingMapper {
             && !(reasonableAdjustmentIsMappedToRoomAttributes
                 && hearingDetails.getFacilitiesRequired().equals(listing.getRoomAttributes()))) {
             listing.setListingAutoCreateFlag(false);
-            if (!isPostRequest(requestEntity)) {
+            if (Boolean.FALSE.equals(isPostRequest(requestEntity))) {
                 caseHearingRequestRepository.updateAutoListFlag(hearingId,requestEntity.getVersionNumber(), false);
                 updateListingReasonCode(requestEntity.getCaseHearingID(), requestEntity.getVersionNumber());
             }
         }
 
-        if (hearingDetails.getListingAutoChangeReasonCode() != null) {
-            if (Boolean.FALSE.equals(hearingDetails.getAutoListFlag()) && !isPostRequest(requestEntity)) {
+        if (hearingDetails.getListingAutoChangeReasonCode() != null
+            && Boolean.FALSE.equals(isPostRequest(requestEntity))) {
+            if (Boolean.FALSE.equals(hearingDetails.getAutoListFlag())) {
                 updateListingReasonCode(requestEntity.getCaseHearingID(),requestEntity.getVersionNumber());
             } else {
                 throw new BadRequestException(ValidationError.MUST_BE_FALSE_IF_YOU_SUPPLY_A_CHANGE_REASONCODE);
