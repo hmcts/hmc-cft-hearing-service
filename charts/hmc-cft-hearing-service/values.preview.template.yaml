@@ -41,8 +41,10 @@ hmc:
       enabled: true
     hearingService:
       enabled: false
-      
+
   hmc-hmi-outbound-adapter:
     java:
       environment:
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CLIENT_FUTUREHEARING: DEBUG
+        HMI_BASE_URL: "https://ccd-test-stubs-service-pr-174.service.core-compute-preview.internal"
+
