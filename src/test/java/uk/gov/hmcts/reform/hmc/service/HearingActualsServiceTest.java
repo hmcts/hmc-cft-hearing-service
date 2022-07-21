@@ -70,21 +70,6 @@ class HearingActualsServiceTest {
     @Mock
     private HearingResponseRepository hearingResponseRepository;
 
-    @Mock
-    HearingActualsValidator hearingActualsValidatorMock;
-
-    @Mock
-    HearingIdValidator hearingIdValidatorMock;
-
-    @Mock
-    HearingActualsMapper hearingActualsMapperMock;
-
-    HearingActualsValidator hearingActualsValidator;
-
-    HearingIdValidator hearingIdValidator;
-
-    HearingActualsMapper hearingActualsMapper;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);

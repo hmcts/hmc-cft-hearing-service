@@ -6,13 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 
 import java.net.URI;
@@ -44,12 +42,6 @@ import static wiremock.org.apache.http.entity.ContentType.APPLICATION_JSON;
     "http.client.max.client_per_route=2",
     "http.client.validate.after.inactivity=1"})
 public class RestTemplateConfigurationTest extends BaseTest {
-
-    @MockBean
-    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
-
-    @MockBean
-    private ApplicationParams applicationParams;
 
     private RestTemplate restTemplate;
 

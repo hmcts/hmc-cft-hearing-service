@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -27,7 +26,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 class HearingManagementInterfaceRequestInterceptorTest {
 
     private final Clock fixedClock = Clock.fixed(Instant.parse("2021-06-10T04:00:00.08Z"), ZoneOffset.UTC);
-    private static MockedStatic<UUID> mockedUuid;
     private static final String SOURCE_SYSTEM = "SOURCE_SYSTEM";
     private static final String DESTINATION_SYSTEM = "DESTINATION_SYSTEM";
     private static final String TEST_TOKEN = "test-token";
