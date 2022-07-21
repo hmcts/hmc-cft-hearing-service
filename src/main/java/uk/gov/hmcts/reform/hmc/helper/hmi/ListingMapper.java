@@ -197,30 +197,31 @@ public class ListingMapper {
         if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag())
             && !(reasonableAdjustmentIsMappedToRoomAttributes
                 && hearingDetails.getFacilitiesRequired().equals(listing.getRoomAttributes()))) {
+
             listing.setListingAutoCreateFlag(false);
-            if (Boolean.FALSE.equals(isPostRequest(requestEntity))) {
-                caseHearingRequestRepository.updateAutoListFlag(hearingId,requestEntity.getVersionNumber(), false);
-                updateListingReasonCode(requestEntity.getCaseHearingID(), requestEntity.getVersionNumber());
+            if (Boolean.TRUE.equals(isUpdateRequest(requestEntity))) {
+                requestEntity.setVersionNumber(requestEntity.getHearing().getNextRequestVersion());
+                requestEntity.setAutoListFlag(false);
+                requestEntity.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.label);
             }
+
         }
 
-        if (hearingDetails.getListingAutoChangeReasonCode() != null
-            && Boolean.FALSE.equals(isPostRequest(requestEntity))) {
+        if (hearingDetails.getListingAutoChangeReasonCode() != null) {
             if (Boolean.FALSE.equals(hearingDetails.getAutoListFlag())) {
-                updateListingReasonCode(requestEntity.getCaseHearingID(),requestEntity.getVersionNumber());
+                if (Boolean.TRUE.equals(isUpdateRequest(requestEntity))) {
+                    requestEntity.setVersionNumber(requestEntity.getHearing().getNextRequestVersion());
+                    requestEntity.setListingAutoChangeReasonCode(
+                        ListingReasonCode.valueOf(hearingDetails.getListingAutoChangeReasonCode()).label);
+                }
             } else {
                 throw new BadRequestException(ValidationError.MUST_BE_FALSE_IF_YOU_SUPPLY_A_CHANGE_REASONCODE);
             }
         }
     }
 
-    private void updateListingReasonCode(Long caseHearingId, Integer caseHearingLatestVersion) {
-        caseHearingRequestRepository.updateListingAutoChangeReasonCode(
-            caseHearingId, caseHearingLatestVersion, ListingReasonCode.NO_MAPPING_AVAILABLE.label);
-    }
-
-    private Boolean isPostRequest(CaseHearingRequestEntity requestEntity) {
-        return requestEntity == null;
+    private Boolean isUpdateRequest(CaseHearingRequestEntity requestEntity) {
+        return requestEntity != null;
     }
 
 }

@@ -438,6 +438,7 @@ class ListingMapperTest {
         CaseHearingRequestEntity caseHearingRequest = new CaseHearingRequestEntity();
         caseHearingRequest.setVersionNumber(version);
         caseHearingRequest.setCaseHearingID(1L);
+        caseHearingRequest.setHearing(TestingUtil.hearingEntity());
         when(caseHearingRequestRepository.getLatestCaseHearingRequest(any())).thenReturn(caseHearingRequest);
     }
 }
