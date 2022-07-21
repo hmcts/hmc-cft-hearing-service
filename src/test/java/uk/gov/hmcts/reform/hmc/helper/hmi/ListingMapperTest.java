@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.RoleType;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
@@ -57,6 +58,41 @@ class ListingMapperTest {
     private static final String ROLE_TYPE = "RoleType1";
     private static final String HEARING_CHANNEL = "someChannelType";
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
+
+    @Test
+    void shouldReturnListingWithNoWelshLanguageValue() {
+        HearingDetails hearingDetails = buildHearingDetails(150);
+        hearingDetails.setHearingInWelshFlag(false);
+        Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
+        assertEquals(ListingMapper.WELSH_LANGUAGE_FALSE_VALUE, listing.getListingLanguage());
+    }
+
+    @Test
+    void shouldReturnListingWithWelshLanguageValue() {
+        HearingDetails hearingDetails = buildHearingDetails(150);
+        hearingDetails.setHearingInWelshFlag(true);
+        Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
+        assertEquals(ListingMapper.WELSH_LANGUAGE_TRUE_VALUE, listing.getListingLanguage());
+    }
+
+    @Test
+    void shouldReturnListingJohTiersWithGivenRoleType() {
+        HearingDetails hearingDetails = buildHearingDetails(150);
+        hearingDetails.getPanelRequirements().setRoleType(List.of(RoleType.ORGANISATION.name()));
+        Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
+        assertTrue(listing.getListingJohTiers().contains(RoleType.ORGANISATION.name()));
+    }
+
+    @Test
+    void shouldReturnListingOtherConsiderationWtithGivenFacilitiesRequired() {
+        List<String> faciltiesRequired = List.of("Reading Room","Study Room");
+        HearingDetails hearingDetails = buildHearingDetails(150);
+        hearingDetails.setFacilitiesRequired(faciltiesRequired);
+        Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
+        faciltiesRequired.forEach(e -> {
+            assertTrue(listing.getListingOtherConsiderations().contains(e));
+        });
+    }
 
     @Test
     void shouldReturnListingWithBothHearingWindowFieldsAndRoleType() {
