@@ -23,6 +23,8 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
 @Component
 public class ListingMapper {
 
+    public static final String WELSH_LANGUAGE_TRUE_VALUE = "cym";
+    public static final String WELSH_LANGUAGE_FALSE_VALUE = "ENG";
     private final ListingJohsMapper listingJohsMapper;
     private final ListingLocationsMapper listingLocationsMapper;
     private final RoomAttributesService roomAttributesService;
@@ -51,6 +53,8 @@ public class ListingMapper {
             .listingLocations(listingLocationsMapper.getListingLocations(hearingDetails.getHearingLocations()))
             .listingJohSpecialisms(hearingDetails.getPanelRequirements().getPanelSpecialisms())
             .listingJohTickets(hearingDetails.getPanelRequirements().getAuthorisationSubType())
+            .listingLanguage(Boolean.TRUE.equals(hearingDetails.getHearingInWelshFlag())
+                    ? WELSH_LANGUAGE_TRUE_VALUE : WELSH_LANGUAGE_FALSE_VALUE)
             .build();
 
         if (hearingDetails.getHearingWindow() != null) {
