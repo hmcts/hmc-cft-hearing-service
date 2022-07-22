@@ -41,7 +41,11 @@ public class HmiSubmitHearingRequestMapper {
                     hearingId,
                     isLinkedFlag))
             .entities(entities.getEntities())
-            .listing(listingMapper.getListing(hearingRequest.getHearingDetails(), entities.getEntities()))
+            .listing(listingMapper.getListing(
+                    hearingRequest.getHearingDetails(),
+                    entities.getEntities(),
+                    versionNumber,
+                hearingId, hearingRequest))
             .build();
 
         return HmiSubmitHearingRequest.builder()

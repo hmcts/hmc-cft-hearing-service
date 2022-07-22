@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
@@ -16,6 +18,7 @@ import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingJoh;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingLocation;
+import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.service.RoomAttributesService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -27,6 +30,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -34,6 +38,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.COURT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.EPIMS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 
 @ExtendWith(MockitoExtension.class)
 class ListingMapperTest {
@@ -47,6 +52,9 @@ class ListingMapperTest {
     @Mock
     private RoomAttributesService roomAttributesService;
 
+    @Mock
+    CaseHearingRequestRepository caseHearingRequestRepository;
+
     @InjectMocks
     private ListingMapper listingMapper;
 
@@ -57,6 +65,7 @@ class ListingMapperTest {
     private static final String ROLE_TYPE = "RoleType1";
     private static final String HEARING_CHANNEL = "someChannelType";
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
+    private static final Long HEARING_ID = 1L;
 
     @Test
     void shouldReturnListingWithBothHearingWindowFieldsAndRoleType() {
@@ -68,7 +77,6 @@ class ListingMapperTest {
         assertListingLocations(listingLocation, listing.getListingLocations());
         assertListingJohs(listingJoh, listing.getListingJohs());
 
-        assertEquals(true, listing.getListingAutoCreateFlag());
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
         assertEquals(HEARING_TYPE, listing.getListingType());
         assertEquals(150, listing.getListingDuration());
@@ -109,7 +117,6 @@ class ListingMapperTest {
         assertListingLocations(listingLocation, listing.getListingLocations());
         assertListingJohs(listingJoh, listing.getListingJohs());
 
-        assertEquals(true, listing.getListingAutoCreateFlag());
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
         assertEquals(HEARING_TYPE, listing.getListingType());
         assertEquals(360, listing.getListingDuration());
@@ -148,7 +155,6 @@ class ListingMapperTest {
         assertListingLocations(listingLocation, listing.getListingLocations());
         assertListingJohs(listingJoh, listing.getListingJohs());
 
-        assertEquals(true, listing.getListingAutoCreateFlag());
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
         assertEquals(HEARING_TYPE, listing.getListingType());
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
@@ -234,7 +240,8 @@ class ListingMapperTest {
     @Test
     void shouldReturnEmptyListingFieldsIfEntitiesListIsNull() {
         HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
-        Listing listing = listingMapper.getListing(hearingDetails,null);
+        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
+        Listing listing = listingMapper.getListing(hearingDetails,null, null);
         assertTrue(listing.getListingOtherConsiderations().isEmpty());
         assertTrue(listing.getRoomAttributes().isEmpty());
     }
@@ -299,6 +306,36 @@ class ListingMapperTest {
         assertTrue(listing.getListingOtherConsiderations().contains("randomReasonableAdjustment"));
     }
 
+    @Test
+    void shouldReturnListingWithAutoCreateFlag() {
+        HearingDetails hearingDetails = buildHearingDetails(150);
+        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setListingAutoChangeReasonCode(null);
+        hearingDetails.setFacilitiesRequired(List.of("ReasonableAdjustment1"));
+        Optional<RoomAttribute> roomAttribute =
+            TestingUtil.getRoomAttribute("RoomCode1", "Name1",
+                "ReasonableAdjustment1", false);
+        when(roomAttributesService.findByReasonableAdjustmentCode("ReasonableAdjustment1"))
+            .thenReturn(roomAttribute);
+        Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
+        assertNotNull(listing.getRoomAttributes());
+        assertTrue(listing.getRoomAttributes().contains("RoomCode1"));
+    }
+
+    @Test
+    void shouldFail_whenListingAutoChangeReasonCodeIsProvidedAndAutoListFlagIsTrue() {
+        HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
+        assertNotNull(hearingDetails.getListingAutoChangeReasonCode());
+
+        hearingDetails.setAutoListFlag(true);
+        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            listingMapper.getListing(hearingDetails,null, null));
+        assertEquals(
+            "001 autoListFlag must be FALSE if you supply a change reasoncode",
+            exception.getMessage());
+    }
+
     private void assertListingJohs(ListingJoh listingJoh, List<ListingJoh> listingJohList) {
         assertEquals(1, listingJohList.size());
         assertEquals(listingJoh, listingJohList.get(0));
@@ -315,7 +352,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingIfHearingWindowNotPresent() {
         HearingDetails hearingDetails = buildHearingDetailsWithNoHearingWindow(2165);
-        Listing listing = listingMapper.getListing(hearingDetails,null);
+        Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
         assertNull(listing.getListingDate());
         assertNull(listing.getListingStartDate());
         assertNull(listing.getListingEndDate());
@@ -363,9 +400,9 @@ class ListingMapperTest {
     }
 
     private Listing buildListing(HearingDetails hearingDetails,Entity entity) {
-        return listingMapper.getListing(hearingDetails,List.of(entity));
+        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
+        return listingMapper.getListing(hearingDetails,List.of(entity),HEARING_ID);
     }
-
 
     @Test
     void shouldReturnListingForMultiDayHearingDurationWithManyValues() {
@@ -392,8 +429,16 @@ class ListingMapperTest {
     }
 
     private Listing getListing(int duration) {
+        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
         val hearingDetails = buildHearingDetails(HearingMapper.roundUpDuration(duration));
-        Listing listing = listingMapper.getListing(hearingDetails, null);
-        return listing;
+        return listingMapper.getListing(hearingDetails, null,null);
+    }
+
+    private void generateCaseHearingRequestEntity(Integer version) {
+        CaseHearingRequestEntity caseHearingRequest = new CaseHearingRequestEntity();
+        caseHearingRequest.setVersionNumber(version);
+        caseHearingRequest.setCaseHearingID(1L);
+        caseHearingRequest.setHearing(TestingUtil.hearingEntity());
+        when(caseHearingRequestRepository.getLatestCaseHearingRequest(any())).thenReturn(caseHearingRequest);
     }
 }

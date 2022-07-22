@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
+import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Constraint(validatedBy = ListingReasonCodeEnumPatternValidator.class)
 public @interface ListingReasonCodeEnumPattern {
-    Class<? extends Enum<?>> enumClass();
+    Class<? extends Enum<ListingReasonCode>> enumClass();
     String fieldName();
     String message() default "Unsupported type or value for {fieldName}";
     Class<?>[] groups() default {};
