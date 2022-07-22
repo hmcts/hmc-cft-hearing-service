@@ -50,6 +50,9 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     @Column(name = "auto_list_flag", nullable = false)
     private Boolean autoListFlag;
 
+    @Column(name = "listing_auto_change_reason_code", length = 70)
+    private String listingAutoChangeReasonCode;
+
     @Column(name = "hearing_type", nullable = false)
     private String hearingType;
 
@@ -125,9 +128,6 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     @Column(name = "hearing_request_received_date_time", nullable = false)
     private LocalDateTime hearingRequestReceivedDateTime;
 
-    @Column(name = "listing_auto_change_reason_code", length = 70)
-    private String listingAutoChangeReasonCode;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
@@ -173,6 +173,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     public CaseHearingRequestEntity(CaseHearingRequestEntity original) {
         this.caseHearingID = original.caseHearingID;
         this.autoListFlag = original.autoListFlag;
+        this.listingAutoChangeReasonCode = original.listingAutoChangeReasonCode;
         this.hearingType = original.hearingType;
         this.requiredDurationInMinutes = original.requiredDurationInMinutes;
         this.hearingPriorityType = original.hearingPriorityType;
@@ -211,7 +212,6 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         this.cancellationReasons = original.cancellationReasons;
         this.hearingChannels = original.hearingChannels;
         this.amendReasonCodes = original.amendReasonCodes;
-        this.listingAutoChangeReasonCode = original.listingAutoChangeReasonCode;
     }
 
     @Override

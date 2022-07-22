@@ -39,4 +39,12 @@ public interface CaseHearingRequestRepository extends CrudRepository<CaseHearing
     @Query("select count(hmctsServiceCode) from CaseHearingRequestEntity where hmctsServiceCode = :hmctsServiceCode")
     Long getHmctsServiceCodeCount(String hmctsServiceCode);
 
+    @Modifying
+    @Query("UPDATE CaseHearingRequestEntity chr SET chr.autoListFlag = :autoListFlag "
+        + ", chr.listingAutoChangeReasonCode = :listingAutoChangeReasonCode "
+        + "WHERE chr.hearing.id = :hearingId and chr.versionNumber = :versionNumber")
+    void updateAutoListFlagAndListingReasonCode(Long hearingId, Integer versionNumber,
+                                                boolean autoListFlag,
+                                                String listingAutoChangeReasonCode);
+
 }

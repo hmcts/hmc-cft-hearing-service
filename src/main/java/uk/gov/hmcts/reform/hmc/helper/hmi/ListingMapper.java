@@ -7,14 +7,19 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.constants.Constants;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.helper.CaseHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.RoomAttribute;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingMultiDay;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.RoomAttributesService;
 
 import java.util.ArrayList;
@@ -24,6 +29,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 
 @Component
 public class ListingMapper {
@@ -31,21 +38,28 @@ public class ListingMapper {
     private final ListingJohsMapper listingJohsMapper;
     private final ListingLocationsMapper listingLocationsMapper;
     private final RoomAttributesService roomAttributesService;
-    private final CaseHearingRequestRepository caseHearingRequestRepository;
-    private boolean reasonableAdjustmentIsMappedToRoomAttributes = false;
+    private final CaseHearingRequestRepository requestRepository;
+    private final HearingRepository hearingRepository;
+    private boolean reasonableAdjustmentIsMappedToRoomAttributes;
+    private final CaseHearingRequestMapper caseHearingRequestMapper;
 
     @Autowired
     public ListingMapper(ListingJohsMapper listingJohsMapper,
                          ListingLocationsMapper listingLocationsMapper,
                          RoomAttributesService roomAttributesService,
-                         CaseHearingRequestRepository caseHearingRequestRepository) {
+                         CaseHearingRequestRepository caseHearingRequestRepository,
+                         HearingRepository hearingRepository,
+                         CaseHearingRequestMapper caseHearingRequestMapper) {
         this.listingJohsMapper = listingJohsMapper;
         this.listingLocationsMapper = listingLocationsMapper;
         this.roomAttributesService = roomAttributesService;
-        this.caseHearingRequestRepository = caseHearingRequestRepository;
+        this.requestRepository = caseHearingRequestRepository;
+        this.hearingRepository = hearingRepository;
+        this.caseHearingRequestMapper = caseHearingRequestMapper;
     }
 
-    public Listing getListing(HearingDetails hearingDetails, List<Entity> entitiesList, Long hearingId) {
+    public Listing getListing(HearingDetails hearingDetails, List<Entity> entitiesList, Integer versionNumber, Long hearingId,
+                              HearingRequest hearingRequest) {
 
         Listing listing = Listing.builder()
             .listingPriority(hearingDetails.getHearingPriorityType())
@@ -91,7 +105,7 @@ public class ListingMapper {
             listing.setListingOtherConsiderations(List.of());
             listing.setRoomAttributes(List.of());
         }
-        setAutoListFlag(hearingDetails, hearingId, listing);
+        setAutoListFlag(hearingDetails, versionNumber, listing, hearingId, hearingRequest);
 
         if (!Collections.isEmpty(hearingDetails.getAmendReasonCodes())) {
             listing.setAmendReasonCode(Constants.AMEND_REASON_CODE);
@@ -132,6 +146,7 @@ public class ListingMapper {
     private boolean areRoomAttributesFound(List<Entity> entitiesList,
                                            HearingDetails hearingDetails,
                                            Listing listing) {
+        reasonableAdjustmentIsMappedToRoomAttributes = false;
         Set<String> roomAttributesSet = new HashSet<>();
         Set<String> otherConsiderationsSet = new HashSet<>();
         entitiesList.forEach(entity -> {
@@ -192,31 +207,12 @@ public class ListingMapper {
         return roomAttributesCodeList;
     }
 
-    private void setAutoListFlag(HearingDetails hearingDetails, Long hearingId, Listing listing) {
-        CaseHearingRequestEntity requestEntity = caseHearingRequestRepository.getLatestCaseHearingRequest(hearingId);
+    private void setAutoListFlag(HearingDetails hearingDetails, Integer versionNumber, Listing listing, Long hearingId,
+                                 HearingRequest hearingRequest) {
         if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag())
             && !(reasonableAdjustmentIsMappedToRoomAttributes
                 && hearingDetails.getFacilitiesRequired().equals(listing.getRoomAttributes()))) {
-
-            listing.setListingAutoCreateFlag(false);
-            if (Boolean.TRUE.equals(isUpdateRequest(requestEntity))) {
-                requestEntity.setVersionNumber(requestEntity.getHearing().getNextRequestVersion());
-                requestEntity.setAutoListFlag(false);
-                requestEntity.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.label);
-            }
-
-        }
-
-        if (hearingDetails.getListingAutoChangeReasonCode() != null) {
-            if (Boolean.FALSE.equals(hearingDetails.getAutoListFlag())) {
-                if (Boolean.TRUE.equals(isUpdateRequest(requestEntity))) {
-                    requestEntity.setVersionNumber(requestEntity.getHearing().getNextRequestVersion());
-                    requestEntity.setListingAutoChangeReasonCode(
-                        ListingReasonCode.valueOf(hearingDetails.getListingAutoChangeReasonCode()).label);
-                }
-            } else {
-                throw new BadRequestException(ValidationError.MUST_BE_FALSE_IF_YOU_SUPPLY_A_CHANGE_REASONCODE);
-            }
+            requestRepository.updateAutoListFlagAndListingReasonCode(hearingId, versionNumber, false, ListingReasonCode.NO_MAPPING_AVAILABLE.label);
         }
     }
 

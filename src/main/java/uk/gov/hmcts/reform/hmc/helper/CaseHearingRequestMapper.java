@@ -3,10 +3,13 @@ package uk.gov.hmcts.reform.hmc.helper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseCategoriesEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.CaseCategory;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
@@ -39,7 +42,6 @@ public class CaseHearingRequestMapper {
         final CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         HearingDetails hearingDetails = hearingRequest.getHearingDetails();
         CaseDetails caseDetails = hearingRequest.getCaseDetails();
-        caseHearingRequestEntity.setAutoListFlag(hearingDetails.getAutoListFlag());
         caseHearingRequestEntity.setHearingType(hearingDetails.getHearingType());
         caseHearingRequestEntity.setRequiredDurationInMinutes(hearingDetails.getDuration());
         caseHearingRequestEntity.setHearingPriorityType(hearingDetails.getHearingPriorityType());
@@ -70,6 +72,14 @@ public class CaseHearingRequestMapper {
                                                                         .getDateRangeStart());
             caseHearingRequestEntity.setHearingWindowEndDateRange(hearingDetails.getHearingWindow()
                                                                       .getDateRangeEnd());
+        }
+        if (hearingDetails.getListingAutoChangeReasonCode() != null) {
+            if (Boolean.FALSE.equals(hearingDetails.getAutoListFlag())) {
+                caseHearingRequestEntity.setListingAutoChangeReasonCode(
+                    ListingReasonCode.valueOf(hearingDetails.getListingAutoChangeReasonCode()).label);
+            } else {
+                throw new BadRequestException(ValidationError.MUST_BE_FALSE_IF_YOU_SUPPLY_A_CHANGE_REASONCODE);
+            }
         }
         return caseHearingRequestEntity;
     }
