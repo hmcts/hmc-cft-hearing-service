@@ -1,0 +1,36 @@
+{
+  "_guid_": "S-008.4",
+  "_extends_" : "F-008_TestBase",
+
+  "specs": [
+    "an active profile in CCD",
+    "has 400 status code",
+    "shows there are insufficient requestIDs"
+  ],
+
+  "request": {
+    "body": {
+      "groupDetails": {
+        "groupName": "groupName",
+        "groupReason": "reason",
+        "groupLinkType": "Ordered",
+        "groupComments": "<groupComments>"
+      },
+      "hearingsInGroup": [
+        {
+          "hearingId": "${[scenarioContext][childContexts][CreateLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingOrder": "1"
+        }
+      ]
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 400,
+    "responseMessage" : "Bad Request",
+    "body" : {
+      "status" : "BAD_REQUEST",
+      "errors" : [ "001 Insufficient requestIds" ]
+    }
+  }
+}

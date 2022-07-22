@@ -1,0 +1,40 @@
+{
+  "_guid_": "S-008.2",
+  "_extends_" : "F-008_TestBase",
+
+  "specs": [
+    "an active profile in CCD",
+    "has 400 status code",
+    "shows isLinked value on hearingRequest trying to be linked is FALSE"
+  ],
+
+  "request": {
+    "body": {
+      "groupDetails": {
+        "groupName": "groupName",
+        "groupReason": "reason",
+        "groupLinkType": "Same Slot",
+        "groupComments": "groupComments"
+      },
+      "hearingsInGroup": [
+        {
+          "hearingId": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingOrder": "1"
+        },
+        {
+          "hearingId": "${[scenarioContext][childContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingOrder": "2"
+        }
+      ]
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 400,
+    "responseMessage": "Bad Request",
+    "body" : {
+      "status" : "BAD_REQUEST",
+      "errors" : [ "002 hearing request isLinked is False" ]
+    }
+  }
+}
