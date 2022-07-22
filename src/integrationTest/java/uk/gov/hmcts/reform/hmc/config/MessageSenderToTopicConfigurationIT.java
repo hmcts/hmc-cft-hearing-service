@@ -17,6 +17,7 @@ class MessageSenderToTopicConfigurationIT {
     void shouldSuccessfullyProcessRequest() {
         MessageSenderToTopicConfiguration messageSenderToTopicConfiguration =
             new MessageSenderToTopicConfiguration(applicationParams);
-        messageSenderToTopicConfiguration.sendMessage("Test Message");
+        messageSenderToTopicConfiguration.sendMessage("Test Message",
+                                                      "Test service code");
     }
 }

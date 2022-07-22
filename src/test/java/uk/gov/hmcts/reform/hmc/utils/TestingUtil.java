@@ -87,6 +87,7 @@ public class TestingUtil {
 
     public static final String CASE_REFERENCE = "1111222233334444";
     public static final String INVALID_CASE_REFERENCE = "1111222233334445";
+    public static final List<String> CANCELLATION_REASON_CODES = List.of("test 1", "test 2");
     public static Long ID = 2000000000L;
 
     private TestingUtil() {
@@ -218,12 +219,26 @@ public class TestingUtil {
     public static List<PartyDetails> partyDetails() {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
-        partyDetails1.setPartyType("ind");
+        partyDetails1.setPartyType(PartyType.IND.getLabel());
         partyDetails1.setPartyRole("DEF");
 
         PartyDetails partyDetails2 = new PartyDetails();
         partyDetails2.setPartyID("P2");
-        partyDetails2.setPartyType("IND");
+        partyDetails2.setPartyType(PartyType.IND.getLabel());
+        partyDetails2.setPartyRole("DEF2");
+
+        return List.of(partyDetails1, partyDetails2);
+    }
+
+    public static List<PartyDetails> partyDetailsWithOrgType() {
+        PartyDetails partyDetails1 = new PartyDetails();
+        partyDetails1.setPartyID("P1");
+        partyDetails1.setPartyType(PartyType.ORG.getLabel());
+        partyDetails1.setPartyRole("DEF");
+
+        PartyDetails partyDetails2 = new PartyDetails();
+        partyDetails2.setPartyID("P2");
+        partyDetails2.setPartyType(PartyType.ORG.getLabel());
         partyDetails2.setPartyRole("DEF2");
 
         return List.of(partyDetails1, partyDetails2);
@@ -397,7 +412,7 @@ public class TestingUtil {
 
     public static DeleteHearingRequest deleteHearingRequest() {
         DeleteHearingRequest request = new DeleteHearingRequest();
-        request.setCancellationReasonCode("test");
+        request.setCancellationReasonCodes(CANCELLATION_REASON_CODES);
         return request;
     }
 
@@ -1142,7 +1157,7 @@ public class TestingUtil {
     private static List<PartyDetails> partyDetailsWith2Parties(boolean isCftOrganisationIdNull) {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
-        partyDetails1.setPartyType("ind");
+        partyDetails1.setPartyType(PartyType.IND.getLabel());
         partyDetails1.setPartyRole("DEF");
         partyDetails1.setIndividualDetails(allIndividualDetails());
         partyDetails1.setUnavailabilityDow(unavailabilityDowDetails());
@@ -1150,7 +1165,7 @@ public class TestingUtil {
 
         PartyDetails partyDetails2 = new PartyDetails();
         partyDetails2.setPartyID("P2");
-        partyDetails2.setPartyType("IND");
+        partyDetails2.setPartyType(PartyType.ORG.getLabel());
         partyDetails2.setPartyRole("DEF2");
         if (isCftOrganisationIdNull) {
             partyDetails2.setOrganisationDetails(organisationDetailsIdNull());
@@ -1377,5 +1392,37 @@ public class TestingUtil {
         return pauseDayTime;
     }
 
+    public static UpdateHearingRequest updateHearingRequestWithoutHearingWindow(int version) {
+        UpdateHearingRequest request = new UpdateHearingRequest();
+        HearingDetails hearingDetails = hearingDetailsWithoutHearingWindow();
+        hearingDetails.setAmendReasonCodes(List.of("reason 1", "reason 2"));
+        request.setHearingDetails(hearingDetails);
+        CaseDetails caseDetails = getValidCaseDetails();
+        request.setCaseDetails(caseDetails);
+        request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
+        RequestDetails requestDetails = new RequestDetails();
+        requestDetails.setVersionNumber(1);
+        request.setRequestDetails(requestDetails);
+        return request;
+    }
+
+    public static HearingDetails hearingDetailsWithoutHearingWindow() {
+        HearingDetails hearingDetails = new HearingDetails();
+        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setHearingType("Some hearing type");
+        hearingDetails.setDuration(360);
+        hearingDetails.setNonStandardHearingDurationReasons(List.of("First reason", "Second reason"));
+        hearingDetails.setHearingPriorityType("Priority type");
+        hearingDetails.setHearingIsLinkedFlag(Boolean.TRUE);
+        hearingDetails.setHearingChannels(getHearingChannelsList());
+        HearingLocation location1 = new HearingLocation();
+        location1.setLocationType(LocationType.CLUSTER.getLabel());
+        location1.setLocationId("Location Id");
+        List<HearingLocation> hearingLocations = new ArrayList<>();
+        hearingLocations.add(location1);
+        hearingDetails.setHearingLocations(hearingLocations);
+        hearingDetails.setFacilitiesRequired(List.of("facility1", "facility2"));
+        return hearingDetails;
+    }
 }
 

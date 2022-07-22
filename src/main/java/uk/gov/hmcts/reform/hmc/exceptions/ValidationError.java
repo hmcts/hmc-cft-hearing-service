@@ -9,7 +9,6 @@ public final class ValidationError {
     public static final String AUTO_LIST_FLAG_NULL_EMPTY = "Auto list flag can not be null or empty";
     public static final String HEARING_TYPE_NULL_EMPTY = "Hearing type can not be null or empty";
     public static final String HEARING_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;
-    public static final String HEARING_WINDOW_NULL = "Hearing window can not be null";
     public static final String DURATION_EMPTY = "Duration can not be empty";
     public static final String NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG = "Non standard hearing duration "
         + "reasons length cannot be greater than 70 " + CHARACTERS_LONG;
@@ -117,7 +116,7 @@ public final class ValidationError {
         + "be present";
     public static final String INVALID_CANCELLATION_REASON_CODE = "Cancellation Reason code details are not present";
     public static final String CANCELLATION_REASON_CODE_MAX_LENGTH_MSG = "Cancellation Reason code "
-        + "length cannot be greater than 100 characters";
+        + "length must be at least 1 and no greater than 100 characters";
     public static final String INVALID_VERSION_NUMBER = "Invalid version number";
     public static final String INVALID_HEARING_ID_DETAILS = "Invalid hearing Id";
     public static final String CASE_NOT_FOUND = "Case could not be found";
@@ -162,7 +161,7 @@ public final class ValidationError {
     public static final String HA_OUTCOME_REQUEST_DATE_NOT_EMPTY = "hearingResultDate cannot be null or empty";
 
     public static final String HA_OUTCOME_REQUEST_DATE_MUST_BE_PAST_OR_PRESENT =
-            "hearingResultDate must be past or present";
+        "hearingResultDate must be past or present";
 
     public static final String HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY = "hearingDate cannot be null or empty";
     public static final String HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY = "pauseStartTime cannot be null or empty";
@@ -205,20 +204,20 @@ public final class ValidationError {
     public static final String HEARINGS_IN_GROUP_SIZE = "001 Insufficient requestIds";
 
     public static final String HEARING_REQUEST_ID_MAX_LENGTH =
-            "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
+        "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
     public static final String HEARING_GROUP_REQUEST_ID_MAX_LENGTH =
-            "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
+        "Hearing request id length cannot be greater than 30 " + CHARACTERS_LONG;
     public static final String LIST_ASSIST_TRANSACTION_ID_MAX_LENGTH =
-            "List assist transaction id length cannot be greater than 40 " + CHARACTERS_LONG;
+        "List assist transaction id length cannot be greater than 40 " + CHARACTERS_LONG;
     public static final String HEARING_CANCELLATION_REASON_MAX_LENGTH =
-            "Hearing cancellation reason length cannot be greater than 40 " + CHARACTERS_LONG;
+        "Hearing cancellation reason length cannot be greater than 40 " + CHARACTERS_LONG;
 
 
     public static final String INVALID_LINKED_GROUP_REQUEST_ID_DETAILS = "Invalid linked group id";
     public static final String INVALID_STATE_FOR_HEARING_REQUEST
-            = "004 Invalid state for hearing request <hearingId>";
+        = "004 Invalid state for hearing request <hearingId>";
     public static final String INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST
-            = "008 Invalid state for unlinking hearing request <hearingId>";
+        = "008 Invalid state for unlinking hearing request <hearingId>";
     public static final String HEARING_REQUEST_CANNOT_BE_LINKED = "002 hearing request isLinked is False";
     public static final String INVALID_STATE_FOR_LINKED_GROUP = "007 group is in a <state> state";
     public static final String HEARING_REQUEST_ALREADY_LINKED = "003 hearing request already in a group";
@@ -260,10 +259,12 @@ public final class ValidationError {
     public static final String REJECTED_BY_LIST_ASSIST = "005 rejected by List Assist";
     public static final String LIST_ASSIST_FAILED_TO_RESPOND = "006 List Assist failed to respond";
     public static final String LIST_ASSIST_CASE_STATUS_NULL = "List assist case status can not be null or empty";
-    public static final String INVALID_DURATION_DETAILS = "Invalid duration details";
     public static final String AMEND_REASON_CODE_MAX_LENGTH = "Amend reason code must be at least 1 but no more than "
         + "70 " + CHARACTERS_LONG;
     public static final String INVALID_AMEND_REASON_CODE = "Amend reason code details are required";
 
     public static final String INTERNAL_SERVER_ERROR = "Error occurred on the server";
+
+    public static final String MISSING_INDIVIDUAL_DETAILS = "Individual details are missing";
+    public static final String MISSING_ORGANISATION_DETAILS = "Organisation details are missing";
 }

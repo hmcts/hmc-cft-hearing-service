@@ -10,7 +10,7 @@ plugins {
   id 'uk.gov.hmcts.java' version '0.12.2'
   id 'com.github.spacialcircumstances.gradle-cucumber-reporting' version '0.1.23'
   id 'au.com.dius.pact' version '4.1.7'
-  id 'com.github.hmcts.rse-cft-lib' version '0.15.64'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.233'
 }
 
 ext['diuspactproviderVersion'] = '4.2.14'
@@ -442,8 +442,9 @@ dependencies {
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
   integrationTestImplementation group: 'net.minidev', name: 'json-smart', version: '2.4.7'
-
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
+  integrationTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+  integrationTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
@@ -523,8 +524,7 @@ bootWithCCD {
   environment("CFT_HEARING_SERVICE_DB_PASSWORD", "postgres")
   environment("CFT_HEARING_SERVICE_DB_PORT", "6432")
   environment("CFT_HEARING_SERVICE_DB_NAME", "hmc")
-  environment("S2S_URL", "http://localhost:8489")
-  environment("HMC_ACCESS_CONTROL_ENABLED", "false")
+  environment("RSE_LIB_S2S_PORT", 4502)
 }
 
 task fortifyScan(type: JavaExec)  {
