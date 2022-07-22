@@ -1,5 +1,5 @@
 @F-007
-Feature: F-007: PUT hearing actuals
+Feature: F-007: Amend hearing actuals
 
   Background:
     Given an appropriate test context as detailed in the test data source
@@ -38,24 +38,24 @@ Feature: F-007: PUT hearing actuals
 
   @S-007.4 @Ignore
   #    todo cant get case into UPDATE_REQUESTED state
-  Scenario: successfully amend hearing request
+  Scenario: Should return 004 non-unique dates
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     And a successful call [to amend a hearing request] as in [AmendHearingRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [amend hearing actuals] operation of [HMC CFT Hearing Service],
-    Then a positive response is received,
+    Then a negative response is received,
     And the response [has the 400 code],
     And the response [has a status of UPDATE_REQUESTED],
     And the response has all other details as expected.
 
   @S-007.5 @Ignore
   #    todo cant get case into UPDATE_REQUESTED state
-  Scenario: successfully amend hearing request
+  Scenario: Should return 003 invalid date
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     And a successful call [to amend a hearing request] as in [AmendHearingRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [amend hearing actuals] operation of [HMC CFT Hearing Service],
-    Then a positive response is received,
+    Then a negative response is received,
     And the response [has the 400 code],
     And the response [has a status of UPDATE_REQUESTED],
     And the response has all other details as expected.
