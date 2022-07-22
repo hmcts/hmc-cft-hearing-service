@@ -12,7 +12,7 @@
     "body": {
       "_extends_": "createHearingRequestDataMandatoryOnly",
       "caseDetails": {
-        "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
+        "caseRef": "1512672408575038"
       }
     }
   },

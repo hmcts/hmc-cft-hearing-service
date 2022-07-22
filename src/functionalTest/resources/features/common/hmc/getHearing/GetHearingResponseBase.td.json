@@ -9,7 +9,7 @@
       },
       "caseDetails" : {
         "hmctsServiceCode" : "ABA1",
-        "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
+        "caseRef": "1512672408575038",
         "externalCaseReference" : "EXT/REF123",
         "caseDeepLink" : "https://www.google.com",
         "hmctsInternalCaseName" : "Internal case name",
@@ -66,7 +66,6 @@
         },
         "hearingIsLinkedFlag" : false,
         "hearingChannels" : [ "INTER" ],
-        "multiDayHearing" : false,
         "autolistFlag" : true
       },
       "partyDetails" : [ {

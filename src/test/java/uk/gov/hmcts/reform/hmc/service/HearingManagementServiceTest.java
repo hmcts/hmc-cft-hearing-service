@@ -255,10 +255,10 @@ class HearingManagementServiceTest {
             String json = "{\"query\": {\"match\": \"blah blah\"}}";
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any());
-            hearingManagementService.sendResponse(json);
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any(), any());
+            hearingManagementService.sendResponse(json, "test hmctsCode");
             verify(objectMapperService, times(1)).convertObjectToJsonNode(any());
-            verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any());
+            verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any(), any());
         }
     }
 
@@ -447,7 +447,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
             hearingRequest.setCaseDetails(TestingUtil.caseDetails());
             hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-            hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+            hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
 
             final HearingEntity hearingEntity = mock(HearingEntity.class);
@@ -484,7 +484,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
             hearingRequest.setCaseDetails(TestingUtil.caseDetails());
             hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-            hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+            hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
             mockSubmitRequest();
             given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any()))
@@ -519,7 +519,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
             hearingRequest.setCaseDetails(TestingUtil.caseDetails());
             hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-            hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+            hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(
                 TestingUtil.individualWithoutRelatedPartyDetails());
             mockSubmitRequest();
@@ -537,7 +537,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
             hearingRequest.setCaseDetails(TestingUtil.caseDetails());
             hearingRequest.setPartyDetails(TestingUtil.partyDetails());
-            hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
+            hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
             mockSubmitRequest();
             given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any()))
@@ -967,7 +967,7 @@ class HearingManagementServiceTest {
             hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
             hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
             hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-            hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+            hearingRequest.setPartyDetails(TestingUtil.partyDetailsWithOrgType());
             hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
             hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
             HmiDeleteHearingRequest hmiDeleteHearingRequest = getHmiDeleteHearingRequest();
@@ -1220,10 +1220,9 @@ class HearingManagementServiceTest {
 
         @Test
         void updateHearingRequestShouldNotErrorWhenPartyUnavailabilityDowIsNotPresent() {
-            PartyDetails partyDetails = new PartyDetails();
-            IndividualDetails individualDetails = new IndividualDetails();
-            individualDetails.setHearingChannelEmail(List.of("email"));
-            partyDetails.setIndividualDetails(individualDetails);
+            PartyDetails partyDetails = TestingUtil.partyDetails().get(0);
+            partyDetails.setIndividualDetails(TestingUtil.individualDetails());
+            partyDetails.getIndividualDetails().setHearingChannelEmail(List.of("email"));
             List<UnavailabilityDow> unavailabilityDowList = new ArrayList<>();
             partyDetails.setUnavailabilityDow(unavailabilityDowList);
             List<PartyDetails> partyDetailsList = new ArrayList<>();
@@ -1249,10 +1248,9 @@ class HearingManagementServiceTest {
 
         @Test
         void updateHearingRequestShouldNotErrorWhenPartyUnavailabilityRangesIsNotPresent() {
-            PartyDetails partyDetails = new PartyDetails();
-            IndividualDetails individualDetails = new IndividualDetails();
-            individualDetails.setHearingChannelEmail(List.of("email"));
-            partyDetails.setIndividualDetails(individualDetails);
+            PartyDetails partyDetails = TestingUtil.partyDetails().get(0);
+            partyDetails.setIndividualDetails(TestingUtil.individualDetails());
+            partyDetails.getIndividualDetails().setHearingChannelEmail(List.of("email"));
             List<UnavailabilityRanges> unavailabilityRanges = new ArrayList<>();
             partyDetails.setUnavailabilityRanges(unavailabilityRanges);
             List<PartyDetails> partyDetailsList = new ArrayList<>();
@@ -1278,12 +1276,13 @@ class HearingManagementServiceTest {
 
         @Test
         void updateHearingRequestShouldNotErrorWhenRelatedPartyDetailsAreNotPresent() {
-            PartyDetails partyDetails = new PartyDetails();
-            IndividualDetails individualDetails = new IndividualDetails();
+            PartyDetails partyDetails = TestingUtil.partyDetails().get(0);
+            IndividualDetails individualDetails = TestingUtil.individualDetails();
             individualDetails.setHearingChannelEmail(List.of("email"));
             List<RelatedParty> relatedParties = new ArrayList<>();
             individualDetails.setRelatedParties(relatedParties);
             partyDetails.setIndividualDetails(individualDetails);
+            partyDetails.getIndividualDetails().setRelatedParties(new ArrayList<>());
             List<PartyDetails> partyDetailsList = new ArrayList<>();
             partyDetailsList.add(partyDetails);
             RequestDetails requestDetails = new RequestDetails();
@@ -1685,7 +1684,7 @@ class HearingManagementServiceTest {
         hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         hearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        hearingRequest.setPartyDetails(TestingUtil.partyDetailsWithOrgType());
         hearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         hearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         HmiSubmitHearingRequest hmiSubmitHearingRequest = getHmiSubmitHearingRequest();

@@ -1,0 +1,103 @@
+[
+  {
+    "email": "hmc.superuser@gmail.com",
+    "id": "%s",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hearing-manager",
+        "grantType": "STANDARD",
+        "roleCategory": "ADMIN",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "BEFTA_MASTER"
+        },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hearing-viewer",
+        "grantType": "STANDARD",
+        "roleCategory": "ADMIN",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "BEFTA_MASTER"
+        },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "listed-hearing-viewer",
+        "grantType": "STANDARD",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "BEFTA_MASTER"
+        },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+
+  {
+    "email": "hmc.hearing-manager@gmail.com",
+    "id": "%s",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hearing-manager",
+        "grantType": "STANDARD",
+        "roleCategory": "ADMIN",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "BEFTA_MASTER"
+        },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+  {
+    "email": "hmc.hearing-viewer@gmail.com",
+    "id": "%s",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hearing-viewer",
+        "grantType": "STANDARD",
+        "roleCategory": "ADMIN",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "BEFTA_MASTER"
+        },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+  {
+    "email": "hmc.listed-hearing-viewer@gmail.com",
+    "id": "%s",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "listed-hearing-viewer",
+        "grantType": "STANDARD",
+        "roleCategory": "OTHER_GOV_DEPT",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "BEFTA_MASTER"
+        },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  }
+]

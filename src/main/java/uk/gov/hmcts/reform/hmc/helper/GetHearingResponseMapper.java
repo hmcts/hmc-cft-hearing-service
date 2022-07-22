@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.hmc.data.ReasonableAdjustmentsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
@@ -221,8 +220,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
             hearingResponse.setListAssistTransactionID(
                 hearingResponseEntity.getListAssistTransactionId());
             hearingResponse.setReceivedDateTime(hearingResponseEntity.getRequestTimeStamp());
-            hearingResponse.setLaCaseStatus(ListAssistCaseStatus.getLabel(
-                hearingResponseEntity.getListingCaseStatus()));
+            hearingResponse.setLaCaseStatus(hearingResponseEntity.getListingCaseStatus());
             if (hearingResponseEntity.getListingStatus() != null) {
                 hearingResponse.setListingStatus(hearingResponseEntity.getListingStatus());
             }
