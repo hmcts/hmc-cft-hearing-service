@@ -4,7 +4,8 @@
 
   "specs": [
     "an active profile in CCD",
-    "has 400 status code"
+    "has 400 status code",
+    "shows there are insufficient requestIDs"
   ],
 
   "request": {
