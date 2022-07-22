@@ -4,7 +4,6 @@ Feature: F-007: PUT hearing actuals
   Background:
     Given an appropriate test context as detailed in the test data source
     Given a user with [an active profile in CCD]
-    And a case that has just been created as in [CreateCase],
 
   @S-007.1 @Ignore
   #    todo cant get case into UPDATE_REQUESTED state
