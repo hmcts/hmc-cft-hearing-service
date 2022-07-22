@@ -8,11 +8,11 @@
   ],
   "request": {
     "pathVariables": {
-      "hmctsServiceCode": "BBA3"
+      "hmctsServiceCode": "ABA1"
     },
     "queryParams": {
-      "hearing_start_date_from": "2022-01-20 09:00:00",
-      "hearing_start_date_to": "2022-01-19 10:00:00"
+      "hearing_start_date_from": "2022-05-13 00:00:00",
+      "hearing_start_date_to": "2022-05-14 00:00:00"
     }
   },
   "expectedResponse": {
@@ -24,8 +24,8 @@
       "Request-Context": "[[ANY_NULLABLE]]"
     },
     "body" : {
-      "hearingIds": [],
-      "totalFound": 0
+      "hearingIds" : "[[ANYTHING_PRESENT]]",
+      "totalFound" : 1
     }
   }
 }
