@@ -1,0 +1,28 @@
+{
+  "_guid_": "CreateFourthLinkedHearingRequest",
+  "_extends_" : "CreateHearingRequestBase",
+  "specs": [
+    "to create a hearing request"
+  ],
+  "request": {
+    "body": {
+      "_extends_": "createLinkedHearingRequestFullData"
+    }
+  },
+  "expectedResponse": {
+    "responseCode": 201,
+    "responseMessage": "OK",
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    },
+    "body": {
+      "hearingRequestID": "[[ANYTHING_PRESENT]]",
+      "status": "HEARING_REQUESTED",
+      "timeStamp": "[[ANYTHING_PRESENT]]",
+      "versionNumber": 1
+    }
+  }
+}

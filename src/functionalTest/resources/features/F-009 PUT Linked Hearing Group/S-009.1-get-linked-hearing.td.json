@@ -1,0 +1,35 @@
+{
+  "_guid_": "S-009.1-get-linked-hearing",
+  "_extends_" : "GetLinkedHearingGroupRequestPositiveGeneric",
+  "specs": [
+    "to verify versionNumber=1 and status=HEARING_REQUESTED"
+
+  ],
+  "request": {
+    "pathVariables": {
+      "id" : "${[scenarioContext][siblingContexts][CreateLinkedHearingGroupRequest][testData][actualResponse][body][hearingGroupRequestId]}"
+    }
+  },
+  "expectedResponse": {
+
+    "body": {
+      "groupDetails" : {
+        "groupName" : "groupName",
+        "groupReason" : "1",
+        "groupLinkType" : "Same Slot",
+        "groupComments" : "groupComments"
+      },
+      "hearingsInGroup" : [ {
+        "hearingId" : "${[scenarioContext][siblingContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+        "hearingOrder" : 1,
+        "caseRef" : "[[ANYTHING_PRESENT]]",
+        "hmctsInternalCaseName" : "Internal case name"
+      }, {
+        "hearingId" : "${[scenarioContext][siblingContexts][CreateThirdLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+        "hearingOrder" : 2,
+        "caseRef" : "[[ANYTHING_PRESENT]]",
+        "hmctsInternalCaseName" : "Internal case name"
+      } ]
+    }
+  }
+}
