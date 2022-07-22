@@ -219,12 +219,26 @@ public class TestingUtil {
     public static List<PartyDetails> partyDetails() {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
-        partyDetails1.setPartyType("ind");
+        partyDetails1.setPartyType(PartyType.IND.getLabel());
         partyDetails1.setPartyRole("DEF");
 
         PartyDetails partyDetails2 = new PartyDetails();
         partyDetails2.setPartyID("P2");
-        partyDetails2.setPartyType("IND");
+        partyDetails2.setPartyType(PartyType.IND.getLabel());
+        partyDetails2.setPartyRole("DEF2");
+
+        return List.of(partyDetails1, partyDetails2);
+    }
+
+    public static List<PartyDetails> partyDetailsWithOrgType() {
+        PartyDetails partyDetails1 = new PartyDetails();
+        partyDetails1.setPartyID("P1");
+        partyDetails1.setPartyType(PartyType.ORG.getLabel());
+        partyDetails1.setPartyRole("DEF");
+
+        PartyDetails partyDetails2 = new PartyDetails();
+        partyDetails2.setPartyID("P2");
+        partyDetails2.setPartyType(PartyType.ORG.getLabel());
         partyDetails2.setPartyRole("DEF2");
 
         return List.of(partyDetails1, partyDetails2);
@@ -1143,7 +1157,7 @@ public class TestingUtil {
     private static List<PartyDetails> partyDetailsWith2Parties(boolean isCftOrganisationIdNull) {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
-        partyDetails1.setPartyType("ind");
+        partyDetails1.setPartyType(PartyType.IND.getLabel());
         partyDetails1.setPartyRole("DEF");
         partyDetails1.setIndividualDetails(allIndividualDetails());
         partyDetails1.setUnavailabilityDow(unavailabilityDowDetails());
@@ -1151,7 +1165,7 @@ public class TestingUtil {
 
         PartyDetails partyDetails2 = new PartyDetails();
         partyDetails2.setPartyID("P2");
-        partyDetails2.setPartyType("IND");
+        partyDetails2.setPartyType(PartyType.ORG.getLabel());
         partyDetails2.setPartyRole("DEF2");
         if (isCftOrganisationIdNull) {
             partyDetails2.setOrganisationDetails(organisationDetailsIdNull());
