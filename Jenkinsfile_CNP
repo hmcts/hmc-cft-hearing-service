@@ -85,7 +85,7 @@ env.HMC_OUTBOUND_SERVICE_BUS_QUEUE = "hmc-to-hmi"
 // vars needed for functional tests
 // Assume a feature build branched off 'develop', with dependencies develop-to-develop.
 env.DEFINITION_STORE_URL_BASE = "http://ccd-definition-store-api-${definitionStoreDevelopPr}.service.core-compute-preview.internal".toLowerCase()
-env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-data-store-api-${dataStoreApiDevelopPr}.service.core-compute-preview.internal".toLowerCase()
+env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-test-stubs-service-aat.service.core-compute-aat.internal"
 env.MCA_API_BASE_URL = "http://aac-manage-case-assignment-${env.BRANCH_NAME}.service.core-compute-preview.internal".toLowerCase()
 
 // Other env variables needed for BEFTA.
@@ -120,12 +120,6 @@ withPipeline(type, product, component) {
     AppPipelineDsl.PactRoles.CONSUMER,
     AppPipelineDsl.PactRoles.PROVIDER
   ])
-
-  if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'demo' || env.BRANCH_NAME == 'perftest' || env.BRANCH_NAME == 'ithc') {
-    env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
-  } else {
-    env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-data-store-api-${dataStoreApiDevelopPr}.service.core-compute-preview.internal".toLowerCase()
-  }
 
   after('test') {
     builder.gradle('integration')
