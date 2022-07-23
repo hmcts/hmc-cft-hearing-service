@@ -1,0 +1,19 @@
+{
+  "_guid_": "F-011_TestBase",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "Search linked hearing groups",
+  "method": "GET",
+  "uri": "/linkedHearingGroup/{id}",
+  "s2sClientId": "xui_webapp",
+
+  "users": {
+    "invokingUser": {
+      "_extends_": "HmcSuperuser"
+    }
+  },
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    }
+  }
+}
