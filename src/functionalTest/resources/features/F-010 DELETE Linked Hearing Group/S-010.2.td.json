@@ -1,0 +1,49 @@
+{
+  "_guid_": "S-010.2",
+  "_extends_" : "F-010_TestBase",
+
+  "specs": [
+    "an active profile in CCD",
+    "has 403 status code"
+  ],
+
+  "users": {
+    "invokingUser": {
+      "username": "master.caseworker@gmail.com",
+      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
+    }
+  },
+
+  "request": {
+    "pathVariables": {
+      "id": "${[scenarioContext][childContexts][CreateLinkedHearingGroupRequest][testData][actualResponse][body][hearingGroupRequestId]}"
+    },
+    "body": {
+      "groupDetails": {
+        "groupName": "groupName",
+        "groupReason": "reason",
+        "groupLinkType": "Ordered",
+        "groupComments": "<groupComments>"
+      },
+      "hearingsInGroup": [
+        {
+          "hearingId": "${[scenarioContext][childContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingOrder": "1"
+        },
+        {
+          "hearingId": "${[scenarioContext][childContexts][CreateThirdLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingOrder": "2"
+        }
+      ]
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 403,
+    "responseMessage" : "Forbidden",
+    "body" : {
+      "status" : "FORBIDDEN",
+      "errors" : "[[ANYTHING_PRESENT]]"
+    }
+  }
+}
