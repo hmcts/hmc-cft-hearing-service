@@ -74,7 +74,6 @@
         },
         "hearingIsLinkedFlag" : false,
         "hearingChannels" : [ "INTER" ],
-        "multiDayHearing" : false,
         "autolistFlag" : true
       },
       "partyDetails" : [ {
