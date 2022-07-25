@@ -83,7 +83,7 @@ env.HMC_OUTBOUND_SERVICE_BUS_QUEUE = "hmc-to-hmi"
 
 //----------------
 
-echo "env vars = ${env} "
+echo "env vars = ${env.getEnvironment()} "
 
 // vars needed for functional tests
 // Assume a feature build branched off 'develop', with dependencies develop-to-develop.
