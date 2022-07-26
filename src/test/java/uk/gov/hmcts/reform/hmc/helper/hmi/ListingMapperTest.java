@@ -6,9 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.helper.RoomAttributesMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
@@ -38,7 +38,6 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.COURT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.EPIMS;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 
 @ExtendWith(MockitoExtension.class)
 class ListingMapperTest {
@@ -51,6 +50,9 @@ class ListingMapperTest {
 
     @Mock
     private RoomAttributesService roomAttributesService;
+
+    @Mock
+    private RoomAttributesMapper roomAttributesMapper;
 
     @Mock
     CaseHearingRequestRepository caseHearingRequestRepository;
@@ -240,8 +242,8 @@ class ListingMapperTest {
     @Test
     void shouldReturnEmptyListingFieldsIfEntitiesListIsNull() {
         HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
-        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
-        Listing listing = listingMapper.getListing(hearingDetails,null, null);
+//        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
+        Listing listing = listingMapper.getListing(hearingDetails,null);
         assertTrue(listing.getListingOtherConsiderations().isEmpty());
         assertTrue(listing.getRoomAttributes().isEmpty());
     }
@@ -328,9 +330,9 @@ class ListingMapperTest {
         assertNotNull(hearingDetails.getListingAutoChangeReasonCode());
 
         hearingDetails.setAutoListFlag(true);
-        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
+//        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
         Exception exception = assertThrows(BadRequestException.class, () ->
-            listingMapper.getListing(hearingDetails,null, null));
+            listingMapper.getListing(hearingDetails,null));
         assertEquals(
             "001 autoListFlag must be FALSE if you supply a change reasoncode",
             exception.getMessage());
@@ -400,8 +402,8 @@ class ListingMapperTest {
     }
 
     private Listing buildListing(HearingDetails hearingDetails,Entity entity) {
-        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
-        return listingMapper.getListing(hearingDetails,List.of(entity),HEARING_ID);
+//        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
+        return listingMapper.getListing(hearingDetails,List.of(entity));
     }
 
     @Test
@@ -429,16 +431,16 @@ class ListingMapperTest {
     }
 
     private Listing getListing(int duration) {
-        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
+//        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
         val hearingDetails = buildHearingDetails(HearingMapper.roundUpDuration(duration));
-        return listingMapper.getListing(hearingDetails, null,null);
+        return listingMapper.getListing(hearingDetails, null);
     }
 
-    private void generateCaseHearingRequestEntity(Integer version) {
-        CaseHearingRequestEntity caseHearingRequest = new CaseHearingRequestEntity();
-        caseHearingRequest.setVersionNumber(version);
-        caseHearingRequest.setCaseHearingID(1L);
-        caseHearingRequest.setHearing(TestingUtil.hearingEntity());
-        when(caseHearingRequestRepository.getLatestCaseHearingRequest(any())).thenReturn(caseHearingRequest);
-    }
+//    private void generateCaseHearingRequestEntity(Integer version) {
+//        CaseHearingRequestEntity caseHearingRequest = new CaseHearingRequestEntity();
+//        caseHearingRequest.setVersionNumber(version);
+//        caseHearingRequest.setCaseHearingID(1L);
+//        caseHearingRequest.setHearing(TestingUtil.hearingEntity());
+//        when(caseHearingRequestRepository.getLatestCaseHearingRequest(any())).thenReturn(caseHearingRequest);
+//    }
 }

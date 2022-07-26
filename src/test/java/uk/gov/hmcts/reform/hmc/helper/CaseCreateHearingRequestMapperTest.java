@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
@@ -27,7 +28,9 @@ class CaseCreateHearingRequestMapperTest {
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         HearingEntity hearingEntity = new HearingEntity();
         CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
-        CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper, clock);
+        RoomAttributesMapper roomAttributesMapper = new RoomAttributesMapper(null);
+        CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(
+                                                                    caseCategoriesMapper, clock, roomAttributesMapper);
         CaseHearingRequestEntity actualEntity = caseHearingRequestMapper.modelToEntity(
             createHearingRequest,
             hearingEntity, 1
@@ -44,6 +47,8 @@ class CaseCreateHearingRequestMapperTest {
         expectedEntity.setHearingWindowStartDateRange(null);
         expectedEntity.setHearingWindowEndDateRange(null);
         expectedEntity.setFirstDateTimeOfHearingMustBe(null);
+        expectedEntity.setAutoListFlag(false);
+        expectedEntity.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.label);
         HearingRequest createHearingRequest = new HearingRequest();
         HearingDetails hearingDetails = TestingUtil.hearingDetails();
         hearingDetails.setHearingWindow(null);
@@ -51,8 +56,10 @@ class CaseCreateHearingRequestMapperTest {
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         HearingEntity hearingEntity = new HearingEntity();
         CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
+        RoomAttributesMapper roomAttributesMapper = new RoomAttributesMapper(null);
 
-        CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper, clock);
+        CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(
+                                                                caseCategoriesMapper, clock, roomAttributesMapper);
         CaseHearingRequestEntity actualEntity = caseHearingRequestMapper.modelToEntity(
             createHearingRequest,
             hearingEntity, 1

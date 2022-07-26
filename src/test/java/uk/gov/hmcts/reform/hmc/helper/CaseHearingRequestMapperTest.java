@@ -26,7 +26,8 @@ class CaseHearingRequestMapperTest {
         hearingRequest.setCaseDetails(TestingUtil.caseDetails());
         HearingEntity hearingEntity = new HearingEntity();
         CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
-        CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper, CLOCK);
+        CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper,
+                                                                                            CLOCK, null);
         CaseHearingRequestEntity entity = caseHearingRequestMapper.modelToEntity(hearingRequest, hearingEntity, 1);
         assert1(entity);
         assert2(entity);

@@ -26,19 +26,23 @@ import java.util.stream.Collectors;
 public class CaseHearingRequestMapper {
 
     private final CaseCategoriesMapper caseCategoriesMapper;
+    private RoomAttributesMapper roomAttributesMapper;
 
     private final Clock utcClock;
 
     @Autowired
     public CaseHearingRequestMapper(CaseCategoriesMapper caseCategoriesMapper,
-                                    Clock utcClock) {
+                                    Clock utcClock,
+                                    RoomAttributesMapper roomAttributesMapper) {
         this.caseCategoriesMapper = caseCategoriesMapper;
         this.utcClock = utcClock;
+        this.roomAttributesMapper = roomAttributesMapper;
     }
 
     public CaseHearingRequestEntity modelToEntity(HearingRequest hearingRequest,
                                                   HearingEntity hearingEntity,
                                                   Integer requestVersion) {
+
         final CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         HearingDetails hearingDetails = hearingRequest.getHearingDetails();
         CaseDetails caseDetails = hearingRequest.getCaseDetails();
@@ -73,6 +77,13 @@ public class CaseHearingRequestMapper {
             caseHearingRequestEntity.setHearingWindowEndDateRange(hearingDetails.getHearingWindow()
                                                                       .getDateRangeEnd());
         }
+
+        if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag())
+            && !(roomAttributesMapper.bothAreMappedTo())) {
+            caseHearingRequestEntity.setAutoListFlag(false);
+            caseHearingRequestEntity.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.label);
+        }
+
         if (hearingDetails.getListingAutoChangeReasonCode() != null) {
             if (Boolean.FALSE.equals(hearingDetails.getAutoListFlag())) {
                 caseHearingRequestEntity.setListingAutoChangeReasonCode(
@@ -81,6 +92,7 @@ public class CaseHearingRequestMapper {
                 throw new BadRequestException(ValidationError.MUST_BE_FALSE_IF_YOU_SUPPLY_A_CHANGE_REASONCODE);
             }
         }
+
         return caseHearingRequestEntity;
     }
 
