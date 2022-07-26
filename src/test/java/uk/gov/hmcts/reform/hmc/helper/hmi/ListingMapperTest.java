@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.RoleType;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.helper.RoomAttributesMapper;
@@ -70,6 +71,41 @@ class ListingMapperTest {
     private static final Long HEARING_ID = 1L;
 
     @Test
+    void shouldReturnListingWithNoWelshLanguageValue() {
+        HearingDetails hearingDetails = buildHearingDetails(150);
+        hearingDetails.setHearingInWelshFlag(false);
+        Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
+        assertEquals(ListingMapper.WELSH_LANGUAGE_FALSE_VALUE, listing.getListingLanguage());
+    }
+
+    @Test
+    void shouldReturnListingWithWelshLanguageValue() {
+        HearingDetails hearingDetails = buildHearingDetails(150);
+        hearingDetails.setHearingInWelshFlag(true);
+        Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
+        assertEquals(ListingMapper.WELSH_LANGUAGE_TRUE_VALUE, listing.getListingLanguage());
+    }
+
+    @Test
+    void shouldReturnListingJohTiersWithGivenRoleType() {
+        HearingDetails hearingDetails = buildHearingDetails(150);
+        hearingDetails.getPanelRequirements().setRoleType(List.of(RoleType.ORGANISATION.name()));
+        Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
+        assertTrue(listing.getListingJohTiers().contains(RoleType.ORGANISATION.name()));
+    }
+
+    @Test
+    void shouldReturnListingOtherConsiderationWtithGivenFacilitiesRequired() {
+        List<String> faciltiesRequired = List.of("Reading Room","Study Room");
+        HearingDetails hearingDetails = buildHearingDetails(150);
+        hearingDetails.setFacilitiesRequired(faciltiesRequired);
+        Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
+        faciltiesRequired.forEach(e -> {
+            assertTrue(listing.getListingOtherConsiderations().contains(e));
+        });
+    }
+
+    @Test
     void shouldReturnListingWithBothHearingWindowFieldsAndRoleType() {
         ListingJoh listingJoh = generateListingJoh();
         ListingLocation listingLocation = generateListingLocation();
@@ -87,6 +123,7 @@ class ListingMapperTest {
         assertEquals(4, listing.getListingNumberAttendees());
         assertEquals(LISTING_COMMENTS, listing.getListingComments());
         assertEquals(HEARING_REQUESTER, listing.getListingRequestedBy());
+        assertEquals("ENG", listing.getListingLanguage());
         assertEquals(false, listing.getListingPrivateFlag());
         assertEquals(2, listing.getListingHearingChannels().size());
         assertEquals(AMEND_REASON_CODE, listing.getAmendReasonCode());
