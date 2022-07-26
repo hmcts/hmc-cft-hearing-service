@@ -35,3 +35,15 @@ Feature: F-003: Get hearing request
     And the response [has the 404 code],
     And the response has all other details as expected.
 
+  @S-003.4
+  Scenario: successfully get hearing request in specific status
+    Given a successful call [to create a hearing request] as in [CreateHearingRequest],
+    And a successful call [to list the hearing] as in [ListHearingRequest],
+    And a wait time of [10] seconds [to wait for status to come back from hmi]
+    When a request is prepared with appropriate values,
+    And the request [uses the query param status=LISTED],
+    And it is submitted to call the [get hearing] operation of [HMC CFT Hearing Service],
+    Then a positive response is received,
+    And the response [has the 200 OK code],
+    And the response has all other details as expected.
+

@@ -49,7 +49,8 @@ def secrets = [
     secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_KEY'),
     secret('microservicekey-ccd-gw', 'BEFTA_S2S_CLIENT_SECRET'),
     secret('microservicekey-aac-manage-case-assignment', 'BEFTA_S2S_CLIENT_SECRET_OF_AAC_MANAGE_CASE_ASSIGNMENT'),
-    secret('microservicekey-xui-webapp', 'BEFTA_S2S_CLIENT_SECRET_OF_XUI_WEBAPP')
+    secret('microservicekey-xui-webapp', 'BEFTA_S2S_CLIENT_SECRET_OF_XUI_WEBAPP'),
+    secret('microservicekey-api-gw', 'BEFTA_S2S_CLIENT_SECRET_OF_API_GW')
   ]
 ]
 
@@ -77,14 +78,13 @@ env.HMC_SERVICE_BUS_SUBSCRIPTION = "hmc-subs-to-cft"
 env.HMC_SERVICE_BUS_QUEUE = "hmc-from-hmi"
 env.HMC_OUTBOUND_SERVICE_BUS_QUEUE = "hmc-to-hmi"
 
+env.HMC_INBOUND_ADAPTER_URL = "http://hmc-hmi-inbound-adapter-${env.BRANCH_NAME}.service.core-compute-${env.BRANCH_NAME}.internal"
+echo 'url for inbound adapter = ${env.HMC_INBOUND_ADAPTER_URL}'
 
 
 
 
 //----------------
-
-echo "env vars = ${env.getEnvironment()} "
-
 // vars needed for functional tests
 // Assume a feature build branched off 'develop', with dependencies develop-to-develop.
 env.DEFINITION_STORE_URL_BASE = "http://ccd-definition-store-api-${definitionStoreDevelopPr}.service.core-compute-preview.internal".toLowerCase()
