@@ -9,7 +9,7 @@
 
   "request": {
     "pathVariables": {
-      "id": "2000000400"
+      "id": "2100000400"
     }
   },
 
@@ -18,7 +18,7 @@
     "responseMessage": "Bad Request",
     "body" : {
       "status" : "NOT_FOUND",
-      "errors" : [ "No hearing found for reference: 2000000400" ]
+      "errors" : [ "No hearing found for reference: 2100000400" ]
     }
   }
 }
