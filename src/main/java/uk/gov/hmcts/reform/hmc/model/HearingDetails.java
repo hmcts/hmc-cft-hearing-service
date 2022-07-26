@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -78,6 +79,7 @@ public class HearingDetails {
     @NotNull(message = ValidationError.HEARING_CHANNEL_EMPTY)
     private List<@Size(max = 70, message = ValidationError.CHANNEL_TYPE_MAX_LENGTH)String> hearingChannels;
 
+    @JsonIgnore
     public boolean isMultiDayHearing() {
         return getDuration() != null ? getDuration() > DURATION_OF_DAY : false;
     }
