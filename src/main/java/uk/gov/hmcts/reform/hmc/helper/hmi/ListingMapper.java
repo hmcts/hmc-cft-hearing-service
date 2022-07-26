@@ -7,12 +7,17 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.constants.Constants;
 import uk.gov.hmcts.reform.hmc.helper.RoomAttributesMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
+import uk.gov.hmcts.reform.hmc.model.RoomAttribute;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingMultiDay;
+import uk.gov.hmcts.reform.hmc.service.RoomAttributesService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DURATION_OF_DAY;
 
@@ -23,18 +28,22 @@ public class ListingMapper {
     public static final String WELSH_LANGUAGE_FALSE_VALUE = "ENG";
     private final ListingJohsMapper listingJohsMapper;
     private final ListingLocationsMapper listingLocationsMapper;
-    private final RoomAttributesMapper roomAttributesMapper;
+    private final RoomAttributesService roomAttributesService;
+    private RoomAttributesMapper roomAttributesMapper;
+
 
     @Autowired
     public ListingMapper(ListingJohsMapper listingJohsMapper,
                          ListingLocationsMapper listingLocationsMapper,
-                         RoomAttributesMapper roomAttributesMapper) {
+                         RoomAttributesService roomAttributesService) {
         this.listingJohsMapper = listingJohsMapper;
         this.listingLocationsMapper = listingLocationsMapper;
-        this.roomAttributesMapper = roomAttributesMapper;
+        this.roomAttributesService = roomAttributesService;
     }
 
-    public Listing getListing(HearingDetails hearingDetails, List<Entity> entitiesList) {
+    public Listing getListing(HearingDetails hearingDetails, List<Entity> entitiesList,
+                              RoomAttributesMapper roomAttributesMapper) {
+        this.roomAttributesMapper = roomAttributesMapper;
 
         Listing listing = Listing.builder()
             .listingPriority(hearingDetails.getHearingPriorityType())
@@ -73,15 +82,7 @@ public class ListingMapper {
             listing.setListingDuration(hearingDetails.getDuration());
         }
 
-        if (entitiesList != null && !entitiesList.isEmpty()) {
-            if (!roomAttributesMapper.areRoomAttributesFound(entitiesList, hearingDetails, listing)) {
-                listing.setListingOtherConsiderations(List.of());
-                listing.setRoomAttributes(List.of());
-            }
-        } else {
-            listing.setListingOtherConsiderations(List.of());
-            listing.setRoomAttributes(List.of());
-        }
+        setRoomAttributes(entitiesList, hearingDetails, listing);
         setAutoListFlag(hearingDetails, listing);
 
         if (!Collections.isEmpty(hearingDetails.getAmendReasonCodes())) {
@@ -120,13 +121,90 @@ public class ListingMapper {
         return (hearingDetailsDuration / (360 * 5));
     }
 
+    private void setRoomAttributes(List<Entity> entitiesList, HearingDetails hearingDetails, Listing listing) {
+        if (entitiesList != null && !entitiesList.isEmpty()) {
+            if (!areRoomAttributesFound(entitiesList, hearingDetails.getFacilitiesRequired(), listing)) {
+                listing.setListingOtherConsiderations(List.of());
+                listing.setRoomAttributes(List.of());
+            }
+        } else {
+            listing.setListingOtherConsiderations(List.of());
+            listing.setRoomAttributes(List.of());
+        }
+    }
+
     private void setAutoListFlag(HearingDetails hearingDetails, Listing listing) {
         if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag())
-            && !(roomAttributesMapper.bothAreMappedTo())) {
+            && !(roomAttributesMapper.isReasonableAdjustmentIsMappedToRoomAttributeCode()
+                && hearingDetails.getFacilitiesRequired().equals(listing.getRoomAttributes()))) {
             listing.setListingAutoCreateFlag(false);
         }
     }
 
+    private boolean areRoomAttributesFound(List<Entity> entitiesList,
+                                           List<String> facilitiesRequired, Listing listing) {
+        Set<String> roomAttributesSet = new HashSet<>();
+        Set<String> otherConsiderationsSet = new HashSet<>();
+        entitiesList.forEach(entity -> {
+            List<String> roomAttributesByReasonableAdjustmentList =
+                getRoomAttributesByReasonableAdjustmentCode(entity);
+            List<String> roomAttributesByAttributeCodeList =
+                getRoomAttributesByAttributeCode(facilitiesRequired);
+            if (!roomAttributesByReasonableAdjustmentList.isEmpty()) {
+                roomAttributesSet.addAll(roomAttributesByReasonableAdjustmentList);
+                roomAttributesMapper.setReasonableAdjustmentIsMappedToRoomAttributeCode(true);
+            } else if (!roomAttributesByAttributeCodeList.isEmpty()) {
+                roomAttributesSet.addAll(roomAttributesByAttributeCodeList);
+            } else {
+                if (facilitiesRequired != null
+                    && !facilitiesRequired.isEmpty()) {
+                    otherConsiderationsSet.addAll(facilitiesRequired);
+                }
+            }
+        });
+
+        if (!roomAttributesSet.isEmpty() || !otherConsiderationsSet.isEmpty()) {
+            if (!roomAttributesSet.isEmpty()) {
+                listing.setRoomAttributes(new ArrayList<>(roomAttributesSet));
+                if (facilitiesRequired.equals(listing.getRoomAttributes())) {
+                    roomAttributesMapper.setHearingFacilitiesMappedToRoomAttributes(true);
+                }
+            }
+            if (!otherConsiderationsSet.isEmpty()) {
+                listing.setListingOtherConsiderations(new ArrayList<>(otherConsiderationsSet));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private List<String> getRoomAttributesByReasonableAdjustmentCode(Entity entity) {
+        List<String> roomAttributesCodeList = new ArrayList<>();
+        if (entity.getEntityOtherConsiderations() != null && !entity.getEntityOtherConsiderations().isEmpty()) {
+            for (String reasonableAdjustment : entity.getEntityOtherConsiderations()) {
+                Optional<RoomAttribute> roomAttributeByReasonableAdjustment =
+                    roomAttributesService.findByReasonableAdjustmentCode(reasonableAdjustment);
+                roomAttributeByReasonableAdjustment.ifPresent(
+                    roomAttribute
+                        -> roomAttributesCodeList.add(roomAttribute.getRoomAttributeCode()));
+            }
+        }
+        return roomAttributesCodeList;
+    }
+
+    private List<String> getRoomAttributesByAttributeCode(List<String> facilityTypes) {
+        List<String> roomAttributesCodeList = new ArrayList<>();
+        if (facilityTypes != null && !facilityTypes.isEmpty()) {
+            for (String facility : facilityTypes) {
+                Optional<RoomAttribute> roomAttributeByAttributeCode =
+                    roomAttributesService.findByRoomAttributeCode(facility);
+                if (roomAttributeByAttributeCode.isPresent() && roomAttributeByAttributeCode.get().isFacility()) {
+                    roomAttributesCodeList.add(roomAttributeByAttributeCode.get().getRoomAttributeCode());
+                }
+            }
+        }
+        return roomAttributesCodeList;
+    }
 
 }
 

@@ -26,22 +26,20 @@ import java.util.stream.Collectors;
 public class CaseHearingRequestMapper {
 
     private final CaseCategoriesMapper caseCategoriesMapper;
-    private RoomAttributesMapper roomAttributesMapper;
 
     private final Clock utcClock;
 
     @Autowired
     public CaseHearingRequestMapper(CaseCategoriesMapper caseCategoriesMapper,
-                                    Clock utcClock,
-                                    RoomAttributesMapper roomAttributesMapper) {
+                                    Clock utcClock) {
         this.caseCategoriesMapper = caseCategoriesMapper;
         this.utcClock = utcClock;
-        this.roomAttributesMapper = roomAttributesMapper;
     }
 
     public CaseHearingRequestEntity modelToEntity(HearingRequest hearingRequest,
                                                   HearingEntity hearingEntity,
-                                                  Integer requestVersion) {
+                                                  Integer requestVersion,
+                                                  RoomAttributesMapper roomAttributesMapper) {
 
         final CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         HearingDetails hearingDetails = hearingRequest.getHearingDetails();
@@ -78,8 +76,7 @@ public class CaseHearingRequestMapper {
                                                                       .getDateRangeEnd());
         }
 
-        if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag())
-            && !(roomAttributesMapper.bothAreMappedTo())) {
+        if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag()) && roomAttributesMapper.isMappedTo()) {
             caseHearingRequestEntity.setAutoListFlag(false);
             caseHearingRequestEntity.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.label);
         }

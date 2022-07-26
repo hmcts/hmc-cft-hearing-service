@@ -1412,7 +1412,7 @@ public class TestingUtil {
 
     public static HearingDetails hearingDetailsWithoutHearingWindow() {
         HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setAutoListFlag(false);
         hearingDetails.setHearingType("Some hearing type");
         hearingDetails.setDuration(360);
         hearingDetails.setNonStandardHearingDurationReasons(List.of("First reason", "Second reason"));

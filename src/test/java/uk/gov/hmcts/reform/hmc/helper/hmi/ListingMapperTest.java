@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.RoleType;
-import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.helper.RoomAttributesMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
 import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingJoh;
 import uk.gov.hmcts.reform.hmc.model.hmi.ListingLocation;
-import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.service.RoomAttributesService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -31,7 +29,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -55,9 +52,6 @@ class ListingMapperTest {
     @Mock
     private RoomAttributesMapper roomAttributesMapper;
 
-    @Mock
-    CaseHearingRequestRepository caseHearingRequestRepository;
-
     @InjectMocks
     private ListingMapper listingMapper;
 
@@ -68,7 +62,6 @@ class ListingMapperTest {
     private static final String ROLE_TYPE = "RoleType1";
     private static final String HEARING_CHANNEL = "someChannelType";
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
-    private static final Long HEARING_ID = 1L;
 
     @Test
     void shouldReturnListingWithNoWelshLanguageValue() {
@@ -156,6 +149,7 @@ class ListingMapperTest {
         assertListingLocations(listingLocation, listing.getListingLocations());
         assertListingJohs(listingJoh, listing.getListingJohs());
 
+        assertNull(listing.getListingAutoCreateFlag());
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
         assertEquals(HEARING_TYPE, listing.getListingType());
         assertEquals(360, listing.getListingDuration());
@@ -210,6 +204,7 @@ class ListingMapperTest {
         assertNull(listing.getListingStartDate());
         assertNull(listing.getListingEndDate());
         assertNull(listing.getListingJohTiers());
+        assertNull(listing.getListingAutoCreateFlag());
     }
 
     @Test
@@ -279,8 +274,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnEmptyListingFieldsIfEntitiesListIsNull() {
         HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
-//        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
-        Listing listing = listingMapper.getListing(hearingDetails,null);
+        Listing listing = listingMapper.getListing(hearingDetails,null, roomAttributesMapper);
         assertTrue(listing.getListingOtherConsiderations().isEmpty());
         assertTrue(listing.getRoomAttributes().isEmpty());
     }
@@ -320,7 +314,7 @@ class ListingMapperTest {
         hearingDetails.setFacilitiesRequired(List.of("RoomCode1"));
         Optional<RoomAttribute> roomAttribute =
             TestingUtil.getRoomAttribute("RoomCode1", "Name1",
-                                         "ReasonableAdjustment1", false);
+                "ReasonableAdjustment1", false);
 
         when(roomAttributesService.findByRoomAttributeCode("RoomCode1"))
             .thenReturn(roomAttribute);
@@ -335,7 +329,7 @@ class ListingMapperTest {
         hearingDetails.setFacilitiesRequired(List.of("randomReasonableAdjustment"));
         Optional<RoomAttribute> roomAttribute =
             TestingUtil.getRoomAttribute("RoomCode1", "Name1",
-                                         "ReasonableAdjustment1", false);
+                "ReasonableAdjustment1", false);
         when(roomAttributesService.findByRoomAttributeCode("randomReasonableAdjustment"))
             .thenReturn(Optional.empty());
         when(roomAttributesService.findByReasonableAdjustmentCode("randomReasonableAdjustment"))
@@ -343,36 +337,6 @@ class ListingMapperTest {
         Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
         assertNotNull(listing.getListingOtherConsiderations());
         assertTrue(listing.getListingOtherConsiderations().contains("randomReasonableAdjustment"));
-    }
-
-    @Test
-    void shouldReturnListingWithAutoCreateFlag() {
-        HearingDetails hearingDetails = buildHearingDetails(150);
-        hearingDetails.setAutoListFlag(true);
-        hearingDetails.setListingAutoChangeReasonCode(null);
-        hearingDetails.setFacilitiesRequired(List.of("ReasonableAdjustment1"));
-        Optional<RoomAttribute> roomAttribute =
-            TestingUtil.getRoomAttribute("RoomCode1", "Name1",
-                "ReasonableAdjustment1", false);
-        when(roomAttributesService.findByReasonableAdjustmentCode("ReasonableAdjustment1"))
-            .thenReturn(roomAttribute);
-        Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
-        assertNotNull(listing.getRoomAttributes());
-        assertTrue(listing.getRoomAttributes().contains("RoomCode1"));
-    }
-
-    @Test
-    void shouldFail_whenListingAutoChangeReasonCodeIsProvidedAndAutoListFlagIsTrue() {
-        HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
-        assertNotNull(hearingDetails.getListingAutoChangeReasonCode());
-
-        hearingDetails.setAutoListFlag(true);
-//        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
-        Exception exception = assertThrows(BadRequestException.class, () ->
-            listingMapper.getListing(hearingDetails,null));
-        assertEquals(
-            "001 autoListFlag must be FALSE if you supply a change reasoncode",
-            exception.getMessage());
     }
 
     private void assertListingJohs(ListingJoh listingJoh, List<ListingJoh> listingJohList) {
@@ -391,7 +355,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingIfHearingWindowNotPresent() {
         HearingDetails hearingDetails = buildHearingDetailsWithNoHearingWindow(2165);
-        Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
+        Listing listing = listingMapper.getListing(hearingDetails,null, roomAttributesMapper);
         assertNull(listing.getListingDate());
         assertNull(listing.getListingStartDate());
         assertNull(listing.getListingEndDate());
@@ -439,9 +403,9 @@ class ListingMapperTest {
     }
 
     private Listing buildListing(HearingDetails hearingDetails,Entity entity) {
-//        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
-        return listingMapper.getListing(hearingDetails,List.of(entity));
+        return listingMapper.getListing(hearingDetails,List.of(entity), roomAttributesMapper);
     }
+
 
     @Test
     void shouldReturnListingForMultiDayHearingDurationWithManyValues() {
@@ -468,16 +432,8 @@ class ListingMapperTest {
     }
 
     private Listing getListing(int duration) {
-//        generateCaseHearingRequestEntity(VERSION_NUMBER_TO_INCREMENT);
         val hearingDetails = buildHearingDetails(HearingMapper.roundUpDuration(duration));
-        return listingMapper.getListing(hearingDetails, null);
-    }
+        return listingMapper.getListing(hearingDetails, null, roomAttributesMapper);
 
-//    private void generateCaseHearingRequestEntity(Integer version) {
-//        CaseHearingRequestEntity caseHearingRequest = new CaseHearingRequestEntity();
-//        caseHearingRequest.setVersionNumber(version);
-//        caseHearingRequest.setCaseHearingID(1L);
-//        caseHearingRequest.setHearing(TestingUtil.hearingEntity());
-//        when(caseHearingRequestRepository.getLatestCaseHearingRequest(any())).thenReturn(caseHearingRequest);
-//    }
+    }
 }

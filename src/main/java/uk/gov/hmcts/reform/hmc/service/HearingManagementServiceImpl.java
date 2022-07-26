@@ -111,7 +111,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final ListingMapper listingMapper;
     private final HmiCaseDetailsMapper hmiCaseDetailsMapper;
     private final EntitiesMapper entitiesMapper;
-    private final RoomAttributesMapper roomAttributesMapper;
+    private RoomAttributesMapper roomAttributesMapper;
 
 
     @Autowired
@@ -215,7 +215,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         String statusToUpdate = getNextPutHearingStatus(existingHearing.getStatus());
         Listing listing = getListing(hearingRequest);
         HearingEntity hearingEntity = hearingMapper
-            .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate);
+            .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate,
+                            roomAttributesMapper);
+
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
@@ -315,15 +317,16 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private HearingEntity saveHearingDetails(HearingRequest createHearingRequest) {
         HearingEntity hearingEntity = hearingMapper
-            .modelToEntity(createHearingRequest, new HearingEntity(), VERSION_NUMBER_TO_INCREMENT, POST_HEARING_STATUS);
+            .modelToEntity(createHearingRequest, new HearingEntity(), VERSION_NUMBER_TO_INCREMENT, POST_HEARING_STATUS,
+                roomAttributesMapper);
         return hearingRepository.save(hearingEntity);
     }
 
     private Listing getListing(HearingRequest hearingRequest) {
+        roomAttributesMapper.initialize();
         EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest.getPartyDetails());
-        return listingMapper.getListing(
-            hearingRequest.getHearingDetails(),
-            entities.getEntities());
+        return listingMapper.getListing(hearingRequest.getHearingDetails(), entities.getEntities(),
+                                        roomAttributesMapper);
     }
 
     private HmiCaseDetails getCaseDetails(Long hearingId, HearingRequest hearingRequest) {
