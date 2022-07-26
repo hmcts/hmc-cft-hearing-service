@@ -9,6 +9,7 @@ Feature: F-007: Amend hearing actuals
   #    todo cant get case into UPDATE_REQUESTED state
   Scenario: successfully amend hearing request
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
+    And a wait time of [90] seconds [to allow for outbound service to process all messages]
     And a successful call [to amend a hearing request] as in [AmendHearingRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [amend hearing actuals] operation of [HMC CFT Hearing Service],
