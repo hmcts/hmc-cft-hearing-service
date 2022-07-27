@@ -48,3 +48,8 @@ hmc:
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CLIENT_FUTUREHEARING: DEBUG
         HMI_BASE_URL: "http://ccd-test-stubs-service-pr-174.service.core-compute-preview.internal"
 
+  hmc-hmi-inbound-adapter:
+    java:
+      ingressHost: inbound-adapter-${SERVICE_FQDN}
+      environment:
+        CFT_HEARING_SERVICE_URL: http://${SERVICE_FQDN}
