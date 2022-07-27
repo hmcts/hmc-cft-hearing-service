@@ -17,24 +17,6 @@
   "request": {
     "pathVariables": {
       "id": "${[scenarioContext][childContexts][CreateLinkedHearingGroupRequest][testData][actualResponse][body][hearingGroupRequestId]}"
-    },
-    "body": {
-      "groupDetails": {
-        "groupName": "groupName",
-        "groupReason": "reason",
-        "groupLinkType": "Ordered",
-        "groupComments": "<groupComments>"
-      },
-      "hearingsInGroup": [
-        {
-          "hearingId": "${[scenarioContext][childContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
-          "hearingOrder": "1"
-        },
-        {
-          "hearingId": "${[scenarioContext][childContexts][CreateThirdLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
-          "hearingOrder": "2"
-        }
-      ]
     }
   },
 

@@ -26,7 +26,7 @@ Feature: F-011: Search for linked hearing group
     And the response has all other details as expected.
 
   @S-011.3
-  Scenario: Incorrect schema should return 400
+  Scenario: Incorrect schema should return 404
     Given a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateAnotherLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateLinkedHearingGroupRequest],

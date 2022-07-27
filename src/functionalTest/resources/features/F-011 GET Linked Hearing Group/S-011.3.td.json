@@ -11,24 +11,6 @@
   "request": {
     "pathVariables": {
       "id": "987"
-    },
-    "body": {
-      "groupDetails": {
-        "groupName": "groupName",
-        "groupReason": "reason",
-        "groupLinkType": "Same Slot",
-        "groupComments": "groupComments"
-      },
-      "hearingsInGroup": [
-        {
-          "hearingId": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}",
-          "hearingOrder": "1"
-        },
-        {
-          "hearingId": "${[scenarioContext][childContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
-          "hearingOrder": "2"
-        }
-      ]
     }
   },
 
