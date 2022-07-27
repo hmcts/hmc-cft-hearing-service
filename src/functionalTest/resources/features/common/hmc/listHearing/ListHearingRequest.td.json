@@ -1,25 +1,7 @@
 {
   "_guid_": "ListHearingRequest",
-  "productName": "HMC Inbound Adapter",
-  "operationName": "list hearing",
-  "method": "PUT",
-  "uri": "{{HMC_INBOUND_ADAPTER_URL}}/listings/{hearingID}",
-  "s2sClientId": "api_gw",
-  "specs": [
-    "to list the hearing"
-  ],
-  "users": {
-    "invokingUser": {
-      "_extends_": "HmcSuperuser"
-    }
-  },
+  "_extends_" : "ListHearingRequestBase",
   "request": {
-    "pathVariables": {
-      "hearingID": "${[scenarioContext][siblingContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
-    },
-    "headers": {
-      "_extends_": "Common_Request_Headers"
-    },
     "body": {
       "hearingResponse": {
         "meta": {
@@ -107,15 +89,6 @@
           "hearingCaseVersionId": 1
         }
       }
-    }
-  },
-  "expectedResponse": {
-    "_extends_" : "Common_202_Response",
-    "headers": {
-      "Content-Length": "[[ANYTHING_PRESENT]]",
-      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
-      "Date": "[[ANYTHING_PRESENT]]",
-      "Request-Context": "[[ANY_NULLABLE]]"
     }
   }
 }
