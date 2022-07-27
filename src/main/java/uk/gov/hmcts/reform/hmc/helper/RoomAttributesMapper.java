@@ -9,10 +9,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class RoomAttributesMapper {
 
-    private boolean isMappedTo;
-
+    private boolean mappedTo;
     private boolean hearingFacilitiesMappedToRoomAttributes;
-
     private boolean reasonableAdjustmentIsMappedToRoomAttributeCode;
 
     public void initialize() {

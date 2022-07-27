@@ -136,8 +136,9 @@ public class ListingMapper {
     private void setAutoListFlag(HearingDetails hearingDetails, Listing listing) {
         if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag())
             && !(roomAttributesMapper.isReasonableAdjustmentIsMappedToRoomAttributeCode()
-                && hearingDetails.getFacilitiesRequired().equals(listing.getRoomAttributes()))) {
+                && roomAttributesMapper.isHearingFacilitiesMappedToRoomAttributes())) {
             listing.setListingAutoCreateFlag(false);
+            roomAttributesMapper.setMappedTo(true);
         }
     }
 
@@ -145,6 +146,25 @@ public class ListingMapper {
                                            List<String> facilitiesRequired, Listing listing) {
         Set<String> roomAttributesSet = new HashSet<>();
         Set<String> otherConsiderationsSet = new HashSet<>();
+        getRoomAttributes(entitiesList, facilitiesRequired, roomAttributesSet, otherConsiderationsSet);
+
+        if (!roomAttributesSet.isEmpty() || !otherConsiderationsSet.isEmpty()) {
+            if (!roomAttributesSet.isEmpty()) {
+                listing.setRoomAttributes(new ArrayList<>(roomAttributesSet));
+                if (facilitiesRequired.equals(listing.getRoomAttributes())) {
+                    roomAttributesMapper.setHearingFacilitiesMappedToRoomAttributes(true);
+                }
+            }
+            if (!otherConsiderationsSet.isEmpty()) {
+                listing.setListingOtherConsiderations(new ArrayList<>(otherConsiderationsSet));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void getRoomAttributes(List<Entity> entitiesList, List<String> facilitiesRequired,
+                                   Set<String> roomAttributesSet, Set<String> otherConsiderationsSet) {
         entitiesList.forEach(entity -> {
             List<String> roomAttributesByReasonableAdjustmentList =
                 getRoomAttributesByReasonableAdjustmentCode(entity);
@@ -162,20 +182,6 @@ public class ListingMapper {
                 }
             }
         });
-
-        if (!roomAttributesSet.isEmpty() || !otherConsiderationsSet.isEmpty()) {
-            if (!roomAttributesSet.isEmpty()) {
-                listing.setRoomAttributes(new ArrayList<>(roomAttributesSet));
-                if (facilitiesRequired.equals(listing.getRoomAttributes())) {
-                    roomAttributesMapper.setHearingFacilitiesMappedToRoomAttributes(true);
-                }
-            }
-            if (!otherConsiderationsSet.isEmpty()) {
-                listing.setListingOtherConsiderations(new ArrayList<>(otherConsiderationsSet));
-            }
-            return true;
-        }
-        return false;
     }
 
     private List<String> getRoomAttributesByReasonableAdjustmentCode(Entity entity) {
@@ -207,4 +213,3 @@ public class ListingMapper {
     }
 
 }
-

@@ -44,6 +44,7 @@ public class CaseHearingRequestMapper {
         final CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         HearingDetails hearingDetails = hearingRequest.getHearingDetails();
         CaseDetails caseDetails = hearingRequest.getCaseDetails();
+        caseHearingRequestEntity.setAutoListFlag(hearingDetails.getAutoListFlag());
         caseHearingRequestEntity.setHearingType(hearingDetails.getHearingType());
         caseHearingRequestEntity.setRequiredDurationInMinutes(hearingDetails.getDuration());
         caseHearingRequestEntity.setHearingPriorityType(hearingDetails.getHearingPriorityType());
