@@ -4,7 +4,8 @@
 
   "specs": [
     "an active profile in CCD",
-    "has 400 status code"
+    "has 400 status code",
+    "shows hearing request is already in a group"
   ],
 
   "request": {
@@ -21,7 +22,7 @@
           "hearingOrder": "1"
         },
         {
-          "hearingId": "${[scenarioContext][childContexts][CreateLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
+          "hearingId": "${[scenarioContext][childContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
           "hearingOrder": "2"
         }
       ]

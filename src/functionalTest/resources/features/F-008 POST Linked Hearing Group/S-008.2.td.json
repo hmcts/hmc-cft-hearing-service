@@ -5,7 +5,7 @@
   "specs": [
     "an active profile in CCD",
     "has 400 status code",
-    "has incorrect request invocation"
+    "shows isLinked value on hearingRequest trying to be linked is FALSE"
   ],
 
   "request": {
