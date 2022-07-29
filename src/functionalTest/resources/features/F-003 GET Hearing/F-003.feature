@@ -38,8 +38,9 @@ Feature: F-003: Get hearing request
   @S-003.4
   Scenario: successfully get hearing request in LISTED status
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
+    And a wait time of [2] seconds [to wait for status to come back from hmi]
     And a successful call [to list the hearing] as in [ListHearingRequest],
-#    And a wait time of [2] seconds [to wait for status to come back from hmi]
+    And a wait time of [2] seconds [to wait for status to come back from hmi]
     And a successful call [to check the hearing status is LISTED] as in [GetHearingRequestListedStatus],
     When a request is prepared with appropriate values,
     And the request [uses the query param status=LISTED],
