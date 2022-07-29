@@ -2,11 +2,11 @@
   "_guid_": "CreateHearingActualRequest",
   "_extends_" : "CreateHearingRequestBase",
   "specs": [
-    "to create a hearing actual request"
+    "to create a hearing request"
   ],
   "request": {
     "body": {
-      "_extends_": "createHearingRequestFullData"
+      "_extends_": "createHearingActualRequestFullData"
     }
   },
   "expectedResponse": {
@@ -20,7 +20,7 @@
     },
     "body": {
       "hearingRequestID": "[[ANYTHING_PRESENT]]",
-      "status": "UPDATE_REQUESTED",
+      "status": "HEARING_REQUESTED",
       "timeStamp": "[[ANYTHING_PRESENT]]",
       "versionNumber": 1
     }

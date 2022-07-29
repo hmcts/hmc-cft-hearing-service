@@ -1,6 +1,6 @@
 {
-  "_guid_": "S-007.5",
-  "_extends_" : "PutHearingActualsWithValidHearingActualData",
+  "_guid_": "S-007.6",
+  "_extends_" : "PutHearingActualsRequestBase",
 
   "specs": [
     "an active profile in CCD",
@@ -43,7 +43,7 @@
     "responseMessage": "Bad Request",
     "body" : {
       "status" : "BAD_REQUEST",
-      "errors" : [ "003 invalid date" ]
+      "errors" : [ "002 invalid status HEARING_REQUESTED" ]
     }
   }
 }

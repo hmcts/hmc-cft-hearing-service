@@ -1,27 +1,20 @@
 {
   "_guid_": "S-007.1",
-  "_extends_" : "PutHearingActualsRequestBase",
+  "_extends_" : "PutHearingActualsWithValidHearingActualData",
 
   "specs": [
     "an active profile in CCD",
-    "has the 201 code",
-    "UPDATE_REQUESTED"
+    "has the 200 code"
   ],
 
   "expectedResponse": {
-    "responseCode": 201,
+    "responseCode": 200,
     "responseMessage": "OK",
     "headers": {
       "Content-Length": "[[ANYTHING_PRESENT]]",
       "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
       "Date": "[[ANYTHING_PRESENT]]",
       "Request-Context": "[[ANY_NULLABLE]]"
-    },
-    "body" : {
-      "hearingRequestID": "[[ANYTHING_PRESENT]]",
-      "status": "UPDATE_REQUESTED",
-      "timeStamp": "[[ANYTHING_PRESENT]]",
-      "versionNumber": 2
     }
   }
 }

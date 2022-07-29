@@ -1,11 +1,10 @@
 {
   "_guid_": "S-007.4",
-  "_extends_" : "PutHearingActualsRequestBase",
+  "_extends_" : "PutHearingActualsWithValidHearingActualData",
 
   "specs": [
     "an active profile in CCD",
-    "has the 400 code",
-    "UPDATE_REQUESTED"
+    "has the 400 code"
   ],
 
   "request": {
