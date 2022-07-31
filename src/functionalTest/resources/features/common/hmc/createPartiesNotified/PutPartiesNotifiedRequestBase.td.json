@@ -1,0 +1,31 @@
+{
+  "_guid_": "PutPartiesNotifiedRequestBase",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "put parties notified",
+  "method": "PUT",
+  "uri": "/partiesNotified/{id}",
+  "s2sClientId": "xui_webapp",
+  "specs": [
+  ],
+  "users": {
+    "invokingUser": {
+      "_extends_": "HmcSuperuser"
+    }
+  },
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    },
+    "body": {
+        "serviceData": "{\"dummyData\":\"null\"}"
+    }
+  },
+  "expectedResponse": {
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    }
+  }
+}

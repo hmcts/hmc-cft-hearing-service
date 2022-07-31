@@ -9,7 +9,7 @@
   ],
   "request": {
     "pathVariables": {
-      "caseref": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
+      "caseref": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}"
     },
     "queryParams": {
       "status": "HEARING_REQUESTED"
@@ -25,7 +25,7 @@
       "Request-Context": "[[ANY_NULLABLE]]"
     },
     "body" : {
-      "caseRef" : "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
+      "caseRef" : "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}",
       "caseHearings" : [ {
         "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
         "hearingType" : "Some hearing type",

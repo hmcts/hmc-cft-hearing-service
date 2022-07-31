@@ -1,0 +1,27 @@
+{
+  "_guid_": "CreatePartiesNotifiedRequest",
+  "_extends_" : "PutPartiesNotifiedRequestBase",
+  "specs": [
+    "to put parties notified responses"
+  ],
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    },
+    "pathVariables": {
+      "id": "${[scenarioContext][siblingContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    },
+    "queryParams":{
+      "version": "1",
+      "received": "2021-08-10T12:20:00"
+    },
+    "body": {
+    }
+  },
+  "expectedResponse": {
+    "responseCode": 201,
+    "responseMessage": "OK",
+    "body" : {
+    }
+  }
+}
