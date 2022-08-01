@@ -31,7 +31,6 @@ public class ListingMapper {
     private final RoomAttributesService roomAttributesService;
     private RoomAttributesMapper roomAttributesMapper;
 
-
     @Autowired
     public ListingMapper(ListingJohsMapper listingJohsMapper,
                          ListingLocationsMapper listingLocationsMapper,
@@ -84,7 +83,7 @@ public class ListingMapper {
         }
 
         setRoomAttributes(entitiesList, hearingDetails, listing);
-        setAutoListFlag(hearingDetails, listing);
+        validateAutoListFlag(hearingDetails, listing);
 
         if (!Collections.isEmpty(hearingDetails.getAmendReasonCodes())) {
             listing.setAmendReasonCode(Constants.AMEND_REASON_CODE);
@@ -134,7 +133,7 @@ public class ListingMapper {
         }
     }
 
-    private void setAutoListFlag(HearingDetails hearingDetails, Listing listing) {
+    private void validateAutoListFlag(HearingDetails hearingDetails, Listing listing) {
         if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag())
             && !(roomAttributesMapper.isReasonableAdjustmentIsMappedToRoomAttributeCode()
                 && roomAttributesMapper.isHearingFacilitiesMappedToRoomAttributes())) {
