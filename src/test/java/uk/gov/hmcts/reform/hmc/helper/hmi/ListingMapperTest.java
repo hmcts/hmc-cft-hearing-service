@@ -50,8 +50,6 @@ class ListingMapperTest {
     @Mock
     private RoomAttributesService roomAttributesService;
 
-    private final RoomAttributesMapper roomAttributesMapper = new RoomAttributesMapper();
-
     @InjectMocks
     private ListingMapper listingMapper;
 
@@ -62,6 +60,7 @@ class ListingMapperTest {
     private static final String ROLE_TYPE = "RoleType1";
     private static final String HEARING_CHANNEL = "someChannelType";
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
+    private final RoomAttributesMapper roomAttributesMapper = new RoomAttributesMapper();
 
     @Test
     void shouldReturnListingWithNoWelshLanguageValue() {
@@ -149,7 +148,7 @@ class ListingMapperTest {
         assertListingLocations(listingLocation, listing.getListingLocations());
         assertListingJohs(listingJoh, listing.getListingJohs());
 
-        assertNull(listing.getListingAutoCreateFlag());
+        assertFalse(listing.getListingAutoCreateFlag());
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
         assertEquals(HEARING_TYPE, listing.getListingType());
         assertEquals(360, listing.getListingDuration());
@@ -188,7 +187,7 @@ class ListingMapperTest {
         assertListingLocations(listingLocation, listing.getListingLocations());
         assertListingJohs(listingJoh, listing.getListingJohs());
 
-        assertNull(listing.getListingAutoCreateFlag());
+        assertFalse(listing.getListingAutoCreateFlag());
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
         assertEquals(HEARING_TYPE, listing.getListingType());
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());

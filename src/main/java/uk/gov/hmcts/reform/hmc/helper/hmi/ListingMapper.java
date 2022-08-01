@@ -46,6 +46,7 @@ public class ListingMapper {
         this.roomAttributesMapper = roomAttributesMapper;
 
         Listing listing = Listing.builder()
+            .listingAutoCreateFlag(hearingDetails.getAutoListFlag())
             .listingPriority(hearingDetails.getHearingPriorityType())
             .listingType(hearingDetails.getHearingType())
             .listingNumberAttendees(hearingDetails.getNumberOfPhysicalAttendees())
