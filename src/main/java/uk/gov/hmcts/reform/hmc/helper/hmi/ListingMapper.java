@@ -66,31 +66,41 @@ public class ListingMapper {
                 listing.setListingEndDate(hearingDetails.getHearingWindow().getDateRangeEnd());
             }
         }
+
+        appendListingValues(listing, hearingDetails, entitiesList);
+
+        return listing;
+    }
+
+    private void appendListingValues(Listing listing, HearingDetails hearingDetails, List<Entity> entitiesList) {
+
         if (hearingDetails.getPanelRequirements().getRoleType() != null && !hearingDetails
-            .getPanelRequirements().getRoleType().isEmpty()) {
+                .getPanelRequirements().getRoleType().isEmpty()) {
             listing.setListingJohTiers(new ArrayList<>(hearingDetails.getPanelRequirements()
-                                                           .getRoleType()));
+                    .getRoleType()));
         }
+
         if (hearingDetails.isMultiDayHearing()) {
             listing.setListingDuration(DURATION_OF_DAY);
             listing.setListingMultiDay(calculateMultiDayDurations(hearingDetails.getDuration()));
         } else {
             listing.setListingDuration(hearingDetails.getDuration());
         }
+
         if (entitiesList != null && !entitiesList.isEmpty()) {
             if (!areRoomAttributesFound(entitiesList, hearingDetails, listing)) {
                 listing.setListingOtherConsiderations(List.of());
-                listing.setRoomAttributes(List.of());
+                listing.setListingRoomAttributes(List.of());
             }
         } else {
             listing.setListingOtherConsiderations(List.of());
-            listing.setRoomAttributes(List.of());
+            listing.setListingRoomAttributes(List.of());
         }
+
         if (!Collections.isEmpty(hearingDetails.getAmendReasonCodes())) {
             listing.setAmendReasonCode(Constants.AMEND_REASON_CODE);
         }
 
-        return listing;
     }
 
     private ListingMultiDay calculateMultiDayDurations(Integer hearingDetailsDuration) {
@@ -146,7 +156,7 @@ public class ListingMapper {
 
         if (!roomAttributesSet.isEmpty() || !otherConsiderationsSet.isEmpty()) {
             if (!roomAttributesSet.isEmpty()) {
-                listing.setRoomAttributes(new ArrayList<>(roomAttributesSet));
+                listing.setListingRoomAttributes(new ArrayList<>(roomAttributesSet));
             }
             if (!otherConsiderationsSet.isEmpty()) {
                 listing.setListingOtherConsiderations(new ArrayList<>(otherConsiderationsSet));

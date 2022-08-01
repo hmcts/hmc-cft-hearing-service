@@ -59,5 +59,5 @@ public class Listing {
 
     private String listingLanguage;
 
-    private List<String> roomAttributes;
+    private List<String> listingRoomAttributes;
 }

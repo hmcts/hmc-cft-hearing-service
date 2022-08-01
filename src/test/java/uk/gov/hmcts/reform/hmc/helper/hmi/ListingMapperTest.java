@@ -273,7 +273,7 @@ class ListingMapperTest {
         HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
         Listing listing = listingMapper.getListing(hearingDetails,null);
         assertTrue(listing.getListingOtherConsiderations().isEmpty());
-        assertTrue(listing.getRoomAttributes().isEmpty());
+        assertTrue(listing.getListingRoomAttributes().isEmpty());
     }
 
     @Test
@@ -286,8 +286,8 @@ class ListingMapperTest {
         when(roomAttributesService.findByReasonableAdjustmentCode("ReasonableAdjustment1"))
             .thenReturn(roomAttribute);
         Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
-        assertNotNull(listing.getRoomAttributes());
-        assertTrue(listing.getRoomAttributes().contains("RoomCode1"));
+        assertNotNull(listing.getListingRoomAttributes());
+        assertTrue(listing.getListingRoomAttributes().contains("RoomCode1"));
     }
 
     @Test
@@ -301,8 +301,8 @@ class ListingMapperTest {
         when(roomAttributesService.findByRoomAttributeCode("RoomCode1"))
             .thenReturn(roomAttribute);
         Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
-        assertNotNull(listing.getRoomAttributes());
-        assertTrue(listing.getRoomAttributes().contains("RoomCode1"));
+        assertNotNull(listing.getListingRoomAttributes());
+        assertTrue(listing.getListingRoomAttributes().contains("RoomCode1"));
     }
 
     @Test
