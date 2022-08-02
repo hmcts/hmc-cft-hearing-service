@@ -74,7 +74,8 @@
         },
         "hearingIsLinkedFlag" : false,
         "hearingChannels" : [ "INTER" ],
-        "autolistFlag" : true
+        "autolistFlag" : "[[ANYTHING_PRESENT]]",
+        "listingAutoChangeReasonCode" : "[[ANYTHING_PRESENT]]"
       },
       "partyDetails" : [ {
         "partyID" : "P1",

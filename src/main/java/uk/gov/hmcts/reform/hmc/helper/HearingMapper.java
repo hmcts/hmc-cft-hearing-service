@@ -36,7 +36,8 @@ public class HearingMapper {
     public HearingEntity modelToEntity(HearingRequest hearingRequest,
                                        HearingEntity hearingEntity,
                                        Integer requestVersion,
-                                       String status) {
+                                       String status,
+                                       RoomAttributesMapper roomAttributesMapper) {
 
 
         hearingRequest.getHearingDetails().setDuration(
@@ -44,7 +45,7 @@ public class HearingMapper {
         );
 
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
-            hearingRequest, hearingEntity, requestVersion);
+            hearingRequest, hearingEntity, requestVersion, roomAttributesMapper);
         setHearingDetails(hearingRequest.getHearingDetails(), caseHearingRequestEntity);
         setCaseDetails(hearingRequest.getCaseDetails(), caseHearingRequestEntity);
         setPartyDetails(hearingRequest.getPartyDetails(), caseHearingRequestEntity);
