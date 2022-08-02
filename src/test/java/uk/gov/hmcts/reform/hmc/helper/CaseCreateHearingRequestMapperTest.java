@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -14,33 +16,36 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CaseCreateHearingRequestMapperTest {
 
+    private static final Clock CLOCK = Clock.fixed(Instant.parse("2021-08-10T12:20:00Z"), ZoneOffset.UTC);
+    private final CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
+    private final HearingEntity hearingEntity = new HearingEntity();
+    private final CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(
+        caseCategoriesMapper, CLOCK);
+
     @Test
     void modelToEntity() {
-        Clock clock = Clock.fixed(Instant.parse("2021-08-10T12:20:00Z"), ZoneOffset.UTC);
         CaseHearingRequestEntity expectedEntity = new CaseHearingRequestEntity();
-        expectedEntityValues(clock, expectedEntity);
+        expectedEntityValues(expectedEntity);
         HearingRequest createHearingRequest = new HearingRequest();
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        HearingEntity hearingEntity = new HearingEntity();
-        CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
-        CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper, clock);
         CaseHearingRequestEntity actualEntity = caseHearingRequestMapper.modelToEntity(
-            createHearingRequest,
-            hearingEntity, 1
-        );
+            createHearingRequest, hearingEntity, 1, new RoomAttributesMapper());
         expectedEntity.setHearing(hearingEntity);
         assertEquals(expectedEntity, actualEntity);
     }
 
     @Test
     void modelToEntityWithoutHearingWindow() {
-        Clock clock = Clock.fixed(Instant.parse("2021-08-10T12:20:00Z"), ZoneOffset.UTC);
         CaseHearingRequestEntity expectedEntity = new CaseHearingRequestEntity();
-        expectedEntityValues(clock, expectedEntity);
+        expectedEntityValues(expectedEntity);
         expectedEntity.setHearingWindowStartDateRange(null);
         expectedEntity.setHearingWindowEndDateRange(null);
         expectedEntity.setFirstDateTimeOfHearingMustBe(null);
@@ -49,19 +54,76 @@ class CaseCreateHearingRequestMapperTest {
         hearingDetails.setHearingWindow(null);
         createHearingRequest.setHearingDetails(hearingDetails);
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
-        HearingEntity hearingEntity = new HearingEntity();
-        CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
-
-        CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper, clock);
         CaseHearingRequestEntity actualEntity = caseHearingRequestMapper.modelToEntity(
             createHearingRequest,
-            hearingEntity, 1
-        );
+            hearingEntity, 1,
+            new RoomAttributesMapper());
         expectedEntity.setHearing(hearingEntity);
         assertEquals(expectedEntity, actualEntity);
     }
 
-    private void expectedEntityValues(Clock clock, CaseHearingRequestEntity expectedEntity) {
+    @Test
+    void modelToEntityWhenAutoListFlagIsTrueAndIsMappedToIsFalse() {
+        HearingRequest createHearingRequest = buildCreateHearingRequest();
+        createHearingRequest.getHearingDetails().setAutoListFlag(true);
+
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
+            createHearingRequest,
+            hearingEntity, 1,
+            new RoomAttributesMapper());
+        assertTrue(caseHearingRequestEntity.getAutoListFlag());
+        assertNull(caseHearingRequestEntity.getListingAutoChangeReasonCode());
+    }
+
+    @Test
+    void modelToEntityWhenAutoListFlagAndIsMappedToIsTrue() {
+        RoomAttributesMapper roomAttributesMapper = new RoomAttributesMapper();
+        roomAttributesMapper.setMappedTo(true);
+        HearingRequest createHearingRequest = buildCreateHearingRequest();
+        createHearingRequest.getHearingDetails().setAutoListFlag(true);
+
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
+            createHearingRequest,
+            hearingEntity, 1,
+            roomAttributesMapper);
+        assertFalse(caseHearingRequestEntity.getAutoListFlag());
+        assertEquals(ListingReasonCode.NO_MAPPING_AVAILABLE.label,
+            caseHearingRequestEntity.getListingAutoChangeReasonCode());
+    }
+
+    @Test
+    void modelToEntityWhenListingAutoChangeReasonCodeIsProvidedAndAutoListFlagFalse() {
+        HearingRequest createHearingRequest = buildCreateHearingRequest();
+        createHearingRequest.getHearingDetails()
+            .setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.name());
+        createHearingRequest.getHearingDetails().setAutoListFlag(false);
+
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
+            createHearingRequest,
+            hearingEntity, 1,
+            new RoomAttributesMapper());
+        assertFalse(caseHearingRequestEntity.getAutoListFlag());
+        assertEquals(ListingReasonCode.NO_MAPPING_AVAILABLE.label,
+            caseHearingRequestEntity.getListingAutoChangeReasonCode());
+    }
+
+    @Test
+    void shouldFail_whenListingAutoChangeReasonCodeIsProvidedAndAutoListFlagIsTrue() {
+        RoomAttributesMapper roomAttributesMapper = new RoomAttributesMapper();
+        HearingRequest createHearingRequest = buildCreateHearingRequest();
+        createHearingRequest.getHearingDetails()
+            .setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.name());
+        assertTrue(createHearingRequest.getHearingDetails().getAutoListFlag());
+
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            caseHearingRequestMapper.modelToEntity(
+                createHearingRequest, hearingEntity, 1, roomAttributesMapper));
+        assertEquals(
+            "001 autoListFlag must be FALSE if you supply a change reasoncode",
+            exception.getMessage());
+    }
+
+    private void expectedEntityValues(CaseHearingRequestEntity expectedEntity) {
         expectedEntity.setAutoListFlag(true);
         expectedEntity.setHearingType("Some hearing type");
         expectedEntity.setRequiredDurationInMinutes(360);
@@ -69,7 +131,7 @@ class CaseCreateHearingRequestMapperTest {
         expectedEntity.setPrivateHearingRequiredFlag(true);
         expectedEntity.setHmctsServiceCode("ABA1");
         expectedEntity.setCaseReference("1111222233334444");
-        expectedEntity.setHearingRequestReceivedDateTime(LocalDateTime.now(clock));
+        expectedEntity.setHearingRequestReceivedDateTime(LocalDateTime.now(CLOCK));
         expectedEntity.setCaseUrlContextPath("https://www.google.com");
         expectedEntity.setHmctsInternalCaseName("Internal case name");
         expectedEntity.setPublicCaseName("Public case name");
@@ -80,6 +142,13 @@ class CaseCreateHearingRequestMapperTest {
         expectedEntity.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
         expectedEntity.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
         expectedEntity.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));
+    }
+
+    private HearingRequest buildCreateHearingRequest() {
+        HearingRequest createHearingRequest = new HearingRequest();
+        createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+        createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
+        return createHearingRequest;
     }
 
 }

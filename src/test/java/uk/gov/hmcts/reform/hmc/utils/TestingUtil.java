@@ -1206,7 +1206,7 @@ public class TestingUtil {
 
     public static HearingDetails hearingDetailsWithAllFields() {
         HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setAutoListFlag(false);
         hearingDetails.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.name());
         hearingDetails.setAmendReasonCodes(List.of("reason 1", "reason 2"));
         hearingDetails.setHearingType("Some hearing type");
@@ -1412,7 +1412,7 @@ public class TestingUtil {
 
     public static HearingDetails hearingDetailsWithoutHearingWindow() {
         HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setAutoListFlag(false);
         hearingDetails.setHearingType("Some hearing type");
         hearingDetails.setDuration(360);
         hearingDetails.setNonStandardHearingDurationReasons(List.of("First reason", "Second reason"));

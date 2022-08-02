@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.RoleType;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
+import uk.gov.hmcts.reform.hmc.helper.RoomAttributesMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -58,6 +60,7 @@ class ListingMapperTest {
     private static final String ROLE_TYPE = "RoleType1";
     private static final String HEARING_CHANNEL = "someChannelType";
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
+    private final RoomAttributesMapper roomAttributesMapper = new RoomAttributesMapper();
 
     @Test
     void shouldReturnListingWithNoWelshLanguageValue() {
@@ -84,7 +87,7 @@ class ListingMapperTest {
     }
 
     @Test
-    void shouldReturnListingOtherConsiderationWtithGivenFacilitiesRequired() {
+    void shouldReturnListingOtherConsiderationWithGivenFacilitiesRequired() {
         List<String> faciltiesRequired = List.of("Reading Room","Study Room");
         HearingDetails hearingDetails = buildHearingDetails(150);
         hearingDetails.setFacilitiesRequired(faciltiesRequired);
@@ -104,7 +107,6 @@ class ListingMapperTest {
         assertListingLocations(listingLocation, listing.getListingLocations());
         assertListingJohs(listingJoh, listing.getListingJohs());
 
-        assertEquals(true, listing.getListingAutoCreateFlag());
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
         assertEquals(HEARING_TYPE, listing.getListingType());
         assertEquals(150, listing.getListingDuration());
@@ -146,7 +148,7 @@ class ListingMapperTest {
         assertListingLocations(listingLocation, listing.getListingLocations());
         assertListingJohs(listingJoh, listing.getListingJohs());
 
-        assertEquals(true, listing.getListingAutoCreateFlag());
+        assertFalse(listing.getListingAutoCreateFlag());
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
         assertEquals(HEARING_TYPE, listing.getListingType());
         assertEquals(360, listing.getListingDuration());
@@ -185,7 +187,7 @@ class ListingMapperTest {
         assertListingLocations(listingLocation, listing.getListingLocations());
         assertListingJohs(listingJoh, listing.getListingJohs());
 
-        assertEquals(true, listing.getListingAutoCreateFlag());
+        assertFalse(listing.getListingAutoCreateFlag());
         assertEquals(HEARING_PRIORITY_TYPE, listing.getListingPriority());
         assertEquals(HEARING_TYPE, listing.getListingType());
         assertEquals(DURATION_OF_DAY, listing.getListingDuration());
@@ -271,7 +273,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnEmptyListingFieldsIfEntitiesListIsNull() {
         HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
-        Listing listing = listingMapper.getListing(hearingDetails,null);
+        Listing listing = listingMapper.getListing(hearingDetails,null, roomAttributesMapper);
         assertTrue(listing.getListingOtherConsiderations().isEmpty());
         assertTrue(listing.getRoomAttributes().isEmpty());
     }
@@ -311,7 +313,7 @@ class ListingMapperTest {
         hearingDetails.setFacilitiesRequired(List.of("RoomCode1"));
         Optional<RoomAttribute> roomAttribute =
             TestingUtil.getRoomAttribute("RoomCode1", "Name1",
-                                         "ReasonableAdjustment1", false);
+                "ReasonableAdjustment1", false);
 
         when(roomAttributesService.findByRoomAttributeCode("RoomCode1"))
             .thenReturn(roomAttribute);
@@ -326,7 +328,7 @@ class ListingMapperTest {
         hearingDetails.setFacilitiesRequired(List.of("randomReasonableAdjustment"));
         Optional<RoomAttribute> roomAttribute =
             TestingUtil.getRoomAttribute("RoomCode1", "Name1",
-                                         "ReasonableAdjustment1", false);
+                "ReasonableAdjustment1", false);
         when(roomAttributesService.findByRoomAttributeCode("randomReasonableAdjustment"))
             .thenReturn(Optional.empty());
         when(roomAttributesService.findByReasonableAdjustmentCode("randomReasonableAdjustment"))
@@ -334,6 +336,21 @@ class ListingMapperTest {
         Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
         assertNotNull(listing.getListingOtherConsiderations());
         assertTrue(listing.getListingOtherConsiderations().contains("randomReasonableAdjustment"));
+    }
+
+    @Test
+    void shouldReturnListingAutoCreateFlag() {
+        HearingDetails hearingDetails = buildHearingDetails(150);
+        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setFacilitiesRequired(List.of("ReasonableAdjustment1"));
+        Optional<RoomAttribute> roomAttribute =
+            TestingUtil.getRoomAttribute("RoomCode1", "Name1",
+                "ReasonableAdjustment1", false);
+        when(roomAttributesService.findByReasonableAdjustmentCode("ReasonableAdjustment1"))
+            .thenReturn(roomAttribute);
+        Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
+        assertFalse(listing.getListingAutoCreateFlag());
+        assertTrue(roomAttributesMapper.isMappedTo());
     }
 
     private void assertListingJohs(ListingJoh listingJoh, List<ListingJoh> listingJohList) {
@@ -352,7 +369,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingIfHearingWindowNotPresent() {
         HearingDetails hearingDetails = buildHearingDetailsWithNoHearingWindow(2165);
-        Listing listing = listingMapper.getListing(hearingDetails,null);
+        Listing listing = listingMapper.getListing(hearingDetails,null, roomAttributesMapper);
         assertNull(listing.getListingDate());
         assertNull(listing.getListingStartDate());
         assertNull(listing.getListingEndDate());
@@ -400,9 +417,8 @@ class ListingMapperTest {
     }
 
     private Listing buildListing(HearingDetails hearingDetails,Entity entity) {
-        return listingMapper.getListing(hearingDetails,List.of(entity));
+        return listingMapper.getListing(hearingDetails,List.of(entity), roomAttributesMapper);
     }
-
 
     @Test
     void shouldReturnListingForMultiDayHearingDurationWithManyValues() {
@@ -430,7 +446,7 @@ class ListingMapperTest {
 
     private Listing getListing(int duration) {
         val hearingDetails = buildHearingDetails(HearingMapper.roundUpDuration(duration));
-        Listing listing = listingMapper.getListing(hearingDetails, null);
-        return listing;
+        return listingMapper.getListing(hearingDetails, null, roomAttributesMapper);
+
     }
 }
