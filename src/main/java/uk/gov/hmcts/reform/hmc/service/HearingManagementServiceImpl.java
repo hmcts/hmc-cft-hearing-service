@@ -27,8 +27,13 @@ import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.helper.PartyRelationshipDetailsMapper;
+import uk.gov.hmcts.reform.hmc.helper.RoomAttributesMapper;
+import uk.gov.hmcts.reform.hmc.helper.hmi.EntitiesMapper;
+import uk.gov.hmcts.reform.hmc.helper.hmi.EntitiesMapperObject;
+import uk.gov.hmcts.reform.hmc.helper.hmi.HmiCaseDetailsMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
+import uk.gov.hmcts.reform.hmc.helper.hmi.ListingMapper;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
@@ -38,8 +43,10 @@ import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.HmiCaseDetails;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiDeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.HmiSubmitHearingRequest;
+import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -101,6 +108,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final LinkedHearingValidator linkedHearingValidator;
     private final HearingRepository hearingRepository;
     private final PartyRelationshipDetailsMapper partyRelationshipDetailsMapper;
+    private final ListingMapper listingMapper;
+    private final HmiCaseDetailsMapper hmiCaseDetailsMapper;
+    private final EntitiesMapper entitiesMapper;
+    private RoomAttributesMapper roomAttributesMapper;
+
 
     @Autowired
     public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
@@ -120,7 +132,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HearingIdValidator hearingIdValidator,
                                         LinkedHearingValidator linkedHearingValidator,
                                         PartyRelationshipDetailsMapper partyRelationshipDetailsMapper,
-                                        HearingActualsValidator hearingActualsValidator) {
+                                        HearingActualsValidator hearingActualsValidator,
+                                        ListingMapper listingMapper,
+                                        HmiCaseDetailsMapper hmiCaseDetailsMapper,
+                                        EntitiesMapper entitiesMapper,
+                                        RoomAttributesMapper roomAttributesMapper) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -139,6 +155,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.linkedHearingValidator = linkedHearingValidator;
         this.partyRelationshipDetailsMapper = partyRelationshipDetailsMapper;
         this.hearingActualsValidator = hearingActualsValidator;
+        this.listingMapper = listingMapper;
+        this.hmiCaseDetailsMapper = hmiCaseDetailsMapper;
+        this.entitiesMapper = entitiesMapper;
+        this.roomAttributesMapper = roomAttributesMapper;
     }
 
     @Override
@@ -173,9 +193,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
         validateHearingRequest(createHearingRequest);
+        Listing listing = getListing(createHearingRequest);
         HearingResponse hearingResponse = insertHearingRequest(createHearingRequest);
-        sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), createHearingRequest,
-                                 REQUEST_HEARING
+        sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), REQUEST_HEARING, createHearingRequest,
+                                    getCaseDetails(hearingResponse.getHearingRequestId(), createHearingRequest),
+                                    listing
         );
         return hearingResponse;
     }
@@ -191,17 +213,22 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingEntity existingHearing = hearingRepository.findById(hearingId)
             .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
         String statusToUpdate = getNextPutHearingStatus(existingHearing.getStatus());
+        Listing listing = getListing(hearingRequest);
         HearingEntity hearingEntity = hearingMapper
-            .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate);
+            .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate,
+                            roomAttributesMapper);
+
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
-        sendRequestToHmiAndQueue(hearingId, hearingRequest, AMEND_HEARING);
+        sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
+            getCaseDetails(saveHearingResponseDetails.getHearingRequestId(), hearingRequest), listing);
         return saveHearingResponseDetails;
     }
 
-    private void sendRequestToHmiAndQueue(Long hearingId, HearingRequest hearingRequest, String messageType) {
+    private void sendRequestToHmiAndQueue(Long hearingId, String messageType, HearingRequest hearingRequest,
+                                          HmiCaseDetails hmiCaseDetails,Listing listing) {
         HmiSubmitHearingRequest hmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
-            .mapRequest(hearingId, hearingRequest);
+            .mapRequest(hearingRequest, hmiCaseDetails, listing);
         sendRequestToQueue(hmiSubmitHearingRequest, hearingId, messageType);
     }
 
@@ -290,8 +317,32 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private HearingEntity saveHearingDetails(HearingRequest createHearingRequest) {
         HearingEntity hearingEntity = hearingMapper
-            .modelToEntity(createHearingRequest, new HearingEntity(), VERSION_NUMBER_TO_INCREMENT, POST_HEARING_STATUS);
+            .modelToEntity(createHearingRequest, new HearingEntity(), VERSION_NUMBER_TO_INCREMENT, POST_HEARING_STATUS,
+                roomAttributesMapper);
         return hearingRepository.save(hearingEntity);
+    }
+
+    private Listing getListing(HearingRequest hearingRequest) {
+        roomAttributesMapper.initialize();
+        EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest.getPartyDetails());
+        return listingMapper.getListing(hearingRequest.getHearingDetails(), entities.getEntities(),
+                                        roomAttributesMapper);
+    }
+
+    private HmiCaseDetails getCaseDetails(Long hearingId, HearingRequest hearingRequest) {
+        Boolean isLinkedFlag = hearingRequest.getHearingDetails().getHearingIsLinkedFlag();
+        int versionNumber = 1;
+        if (hearingRequest instanceof UpdateHearingRequest) {
+            UpdateHearingRequest request = (UpdateHearingRequest) hearingRequest;
+            if (null != request.getRequestDetails()) {
+                versionNumber = request.getRequestDetails().getVersionNumber() + VERSION_NUMBER_TO_INCREMENT;
+            }
+        }
+        return hmiCaseDetailsMapper.getCaseDetails(
+            hearingRequest.getCaseDetails(),
+            versionNumber,
+            hearingId,
+            isLinkedFlag);
     }
 
     private void savePartyRelationshipDetails(HearingRequest hearingRequest, HearingEntity hearingEntity) {

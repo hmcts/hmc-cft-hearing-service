@@ -139,6 +139,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LAST_NAME_EMPTY
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LAST_NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LISTING_COMMENTS_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LISTING_REASON_CODE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LOCATION_ID_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MEMBER_ID_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MEMBER_ID_MAX_LENGTH;
@@ -1009,6 +1010,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn400WhenHearingDetailsAreInvalid() throws Exception {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         hearingRequest.getHearingDetails().setHearingType("a".repeat(41));
+        hearingRequest.getHearingDetails().setListingAutoChangeReasonCode("a".repeat(71));
         hearingRequest.getHearingDetails().setDuration(-1);
         hearingRequest.getHearingDetails().setAmendReasonCodes(List.of("a".repeat(71)));
         List<String> nonStandardHearingDurationReasonsList = Collections.singletonList("a".repeat(71));
@@ -1043,7 +1045,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(21)))
+            .andExpect(jsonPath("$.errors", hasSize(23)))
             .andExpect(jsonPath("$.errors", hasItems(HEARING_TYPE_MAX_LENGTH, DURATION_MIN_VALUE,
                                                      NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG,
                                                      HEARING_PRIORITY_TYPE_MAX_LENGTH,
@@ -1057,7 +1059,9 @@ class HearingManagementControllerIT extends BaseTest {
                                                      MEMBER_ID_MAX_LENGTH, MEMBER_TYPE_MAX_LENGTH,
                                                      "Unsupported type for requirementType",
                                                      AMEND_REASON_CODE_MAX_LENGTH,
-                                                     HEARING_CHANNEL_EMPTY
+                                                     HEARING_CHANNEL_EMPTY,
+                                                     LISTING_REASON_CODE_MAX_LENGTH,
+                                                     "Unsupported type or value for listingAutoChangeReasonCode"
             )))
             .andReturn();
     }

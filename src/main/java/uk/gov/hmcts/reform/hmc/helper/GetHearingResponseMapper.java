@@ -235,6 +235,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         HearingDetails hearingDetails = new HearingDetails();
         CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
         hearingDetails.setAutoListFlag(caseHearingRequestEntity.getAutoListFlag());
+        hearingDetails.setListingAutoChangeReasonCode(caseHearingRequestEntity.getListingAutoChangeReasonCode());
         hearingDetails.setHearingType(caseHearingRequestEntity.getHearingType());
         hearingDetails.setHearingWindow(setHearingWindow(hearingEntity));
         hearingDetails.setDuration(caseHearingRequestEntity.getRequiredDurationInMinutes());

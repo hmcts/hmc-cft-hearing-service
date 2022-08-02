@@ -27,7 +27,8 @@ class CaseHearingRequestMapperTest {
         HearingEntity hearingEntity = new HearingEntity();
         CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
         CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper, CLOCK);
-        CaseHearingRequestEntity entity = caseHearingRequestMapper.modelToEntity(hearingRequest, hearingEntity, 1);
+        CaseHearingRequestEntity entity = caseHearingRequestMapper.modelToEntity(hearingRequest, hearingEntity, 1,
+                                                                                    new RoomAttributesMapper());
         assert1(entity);
         assert2(entity);
     }
