@@ -384,6 +384,13 @@ public class HmiHearingResponseMapper {
                     postStatus = HearingStatus.CANCELLATION_REQUESTED;
                 }
                 break;
+            case CANCELLATION_SUBMITTED:
+                if (hearingVersion == currentVersion) {
+                    postStatus = EXCEPTION;
+                } else {
+                    postStatus = HearingStatus.CANCELLATION_SUBMITTED;
+                }
+                break;
             case EXCEPTION:
                 postStatus = EXCEPTION;
                 break;
@@ -401,6 +408,7 @@ public class HmiHearingResponseMapper {
             case LISTED:
             case UPDATE_REQUESTED:
             case CANCELLATION_REQUESTED:
+            case CANCELLATION_SUBMITTED:
                 postStatus = HearingStatus.CANCELLED;
                 break;
             case EXCEPTION:
