@@ -124,11 +124,11 @@ public class ListingMapper {
         if (entitiesList != null && !entitiesList.isEmpty()) {
             if (!areRoomAttributesFound(entitiesList, hearingDetails.getFacilitiesRequired(), listing)) {
                 listing.setListingOtherConsiderations(List.of());
-                listing.setRoomAttributes(List.of());
+                listing.setListingRoomAttributes(List.of());
             }
         } else {
             listing.setListingOtherConsiderations(List.of());
-            listing.setRoomAttributes(List.of());
+            listing.setListingRoomAttributes(List.of());
         }
     }
 
@@ -149,8 +149,8 @@ public class ListingMapper {
 
         if (!roomAttributesSet.isEmpty() || !otherConsiderationsSet.isEmpty()) {
             if (!roomAttributesSet.isEmpty()) {
-                listing.setRoomAttributes(new ArrayList<>(roomAttributesSet));
-                if (facilitiesRequired.equals(listing.getRoomAttributes())) {
+                listing.setListingRoomAttributes(new ArrayList<>(roomAttributesSet));
+                if (facilitiesRequired.equals(listing.getListingRoomAttributes())) {
                     roomAttributesMapper.setHearingFacilitiesMappedToRoomAttributes(true);
                 }
             }
