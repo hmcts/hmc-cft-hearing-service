@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 
@@ -47,6 +48,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_LISTING;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_SUBMITTED;
@@ -59,13 +62,60 @@ import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SU
 
 class HmiHearingResponseMapperTest {
 
-
     private static HmiHearingResponseMapper hmiHearingResponseMapper;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         hmiHearingResponseMapper = new HmiHearingResponseMapper();
+    }
+
+    @Test
+    void shouldErrorOnLaStatusIsListedAndHearingStatusIsCancelled() {
+        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
+                HearingCode.LISTED, "CANCELLED");
+    }
+
+    @Test
+    void shouldErrorOnLaStatusIsListedAndHearingStatusIsCancellationSubmitted() {
+        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
+                HearingCode.LISTED, "CANCELLATION_SUBMITTED");
+    }
+
+    @Test
+    void shouldErrorOnLaStatusIsListedAndHearingStatusIsClosed() {
+        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
+                HearingCode.LISTED, "CLOSED");
+    }
+
+    @Test
+    void shouldErrorOnLaStatusIsListedAndHearingStatusIsHearingRequested() {
+        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
+                HearingCode.LISTED, "HEARING_REQUESTED");
+    }
+
+    @Test
+    void shouldErrorOnLaStatusIsClosedAndHearingStatusIsCancelled() {
+        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
+                HearingCode.CLOSED, "CANCELLED");
+    }
+
+    @Test
+    void shouldErrorOnLaStatusIsClosedAndHearingStatusIsCancellationSubmitted() {
+        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
+                HearingCode.CLOSED, "CANCELLATION_SUBMITTED");
+    }
+
+    @Test
+    void shouldErrorOnLaStatusIsClosedAndHearingStatusIsClosed() {
+        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
+                HearingCode.CLOSED, "CLOSED");
+    }
+
+    @Test
+    void shouldErrorOnLaStatusIsClosedAndHearingStatusIsHearingRequested() {
+        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
+                HearingCode.CLOSED, "HEARING_REQUESTED");
     }
 
     @Test
@@ -223,6 +273,31 @@ class HmiHearingResponseMapperTest {
             () -> assertThat(response.getHearingResponses().get(1).getHearingDayDetails().get(0)
                                  .getHearingDayPanel().get(0).getIsPresiding(), is(true))
         );
+    }
+
+    private void shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(HearingCode hearingCode,
+                                                                                   String hearingStatus) {
+        HearingResponse hearingResponse = new HearingResponse();
+        hearingResponse.setMeta(generateMetaResponse());
+
+        Hearing hearing = new Hearing();
+        hearing.setHearingCaseVersionId(1);
+        hearing.setHearingCaseStatus(generateHearingCaseStatus(hearingCode));
+        hearingResponse.setHearing(hearing);
+
+        HearingEntity hearingEntity = hmiHearingResponseMapper.mapHmiHearingToEntity(
+                generateHmiHearing("random", hearingCode, 1, "Draft"),
+                generateHearingEntity("CANCELLATION_REQUESTED", 1)
+        );
+        hearingEntity.setStatus(hearingStatus);
+        Exception exception = assertThrows(MalformedMessageException.class, () ->
+                hmiHearingResponseMapper.getHearingStatus(hearingResponse, hearingEntity));
+        if (hearingCode.equals(HearingCode.CLOSED)) {
+            assertTrue(exception.getMessage().contains("LA status:CASE_CLOSED"));
+        } else {
+            assertTrue(exception.getMessage().contains("LA status:" + hearingCode.name()));
+        }
+        assertTrue(exception.getMessage().contains("current status:" + hearingStatus));
     }
 
     private static HearingSession createHearingSession(LocalDateTime startDateTime, LocalDateTime endDateTime) {
