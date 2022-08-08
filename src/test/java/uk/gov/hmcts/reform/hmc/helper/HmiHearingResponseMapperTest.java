@@ -744,6 +744,15 @@ class HmiHearingResponseMapperTest {
         }
 
         @Test
+        void shouldGetPostStateOfClosedWhenLaStateIsClosedAndCurrentIsCancellationSubmitted() {
+            HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
+                generateHmiHearing("random", HearingCode.CLOSED, 1, "Draft"),
+                generateHearingEntity("CANCELLATION_SUBMITTED", 1)
+            );
+            assertEquals(response.getStatus(), CANCELLED.name());
+        }
+
+        @Test
         void shouldGetPostStateOfExceptionWhenLaStateIsClosedAndCurrentIsException() {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
                 generateHmiHearing("random", HearingCode.CLOSED, 1, "Draft"),
@@ -821,6 +830,15 @@ class HmiHearingResponseMapperTest {
         }
 
         @Test
+        void shouldGetPostStateOfExceptionWhenLaStateIsListedAndCurrentIsCancellationSubmittedAndVersionIsEqual() {
+            HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
+                generateHmiHearing("random", HearingCode.LISTED, 1, "Draft"),
+                generateHearingEntity("CANCELLATION_SUBMITTED", 1)
+            );
+            assertEquals(response.getStatus(), EXCEPTION.name());
+        }
+
+        @Test
         void shouldGetPostStateOfCancellationRequestedWhenLaStateIsListedAndCurrentIsCancellationRequested() {
             HearingEntity hearingEntity = generateHearingEntity(CANCELLATION_REQUESTED.name(), 11);
             CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
@@ -832,6 +850,20 @@ class HmiHearingResponseMapperTest {
                 hearingEntity
             );
             assertEquals(response.getStatus(), CANCELLATION_REQUESTED.name());
+        }
+
+        @Test
+        void shouldGetPostStateOfCancellationSubmittedWhenLaStateIsListedAndCurrentIsCancellationSubmitted() {
+            HearingEntity hearingEntity = generateHearingEntity("CANCELLATION_SUBMITTED", 11);
+            CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
+            caseHearingRequestEntity.setVersionNumber(1);
+            hearingEntity.getCaseHearingRequests().add(caseHearingRequestEntity);
+
+            HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(
+                generateHmiHearing("random", HearingCode.LISTED, 1, "Draft"),
+                hearingEntity
+            );
+            assertEquals(response.getStatus(), CANCELLATION_SUBMITTED.name());
         }
     }
 
