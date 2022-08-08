@@ -288,7 +288,7 @@ class HmiHearingResponseMapperTest {
 
         HearingEntity hearingEntity = hmiHearingResponseMapper.mapHmiHearingToEntity(
                 generateHmiHearing("random", hearingCode, 1, "Draft"),
-                generateHearingEntity(CANCELLATION_REQUESTED.name(), 1)
+                generateHearingEntity(LISTED.name(), 1)
         );
         hearingEntity.setStatus(hearingStatus);
 
