@@ -315,7 +315,8 @@ public class HmiHearingResponseMapper {
         HearingStatus currentStatus = HearingStatus.valueOf(hearingEntity.getStatus());
         HearingCode laStatus = HearingCode.getByNumber(hearing.getHearing().getHearingCaseStatus().getCode());
         HearingStatus postStatus = null;
-
+        // TODO: remove temp debug
+        System.out.println("laStatus:" + laStatus.name() + "; currentStatus:" + currentStatus.name());
         switch (laStatus) {
             case EXCEPTION:
                 postStatus = EXCEPTION;
