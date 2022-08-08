@@ -78,12 +78,6 @@ class HmiHearingResponseMapperTest {
     }
 
     @Test
-    void shouldErrorOnLaStatusIsListedAndHearingStatusIsCancellationSubmitted() {
-        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
-                HearingCode.LISTED,  CANCELLATION_SUBMITTED.name());
-    }
-
-    @Test
     void shouldErrorOnLaStatusIsListedAndHearingStatusIsClosed() {
         shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
                 HearingCode.LISTED, CLOSED.name());
@@ -99,12 +93,6 @@ class HmiHearingResponseMapperTest {
     void shouldErrorOnLaStatusIsClosedAndHearingStatusIsCancelled() {
         shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
                 HearingCode.CLOSED, CANCELLED.name());
-    }
-
-    @Test
-    void shouldErrorOnLaStatusIsClosedAndHearingStatusIsCancellationSubmitted() {
-        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
-                HearingCode.CLOSED, CANCELLATION_SUBMITTED.name());
     }
 
     @Test
@@ -294,9 +282,6 @@ class HmiHearingResponseMapperTest {
 
         HearingStatus currentStatus = HearingStatus.valueOf(hearingEntity.getStatus());
         HearingCode laStatus = HearingCode.getByNumber(hearingResponse.getHearing().getHearingCaseStatus().getCode());
-        System.out.println("laStatus:" + laStatus + " / " + hearingCode.name() + "; currentStatus: "
-                + currentStatus + " / " + hearingStatus);
-
 
         Exception exception = assertThrows(MalformedMessageException.class, () ->
                 hmiHearingResponseMapper.getHearingStatus(hearingResponse, hearingEntity));
