@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
@@ -290,6 +291,13 @@ class HmiHearingResponseMapperTest {
                 generateHearingEntity(CANCELLATION_REQUESTED.name(), 1)
         );
         hearingEntity.setStatus(hearingStatus);
+
+        HearingStatus currentStatus = HearingStatus.valueOf(hearingEntity.getStatus());
+        HearingCode laStatus = HearingCode.getByNumber(hearingResponse.getHearing().getHearingCaseStatus().getCode());
+        System.out.println("laStatus:" + laStatus + " / " + hearingCode.name() + "; currentStatus: "
+                + currentStatus + " / " + hearingStatus);
+
+
         Exception exception = assertThrows(MalformedMessageException.class, () ->
                 hmiHearingResponseMapper.getHearingStatus(hearingResponse, hearingEntity));
         if (hearingCode.equals(HearingCode.CLOSED)) {
