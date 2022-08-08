@@ -19,7 +19,8 @@
     "_extends_": "Common_200_Response",
     "body": {
       "requestDetails": {
-        "hearingRequestID" : "[[ANYTHING_PRESENT]]"
+        "hearingRequestID" : "[[ANYTHING_PRESENT]]",
+        "status": "LISTED"
       },
       "caseDetails" : {
         "hmctsServiceCode" : "ABA1",
