@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import ch.qos.logback.classic.Logger;
 import com.google.common.collect.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockitoAnnotations;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.Hearing;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingAttendee;
@@ -35,6 +37,7 @@ import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -54,7 +57,6 @@ import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLED;
-import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CLOSED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.LISTED;
@@ -62,6 +64,8 @@ import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_RE
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SUBMITTED;
 
 class HmiHearingResponseMapperTest {
+
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(HmiHearingResponseMapperTest.class);
 
     private static HmiHearingResponseMapper hmiHearingResponseMapper;
 
@@ -72,39 +76,24 @@ class HmiHearingResponseMapperTest {
     }
 
     @Test
-    void shouldErrorOnLaStatusIsListedAndHearingStatusIsCancelled() {
-        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
-                HearingCode.LISTED, CANCELLED.name());
+    void shouldErrorOnLaStatusIsListedAndHearingStatusIsNotSupported() {
+        Arrays.stream(HearingStatus.values()).forEach(status -> {
+            if (containsUnsupportedValueHearingStatus(status.name())) {
+                logger.info("laStatus:LISTED; hearingStatus:{}", status.name());
+                shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(HearingCode.LISTED, status.name());
+            }
+        });
     }
 
     @Test
-    void shouldErrorOnLaStatusIsListedAndHearingStatusIsClosed() {
-        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
-                HearingCode.LISTED, CLOSED.name());
-    }
-
-    @Test
-    void shouldErrorOnLaStatusIsListedAndHearingStatusIsHearingRequested() {
-        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
-                HearingCode.LISTED, HEARING_REQUESTED.name());
-    }
-
-    @Test
-    void shouldErrorOnLaStatusIsClosedAndHearingStatusIsCancelled() {
-        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
-                HearingCode.CLOSED, CANCELLED.name());
-    }
-
-    @Test
-    void shouldErrorOnLaStatusIsClosedAndHearingStatusIsClosed() {
-        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
-                HearingCode.CLOSED, CLOSED.name());
-    }
-
-    @Test
-    void shouldErrorOnLaStatusIsClosedAndHearingStatusIsHearingRequested() {
-        shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
-                HearingCode.CLOSED, HEARING_REQUESTED.name());
+    void shouldErrorOnLaStatusIsClosedAndHearingStatusIsNotSupported() {
+        Arrays.stream(HearingStatus.values()).forEach(status -> {
+            if (containsUnsupportedValueHearingStatus(status.name())) {
+                logger.info("laStatus:CLOSED; hearingStatus:{}", status.name());
+                shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(
+                        HearingCode.CLOSED, status.name());
+            }
+        });
     }
 
     @Test
@@ -264,6 +253,15 @@ class HmiHearingResponseMapperTest {
         );
     }
 
+    private boolean containsUnsupportedValueHearingStatus(String hearingStatus) {
+        List<String> supportedValues = List.of("AWAITING_LISTING","CANCELLATION_REQUESTED","CANCELLATION_SUBMITTED",
+                "EXCEPTION","LISTED","UPDATE_REQUESTED","UPDATE_SUBMITTED");
+        if (!supportedValues.contains(hearingStatus)) {
+            return true;
+        }
+        return false;
+    }
+
     private void shouldThrowMalFormedExceptionOnGivenLaStatusAndGivenHearingStatus(HearingCode hearingCode,
                                                                                    String hearingStatus) {
         HearingResponse hearingResponse = new HearingResponse();
@@ -279,9 +277,6 @@ class HmiHearingResponseMapperTest {
                 generateHearingEntity(LISTED.name(), 1)
         );
         hearingEntity.setStatus(hearingStatus);
-
-        HearingStatus currentStatus = HearingStatus.valueOf(hearingEntity.getStatus());
-        HearingCode laStatus = HearingCode.getByNumber(hearingResponse.getHearing().getHearingCaseStatus().getCode());
 
         Exception exception = assertThrows(MalformedMessageException.class, () ->
                 hmiHearingResponseMapper.getHearingStatus(hearingResponse, hearingEntity));
@@ -539,7 +534,6 @@ class HmiHearingResponseMapperTest {
                        .getHearingDayPanel().size(), is(0));
     }
 
-
     void assertOptionalFields(HearingEntity response) {
         assertThat(response.getHearingResponses().size(), is(2));
         assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name()));
@@ -560,7 +554,6 @@ class HmiHearingResponseMapperTest {
                        .getHearingResponses().get(1).getHearingDayDetails().get(0)
                        .getHearingAttendeeDetails().size(), is(0));
     }
-
 
     @Nested
     @DisplayName("getPostStateForSyncResponse")
