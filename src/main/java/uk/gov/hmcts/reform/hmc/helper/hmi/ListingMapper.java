@@ -150,7 +150,7 @@ public class ListingMapper {
         if (!roomAttributesSet.isEmpty() || !otherConsiderationsSet.isEmpty()) {
             if (!roomAttributesSet.isEmpty()) {
                 listing.setListingRoomAttributes(new ArrayList<>(roomAttributesSet));
-                if (facilitiesRequired.equals(listing.getListingRoomAttributes())) {
+                if (null != facilitiesRequired && facilitiesRequired.equals(listing.getListingRoomAttributes())) {
                     roomAttributesMapper.setHearingFacilitiesMappedToRoomAttributes(true);
                 }
             }
