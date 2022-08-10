@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
-import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
@@ -112,7 +111,6 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCR
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.UPDATE_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_UN_EXPECTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_DETAILS_ARE_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_EMPTY_NULL;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
@@ -1580,7 +1578,7 @@ class HearingManagementServiceTest {
         }
 
         @Test
-        void shouldThrowErrorWhenActualHearingDayPresentForCanceledActualHearing() {
+        void shouldPassWhenActualHearingDayPresentForCancelledActualHearing() {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
             final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
@@ -1598,12 +1596,29 @@ class HearingManagementServiceTest {
             when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(13));
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
-            ActualHearingDayEntity actualHearingDay = mock(ActualHearingDayEntity.class);
-            when(actualHearingDayRepository.findByActualHearing(any(ActualHearingEntity.class)))
-                .thenReturn(Optional.of(actualHearingDay));
-            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .hearingCompletion(hearingId));
-            assertEquals(HEARING_ACTUALS_UN_EXPECTED, exception.getMessage());
+            hearingManagementService.hearingCompletion(hearingId);
+        }
+
+        @Test
+        void shouldPassWhenActualHearingDayPresentForNonCancelledActualHearing() {
+            final long hearingId = 2000000000L;
+            UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+            final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+            when(hearingRepository.getStatus(hearingId)).thenReturn(PutHearingStatus.LISTED.name());
+            HearingEntity hearingEntity = generateHearingEntity(hearingId, PutHearingStatus.LISTED.name(),
+                    versionNumber
+            );
+            addHearingResponses(hearingEntity, 1, true, 1, -1);
+            when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.existsById(hearingId)).thenReturn(true);
+            ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
+            when(actualHearingEntity.getHearingResultType()).thenReturn(COMPLETED);
+            when(actualHearingEntity.getActualHearingType()).thenReturn("TYPE 32");
+            when(actualHearingEntity.getHearingResultReasonType()).thenReturn("MADE UP REASON");
+            when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(13));
+            when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
+                    .thenReturn(Optional.of(actualHearingEntity));
+            hearingManagementService.hearingCompletion(hearingId);
         }
 
         @Test
@@ -1625,8 +1640,6 @@ class HearingManagementServiceTest {
             when(actualHearingEntity.getHearingResultReasonType()).thenReturn("MADE UP REASON");
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
-            when(actualHearingDayRepository.findByActualHearing(any(ActualHearingEntity.class)))
-                .thenReturn(Optional.empty());
             ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId);
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
             assertNotNull(responseEntity);
