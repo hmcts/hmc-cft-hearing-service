@@ -1647,17 +1647,6 @@ class HearingManagementServiceTest {
         }
     }
 
-    protected void generateHearingResponseEntity(Integer requestVersion, HearingEntity hearingEntity,
-                                                 ActualHearingEntity actualHearingEntity) {
-        HearingResponseEntity responseEntity = new HearingResponseEntity();
-        responseEntity.setCancellationReasonType("Test Reason Type");
-        responseEntity.setRequestVersion(requestVersion);
-        responseEntity.setHearing(hearingEntity);
-        responseEntity.setActualHearingEntity(actualHearingEntity);
-        hearingEntity.setHearingResponses(List.of(responseEntity));
-        actualHearingEntity.setHearingResponse(responseEntity);
-    }
-
     /**
      * generate Hearing Entity.
      *
