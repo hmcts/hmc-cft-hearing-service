@@ -19,7 +19,7 @@
         "amendReasonCodes": ["test for amend hearing request"]
       },
       "caseDetails": {
-        "caseRef": "${[scenarioContext][siblingContexts][CreateCase][testData][actualResponse][body][id]}",
+        "caseRef": "1512672408575038",
         "individualDetails": {
           "firstName": "john",
           "lastName": "doe"
