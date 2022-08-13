@@ -50,13 +50,13 @@ hmc:
       cpuLimits: 1000m
       java:
         memoryRequests: '1024Mi'
-          cpuRequests: '500m'
-          memoryLimits: '4096Mi'
-          cpuLimits: '3000m'
-          devmemoryRequests: '1024Mi'
-          devcpuRequests: '500m'
-          devmemoryLimits: '2046Mi'
-          devcpuLimits: '5000m'
+        cpuRequests: '500m'
+        memoryLimits: '4096Mi'
+        cpuLimits: '3000m'
+        devmemoryRequests: '1024Mi'
+        devcpuRequests: '500m'
+        devmemoryLimits: '2046Mi'
+        devcpuLimits: '5000m'
         environment:
           LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CLIENT_FUTUREHEARING: DEBUG
           HMI_BASE_URL: "http://ccd-test-stubs-service-pr-174.service.core-compute-preview.internal"
