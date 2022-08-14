@@ -59,7 +59,7 @@ hmc:
         devcpuLimits: '5000m'
         environment:
           LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CLIENT_FUTUREHEARING: DEBUG
-          HMI_BASE_URL: "http://ccd-test-stubs-service-pr-174.service.core-compute-preview.internal"
+          HMI_BASE_URL: "http://ccd-test-stubs-service-pr-174-java.ccd"
 
   hmc-hmi-inbound-adapter:
     java:
