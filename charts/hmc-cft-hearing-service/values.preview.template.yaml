@@ -52,4 +52,4 @@ hmc:
     java:
       ingressHost: inbound-adapter-${SERVICE_FQDN}
       environment:
-        CFT_HEARING_SERVICE_URL: http://${SERVICE_NAME}
+        CFT_HEARING_SERVICE_URL: http://${SERVICE_NAME}-java
