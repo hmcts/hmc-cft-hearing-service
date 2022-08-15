@@ -13,7 +13,7 @@ java:
     CFT_HEARING_SERVICE_DB_PASSWORD: "{{ .Values.postgresql.auth.password}}"
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
     CFT_HEARING_SERVICE_DB_PORT: 5432
-    CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api-pr-1260.service.core-compute-preview.internal/
+    CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api-pr-1260-java.ccd/
   postgresql:
     enabled: true
   secrets:

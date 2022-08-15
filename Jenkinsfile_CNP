@@ -70,7 +70,7 @@ env.BEFTA_S2S_CLIENT_ID = "ccd_gw"
 env.BEFTA_RESPONSE_HEADER_CHECK_POLICY="JUST_WARN"
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
-env.DEFINITION_STORE_URL_BASE = "http://ccd-definition-store-api-${definitionStoreDevelopPr}.service.core-compute-preview.internal".toLowerCase()
+env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-api-${definitionStoreDevelopPr}.service.core-compute-preview.internal".toLowerCase()
 
 env.HMC_SERVICE_BUS_TOPIC = "hmc-to-cft"
 env.HMC_SERVICE_BUS_SUBSCRIPTION = "hmc-subs-to-cft"
@@ -84,9 +84,9 @@ env.HMC_OUTBOUND_SERVICE_BUS_QUEUE = "hmc-to-hmi"
 //----------------
 // vars needed for functional tests
 // Assume a feature build branched off 'develop', with dependencies develop-to-develop.
-env.DEFINITION_STORE_URL_BASE = "http://ccd-definition-store-api-${definitionStoreDevelopPr}.service.core-compute-preview.internal".toLowerCase()
-env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-data-store-api-${dataStoreApiDevelopPr}.service.core-compute-preview.internal".toLowerCase()
-env.MCA_API_BASE_URL = "http://aac-manage-case-assignment-${env.BRANCH_NAME}.service.core-compute-preview.internal".toLowerCase()
+env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-api-${definitionStoreDevelopPr}.service.core-compute-preview.internal".toLowerCase()
+env.CCD_DATA_STORE_API_BASE_URL = "https://ccd-data-store-api-${dataStoreApiDevelopPr}.service.core-compute-preview.internal".toLowerCase()
+env.MCA_API_BASE_URL = "https://aac-manage-case-assignment-${env.BRANCH_NAME}.service.core-compute-preview.internal".toLowerCase()
 
 // Other env variables needed for BEFTA.
 env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
@@ -124,7 +124,7 @@ withPipeline(type, product, component) {
   if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'demo' || env.BRANCH_NAME == 'perftest' || env.BRANCH_NAME == 'ithc') {
     env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
   } else {
-    env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-data-store-api-${dataStoreApiDevelopPr}.service.core-compute-preview.internal".toLowerCase()
+    env.CCD_DATA_STORE_API_BASE_URL = "https://ccd-data-store-api-${dataStoreApiDevelopPr}.service.core-compute-preview.internal".toLowerCase()
   }
 
   after('test') {
