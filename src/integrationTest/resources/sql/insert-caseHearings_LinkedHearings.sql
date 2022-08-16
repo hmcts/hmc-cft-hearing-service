@@ -100,7 +100,6 @@ insert into hearing_response(hearing_response_id, hearing_id, received_date_time
 values (4, '2000000012', '2021-08-10 11:20:00', 'listingStatus3-1', 'caselistingStatus3-1', 1);
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)
 values (5, '2000000013', '2023-08-10 11:20:00', 'listingStatus3-1', 'caselistingStatus3-1', 1);
-
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
 values (6, '2000000007', '2022-06-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', 1, '2022-06-05 11:20:00');
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
