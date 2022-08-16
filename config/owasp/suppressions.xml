@@ -29,8 +29,10 @@
   <suppress>
     <notes>Temporary Suppression
       CVE-2022-31569 refer https://tools.hmcts.net/jira/browse/CCD-3536
+      CVE-2022-31197 refer https://tools.hmcts.net/jira/browse/HMAN-392
     </notes>
     <cve>CVE-2022-31569</cve>
+    <cve>CVE-2022-31197</cve>
   </suppress>
   <!--End of temporary suppression section -->
 

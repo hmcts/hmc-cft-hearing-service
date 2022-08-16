@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.ContactDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingChannelsEntity;
@@ -66,6 +67,14 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         requestDetails.setStatus(hearingEntity.getDerivedHearingStatus());
         requestDetails.setTimestamp(caseHearingRequestEntity.getHearingRequestReceivedDateTime());
         requestDetails.setVersionNumber(caseHearingRequestEntity.getVersionNumber());
+        if (null != caseHearingRequestEntity.getCancellationReasons()
+            && !caseHearingRequestEntity.getCancellationReasons().isEmpty()) {
+            List<String> cancelReasons = new ArrayList<>();
+            for (CancellationReasonsEntity entity : caseHearingRequestEntity.getCancellationReasons()) {
+                cancelReasons.add(entity.getCancellationReasonType());
+            }
+            requestDetails.setCancellationReasonCodes(cancelReasons);
+        }
         return requestDetails;
     }
 
@@ -397,7 +406,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
 
     private List<String> setHearingChannel(CaseHearingRequestEntity caseHearingRequestEntity) {
         List<String> hearingChannels = new ArrayList<>();
-        for (HearingChannelsEntity hearingChannelsEntity: caseHearingRequestEntity.getHearingChannels()) {
+        for (HearingChannelsEntity hearingChannelsEntity : caseHearingRequestEntity.getHearingChannels()) {
             hearingChannels.add(hearingChannelsEntity.getHearingChannelType());
         }
 
