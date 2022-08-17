@@ -8,14 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
-import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.ChangeReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
@@ -104,7 +101,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.FIRST_NAME_EMPT
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.FIRST_NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_UN_EXPECTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_CHANNEL_EMAIL_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_CHANNEL_EMAIL_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_CHANNEL_EMPTY;
@@ -189,12 +185,6 @@ class HearingManagementControllerIT extends BaseTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
-
-    @Autowired
-    private ApplicationParams applicationParams;
-
     @Autowired
     private CancellationReasonsRepository cancellationReasonsRepository;
 
@@ -256,6 +246,21 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(get(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenHearingHasCancellationReasons() throws Exception {
+        stubFor(WireMock.get(urlMatching("/cases/9372710950276233"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        mockMvc.perform(get(url + "/2000000012")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.requestDetails.cancellationReasonCodes").value(IsNull.notNullValue()))
             .andReturn();
     }
 
@@ -1561,12 +1566,10 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
-    void shouldReturn404WhenActualHearingDayExistsForCanceledResultTypeResponseHearingCompletion() throws Exception {
+    void shouldReturn200WhenActualHearingDayExistsForCanceledResultTypeResponseHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000014")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(1)))
-            .andExpect(jsonPath("$.errors", hasItem((HEARING_ACTUALS_UN_EXPECTED))))
+            .andExpect(status().is(200))
             .andReturn();
     }
 

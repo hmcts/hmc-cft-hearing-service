@@ -22,6 +22,7 @@
         "timestamp": "[[ANYTHING_PRESENT]]",
         "status": "CANCELLATION_REQUESTED",
         "versionNumber": 2,
+        "cancellationReasonCodes" : [ "test" ],
         "hearingRequestID" : "[[ANYTHING_PRESENT]]"
       },
       "caseDetails": "[[ANYTHING_PRESENT]]",
