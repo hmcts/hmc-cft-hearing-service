@@ -87,7 +87,7 @@ class CaseCreateHearingRequestMapperTest {
             hearingEntity, 1,
             roomAttributesMapper);
         assertFalse(caseHearingRequestEntity.getAutoListFlag());
-        assertEquals(ListingReasonCode.NO_MAPPING_AVAILABLE.label,
+        assertEquals(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel(),
             caseHearingRequestEntity.getListingAutoChangeReasonCode());
     }
 
@@ -103,7 +103,7 @@ class CaseCreateHearingRequestMapperTest {
             hearingEntity, 1,
             new RoomAttributesMapper());
         assertFalse(caseHearingRequestEntity.getAutoListFlag());
-        assertEquals(ListingReasonCode.NO_MAPPING_AVAILABLE.label,
+        assertEquals(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel(),
             caseHearingRequestEntity.getListingAutoChangeReasonCode());
     }
 

@@ -78,8 +78,7 @@ public class HearingDetailsMapper {
             );
         }
         if (hearingDetails.getListingAutoChangeReasonCode() != null) {
-            caseHearingRequestEntity.setListingAutoChangeReasonCode(
-                ListingReasonCode.valueOf(hearingDetails.getListingAutoChangeReasonCode()).label);
+            caseHearingRequestEntity.setListingAutoChangeReasonCode(hearingDetails.getListingAutoChangeReasonCode());
         }
     }
 
