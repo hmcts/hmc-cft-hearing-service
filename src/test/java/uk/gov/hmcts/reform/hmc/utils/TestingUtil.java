@@ -1208,7 +1208,7 @@ public class TestingUtil {
     public static HearingDetails hearingDetailsWithAllFields() {
         HearingDetails hearingDetails = new HearingDetails();
         hearingDetails.setAutoListFlag(false);
-        hearingDetails.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.name());
+        hearingDetails.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel());
         hearingDetails.setAmendReasonCodes(List.of("reason 1", "reason 2"));
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
