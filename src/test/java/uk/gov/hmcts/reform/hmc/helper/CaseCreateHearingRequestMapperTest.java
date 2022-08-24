@@ -111,7 +111,6 @@ class CaseCreateHearingRequestMapperTest {
 
     @Test
     void shouldFail_whenListingAutoChangeReasonCodeIsProvidedAndAutoListFlagIsTrue() {
-        RoomAttributesMapper roomAttributesMapper = new RoomAttributesMapper();
         HearingRequest createHearingRequest = buildCreateHearingRequest();
         createHearingRequest.getHearingDetails()
             .setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.name());
@@ -120,7 +119,7 @@ class CaseCreateHearingRequestMapperTest {
 
         Exception exception = assertThrows(BadRequestException.class, () ->
             caseHearingRequestMapper.modelToEntity(
-                createHearingRequest, hearingEntity, 1, roomAttributesMapper));
+                createHearingRequest, hearingEntity, 1, new RoomAttributesMapper()));
         assertEquals(
             "001 autoListFlag must be FALSE if you supply a change reasoncode",
             exception.getMessage());
