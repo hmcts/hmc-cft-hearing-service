@@ -100,7 +100,7 @@ public class TestingUtil {
 
     public static HearingDetails hearingDetails() {
         HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setAutoListFlag(false);
         hearingDetails.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel());
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
