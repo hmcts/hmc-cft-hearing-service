@@ -13,7 +13,7 @@ public class ListingReasonCodeEnumPatternValidator implements ConstraintValidato
     @Override
     public void initialize(final ListingReasonCodeEnumPattern annotation) {
         acceptedValues = Stream.of(annotation.enumClass().getEnumConstants())
-            .map(Enum::name)
+            .map(Enum::toString)
             .collect(Collectors.toList());
     }
 
@@ -22,7 +22,7 @@ public class ListingReasonCodeEnumPatternValidator implements ConstraintValidato
         if (value == null) {
             return true;
         }
-        return acceptedValues.contains(value.toUpperCase());
+        return acceptedValues.contains(value);
     }
 
 }

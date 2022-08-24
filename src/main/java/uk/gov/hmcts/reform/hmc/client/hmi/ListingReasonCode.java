@@ -8,5 +8,10 @@ import lombok.RequiredArgsConstructor;
 public enum ListingReasonCode {
     NO_MAPPING_AVAILABLE("no-mapping-available");
 
-    public final String label;
+    private final String label;
+
+    @Override
+    public String toString() {
+        return label;
+    }
 }

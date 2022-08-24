@@ -368,7 +368,7 @@ class GetHearingResponseMapperTest {
         assertAll(
             () -> assertEquals("Some hearing type", hearingDetails.getHearingType()),
             () -> assertEquals(
-                ListingReasonCode.NO_MAPPING_AVAILABLE.label, hearingDetails.getListingAutoChangeReasonCode())
+                ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel(), hearingDetails.getListingAutoChangeReasonCode())
         );
     }
 
