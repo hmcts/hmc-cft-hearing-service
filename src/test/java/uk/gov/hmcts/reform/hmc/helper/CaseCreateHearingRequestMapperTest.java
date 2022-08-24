@@ -95,7 +95,7 @@ class CaseCreateHearingRequestMapperTest {
     void modelToEntityWhenListingAutoChangeReasonCodeIsProvidedAndAutoListFlagFalse() {
         HearingRequest createHearingRequest = buildCreateHearingRequest();
         createHearingRequest.getHearingDetails()
-            .setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.name());
+            .setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel());
         createHearingRequest.getHearingDetails().setAutoListFlag(false);
 
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
