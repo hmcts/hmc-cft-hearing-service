@@ -192,8 +192,16 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }
         validateHearingRequest(createHearingRequest);
-        Listing listing = getListing(createHearingRequest);
-        HearingResponse hearingResponse = insertHearingRequest(createHearingRequest);
+        EntitiesMapperObject entities = entitiesMapper.getEntities(createHearingRequest.getPartyDetails());
+        Listing listing = getListing(createHearingRequest, entities);
+        boolean reasonableMatch = listingMapper.checkRoomAttributesByReasonableAdjustmentCode(entities.getEntities());
+        List<String> facilitiesRoomAttributes =
+            listingMapper.getRoomAttributesByAttributeCode(createHearingRequest
+                                                               .getHearingDetails().getFacilitiesRequired());
+        boolean facilitiesMatch = (facilitiesRoomAttributes.size()
+            == createHearingRequest.getHearingDetails().getFacilitiesRequired().size());
+
+        HearingResponse hearingResponse = insertHearingRequest(createHearingRequest, reasonableMatch, facilitiesMatch);
         sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), REQUEST_HEARING, createHearingRequest,
                                     getCaseDetails(hearingResponse.getHearingRequestId(), createHearingRequest),
                                     listing
@@ -212,10 +220,18 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingEntity existingHearing = hearingRepository.findById(hearingId)
             .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
         String statusToUpdate = getNextPutHearingStatus(existingHearing.getStatus());
-        Listing listing = getListing(hearingRequest);
+        EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest.getPartyDetails());
+        Listing listing = getListing(hearingRequest, entities);
+        boolean reasonableMatch = listingMapper.checkRoomAttributesByReasonableAdjustmentCode(entities.getEntities());
+        List<String> facilitiesRoomAttributes =
+            listingMapper.getRoomAttributesByAttributeCode(hearingRequest.getHearingDetails().getFacilitiesRequired());
+        boolean facilitiesMatch = (facilitiesRoomAttributes.size()
+            == hearingRequest.getHearingDetails().getFacilitiesRequired().size());
+
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate,
-                            roomAttributesMapper);
+                           reasonableMatch,
+                           facilitiesMatch);
 
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
@@ -307,24 +323,25 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
     }
 
-    private HearingResponse insertHearingRequest(HearingRequest createHearingRequest) {
-        HearingEntity savedEntity = saveHearingDetails(createHearingRequest);
+    private HearingResponse insertHearingRequest(HearingRequest createHearingRequest,
+                                                 boolean reasonableMatch,
+                                                 boolean facilitiesMatch) {
+        HearingEntity savedEntity = saveHearingDetails(createHearingRequest, reasonableMatch, facilitiesMatch);
         savePartyRelationshipDetails(createHearingRequest, savedEntity);
         return getSaveHearingResponseDetails(savedEntity);
     }
 
-    private HearingEntity saveHearingDetails(HearingRequest createHearingRequest) {
+    private HearingEntity saveHearingDetails(HearingRequest createHearingRequest,
+                                             boolean reasonableMatch,
+                                             boolean facilitiesMatch) {
         HearingEntity hearingEntity = hearingMapper
-            .modelToEntity(createHearingRequest, new HearingEntity(), VERSION_NUMBER_TO_INCREMENT, POST_HEARING_STATUS,
-                roomAttributesMapper);
+            .modelToEntity(createHearingRequest, new HearingEntity(),
+                           VERSION_NUMBER_TO_INCREMENT, POST_HEARING_STATUS, reasonableMatch, facilitiesMatch);
         return hearingRepository.save(hearingEntity);
     }
 
-    private Listing getListing(HearingRequest hearingRequest) {
-        roomAttributesMapper.initialize();
-        EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest.getPartyDetails());
-        return listingMapper.getListing(hearingRequest.getHearingDetails(), entities.getEntities(),
-                                        roomAttributesMapper);
+    private Listing getListing(HearingRequest hearingRequest, EntitiesMapperObject entities) {
+        return listingMapper.getListing(hearingRequest.getHearingDetails(), entities.getEntities());
     }
 
     private HmiCaseDetails getCaseDetails(Long hearingId, HearingRequest hearingRequest) {

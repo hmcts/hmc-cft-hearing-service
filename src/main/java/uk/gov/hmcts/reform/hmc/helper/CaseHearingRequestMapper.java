@@ -39,7 +39,9 @@ public class CaseHearingRequestMapper {
     public CaseHearingRequestEntity modelToEntity(HearingRequest hearingRequest,
                                                   HearingEntity hearingEntity,
                                                   Integer requestVersion,
-                                                  RoomAttributesMapper roomAttributesMapper) {
+                                                  boolean reasonableMatch,
+                                                  boolean facilitiesMatch) {
+
 
         final CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         HearingDetails hearingDetails = hearingRequest.getHearingDetails();
@@ -77,7 +79,7 @@ public class CaseHearingRequestMapper {
                                                                       .getDateRangeEnd());
         }
 
-        if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag()) && roomAttributesMapper.isMappedTo()) {
+        if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag()) && !(reasonableMatch && facilitiesMatch)) {
             caseHearingRequestEntity.setAutoListFlag(false);
             caseHearingRequestEntity.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.label);
         }

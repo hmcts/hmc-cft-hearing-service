@@ -273,7 +273,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnEmptyListingFieldsIfEntitiesListIsNull() {
         HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
-        Listing listing = listingMapper.getListing(hearingDetails,null, roomAttributesMapper);
+        Listing listing = listingMapper.getListing(hearingDetails,null);
         assertTrue(listing.getListingOtherConsiderations().isEmpty());
         assertTrue(listing.getListingRoomAttributes().isEmpty());
     }
@@ -350,7 +350,6 @@ class ListingMapperTest {
             .thenReturn(roomAttribute);
         Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
         assertFalse(listing.getListingAutoCreateFlag());
-        assertTrue(roomAttributesMapper.isMappedTo());
     }
 
     private void assertListingJohs(ListingJoh listingJoh, List<ListingJoh> listingJohList) {
@@ -369,7 +368,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingIfHearingWindowNotPresent() {
         HearingDetails hearingDetails = buildHearingDetailsWithNoHearingWindow(2165);
-        Listing listing = listingMapper.getListing(hearingDetails,null, roomAttributesMapper);
+        Listing listing = listingMapper.getListing(hearingDetails,null);
         assertNull(listing.getListingDate());
         assertNull(listing.getListingStartDate());
         assertNull(listing.getListingEndDate());
@@ -417,7 +416,7 @@ class ListingMapperTest {
     }
 
     private Listing buildListing(HearingDetails hearingDetails,Entity entity) {
-        return listingMapper.getListing(hearingDetails,List.of(entity), roomAttributesMapper);
+        return listingMapper.getListing(hearingDetails,List.of(entity));
     }
 
     @Test
@@ -446,7 +445,7 @@ class ListingMapperTest {
 
     private Listing getListing(int duration) {
         val hearingDetails = buildHearingDetails(HearingMapper.roundUpDuration(duration));
-        return listingMapper.getListing(hearingDetails, null, roomAttributesMapper);
+        return listingMapper.getListing(hearingDetails, null);
 
     }
 }
