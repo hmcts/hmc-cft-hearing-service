@@ -34,7 +34,7 @@ class CaseHearingRequestMapperTest {
     }
 
     private void assert1(CaseHearingRequestEntity entity) {
-        assertEquals(Boolean.TRUE, entity.getAutoListFlag());
+        assertEquals(Boolean.FALSE, entity.getAutoListFlag());
         assertEquals("Some hearing type", entity.getHearingType());
         assertEquals(360, entity.getRequiredDurationInMinutes());
         assertEquals("Priority type", entity.getHearingPriorityType());
