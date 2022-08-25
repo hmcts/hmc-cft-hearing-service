@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
 import uk.gov.hmcts.reform.hmc.helper.PartyRelationshipDetailsMapper;
-import uk.gov.hmcts.reform.hmc.helper.RoomAttributesMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.EntitiesMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.EntitiesMapperObject;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiCaseDetailsMapper;
@@ -110,7 +109,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final ListingMapper listingMapper;
     private final HmiCaseDetailsMapper hmiCaseDetailsMapper;
     private final EntitiesMapper entitiesMapper;
-    private RoomAttributesMapper roomAttributesMapper;
 
 
     @Autowired
@@ -134,8 +132,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HearingActualsValidator hearingActualsValidator,
                                         ListingMapper listingMapper,
                                         HmiCaseDetailsMapper hmiCaseDetailsMapper,
-                                        EntitiesMapper entitiesMapper,
-                                        RoomAttributesMapper roomAttributesMapper) {
+                                        EntitiesMapper entitiesMapper) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -157,7 +154,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.listingMapper = listingMapper;
         this.hmiCaseDetailsMapper = hmiCaseDetailsMapper;
         this.entitiesMapper = entitiesMapper;
-        this.roomAttributesMapper = roomAttributesMapper;
     }
 
     @Override

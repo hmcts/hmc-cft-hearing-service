@@ -78,8 +78,6 @@ class CaseCreateHearingRequestMapperTest {
 
     @Test
     void modelToEntityWhenAutoListFlagAndIsMappedToIsTrue() {
-        RoomAttributesMapper roomAttributesMapper = new RoomAttributesMapper();
-        roomAttributesMapper.setMappedTo(true);
         HearingRequest createHearingRequest = buildCreateHearingRequest();
         createHearingRequest.getHearingDetails().setAutoListFlag(true);
         createHearingRequest.getHearingDetails().setListingAutoChangeReasonCode(null);

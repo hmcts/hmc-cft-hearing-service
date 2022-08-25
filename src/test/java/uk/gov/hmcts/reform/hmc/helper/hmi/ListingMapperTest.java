@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.RoleType;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
-import uk.gov.hmcts.reform.hmc.helper.RoomAttributesMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
@@ -60,7 +59,6 @@ class ListingMapperTest {
     private static final String ROLE_TYPE = "RoleType1";
     private static final String HEARING_CHANNEL = "someChannelType";
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
-    private final RoomAttributesMapper roomAttributesMapper = new RoomAttributesMapper();
 
     @Test
     void shouldReturnListingWithNoWelshLanguageValue() {

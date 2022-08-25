@@ -193,20 +193,22 @@ public class ListingMapper {
     }
 
     public boolean checkRoomAttributesByReasonableAdjustmentCode(List<Entity> entities) {
+        boolean match = true;
         if (entities != null && !entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity.getEntityOtherConsiderations() != null && !entity.getEntityOtherConsiderations().isEmpty()) {
                     for (String reasonableAdjustment : entity.getEntityOtherConsiderations()) {
                         Optional<RoomAttribute> roomAttributeByReasonableAdjustment =
                             roomAttributesService.findByReasonableAdjustmentCode(reasonableAdjustment);
-                        return !roomAttributeByReasonableAdjustment.isEmpty();
+                        if (roomAttributeByReasonableAdjustment.isEmpty()) {
+                            match = false;
+                            break;
+                        }
                     }
                 }
             }
-            return true;
-        } else {
-            return true;
         }
+        return match;
     }
 
     public List<String> getRoomAttributesByAttributeCode(List<String> facilityTypes) {
