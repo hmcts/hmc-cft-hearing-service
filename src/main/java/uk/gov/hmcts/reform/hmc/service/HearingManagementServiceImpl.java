@@ -194,8 +194,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         List<String> facilitiesRoomAttributes =
             listingMapper.getRoomAttributesByAttributeCode(createHearingRequest
                                                                .getHearingDetails().getFacilitiesRequired());
-        boolean facilitiesMatch = (facilitiesRoomAttributes.size()
-            == createHearingRequest.getHearingDetails().getFacilitiesRequired().size());
+        int size = (createHearingRequest.getHearingDetails().getFacilitiesRequired() == null)
+            ? 0 : createHearingRequest.getHearingDetails().getFacilitiesRequired().size();
+        boolean facilitiesMatch = (facilitiesRoomAttributes.size() == size);
 
         HearingResponse hearingResponse = insertHearingRequest(createHearingRequest, reasonableMatch, facilitiesMatch);
         sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), REQUEST_HEARING, createHearingRequest,
@@ -221,8 +222,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         boolean reasonableMatch = listingMapper.checkRoomAttributesByReasonableAdjustmentCode(entities.getEntities());
         List<String> facilitiesRoomAttributes =
             listingMapper.getRoomAttributesByAttributeCode(hearingRequest.getHearingDetails().getFacilitiesRequired());
-        boolean facilitiesMatch = (facilitiesRoomAttributes.size()
-            == hearingRequest.getHearingDetails().getFacilitiesRequired().size());
+        int size = (hearingRequest.getHearingDetails().getFacilitiesRequired() == null)
+            ? 0 : hearingRequest.getHearingDetails().getFacilitiesRequired().size();
+        boolean facilitiesMatch = (facilitiesRoomAttributes.size() == size);
+
 
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate,

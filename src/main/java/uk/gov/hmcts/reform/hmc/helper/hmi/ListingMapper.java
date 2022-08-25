@@ -133,7 +133,8 @@ public class ListingMapper {
 
         List<String> facilitiesRoomAttributes =
             getRoomAttributesByAttributeCode(hearingDetails.getFacilitiesRequired());
-        boolean facilitiesMatch = (facilitiesRoomAttributes.size() == hearingDetails.getFacilitiesRequired().size());
+        int size = (hearingDetails.getFacilitiesRequired() == null) ? 0 : hearingDetails.getFacilitiesRequired().size();
+        boolean facilitiesMatch = (facilitiesRoomAttributes.size() == size);
 
         if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag()) && !(reasonableMatch && facilitiesMatch)) {
             listing.setListingAutoCreateFlag(false);
