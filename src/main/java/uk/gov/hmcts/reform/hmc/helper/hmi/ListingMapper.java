@@ -5,7 +5,6 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.constants.Constants;
-import uk.gov.hmcts.reform.hmc.helper.RoomAttributesMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.RoomAttribute;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
@@ -28,7 +27,6 @@ public class ListingMapper {
     private final ListingJohsMapper listingJohsMapper;
     private final ListingLocationsMapper listingLocationsMapper;
     private final RoomAttributesService roomAttributesService;
-    private RoomAttributesMapper roomAttributesMapper;
 
     @Autowired
     public ListingMapper(ListingJohsMapper listingJohsMapper,
@@ -39,9 +37,7 @@ public class ListingMapper {
         this.roomAttributesService = roomAttributesService;
     }
 
-    public Listing getListing(HearingDetails hearingDetails, List<Entity> entitiesList,
-                              RoomAttributesMapper roomAttributesMapper) {
-        this.roomAttributesMapper = roomAttributesMapper;
+    public Listing getListing(HearingDetails hearingDetails, List<Entity> entitiesList) {
 
         Listing listing = Listing.builder()
             .listingAutoCreateFlag(hearingDetails.getAutoListFlag())
@@ -82,7 +78,7 @@ public class ListingMapper {
         }
 
         setRoomAttributes(entitiesList, hearingDetails, listing);
-        validateAutoListFlag(hearingDetails, listing);
+        validateAutoListFlag(hearingDetails, listing, entitiesList);
 
         if (!Collections.isEmpty(hearingDetails.getAmendReasonCodes())) {
             listing.setAmendReasonCode(Constants.AMEND_REASON_CODE);
@@ -132,12 +128,16 @@ public class ListingMapper {
         }
     }
 
-    private void validateAutoListFlag(HearingDetails hearingDetails, Listing listing) {
-        if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag())
-            && !(roomAttributesMapper.isReasonableAdjustmentIsMappedToRoomAttributeCode()
-                && roomAttributesMapper.isHearingFacilitiesMappedToRoomAttributes())) {
+    private void validateAutoListFlag(HearingDetails hearingDetails, Listing listing, List<Entity> entitiesList) {
+        boolean reasonableMatch = checkRoomAttributesByReasonableAdjustmentCode(entitiesList);
+
+        List<String> facilitiesRoomAttributes =
+            getRoomAttributesByAttributeCode(hearingDetails.getFacilitiesRequired());
+        int size = (hearingDetails.getFacilitiesRequired() == null) ? 0 : hearingDetails.getFacilitiesRequired().size();
+        boolean facilitiesMatch = (facilitiesRoomAttributes.size() == size);
+
+        if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag()) && !(reasonableMatch && facilitiesMatch)) {
             listing.setListingAutoCreateFlag(false);
-            roomAttributesMapper.setMappedTo(true);
         }
     }
 
@@ -150,9 +150,6 @@ public class ListingMapper {
         if (!roomAttributesSet.isEmpty() || !otherConsiderationsSet.isEmpty()) {
             if (!roomAttributesSet.isEmpty()) {
                 listing.setListingRoomAttributes(new ArrayList<>(roomAttributesSet));
-                if (null != facilitiesRequired && facilitiesRequired.equals(listing.getListingRoomAttributes())) {
-                    roomAttributesMapper.setHearingFacilitiesMappedToRoomAttributes(true);
-                }
             }
             if (!otherConsiderationsSet.isEmpty()) {
                 listing.setListingOtherConsiderations(new ArrayList<>(otherConsiderationsSet));
@@ -171,7 +168,6 @@ public class ListingMapper {
                 getRoomAttributesByAttributeCode(facilitiesRequired);
             if (!roomAttributesByReasonableAdjustmentList.isEmpty()) {
                 roomAttributesSet.addAll(roomAttributesByReasonableAdjustmentList);
-                roomAttributesMapper.setReasonableAdjustmentIsMappedToRoomAttributeCode(true);
             } else if (!roomAttributesByAttributeCodeList.isEmpty()) {
                 roomAttributesSet.addAll(roomAttributesByAttributeCodeList);
             } else {
@@ -197,7 +193,26 @@ public class ListingMapper {
         return roomAttributesCodeList;
     }
 
-    private List<String> getRoomAttributesByAttributeCode(List<String> facilityTypes) {
+    public boolean checkRoomAttributesByReasonableAdjustmentCode(List<Entity> entities) {
+        boolean match = true;
+        if (entities != null && !entities.isEmpty()) {
+            for (Entity entity : entities) {
+                if (entity.getEntityOtherConsiderations() != null && !entity.getEntityOtherConsiderations().isEmpty()) {
+                    for (String reasonableAdjustment : entity.getEntityOtherConsiderations()) {
+                        Optional<RoomAttribute> roomAttributeByReasonableAdjustment =
+                            roomAttributesService.findByReasonableAdjustmentCode(reasonableAdjustment);
+                        if (roomAttributeByReasonableAdjustment.isEmpty()) {
+                            match = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return match;
+    }
+
+    public List<String> getRoomAttributesByAttributeCode(List<String> facilityTypes) {
         List<String> roomAttributesCodeList = new ArrayList<>();
         if (facilityTypes != null && !facilityTypes.isEmpty()) {
             for (String facility : facilityTypes) {

@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.RoleType;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
-import uk.gov.hmcts.reform.hmc.helper.RoomAttributesMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
@@ -60,7 +59,6 @@ class ListingMapperTest {
     private static final String ROLE_TYPE = "RoleType1";
     private static final String HEARING_CHANNEL = "someChannelType";
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
-    private final RoomAttributesMapper roomAttributesMapper = new RoomAttributesMapper();
 
     @Test
     void shouldReturnListingWithNoWelshLanguageValue() {
@@ -273,7 +271,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnEmptyListingFieldsIfEntitiesListIsNull() {
         HearingDetails hearingDetails = buildHearingDetails(DURATION_OF_DAY);
-        Listing listing = listingMapper.getListing(hearingDetails,null, roomAttributesMapper);
+        Listing listing = listingMapper.getListing(hearingDetails,null);
         assertTrue(listing.getListingOtherConsiderations().isEmpty());
         assertTrue(listing.getListingRoomAttributes().isEmpty());
     }
@@ -350,7 +348,6 @@ class ListingMapperTest {
             .thenReturn(roomAttribute);
         Listing listing = buildListing(hearingDetails,TestingUtil.getEntity(hearingDetails.getFacilitiesRequired()));
         assertFalse(listing.getListingAutoCreateFlag());
-        assertTrue(roomAttributesMapper.isMappedTo());
     }
 
     private void assertListingJohs(ListingJoh listingJoh, List<ListingJoh> listingJohList) {
@@ -369,7 +366,7 @@ class ListingMapperTest {
     @Test
     void shouldReturnListingIfHearingWindowNotPresent() {
         HearingDetails hearingDetails = buildHearingDetailsWithNoHearingWindow(2165);
-        Listing listing = listingMapper.getListing(hearingDetails,null, roomAttributesMapper);
+        Listing listing = listingMapper.getListing(hearingDetails,null);
         assertNull(listing.getListingDate());
         assertNull(listing.getListingStartDate());
         assertNull(listing.getListingEndDate());
@@ -417,7 +414,7 @@ class ListingMapperTest {
     }
 
     private Listing buildListing(HearingDetails hearingDetails,Entity entity) {
-        return listingMapper.getListing(hearingDetails,List.of(entity), roomAttributesMapper);
+        return listingMapper.getListing(hearingDetails,List.of(entity));
     }
 
     @Test
@@ -446,7 +443,7 @@ class ListingMapperTest {
 
     private Listing getListing(int duration) {
         val hearingDetails = buildHearingDetails(HearingMapper.roundUpDuration(duration));
-        return listingMapper.getListing(hearingDetails, null, roomAttributesMapper);
+        return listingMapper.getListing(hearingDetails, null);
 
     }
 }

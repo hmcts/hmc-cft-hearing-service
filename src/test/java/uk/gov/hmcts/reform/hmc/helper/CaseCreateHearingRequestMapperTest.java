@@ -37,7 +37,7 @@ class CaseCreateHearingRequestMapperTest {
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         CaseHearingRequestEntity actualEntity = caseHearingRequestMapper.modelToEntity(
-            createHearingRequest, hearingEntity, 1, new RoomAttributesMapper());
+            createHearingRequest, hearingEntity, 1, true, true);
         expectedEntity.setHearing(hearingEntity);
         assertEquals(expectedEntity, actualEntity);
     }
@@ -57,7 +57,7 @@ class CaseCreateHearingRequestMapperTest {
         CaseHearingRequestEntity actualEntity = caseHearingRequestMapper.modelToEntity(
             createHearingRequest,
             hearingEntity, 1,
-            new RoomAttributesMapper());
+            true, true);
         expectedEntity.setHearing(hearingEntity);
         assertEquals(expectedEntity, actualEntity);
     }
@@ -71,15 +71,13 @@ class CaseCreateHearingRequestMapperTest {
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
             createHearingRequest,
             hearingEntity, 1,
-            new RoomAttributesMapper());
+            true, true);
         assertTrue(caseHearingRequestEntity.getAutoListFlag());
         assertNull(caseHearingRequestEntity.getListingAutoChangeReasonCode());
     }
 
     @Test
     void modelToEntityWhenAutoListFlagAndIsMappedToIsTrue() {
-        RoomAttributesMapper roomAttributesMapper = new RoomAttributesMapper();
-        roomAttributesMapper.setMappedTo(true);
         HearingRequest createHearingRequest = buildCreateHearingRequest();
         createHearingRequest.getHearingDetails().setAutoListFlag(true);
         createHearingRequest.getHearingDetails().setListingAutoChangeReasonCode(null);
@@ -87,7 +85,7 @@ class CaseCreateHearingRequestMapperTest {
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
             createHearingRequest,
             hearingEntity, 1,
-            roomAttributesMapper);
+            true, false);
         assertFalse(caseHearingRequestEntity.getAutoListFlag());
         assertEquals(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel(),
             caseHearingRequestEntity.getListingAutoChangeReasonCode());
@@ -103,7 +101,7 @@ class CaseCreateHearingRequestMapperTest {
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
             createHearingRequest,
             hearingEntity, 1,
-            new RoomAttributesMapper());
+            true, true);
         assertFalse(caseHearingRequestEntity.getAutoListFlag());
         assertEquals(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel(),
             caseHearingRequestEntity.getListingAutoChangeReasonCode());
@@ -119,7 +117,7 @@ class CaseCreateHearingRequestMapperTest {
 
         Exception exception = assertThrows(BadRequestException.class, () ->
             caseHearingRequestMapper.modelToEntity(
-                createHearingRequest, hearingEntity, 1, new RoomAttributesMapper()));
+                createHearingRequest, hearingEntity, 1, true, true));
         assertEquals(
             "001 autoListFlag must be FALSE if you supply a change reasoncode",
             exception.getMessage());
