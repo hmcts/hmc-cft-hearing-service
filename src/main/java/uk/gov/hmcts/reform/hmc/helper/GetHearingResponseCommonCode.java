@@ -37,13 +37,17 @@ public class GetHearingResponseCommonCode {
         hearingDaySchedule.setAttendees(attendeeList);
     }
 
-    protected void setHearingJudgeAndPanelMemberIds(HearingDayPanelEntity hearingDayPanelEntity,
+    protected void setHearingJudgeAndPanelMemberIds(List<HearingDayPanelEntity> hearingDayPanelEntities,
                                                   HearingDaySchedule hearingDaySchedule) {
-        if (null == hearingDayPanelEntity.getIsPresiding() || !hearingDayPanelEntity.getIsPresiding()) {
-            hearingDaySchedule.setPanelMemberId(hearingDayPanelEntity.getPanelUserId());
-        } else {
-            hearingDaySchedule.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
+        List<String> panelMemberIds = new ArrayList<>();
+        for (HearingDayPanelEntity hearingDayPanelEntity :  hearingDayPanelEntities) {
+            if (null == hearingDayPanelEntity.getIsPresiding() || !hearingDayPanelEntity.getIsPresiding()) {
+                panelMemberIds.add(hearingDayPanelEntity.getPanelUserId());
+            } else {
+                hearingDaySchedule.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
+            }
         }
+        hearingDaySchedule.setPanelMemberId(panelMemberIds);
     }
 
     protected CaseDetails setCaseDetails(HearingEntity hearingEntity) {

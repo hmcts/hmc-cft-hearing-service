@@ -35,7 +35,7 @@ class GetHearingsResponseMapperTest {
         assertEquals("SubChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getAttendees().get(0).getHearingSubChannel());
         assertEquals("PanelUser1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
-            .getPanelMemberId());
+            .getPanelMemberId().get(0));
         assertNull(response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getHearingJudgeId());
         assertTrue(response.getCaseHearings().get(0).getHearingChannels().contains("someChannelType"));
     }
@@ -57,7 +57,7 @@ class GetHearingsResponseMapperTest {
         assertEquals("SubChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getAttendees().get(0).getHearingSubChannel());
         assertEquals("PanelUser1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
-            .getPanelMemberId());
+            .getPanelMemberId().get(0));
         assertNull(response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getHearingJudgeId());
     }
 
@@ -79,7 +79,7 @@ class GetHearingsResponseMapperTest {
             .getAttendees().get(0).getHearingSubChannel());
         assertEquals("PanelUser1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getHearingJudgeId());
-        assertNull(response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getPanelMemberId());
+        assertEquals(0, response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getPanelMemberId().size());
     }
 
     @Test
@@ -99,7 +99,7 @@ class GetHearingsResponseMapperTest {
         assertEquals("SubChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getAttendees().get(0).getHearingSubChannel());
         assertEquals("PanelUser1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
-            .getPanelMemberId());
+            .getPanelMemberId().get(0));
         assertNull(response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getHearingJudgeId());
     }
 
