@@ -424,7 +424,7 @@ public class HearingResponsePactUtil {
         hearingDaySchedule.setHearingEndDateTime(LocalDateTime.now().plusDays(id).plusHours(2));
         hearingDaySchedule.setAttendees(generateAttendees());
         hearingDaySchedule.setListAssistSessionId("listAssistSessionId" + id);
-        hearingDaySchedule.setPanelMemberId(List.of(PANEL_MEMBER_ID + id));
+        hearingDaySchedule.setPanelMemberIds(List.of(PANEL_MEMBER_ID + id));
         return hearingDaySchedule;
     }
 

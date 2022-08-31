@@ -47,7 +47,7 @@ public class GetHearingResponseCommonCode {
                 hearingDaySchedule.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
             }
         }
-        hearingDaySchedule.setPanelMemberId(panelMemberIds);
+        hearingDaySchedule.setPanelMemberIds(panelMemberIds);
     }
 
     protected CaseDetails setCaseDetails(HearingEntity hearingEntity) {

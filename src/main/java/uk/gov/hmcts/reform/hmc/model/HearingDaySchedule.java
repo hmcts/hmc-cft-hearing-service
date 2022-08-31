@@ -37,7 +37,7 @@ public class HearingDaySchedule {
     private String hearingJudgeId;
 
     @Size(max = 60)
-    private List<String> panelMemberId;
+    private List<String> panelMemberIds;
 
     @Valid
     @NotNull
