@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,8 +37,7 @@ public class HearingDaySchedule {
     @Size(max = 60)
     private String hearingJudgeId;
 
-    @Size(max = 60)
-    private List<String> panelMemberIds;
+    private List<@Size(max = 60)String> panelMemberIds;
 
     @Valid
     @NotNull
