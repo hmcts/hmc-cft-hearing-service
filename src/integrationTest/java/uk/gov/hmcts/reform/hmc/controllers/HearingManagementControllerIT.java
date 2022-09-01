@@ -122,6 +122,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_R
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CANCELLATION_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_CATEGORIES;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
@@ -1112,12 +1113,13 @@ class HearingManagementControllerIT extends BaseTest {
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.errors", hasSize(11)))
-            .andExpect(jsonPath("$.errors", hasItems(HMCTS_SERVICE_CODE_EMPTY_INVALID, CASE_REF_INVALID,
+            .andExpect(jsonPath("$.errors", hasItems(HMCTS_SERVICE_CODE_EMPTY_INVALID, INVALID_CASE_REFERENCE,
                                                      EXTERNAL_CASE_REFERENCE_MAX_LENGTH, CASE_DEEP_LINK_MAX_LENGTH,
                                                      CASE_DEEP_LINK_INVALID, HMCTS_INTERNAL_CASE_NAME_MAX_LENGTH,
                                                      PUBLIC_CASE_NAME_MAX_LENGTH,
                                                      CASE_MANAGEMENT_LOCATION_CODE_MAX_LENGTH, CATEGORY_VALUE,
                                                      "Unsupported type for categoryType", CATEGORY_TYPE_EMPTY
+
             )))
             .andReturn();
     }
