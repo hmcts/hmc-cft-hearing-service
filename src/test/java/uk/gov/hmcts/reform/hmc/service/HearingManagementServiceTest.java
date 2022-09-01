@@ -1266,6 +1266,7 @@ class HearingManagementServiceTest {
             UpdateHearingRequest request = new UpdateHearingRequest();
             HearingDetails hearingDetails = buildHearingDetails();
             request.setHearingDetails(hearingDetails);
+            request.setCaseDetails(TestingUtil.caseDetails());
             request.setPartyDetails(partyDetailsList);
             request.setRequestDetails(requestDetails);
 
@@ -1295,6 +1296,7 @@ class HearingManagementServiceTest {
             UpdateHearingRequest request = new UpdateHearingRequest();
             HearingDetails hearingDetails = buildHearingDetails();
             request.setHearingDetails(hearingDetails);
+            request.setCaseDetails(TestingUtil.caseDetails());
             request.setPartyDetails(partyDetailsList);
             request.setRequestDetails(requestDetails);
 
@@ -1326,6 +1328,7 @@ class HearingManagementServiceTest {
             UpdateHearingRequest request = new UpdateHearingRequest();
             HearingDetails hearingDetails = buildHearingDetails();
             request.setHearingDetails(hearingDetails);
+            request.setCaseDetails(TestingUtil.caseDetails());
             request.setPartyDetails(partyDetailsList);
             request.setRequestDetails(requestDetails);
 
@@ -1661,6 +1664,7 @@ class HearingManagementServiceTest {
         CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         caseHearingRequestEntity.setHearingRequestReceivedDateTime(LocalDateTime.now());
         caseHearingRequestEntity.setVersionNumber(versionNumber + 1);
+        caseHearingRequestEntity.setCaseReference(CASE_REFERENCE);
         hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
         return hearingEntity;
     }

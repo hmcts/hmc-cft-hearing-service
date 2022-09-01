@@ -294,6 +294,7 @@ class HearingManagementServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testUpdateHearingRequest_WhenStatus_Update_Requested() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
+        request.getCaseDetails().setCaseRef("1111222233334455");
         HearingResponse response = hearingManagementService.updateHearingRequest(2000000012L, request);
         assertEquals(2000000012L, response.getHearingRequestId());
         assertEquals(response.getStatus(), PutHearingStatus.UPDATE_REQUESTED.name());
@@ -305,6 +306,7 @@ class HearingManagementServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
     void testUpdateHearingRequest_WhenStatus_Awaiting_Listing() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
+        request.getCaseDetails().setCaseRef("1111222233334466");
         HearingResponse response = hearingManagementService.updateHearingRequest(2000000024L, request);
         assertEquals(2000000024L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
@@ -351,6 +353,7 @@ class HearingManagementServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
     void testUpdateHearingRequest_WhenPartyDetailsAreValid() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
+        request.getCaseDetails().setCaseRef("1111222233334466");
         request.setPartyDetails(TestingUtil.partyDetails());
         request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         request.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
