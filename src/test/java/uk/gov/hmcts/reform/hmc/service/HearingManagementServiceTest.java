@@ -1377,6 +1377,40 @@ class HearingManagementServiceTest {
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
         }
 
+        @Test
+        void updateHearingRequestShouldPassWithCaseRefSameAsInDB() {
+            final long hearingId = 2000000000L;
+            UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+            final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+            mockValidHearing(hearingId, versionNumber, hearingRequest);
+            mockGetEntities(hearingRequest);
+            mockSubmitRequest();
+
+            HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
+            assertEquals(hearingResponse.getVersionNumber(), versionNumber + 1);
+            verify(hearingRepository).existsById(hearingId);
+            verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
+        }
+
+        @Test
+        void updateHearingRequestShouldFailAsCaseRefIsChangedForUpdate() {
+            final long hearingId = 2000000000L;
+            UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+            hearingRequest.getCaseDetails().setCaseRef("1111222233334455");
+            final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+            when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
+            when(hearingRepository.existsById(hearingId)).thenReturn(true);
+            when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
+            HearingEntity hearingEntity = generateHearingEntity(hearingId, UPDATE_REQUESTED.name(),
+                                                                versionNumber
+            );
+            when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
+
+            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .updateHearingRequest(2000000000L, hearingRequest));
+            assertEquals(ValidationError.INVALID_CASE_REFERENCE, exception.getMessage());
+        }
+
         private int mockValidHearing(long hearingId, int versionNumber, UpdateHearingRequest hearingRequest) {
 
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);

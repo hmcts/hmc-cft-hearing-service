@@ -851,6 +851,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        hearingRequest.getCaseDetails().setCaseRef("9856815055686759");
         mockMvc.perform(put(url + "/2000000012")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1325,6 +1326,7 @@ class HearingManagementControllerIT extends BaseTest {
             .get(0).setRelatedPartyID("unknown");
         hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
             .get(0).setRelationshipType("a".repeat(10));
+        hearingRequest.getCaseDetails().setCaseRef("9856815055686759");
         mockMvc.perform(put(url + "/2000000012")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1343,6 +1345,7 @@ class HearingManagementControllerIT extends BaseTest {
                                            + "\t\"case_type\": \"CaseType1\"\n"
                                            + "}")));
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequestWithPartyDetails(false);
+        hearingRequest.getCaseDetails().setCaseRef("9372710950276233");
         mockMvc.perform(put(url + "/2000000024")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1358,6 +1361,7 @@ class HearingManagementControllerIT extends BaseTest {
         throws Exception {
         UpdateHearingRequest hearingRequest =
             TestingUtil.updateHearingRequestWithPartyDetails(true);
+        hearingRequest.getCaseDetails().setCaseRef("9372710950276233");
         mockMvc.perform(put(url + "/2000000024")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1464,6 +1468,7 @@ class HearingManagementControllerIT extends BaseTest {
             TestingUtil.updateHearingRequestWithPartyDetails(true);
 
         hearingRequest.getHearingDetails().setDuration(duration);
+        hearingRequest.getCaseDetails().setCaseRef("9372710950276233");
 
         mockMvc.perform(put(url + "/" + hearingId)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
