@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.LuhnCheck;
 import org.hibernate.validator.constraints.URL;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
@@ -25,7 +26,7 @@ public class CaseDetails {
     private String hmctsServiceCode;
 
     @NotEmpty(message = ValidationError.CASE_REF_EMPTY)
-    @Pattern(regexp = "^\\d{16}$", message = ValidationError.CASE_REF_INVALID)
+    @LuhnCheck(message = ValidationError.INVALID_CASE_REFERENCE, ignoreNonDigitCharacters = false)
     private String caseRef;
 
     @Size(max = 70, message = ValidationError.EXTERNAL_CASE_REFERENCE_MAX_LENGTH)

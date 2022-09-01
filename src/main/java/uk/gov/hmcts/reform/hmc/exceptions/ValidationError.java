@@ -271,4 +271,5 @@ public final class ValidationError {
 
     public static final String MISSING_INDIVIDUAL_DETAILS = "Individual details are missing";
     public static final String MISSING_ORGANISATION_DETAILS = "Organisation details are missing";
+    public static final String INVALID_CASE_REFERENCE = "Invalid case Reference";
 }

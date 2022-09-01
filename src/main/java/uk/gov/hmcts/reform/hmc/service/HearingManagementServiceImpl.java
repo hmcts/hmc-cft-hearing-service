@@ -76,6 +76,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_DETAILS_ARE_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_EMPTY_NULL;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
@@ -216,6 +217,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         HearingEntity existingHearing = hearingRepository.findById(hearingId)
             .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
+        if (!existingHearing.getLatestCaseReferenceNumber().equals(hearingRequest.getCaseDetails().getCaseRef())) {
+            throw new BadRequestException(INVALID_CASE_REFERENCE);
+        }
         String statusToUpdate = getNextPutHearingStatus(existingHearing.getStatus());
         EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest.getPartyDetails());
         Listing listing = getListing(hearingRequest, entities);
