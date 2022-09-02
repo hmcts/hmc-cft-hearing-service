@@ -12,7 +12,7 @@
     "body": {
       "caseDetails": {
         "hmctsServiceCode": "1234",
-        "caseRef": "1641911514704411",
+        "caseRef": "${[scenarioContext][siblingContexts][CreateCase][testData][actualResponse][body][id]}",
         "caseDeepLink": "https://www.google.com",
         "hmctsInternalCaseName": "Internal case name",
         "publicCaseName": "Public case name",
