@@ -1372,6 +1372,47 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn400_WhenCaseRefHasInvalidFormat_UpdateHearing() throws Exception {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.getCaseDetails().setCaseRef("1111222233334445");
+        mockMvc.perform(put(url + "/2000000000")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem((INVALID_CASE_REFERENCE))))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void shouldReturn400_WhenCaseRefHasInvalidFormat_CreateHearing() throws Exception {
+        val hearingRequest = getHearingRequest("P1");
+        stubSuccessfullyValidateHearingObject(hearingRequest);
+
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
+        hearingRequest.getCaseDetails().setCaseRef("1111222233334445");
+        mockMvc.perform(post(url)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem((INVALID_CASE_REFERENCE))))
+            .andReturn();
+    }
+
+    @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn201_WhenHearingRequestHasValidData() throws Exception {
         val hearingRequest = getHearingRequest("P1");

@@ -1378,7 +1378,7 @@ class HearingManagementServiceTest {
         }
 
         @Test
-        void updateHearingRequestShouldPassWithCaseRefSameAsInDB() {
+        void updateHearingRequestShouldPassWithCaseRefSameAsInPost() {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
             final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
