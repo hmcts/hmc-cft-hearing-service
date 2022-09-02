@@ -32,6 +32,7 @@
     </notes>
     <cve>CVE-2022-31569</cve>
     <cve>CVE-2022-31197</cve>
+    <cve>CVE-2022-25857</cve>
   </suppress>
   <!--End of temporary suppression section -->
 
