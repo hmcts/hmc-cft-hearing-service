@@ -392,7 +392,7 @@ class GetHearingResponseMapperTest {
         assertAll(
             () -> assertEquals("venue1", hearingDaySchedule.getHearingVenueId()),
             () -> assertEquals("room1", hearingDaySchedule.getHearingRoomId()),
-            () -> assertEquals("PanelUser1", hearingDaySchedule.getPanelMemberId())
+            () -> assertEquals("PanelUser1", hearingDaySchedule.getPanelMemberIds().get(0))
         );
     }
 
