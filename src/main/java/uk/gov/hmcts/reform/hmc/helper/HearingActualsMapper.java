@@ -73,16 +73,6 @@ public class HearingActualsMapper {
 
     private void setNotRequired(ActualHearingDayEntity actualHearingDayEntity, ActualHearingDay actualHearingDay) {
         actualHearingDayEntity.setNotRequired(actualHearingDay.getNotRequired());
-        if (null == actualHearingDay.getNotRequired() || !actualHearingDay.getNotRequired()) {
-            if (null == actualHearingDay.getHearingStartTime()) {
-                throw new BadRequestException(
-                    String.format("005 missing hearingStartTime for %s", actualHearingDay.getHearingDate()));
-            }
-            if (null == actualHearingDay.getHearingEndTime()) {
-                throw new BadRequestException(
-                    String.format("006 missing hearingEndTime for %s", actualHearingDay.getHearingDate()));
-            }
-        }
     }
 
     private List<ActualHearingDayPausesEntity> toActualHearingDayPausesEntities(
