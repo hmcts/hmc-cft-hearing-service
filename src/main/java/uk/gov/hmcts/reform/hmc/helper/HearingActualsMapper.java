@@ -66,13 +66,9 @@ public class HearingActualsMapper {
             toActualHearingDayPausesEntities(actualHearingDay.getPauseDateTimes(), actualHearingDayEntity));
         actualHearingDayEntity.setActualHearingParty(
             toActualHearingPartyEntities(actualHearingDay.getActualDayParties(), actualHearingDayEntity));
-        setNotRequired(actualHearingDayEntity, actualHearingDay);
+        actualHearingDayEntity.setNotRequired(actualHearingDay.getNotRequired());
         actualHearingDayEntity.setActualHearing(actualHearing);
         return actualHearingDayEntity;
-    }
-
-    private void setNotRequired(ActualHearingDayEntity actualHearingDayEntity, ActualHearingDay actualHearingDay) {
-        actualHearingDayEntity.setNotRequired(actualHearingDay.getNotRequired());
     }
 
     private List<ActualHearingDayPausesEntity> toActualHearingDayPausesEntities(
