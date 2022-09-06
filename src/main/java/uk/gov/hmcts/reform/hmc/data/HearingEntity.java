@@ -102,6 +102,10 @@ public class HearingEntity extends BaseEntity implements Serializable {
         return getLatestCaseHearingRequest().getVersionNumber();
     }
 
+    public String getLatestCaseReferenceNumber() {
+        return getLatestCaseHearingRequest().getCaseReference();
+    }
+
     /**
      * Gets the most recent hearing response associated with the latest request.
      */

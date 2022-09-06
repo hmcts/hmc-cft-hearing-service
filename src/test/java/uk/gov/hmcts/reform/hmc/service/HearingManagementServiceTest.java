@@ -1266,6 +1266,7 @@ class HearingManagementServiceTest {
             UpdateHearingRequest request = new UpdateHearingRequest();
             HearingDetails hearingDetails = buildHearingDetails();
             request.setHearingDetails(hearingDetails);
+            request.setCaseDetails(TestingUtil.caseDetails());
             request.setPartyDetails(partyDetailsList);
             request.setRequestDetails(requestDetails);
 
@@ -1295,6 +1296,7 @@ class HearingManagementServiceTest {
             UpdateHearingRequest request = new UpdateHearingRequest();
             HearingDetails hearingDetails = buildHearingDetails();
             request.setHearingDetails(hearingDetails);
+            request.setCaseDetails(TestingUtil.caseDetails());
             request.setPartyDetails(partyDetailsList);
             request.setRequestDetails(requestDetails);
 
@@ -1326,6 +1328,7 @@ class HearingManagementServiceTest {
             UpdateHearingRequest request = new UpdateHearingRequest();
             HearingDetails hearingDetails = buildHearingDetails();
             request.setHearingDetails(hearingDetails);
+            request.setCaseDetails(TestingUtil.caseDetails());
             request.setPartyDetails(partyDetailsList);
             request.setRequestDetails(requestDetails);
 
@@ -1372,6 +1375,40 @@ class HearingManagementServiceTest {
             Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
                 .updateHearingRequest(2000000000L, updateHearingRequest));
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
+        }
+
+        @Test
+        void updateHearingRequestShouldPassWithCaseRefSameAsInPost() {
+            final long hearingId = 2000000000L;
+            UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+            final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+            mockValidHearing(hearingId, versionNumber, hearingRequest);
+            mockGetEntities(hearingRequest);
+            mockSubmitRequest();
+
+            HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest);
+            assertEquals(hearingResponse.getVersionNumber(), versionNumber + 1);
+            verify(hearingRepository).existsById(hearingId);
+            verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
+        }
+
+        @Test
+        void updateHearingRequestShouldFailAsCaseRefIsChangedForUpdate() {
+            final long hearingId = 2000000000L;
+            UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+            hearingRequest.getCaseDetails().setCaseRef("1111222233334455");
+            final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+            when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
+            when(hearingRepository.existsById(hearingId)).thenReturn(true);
+            when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
+            HearingEntity hearingEntity = generateHearingEntity(hearingId, UPDATE_REQUESTED.name(),
+                                                                versionNumber
+            );
+            when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
+
+            Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
+                .updateHearingRequest(2000000000L, hearingRequest));
+            assertEquals(ValidationError.INVALID_CASE_REFERENCE, exception.getMessage());
         }
 
         private int mockValidHearing(long hearingId, int versionNumber, UpdateHearingRequest hearingRequest) {
@@ -1661,6 +1698,7 @@ class HearingManagementServiceTest {
         CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         caseHearingRequestEntity.setHearingRequestReceivedDateTime(LocalDateTime.now());
         caseHearingRequestEntity.setVersionNumber(versionNumber + 1);
+        caseHearingRequestEntity.setCaseReference(CASE_REFERENCE);
         hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
         return hearingEntity;
     }

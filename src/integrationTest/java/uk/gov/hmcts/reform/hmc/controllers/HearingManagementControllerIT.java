@@ -86,7 +86,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_MANAGEMENT
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_MANAGEMENT_LOCATION_CODE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_RESTRICTED_FLAG_NULL_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_SLA_START_DATE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_TYPE_EMPTY;
@@ -122,6 +121,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_R
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CANCELLATION_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_CATEGORIES;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
@@ -851,6 +851,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        hearingRequest.getCaseDetails().setCaseRef("9856815055686759");
         mockMvc.perform(put(url + "/2000000012")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1112,12 +1113,13 @@ class HearingManagementControllerIT extends BaseTest {
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.errors", hasSize(11)))
-            .andExpect(jsonPath("$.errors", hasItems(HMCTS_SERVICE_CODE_EMPTY_INVALID, CASE_REF_INVALID,
+            .andExpect(jsonPath("$.errors", hasItems(HMCTS_SERVICE_CODE_EMPTY_INVALID, INVALID_CASE_REFERENCE,
                                                      EXTERNAL_CASE_REFERENCE_MAX_LENGTH, CASE_DEEP_LINK_MAX_LENGTH,
                                                      CASE_DEEP_LINK_INVALID, HMCTS_INTERNAL_CASE_NAME_MAX_LENGTH,
                                                      PUBLIC_CASE_NAME_MAX_LENGTH,
                                                      CASE_MANAGEMENT_LOCATION_CODE_MAX_LENGTH, CATEGORY_VALUE,
                                                      "Unsupported type for categoryType", CATEGORY_TYPE_EMPTY
+
             )))
             .andReturn();
     }
@@ -1324,6 +1326,7 @@ class HearingManagementControllerIT extends BaseTest {
             .get(0).setRelatedPartyID("unknown");
         hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
             .get(0).setRelationshipType("a".repeat(10));
+        hearingRequest.getCaseDetails().setCaseRef("9856815055686759");
         mockMvc.perform(put(url + "/2000000012")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1342,6 +1345,7 @@ class HearingManagementControllerIT extends BaseTest {
                                            + "\t\"case_type\": \"CaseType1\"\n"
                                            + "}")));
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequestWithPartyDetails(false);
+        hearingRequest.getCaseDetails().setCaseRef("9372710950276233");
         mockMvc.perform(put(url + "/2000000024")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1357,12 +1361,54 @@ class HearingManagementControllerIT extends BaseTest {
         throws Exception {
         UpdateHearingRequest hearingRequest =
             TestingUtil.updateHearingRequestWithPartyDetails(true);
+        hearingRequest.getCaseDetails().setCaseRef("9372710950276233");
         mockMvc.perform(put(url + "/2000000024")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(201))
             .andExpect(jsonPath("$.hearingRequestID").value("2000000024"))
             .andExpect(jsonPath("$.timeStamp").value(IsNull.notNullValue()))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn400_WhenCaseRefHasInvalidFormat_UpdateHearing() throws Exception {
+        UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+        hearingRequest.getCaseDetails().setCaseRef("1111222233334445");
+        mockMvc.perform(put(url + "/2000000000")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem((INVALID_CASE_REFERENCE))))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void shouldReturn400_WhenCaseRefHasInvalidFormat_CreateHearing() throws Exception {
+        val hearingRequest = getHearingRequest("P1");
+        stubSuccessfullyValidateHearingObject(hearingRequest);
+
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
+        hearingRequest.getCaseDetails().setCaseRef("1111222233334445");
+        mockMvc.perform(post(url)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem((INVALID_CASE_REFERENCE))))
             .andReturn();
     }
 
@@ -1463,6 +1509,7 @@ class HearingManagementControllerIT extends BaseTest {
             TestingUtil.updateHearingRequestWithPartyDetails(true);
 
         hearingRequest.getHearingDetails().setDuration(duration);
+        hearingRequest.getCaseDetails().setCaseRef("9372710950276233");
 
         mockMvc.perform(put(url + "/" + hearingId)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
