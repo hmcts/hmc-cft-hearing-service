@@ -53,7 +53,7 @@ variable "sku_capacity" {
 }
 
 variable "ssl_enforcement" {
-  default = "Enabled"
+  default = true
 }
 
 variable "backup_retention_days" {
@@ -61,7 +61,7 @@ variable "backup_retention_days" {
 }
 
 variable "georedundant_backup" {
-  default = "Enabled"
+  default = true
 }
 
 // Define the values for mandatory/required parameters (see https://github.com/hmcts/cnp-module-postgres)
