@@ -18,7 +18,7 @@ data "azurerm_key_vault" "hmc_shared_key_vault" {
 }
 
 module "hmc-hearing-management-db" {
-  source                = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  source                = "git@github.com:hmcts/cnp-module-postgres?ref=enable-replicas-master"
   product               = var.product
   component             = var.component
   name                  = "${local.app_full_name}-postgres-db"
@@ -35,6 +35,7 @@ module "hmc-hearing-management-db" {
   storage_mb            = var.storage_mb
   backup_retention_days = var.backup_retention_days
   georedundant_backup   = var.georedundant_backup
+  replicas              = [ "replica01" ]
   common_tags           = var.common_tags
 }
 
