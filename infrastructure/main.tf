@@ -35,8 +35,7 @@ module "hmc-hearing-management-db" {
   storage_mb            = var.storage_mb
   backup_retention_days = var.backup_retention_days
   georedundant_backup   = var.georedundant_backup
-  replica_enable        = true
-  replica_name          = [ "replica01" ]
+  replicas              = [ "replica01" ]
   common_tags           = var.common_tags
 }
 
