@@ -141,7 +141,7 @@ public class HearingEntity extends BaseEntity implements Serializable {
                     if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
                         HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
                         if (hearingDayDetailsEntity.getStartDateTime() != null
-                            && !hearingDayDetailsEntity.getStartDateTime().toLocalDate().isAfter(LocalDate.now())) {
+                            && !LocalDate.now().isBefore(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
                             return "AWAITING_ACTUALS";
                         }
                     }
