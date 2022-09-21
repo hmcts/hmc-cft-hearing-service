@@ -24,9 +24,8 @@ Feature: F-060: Search for Parties Notified
   @S-060.3
   Scenario: List the expected parties of the hearing request.
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
-    And a successful call [to amend a hearing request] as in [AmendHearingRequest],
-    And a successful call to [get hearing] as in [GetHearingRequestPositiveGeneric],
-#    And  a successful call [to put parties notified responses] as in [CreatePartiesNotifiedRequest]
+    And another successful call [listing a hearing] as in [ListingHearing],
+    And a successful call [to submit a notified parties hearing request] as in [AddPartiesNotifiedRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [Search for parties notified] operation of [HMC CFT Hearing Service],
     Then a positive response is received,

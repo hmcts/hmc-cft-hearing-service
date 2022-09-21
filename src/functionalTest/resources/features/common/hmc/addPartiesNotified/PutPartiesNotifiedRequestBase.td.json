@@ -1,7 +1,7 @@
 {
   "_guid_": "PutPartiesNotifiedRequestBase",
   "productName": "HMC CFT Hearing Service",
-  "operationName": "put parties notified",
+  "operationName": "add parties notified",
   "method": "PUT",
   "uri": "/partiesNotified/{id}",
   "s2sClientId": "xui_webapp",

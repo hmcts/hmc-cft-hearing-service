@@ -1,8 +1,8 @@
 {
-  "_guid_": "CreatePartiesNotifiedRequest",
+  "_guid_": "AddPartiesNotifiedRequest",
   "_extends_" : "PutPartiesNotifiedRequestBase",
   "specs": [
-    "to put parties notified responses"
+    "to submit a notified parties hearing request"
   ],
   "request": {
     "headers": {
@@ -19,7 +19,7 @@
     }
   },
   "expectedResponse": {
-    "responseCode": 201,
+    "responseCode": 200,
     "responseMessage": "OK",
     "body" : {
     }
