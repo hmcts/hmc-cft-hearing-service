@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.validation.constraints.Size;
 
 @Data
@@ -29,5 +30,5 @@ public class RequestDetails {
 
     private LocalDateTime partiesNotified;
 
-
+    private List<String> cancellationReasonCodes;
 }

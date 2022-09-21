@@ -75,7 +75,8 @@
         "hearingIsLinkedFlag" : false,
         "hearingChannels" : [ "INTER" ],
         "multiDayHearing" : false,
-        "autolistFlag" : true
+        "autolistFlag" : "[[ANYTHING_PRESENT]]",
+        "listingAutoChangeReasonCode" : "[[ANYTHING_PRESENT]]"
       },
       "partyDetails" : [ {
         "partyID" : "P1",
