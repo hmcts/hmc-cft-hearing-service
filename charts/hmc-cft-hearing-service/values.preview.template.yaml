@@ -13,7 +13,7 @@ java:
     CFT_HEARING_SERVICE_DB_PASSWORD: "{{ .Values.postgresql.auth.password}}"
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
     CFT_HEARING_SERVICE_DB_PORT: 5432
-    CCD_DATA_STORE_API_BASE_URL: "http://ccd-test-stubs-service-aat.service.core-compute-aat.internal"
+    CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api-pr-1260-java.ccd/
   postgresql:
     enabled: true
   secrets:
@@ -34,10 +34,16 @@ java:
         - name: hmc-cft-hearing-service-s2s-secret
           alias: IDAM_KEY_CFT_HEARING_SERVICE
 
-hmc:
+servicebus:
   enabled: true
-  hmc:
-    servicebus:
-      enabled: true
-    hearingService:
-      enabled: false
+  teamName: CCD
+  resourceGroup: hmc-aks
+  serviceplan: standard
+  setup:
+    topics:
+      - name: hmc-to-cft
+    subscriptions:
+      - name: hmc-subs-to-cft
+    queues:
+      - name: hmc-from-hmi
+      - name: hmc-to-hmi
