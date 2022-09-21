@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -36,7 +35,6 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyDeleteLin
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 
-
 class LinkHearingGroupControllerIT extends BaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(LinkHearingGroupControllerIT.class);
@@ -48,9 +46,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ApplicationParams applicationParams;
 
     private static final String url = "/linkedHearingGroup";
 

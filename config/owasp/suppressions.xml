@@ -29,8 +29,18 @@
   <suppress>
     <notes>Temporary Suppression
       CVE-2022-31569 refer https://tools.hmcts.net/jira/browse/CCD-3536
+      CVE-2022-31197 refer https://tools.hmcts.net/jira/browse/HMAN-392
+      CVE-2022-25857 refer https://tools.hmcts.net/jira/browse/HMAN-415
+      CVE-2022-38751 TBC
+		  CVE-2022-38750 TBC
+		  CVE-2022-38749 TBC
     </notes>
     <cve>CVE-2022-31569</cve>
+    <cve>CVE-2022-31197</cve>
+    <cve>CVE-2022-25857</cve>
+    <cve>CVE-2022-38751</cve>
+		<cve>CVE-2022-38750</cve>
+		<cve>CVE-2022-38749</cve>
   </suppress>
   <!--End of temporary suppression section -->
 

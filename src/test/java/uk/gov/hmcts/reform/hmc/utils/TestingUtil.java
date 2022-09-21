@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.utils;
 
 import com.google.common.collect.Lists;
+import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayPausesEntity;
@@ -99,7 +100,8 @@ public class TestingUtil {
 
     public static HearingDetails hearingDetails() {
         HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setAutoListFlag(false);
+        hearingDetails.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel());
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
         hearingWindow.setDateRangeEnd(LocalDate.parse("2017-03-01"));
@@ -1088,6 +1090,7 @@ public class TestingUtil {
         entity1.setHmctsServiceCode("ABA1");
         entity1.setCaseReference("12345");
         entity1.setHearingType("Some hearing type");
+        entity1.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel());
         entity1.setHearingParties(List.of(hearingPartyEntityOrg()));
         entity1.setHearingChannels(hearingChannelsEntity());
         return entity1;
@@ -1133,6 +1136,7 @@ public class TestingUtil {
         entity1.setHmctsServiceCode("ABA1");
         entity1.setCaseReference("12345");
         entity1.setHearingType("Some hearing type");
+        entity1.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel());
         entity1.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
         entity1.getHearing().getHearingResponses().get(0)
             .setHearingDayDetails(List.of(hearingDayDetailsEntities()));
@@ -1203,7 +1207,8 @@ public class TestingUtil {
 
     public static HearingDetails hearingDetailsWithAllFields() {
         HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setAutoListFlag(false);
+        hearingDetails.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel());
         hearingDetails.setAmendReasonCodes(List.of("reason 1", "reason 2"));
         hearingDetails.setHearingType("Some hearing type");
         HearingWindow hearingWindow = new HearingWindow();
@@ -1408,7 +1413,7 @@ public class TestingUtil {
 
     public static HearingDetails hearingDetailsWithoutHearingWindow() {
         HearingDetails hearingDetails = new HearingDetails();
-        hearingDetails.setAutoListFlag(true);
+        hearingDetails.setAutoListFlag(false);
         hearingDetails.setHearingType("Some hearing type");
         hearingDetails.setDuration(360);
         hearingDetails.setNonStandardHearingDurationReasons(List.of("First reason", "Second reason"));
