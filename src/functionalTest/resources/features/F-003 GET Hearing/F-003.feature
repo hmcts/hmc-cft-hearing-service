@@ -3,7 +3,8 @@ Feature: F-003: Get hearing request
 
   Background:
     Given an appropriate test context as detailed in the test data source
-    Given a user with [an active profile in CCD]
+    And a user with [an active profile in CCD],
+    And a case that has just been created as in [CreateCase],
 
     @S-003.1
   Scenario: successfully get hearing request

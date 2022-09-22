@@ -18,7 +18,7 @@
       },
       "caseDetails" : {
         "hmctsServiceCode" : "ABA1",
-        "caseRef": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}",
+        "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
         "externalCaseReference" : "EXT/REF123",
         "caseDeepLink" : "https://www.google.com",
         "hmctsInternalCaseName" : "Internal case name",

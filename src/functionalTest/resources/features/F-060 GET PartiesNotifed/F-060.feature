@@ -3,7 +3,8 @@ Feature: F-060: Search for Parties Notified
 
   Background:
     Given an appropriate test context as detailed in the test data source
-    Given a user with [an active profile in CCD]
+    And a user with [an active profile in CCD]
+    And a case that has just been created as in [CreateCase],
 
   @S-060.1
   Scenario: Should return 400 validation error
