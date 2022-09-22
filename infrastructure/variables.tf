@@ -77,3 +77,8 @@ variable "database_name" {
 variable "postgresql_version" {
   default = "11"
 }
+  
+variable "db_replicas" {
+  type    = list(string)
+  default = []
+}

@@ -36,7 +36,10 @@ public class HearingMapper {
     public HearingEntity modelToEntity(HearingRequest hearingRequest,
                                        HearingEntity hearingEntity,
                                        Integer requestVersion,
-                                       String status) {
+                                       String status,
+                                       boolean reasonableMatch,
+                                       boolean facilitiesMatch) {
+
 
 
         hearingRequest.getHearingDetails().setDuration(
@@ -44,7 +47,7 @@ public class HearingMapper {
         );
 
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
-            hearingRequest, hearingEntity, requestVersion);
+            hearingRequest, hearingEntity, requestVersion, reasonableMatch, facilitiesMatch);
         setHearingDetails(hearingRequest.getHearingDetails(), caseHearingRequestEntity);
         setCaseDetails(hearingRequest.getCaseDetails(), caseHearingRequestEntity);
         setPartyDetails(hearingRequest.getPartyDetails(), caseHearingRequestEntity);

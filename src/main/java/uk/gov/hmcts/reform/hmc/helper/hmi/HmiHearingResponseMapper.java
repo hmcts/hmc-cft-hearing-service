@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
@@ -314,7 +315,6 @@ public class HmiHearingResponseMapper {
         HearingStatus currentStatus = HearingStatus.valueOf(hearingEntity.getStatus());
         HearingCode laStatus = HearingCode.getByNumber(hearing.getHearing().getHearingCaseStatus().getCode());
         HearingStatus postStatus = null;
-
         switch (laStatus) {
             case EXCEPTION:
                 postStatus = EXCEPTION;
@@ -331,7 +331,11 @@ public class HmiHearingResponseMapper {
                 postStatus = getHearingStatusWhenLaStatusIsClosed(currentStatus);
                 break;
             default:
-                throw new MalformedMessageException(UNSUPPORTED_HEARING_STATUS);
+                throw new MalformedMessageException(
+                        getUnsupportedHearingStatusMessage(currentStatus.name(), laStatus.toString())
+                );
+
+
         }
         return postStatus;
     }
@@ -384,11 +388,19 @@ public class HmiHearingResponseMapper {
                     postStatus = HearingStatus.CANCELLATION_REQUESTED;
                 }
                 break;
+            case CANCELLATION_SUBMITTED:
+                if (hearingVersion == currentVersion) {
+                    postStatus = EXCEPTION;
+                } else {
+                    postStatus = HearingStatus.CANCELLATION_SUBMITTED;
+                }
+                break;
             case EXCEPTION:
                 postStatus = EXCEPTION;
                 break;
             default:
-                throw new MalformedMessageException(UNSUPPORTED_HEARING_STATUS);
+                throw new MalformedMessageException(
+                        getUnsupportedHearingStatusMessage(currentStatus.name(), ListAssistCaseStatus.LISTED.name()));
         }
         return postStatus;
     }
@@ -401,14 +413,23 @@ public class HmiHearingResponseMapper {
             case LISTED:
             case UPDATE_REQUESTED:
             case CANCELLATION_REQUESTED:
+            case CANCELLATION_SUBMITTED:
                 postStatus = HearingStatus.CANCELLED;
                 break;
             case EXCEPTION:
                 postStatus = EXCEPTION;
                 break;
             default:
-                throw new MalformedMessageException(UNSUPPORTED_HEARING_STATUS);
+                throw new MalformedMessageException(
+                        getUnsupportedHearingStatusMessage(currentStatus.name(),
+                                ListAssistCaseStatus.CASE_CLOSED.name()));
         }
         return postStatus;
+    }
+
+    private String getUnsupportedHearingStatusMessage(String currentStatus, String laStatus) {
+        return new StringBuilder(UNSUPPORTED_HEARING_STATUS)
+                .append("; current status:").append(currentStatus)
+                .append("; LA status:").append(laStatus).toString();
     }
 }
