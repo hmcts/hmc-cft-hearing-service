@@ -524,8 +524,7 @@ bootWithCCD {
   environment("CFT_HEARING_SERVICE_DB_PASSWORD", "postgres")
   environment("CFT_HEARING_SERVICE_DB_PORT", "6432")
   environment("CFT_HEARING_SERVICE_DB_NAME", "hmc")
-  environment("S2S_URL", "http://localhost:8489")
-  environment("HMC_ACCESS_CONTROL_ENABLED", "false")
+  environment("RSE_LIB_S2S_PORT", 4502)
 }
 
 task fortifyScan(type: JavaExec)  {
