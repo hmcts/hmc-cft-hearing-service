@@ -229,7 +229,8 @@ def versions = [
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.2',
   netty           : '4.1.77.Final',
-  serviceAuthVersion: '4.0.3'
+  serviceAuthVersion: '4.0.3' ,
+  jackson           : '2.14.0-rc1'
 ]
 
 ext['spring-framework.version'] = '5.3.19'
@@ -357,9 +358,9 @@ dependencies {
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
   compile 'net.minidev:json-smart:2.4.7'
-  compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-jaxb-annotations', version: '2.13.2'
-  compile "com.fasterxml.jackson.core:jackson-databind:2.13.2.2"
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.2'
+  compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-jaxb-annotations', version: versions.jackson
+  compile "com.fasterxml.jackson.core:jackson-databind:2.14.0-rc1"
+  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
   compile group: 'org.yaml', name: 'snakeyaml', version: '1.32'
 
   testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.13.0') {
