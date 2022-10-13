@@ -50,6 +50,9 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     @Column(name = "auto_list_flag", nullable = false)
     private Boolean autoListFlag;
 
+    @Column(name = "listing_auto_change_reason_code", length = 70)
+    private String listingAutoChangeReasonCode;
+
     @Column(name = "hearing_type", nullable = false)
     private String hearingType;
 
@@ -170,6 +173,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     public CaseHearingRequestEntity(CaseHearingRequestEntity original) {
         this.caseHearingID = original.caseHearingID;
         this.autoListFlag = original.autoListFlag;
+        this.listingAutoChangeReasonCode = original.listingAutoChangeReasonCode;
         this.hearingType = original.hearingType;
         this.requiredDurationInMinutes = original.requiredDurationInMinutes;
         this.hearingPriorityType = original.hearingPriorityType;

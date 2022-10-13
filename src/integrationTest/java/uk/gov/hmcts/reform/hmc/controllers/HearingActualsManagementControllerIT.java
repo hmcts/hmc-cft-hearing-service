@@ -751,43 +751,39 @@ class HearingActualsManagementControllerIT extends BaseTest {
             mockMvc.perform(put(URL + "/2000001000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
-                .andExpect(status().is(400))
+                .andExpect(status().is(200))
                 .andReturn();
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400WhenHearingEndTimeIsNotPresentAndNotRequiredIsFalse() throws Exception {
+        void shouldReturn200WhenHearingEndTimeIsNotPresentAndNotRequiredIsFalse() throws Exception {
             String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
             String preparedJson = deleteByJsonPath(json, "$['actualHearingDays'][0]['hearingEndTime']");
             preparedJson = addByJsonPath(preparedJson, "$['actualHearingDays'][0]['notRequired']", "false");
             mockMvc.perform(put(URL + "/2000001000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
-                .andExpect(status().is(400))
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem(("006 missing hearingEndTime for 2022-01-28"))))
+                .andExpect(status().is(200))
                 .andReturn();
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400WhenHearingStartTimeIsNotPresentAndNotRequiredIsFalse() throws Exception {
+        void shouldReturn200WhenHearingStartTimeIsNotPresentAndNotRequiredIsFalse() throws Exception {
             String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
             String preparedJson = deleteByJsonPath(json, "$['actualHearingDays'][0]['hearingStartTime']");
             preparedJson = addByJsonPath(preparedJson, "$['actualHearingDays'][0]['notRequired']", "false");
             mockMvc.perform(put(URL + "/2000001000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
-                .andExpect(status().is(400))
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem(("005 missing hearingStartTime for 2022-01-28"))))
+                .andExpect(status().is(200))
                 .andReturn();
         }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400WhenStartAndEndTimeIsNotPresentAndNotRequiredIsFalse() throws Exception {
+        void shouldReturn200WhenStartAndEndTimeIsNotPresentAndNotRequiredIsFalse() throws Exception {
             String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
             String preparedJson = deleteByJsonPath(json, "$['actualHearingDays'][0]['hearingStartTime']");
             preparedJson = deleteByJsonPath(preparedJson, "$['actualHearingDays'][0]['hearingEndTime']");
@@ -795,9 +791,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
             mockMvc.perform(put(URL + "/2000001000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
-                .andExpect(status().is(400))
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem(("005 missing hearingStartTime for 2022-01-28"))))
+                .andExpect(status().is(200))
                 .andReturn();
         }
 
@@ -813,7 +807,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
             mockMvc.perform(put(URL + "/2000001000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
-                .andExpect(status().is(400))
+                .andExpect(status().is(200))
                 .andReturn();
         }
 
@@ -829,7 +823,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
             mockMvc.perform(put(URL + "/2000001000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
-                .andExpect(status().is(400))
+                .andExpect(status().is(200))
                 .andReturn();
         }
 

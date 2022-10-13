@@ -27,13 +27,14 @@ class CaseHearingRequestMapperTest {
         HearingEntity hearingEntity = new HearingEntity();
         CaseCategoriesMapper caseCategoriesMapper = new CaseCategoriesMapper();
         CaseHearingRequestMapper caseHearingRequestMapper = new CaseHearingRequestMapper(caseCategoriesMapper, CLOCK);
-        CaseHearingRequestEntity entity = caseHearingRequestMapper.modelToEntity(hearingRequest, hearingEntity, 1);
+        CaseHearingRequestEntity entity = caseHearingRequestMapper.modelToEntity(hearingRequest, hearingEntity, 1,
+                                                                                    true, true);
         assert1(entity);
         assert2(entity);
     }
 
     private void assert1(CaseHearingRequestEntity entity) {
-        assertEquals(Boolean.TRUE, entity.getAutoListFlag());
+        assertEquals(Boolean.FALSE, entity.getAutoListFlag());
         assertEquals("Some hearing type", entity.getHearingType());
         assertEquals(360, entity.getRequiredDurationInMinutes());
         assertEquals("Priority type", entity.getHearingPriorityType());
