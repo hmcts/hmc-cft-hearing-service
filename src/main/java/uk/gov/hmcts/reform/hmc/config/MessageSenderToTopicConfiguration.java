@@ -43,7 +43,7 @@ public class MessageSenderToTopicConfiguration {
             log.error(
                 "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
                 CFT_HEARING_SERVICE,
-                NO_DEFINED, //TODO TO BE CONFIRM CHE ServiceBusMessage and  message
+                MessageType.LA_SYNC_HEARING_RESPONSE, //TODO TO BE CONFIRM!!
                 WRITE,
                 hearingId
             );

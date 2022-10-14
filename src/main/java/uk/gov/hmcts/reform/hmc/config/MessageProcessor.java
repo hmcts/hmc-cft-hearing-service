@@ -71,9 +71,9 @@ public class MessageProcessor {
                 log.error(
                     "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
                     CFT_HEARING_SERVICE,
-                    applicationProperties.get(MESSAGE_TYPE), //TODO TO BE CONFIRM
+                    applicationProperties.get(MESSAGE_TYPE),
                     WRITE,
-                    applicationProperties.get(HEARING_ID) //TODO TO BE CONFIRM
+                    applicationProperties.get(HEARING_ID)
                 );
                 inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, ex);
             }
