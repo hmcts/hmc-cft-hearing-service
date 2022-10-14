@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_SERVICE_ID;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.NO_DEFINED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.TYPE_TOPIC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.WRITE;
 
 @Slf4j
@@ -43,7 +43,7 @@ public class MessageSenderToTopicConfiguration {
             log.error(
                 "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
                 CFT_HEARING_SERVICE,
-                MessageType.LA_SYNC_HEARING_RESPONSE, //TODO TO BE CONFIRM!!
+                TYPE_TOPIC,
                 WRITE,
                 hearingId
             );

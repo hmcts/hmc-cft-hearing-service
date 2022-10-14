@@ -16,6 +16,8 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.NO_DEFINED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.READ;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.TYPE_INBOUND;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.WRITE;
 
 @Slf4j
@@ -51,8 +53,8 @@ public class MessageProcessor {
             log.error(
                 "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
                 CFT_HEARING_SERVICE,
-                message.getApplicationProperties().getOrDefault(MESSAGE_TYPE,NO_DEFINED),
-                WRITE,
+                TYPE_INBOUND,
+                READ,
                 message.getApplicationProperties().getOrDefault(HEARING_ID,NO_DEFINED)
             );
             inboundQueueService.catchExceptionAndUpdateHearing(message.getApplicationProperties(), exception);
@@ -71,7 +73,7 @@ public class MessageProcessor {
                 log.error(
                     "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
                     CFT_HEARING_SERVICE,
-                    applicationProperties.get(MESSAGE_TYPE),
+                    applicationProperties.get(MESSAGE_TYPE),//INBOUND QUEUE
                     WRITE,
                     applicationProperties.get(HEARING_ID)
                 );
