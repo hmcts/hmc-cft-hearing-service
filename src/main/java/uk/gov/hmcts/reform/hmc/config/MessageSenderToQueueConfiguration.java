@@ -7,8 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.WRITE;
 
 @Slf4j
 @Component
@@ -35,6 +37,13 @@ public class MessageSenderToQueueConfiguration {
 
             log.debug("Message has been sent to the queue {}", applicationParams.getInternalOutboundQueueName());
         } catch (Exception e) {
+            log.error(
+                "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
+                CFT_HEARING_SERVICE,
+                messageType,
+                WRITE,
+                hearingId
+            );
             log.error("Error while sending the message to queue:{}", e.getMessage());
         }
     }

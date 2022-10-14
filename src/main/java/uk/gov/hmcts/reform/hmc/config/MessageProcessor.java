@@ -13,6 +13,11 @@ import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.NO_DEFINED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.WRITE;
+
 @Slf4j
 @Component
 public class MessageProcessor {
@@ -41,9 +46,16 @@ public class MessageProcessor {
             client.complete(message);
             log.info("Message with id '{}' handled successfully", message.getMessageId());
 
-        } catch (JsonProcessingException ex) {
-            log.error(MESSAGE_PARSE_ERROR, message.getMessageId(), ex);
-            inboundQueueService.catchExceptionAndUpdateHearing(message.getApplicationProperties(), ex);
+        } catch (Exception exception) {
+            log.error(MESSAGE_PARSE_ERROR, message.getMessageId(), exception);
+            log.error(
+                "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
+                CFT_HEARING_SERVICE,
+                message.getApplicationProperties().getOrDefault(MESSAGE_TYPE,NO_DEFINED),
+                WRITE,
+                message.getApplicationProperties().getOrDefault(HEARING_ID,NO_DEFINED)
+            );
+            inboundQueueService.catchExceptionAndUpdateHearing(message.getApplicationProperties(), exception);
         }
     }
 
@@ -56,6 +68,13 @@ public class MessageProcessor {
                 log.error(MESSAGE_ERROR + serviceBusReceivedMessage.getMessageId() + WITH_ERROR + ex.getMessage());
             } catch (Exception ex) {
                 log.error(MESSAGE_ERROR + serviceBusReceivedMessage.getMessageId() + WITH_ERROR + ex.getMessage());
+                log.error(
+                    "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
+                    CFT_HEARING_SERVICE,
+                    applicationProperties.get(MESSAGE_TYPE), //TODO TO BE CONFIRM
+                    WRITE,
+                    applicationProperties.get(HEARING_ID) //TODO TO BE CONFIRM
+                );
                 inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, ex);
             }
         } else {
