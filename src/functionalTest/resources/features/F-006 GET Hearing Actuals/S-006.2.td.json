@@ -3,7 +3,6 @@
   "_extends_" : "F-006_TestBase",
 
   "specs": [
-    "an active profile in CCD",
     "has 404 status code"
   ],
 

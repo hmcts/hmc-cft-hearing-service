@@ -3,7 +3,7 @@ Feature: F-006: Search for hearing actuals
 
   Background:
     Given an appropriate test context as detailed in the test data source
-    Given a user with [an active profile in CCD]
+    And a user with [an active profile in CCD]
 
   @S-006.1
   Scenario: List the expected parties as per the latest version of the hearing request-response together with any actuals currently captured.
