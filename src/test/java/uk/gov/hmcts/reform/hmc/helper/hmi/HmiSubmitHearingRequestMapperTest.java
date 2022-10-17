@@ -59,11 +59,7 @@ class HmiSubmitHearingRequestMapperTest {
                 .build();
         when(entitiesMapper.getEntities(Collections.singletonList(partyDetails))).thenReturn(entities);
         HmiCaseDetails hmiCaseDetails = HmiCaseDetails.builder().build();
-        when(hmiCaseDetailsMapper.getCaseDetails(caseDetails, 1, HEARING_ID, Boolean.TRUE))
-            .thenReturn(hmiCaseDetails);
         Listing listing = Listing.builder().build();
-        when(listingMapper.getListing(hearingDetails, entities.getEntities()))
-                .thenReturn(listing);
         HmiHearingRequest hmiHearingRequest = HmiHearingRequest.builder()
                 .caseDetails(hmiCaseDetails)
                 .listing(listing)
@@ -73,7 +69,7 @@ class HmiSubmitHearingRequestMapperTest {
                 .hearingRequest(hmiHearingRequest)
                 .build();
         HmiSubmitHearingRequest actualHmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
-                .mapRequest(HEARING_ID, createHearingRequest);
+                .mapRequest(createHearingRequest, hmiCaseDetails, listing);
         assertEquals(expectedHmiSubmitHearingRequest, actualHmiSubmitHearingRequest);
     }
 
@@ -87,12 +83,7 @@ class HmiSubmitHearingRequestMapperTest {
                 .build();
         when(entitiesMapper.getEntities(any())).thenReturn(entities);
         HmiCaseDetails hmiCaseDetails = HmiCaseDetails.builder().build();
-        when(hmiCaseDetailsMapper.getCaseDetails(updateHearingRequest.getCaseDetails(),
-                updateHearingRequest.getRequestDetails().getVersionNumber() + 1, HEARING_ID, Boolean.TRUE))
-                  .thenReturn(hmiCaseDetails);
         Listing listing = Listing.builder().build();
-        when(listingMapper.getListing(updateHearingRequest.getHearingDetails(), entities.getEntities()))
-                .thenReturn(listing);
         HmiHearingRequest hmiHearingRequest = HmiHearingRequest.builder()
                 .caseDetails(hmiCaseDetails)
                 .listing(listing)
@@ -102,7 +93,7 @@ class HmiSubmitHearingRequestMapperTest {
                 .hearingRequest(hmiHearingRequest)
                 .build();
         HmiSubmitHearingRequest actualHmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
-                .mapRequest(HEARING_ID, updateHearingRequest);
+                .mapRequest(updateHearingRequest, hmiCaseDetails, listing);
         assertEquals(expectedHmiSubmitHearingRequest, actualHmiSubmitHearingRequest);
     }
 

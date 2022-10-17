@@ -76,6 +76,9 @@ public class HearingDetailsMapper {
                 caseHearingRequestEntity
             );
         }
+        if (hearingDetails.getListingAutoChangeReasonCode() != null) {
+            caseHearingRequestEntity.setListingAutoChangeReasonCode(hearingDetails.getListingAutoChangeReasonCode());
+        }
     }
 
     private void setPanelDetails(HearingDetails hearingDetails, CaseHearingRequestEntity caseHearingRequestEntity) {
