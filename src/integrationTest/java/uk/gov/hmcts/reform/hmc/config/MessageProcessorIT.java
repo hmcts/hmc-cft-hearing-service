@@ -425,7 +425,7 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Hearing id 1000000000 not found", logsList.get(2).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
-        assertEquals(1, logsListMessageProcessor.size());
+        assertEquals(2, logsListMessageProcessor.size());
         assertEquals(Level.ERROR, logsListMessageProcessor.get(0).getLevel());
         assertEquals("Error for message with id null with error Invalid hearing Id",
                      logsListMessageProcessor.get(0).getMessage());
