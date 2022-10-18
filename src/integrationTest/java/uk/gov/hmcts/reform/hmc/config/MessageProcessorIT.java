@@ -417,7 +417,7 @@ class MessageProcessorIT extends BaseTest {
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(3, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals(Level.ERROR, logsList.get(1).getLevel());
+        assertEquals(Level.ERROR, logsList.get(2).getLevel());
         assertEquals(Level.ERROR, logsList.get(2).getLevel());
         assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
         assertEquals("Error processing message with Hearing id 1000000000 exception was "
