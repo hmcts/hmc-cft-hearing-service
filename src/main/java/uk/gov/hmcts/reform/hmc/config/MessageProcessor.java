@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.NO_DEFINED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.READ;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.TYPE_INBOUND;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.TYPE_OUTBOUND;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.WRITE;
 
 @Slf4j
@@ -53,7 +53,7 @@ public class MessageProcessor {
             log.error(
                 "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
                 CFT_HEARING_SERVICE,
-                TYPE_INBOUND,
+                TYPE_OUTBOUND,
                 READ,
                 message.getApplicationProperties().getOrDefault(HEARING_ID,NO_DEFINED)
             );
@@ -73,7 +73,7 @@ public class MessageProcessor {
                 log.error(
                     "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
                     CFT_HEARING_SERVICE,
-                    TYPE_INBOUND,
+                    TYPE_OUTBOUND,
                     WRITE,
                     applicationProperties.getOrDefault(HEARING_ID,NO_DEFINED)
                 );

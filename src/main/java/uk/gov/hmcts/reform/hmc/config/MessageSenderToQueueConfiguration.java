@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.TYPE_INBOUND;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.TYPE_OUTBOUND;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.WRITE;
 
@@ -41,7 +42,7 @@ public class MessageSenderToQueueConfiguration {
             log.error(
                 "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
                 CFT_HEARING_SERVICE,
-                TYPE_OUTBOUND,
+                TYPE_INBOUND,
                 WRITE,
                 hearingId
             );
