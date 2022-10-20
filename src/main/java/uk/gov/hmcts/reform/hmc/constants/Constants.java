@@ -19,9 +19,9 @@ public final class Constants {
     public static final String CFT_HEARING_SERVICE = "<CFT Hearing Service>";
     public static final String WRITE = "<WRITE>";
     public static final String READ = "<READ>";
-    public static final String TYPE_INBOUND = "Inbound Queue";
-    public static final String TYPE_OUTBOUND = "Outbound Queue";
-    public static final String TYPE_TOPIC = "TOPIC";
+    public static final String TYPE_INBOUND = "hmc-to-hmi";
+    public static final String TYPE_OUTBOUND = "hmc-from-hmi";
+    public static final String TYPE_TOPIC = "hmc-to-cft";
 
     public static final String NO_DEFINED = "NO_DEFINED";
     public static final String REQUEST_HEARING = "REQUEST_HEARING";
