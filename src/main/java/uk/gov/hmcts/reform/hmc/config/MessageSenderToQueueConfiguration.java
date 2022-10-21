@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR_PROCESSING_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC_TO_HMI;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.TYPE_INBOUND;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.TYPE_OUTBOUND;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.WRITE;
 
 @Slf4j
@@ -40,9 +40,9 @@ public class MessageSenderToQueueConfiguration {
             log.debug("Message has been sent to the queue {}", applicationParams.getInternalOutboundQueueName());
         } catch (Exception e) {
             log.error(
-                "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
+                ERROR_PROCESSING_MESSAGE,
                 CFT_HEARING_SERVICE,
-                TYPE_INBOUND,
+                HMC_TO_HMI,
                 WRITE,
                 hearingId
             );

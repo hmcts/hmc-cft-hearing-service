@@ -14,10 +14,11 @@ import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR_PROCESSING_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC_FROM_HMI;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.NO_DEFINED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.READ;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.TYPE_OUTBOUND;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.WRITE;
 
 @Slf4j
@@ -51,9 +52,9 @@ public class MessageProcessor {
         } catch (Exception exception) {
             log.error(MESSAGE_PARSE_ERROR, message.getMessageId(), exception);
             log.error(
-                "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
+                ERROR_PROCESSING_MESSAGE,
                 CFT_HEARING_SERVICE,
-                TYPE_OUTBOUND,
+                HMC_FROM_HMI,
                 READ,
                 message.getApplicationProperties().getOrDefault(HEARING_ID,NO_DEFINED)
             );
@@ -71,9 +72,9 @@ public class MessageProcessor {
             } catch (Exception ex) {
                 log.error(MESSAGE_ERROR + serviceBusReceivedMessage.getMessageId() + WITH_ERROR + ex.getMessage());
                 log.error(
-                    "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
+                    ERROR_PROCESSING_MESSAGE,
                     CFT_HEARING_SERVICE,
-                    TYPE_OUTBOUND,
+                    HMC_FROM_HMI,
                     WRITE,
                     applicationProperties.getOrDefault(HEARING_ID,NO_DEFINED)
                 );

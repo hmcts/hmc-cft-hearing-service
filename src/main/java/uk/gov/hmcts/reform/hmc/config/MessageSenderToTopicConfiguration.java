@@ -9,9 +9,10 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR_SENDING_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_SERVICE_ID;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.TYPE_TOPIC;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.TOPIC_HMC_TO_CFT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.WRITE;
 
 @Slf4j
@@ -41,9 +42,9 @@ public class MessageSenderToTopicConfiguration {
         } catch (Exception e) {
             log.error("Error while sending the message to topic:{}", e.getMessage());
             log.error(
-                "Error occurred during service bus processing. Service:{} . Type: {}. Method: {}. Hearing ID: {}.",
+                ERROR_SENDING_MESSAGE,
                 CFT_HEARING_SERVICE,
-                TYPE_TOPIC,
+                TOPIC_HMC_TO_CFT,
                 WRITE,
                 hearingId
             );
