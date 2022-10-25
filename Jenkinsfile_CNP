@@ -85,7 +85,7 @@ env.HMC_OUTBOUND_SERVICE_BUS_QUEUE = "hmc-to-hmi"
 // vars needed for functional tests
 // Assume a feature build branched off 'develop', with dependencies develop-to-develop.
 env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-api-${definitionStoreDevelopPr}.service.core-compute-preview.internal".toLowerCase()
-env.CCD_DATA_STORE_API_BASE_URL = "https://ccd-test-stubs-service-aat.service.core-compute-aat.internal"
+env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-test-stubs-service-aat.service.core-compute-aat.internal"
 env.MCA_API_BASE_URL = "https://aac-manage-case-assignment-${env.BRANCH_NAME}.service.core-compute-preview.internal".toLowerCase()
 
 // Other env variables needed for BEFTA.
