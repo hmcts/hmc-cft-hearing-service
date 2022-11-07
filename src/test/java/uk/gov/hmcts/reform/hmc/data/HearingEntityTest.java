@@ -215,8 +215,8 @@ class HearingEntityTest {
 
         @Test
         void shouldGetDefaultDerivedHearingResponseWithNotUpdated() {
-            LocalDateTime startDateTime = LocalDateTime.now();
-            LocalDateTime endDateTime = LocalDateTime.of(2023, 5, 30, 11, 11);
+            LocalDateTime startDateTime = LocalDateTime.now().plusDays(1);
+            LocalDateTime endDateTime = LocalDateTime.now().plusMonths(6);
 
             HearingResponseEntity hearingResponse =
                 hearingResponseWithDayDetails(startDateTime, endDateTime);
@@ -233,7 +233,7 @@ class HearingEntityTest {
         @Test
         void shouldGetDefaultDerivedHearingResponseWhenStartDateIsAheadOfToday() {
             LocalDateTime startDateTime = LocalDateTime.now().plusDays(1);
-            LocalDateTime endDateTime = LocalDateTime.of(2023, 5, 30, 11, 11);
+            LocalDateTime endDateTime = LocalDateTime.now().plusMonths(6);
 
             HearingResponseEntity hearingResponse =
                 hearingResponseWithDayDetails(startDateTime, endDateTime);
@@ -244,6 +244,49 @@ class HearingEntityTest {
             String latestResponse = hearing.getDerivedHearingStatus();
             assertEquals("LISTED", latestResponse);
         }
+
+        @Test
+        void shouldGetDerivedHearingAwaitingActualsWhenStartDateToday() {
+            HearingEntity hearing = new HearingEntity();
+            LocalDateTime startDateTime = LocalDateTime.now();
+            LocalDateTime endDateTime = LocalDateTime.now().plusDays(2);
+            HearingResponseEntity hearingResponse = hearingResponseWithDayDetails(startDateTime, endDateTime);
+            hearing.setHearingResponses(List.of(hearingResponse));
+            hearing.setStatus("LISTED");
+
+            String latestResponse = hearing.getDerivedHearingStatus();
+
+            assertEquals("AWAITING_ACTUALS", latestResponse);
+        }
+
+        @Test
+        void shouldGetDerivedHearingAwaitingActualsWhenStartDateYesterday() {
+            HearingEntity hearing = new HearingEntity();
+            LocalDateTime startDateTime = LocalDateTime.now().minusDays(1);
+            LocalDateTime endDateTime = LocalDateTime.now().plusDays(1);
+            HearingResponseEntity hearingResponse = hearingResponseWithDayDetails(startDateTime, endDateTime);
+            hearing.setHearingResponses(List.of(hearingResponse));
+            hearing.setStatus("LISTED");
+
+            String latestResponse = hearing.getDerivedHearingStatus();
+
+            assertEquals("AWAITING_ACTUALS", latestResponse);
+        }
+
+        @Test
+        void shouldGetDerivedHearingAwaitingActualsWhenStartDateTomorrow() {
+            HearingEntity hearing = new HearingEntity();
+            LocalDateTime startDateTime = LocalDateTime.now().plusDays(1);
+            LocalDateTime endDateTime = LocalDateTime.now().plusDays(3);
+            HearingResponseEntity hearingResponse = hearingResponseWithDayDetails(startDateTime, endDateTime);
+            hearing.setHearingResponses(List.of(hearingResponse));
+            hearing.setStatus("LISTED");
+
+            String latestResponse = hearing.getDerivedHearingStatus();
+
+            assertEquals(hearing.getStatus(), latestResponse);
+        }
+
     }
 
     private CaseHearingRequestEntity caseHearingRequest(int version) {
