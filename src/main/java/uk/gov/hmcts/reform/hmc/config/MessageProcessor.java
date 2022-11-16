@@ -83,6 +83,13 @@ public class MessageProcessor {
         } else {
             log.error(MISSING_MESSAGE_TYPE + " for message with message with id "
                           + serviceBusReceivedMessage.getMessageId());
+            log.error(
+                ERROR_PROCESSING_MESSAGE,
+                CFT_HEARING_SERVICE,
+                HMC_FROM_HMI,
+                WRITE,
+                applicationProperties.getOrDefault(HEARING_ID,NO_DEFINED)
+            );
         }
     }
 
