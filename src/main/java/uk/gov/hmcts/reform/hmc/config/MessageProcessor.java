@@ -75,7 +75,7 @@ public class MessageProcessor {
                     ERROR_PROCESSING_MESSAGE,
                     CFT_HEARING_SERVICE,
                     HMC_FROM_HMI,
-                    WRITE,
+                    READ,
                     applicationProperties.getOrDefault(HEARING_ID,NO_DEFINED)
                 );
                 inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, ex);
@@ -87,7 +87,7 @@ public class MessageProcessor {
                 ERROR_PROCESSING_MESSAGE,
                 CFT_HEARING_SERVICE,
                 HMC_FROM_HMI,
-                WRITE,
+                READ,
                 applicationProperties.getOrDefault(HEARING_ID,NO_DEFINED)
             );
         }
