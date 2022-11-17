@@ -325,7 +325,7 @@ class MessageProcessorIT extends BaseTest {
         assertEquals(0, logsList.size());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
-        assertEquals(1, logsListMessageProcessor.size());
+        assertEquals(2, logsListMessageProcessor.size());
         assertEquals(Level.ERROR, logsListMessageProcessor.get(0).getLevel());
         assertEquals("Message is missing custom header message_type for message with message with id null",
                      logsListMessageProcessor.get(0).getMessage());
