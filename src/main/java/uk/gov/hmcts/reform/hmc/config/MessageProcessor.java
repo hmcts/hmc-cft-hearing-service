@@ -19,7 +19,6 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC_FROM_HMI;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.NO_DEFINED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.READ;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.WRITE;
 
 @Slf4j
 @Component
