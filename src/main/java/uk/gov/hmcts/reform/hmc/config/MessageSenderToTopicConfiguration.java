@@ -8,7 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR_SENDING_MESSAGE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_SERVICE_ID;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.TOPIC_HMC_TO_CFT;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.WRITE;
 
 @Slf4j
 @Component
@@ -20,10 +25,9 @@ public class MessageSenderToTopicConfiguration {
         this.applicationParams = applicationParams;
     }
 
-    public void sendMessage(String message, String hmctsServiceId) {
+    public void sendMessage(String message, String hmctsServiceId, String hearingId) {
         try {
-
-            ServiceBusSenderClient senderClient = new ServiceBusClientBuilder()
+            final ServiceBusSenderClient senderClient = new ServiceBusClientBuilder()
                 .connectionString(applicationParams.getExternalConnectionString())
                 .sender()
                 .topicName(applicationParams.getExternalTopicName())
@@ -32,10 +36,18 @@ public class MessageSenderToTopicConfiguration {
             log.debug("Connected to Topic {}", applicationParams.getExternalTopicName());
             ServiceBusMessage serviceBusMessage = new ServiceBusMessage(message);
             serviceBusMessage.getApplicationProperties().put(HMCTS_SERVICE_ID, hmctsServiceId);
+            serviceBusMessage.getApplicationProperties().put(HEARING_ID, hearingId);
             senderClient.sendMessage(serviceBusMessage);
             log.debug("Message has been sent to the topic {}", applicationParams.getExternalTopicName());
         } catch (Exception e) {
             log.error("Error while sending the message to topic:{}", e.getMessage());
+            log.error(
+                ERROR_SENDING_MESSAGE,
+                CFT_HEARING_SERVICE,
+                TOPIC_HMC_TO_CFT,
+                WRITE,
+                hearingId
+            );
         }
     }
 }

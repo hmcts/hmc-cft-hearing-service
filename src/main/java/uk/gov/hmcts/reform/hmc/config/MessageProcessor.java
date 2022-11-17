@@ -13,6 +13,13 @@ import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR_PROCESSING_MESSAGE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC_FROM_HMI;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.NO_DEFINED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.READ;
+
 @Slf4j
 @Component
 public class MessageProcessor {
@@ -41,9 +48,16 @@ public class MessageProcessor {
             client.complete(message);
             log.info("Message with id '{}' handled successfully", message.getMessageId());
 
-        } catch (JsonProcessingException ex) {
-            log.error(MESSAGE_PARSE_ERROR, message.getMessageId(), ex);
-            inboundQueueService.catchExceptionAndUpdateHearing(message.getApplicationProperties(), ex);
+        } catch (Exception exception) {
+            log.error(MESSAGE_PARSE_ERROR, message.getMessageId(), exception);
+            log.error(
+                ERROR_PROCESSING_MESSAGE,
+                CFT_HEARING_SERVICE,
+                HMC_FROM_HMI,
+                READ,
+                message.getApplicationProperties().getOrDefault(HEARING_ID,NO_DEFINED)
+            );
+            inboundQueueService.catchExceptionAndUpdateHearing(message.getApplicationProperties(), exception);
         }
     }
 
@@ -56,11 +70,25 @@ public class MessageProcessor {
                 log.error(MESSAGE_ERROR + serviceBusReceivedMessage.getMessageId() + WITH_ERROR + ex.getMessage());
             } catch (Exception ex) {
                 log.error(MESSAGE_ERROR + serviceBusReceivedMessage.getMessageId() + WITH_ERROR + ex.getMessage());
+                log.error(
+                    ERROR_PROCESSING_MESSAGE,
+                    CFT_HEARING_SERVICE,
+                    HMC_FROM_HMI,
+                    READ,
+                    applicationProperties.getOrDefault(HEARING_ID,NO_DEFINED)
+                );
                 inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, ex);
             }
         } else {
             log.error(MISSING_MESSAGE_TYPE + " for message with message with id "
                           + serviceBusReceivedMessage.getMessageId());
+            log.error(
+                ERROR_PROCESSING_MESSAGE,
+                CFT_HEARING_SERVICE,
+                HMC_FROM_HMI,
+                READ,
+                applicationProperties.getOrDefault(HEARING_ID,NO_DEFINED)
+            );
         }
     }
 
