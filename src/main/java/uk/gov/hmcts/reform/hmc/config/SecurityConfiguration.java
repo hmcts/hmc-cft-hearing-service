@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
@@ -59,8 +57,20 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    protected SecurityFilterChain allowedList(HttpSecurity http) throws Exception {
+        return http
+            .requestMatchers().antMatchers(AUTH_ALLOWED_LIST)
+            .and()
+            .sessionManagement().sessionCreationPolicy(STATELESS)
+            .and()
+            .authorizeRequests().anyRequest().permitAll()
+            .and()
+            .build();
+    }
+
+    @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
+        return http
             .addFilterBefore(serviceAuthFilter, BearerTokenAuthenticationFilter.class)
             .sessionManagement().sessionCreationPolicy(STATELESS).and()
             .csrf().disable()
@@ -75,18 +85,10 @@ public class SecurityConfiguration {
             .jwtAuthenticationConverter(jwtAuthenticationConverter)
             .and()
             .and()
-            .oauth2Client();
-        return http.build();
+            .oauth2Client()
+            .and().build();
     }
 
-    @Bean
-    @Order(0)
-    protected SecurityFilterChain allowedList(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(authorize -> authorize
-                .antMatchers(HttpMethod.GET, AUTH_ALLOWED_LIST).permitAll());
-        return http.build();
-    }
 
     @Bean
     JwtDecoder jwtDecoder() {
