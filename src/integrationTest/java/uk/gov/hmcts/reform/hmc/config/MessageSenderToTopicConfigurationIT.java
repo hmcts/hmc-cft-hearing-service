@@ -18,6 +18,6 @@ class MessageSenderToTopicConfigurationIT {
         MessageSenderToTopicConfiguration messageSenderToTopicConfiguration =
             new MessageSenderToTopicConfiguration(applicationParams);
         messageSenderToTopicConfiguration.sendMessage("Test Message",
-                                                      "Test service code");
+                                                      "Test service code","hearingID");
     }
 }

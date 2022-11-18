@@ -295,7 +295,7 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(3).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
-        assertEquals(1, logsListMessageProcessor.size());
+        assertEquals(2, logsListMessageProcessor.size());
         assertEquals(Level.ERROR, logsListMessageProcessor.get(0).getLevel());
         assertEquals("Error for message with id null with error "
                          + "Cannot find request version 10 for hearing 2000000000",
@@ -325,7 +325,7 @@ class MessageProcessorIT extends BaseTest {
         assertEquals(0, logsList.size());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
-        assertEquals(1, logsListMessageProcessor.size());
+        assertEquals(2, logsListMessageProcessor.size());
         assertEquals(Level.ERROR, logsListMessageProcessor.get(0).getLevel());
         assertEquals("Message is missing custom header message_type for message with message with id null",
                      logsListMessageProcessor.get(0).getMessage());
@@ -417,7 +417,7 @@ class MessageProcessorIT extends BaseTest {
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(3, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals(Level.ERROR, logsList.get(1).getLevel());
+        assertEquals(Level.ERROR, logsList.get(2).getLevel());
         assertEquals(Level.ERROR, logsList.get(2).getLevel());
         assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
         assertEquals("Error processing message with Hearing id 1000000000 exception was "
@@ -425,7 +425,7 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Hearing id 1000000000 not found", logsList.get(2).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
-        assertEquals(1, logsListMessageProcessor.size());
+        assertEquals(2, logsListMessageProcessor.size());
         assertEquals(Level.ERROR, logsListMessageProcessor.get(0).getLevel());
         assertEquals("Error for message with id null with error Invalid hearing Id",
                      logsListMessageProcessor.get(0).getMessage());

@@ -264,7 +264,7 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(data);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
 
             ListAppender<ILoggingEvent> listAppender = setupLogger();
 
@@ -297,7 +297,7 @@ class InboundQueueServiceTest {
                 .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
             when(hearingRepository.save(any()))
                 .thenReturn(hearingEntity);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
 
             ListAppender<ILoggingEvent> listAppender = setupLogger();
 
@@ -344,7 +344,7 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.AWAITING_LISTING));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
 
             inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage);
             verify(hearingRepository).save(hearingEntity);
@@ -457,7 +457,7 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.AWAITING_LISTING));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
 
             inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage);
             verify(hearingRepository).save(hearingEntity);
@@ -682,7 +682,7 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
 
             JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
             Exception exception = assertThrows(ListAssistResponseException.class, () ->
