@@ -158,3 +158,12 @@ fh:
     host: ${HMI_BASE_URL:base/url}
     source-system: ${HMI_SOURCE_SYSTEM:source-system}
     destination-system: ${HMI_DESTINATION_SYSTEM:destination-system}
+
+LOGGING:
+  LEVEL:
+    uk:
+      gov:
+        hmcts:
+          reform:
+            hmc:
+              config: INFO

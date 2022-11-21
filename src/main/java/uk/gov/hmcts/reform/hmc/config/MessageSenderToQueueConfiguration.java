@@ -32,6 +32,7 @@ public class MessageSenderToQueueConfiguration {
                 .queueName(applicationParams.getInternalOutboundQueueName())
                 .buildClient();
             log.debug("Connected to queue {}", applicationParams.getInternalOutboundQueueName());
+            log.debug("Sending request for hearing Id :{} with messageType : {}, {} ",hearingId, messageType, message);
             ServiceBusMessage serviceBusMessage = new ServiceBusMessage(message);
             serviceBusMessage.getApplicationProperties().put(MESSAGE_TYPE, messageType);
             serviceBusMessage.getApplicationProperties().put(HEARING_ID, hearingId);
