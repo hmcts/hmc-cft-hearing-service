@@ -234,10 +234,9 @@ def versions = [
 
 ext['spring-framework.version'] = '5.3.19'
 ext['log4j2.version'] = '2.17.1'
-ext['jackson.version'] = '2.13.2'
 ext['spring-security.version'] = '5.7.5'
 ext['snakeyaml.version'] = '1.33'
-
+ext['jackson.version'] = '2.13.4'
 
 // before committing a change, make sure task still works
 dependencyUpdates {
@@ -360,9 +359,10 @@ dependencies {
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
   compile 'net.minidev:json-smart:2.4.7'
-  compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-jaxb-annotations', version: '2.13.2'
-  compile "com.fasterxml.jackson.core:jackson-databind:2.13.2.2"
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.2'
+  compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-jaxb-annotations', version: '2.13.4'
+  compile "com.fasterxml.jackson.core:jackson-databind:2.13.4.2"
+  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.4'
+  compile group: 'org.yaml', name: 'snakeyaml', version: '1.32'
 
   testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.13.0') {
     exclude group: 'com.github.hmcts.befta-fw', module: 'befta-fw'
