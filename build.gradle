@@ -266,7 +266,6 @@ dependencyManagement {
       entry 'json-path'
       entry 'xml-path'
     }
-    
     dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.68') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
