@@ -360,6 +360,7 @@ dependencies {
   compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-jaxb-annotations', version: '2.13.4'
   compile "com.fasterxml.jackson.core:jackson-databind:2.13.4.2"
   compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.4'
+  compile group: 'org.yaml', name: 'snakeyaml', version: '1.32'
 
   testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.13.0') {
     exclude group: 'com.github.hmcts.befta-fw', module: 'befta-fw'

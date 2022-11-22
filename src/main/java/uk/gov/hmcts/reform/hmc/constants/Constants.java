@@ -16,6 +16,19 @@ public final class Constants {
     public static final String CANCELLATION_REQUESTED = "CANCELLATION_REQUESTED";
     public static final String MESSAGE_TYPE = "message_type";
     public static final String HEARING_ID = "hearing_id";
+    public static final String CFT_HEARING_SERVICE = "<CFT Hearing Service>";
+    public static final String WRITE = "<WRITE>";
+    public static final String READ = "<READ>";
+    public static final String HMC_TO_HMI = "hmc-to-hmi";
+    public static final String HMC_FROM_HMI = "hmc-from-hmi";
+    public static final String TOPIC_HMC_TO_CFT = "hmc-to-cft";
+
+    public static final String ERROR_PROCESSING_MESSAGE = "Error occurred during service bus processing. "
+        + "Service:{} . Entity: {}. Method: {}. Hearing ID: {}.";
+    public static final String ERROR_SENDING_MESSAGE = "Error occurred during service bus sending message. "
+        + "Service:{} . Entity: {}. Method: {}. Hearing ID: {}.";
+
+    public static final String NO_DEFINED = "NO_DEFINED";
     public static final String REQUEST_HEARING = "REQUEST_HEARING";
     public static final String AMEND_HEARING = "AMEND_HEARING";
     public static final String DELETE_HEARING = "DELETE_HEARING";
