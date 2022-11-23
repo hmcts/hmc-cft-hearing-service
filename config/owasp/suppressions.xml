@@ -14,9 +14,8 @@
   <!--Please add all the temporary suppression under the below section-->
   <suppress>
     <notes>Temporary Suppressions
-      CVE-2022-31684 refer https://tools.hmcts.net/jira/browse/HMAN-482
+      CVE-2020-5408 refer https://tools.hmcts.net/jira/browse/HMAN-482
     </notes>
-    <cve>CVE-2022-31684</cve>
     <cve>CVE-2020-5408</cve>
   </suppress>
   <!--End of temporary suppression section -->
