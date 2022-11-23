@@ -14,11 +14,7 @@
   <suppress>
     <notes>
       <![CDATA[Temporary suppressions pending investigation]]>
-      CVE-2022-29885 refer https://tools.hmcts.net/jira/browse/HMAN-238
-      CVE-2022-22971, CVE-2022-22970 refer https://tools.hmcts.net/jira/browse/HMAN-248
     </notes>
-    <cve>CVE-2022-22971</cve>
-    <cve>CVE-2022-22970</cve>
     <cve>CVE-2022-33915</cve>
   </suppress>
 
@@ -54,6 +50,9 @@
     <cve>CVE-2022-38752</cve>
     <cve>CVE-2022-42003</cve>
     <cve>CVE-2022-42004</cve>
+    <cve>CVE-2022-31684</cve>
+    <cve>CVE-2021-22044</cve>
+    <cve>CVE-2020-5408</cve>
   </suppress>
   <!--End of temporary suppression section -->
 
