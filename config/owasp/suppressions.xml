@@ -14,12 +14,10 @@
   <!--Please add all the temporary suppression under the below section-->
   <suppress>
     <notes>Temporary Suppression
-      CVE-2022-25857 refer https://tools.hmcts.net/jira/browse/HMAN-415
       CVE-2022-38751 TBC
 		  CVE-2022-38750 TBC
 		  CVE-2022-38749 TBC
     </notes>
-    <cve>CVE-2022-25857</cve>
     <cve>CVE-2022-38751</cve>
 		<cve>CVE-2022-38750</cve>
 		<cve>CVE-2022-38749</cve>
