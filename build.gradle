@@ -416,6 +416,7 @@ dependencies {
   implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: versions.netty
   implementation group: 'io.netty', name: 'netty-transport-native-kqueue', version: versions.netty
   implementation group: 'io.netty', name: 'netty-transport-native-unix-common', version: versions.netty
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.5'
 
   // CVE-2021-29425
   implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
