@@ -1,0 +1,21 @@
+{
+  "_guid_": "S-060.1",
+  "_extends_" : "F-060_TestBase",
+  "specs": [
+    "has the 400 status code",
+    "an active profile in CCD"
+  ],
+  "request": {
+    "pathVariables": {
+      "id": "2AAdd00000099"
+    }
+  },
+  "expectedResponse": {
+    "responseCode": 400,
+    "responseMessage": "BAD REQUEST",
+    "body" : {
+      "status" : "NOT_FOUND",
+      "errors" : [ "No hearing found for reference: 2AAdd00000099" ]
+    }
+  }
+}

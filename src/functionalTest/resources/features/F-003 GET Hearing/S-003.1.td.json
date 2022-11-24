@@ -74,6 +74,7 @@
         },
         "hearingIsLinkedFlag" : false,
         "hearingChannels" : [ "INTER" ],
+        "multiDayHearing" : false,
         "autolistFlag" : "[[ANYTHING_PRESENT]]",
         "listingAutoChangeReasonCode" : "[[ANYTHING_PRESENT]]"
       },

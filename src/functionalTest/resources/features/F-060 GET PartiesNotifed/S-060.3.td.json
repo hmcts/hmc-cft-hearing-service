@@ -1,0 +1,38 @@
+{
+  "_guid_": "S-060.3",
+  "_extends_": "F-060_TestBase",
+  "specs": [
+    "has the 200 status code",
+    "an active profile in CCD"
+  ],
+  "request": {
+    "pathVariables": {
+      "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    }
+  },
+  "expectedResponse": {
+    "_extends_": "Common_200_Response",
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    },
+    "body": {
+      "expectedResponse": {
+        "_extends_": "Common_200_Response",
+        "body": {
+          "hearingRequestID": "[[ANYTHING_PRESENT]]",
+          "responses": [
+            {
+              "requestVersion": "1",
+              "responseReceivedDateTime": "[ANYTHING_PRESENT]]",
+              "partiesNotified": "[ANYTHING_PRESENT]]",
+              "serviceData": "[ANYTHING_PRESENT]]"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

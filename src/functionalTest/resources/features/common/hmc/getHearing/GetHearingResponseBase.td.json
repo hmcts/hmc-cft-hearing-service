@@ -7,6 +7,15 @@
       "requestDetails": {
         "hearingRequestID" : "[[ANYTHING_PRESENT]]"
       },
+      "hearingResponse": {
+        "listAssistTransactionID": "la1222",
+        "receivedDateTime":  "2022-07-29T19:23:00",
+        "responseVersion":  "1",
+        "laCaseStatus": "Case Created",
+        "listingStatus": "Provisional",
+        "hearingCancellationReason": "",
+        "hearingDaySchedule": []
+      },
       "caseDetails" : {
         "hmctsServiceCode" : "ABA1",
         "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
@@ -66,6 +75,7 @@
         },
         "hearingIsLinkedFlag" : false,
         "hearingChannels" : [ "INTER" ],
+        "multiDayHearing" : false,
         "autolistFlag" : true
       },
       "partyDetails" : [ {

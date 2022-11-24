@@ -4,13 +4,31 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.UUID;
+
 @Component
 public class CftLibConfig implements CFTLibConfigurer {
 
     @Override
-    public void configure(CFTLib lib) {
+    public void configure(CFTLib lib) throws Exception {
         createCcdRoles(lib);
         createIdamUsers(lib);
+        createRoleAssignments(lib);
+    }
+
+    private void createRoleAssignments(CFTLib lib) throws Exception {
+        String roleAssignments = Files.readString(Paths.get("src/main/resources/cftlib-am-role-assignments.json"));
+        final String formattedRoleAssignments = String.format(roleAssignments, getUuid("hmc.superuser@gmail.com"),
+                getUuid("hmc.hearing-manager@gmail.com"),
+                getUuid("hmc.hearing-viewer@gmail.com"),
+                getUuid("hmc.listed-hearing-viewer@gmail.com"));
+        lib.configureRoleAssignments(formattedRoleAssignments);
+    }
+
+    private String getUuid(String email) {
+        return UUID.nameUUIDFromBytes(email.getBytes()).toString();
     }
 
     private void createCcdRoles(CFTLib lib) {
@@ -42,7 +60,10 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-caa",
             "ccd-import",
             "citizen",
-            "pui-caa"
+            "pui-caa",
+            "hearing-manager",
+            "hearing-viewer",
+            "listed-hearing-viewer"
         );
     }
 
@@ -142,5 +163,11 @@ public class CftLibConfig implements CFTLibConfigurer {
         lib.createIdamUser("ccd.ac.staff7@gmail.com", "caseworker");
         lib.createIdamUser("ccd.ac.staff8@gmail.com", "caseworker");
         lib.createIdamUser("ccd.ac.other1@gmail.com", "caseworker");
+        lib.createIdamUser("hmc.hearing-manager@gmail.com", "hearing-manager", "caseworker", "caseworker-befta_master");
+        lib.createIdamUser("hmc.hearing-viewer@gmail.com", "hearing-viewer", "caseworker", "caseworker-befta_master");
+        lib.createIdamUser("hmc.listed-hearing-viewer@gmail.com",
+                "listed-hearing-viewer", "caseworker", "caseworker-befta_master");
+        lib.createIdamUser("hmc.superuser@gmail.com",
+                "hearing-manager", "hearing-viewer", "caseworker", "listed-hearing-viewer", "caseworker-befta_master");
     }
 }

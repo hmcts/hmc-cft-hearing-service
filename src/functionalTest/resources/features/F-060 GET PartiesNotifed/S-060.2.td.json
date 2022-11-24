@@ -1,0 +1,38 @@
+{
+  "_guid_": "S-060.2",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "Search for parties notified",
+  "method": "GET",
+  "uri": "/partiesNotified/{id}",
+  "s2sClientId": "xui_webapp",
+  "specs": [
+    "an active profile in CCD",
+    "has the 403 status code"
+  ],
+  "users": {
+    "invokingUser": {
+      "username": "master.caseworker@gmail.com",
+      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
+    }
+  },
+
+  "request": {
+    "pathVariables": {
+      "id": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    },
+    "body": {
+      "pathVariables": {
+        "hearingID": "2000000019"
+      }
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 403,
+    "responseMessage" : "Forbidden",
+    "body" : {
+      "status" : "FORBIDDEN",
+      "errors" : "[[ANYTHING_PRESENT]]"
+    }
+  }
+}
