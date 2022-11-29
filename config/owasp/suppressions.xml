@@ -4,12 +4,8 @@
   <suppress>
     <notes>False Positives
       CVE-2016-1000027 refer https://tools.hmcts.net/jira/browse/HMAN-252
-      CVE-2020-23171 refer https://tools.hmcts.net/jira/browse/CCD-3263
-      CVE-2020-5408 refer https://tools.hmcts.net/jira/browse/HMAN-482
     </notes>
     <cve>CVE-2016-1000027</cve>
-    <cve>CVE-2020-23171</cve>
-    <cve>CVE-2020-5408</cve>
   </suppress>
   <!--End of false positives section -->
 
