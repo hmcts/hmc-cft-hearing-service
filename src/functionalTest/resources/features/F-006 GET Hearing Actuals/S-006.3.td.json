@@ -4,23 +4,27 @@
 
   "specs": [
     "an active profile in CCD",
-    "has 401 status code"
+    "has 403 status code"
   ],
 
   "users": {
     "invokingUser": {
-      "username": "master.caseworker@gmail.com",
-      "password": "INCORRECT"
+      "_extends_" : "HmcSuperuser"
     }
   },
 
   "request": {
     "pathVariables": {
-      "caseref": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
+      "id": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
     }
   },
 
   "expectedResponse": {
-    "responseCode": 401
+    "responseCode": 403,
+    "responseMessage" : "Forbidden",
+    "body" : {
+      "status" : "FORBIDDEN",
+      "errors" : "[[ANYTHING_PRESENT]]"
+    }
   }
 }

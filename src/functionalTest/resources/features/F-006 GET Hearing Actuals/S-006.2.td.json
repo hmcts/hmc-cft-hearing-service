@@ -3,18 +3,21 @@
   "_extends_" : "F-006_TestBase",
 
   "specs": [
-    "an active profile in CCD",
     "has 404 status code"
   ],
 
   "request": {
     "pathVariables": {
-      "caseref": "1234567890"
+      "id": "2100000400"
     }
   },
 
   "expectedResponse": {
     "responseCode": 404,
-    "responseMessage": "No hearing found for reference: ${caseref}"
+    "responseMessage": "Bad Request",
+    "body" : {
+      "status" : "NOT_FOUND",
+      "errors" : [ "No hearing found for reference: 2100000400" ]
+    }
   }
 }
