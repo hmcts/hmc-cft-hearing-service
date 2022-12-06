@@ -1,0 +1,105 @@
+{
+  "_guid_" : "createLinkedHearingRequestFullData",
+
+  "requestDetails" : {
+    "requestTimeStamp" : "2021-08-10T12:20:00.000Z",
+    "versionNumber" : 1
+  },
+  "hearingDetails" : {
+    "hearingChannels": [
+      "INTER"
+    ],
+    "autolistFlag" : true,
+    "hearingType" : "Some hearing type",
+    "hearingWindow": {
+      "dateRangeStart": "2022-05-10",
+      "dateRangeEnd": "2023-05-10"
+    },
+    "duration" : 60,
+    "nonStandardHearingDurationReasons" : [ "First reason", "Second reason" ],
+    "hearingPriorityType" : "Priority type",
+    "numberOfPhysicalAttendees" : 4,
+    "hearingInWelshFlag" : false,
+    "hearingLocations" : [ {
+      "locationType": "court",
+      "locationId": "685391"
+    } ],
+    "facilitiesRequired" : [ "First facility", "Second facility" ],
+    "listingComments" : "Some listing comments",
+    "hearingRequester" : "Some judge",
+    "privateHearingRequiredFlag" : false,
+    "leadJudgeContractType" : "AB123",
+    "panelRequirements" : {
+      "roleType" : [ "RoleType1", "RoleType2" ],
+      "authorisationTypes" : [ "AuthorisationType1", "AuthorisationType2" ],
+      "authorisationSubType" : [ "AuthorisationSubType1", "AuthorisationSubType2" ],
+      "panelPreferences" : [ {
+        "memberID" : "MID123",
+        "memberType" : "Member type 1",
+        "requirementType" : "MUSTINC"
+      }, {
+        "memberID" : "MID999",
+        "memberType" : "Member type 2",
+        "requirementType" : "OPTINC"
+      } ],
+      "panelSpecialisms" : [ "Specialism 1" ]
+    },
+    "hearingIsLinkedFlag" : true
+  },
+  "caseDetails" : {
+    "hmctsServiceCode" : "ABA1",
+    "caseRef": "${[scenarioContext][customValues][GenerateCaseId]}",
+    "requestTimeStamp" : "2000-08-10T12:20:00.000Z",
+    "externalCaseReference" : "EXT/REF123",
+    "caseDeepLink" : "https://www.google.com",
+    "hmctsInternalCaseName" : "Internal case name",
+    "publicCaseName" : "Public case name",
+    "caseAdditionalSecurityFlag" : true,
+    "caseInterpreterRequiredFlag" : true,
+    "caseCategories": [
+      {
+        "categoryType": "caseType",
+        "categoryValue": "BBA3-002"
+      },
+      {
+        "categoryType": "caseSubType",
+        "categoryValue": "BBA3-002CP",
+        "categoryParent": "BBA3-002"
+      }
+    ],
+    "caseManagementLocationCode" : "CMLC123",
+    "caserestrictedFlag" : true,
+    "caseSLAStartDate" : "2021-10-10"
+  },
+  "partyDetails" : [ {
+    "partyID" : "P1",
+    "partyType" : "IND",
+    "partyRole" : "DEF",
+    "individualDetails" : {
+      "title" : "Mr",
+      "firstName" : "Joe",
+      "lastName" : "Bloggs",
+      "preferredHearingChannel" : "Channel 4",
+      "interpreterLanguage" : "French",
+      "reasonableAdjustments" : [ "Ad1", "Adjust2" ],
+      "vulnerableFlag" : true,
+      "vulnerabilityDetails" : "A bit vulnerable",
+      "hearingChannelEmail": ["hearing.channel@email.com"],
+      "hearingChannelPhone": ["01234567890"],
+      "relatedParties" : []
+    },
+    "unavailabilityDOW": [
+      {
+        "DOW": "Monday",
+        "DOWUnavailabilityType": "am"
+      }
+    ],
+    "unavailabilityRanges": [
+      {
+        "unavailableFromDate": "2022-05-08",
+        "unavailableToDate": "2022-05-09",
+        "unavailabilityType": "All Day"
+      }
+    ]
+  }]
+}
