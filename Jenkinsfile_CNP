@@ -34,22 +34,24 @@ def secrets = [
     secret('ccd-api-gateway-oauth2-client-secret', 'OAUTH2_CLIENT_SECRET'),
     secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
     secret('definition-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
-    secret('ccd-caseworker-autotest-password', 'CCD_CASEWORKER_AUTOTEST_PASSWORD')
+    secret('ccd-caseworker-autotest-password', 'CCD_CASEWORKER_AUTOTEST_PASSWORD'),
+    secret('idam-data-store-system-user-username','ROLE_ASSIGNMENT_USER_EMAIL'),
+    secret('idam-data-store-system-user-password','ROLE_ASSIGNMENT_USER_PASSWORD')
   ],
   'hmc-${env}': [
     secret('hmc-servicebus-connection-string', 'HMC_SERVICE_BUS_CONNECTION_STRING'),
     secret('hmc-queue-connection-string', 'HMC_QUEUE_CONNECTION_STRING'),
     secret('hmc-outbound-queue-connection-string', 'HMC_OUTBOUND_QUEUE_CONNECTION_STRING'),
     secret('hmc-fta-password', 'HMC_FTA_PASSWORD'),
-    secret('hmc-hearing-service-users-pwd', 'HMC_HEARING_SERVICE_USERS_PWD'),
-
+    secret('hmc-hearing-service-users-pwd', 'HMC_HEARING_SERVICE_USERS_PWD')
   ],
   's2s-${env}': [
     secret('microservicekey-ccd-data', 'BEFTA_S2S_CLIENT_SECRET_OF_CCD_DATA'),
     secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_KEY'),
     secret('microservicekey-ccd-gw', 'BEFTA_S2S_CLIENT_SECRET'),
     secret('microservicekey-aac-manage-case-assignment', 'BEFTA_S2S_CLIENT_SECRET_OF_AAC_MANAGE_CASE_ASSIGNMENT'),
-    secret('microservicekey-xui-webapp', 'BEFTA_S2S_CLIENT_SECRET_OF_XUI_WEBAPP')
+    secret('microservicekey-xui-webapp', 'BEFTA_S2S_CLIENT_SECRET_OF_XUI_WEBAPP'),
+    secret('microservicekey-ccd-data', 'ROLE_ASSIGNMENT_API_GATEWAY_S2S_CLIENT_KEY')
   ]
 ]
 
@@ -77,10 +79,6 @@ env.HMC_SERVICE_BUS_SUBSCRIPTION = "hmc-subs-to-cft"
 env.HMC_SERVICE_BUS_QUEUE = "hmc-from-hmi"
 env.HMC_OUTBOUND_SERVICE_BUS_QUEUE = "hmc-to-hmi"
 
-
-
-
-
 //----------------
 // vars needed for functional tests
 // Assume a feature build branched off 'develop', with dependencies develop-to-develop.
@@ -104,6 +102,14 @@ env.BEFTA_OAUTH2_CLIENT_ID_OF_XUIWEBAPP = "xuiwebapp"
 env.BEFTA_OAUTH2_REDIRECT_URI_OF_XUIWEBAPP = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
 env.BEFTA_OAUTH2_ACCESS_TOKEN_TYPE_OF_XUIWEBAPP = "OIDC"
 env.BEFTA_OAUTH2_SCOPE_VARIABLES_OF_XUIWEBAPP = "profile openid roles manage-user create-user search-user"
+
+// Env variables needed to add Role Assignments.
+env.ROLE_ASSIGNMENT_API_GATEWAY_S2S_CLIENT_ID = "ccd_data"
+env.ROLE_ASSIGNMENT_HOST="http://am-role-assignment-service-aat.service.core-compute-aat.internal"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER="hmc.superuser@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER="hmc.listed-hearing-viewer@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER="hmc.hearing-viewer@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER="hmc.hearing-manager@gmail.com"
 
 // temporary workaround for platform changes: turn BEFTA header checks to warning mode
 env.BEFTA_RESPONSE_HEADER_CHECK_POLICY="JUST_WARN"

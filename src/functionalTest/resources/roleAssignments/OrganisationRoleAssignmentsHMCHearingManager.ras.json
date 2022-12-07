@@ -1,0 +1,25 @@
+{
+  "roleRequest" : {
+    "assignerId" : "[[$ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER]]",
+    "process" : "ccd-fta-data-setup",
+    "reference" : "[[$ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER]]",
+    "replaceExisting" : true
+  },
+  "requestedRoles" : [
+    {
+      "actorId" : "[[$ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER]]",
+      "actorIdType" : "IDAM",
+      "roleType" : "ORGANISATION",
+      "roleName" : "hearing-manager",
+      "roleCategory" : "PROFESSIONAL",
+      "classification" : "PUBLIC",
+      "grantType" : "STANDARD",
+      "readOnly" : false,
+      "beginTime" : "2021-01-01T00:00:00Z",
+      "attributes" : {
+        "jurisdiction": "BEFTA_MASTER"
+      }
+    }
+  ]
+}
+
