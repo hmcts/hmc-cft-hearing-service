@@ -101,7 +101,7 @@ task functional(type: Test) {
       classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
       args = [
         '--strict',
-        '--threads', '2',
+        '--threads', '10',
         '--plugin', "json:${rootDir}/target/cucumber.json",
         '--plugin', "junit:${buildDir}/test-results/functional/cucumber.xml",
         '--tags', 'not @Ignore',
@@ -529,6 +529,7 @@ bootWithCCD {
   environment("CFT_HEARING_SERVICE_DB_PASSWORD", "postgres")
   environment("CFT_HEARING_SERVICE_DB_PORT", "6432")
   environment("CFT_HEARING_SERVICE_DB_NAME", "hmc")
+  environment("S2S_URL", "http://localhost:8489")
   environment("RSE_LIB_S2S_PORT", 4502)
 }
 
