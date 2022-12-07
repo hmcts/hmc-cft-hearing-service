@@ -1,0 +1,31 @@
+{
+  "_guid_": "S-011.2",
+  "_extends_" : "F-011_TestBase",
+
+  "specs": [
+    "an active profile in CCD",
+    "has 403 status code"
+  ],
+
+  "users": {
+    "invokingUser": {
+      "username": "master.caseworker@gmail.com",
+      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
+    }
+  },
+
+  "request": {
+    "pathVariables": {
+      "id": "${[scenarioContext][childContexts][CreateLinkedHearingGroupRequest][testData][actualResponse][body][hearingGroupRequestId]}"
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 403,
+    "responseMessage" : "Forbidden",
+    "body" : {
+      "status" : "FORBIDDEN",
+      "errors" : "[[ANYTHING_PRESENT]]"
+    }
+  }
+}
