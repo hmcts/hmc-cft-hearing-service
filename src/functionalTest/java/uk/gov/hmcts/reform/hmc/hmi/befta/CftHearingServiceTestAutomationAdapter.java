@@ -13,13 +13,4 @@ public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomatio
                                                DataLoaderToDefinitionStore.VALID_CCD_TEST_DEFINITIONS_PATH) {
         };
     }
-
-    @Override
-    public BeftaTestDataLoader getDataLoader() {
-        return new DefaultBeftaTestDataLoader() {
-            @Override
-            public void doLoadTestData() {
-            }
-        };
-    }
 }
