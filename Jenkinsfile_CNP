@@ -92,13 +92,16 @@ env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
 //env.BEFTA_S2S_CLIENT_ID = "xui_webapp"
 //env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID = "ccd_gateway"
 //env.CCD_API_GATEWAY_OAUTH2_REDIRECT_URL = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
+
 //env.OAUTH2_CLIENT_ID = "xuiwebapp"
 //env.OAUTH2_REDIRECT_URI = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
+//env.OAUTH2_ACCESS_TOKEN_TYPE = "OIDC"
+//env.OAUTH2_SCOPE_VARIABLES = "profile openid roles manage-user create-user search-user"
 
 env.OAUTH2_CLIENT_ID = "ccd_data_store_api"
 env.OAUTH2_REDIRECT_URI = "http://ccd-data-store-api/oauth2redirect"
 env.OAUTH2_SCOPE_VARIABLES = "profile openid roles manage-user"
-env.OAUTH2_ACCESS_TOKEN_TYPE = "OIDC"
+//env.OAUTH2_ACCESS_TOKEN_TYPE = "OIDC"
 
 env.DM_STORE_BASE_URL = "http://dm-store-aat.service.core-compute-aat.internal"
 env.RD_PROFESSIONAL_API_BASE_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
