@@ -14,7 +14,7 @@ java:
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
     CFT_HEARING_SERVICE_DB_PORT: 5432
     CCD_DATA_STORE_API_BASE_URL: "http://ccd-test-stubs-service-aat.service.core-compute-aat.internal"
-    HMI_BASE_URL: "https://ccd-test-stubs-service-pr-174-java.ccd/hmi"
+    HMI_BASE_URL: "http://ccd-test-stubs-service-aat.service.core-compute-aat.internal"
   postgresql:
     enabled: true
   secrets:
@@ -47,7 +47,7 @@ hmc:
     java:
       environment:
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CLIENT_FUTUREHEARING: DEBUG
-        HMI_BASE_URL: "http://ccd-test-stubs-service-pr-174-java.ccd"
+        HMI_BASE_URL: "http://ccd-test-stubs-service-aat.service.core-compute-aat.internal"
 
   hmc-hmi-inbound-adapter:
     java:
