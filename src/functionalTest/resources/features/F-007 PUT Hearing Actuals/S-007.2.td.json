@@ -7,11 +7,6 @@
     "has 404 status code"
   ],
 
-  "users": {
-    "invokingUser": {
-      "_extends_" : "HmcSuperuser"
-    },
-
   "request": {
     "pathVariables": {
       "id": "2100000400"
