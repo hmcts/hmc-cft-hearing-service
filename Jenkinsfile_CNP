@@ -29,11 +29,11 @@ GradleBuilder builder = new GradleBuilder(this, product)
 
 def secrets = [
   'rpx-${env}': [
-    secret('mc-idam-client-secret', 'BEFTA_OAUTH2_CLIENT_SECRET_OF_XUIWEBAPP'),
-    secret('mc-idam-client-secret', 'OAUTH2_CLIENT_SECRET')
+    secret('mc-idam-client-secret', 'BEFTA_OAUTH2_CLIENT_SECRET_OF_XUIWEBAPP')
+//    secret('mc-idam-client-secret', 'OAUTH2_CLIENT_SECRET')
   ],
   'ccd-${env}': [
-//    secret('ccd-api-gateway-oauth2-client-secret', 'OAUTH2_CLIENT_SECRET'),
+    secret('idam-data-store-client-secret', 'OAUTH2_CLIENT_SECRET'),
     secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
     secret('definition-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
     secret('ccd-caseworker-autotest-password', 'CCD_CASEWORKER_AUTOTEST_PASSWORD')
@@ -92,14 +92,18 @@ env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
 //env.BEFTA_S2S_CLIENT_ID = "xui_webapp"
 //env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID = "ccd_gateway"
 //env.CCD_API_GATEWAY_OAUTH2_REDIRECT_URL = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
-env.OAUTH2_CLIENT_ID = "xuiwebapp"
-env.OAUTH2_REDIRECT_URI = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
+//env.OAUTH2_CLIENT_ID = "xuiwebapp"
+//env.OAUTH2_REDIRECT_URI = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
+env.OAUTH2_CLIENT_ID = "ccd_data_store_api"
+env.OAUTH2_REDIRECT_URI = "http://ccd-data-store-api/oauth2redirect"
 env.DM_STORE_BASE_URL = "http://dm-store-aat.service.core-compute-aat.internal"
 env.RD_PROFESSIONAL_API_BASE_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
 env.CCD_API_GATEWAY_S2S_ID = "ccd_gw"
 env.BEFTA_S2S_CLIENT_ID = "ccd_gw"
 env.BEFTA_S2S_CLIENT_ID_OF_XUI_WEBAPP = "xui_webapp"
 env.BEFTA_S2S_CLIENT_ID_OF_CCD_DATA = "ccd_data"
+
+//might need to comment these:
 env.BEFTA_OAUTH2_CLIENT_ID_OF_XUIWEBAPP = "xuiwebapp"
 env.BEFTA_OAUTH2_REDIRECT_URI_OF_XUIWEBAPP = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
 env.BEFTA_OAUTH2_ACCESS_TOKEN_TYPE_OF_XUIWEBAPP = "OIDC"
