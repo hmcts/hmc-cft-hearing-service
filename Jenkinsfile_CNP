@@ -1,5 +1,6 @@
 #!groovy
 import uk.gov.hmcts.contino.AppPipelineDsl
+import jenkins.model.Jenkins
 properties(
     [
         [
@@ -88,8 +89,8 @@ env.MCA_API_BASE_URL = "https://aac-manage-case-assignment-${env.BRANCH_NAME}.se
 env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
 //env.BEFTA_S2S_CLIENT_ID = "xui_webapp"
-env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID = "ccd_gateway"
-env.CCD_API_GATEWAY_OAUTH2_REDIRECT_URL = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
+//env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID = "ccd_gateway"
+//env.CCD_API_GATEWAY_OAUTH2_REDIRECT_URL = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
 env.DM_STORE_BASE_URL = "http://dm-store-aat.service.core-compute-aat.internal"
 env.RD_PROFESSIONAL_API_BASE_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
 env.CCD_API_GATEWAY_S2S_ID = "ccd_gw"
@@ -145,6 +146,8 @@ withPipeline(type, product, component) {
 
   after('smoketest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/BEFTA Report for Smoke Tests/**/*'
+    def envVars = Jenkins.instance.getGlobalNodeProperties()[0].getEnvVars()
+    println envVars['myVar']
   }
 
   after('smoketest:aat') {
