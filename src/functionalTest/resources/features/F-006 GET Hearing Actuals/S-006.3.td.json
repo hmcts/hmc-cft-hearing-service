@@ -20,8 +20,8 @@
   },
 
   "expectedResponse": {
-    "responseCode": 403,
-    "responseMessage" : "Forbidden",
+    "responseCode": 401,
+    "responseMessage" : "Unauthorized",
     "body" : {
       "status" : "FORBIDDEN",
       "errors" : "[[ANYTHING_PRESENT]]"
