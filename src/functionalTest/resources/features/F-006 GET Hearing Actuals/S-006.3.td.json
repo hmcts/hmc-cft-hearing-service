@@ -21,10 +21,6 @@
 
   "expectedResponse": {
     "responseCode": 401,
-    "responseMessage" : "Unauthorized",
-    "body" : {
-      "status" : "FORBIDDEN",
-      "errors" : "[[ANYTHING_PRESENT]]"
+    "responseMessage" : "Unauthorized"
     }
   }
-}

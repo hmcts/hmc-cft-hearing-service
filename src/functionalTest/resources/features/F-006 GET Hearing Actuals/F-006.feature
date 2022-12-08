@@ -31,6 +31,6 @@ Feature: F-006: Search for hearing actuals
     When a request is prepared with appropriate values,
     And it is submitted to call the [Search for hearing actuals] operation of [HMC CFT Hearing Service],
     Then a negative response is received,
-    And the response [has 403 status code],
+    And the response [has 401 status code],
     And the response has all other details as expected.
 
