@@ -3,11 +3,11 @@ Feature: F-011: Search for linked hearing group
 
   Background:
     Given an appropriate test context as detailed in the test data source
-    Given a user with [an active profile in CCD]
 
   @S-011.1
   Scenario: Successfully search for linked hearing group
-    Given a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
+    Given a user with [an active profile in CCD]
+    And a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateAnotherLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateLinkedHearingGroupRequest],
     When a request is prepared with appropriate values,
@@ -27,7 +27,8 @@ Feature: F-011: Search for linked hearing group
 
   @S-011.3
   Scenario: Incorrect schema should return 404
-    Given a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
+    Given a user with [an active profile in CCD]
+    And a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateAnotherLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateLinkedHearingGroupRequest],
     When a request is prepared with appropriate values,
