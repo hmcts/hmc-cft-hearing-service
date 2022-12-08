@@ -9,9 +9,9 @@
 
   "users": {
     "invokingUser": {
-      "_extends_" : "HmcSuperuser"
-    },
-
+      "_extends_": "HmcSuperuser"
+    }
+  },
   "request": {
     "pathVariables": {
       "id": "2100000400"
