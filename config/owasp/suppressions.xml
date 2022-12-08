@@ -10,7 +10,9 @@
   <!--End of false positives section -->
 
   <!--Please add all the temporary suppression under the below section-->
-  <cve>CVE-2021-37533</cve>
+  <suppress>
+    <cve>CVE-2021-37533</cve>
+  </suppress>
   <!--End of temporary suppression section -->
 
 </suppressions>
