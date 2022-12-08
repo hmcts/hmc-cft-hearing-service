@@ -34,9 +34,7 @@ def secrets = [
     secret('ccd-api-gateway-oauth2-client-secret', 'OAUTH2_CLIENT_SECRET'),
     secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
     secret('definition-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
-    secret('ccd-caseworker-autotest-password', 'CCD_CASEWORKER_AUTOTEST_PASSWORD'),
-    secret('idam-data-store-system-user-username','ROLE_ASSIGNMENT_USER_EMAIL'),
-    secret('idam-data-store-system-user-password','ROLE_ASSIGNMENT_USER_PASSWORD')
+    secret('ccd-caseworker-autotest-password', 'CCD_CASEWORKER_AUTOTEST_PASSWORD')
   ],
   'hmc-${env}': [
     secret('hmc-servicebus-connection-string', 'HMC_SERVICE_BUS_CONNECTION_STRING'),
@@ -106,6 +104,8 @@ env.BEFTA_OAUTH2_SCOPE_VARIABLES_OF_XUIWEBAPP = "profile openid roles manage-use
 // Env variables needed to add Role Assignments.
 env.ROLE_ASSIGNMENT_API_GATEWAY_S2S_CLIENT_ID = "ccd_data"
 env.ROLE_ASSIGNMENT_HOST="http://am-role-assignment-service-aat.service.core-compute-aat.internal"
+env.ROLE_ASSIGNMENT_USER_EMAIL="ccd.ac.solicitor1@gmail.com"
+env.ROLE_ASSIGNMENT_USER_PASSWORD="Pa55word11"
 env.ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER="hmc.superuser@gmail.com"
 env.ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER="hmc.listed-hearing-viewer@gmail.com"
 env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER="hmc.hearing-viewer@gmail.com"
