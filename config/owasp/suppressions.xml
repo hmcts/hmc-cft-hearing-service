@@ -13,4 +13,7 @@
 
   <!--End of temporary suppression section -->
 
+  <suppress>
+    <cve>CVE-2021-37533</cve>
+  </suppress>
 </suppressions>
