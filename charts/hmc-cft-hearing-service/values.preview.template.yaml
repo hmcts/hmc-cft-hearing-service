@@ -34,6 +34,14 @@ java:
         - name: AppInsightsInstrumentationKey
         - name: hmc-cft-hearing-service-s2s-secret
           alias: IDAM_KEY_CFT_HEARING_SERVICE
+        - name: ClientId
+          alias: CLIENT_ID
+        - name: ClientSecret
+          alias: CLIENT_SECRET
+        - name: Scope
+          alias: SCOPE
+        - name: fh-get-token-url
+          alias: FH_GET_TOKEN_URL
 
 hmc:
   enabled: true
