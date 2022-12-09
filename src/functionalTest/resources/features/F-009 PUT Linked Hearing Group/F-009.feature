@@ -17,7 +17,7 @@ Feature: F-009: Amend linked hearing group
     And a call [to verify versionNumber=1 and status=HEARING_REQUESTED] will get the expected response as in [S-009.1-get-linked-hearing].
 
   @S-009.2
-  Scenario: Should return 403 unauthorised
+  Scenario: Should return 401 unauthorised
     Given a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateAnotherLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateThirdLinkedHearingRequest],
@@ -25,7 +25,7 @@ Feature: F-009: Amend linked hearing group
     When a request is prepared with appropriate values,
     And it is submitted to call the [Put linked hearing groups] operation of [HMC CFT Hearing Service],
     Then a negative response is received,
-    And the response [has 403 status code],
+    And the response [has 401 status code],
     And the response has all other details as expected.
 
   @S-009.3

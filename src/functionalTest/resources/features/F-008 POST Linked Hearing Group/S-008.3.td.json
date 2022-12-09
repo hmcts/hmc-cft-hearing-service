@@ -4,7 +4,7 @@
 
   "specs": [
     "an active profile in CCD",
-    "has 403 status code"
+    "has 401 status code"
   ],
 
   "users": {
@@ -38,9 +38,6 @@
   "expectedResponse": {
     "responseCode": 401,
     "responseMessage" : "Unauthorized",
-    "body" : {
-      "status" : "FORBIDDEN",
-      "errors" : "[[ANYTHING_PRESENT]]"
-    }
+    "body" : null
   }
 }
