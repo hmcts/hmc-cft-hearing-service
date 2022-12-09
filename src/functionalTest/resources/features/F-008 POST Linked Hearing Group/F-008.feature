@@ -28,13 +28,13 @@ Feature: F-008: Create linked hearing group
     And the response has all other details as expected.
 
   @S-008.3
-  Scenario: Should return 403 unauthorised
+  Scenario: Should return 401 unauthorised
     Given a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateAnotherLinkedHearingRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [Create a group of linked hearing requests] operation of [HMC CFT Hearing Service],
     Then a negative response is received,
-    And the response [has 403 status code],
+    And the response [has 401 status code],
     And the response has all other details as expected.
 
   @S-008.4
