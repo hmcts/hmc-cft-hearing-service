@@ -3,11 +3,11 @@ Feature: F-006: Search for hearing actuals
 
   Background:
     Given an appropriate test context as detailed in the test data source
-    And a user with [an active profile in CCD]
 
   @S-006.1
   Scenario: List the expected parties as per the latest version of the hearing request-response together with any actuals currently captured.
-    Given a successful call [to create a hearing request] as in [CreateHearingRequest],
+    Given a user with [an active profile in CCD]
+    And a successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [Search for hearing actuals] operation of [HMC CFT Hearing Service],
     Then a positive response is received,
@@ -17,7 +17,8 @@ Feature: F-006: Search for hearing actuals
 
   @S-006.2
   Scenario: Should return 400 no such ID
-    Given a successful call [to create a hearing request] as in [CreateHearingRequest],
+    Given a user with [an active profile in CCD]
+    And a successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [Search for hearing actuals] operation of [HMC CFT Hearing Service],
     Then a negative response is received,

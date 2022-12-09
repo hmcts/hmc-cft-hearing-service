@@ -3,11 +3,11 @@ Feature: F-010: Delete linked hearing group
 
   Background:
     Given an appropriate test context as detailed in the test data source
-    Given a user with [an active profile in CCD]
 
   @S-010.1
   Scenario: List the expected parties as per the latest version of the hearing request-response together with any actuals currently captured.
-    Given a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
+    Given a user with [an active profile in CCD]
+    And a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateAnotherLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateLinkedHearingGroupRequest],
     When a request is prepared with appropriate values,
@@ -27,7 +27,8 @@ Feature: F-010: Delete linked hearing group
 
   @S-010.3
   Scenario: Incorrect schema should return 400
-    Given a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
+    Given a user with [an active profile in CCD]
+    And a successful call [to create a hearing request] as in [CreateLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateAnotherLinkedHearingRequest],
     And another successful call [to create a hearing request] as in [CreateLinkedHearingGroupRequest],
     When a request is prepared with appropriate values,

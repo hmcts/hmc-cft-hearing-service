@@ -3,11 +3,11 @@ Feature: F-007: Amend hearing actuals
 
   Background:
     Given an appropriate test context as detailed in the test data source
-    Given a user with [an active profile in CCD]
 
   @S-007.1 @Ignore
   Scenario: successfully amend hearing request
-    Given a successful call [to create a hearing request] as in [CreateHearingActualRequest],
+    Given a user with [an active profile in CCD]
+    And a successful call [to create a hearing request] as in [CreateHearingActualRequest],
     And a wait time of [90] seconds [to wait for status to come back from hmi]
     And a successful call [to list the hearing] as in [ListHearingActualRequest],
     And a wait time of [90] seconds [to wait for status to come back from hmi]
@@ -20,7 +20,8 @@ Feature: F-007: Amend hearing actuals
 
   @S-007.2
   Scenario: Should return 400 no such ID
-    Given a successful call [to create a hearing request] as in [CreateHearingRequest],
+    Given a user with [an active profile in CCD]
+    And a successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [amend hearing actuals] operation of [HMC CFT Hearing Service],
     Then a negative response is received,
@@ -28,7 +29,7 @@ Feature: F-007: Amend hearing actuals
     And the response has all other details as expected.
 
   @S-007.3
-  Scenario: Should return 403 unauthorised
+  Scenario: Should return 401 unauthorised
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [amend hearing actuals] operation of [HMC CFT Hearing Service],
@@ -38,7 +39,8 @@ Feature: F-007: Amend hearing actuals
 
   @S-007.4
   Scenario: Should return 004 non-unique dates
-    Given a successful call [to create a hearing request] as in [CreateHearingActualRequest],
+    Given a user with [an active profile in CCD]
+    And a successful call [to create a hearing request] as in [CreateHearingActualRequest],
     And a wait time of [90] seconds [to wait for status to come back from hmi]
     And a successful call [to list the hearing] as in [ListHearingActualRequest],
     And a wait time of [90] seconds [to wait for status to come back from hmi]
@@ -50,7 +52,8 @@ Feature: F-007: Amend hearing actuals
 
   @S-007.5
   Scenario: Should return 003 invalid date
-    Given a successful call [to create a hearing request] as in [CreateHearingActualRequest],
+    Given a user with [an active profile in CCD]
+    And a successful call [to create a hearing request] as in [CreateHearingActualRequest],
     And a wait time of [90] seconds [to wait for status to come back from hmi]
     And a successful call [to list the hearing] as in [ListHearingActualRequest],
     And a wait time of [90] seconds [to wait for status to come back from hmi]
@@ -62,7 +65,8 @@ Feature: F-007: Amend hearing actuals
 
   @S-007.6
   Scenario: Should return 002 invalid status
-    Given a successful call [to create a hearing request] as in [CreateHearingRequest],
+    Given a user with [an active profile in CCD]
+    And a successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [amend hearing actuals] operation of [HMC CFT Hearing Service],
     Then a negative response is received,
