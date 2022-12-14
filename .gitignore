@@ -4,6 +4,9 @@
 *.class
 bin/main/application.yaml
 .demo-env
+target/
+/BEFTA Report for Smoke Tests/
+/BEFTA Report for Functional Tests/
 
 ### STS ###
 .apt_generated
