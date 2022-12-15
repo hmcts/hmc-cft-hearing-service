@@ -40,7 +40,7 @@
         "hearingChannels" : [ "INTER" ],
         "hearingID" : "[[ANY_NUMBER_NOT_NULLABLE]]"
       } ],
-      "hmctsServiceCode" : null
+      "hmctsServiceCode" : "[[ANYTHING_PRESENT]]"
     }
   }
 }

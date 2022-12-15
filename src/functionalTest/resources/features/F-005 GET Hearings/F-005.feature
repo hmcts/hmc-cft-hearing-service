@@ -17,7 +17,7 @@ Feature: F-005: Search for hearings
     And the response has all other details as expected.
 
   @S-005.2
-  Scenario: Successfully search for a hearing using the HEARING_REQUESTED parameter, hearing with CANCELLATION_REQUESTED status is excluded
+  Scenario: Successfully search for a hearing using the AWAITING_LISTING parameter, hearing with CANCELLATION_SUBMITTED status is excluded
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     And another successful call [to create a second hearing request] as in [CreateSecondHearingRequest],
     And a successful call [to delete a hearing request] as in [deleteHearingRequest],
@@ -25,5 +25,5 @@ Feature: F-005: Search for hearings
     And it is submitted to call the [Search for hearings] operation of [HMC CFT Hearing Service],
     Then a positive response is received,
     And the response [has 200 status code],
-    And the response [contains only the hearing with HEARING_REQUESTED status],
+    And the response [contains only the hearing with AWAITING_LISTING status],
     And the response has all other details as expected.

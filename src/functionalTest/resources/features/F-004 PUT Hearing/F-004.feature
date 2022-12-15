@@ -27,6 +27,7 @@ Feature: F-004: Amend hearing request
     Then a negative response is received,
     And the response [has the 400 code],
     And the response has all other details as expected,
+    And a wait time of [60] seconds [to wait for status to change],
     And a call [to get hearing to show version number hasn't been incremented] will get the expected response as in [S-004.2-get-hearing].
 
   @S-004.3
@@ -39,8 +40,7 @@ Feature: F-004: Amend hearing request
     And the response [has the 404 code],
     And the response has all other details as expected.
 
-  @S-004.4 @Ignore
-#    todo cant get case into UPDATE_REQUESTED state
+  @S-004.4
   Scenario: successfully amend hearing request in the UPDATE_REQUESTED state
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     And a successful call [to amend a hearing request] as in [AmendHearingRequest],
@@ -51,7 +51,7 @@ Feature: F-004: Amend hearing request
     And the response [has a versionNumber of 3],
     And the response [has a status of UPDATE_REQUESTED],
     And the response has all other details as expected,
-#    And a call [to verify the values have been updated] will get the expected response as in [S-004.1-get-hearing].
+    And a call [to verify the values have been updated] will get the expected response as in [S-004.1-get-hearing].
 
   @S-004.5
   Scenario: cannot amend hearing request in the CANCELLATION_REQUESTED state
