@@ -19,7 +19,12 @@
         "groupLinkType" : "Same Slot",
         "groupComments" : "groupComments"
       },
-      "hearingsInGroup" : [ {
+      "hearingsInGroup" : [
+        {
+          "__ordering__": "unordered",
+          "__elementId__": "hearingId"
+        },
+        {
         "hearingId" : "${[scenarioContext][siblingContexts][CreateAnotherLinkedHearingRequest][testData][actualResponse][body][hearingRequestID]}",
         "hearingOrder" : 1,
         "caseRef" : "[[ANYTHING_PRESENT]]",

@@ -51,6 +51,7 @@ Feature: F-004: Amend hearing request
     And the response [has a versionNumber of 3],
     And the response [has a status of UPDATE_REQUESTED],
     And the response has all other details as expected,
+    And a wait time of [60] seconds [to wait for status to change],
     And a call [to verify the values have been updated] will get the expected response as in [S-004.1-get-hearing].
 
   @S-004.5

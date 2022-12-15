@@ -5,7 +5,7 @@
     "has the 200 OK code",
     "an active profile in CCD",
     "has 200 status code",
-    "contains only the hearing with HEARING_REQUESTED status"
+    "contains only the hearing with AWAITING_LISTING status"
   ],
   "request": {
     "pathVariables": {
