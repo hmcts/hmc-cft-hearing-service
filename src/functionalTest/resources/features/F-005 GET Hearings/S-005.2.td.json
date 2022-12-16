@@ -12,7 +12,7 @@
       "caseref": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}"
     },
     "queryParams": {
-      "status": "HEARING_REQUESTED"
+      "status": "AWAITING_LISTING"
     }
   },
   "expectedResponse": {
@@ -29,7 +29,7 @@
       "caseHearings" : [ {
         "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
         "hearingType" : "Some hearing type",
-        "hmcStatus" : "HEARING_REQUESTED",
+        "hmcStatus" : "AWAITING_LISTING",
         "lastResponseReceivedDateTime" : null,
         "requestVersion" : null,
         "hearingListingStatus" : null,

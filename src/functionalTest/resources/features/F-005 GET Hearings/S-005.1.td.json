@@ -30,7 +30,7 @@
         {
         "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
         "hearingType" : "Some hearing type",
-        "hmcStatus" : "HEARING_REQUESTED",
+        "hmcStatus" : "AWAITING_LISTING",
         "lastResponseReceivedDateTime" : null,
         "requestVersion" : null,
         "hearingListingStatus" : null,
@@ -43,7 +43,7 @@
       }, {
         "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
         "hearingType" : "Some hearing type",
-        "hmcStatus" : "HEARING_REQUESTED",
+        "hmcStatus" : "AWAITING_LISTING",
         "lastResponseReceivedDateTime" : null,
         "requestVersion" : null,
         "hearingListingStatus" : null,
