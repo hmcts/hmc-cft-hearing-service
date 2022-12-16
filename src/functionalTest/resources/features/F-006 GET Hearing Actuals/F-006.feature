@@ -1,4 +1,4 @@
-@F-006
+@F-006 @Ignore
 Feature: F-006: Search for hearing actuals
 
   Background:
