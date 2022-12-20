@@ -1,4 +1,4 @@
-@F-004 @Ignore
+@F-004
 Feature: F-004: Amend hearing request
 
   Background:

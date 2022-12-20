@@ -1,4 +1,4 @@
-@F-005 @Ignore
+@F-005
 Feature: F-005: Search for hearings
 
   Background:

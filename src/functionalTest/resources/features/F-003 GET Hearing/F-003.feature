@@ -1,4 +1,4 @@
-@F-003 @Ignore
+@F-003
 Feature: F-003: Get hearing request
 
   Background:

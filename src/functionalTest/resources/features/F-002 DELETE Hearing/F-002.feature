@@ -1,4 +1,4 @@
-@F-002 @Ignore
+@F-002
 Feature: F-002: Delete hearing request
 
   Background:

@@ -1,4 +1,4 @@
-@F-008 @Ignore
+@F-008
 Feature: F-008: Create linked hearing group
 
   Background:

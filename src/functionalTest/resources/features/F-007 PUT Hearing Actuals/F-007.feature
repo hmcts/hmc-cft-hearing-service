@@ -1,10 +1,10 @@
-@F-007 @Ignore
+@F-007
 Feature: F-007: Amend hearing actuals
 
   Background:
     Given an appropriate test context as detailed in the test data source
 
-  @S-007.1 @Ignore
+  @S-007.1
   Scenario: successfully amend hearing request
     Given a user with [an active profile in CCD]
     And a successful call [to create a hearing request] as in [CreateHearingActualRequest],
