@@ -1,4 +1,4 @@
-@F-007 @Ignore
+@F-007
 Feature: F-007: Amend hearing actuals
 
   Background:
