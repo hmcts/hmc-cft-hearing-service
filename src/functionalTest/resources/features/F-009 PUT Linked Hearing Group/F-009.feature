@@ -1,4 +1,4 @@
-@F-009 @Ignore
+@F-009
 Feature: F-009: Amend linked hearing group
 
   Background:
