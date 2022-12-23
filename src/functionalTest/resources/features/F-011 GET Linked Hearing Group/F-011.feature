@@ -1,4 +1,4 @@
-@F-011 @Ignore
+@F-011
 Feature: F-011: Search for linked hearing group
 
   Background:

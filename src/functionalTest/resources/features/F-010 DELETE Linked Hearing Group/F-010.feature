@@ -1,4 +1,4 @@
-@F-010 @Ignore
+@F-010
 Feature: F-010: Delete linked hearing group
 
   Background:
