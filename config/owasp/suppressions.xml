@@ -15,8 +15,4 @@
   </suppress>
   <!--End of false positives section -->
 
-  <!--Please add all the temporary suppression under the below section-->
-
-  <!--End of temporary suppression section -->
-
 </suppressions>
