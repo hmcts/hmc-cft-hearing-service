@@ -300,7 +300,7 @@ task runProviderPactVerification(type:Test) {
   useJUnitPlatform()
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
-  systemProperty 'pact.verifier.publishResults', System.getProperty('pact.verifier.publishResults')
+  systemProperty 'pact.verifier.publishResults', System.getenv('pact.verifier.publishResults')
   systemProperty 'pact.provider.version', project.pactVersion
   include "uk/gov/hmcts/reform/hmc/provider/**"
   include "uk/gov/hmcts/reform/hmc/controllers/**"
@@ -479,7 +479,7 @@ wrapper {
 pact {
   publish {
     pactDirectory = 'build/pacts'
-    pactBrokerUrl = System.getProperty("pact.broker.url") ?: 'http://localhost:80'
+    pactBrokerUrl = System.getenv("pact.broker.url") ?: 'http://localhost:80'
     tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
     version = '0.0.1'
   }
