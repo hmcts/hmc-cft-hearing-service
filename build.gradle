@@ -300,7 +300,7 @@ task runProviderPactVerification(type:Test) {
   useJUnitPlatform()
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
-  systemProperty 'pact.verifier.publishResults', System.getProperty('pact.verifier.publishResults')
+  systemProperty 'pact.verifier.publishResults', project.pact.verifier.publishResults
   systemProperty 'pact.provider.version', project.pactVersion
   include "uk/gov/hmcts/reform/hmc/provider/**"
   include "uk/gov/hmcts/reform/hmc/controllers/**"
