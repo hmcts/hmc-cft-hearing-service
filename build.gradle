@@ -479,7 +479,7 @@ wrapper {
 pact {
   publish {
     pactDirectory = 'build/pacts'
-    pactBrokerUrl = System.getenv("pact.broker.url") ?: 'http://localhost:80'
+    pactBrokerUrl = System.getenv("pact.broker.url") ?: 'https://pact-broker.platform.hmcts.net'
     tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
     version = '0.0.1'
   }
