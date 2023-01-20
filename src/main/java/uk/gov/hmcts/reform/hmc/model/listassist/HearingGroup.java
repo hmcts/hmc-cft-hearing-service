@@ -8,15 +8,11 @@ import java.util.ArrayList;
 
 @Data
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class HearingGroup {
     private String groupClientReference;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String groupName;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String groupReason;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String groupComment;
     private String groupLinkType;
     private String groupStatus;

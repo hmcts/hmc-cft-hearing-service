@@ -6,9 +6,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CaseListing {
     private String caseListingRequestId;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer caseLinkOrder;
 }
