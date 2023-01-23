@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGr
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubPostCreateLinkHearingGroup;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubPutUpdateLinkHearingGroup;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyDeleteLinkedHearingGroups;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE_FOR_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 
@@ -628,7 +629,10 @@ class LinkHearingGroupControllerIT extends BaseTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
-                .andExpect(jsonPath("$.errors", hasItem(LIST_ASSIST_FAILED_TO_RESPOND)))
+                .andExpect(jsonPath(
+                    "$.errors",
+                    hasItem(INVALID_STATE_FOR_HEARING_REQUEST.replace("<hearingId>", "2000000007"))
+                ))
                 .andReturn();
         }
     }
