@@ -228,7 +228,8 @@ def versions = [
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.2',
   netty           : '4.1.77.Final',
-  serviceAuthVersion: '4.0.3'
+  serviceAuthVersion: '4.0.3',
+  tomcatEmbedded  : '9.0.69'
 ]
 
 ext['spring-framework.version'] = '5.3.24'
@@ -392,9 +393,16 @@ dependencies {
 
   implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.8.0'
   implementation group: 'com.azure', name: 'azure-core', version: '1.28.0'
+
   // CVE-2021-42550
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.10'
+
+  // CVE-2022-45143
+  implementation "org.apache.tomcat.embed:tomcat-embed-core:${versions.tomcatEmbedded}"
+  implementation "org.apache.tomcat.embed:tomcat-embed-el:${versions.tomcatEmbedded}"
+  implementation "org.apache.tomcat.embed:tomcat-embed-websocket:${versions.tomcatEmbedded}"
+
   // Explicitly set versions of io.netty components to resolve CVE-2021-37136 and CVE-2021-37137
   implementation group: 'io.netty', name: 'netty-buffer', version: versions.netty
   implementation group: 'io.netty', name: 'netty-codec', version: versions.netty
