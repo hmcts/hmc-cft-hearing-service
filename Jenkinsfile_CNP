@@ -116,11 +116,6 @@ withPipeline(type, product, component) {
   enableAksStagingDeployment()
   disableLegacyDeployment()
 
-  enablePactAs([
-    AppPipelineDsl.PactRoles.CONSUMER,
-    AppPipelineDsl.PactRoles.PROVIDER
-  ])
-
   if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'demo' || env.BRANCH_NAME == 'perftest' || env.BRANCH_NAME == 'ithc') {
     env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
   } else {
