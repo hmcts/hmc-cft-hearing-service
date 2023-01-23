@@ -603,7 +603,10 @@ class LinkHearingGroupControllerIT extends BaseTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
-                .andExpect(jsonPath("$.errors", hasItem("004 Invalid state for hearing request 2000000007")))
+                .andExpect(jsonPath(
+                    "$.errors",
+                    hasItem(INVALID_STATE_FOR_HEARING_REQUEST.replace("<hearingId>", "2000000007"))
+                ))
                 .andReturn();
         }
 
