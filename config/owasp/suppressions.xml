@@ -6,7 +6,6 @@
       CVE-2022-41881 refer https://tools.hmcts.net/jira/browse/HMAN-497
       CVE-2022-41915 refer https://tools.hmcts.net/jira/browse/HMAN-497
     </notes>
-    <cve>CVE-2021-37533</cve>
     <cve>CVE-2022-41881</cve>
     <cve>CVE-2022-41915</cve>
   </suppress>
