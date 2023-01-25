@@ -166,6 +166,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.TITLE_MAX_LENGT
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.UNAVAILABLE_FROM_DATE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.UNAVAILABLE_TO_DATE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.VERSION_NUMBER_NULL_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.VULNERABLE_DETAILS_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
@@ -1172,7 +1173,7 @@ class HearingManagementControllerIT extends BaseTest {
         individualDetails.setPreferredHearingChannel("a".repeat(71));
         individualDetails.setInterpreterLanguage("a".repeat(11));
         individualDetails.setReasonableAdjustments(Collections.singletonList("a".repeat(11)));
-        individualDetails.setVulnerabilityDetails("a".repeat(257));
+        individualDetails.setVulnerabilityDetails("a".repeat(2001));
         individualDetails.setHearingChannelEmail(List.of("a".repeat(121)));
         individualDetails.setHearingChannelPhone(List.of("a".repeat(31)));
         individualDetails.setOtherReasonableAdjustmentDetails("a".repeat(201));
@@ -1199,13 +1200,13 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.errors", hasSize(20)))
+            .andExpect(jsonPath("$.errors", hasSize(21)))
             .andExpect(jsonPath("$.errors", hasItems(PARTY_DETAILS_MAX_LENGTH, PARTY_ROLE_MAX_LENGTH,
                                                      TITLE_MAX_LENGTH, FIRST_NAME_MAX_LENGTH, LAST_NAME_MAX_LENGTH,
                                                      PREFERRED_HEARING_CHANNEL_MAX_LENGTH,
                                                      INTERPRETER_LANGUAGE_MAX_LENGTH,
                                                      REASONABLE_ADJUSTMENTS_MAX_LENGTH_MSG,
-                                                     HEARING_CHANNEL_EMAIL_MAX_LENGTH,
+                                                     VULNERABLE_DETAILS_MAX_LENGTH, HEARING_CHANNEL_EMAIL_MAX_LENGTH,
                                                      HEARING_CHANNEL_PHONE_MAX_LENGTH, HEARING_CHANNEL_PHONE_INVALID,
                                                      RELATED_PARTY_MAX_LENGTH, RELATIONSHIP_TYPE_MAX_LENGTH,
                                                      NAME_MAX_LENGTH, ORGANISATION_TYPE_MAX_LENGTH,
