@@ -166,7 +166,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.TITLE_MAX_LENGT
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.UNAVAILABLE_FROM_DATE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.UNAVAILABLE_TO_DATE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.VERSION_NUMBER_NULL_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.VULNERABLE_DETAILS_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENTS_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
