@@ -69,7 +69,7 @@ env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
 env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 env.BEFTA_S2S_CLIENT_ID = "ccd_gw"
 env.BEFTA_RESPONSE_HEADER_CHECK_POLICY="JUST_WARN"
-env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
+env.PACT_BROKER_URL = 'https://pact-broker.platform.hmcts.net'
 
 env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-api-${definitionStoreDevelopPr}.service.core-compute-preview.internal".toLowerCase()
 
@@ -116,11 +116,6 @@ withPipeline(type, product, component) {
   loadVaultSecrets(secrets)
   enableAksStagingDeployment()
   disableLegacyDeployment()
-
-  enablePactAs([
-    AppPipelineDsl.PactRoles.CONSUMER,
-    AppPipelineDsl.PactRoles.PROVIDER
-  ])
 
 //  if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'demo' || env.BRANCH_NAME == 'perftest' || env.BRANCH_NAME == 'ithc') {
 //    env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
