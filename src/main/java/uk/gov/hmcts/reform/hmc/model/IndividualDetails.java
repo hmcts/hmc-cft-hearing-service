@@ -38,7 +38,7 @@ public class IndividualDetails {
 
     private Boolean vulnerableFlag;
 
-    @Size(max = 256, message = ValidationError.VULNERABLE_DETAILS_MAX_LENGTH)
+    @Size(max = 2000, message = ValidationError.VULNERABLE_DETAILS_MAX_LENGTH)
     private String vulnerabilityDetails;
 
     private List<
