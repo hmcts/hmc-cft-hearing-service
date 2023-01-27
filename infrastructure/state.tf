@@ -8,7 +8,7 @@ terraform {
      }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 2.57.0"       # AzureRM provider version
+      version = "~> 2.99.0"       # AzureRM provider version
     }
   }
 }
