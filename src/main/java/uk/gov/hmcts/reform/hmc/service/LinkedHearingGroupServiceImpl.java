@@ -90,7 +90,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
 
     @Override
-    @Transactional(noRollbackFor = {BadRequestException.class})
+    @Transactional
     public HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
         //POST
         linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
