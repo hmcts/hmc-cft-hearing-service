@@ -102,9 +102,8 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             futureHearingRepository.createLinkedHearingGroup(objectMapperService
                                                                  .convertObjectToJsonNode(linkedHearingGroup));
             log.debug(LIST_ASSIST_SUCCESSFUL_RESPONSE);
-            linkedGroupDetailsRepository
-                .updateLinkedGroupDetailsStatus(linkedHearingGroup.getLinkedHearingGroup().getGroupClientReference(),
-                                                "ACTIVE");
+            linkedGroupDetails.setStatus("ACTIVE");
+            linkedGroupDetailsRepository.save(linkedGroupDetails);
         } catch (BadFutureHearingRequestException requestException) {
             deleteLinkedHearingGroup(
                 linkedHearingGroup.getLinkedHearingGroup().getGroupClientReference(),
