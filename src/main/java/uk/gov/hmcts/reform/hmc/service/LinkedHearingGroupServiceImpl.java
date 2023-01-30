@@ -105,7 +105,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             linkedGroupDetails.setStatus("ACTIVE");
             linkedGroupDetailsRepository.save(linkedGroupDetails);
         } catch (BadFutureHearingRequestException requestException) {
-            deleteLinkedHearingGroup(
+            deleteLinkedHearingGroups(
                 linkedHearingGroup.getLinkedHearingGroup().getGroupClientReference(),
                 hearingLinkGroupRequest);
             throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
@@ -307,7 +307,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         return null;
     }
 
-    private void deleteLinkedHearingGroup(String requestId,
+    private void deleteLinkedHearingGroups(String requestId,
                                            HearingLinkGroupRequest hearingLinkGroupRequest) {
         hearingLinkGroupRequest.getHearingsInGroup()
             .forEach(linkHearingDetails -> {
