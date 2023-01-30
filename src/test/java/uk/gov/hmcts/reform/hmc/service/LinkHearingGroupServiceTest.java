@@ -547,7 +547,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
+            verify(linkedGroupDetailsRepository, times(2)).save(any());
         }
 
 
@@ -596,7 +596,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
+            verify(linkedGroupDetailsRepository, times(2)).save(any());
         }
 
         @Test
@@ -642,7 +642,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
+            verify(linkedGroupDetailsRepository, times(2)).save(any());
         }
 
         @Test
