@@ -105,9 +105,6 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             linkedGroupDetails.setStatus("ACTIVE");
             linkedGroupDetailsRepository.save(linkedGroupDetails);
         } catch (BadFutureHearingRequestException requestException) {
-            deleteLinkedHearingGroups(
-                linkedHearingGroup.getLinkedHearingGroup().getGroupClientReference(),
-                hearingLinkGroupRequest);
             throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
         } catch (FutureHearingServerException serverException) {
             throw new FhBadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
