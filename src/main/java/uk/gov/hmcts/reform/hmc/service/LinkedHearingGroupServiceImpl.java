@@ -182,7 +182,9 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         Optional<LinkedGroupDetails> linkedGroupDetailsOptional = linkedGroupDetailsRepository.findById(linkedGroupId);
         LinkedGroupDetails linkedGroupDetails;
         linkedGroupDetails = (linkedGroupDetailsOptional.isPresent()) ? linkedGroupDetailsOptional.get() : null;
-        processDeleteHearingRequest(linkedGroupHearings, linkedGroupDetails);
+        if (linkedGroupDetails != null) {
+            processDeleteHearingRequest(linkedGroupHearings, linkedGroupDetails);
+        }
 
         try {
             futureHearingRepository.deleteLinkedHearingGroup(linkedGroupDetails.getRequestId());
@@ -296,9 +298,11 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingEntity.getId());
             HearingEntity hearingEntityToUpdate =
                 (hearingEntityOptional.isPresent()) ? hearingEntityOptional.get() : null;
-            hearingEntityToUpdate.setLinkedOrder(null);
-            hearingEntityToUpdate.setLinkedGroupDetails(null);
-            hearingRepository.save(hearingEntityToUpdate);
+            if (hearingEntityToUpdate != null) {
+                hearingEntityToUpdate.setLinkedOrder(null);
+                hearingEntityToUpdate.setLinkedGroupDetails(null);
+                hearingRepository.save(hearingEntityToUpdate);
+            }
         }
     }
 
@@ -324,9 +328,11 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
             HearingEntity hearingEntityToUpdate =
                 (hearingEntityOptional.isPresent()) ? hearingEntityOptional.get() : null;
-            hearingEntityToUpdate.setLinkedOrder(order);
-            hearingEntityToUpdate.setLinkedGroupDetails(linkedGroupDetails);
-            hearingRepository.save(hearingEntityToUpdate);
+            if (hearingEntityToUpdate != null) {
+                hearingEntityToUpdate.setLinkedOrder(order);
+                hearingEntityToUpdate.setLinkedGroupDetails(linkedGroupDetails);
+                hearingRepository.save(hearingEntityToUpdate);
+            }
         }
     }
 
