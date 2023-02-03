@@ -179,7 +179,9 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     public void deleteLinkedHearingGroup(String requestId) {
         Long linkedGroupId = linkedHearingValidator.validateHearingGroup(requestId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(linkedGroupId);
-        LinkedGroupDetails linkedGroupDetails = linkedGroupDetailsRepository.findById(linkedGroupId).get();
+        Optional<LinkedGroupDetails> linkedGroupDetailsOptional = linkedGroupDetailsRepository.findById(linkedGroupId);
+        LinkedGroupDetails linkedGroupDetails;
+        linkedGroupDetails = (linkedGroupDetailsOptional.isPresent()) ? linkedGroupDetailsOptional.get() : null;
         processDeleteHearingRequest(linkedGroupHearings, linkedGroupDetails);
 
         try {
@@ -206,7 +208,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Transactional
-    private void processDeleteHearingRequest(List<HearingEntity> linkedGroupHearings,
+    public void processDeleteHearingRequest(List<HearingEntity> linkedGroupHearings,
                                              LinkedGroupDetails linkedGroupDetails) {
         verifyAccess(linkedGroupHearings, Lists.newArrayList(HEARING_MANAGER));
         linkedHearingValidator.validateUnlinkingHearingsStatus(linkedGroupHearings);
@@ -219,7 +221,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Transactional
-    private void processDeleteHearingResponse(LinkedGroupDetails linkedGroupDetails) {
+    public void processDeleteHearingResponse(LinkedGroupDetails linkedGroupDetails) {
         linkedGroupDetailsAuditRepository.deleteLinkedGroupDetailsAudit(
             Long.valueOf(linkedGroupDetails.getLinkedGroupId()),
             (linkedGroupDetails.getLinkedGroupLatestVersion() - 1)
@@ -234,7 +236,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Transactional
-    private LinkedGroupDetails processAmendLinkedHearingRequest(HearingLinkGroupRequest hearingLinkGroupRequest,
+    public LinkedGroupDetails processAmendLinkedHearingRequest(HearingLinkGroupRequest hearingLinkGroupRequest,
                                                                 List<HearingEntity> currentHearings,
                                                                 String requestId) {
         unlinkHearingsFromGroup(hearingLinkGroupRequest, currentHearings);
@@ -245,7 +247,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Transactional
-    private void processAmendLinkedHearingResponse(HearingLinkGroupRequest hearingLinkGroupRequest,
+    public void processAmendLinkedHearingResponse(HearingLinkGroupRequest hearingLinkGroupRequest,
                                                    HashMap<Long, Long> currentHearings, String requestId,
                                                    LinkedGroupDetails linkedGroupDetails,
                                                    PreviousLinkedGroupDetails previousLinkedGroupDetails) {
@@ -291,7 +293,9 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
     private void unlinkHearingsFromGroup(List<HearingEntity> linkedGroupHearings) {
         for (HearingEntity hearingEntity : linkedGroupHearings) {
-            HearingEntity hearingEntityToUpdate = hearingRepository.findById(hearingEntity.getId()).get();
+            Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingEntity.getId());
+            HearingEntity hearingEntityToUpdate =
+                (hearingEntityOptional.isPresent()) ? hearingEntityOptional.get() : null;
             hearingEntityToUpdate.setLinkedOrder(null);
             hearingEntityToUpdate.setLinkedGroupDetails(null);
             hearingRepository.save(hearingEntityToUpdate);
@@ -317,7 +321,9 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         for (Map.Entry<Long, Long> entry : currentHearings.entrySet()) {
             Long hearingId = entry.getKey();
             Long order = entry.getValue();
-            HearingEntity hearingEntityToUpdate = hearingRepository.findById(hearingId).get();
+            Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
+            HearingEntity hearingEntityToUpdate =
+                (hearingEntityOptional.isPresent()) ? hearingEntityOptional.get() : null;
             hearingEntityToUpdate.setLinkedOrder(order);
             hearingEntityToUpdate.setLinkedGroupDetails(linkedGroupDetails);
             hearingRepository.save(hearingEntityToUpdate);
@@ -421,7 +427,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Transactional
-    private LinkedHearingGroup processRequestForListAssist(LinkedGroupDetails linkedGroupDetails) {
+    public LinkedHearingGroup processRequestForListAssist(LinkedGroupDetails linkedGroupDetails) {
         HearingGroup hearingGroup = new HearingGroup();
         hearingGroup.setGroupClientReference(linkedGroupDetails.getRequestId());
         hearingGroup.setGroupName(linkedGroupDetails.getRequestName());
@@ -452,7 +458,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Transactional
-    private void deleteLinkedHearingGroups(String requestId,
+    public void deleteLinkedHearingGroups(String requestId,
                                            HearingLinkGroupRequest hearingLinkGroupRequest) {
         hearingLinkGroupRequest.getHearingsInGroup()
             .forEach(linkHearingDetails -> {
