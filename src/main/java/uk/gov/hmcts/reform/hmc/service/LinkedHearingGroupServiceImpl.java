@@ -94,6 +94,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
         //POST
         linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
@@ -126,6 +127,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest) {
         //PUT
         linkedHearingValidator.validateHearingLinkGroupRequestForUpdate(requestId, hearingLinkGroupRequest);
@@ -175,6 +177,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void deleteLinkedHearingGroup(String requestId) {
         Long linkedGroupId = linkedHearingValidator.validateHearingGroup(requestId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(linkedGroupId);
