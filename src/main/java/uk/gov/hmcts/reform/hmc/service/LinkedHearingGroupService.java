@@ -20,23 +20,4 @@ public interface LinkedHearingGroupService {
     void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest);
 
     GetLinkedHearingGroupResponse getLinkedHearingGroupResponse(String requestId);
-
-    void processDeleteHearingRequest(List<HearingEntity> linkedGroupHearings,
-                               LinkedGroupDetails linkedGroupDetails);
-
-    void processDeleteHearingResponse(LinkedGroupDetails linkedGroupDetails);
-
-    LinkedGroupDetails processAmendLinkedHearingRequest(HearingLinkGroupRequest hearingLinkGroupRequest,
-                                                        List<HearingEntity> currentHearings,
-                                                        String requestId);
-
-    void processAmendLinkedHearingResponse(HearingLinkGroupRequest hearingLinkGroupRequest,
-                                           HashMap<Long, Long> currentHearings,
-                                           LinkedGroupDetails linkedGroupDetails,
-                                           PreviousLinkedGroupDetails previousLinkedGroupDetails);
-
-    LinkedHearingGroup processRequestForListAssist(LinkedGroupDetails linkedGroupDetails);
-
-    void deleteLinkedHearingGroups(String requestId,
-                                   HearingLinkGroupRequest hearingLinkGroupRequest);
 }

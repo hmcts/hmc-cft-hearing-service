@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
@@ -206,8 +207,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         return getLinkedHearingGroupDetails(requestId);
     }
 
-    @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void processDeleteHearingRequest(List<HearingEntity> linkedGroupHearings,
                                              LinkedGroupDetails linkedGroupDetails) {
         verifyAccess(linkedGroupHearings, Lists.newArrayList(HEARING_MANAGER));
@@ -220,8 +220,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         saveLinkedGroupDetails(linkedGroupDetails);
     }
 
-    @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void processDeleteHearingResponse(LinkedGroupDetails linkedGroupDetails) {
         linkedGroupDetailsAuditRepository.deleteLinkedGroupDetailsAudit(
             Long.valueOf(linkedGroupDetails.getLinkedGroupId()),
@@ -236,8 +235,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         linkedGroupDetailsRepository.save(linkedGroupDetails);
     }
 
-    @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public LinkedGroupDetails processAmendLinkedHearingRequest(HearingLinkGroupRequest hearingLinkGroupRequest,
                                                                 List<HearingEntity> currentHearings,
                                                                 String requestId) {
@@ -248,8 +246,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         return linkedGroupDetails;
     }
 
-    @Override
-    @Transactional
+    @Transactional (propagation = Propagation.REQUIRES_NEW)
     public void processAmendLinkedHearingResponse(HearingLinkGroupRequest hearingLinkGroupRequest,
                                                    HashMap<Long, Long> currentHearings,
                                                    LinkedGroupDetails linkedGroupDetails,
@@ -267,8 +264,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         rollBackLinkGroupDetails(previousLinkedGroupDetails);
     }
 
-    @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public LinkedHearingGroup processRequestForListAssist(LinkedGroupDetails linkedGroupDetails) {
         HearingGroup hearingGroup = new HearingGroup();
         hearingGroup.setGroupClientReference(linkedGroupDetails.getRequestId());
@@ -292,8 +288,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         return linkedHearingGroup;
     }
 
-    @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteLinkedHearingGroups(String requestId,
                                           HearingLinkGroupRequest hearingLinkGroupRequest) {
         hearingLinkGroupRequest.getHearingsInGroup()
