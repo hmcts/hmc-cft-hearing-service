@@ -182,20 +182,19 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         linkedGroupDetails = (linkedGroupDetailsOptional.isPresent()) ? linkedGroupDetailsOptional.get() : null;
         if (linkedGroupDetails != null) {
             processDeleteHearingRequest(linkedGroupHearings, linkedGroupDetails);
-        }
+            try {
+                futureHearingRepository.deleteLinkedHearingGroup(linkedGroupDetails.getRequestId());
+                log.debug(LIST_ASSIST_SUCCESSFUL_RESPONSE);
+                unlinkHearingsFromGroup(linkedGroupHearings);
+                linkedGroupDetailsRepository.delete(linkedGroupDetails);
 
-        try {
-            futureHearingRepository.deleteLinkedHearingGroup(linkedGroupDetails.getRequestId());
-            log.debug(LIST_ASSIST_SUCCESSFUL_RESPONSE);
-            unlinkHearingsFromGroup(linkedGroupHearings);
-            linkedGroupDetailsRepository.delete(linkedGroupDetails);
-
-        } catch (BadFutureHearingRequestException requestException) {
-            processDeleteHearingResponse(linkedGroupDetails);
-            throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
-        } catch (FutureHearingServerException serverException) {
-            processDeleteHearingResponse(linkedGroupDetails);
-            throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
+            } catch (BadFutureHearingRequestException requestException) {
+                processDeleteHearingResponse(linkedGroupDetails);
+                throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
+            } catch (FutureHearingServerException serverException) {
+                processDeleteHearingResponse(linkedGroupDetails);
+                throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
+            }
         }
     }
 
