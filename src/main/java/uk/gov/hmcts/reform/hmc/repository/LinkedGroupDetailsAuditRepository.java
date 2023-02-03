@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 public interface LinkedGroupDetailsAuditRepository extends CrudRepository<LinkedGroupDetailsAudit, Long> {
 
     @Modifying
-    @Query("DELETE FROM LinkedGroupDetailsAudit lgd WHERE lgd.linkedGroup.id = :groupId AND lgd.linkedGroupVersion = :version")
+    @Query("DELETE FROM LinkedGroupDetailsAudit lgd WHERE lgd.linkedGroup.id = :groupId "
+        + "AND lgd.linkedGroupVersion = :version")
     void deleteLinkedGroupDetailsAudit(Long groupId, Long version);
 }

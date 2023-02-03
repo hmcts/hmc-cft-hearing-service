@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 public interface LinkedHearingDetailsAuditRepository extends CrudRepository<LinkedHearingDetailsAudit, Long> {
 
     @Modifying
-    @Query("DELETE FROM LinkedHearingDetailsAudit lgd WHERE lgd.linkedGroup.id = :groupId AND lgd.linkedGroupVersion = :version")
+    @Query("DELETE FROM LinkedHearingDetailsAudit lgd WHERE lgd.linkedGroup.id = :groupId "
+        + "AND lgd.linkedGroupVersion = :version")
     void deleteLinkedHearingsDetailsAudit(Long groupId, Long version);
 }

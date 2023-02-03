@@ -298,6 +298,20 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         }
     }
 
+    private void unlinkHearingsFromGroup(HearingLinkGroupRequest hearingLinkGroupRequest,
+                                         List<HearingEntity> currentHearings) {
+        for (HearingEntity hearingEntity : currentHearings) {
+            if (!hearingLinkGroupRequest.getHearingsInGroup()
+                .stream().anyMatch(linkHearingDetails ->
+                                       Long.valueOf(linkHearingDetails.getHearingId())
+                                           .equals(hearingEntity.getId()))) {
+                hearingEntity.setLinkedOrder(null);
+                hearingEntity.setLinkedGroupDetails(null);
+                hearingRepository.save(hearingEntity);
+            }
+        }
+    }
+
     private void relinkOldHearingsFromGroup(HashMap<Long, Long> currentHearings,
                                             LinkedGroupDetails linkedGroupDetails) {
         for (Map.Entry<Long, Long> entry : currentHearings.entrySet()) {
@@ -368,19 +382,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         });
     }
 
-    private void unlinkHearingsFromGroup(HearingLinkGroupRequest hearingLinkGroupRequest,
-                                         List<HearingEntity> currentHearings) {
-        for (HearingEntity hearingEntity : currentHearings) {
-            if (!hearingLinkGroupRequest.getHearingsInGroup()
-                .stream().anyMatch(linkHearingDetails ->
-                                       Long.valueOf(linkHearingDetails.getHearingId())
-                                           .equals(hearingEntity.getId()))) {
-                hearingEntity.setLinkedOrder(null);
-                hearingEntity.setLinkedGroupDetails(null);
-                hearingRepository.save(hearingEntity);
-            }
-        }
-    }
+
 
     protected LinkedGroupDetails updateLinkGroup(HearingLinkGroupRequest hearingLinkGroupRequest,
                                                  String requestId) {
