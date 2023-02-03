@@ -89,7 +89,7 @@ public final class ValidationError {
         + CHARACTERS_LONG;
     public static final String REASONABLE_ADJUSTMENTS_MAX_LENGTH_MSG = "Reasonable adjustments must not be more than "
         + "10 " + CHARACTERS_LONG;
-    public static final String VULNERABLE_DETAILS_MAX_LENGTH = "Vulnerable details must not be more than 256 "
+    public static final String VULNERABLE_DETAILS_MAX_LENGTH = "Vulnerable details must not be more than 2000 "
         + CHARACTERS_LONG;
     public static final String HEARING_CHANNEL_EMAIL_MAX_LENGTH = "Hearing channel email must not be more than 120 "
         + CHARACTERS_LONG;

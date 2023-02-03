@@ -1173,7 +1173,7 @@ class HearingManagementControllerIT extends BaseTest {
         individualDetails.setPreferredHearingChannel("a".repeat(71));
         individualDetails.setInterpreterLanguage("a".repeat(11));
         individualDetails.setReasonableAdjustments(Collections.singletonList("a".repeat(11)));
-        individualDetails.setVulnerabilityDetails("a".repeat(257));
+        individualDetails.setVulnerabilityDetails("a".repeat(2001));
         individualDetails.setHearingChannelEmail(List.of("a".repeat(121)));
         individualDetails.setHearingChannelPhone(List.of("a".repeat(31)));
         individualDetails.setOtherReasonableAdjustmentDetails("a".repeat(201));
