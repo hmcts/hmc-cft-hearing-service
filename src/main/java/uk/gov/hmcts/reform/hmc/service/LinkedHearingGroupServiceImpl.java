@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
+import uk.gov.hmcts.reform.hmc.data.PreviousLinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -36,7 +37,9 @@ import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LIST_ASSIST_SUCCESSFUL_RESPONSE;
@@ -90,7 +93,6 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
 
     @Override
-    @Transactional
     public HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
         //POST
         linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
@@ -107,9 +109,14 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         } catch (BadFutureHearingRequestException requestException) {
             deleteLinkedHearingGroups(
                 linkedHearingGroup.getLinkedHearingGroup().getGroupClientReference(),
-                hearingLinkGroupRequest);
+                hearingLinkGroupRequest
+            );
             throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
         } catch (FutureHearingServerException serverException) {
+            deleteLinkedHearingGroups(
+                linkedHearingGroup.getLinkedHearingGroup().getGroupClientReference(),
+                hearingLinkGroupRequest
+            );
             throw new FhBadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
         }
         HearingLinkGroupResponse hearingLinkGroupResponse = new HearingLinkGroupResponse();
@@ -118,18 +125,24 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Override
-    @Transactional
     public void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest) {
         //PUT
         linkedHearingValidator.validateHearingLinkGroupRequestForUpdate(requestId, hearingLinkGroupRequest);
         //HMAN-94
         LinkedGroupDetails currentLinkGroup = linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(requestId);
+        PreviousLinkedGroupDetails previousLinkedGroupDetails = mapPreviousLinkGroupDetails(currentLinkGroup);
+        HashMap<Long, Long> oldHearings = new HashMap<>();
+        hearingRepository.findByLinkedGroupId(currentLinkGroup.getLinkedGroupId()).forEach(hearingEntity -> {
+            oldHearings.put(hearingEntity.getId(), hearingEntity.getLinkedOrder());
+        });
+
         List<HearingEntity> currentHearings =
             hearingRepository.findByLinkedGroupId(currentLinkGroup.getLinkedGroupId());
-        unlinkHearingsFromGroup(hearingLinkGroupRequest, currentHearings);
-        LinkedGroupDetails linkedGroupDetails = updateLinkGroup(hearingLinkGroupRequest, requestId);
-        updateHearingWithLinkGroup(hearingLinkGroupRequest, linkedGroupDetails);
-        saveAndAuditLinkHearing(hearingLinkGroupRequest, linkedGroupDetails);
+        LinkedGroupDetails linkedGroupDetails = processAmendLinkedHearingRequest(
+            hearingLinkGroupRequest,
+            currentHearings,
+            requestId
+        );
 
         //HMAN-95
         LinkedHearingGroup linkedHearingGroup = processRequestForListAssist(linkedGroupDetails);
@@ -141,32 +154,45 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             linkedGroupDetails.setStatus("ACTIVE");
             linkedGroupDetailsRepository.save(linkedGroupDetails);
         } catch (BadFutureHearingRequestException requestException) {
+            processAmendLinkedHearingResponse(
+                hearingLinkGroupRequest,
+                oldHearings,
+                requestId,
+                linkedGroupDetails,
+                previousLinkedGroupDetails
+            );
             throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
         } catch (FutureHearingServerException serverException) {
+            processAmendLinkedHearingResponse(
+                hearingLinkGroupRequest,
+                oldHearings,
+                requestId,
+                linkedGroupDetails,
+                previousLinkedGroupDetails
+            );
             throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
         }
     }
 
+
     @Override
-    @Transactional
     public void deleteLinkedHearingGroup(String requestId) {
         Long linkedGroupId = linkedHearingValidator.validateHearingGroup(requestId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(linkedGroupId);
-        verifyAccess(linkedGroupHearings, Lists.newArrayList(HEARING_MANAGER));
-        linkedHearingValidator.validateUnlinkingHearingsStatus(linkedGroupHearings);
-        linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
+        LinkedGroupDetails linkedGroupDetails = linkedGroupDetailsRepository.findById(linkedGroupId).get();
+        processDeleteHearingRequest(linkedGroupHearings, linkedGroupDetails);
 
-        LinkedGroupDetails linkedGroupDetails = linkedGroupHearings.get(0).getLinkedGroupDetails();
-        saveLinkedGroupDetailsAudit(linkedGroupDetails);
-        linkedGroupHearings.forEach(hearingEntity -> saveLinkedHearingDetailsAudit(hearingEntity, false));
-        saveLinkedGroupDetails(linkedGroupDetails);
         try {
             futureHearingRepository.deleteLinkedHearingGroup(linkedGroupDetails.getRequestId());
             log.debug(LIST_ASSIST_SUCCESSFUL_RESPONSE);
+            unlinkHearingsFromGroup(linkedGroupHearings);
             linkedGroupDetailsRepository.delete(linkedGroupDetails);
+
         } catch (BadFutureHearingRequestException requestException) {
+            processDeleteHearingResponse(linkedGroupDetails);
             throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
         } catch (FutureHearingServerException serverException) {
+            processDeleteHearingResponse(linkedGroupDetails);
             throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
         }
     }
@@ -177,6 +203,121 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByRequestId(requestId);
         verifyAccess(linkedGroupHearings, Lists.newArrayList(HEARING_VIEWER));
         return getLinkedHearingGroupDetails(requestId);
+    }
+
+    @Transactional
+    private void processDeleteHearingRequest(List<HearingEntity> linkedGroupHearings,
+                                             LinkedGroupDetails linkedGroupDetails) {
+        verifyAccess(linkedGroupHearings, Lists.newArrayList(HEARING_MANAGER));
+        linkedHearingValidator.validateUnlinkingHearingsStatus(linkedGroupHearings);
+        linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
+
+        saveLinkedGroupDetailsAudit(linkedGroupDetails);
+        linkedGroupHearings.forEach(hearingEntity ->
+                                        saveLinkedHearingDetailsAudit(hearingEntity, linkedGroupDetails));
+        saveLinkedGroupDetails(linkedGroupDetails);
+    }
+
+    @Transactional
+    private void processDeleteHearingResponse(LinkedGroupDetails linkedGroupDetails) {
+        linkedGroupDetailsAuditRepository.deleteLinkedGroupDetailsAudit(
+            Long.valueOf(linkedGroupDetails.getLinkedGroupId()),
+            (linkedGroupDetails.getLinkedGroupLatestVersion() - 1)
+        );
+        linkedHearingDetailsAuditRepository.deleteLinkedHearingsDetailsAudit(
+            Long.valueOf(linkedGroupDetails.getLinkedGroupId()),
+            (linkedGroupDetails.getLinkedGroupLatestVersion() - 1)
+        );
+        linkedGroupDetails.setStatus("ACTIVE");
+        linkedGroupDetails.setLinkedGroupLatestVersion((linkedGroupDetails.getLinkedGroupLatestVersion() - 1));
+        linkedGroupDetailsRepository.save(linkedGroupDetails);
+    }
+
+    @Transactional
+    private LinkedGroupDetails processAmendLinkedHearingRequest(HearingLinkGroupRequest hearingLinkGroupRequest,
+                                                                List<HearingEntity> currentHearings,
+                                                                String requestId) {
+        unlinkHearingsFromGroup(hearingLinkGroupRequest, currentHearings);
+        LinkedGroupDetails linkedGroupDetails = updateLinkGroup(hearingLinkGroupRequest, requestId);
+        updateHearingWithLinkGroup(hearingLinkGroupRequest, linkedGroupDetails);
+        saveAndAuditLinkHearing(hearingLinkGroupRequest, linkedGroupDetails);
+        return linkedGroupDetails;
+    }
+
+    @Transactional
+    private void processAmendLinkedHearingResponse(HearingLinkGroupRequest hearingLinkGroupRequest,
+                                                   HashMap<Long, Long> currentHearings, String requestId,
+                                                   LinkedGroupDetails linkedGroupDetails,
+                                                   PreviousLinkedGroupDetails previousLinkedGroupDetails) {
+        linkedGroupDetailsAuditRepository.deleteLinkedGroupDetailsAudit(
+            Long.valueOf(linkedGroupDetails.getLinkedGroupId()),
+            linkedGroupDetails.getLinkedGroupLatestVersion()
+        );
+        linkedHearingDetailsAuditRepository.deleteLinkedHearingsDetailsAudit(
+            Long.valueOf(linkedGroupDetails.getLinkedGroupId()),
+            linkedGroupDetails.getLinkedGroupLatestVersion()
+        );
+        unlinkNewHearingsFromGroup(hearingLinkGroupRequest);
+        relinkOldHearingsFromGroup(currentHearings, linkedGroupDetails);
+        rollBackLinkGroupDetails(previousLinkedGroupDetails);
+    }
+
+    private PreviousLinkedGroupDetails mapPreviousLinkGroupDetails(LinkedGroupDetails oldLinkedGroupDetails) {
+        PreviousLinkedGroupDetails linkedGroupDetails = new PreviousLinkedGroupDetails();
+        linkedGroupDetails.setLinkedGroupId(oldLinkedGroupDetails.getLinkedGroupId());
+        linkedGroupDetails.setRequestId(oldLinkedGroupDetails.getRequestId());
+        linkedGroupDetails.setRequestName(oldLinkedGroupDetails.getRequestName());
+        linkedGroupDetails.setRequestDateTime(oldLinkedGroupDetails.getRequestDateTime());
+        linkedGroupDetails.setLinkType(oldLinkedGroupDetails.getLinkType());
+        linkedGroupDetails.setStatus(oldLinkedGroupDetails.getStatus());
+        linkedGroupDetails.setLinkedComments(oldLinkedGroupDetails.getLinkedComments());
+        linkedGroupDetails.setLinkedGroupLatestVersion(oldLinkedGroupDetails.getLinkedGroupLatestVersion());
+        return linkedGroupDetails;
+    }
+
+    private void rollBackLinkGroupDetails(PreviousLinkedGroupDetails oldLinkedGroupDetails) {
+        LinkedGroupDetails linkedGroupDetails = linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(
+            oldLinkedGroupDetails.getRequestId());
+        linkedGroupDetails.setLinkedGroupId(oldLinkedGroupDetails.getLinkedGroupId());
+        linkedGroupDetails.setRequestId(oldLinkedGroupDetails.getRequestId());
+        linkedGroupDetails.setRequestName(oldLinkedGroupDetails.getRequestName());
+        linkedGroupDetails.setRequestDateTime(oldLinkedGroupDetails.getRequestDateTime());
+        linkedGroupDetails.setLinkType(oldLinkedGroupDetails.getLinkType());
+        linkedGroupDetails.setStatus(oldLinkedGroupDetails.getStatus());
+        linkedGroupDetails.setLinkedComments(oldLinkedGroupDetails.getLinkedComments());
+        linkedGroupDetails.setLinkedGroupLatestVersion(oldLinkedGroupDetails.getLinkedGroupLatestVersion());
+        linkedGroupDetailsRepository.save(linkedGroupDetails);
+    }
+
+    private void unlinkHearingsFromGroup(List<HearingEntity> linkedGroupHearings) {
+        for (HearingEntity hearingEntity : linkedGroupHearings) {
+            HearingEntity hearingEntityToUpdate = hearingRepository.findById(hearingEntity.getId()).get();
+            hearingEntityToUpdate.setLinkedOrder(null);
+            hearingEntityToUpdate.setLinkedGroupDetails(null);
+            hearingRepository.save(hearingEntityToUpdate);
+        }
+    }
+
+    private void relinkOldHearingsFromGroup(HashMap<Long, Long> currentHearings,
+                                            LinkedGroupDetails linkedGroupDetails) {
+        for (Map.Entry<Long, Long> entry : currentHearings.entrySet()) {
+            Long hearingId = entry.getKey();
+            Long order = entry.getValue();
+            HearingEntity hearingEntityToUpdate = hearingRepository.findById(hearingId).get();
+            hearingEntityToUpdate.setLinkedOrder(order);
+            hearingEntityToUpdate.setLinkedGroupDetails(linkedGroupDetails);
+            hearingRepository.save(hearingEntityToUpdate);
+        }
+    }
+
+    private void unlinkNewHearingsFromGroup(HearingLinkGroupRequest hearingLinkGroupRequest) {
+        hearingLinkGroupRequest.getHearingsInGroup().stream().forEach(hearing -> {
+            HearingEntity hearingEntityToUpdate = hearingRepository.findById(
+                Long.valueOf(hearing.getHearingId())).get();
+            hearingEntityToUpdate.setLinkedOrder(null);
+            hearingEntityToUpdate.setLinkedGroupDetails(null);
+            hearingRepository.save(hearingEntityToUpdate);
+        });
     }
 
     private GetLinkedHearingGroupResponse getLinkedHearingGroupDetails(String requestId) {
@@ -222,7 +363,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
                 hearingRepository.findById(Long.valueOf(hearingInGroup.getHearingId()));
             if (optionalHearingEntity.isPresent()) {
                 HearingEntity hearingEntity = optionalHearingEntity.get();
-                saveLinkedHearingDetailsAudit(hearingEntity, true);
+                saveLinkedHearingDetailsAudit(hearingEntity, linkedGroupDetails);
             }
         });
     }
@@ -270,13 +411,14 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
                     HearingEntity hearingToSave = hearing.get();
                     hearingToSave.setLinkedGroupDetails(linkedGroupDetailsSaved);
                     hearingToSave.setLinkedOrder(
-                        linkedHearingValidator.getHearingOrder(linkHearingDetails,hearingLinkGroupRequest)
+                        linkedHearingValidator.getHearingOrder(linkHearingDetails, hearingLinkGroupRequest)
                     );
                     hearingRepository.save(hearingToSave);
                 }
             });
     }
 
+    @Transactional
     private LinkedHearingGroup processRequestForListAssist(LinkedGroupDetails linkedGroupDetails) {
         HearingGroup hearingGroup = new HearingGroup();
         hearingGroup.setGroupClientReference(linkedGroupDetails.getRequestId());
@@ -307,6 +449,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         return null;
     }
 
+    @Transactional
     private void deleteLinkedHearingGroups(String requestId,
                                            HearingLinkGroupRequest hearingLinkGroupRequest) {
         hearingLinkGroupRequest.getHearingsInGroup()
@@ -341,15 +484,10 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         linkedGroupDetailsAuditRepository.save(linkedGroupDetailsAudit);
     }
 
-    private void saveLinkedHearingDetailsAudit(HearingEntity hearingEntity, boolean update) {
+    private void saveLinkedHearingDetailsAudit(HearingEntity hearingEntity, LinkedGroupDetails linkedGroupDetails) {
         LinkedHearingDetailsAudit linkedHearingDetailsAuditEntity;
-        if (update) {
-            linkedHearingDetailsAuditEntity = linkedHearingDetailsAuditMapper
-                .modelToEntityUpdate(hearingEntity);
-        } else {
-            linkedHearingDetailsAuditEntity = linkedHearingDetailsAuditMapper
-                .modelToEntity(hearingEntity);
-        }
+        linkedHearingDetailsAuditEntity = linkedHearingDetailsAuditMapper
+                .modelToEntity(hearingEntity, linkedGroupDetails);
         linkedHearingDetailsAuditRepository.save(linkedHearingDetailsAuditEntity);
     }
 
