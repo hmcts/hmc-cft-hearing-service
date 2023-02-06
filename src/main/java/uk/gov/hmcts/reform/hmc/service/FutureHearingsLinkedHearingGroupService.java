@@ -185,6 +185,7 @@ public class FutureHearingsLinkedHearingGroupService {
         linkedGroupDetails.setLinkType(oldLinkedGroupDetails.getLinkType());
         linkedGroupDetails.setStatus(oldLinkedGroupDetails.getStatus());
         linkedGroupDetails.setLinkedComments(oldLinkedGroupDetails.getLinkedComments());
+        linkedGroupDetails.setReasonForLink(oldLinkedGroupDetails.getReasonForLink());
         linkedGroupDetails.setLinkedGroupLatestVersion(oldLinkedGroupDetails.getLinkedGroupLatestVersion());
         linkedGroupDetailsRepository.save(linkedGroupDetails);
     }

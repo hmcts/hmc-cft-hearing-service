@@ -188,6 +188,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         linkedGroupDetails.setRequestId(oldLinkedGroupDetails.getRequestId());
         linkedGroupDetails.setRequestName(oldLinkedGroupDetails.getRequestName());
         linkedGroupDetails.setRequestDateTime(oldLinkedGroupDetails.getRequestDateTime());
+        linkedGroupDetails.setReasonForLink(oldLinkedGroupDetails.getReasonForLink());
         linkedGroupDetails.setLinkType(oldLinkedGroupDetails.getLinkType());
         linkedGroupDetails.setStatus(oldLinkedGroupDetails.getStatus());
         linkedGroupDetails.setLinkedComments(oldLinkedGroupDetails.getLinkedComments());
