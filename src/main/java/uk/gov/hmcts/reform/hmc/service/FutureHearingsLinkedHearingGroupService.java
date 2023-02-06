@@ -50,14 +50,15 @@ public class FutureHearingsLinkedHearingGroupService {
     private final AccessControlService accessControlService;
 
     @Autowired
-    public FutureHearingsLinkedHearingGroupService(HearingRepository hearingRepository,
-                                                   LinkedGroupDetailsRepository linkedGroupDetailsRepository,
-                                                   LinkedHearingValidator linkedHearingValidator,
-                                                   LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository,
-                                                   LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository,
-                                                   LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper,
-                                                   LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper,
-                                                   AccessControlService accessControlService) {
+    public FutureHearingsLinkedHearingGroupService(
+        HearingRepository hearingRepository,
+        LinkedGroupDetailsRepository linkedGroupDetailsRepository,
+        LinkedHearingValidator linkedHearingValidator,
+        LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository,
+        LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository,
+        LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper,
+        LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper,
+        AccessControlService accessControlService) {
         this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
         this.linkedHearingValidator = linkedHearingValidator;
         this.hearingRepository = hearingRepository;
@@ -71,7 +72,7 @@ public class FutureHearingsLinkedHearingGroupService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void processDeleteHearingRequest(List<HearingEntity> linkedGroupHearings,
-                                             LinkedGroupDetails linkedGroupDetails) {
+                                            LinkedGroupDetails linkedGroupDetails) {
         verifyAccess(linkedGroupHearings, Lists.newArrayList(HEARING_MANAGER));
         linkedHearingValidator.validateUnlinkingHearingsStatus(linkedGroupHearings);
         linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
@@ -89,7 +90,7 @@ public class FutureHearingsLinkedHearingGroupService {
             (linkedGroupDetails.getLinkedGroupLatestVersion() - 1)
         );
         linkedHearingDetailsAuditRepository.deleteLinkedHearingsDetailsAudit(
-           linkedGroupDetails.getLinkedGroupId(),
+            linkedGroupDetails.getLinkedGroupId(),
             (linkedGroupDetails.getLinkedGroupLatestVersion() - 1)
         );
         linkedGroupDetails.setStatus("ACTIVE");
@@ -99,8 +100,8 @@ public class FutureHearingsLinkedHearingGroupService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public LinkedGroupDetails processAmendLinkedHearingRequest(HearingLinkGroupRequest hearingLinkGroupRequest,
-                                                                List<HearingEntity> currentHearings,
-                                                                String requestId) {
+                                                               List<HearingEntity> currentHearings,
+                                                               String requestId) {
         unlinkHearingsFromGroup(hearingLinkGroupRequest, currentHearings);
         LinkedGroupDetails linkedGroupDetails = updateLinkGroup(hearingLinkGroupRequest, requestId);
         updateHearingWithLinkGroup(hearingLinkGroupRequest, linkedGroupDetails);
@@ -108,11 +109,11 @@ public class FutureHearingsLinkedHearingGroupService {
         return linkedGroupDetails;
     }
 
-    @Transactional (propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void processAmendLinkedHearingResponse(HearingLinkGroupRequest hearingLinkGroupRequest,
-                                                   Map<Long, Long> currentHearings,
-                                                   LinkedGroupDetails linkedGroupDetails,
-                                                   PreviousLinkedGroupDetails previousLinkedGroupDetails) {
+                                                  Map<Long, Long> currentHearings,
+                                                  LinkedGroupDetails linkedGroupDetails,
+                                                  PreviousLinkedGroupDetails previousLinkedGroupDetails) {
         linkedGroupDetailsAuditRepository.deleteLinkedGroupDetailsAudit(
             linkedGroupDetails.getLinkedGroupId(),
             linkedGroupDetails.getLinkedGroupLatestVersion()
@@ -300,7 +301,7 @@ public class FutureHearingsLinkedHearingGroupService {
     private void saveLinkedHearingDetailsAudit(HearingEntity hearingEntity, LinkedGroupDetails linkedGroupDetails) {
         LinkedHearingDetailsAudit linkedHearingDetailsAuditEntity;
         linkedHearingDetailsAuditEntity = linkedHearingDetailsAuditMapper
-                .modelToEntity(hearingEntity, linkedGroupDetails);
+            .modelToEntity(hearingEntity, linkedGroupDetails);
         linkedHearingDetailsAuditRepository.save(linkedHearingDetailsAuditEntity);
     }
 

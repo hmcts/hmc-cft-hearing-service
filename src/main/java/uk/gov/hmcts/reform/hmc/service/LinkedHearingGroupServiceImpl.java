@@ -3,10 +3,7 @@ package uk.gov.hmcts.reform.hmc.service;
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.PreviousLinkedGroupDetails;
@@ -159,7 +156,8 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         LinkedGroupDetails linkedGroupDetails;
         linkedGroupDetails = (linkedGroupDetailsOptional.isPresent()) ? linkedGroupDetailsOptional.get() : null;
         if (linkedGroupDetails != null) {
-            futureHearingsLinkedHearingGroupService.processDeleteHearingRequest(linkedGroupHearings, linkedGroupDetails);
+            futureHearingsLinkedHearingGroupService
+                .processDeleteHearingRequest(linkedGroupHearings, linkedGroupDetails);
             try {
                 futureHearingRepository.deleteLinkedHearingGroup(linkedGroupDetails.getRequestId());
                 log.debug(LIST_ASSIST_SUCCESSFUL_RESPONSE);
