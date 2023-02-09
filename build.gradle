@@ -4,10 +4,9 @@ plugins {
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
   id 'org.springframework.boot' version '2.4.4'
-  id 'org.owasp.dependencycheck' version '6.2.2'
   id 'com.github.ben-manes.versions' version '0.39.0'
   id 'org.sonarqube' version '3.3'
-  id 'uk.gov.hmcts.java' version '0.12.2'
+  id 'uk.gov.hmcts.java' version '0.12.40'
   id 'com.github.spacialcircumstances.gradle-cucumber-reporting' version '0.1.23'
   id 'au.com.dius.pact' version '4.1.7'
   id 'com.github.hmcts.rse-cft-lib' version '0.15.64'
@@ -229,12 +228,15 @@ def versions = [
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.2',
   netty           : '4.1.77.Final',
-  serviceAuthVersion: '4.0.3'
+  serviceAuthVersion: '4.0.3',
+  tomcatEmbedded  : '9.0.69'
 ]
 
-ext['spring-framework.version'] = '5.3.19'
+ext['spring-framework.version'] = '5.3.24'
 ext['log4j2.version'] = '2.17.1'
-ext['jackson.version'] = '2.13.2'
+ext['spring-security.version'] = '5.8.0'
+ext['snakeyaml.version'] = '1.33'
+ext['jackson.version'] = '2.14.1'
 
 // before committing a change, make sure task still works
 dependencyUpdates {
@@ -248,6 +250,7 @@ dependencyUpdates {
   }
 }
 
+apply from: './gradle/suppress.gradle'
 dependencyCheck {
   suppressionFile = 'config/owasp/suppressions.xml'
 }
@@ -264,7 +267,7 @@ dependencyManagement {
       entry 'json-path'
       entry 'xml-path'
     }
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.58') {
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.68') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
       entry 'tomcat-embed-websocket'
@@ -357,9 +360,6 @@ dependencies {
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
   compile 'net.minidev:json-smart:2.4.7'
-  compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-jaxb-annotations', version: '2.13.2'
-  compile "com.fasterxml.jackson.core:jackson-databind:2.13.2.2"
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.2'
 
   testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.13.0') {
     exclude group: 'com.github.hmcts.befta-fw', module: 'befta-fw'
@@ -380,8 +380,8 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-config'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
 
-  // CVE-2021-22119
-  implementation group: 'org.springframework.security', name:'spring-security-core', version: '5.6.1'
+  implementation group: 'org.springframework.security', name:'spring-security-core'
+  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.25.6'
 
   implementation 'org.mapstruct:mapstruct-jdk8:1.3.1.Final'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
@@ -393,9 +393,16 @@ dependencies {
 
   implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.8.0'
   implementation group: 'com.azure', name: 'azure-core', version: '1.28.0'
+
   // CVE-2021-42550
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.10'
+
+  // CVE-2022-45143
+  implementation "org.apache.tomcat.embed:tomcat-embed-core:${versions.tomcatEmbedded}"
+  implementation "org.apache.tomcat.embed:tomcat-embed-el:${versions.tomcatEmbedded}"
+  implementation "org.apache.tomcat.embed:tomcat-embed-websocket:${versions.tomcatEmbedded}"
+
   // Explicitly set versions of io.netty components to resolve CVE-2021-37136 and CVE-2021-37137
   implementation group: 'io.netty', name: 'netty-buffer', version: versions.netty
   implementation group: 'io.netty', name: 'netty-codec', version: versions.netty
@@ -413,6 +420,9 @@ dependencies {
   implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: versions.netty
   implementation group: 'io.netty', name: 'netty-transport-native-kqueue', version: versions.netty
   implementation group: 'io.netty', name: 'netty-transport-native-unix-common', version: versions.netty
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.5'
+  implementation group: 'io.projectreactor.netty', name: 'reactor-netty-core', version: '1.1.0'
+  implementation group: 'io.projectreactor.netty', name: 'reactor-netty-http', version: '1.1.0'
 
   // CVE-2021-29425
   implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
@@ -451,7 +461,7 @@ dependencies {
   functionalTestImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '8.7.1'
   functionalTestImplementation libraries.junit5
 
-  runtime group: 'org.postgresql', name: 'postgresql', version: '42.3.3'
+  runtime group: 'org.postgresql', name: 'postgresql', version: '42.5.1'
 
   cftlibImplementation group: 'org.springframework.boot', name: 'spring-boot-devtools'
 
@@ -477,7 +487,7 @@ wrapper {
 pact {
   publish {
     pactDirectory = 'build/pacts'
-    pactBrokerUrl = System.getProperty("pact.broker.url") ?: 'http://localhost:80'
+    pactBrokerUrl = System.getenv("PACT_BROKER_URL") ?: 'http://localhost:80'
     tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
     version = '0.0.1'
   }

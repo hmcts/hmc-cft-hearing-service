@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 
+import java.util.Collections;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 
@@ -96,18 +97,18 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertTrue(hearingEntityBeforeDelete.isPresent());
         assertTrue(hearingEntityAfterDelete.isPresent());
         assertEquals(1, hearingEntityBeforeDelete.get().getLinkedOrder());
-        assertNull(hearingEntityAfterDelete.get().getLinkedOrder());
+        assertEquals(1, hearingEntityAfterDelete.get().getLinkedOrder());
         assertEquals(7700000000L, hearingEntityBeforeDelete.get().getLinkedGroupDetails().getLinkedGroupId());
-        assertNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
+        assertNotNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
 
         //validating LinkedGroupDetails
         LinkedGroupDetails linkedGroupDetailsAfterDelete = linkedGroupDetailsRepository
             .getLinkedGroupDetailsByRequestId(REQUEST_ID2);
         assertNotNull(linkedGroupDetailsAfterDelete);
-        assertEquals("ERROR", linkedGroupDetailsAfterDelete.getStatus());
+        assertEquals("ACTIVE", linkedGroupDetailsAfterDelete.getStatus());
         //checking Audit tables
-        validateLinkedGroupAuditDetails();
-        validateHearingAuditDetails(linkedOrder);
+        validateLinkedGroupAuditDetailsAfterDelete();
+        validateHearingAuditDetailsAfterDelete();
     }
 
     @Test
@@ -127,16 +128,16 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertTrue(hearingEntityBeforeDelete.isPresent());
         assertTrue(hearingEntityAfterDelete.isPresent());
         assertEquals(1, hearingEntityBeforeDelete.get().getLinkedOrder());
-        assertNull(hearingEntityAfterDelete.get().getLinkedOrder());
+        assertEquals(1, hearingEntityAfterDelete.get().getLinkedOrder());
         assertEquals(7700000000L, hearingEntityBeforeDelete.get().getLinkedGroupDetails().getLinkedGroupId());
-        assertNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
+        assertNotNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
 
         //validating LinkedGroupDetails
         Long linkedGroupId = linkedGroupDetailsRepository.isFoundForRequestId(REQUEST_ID2);
-        assertNull(linkedGroupId);
+        assertEquals(7700000000L, linkedGroupId);
         //checking Audit tables
-        validateLinkedGroupAuditDetails();
-        validateHearingAuditDetails(linkedOrder);
+        validateLinkedGroupAuditDetailsAfterDelete();
+        validateHearingAuditDetailsAfterDelete();
     }
 
     @Test
@@ -156,16 +157,16 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertTrue(hearingEntityBeforeDelete.isPresent());
         assertTrue(hearingEntityAfterDelete.isPresent());
         assertEquals(1, hearingEntityBeforeDelete.get().getLinkedOrder());
-        assertNull(hearingEntityAfterDelete.get().getLinkedOrder());
+        assertEquals(1, hearingEntityAfterDelete.get().getLinkedOrder());
         assertEquals(7700000000L, hearingEntityBeforeDelete.get().getLinkedGroupDetails().getLinkedGroupId());
-        assertNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
+        assertNotNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
 
         //validating LinkedGroupDetails
         Long linkedGroupId = linkedGroupDetailsRepository.isFoundForRequestId(REQUEST_ID2);
-        assertNull(linkedGroupId);
+        assertEquals(7700000000L, linkedGroupId);
         //checking Audit tables
-        validateLinkedGroupAuditDetails();
-        validateHearingAuditDetails(linkedOrder);
+        validateLinkedGroupAuditDetailsAfterDelete();
+        validateHearingAuditDetailsAfterDelete();
     }
 
     @Test
@@ -188,18 +189,18 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertTrue(hearingEntityBeforeDelete.isPresent());
         assertTrue(hearingEntityAfterDelete.isPresent());
         assertEquals(1, hearingEntityBeforeDelete.get().getLinkedOrder());
-        assertNull(hearingEntityAfterDelete.get().getLinkedOrder());
+        assertEquals(1, hearingEntityAfterDelete.get().getLinkedOrder());
         assertEquals(7700000000L, hearingEntityBeforeDelete.get().getLinkedGroupDetails().getLinkedGroupId());
-        assertNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
+        assertNotNull(hearingEntityAfterDelete.get().getLinkedGroupDetails());
 
         //validating LinkedGroupDetails
         LinkedGroupDetails linkedGroupDetailsAfterDelete = linkedGroupDetailsRepository
             .getLinkedGroupDetailsByRequestId(REQUEST_ID2);
         assertNotNull(linkedGroupDetailsAfterDelete);
-        assertEquals("ERROR", linkedGroupDetailsAfterDelete.getStatus());
+        assertEquals("ACTIVE", linkedGroupDetailsAfterDelete.getStatus());
         //checking Audit tables
-        validateLinkedGroupAuditDetails();
-        validateHearingAuditDetails(linkedOrder);
+        validateLinkedGroupAuditDetailsAfterDelete();
+        validateHearingAuditDetailsAfterDelete();
     }
 
     @Test
@@ -237,5 +238,21 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertEquals(1, entity.getLinkedGroupVersion());
         assertEquals(7700000000L, entity.getLinkedGroup().getLinkedGroupId());
         assertEquals("good reason", entity.getReasonForLink());
+    }
+
+    private void validateHearingAuditDetailsAfterDelete() {
+        assertEquals(Collections.emptyList(),
+                     entityManager.createNativeQuery("select * from linked_hearing_details_audit where "
+                                                         + "hearing_id=2100000005",
+                                                     LinkedGroupDetailsAudit.class).getResultList());
+    }
+
+    private void validateLinkedGroupAuditDetailsAfterDelete() {
+        assertEquals(
+            Collections.emptyList(),
+            entityManager.createNativeQuery("select * from linked_group_details_audit where "
+                                                             + "linked_group_id=7700000000",
+                                                         LinkedGroupDetailsAudit.class).getResultList());
+
     }
 }

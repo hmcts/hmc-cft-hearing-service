@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
+import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelUserRequirementsEntity;
@@ -55,7 +57,7 @@ class GetHearingResponseMapperTest {
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
-        assertPartyDetails(response.getPartyDetails().get(0), "ORG");
+        assertPartyDetails(response.getPartyDetails().get(0), PartyType.ORG.getLabel());
         assertHearingResponse(response.getHearingResponse());
         assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
         assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
@@ -78,7 +80,7 @@ class GetHearingResponseMapperTest {
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
-        assertPartyDetails(response.getPartyDetails().get(0), "IND");
+        assertPartyDetails(response.getPartyDetails().get(0), PartyType.IND.getLabel());
         assertHearingResponse(response.getHearingResponse());
         assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
         assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
@@ -98,7 +100,7 @@ class GetHearingResponseMapperTest {
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
-        assertPartyDetails(response.getPartyDetails().get(0), "ORG");
+        assertPartyDetails(response.getPartyDetails().get(0), PartyType.ORG.getLabel());
         assertHearingResponse(response.getHearingResponse());
         assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
         assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
@@ -123,7 +125,7 @@ class GetHearingResponseMapperTest {
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
-        assertPartyDetails(response.getPartyDetails().get(0), "ORG");
+        assertPartyDetails(response.getPartyDetails().get(0), PartyType.ORG.getLabel());
         assertHearingResponse(response.getHearingResponse());
         assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
         assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
@@ -185,7 +187,7 @@ class GetHearingResponseMapperTest {
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
-        assertPartyDetails(response.getPartyDetails().get(0), "ORG");
+        assertPartyDetails(response.getPartyDetails().get(0), PartyType.ORG.getLabel());
         assertHearingResponse(response.getHearingResponse());
         assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
         assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
@@ -239,7 +241,7 @@ class GetHearingResponseMapperTest {
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
-        assertPartyDetails(response.getPartyDetails().get(0), "ORG");
+        assertPartyDetails(response.getPartyDetails().get(0), PartyType.ORG.getLabel());
         assertHearingResponse(response.getHearingResponse());
         assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
         assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
@@ -264,7 +266,7 @@ class GetHearingResponseMapperTest {
         assertCaseDetails(response.getCaseDetails());
         assertRequestDetails(response.getRequestDetails());
         assertHearingDetails(response.getHearingDetails());
-        assertPartyDetails(response.getPartyDetails().get(0), "ORG");
+        assertPartyDetails(response.getPartyDetails().get(0), PartyType.ORG.getLabel());
         assertHearingResponse(response.getHearingResponse());
         assertHearingDaySchedule(response.getHearingResponse().getHearingDaySchedule().get(0));
         assertAttendees(response.getHearingResponse().getHearingDaySchedule().get(0).getAttendees().get(0));
@@ -282,6 +284,25 @@ class GetHearingResponseMapperTest {
             .setListingStatus(null);
         GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
         assertNull(response.getHearingResponse().getListingStatus());
+    }
+
+    @Test
+    void toHearingsResponseWhenCancellationReasonsIsEmpty() {
+        HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
+        GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
+        assertNull(response.getRequestDetails().getCancellationReasonCodes());
+    }
+
+    @Test
+    void toHearingsResponseWhenCancellationReasonsIsPresent() {
+        HearingEntity hearingEntity = TestingUtil.getCaseHearingsEntity(PartyType.ORG);
+        List<CancellationReasonsEntity> cancelReasons = new ArrayList<>();
+        CancellationReasonsEntity cancellationReason1 = new CancellationReasonsEntity();
+        cancellationReason1.setCancellationReasonType("ReasonType");
+        cancelReasons.add(cancellationReason1);
+        hearingEntity.getCaseHearingRequests().get(0).setCancellationReasons(cancelReasons);
+        GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
+        assertEquals("ReasonType", response.getRequestDetails().getCancellationReasonCodes().get(0));
     }
 
     @Test
@@ -345,7 +366,9 @@ class GetHearingResponseMapperTest {
 
     private void assertHearingDetails(HearingDetails hearingDetails) {
         assertAll(
-            () -> assertEquals("Some hearing type", hearingDetails.getHearingType())
+            () -> assertEquals("Some hearing type", hearingDetails.getHearingType()),
+            () -> assertEquals(
+                ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel(), hearingDetails.getListingAutoChangeReasonCode())
         );
     }
 
@@ -369,7 +392,7 @@ class GetHearingResponseMapperTest {
         assertAll(
             () -> assertEquals("venue1", hearingDaySchedule.getHearingVenueId()),
             () -> assertEquals("room1", hearingDaySchedule.getHearingRoomId()),
-            () -> assertEquals("PanelUser1", hearingDaySchedule.getPanelMemberId())
+            () -> assertEquals("PanelUser1", hearingDaySchedule.getPanelMemberIds().get(0))
         );
     }
 

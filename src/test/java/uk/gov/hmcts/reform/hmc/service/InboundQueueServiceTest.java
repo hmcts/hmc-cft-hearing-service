@@ -350,7 +350,7 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.AWAITING_LISTING));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
 
             given(messageContext.getMessage()).willReturn(message);
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
@@ -695,7 +695,7 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
 
             JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
             Exception exception = assertThrows(ListAssistResponseException.class, () ->

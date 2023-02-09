@@ -137,7 +137,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingToSave);
             messageSenderToTopicConfiguration
                 .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
-                             hmcHearingResponse.getHmctsServiceCode());
+                             hmcHearingResponse.getHmctsServiceCode(),hearingId.toString());
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
                 log.error("Hearing id: " +  hearingId + " updated to status Exception");
             }
@@ -159,7 +159,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity.get());
                 messageSenderToTopicConfiguration
                     .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
-                                 hmcHearingResponse.getHmctsServiceCode());
+                                 hmcHearingResponse.getHmctsServiceCode(),hearingId.toString());
             }
         }
     }
@@ -176,7 +176,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
             messageSenderToTopicConfiguration
                 .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
-                             hmcHearingResponse.getHmctsServiceCode());
+                             hmcHearingResponse.getHmctsServiceCode(),hearingId.toString());
             if (hearingEntity.getStatus().equals(HearingStatus.EXCEPTION.name())) {
                 log.error("Hearing id: " +  hearingId + " updated to status Exception");
             }

@@ -102,6 +102,10 @@ public class HearingEntity extends BaseEntity implements Serializable {
         return getLatestCaseHearingRequest().getVersionNumber();
     }
 
+    public String getLatestCaseReferenceNumber() {
+        return getLatestCaseHearingRequest().getCaseReference();
+    }
+
     /**
      * Gets the most recent hearing response associated with the latest request.
      */
@@ -141,7 +145,7 @@ public class HearingEntity extends BaseEntity implements Serializable {
                     if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
                         HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
                         if (hearingDayDetailsEntity.getStartDateTime() != null
-                            && LocalDate.now().isAfter(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
+                            && !LocalDate.now().isBefore(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
                             return "AWAITING_ACTUALS";
                         }
                     }

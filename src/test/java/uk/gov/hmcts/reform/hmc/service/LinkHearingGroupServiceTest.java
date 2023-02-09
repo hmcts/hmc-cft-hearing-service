@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.FhBadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
@@ -546,7 +547,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
+            verify(linkedGroupDetailsRepository, times(2)).save(any());
         }
 
 
@@ -595,7 +596,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
+            verify(linkedGroupDetailsRepository, times(2)).save(any());
         }
 
         @Test
@@ -641,7 +642,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
+            verify(linkedGroupDetailsRepository, times(2)).save(any());
         }
 
         @Test
@@ -730,7 +731,7 @@ class LinkHearingGroupServiceTest {
                     hearingDetails2
                 )
             );
-            Exception exception = assertThrows(BadRequestException.class, () -> {
+            Exception exception = assertThrows(FhBadRequestException.class, () -> {
                 service.linkHearing(hearingLinkGroupRequest);
             });
             assertTrue(exception.getMessage().contains(LIST_ASSIST_FAILED_TO_RESPOND));
@@ -1140,7 +1141,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(4)).findById(2000000002L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
+            verify(linkedGroupDetailsRepository, times(2)).save(any());
         }
 
         @Test
@@ -1195,7 +1196,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(4)).findById(2000000002L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
+            verify(linkedGroupDetailsRepository, times(2)).save(any());
         }
 
         @Test
@@ -1637,7 +1638,6 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
             verify(linkedGroupDetailsRepository, times(1))
                 .getLinkedGroupDetailsByRequestId(any());
-            verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
             assertEquals(REJECTED_BY_LIST_ASSIST, response.getDescription());
             assertEquals(400, response.getResponseCode());
         }

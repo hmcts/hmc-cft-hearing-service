@@ -35,7 +35,6 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyDeleteLin
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 
-
 class LinkHearingGroupControllerIT extends BaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(LinkHearingGroupControllerIT.class);

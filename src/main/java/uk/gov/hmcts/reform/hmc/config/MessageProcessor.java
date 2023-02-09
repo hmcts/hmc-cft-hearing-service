@@ -14,6 +14,13 @@ import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR_PROCESSING_MESSAGE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC_FROM_HMI;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.NO_DEFINED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.READ;
+
 @Slf4j
 @Service
 public class MessageProcessor {
@@ -52,8 +59,16 @@ public class MessageProcessor {
             } catch (HearingNotFoundException ex) {
                 log.error(MESSAGE_ERROR +  messageContext.getMessage().getMessageId() + WITH_ERROR + ex.getMessage());
             } catch (Exception ex) {
-                log.error(MESSAGE_ERROR + messageContext.getMessage().getMessageId() + WITH_ERROR + ex.getMessage());
-                inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, ex);
+                log.error(MESSAGE_ERROR + serviceBusReceivedMessage.getMessageId() + WITH_ERROR + ex.getMessage());
+                log.error(
+                    ERROR_PROCESSING_MESSAGE,
+                    CFT_HEARING_SERVICE,
+                    HMC_FROM_HMI,
+                    READ,
+                    applicationProperties.getOrDefault(HEARING_ID,NO_DEFINED)
+                );
+
+inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, ex);
             }
         } else {
             log.error(MISSING_MESSAGE_TYPE + " for message with message with id "

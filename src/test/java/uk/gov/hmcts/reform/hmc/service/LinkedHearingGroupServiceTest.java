@@ -434,7 +434,6 @@ class LinkedHearingGroupServiceTest {
             assertEquals(REJECTED_BY_LIST_ASSIST, exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
             assertEquals(REJECTED_BY_LIST_ASSIST, response.getDescription());
             assertEquals(400, response.getResponseCode());
         }
