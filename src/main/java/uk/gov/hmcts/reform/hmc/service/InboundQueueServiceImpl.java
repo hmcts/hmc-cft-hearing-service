@@ -110,8 +110,6 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             HearingResponse hearingResponse = objectMapper.treeToValue(message, HearingResponse.class);
             Set<ConstraintViolation<HearingResponse>> violations = validator.validate(hearingResponse);
             if (violations.isEmpty()) {
-                log.info("Successfully converted message to HearingResponseType "
-                             + hearingResponse.getHearing().getListingRequestId());
                 log.debug("Successfully converted message to HearingResponseType " + hearingResponse);
                 updateHearingAndStatus(hearingId, hearingResponse);
             } else {
