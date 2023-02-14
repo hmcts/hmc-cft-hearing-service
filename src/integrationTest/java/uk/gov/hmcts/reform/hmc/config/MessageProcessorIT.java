@@ -220,11 +220,9 @@ class MessageProcessorIT extends BaseTest {
         messageProcessor.processMessage(jsonNode, applicationProperties, client, message);
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(2, logsList.size());
+        assertEquals(1, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals(Level.INFO, logsList.get(1).getLevel());
         assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
-        assertTrue(logsList.get(1).getMessage().contains("Successfully converted message to HearingResponseType"));
     }
 
     @Test
@@ -283,16 +281,14 @@ class MessageProcessorIT extends BaseTest {
         messageProcessor.processMessage(jsonMisMatchOnRequestVersion, applicationProperties, client, message);
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(4, logsList.size());
+        assertEquals(3, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals(Level.INFO, logsList.get(1).getLevel());
+        assertEquals(Level.ERROR, logsList.get(1).getLevel());
         assertEquals(Level.ERROR, logsList.get(2).getLevel());
-        assertEquals(Level.ERROR, logsList.get(3).getLevel());
         assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
-        assertTrue(logsList.get(1).getMessage().contains("Successfully converted message to HearingResponseType"));
         assertEquals("Error processing message with Hearing id 2000000000 exception was "
-                         + "Cannot find request version 10 for hearing 2000000000", logsList.get(2).getMessage());
-        assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(3).getMessage());
+                         + "Cannot find request version 10 for hearing 2000000000", logsList.get(1).getMessage());
+        assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(2).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         assertEquals(2, logsListMessageProcessor.size());
