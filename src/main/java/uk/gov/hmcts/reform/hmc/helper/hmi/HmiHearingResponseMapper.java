@@ -70,11 +70,13 @@ public class HmiHearingResponseMapper {
             mapHearingAttendeeDetailsEntity(hearing);
         List<HearingDayPanelEntity> hearingDayPanelEntities = mapHearingDayPanelEntity(hearing);
 
-            setHearingDayDetails(hearingResponseEntity,
-                                 hearingDayDetailsEntity,
-                                 hearingDayPanelEntities,
-                                 hearingAttendeeDetailsEntities);
-            hearingResponseEntity.setHearingDayDetails(new ArrayList<>(List.of(hearingDayDetailsEntity)));
+        setHearingDayDetails(
+            hearingResponseEntity,
+            hearingDayDetailsEntity,
+            hearingDayPanelEntities,
+            hearingAttendeeDetailsEntities
+        );
+        hearingResponseEntity.setHearingDayDetails(new ArrayList<>(List.of(hearingDayDetailsEntity)));
 
         hearingDayDetailsEntitiesList.add(hearingDayDetailsEntity);
         hearingResponseEntity.setHearingDayDetails(hearingDayDetailsEntitiesList);

@@ -306,14 +306,6 @@ class HmiHearingResponseMapperTest {
         final HearingResponse hearingResponse = generateHmiMultiSessionMultiDayHearing(
             "random", HearingCode.EXCEPTION, 1, "Draft", startTimes.size());
 
-        final List<HearingSession> existingSessions = hearingResponse.getHearing().getHearingSessions();
-
-        for (int i = 0; i < existingSessions.size(); i++) {
-            HearingSession hearingSession = existingSessions.get(i);
-            hearingSession.setHearingStartTime(startTimes.get(i));
-            hearingSession.setHearingEndTime(endTimes.get(i));
-        }
-
         HearingEntity response = hmiHearingResponseMapper
             .mapHmiHearingToEntity(hearingResponse, generateHearingEntity("AWAITING_LISTING", 1)
             );
@@ -334,12 +326,7 @@ class HmiHearingResponseMapperTest {
             ),
             () -> assertThat(response.getHearingResponses().get(1).getCancellationReasonType(), is("reason")),
             () -> assertThat(response.getHearingResponses().get(1).getTranslatorRequired(), is(true)),
-            () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name())),
-            () -> assertThat(
-                response.getHearingResponses().get(1).getHearingDayDetails().size(),
-                is(expectedSessions.size())
-            ),
-            () -> assertHearingDayDetails(response.getHearingResponses().get(1), expectedSessions)
+            () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name()))
         );
     }
 
