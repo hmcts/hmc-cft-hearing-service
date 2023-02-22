@@ -350,7 +350,8 @@ class HmiHearingResponseMapperTest {
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().size(),
                 is(hearingSessionStartAndEndTimes.size())
-            )
+            ),
+            () -> assertHearingDayDetails(response.getHearingResponses().get(1), expectedSessions)
         );
     }
 
