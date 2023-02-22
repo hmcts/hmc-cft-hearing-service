@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import ch.qos.logback.classic.Logger;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -306,9 +307,28 @@ class HmiHearingResponseMapperTest {
         final HearingResponse hearingResponse = generateHmiMultiSessionMultiDayHearing(
             "random", HearingCode.EXCEPTION, 1, "Draft", startTimes.size());
 
+        final ImmutablePair<LocalDateTime, LocalDateTime> hearingTimes = new ImmutablePair<>(
+                hearingResponse.getHearing().getHearingStartTime(),
+                hearingResponse.getHearing().getHearingEndTime());
+
+        List<ImmutablePair<LocalDateTime, LocalDateTime>> hearingSessionStartAndEndTimes = new ArrayList<>();
+        final List<HearingSession> existingSessions = hearingResponse.getHearing().getHearingSessions();
+
+        for (int i = 0; i < existingSessions.size(); i++) {
+            HearingSession hearingSession = existingSessions.get(i);
+            hearingSession.setHearingStartTime(startTimes.get(i));
+            hearingSession.setHearingEndTime(endTimes.get(i));
+        }
+
+        for (int i = 0; i < expectedSessions.size(); i++) {
+            ImmutablePair<LocalDateTime, LocalDateTime> pair = new ImmutablePair<>(
+                expectedSessions.get(i).getHearingStartTime(), expectedSessions.get(i).getHearingEndTime());
+            hearingSessionStartAndEndTimes.add(pair);
+        }
+        hearingSessionStartAndEndTimes.add(hearingTimes);
+
         HearingEntity response = hmiHearingResponseMapper
-            .mapHmiHearingToEntity(hearingResponse, generateHearingEntity("AWAITING_LISTING", 1)
-            );
+            .mapHmiHearingToEntity(hearingResponse, generateHearingEntity("AWAITING_LISTING", 1));
         assertAll(
             () -> assertThat(response.getHearingResponses().size(), is(2)),
             () -> assertThat(
@@ -326,7 +346,11 @@ class HmiHearingResponseMapperTest {
             ),
             () -> assertThat(response.getHearingResponses().get(1).getCancellationReasonType(), is("reason")),
             () -> assertThat(response.getHearingResponses().get(1).getTranslatorRequired(), is(true)),
-            () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name()))
+            () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name())),
+            () -> assertThat(
+                response.getHearingResponses().get(1).getHearingDayDetails().size(),
+                is(hearingSessionStartAndEndTimes.size())
+            )
         );
     }
 
