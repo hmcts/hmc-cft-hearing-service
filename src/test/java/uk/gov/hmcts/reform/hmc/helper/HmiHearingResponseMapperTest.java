@@ -419,32 +419,31 @@ class HmiHearingResponseMapperTest {
 
     private static void assertHearingDayDetails(HearingResponseEntity hearingResponseEntity,
                                                 List<HearingSession> hearingSessions) {
-
-        hearingResponseEntity
-            .getHearingDayDetails()
-            .forEach(hearingDayDetailsEntity -> {
-                assertThat(
-                    hearingSessions.stream()
-                        .anyMatch(hearingSession ->
-                                      hearingSession
-                                          .getHearingStartTime()
-                                          .equals(hearingDayDetailsEntity.getStartDateTime())
-                                          && hearingSession
-                                          .getHearingEndTime()
-                                          .equals(hearingDayDetailsEntity.getEndDateTime())),
-                    is(true)
-                );
-
+        hearingSessions.stream().forEach((hearingSession) -> {
+            assertThat(
+                hearingResponseEntity
+                    .getHearingDayDetails().stream()
+                    .anyMatch(hearingDayDetailsEntity ->
+                                  hearingDayDetailsEntity.getStartDateTime()
+                                      .equals(hearingSession.getHearingStartTime())
+                                      && hearingDayDetailsEntity.getEndDateTime()
+                                      .equals(hearingSession
+                                                  .getHearingEndTime())
+                    ),
+                is(true)
+            );
+        });
+        hearingResponseEntity.getHearingDayDetails().stream()
+            .forEach((hearingDayDetailsEntity) -> {
                 assertThat(hearingDayDetailsEntity.getRoomId(), is("multiDayRoomName"));
                 assertThat(hearingDayDetailsEntity.getVenueId(), is(nullValue()));
                 assertThat(hearingDayDetailsEntity
-                               .getHearingAttendeeDetails().get(0).getPartyId(), is("entityId"));
+                                        .getHearingAttendeeDetails().get(0).getPartyId(), is("entityId"));
                 assertThat(hearingDayDetailsEntity.getHearingAttendeeDetails().get(0).getPartySubChannelType(),
-                           is("codeSubChannel"));
+                             is("codeSubChannel"));
                 assertThat(hearingDayDetailsEntity.getHearingDayPanel().get(0).getPanelUserId(), is("JohCode"));
                 assertThat(hearingDayDetailsEntity.getHearingDayPanel().get(0).getIsPresiding(), is(true));
-            }
-            );
+            });
     }
 
     @Test
