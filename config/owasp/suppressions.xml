@@ -12,4 +12,9 @@
     <cve>CVE-2022-41881</cve>
     <cve>CVE-2022-41915</cve>
   </suppress>
+  <suppress>
+    <notes>Temporary Suppression
+        CVE-2022-45688 refer [Ticket]</notes>
+    <cve>CVE-2022-45688</cve>
+  </suppress>
 </suppressions>
