@@ -441,7 +441,7 @@ class MessageProcessorIT extends BaseTest {
 
         final Iterable<HearingDayDetailsEntity> hearingDayDetailsEntities = hearingDayDetailsRepository.findAll();
 
-        assertEquals(1, hearingDayDetailsEntities.spliterator().estimateSize());
+        assertEquals(2, hearingDayDetailsEntities.spliterator().estimateSize());
         final HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetailsEntities.iterator().next();
 
         assertEquals(parse("2022-02-10T10:30:00"), hearingDayDetailsEntity.getStartDateTime());
@@ -461,10 +461,12 @@ class MessageProcessorIT extends BaseTest {
                 new ImmutablePair<>(parse("2022-02-10T10:30:00"), parse("2022-02-10T11:30:00"));
         final var februaryEleventh =
                 new ImmutablePair<>(parse("2022-02-11T12:00:00"), parse("2022-02-11T12:30:00"));
+        final var hearingDetails =
+            new ImmutablePair<>(parse("2021-08-10T12:20:00"), parse("2021-08-10T12:20:00"));
 
         initiateRequest(hearingSessionsJsonNode);
 
-        assertHearingDayDetails(List.of(februaryTenth, februaryEleventh));
+        assertHearingDayDetails(List.of(februaryTenth, februaryEleventh, hearingDetails));
     }
 
     @Test
@@ -481,10 +483,13 @@ class MessageProcessorIT extends BaseTest {
                 new ImmutablePair<>(parse("2022-02-10T10:30:00"), parse("2022-02-10T12:30:00"));
         final var februaryEleventh =
                 new ImmutablePair<>(parse("2022-02-11T14:30:00"), parse("2022-02-11T16:30:00"));
+        final var hearingDetails =
+            new ImmutablePair<>(parse("2021-08-10T12:20:00"), parse("2021-08-10T12:20:00"));
+
 
         initiateRequest(hearingSessionsJsonNode);
 
-        assertHearingDayDetails(List.of(februaryTenth, februaryEleventh));
+        assertHearingDayDetails(List.of(februaryTenth, februaryEleventh, hearingDetails));
     }
 
     private void assertHearingDayDetails(List<ImmutablePair<LocalDateTime, LocalDateTime>> expectedPairs) {
