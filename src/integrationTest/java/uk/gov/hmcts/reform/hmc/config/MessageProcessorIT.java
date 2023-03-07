@@ -226,11 +226,9 @@ class MessageProcessorIT extends BaseTest {
         }
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(2, logsList.size());
+        assertEquals(1, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals(Level.INFO, logsList.get(1).getLevel());
         assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
-        assertTrue(logsList.get(1).getMessage().contains("Successfully converted message to HearingResponseType"));
     }
 
     @Test
@@ -306,16 +304,14 @@ class MessageProcessorIT extends BaseTest {
         }
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(4, logsList.size());
+        assertEquals(3, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals(Level.INFO, logsList.get(1).getLevel());
+        assertEquals(Level.ERROR, logsList.get(1).getLevel());
         assertEquals(Level.ERROR, logsList.get(2).getLevel());
-        assertEquals(Level.ERROR, logsList.get(3).getLevel());
         assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
-        assertTrue(logsList.get(1).getMessage().contains("Successfully converted message to HearingResponseType"));
         assertEquals("Error processing message with Hearing id 2000000000 exception was "
-                         + "Cannot find request version 10 for hearing 2000000000", logsList.get(2).getMessage());
-        assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(3).getMessage());
+                         + "Cannot find request version 10 for hearing 2000000000", logsList.get(1).getMessage());
+        assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(2).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         assertEquals(1, logsListMessageProcessor.size());
@@ -503,7 +499,7 @@ class MessageProcessorIT extends BaseTest {
 
         final Iterable<HearingDayDetailsEntity> hearingDayDetailsEntities = hearingDayDetailsRepository.findAll();
 
-        assertEquals(1, hearingDayDetailsEntities.spliterator().estimateSize());
+        assertEquals(2, hearingDayDetailsEntities.spliterator().estimateSize());
         final HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetailsEntities.iterator().next();
 
         assertEquals(parse("2022-02-10T10:30:00"), hearingDayDetailsEntity.getStartDateTime());
@@ -523,10 +519,12 @@ class MessageProcessorIT extends BaseTest {
                 new ImmutablePair<>(parse("2022-02-10T10:30:00"), parse("2022-02-10T11:30:00"));
         final var februaryEleventh =
                 new ImmutablePair<>(parse("2022-02-11T12:00:00"), parse("2022-02-11T12:30:00"));
+        final var hearingDetails =
+            new ImmutablePair<>(parse("2021-08-10T12:20:00"), parse("2021-08-10T12:20:00"));
 
         initiateRequest(hearingSessionsJsonNode);
 
-        assertHearingDayDetails(List.of(februaryTenth, februaryEleventh));
+        assertHearingDayDetails(List.of(februaryTenth, februaryEleventh, hearingDetails));
     }
 
     @Test
@@ -543,10 +541,13 @@ class MessageProcessorIT extends BaseTest {
                 new ImmutablePair<>(parse("2022-02-10T10:30:00"), parse("2022-02-10T12:30:00"));
         final var februaryEleventh =
                 new ImmutablePair<>(parse("2022-02-11T14:30:00"), parse("2022-02-11T16:30:00"));
+        final var hearingDetails =
+            new ImmutablePair<>(parse("2021-08-10T12:20:00"), parse("2021-08-10T12:20:00"));
+
 
         initiateRequest(hearingSessionsJsonNode);
 
-        assertHearingDayDetails(List.of(februaryTenth, februaryEleventh));
+        assertHearingDayDetails(List.of(februaryTenth, februaryEleventh, hearingDetails));
     }
 
     private void assertHearingDayDetails(List<ImmutablePair<LocalDateTime, LocalDateTime>> expectedPairs) {
