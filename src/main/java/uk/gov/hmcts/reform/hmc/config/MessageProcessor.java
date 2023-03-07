@@ -59,7 +59,7 @@ public class MessageProcessor {
             } catch (HearingNotFoundException ex) {
                 log.error(MESSAGE_ERROR +  messageContext.getMessage().getMessageId() + WITH_ERROR + ex.getMessage());
             } catch (Exception ex) {
-                log.error(MESSAGE_ERROR + serviceBusReceivedMessage.getMessageId() + WITH_ERROR + ex.getMessage());
+                log.error(MESSAGE_ERROR +  messageContext.getMessage().getMessageId() + WITH_ERROR + ex.getMessage());
                 log.error(
                     ERROR_PROCESSING_MESSAGE,
                     CFT_HEARING_SERVICE,
@@ -67,8 +67,7 @@ public class MessageProcessor {
                     READ,
                     applicationProperties.getOrDefault(HEARING_ID,NO_DEFINED)
                 );
-
-inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, ex);
+                inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, ex);
             }
         } else {
             log.error(MISSING_MESSAGE_TYPE + " for message with message with id "
