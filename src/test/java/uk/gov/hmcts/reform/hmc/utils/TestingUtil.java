@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.utils;
 
 import com.google.common.collect.Lists;
+import org.slf4j.helpers.MessageFormatter;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
@@ -1428,6 +1429,10 @@ public class TestingUtil {
         hearingDetails.setHearingLocations(hearingLocations);
         hearingDetails.setFacilitiesRequired(List.of("facility1", "facility2"));
         return hearingDetails;
+    }
+
+    public static String formatLogMessage(String message, Object... objects) {
+        return MessageFormatter.arrayFormat(message, objects).getMessage();
     }
 }
 

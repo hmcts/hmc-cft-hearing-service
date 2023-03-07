@@ -40,6 +40,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR_PROCESSING_MESSAGE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC_FROM_HMI;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.READ;
+import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.formatLogMessage;
 
 class MessageProcessorIT extends BaseTest {
 
@@ -314,11 +319,12 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(2).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
-        assertEquals(1, logsListMessageProcessor.size());
-        assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.ERROR)));
-        assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getMessage()
-                .matches("Error for message with id null with error "
-                         + "Cannot find request version 10 for hearing 2000000000")));
+        assertEquals(2, logsListMessageProcessor.size());
+        assertTrue(logsListMessageProcessor.stream().allMatch(log -> log.getLevel().equals(Level.ERROR)));
+        assertEquals("Error for message with id null with error Cannot find request version 10 for hearing 2000000000",
+                logsListMessageProcessor.get(0).getFormattedMessage());
+        assertEquals(formatLogMessage(ERROR_PROCESSING_MESSAGE,CFT_HEARING_SERVICE, HMC_FROM_HMI, READ, 2000000000),
+                logsListMessageProcessor.get(1).getFormattedMessage());
     }
 
     @Test
