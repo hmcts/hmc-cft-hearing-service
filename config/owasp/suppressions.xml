@@ -16,5 +16,7 @@
     <notes>Temporary Suppression
         CVE-2022-40152 refer [Ticket]</notes>
     <cve>CVE-2022-40152</cve>
+    <cve>CVE-2022-45688</cve>
+    <cve>CVE-2023-24998</cve>
   </suppress>
 </suppressions>
