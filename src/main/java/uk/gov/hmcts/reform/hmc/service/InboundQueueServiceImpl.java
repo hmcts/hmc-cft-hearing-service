@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
-import com.azure.messaging.servicebus.ServiceBusReceiverClient;
+import com.azure.messaging.servicebus.ServiceBusReceivedMessageContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -65,15 +64,16 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     }
 
     @Override
-    public void processMessage(JsonNode message, Map<String, Object> applicationProperties,
-                               ServiceBusReceiverClient client, ServiceBusReceivedMessage serviceBusReceivedMessage)
+    public void processMessage(JsonNode message,
+                               ServiceBusReceivedMessageContext messageContext)
         throws JsonProcessingException {
+        Map<String, Object> applicationProperties = messageContext.getMessage().getApplicationProperties();
         MessageType messageType = MessageType.valueOf(applicationProperties.get(MESSAGE_TYPE).toString());
         log.info("Message of type " + messageType + " received");
         if (applicationProperties.containsKey(HEARING_ID)) {
             Long hearingId = Long.valueOf(applicationProperties.get(HEARING_ID).toString());
             hearingIdValidator.validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
-            validateResponse(message, messageType, hearingId, client, serviceBusReceivedMessage);
+            validateResponse(message, messageType, hearingId);
         } else {
             log.error("Error processing message, exception was " + MISSING_HEARING_ID);
         }
@@ -100,9 +100,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         }
     }
 
-    private void validateResponse(JsonNode message, MessageType messageType, Long hearingId,
-                                  ServiceBusReceiverClient client,
-                                  ServiceBusReceivedMessage serviceBusReceivedMessage)
+    private void validateResponse(JsonNode message, MessageType messageType, Long hearingId)
         throws JsonProcessingException {
         if (messageType.equals(MessageType.HEARING_RESPONSE)) {
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
@@ -124,13 +122,11 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         } else if (messageType.equals(MessageType.ERROR)) {
             ErrorDetails errorResponse = objectMapper.treeToValue(message, ErrorDetails.class);
             log.debug("Successfully converted message to ErrorResponse " + errorResponse);
-            updateHearingAndStatus(hearingId, errorResponse, client, serviceBusReceivedMessage);
+            updateHearingAndStatus(hearingId, errorResponse);
         }
     }
 
-    private void updateHearingAndStatus(Long hearingId, ErrorDetails errorDetails,
-                                        ServiceBusReceiverClient client,
-                                        ServiceBusReceivedMessage message) {
+    private void updateHearingAndStatus(Long hearingId, ErrorDetails errorDetails) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiHearingErrorToEntity(
@@ -143,8 +139,6 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                              hmcHearingResponse.getHmctsServiceCode(),hearingId.toString());
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
-                //Service bus session has to completed first else it will try to re process the message
-                client.complete(message);
                 log.error("Hearing id: " +  hearingId + " updated to status Exception");
             }
         }

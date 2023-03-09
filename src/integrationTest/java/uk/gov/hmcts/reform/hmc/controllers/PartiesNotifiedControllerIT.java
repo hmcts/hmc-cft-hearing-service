@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
@@ -45,9 +44,6 @@ class PartiesNotifiedControllerIT extends BaseTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ApplicationParams applicationParams;
 
     private static final String url = "/partiesNotified";
 

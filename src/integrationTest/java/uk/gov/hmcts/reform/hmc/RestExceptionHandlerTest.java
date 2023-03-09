@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.CaseCouldNotBeFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
@@ -68,12 +67,6 @@ public class RestExceptionHandlerTest extends BaseTest {
 
     @Autowired
     protected ObjectMapper objectMapper;
-
-    @MockBean
-    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
-
-    @MockBean
-    private ApplicationParams applicationParams;
 
     @BeforeEach
     void setUp() {

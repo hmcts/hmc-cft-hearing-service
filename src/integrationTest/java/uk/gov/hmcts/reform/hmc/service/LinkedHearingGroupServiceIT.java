@@ -11,9 +11,7 @@ import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -42,13 +40,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     private LinkedGroupDetailsRepository linkedGroupDetailsRepository;
 
     @Autowired
-    private LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
-
-    @Autowired
     private HearingRepository hearingRepository;
-
-    @Autowired
-    private LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
 
     @Autowired
     private EntityManager entityManager;
