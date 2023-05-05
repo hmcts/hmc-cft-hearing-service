@@ -234,6 +234,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
                 hearingResponse.setListingStatus(hearingResponseEntity.getListingStatus());
             }
             hearingResponse.setHearingCancellationReason(hearingResponseEntity.getCancellationReasonType());
+            hearingResponse.setRequestVersion(hearingResponseEntity.getRequestVersion());
             setHearingDaySchedule(hearingResponse, List.of(hearingResponseEntity));
         }
         return hearingResponse;
