@@ -2,13 +2,10 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
-import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
-import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
@@ -46,12 +43,6 @@ class HearingManagementServiceIT extends BaseTest {
 
     @Autowired
     private HearingManagementService hearingManagementService;
-
-    @MockBean
-    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
-
-    @MockBean
-    private ApplicationParams applicationParams;
 
     @Autowired
     HearingRepository hearingRepository;

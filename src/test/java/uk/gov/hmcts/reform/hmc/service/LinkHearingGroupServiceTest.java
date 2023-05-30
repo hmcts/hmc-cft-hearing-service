@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.FhBadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
@@ -119,13 +120,15 @@ class LinkHearingGroupServiceTest {
     LinkedHearingDetailsAuditRepository linkedHearingDetailsAuditRepository;
 
     @Mock
-    private LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
+    LinkedGroupDetailsAuditRepository linkedGroupDetailsAuditRepository;
 
     @Mock
-    private LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper;
+    LinkedGroupDetailsAuditMapper linkedGroupDetailsAuditMapper;
 
     @Mock
-    private LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
+    LinkedHearingDetailsAuditMapper linkedHearingDetailsAuditMapper;
+
+    FutureHearingsLinkedHearingGroupService futureHearingsLinkedHearingGroupService;
 
     HearingIdValidator hearingIdValidator;
 
@@ -141,21 +144,32 @@ class LinkHearingGroupServiceTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         hearingIdValidator = new HearingIdValidator(hearingRepository, actualHearingRepository,
-                actualHearingDayRepository);
+                                                    actualHearingDayRepository
+        );
         linkedHearingValidator = new LinkedHearingValidator(hearingIdValidator, hearingRepository,
-                linkedGroupDetailsRepository, linkedHearingDetailsRepository);
+                                                            linkedGroupDetailsRepository, linkedHearingDetailsRepository
+        );
+        futureHearingsLinkedHearingGroupService =
+            new FutureHearingsLinkedHearingGroupService(
+                hearingRepository,
+                linkedGroupDetailsRepository,
+                linkedHearingValidator,
+                linkedHearingDetailsAuditRepository,
+                linkedGroupDetailsAuditRepository,
+                linkedGroupDetailsAuditMapper,
+                linkedHearingDetailsAuditMapper,
+                accessControlService
+            );
         service =
-            new LinkedHearingGroupServiceImpl(hearingRepository,
-                                              linkedGroupDetailsRepository,
-                                              linkedHearingValidator,
-                                              linkedHearingDetailsAuditRepository,
-                                              linkedGroupDetailsAuditRepository,
-                                              linkedGroupDetailsAuditMapper,
-                                              linkedHearingDetailsAuditMapper,
-                                              futureHearingRepository,
-                                              objectMapper,
-                                              accessControlService
-                                              );
+            new LinkedHearingGroupServiceImpl(
+                hearingRepository,
+                linkedGroupDetailsRepository,
+                linkedHearingValidator,
+                futureHearingRepository,
+                objectMapper,
+                accessControlService,
+                futureHearingsLinkedHearingGroupService
+            );
     }
 
     @Nested
@@ -208,7 +222,6 @@ class LinkHearingGroupServiceTest {
             assertEquals("001 Insufficient requestIds", exception.getMessage());
         }
 
-
         @Test
         void shouldFailWithHearingRequestIsLinkedIsFalse() {
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
@@ -243,7 +256,6 @@ class LinkHearingGroupServiceTest {
             assertEquals("002 hearing request isLinked is False", exception.getMessage());
         }
 
-
         @Test
         void shouldFailWithHearingRequestAlreadyInGroup() {
             LinkedGroupDetails groupDetails1 = generateLinkGroupDetails(
@@ -258,15 +270,15 @@ class LinkHearingGroupServiceTest {
                 1L
             );
             LinkedGroupDetails groupDetailsAlternate = generateLinkGroupDetails(
-                    202L,
-                    "requestId2",
-                    "request name2",
-                    "Same Slot",
-                    "status",
-                    "reason",
-                    "comments",
-                    LocalDateTime.of(2022, 03, 02, 10, 11),
-                    1L
+                202L,
+                "requestId2",
+                "request name2",
+                "Same Slot",
+                "status",
+                "reason",
+                "comments",
+                LocalDateTime.of(2022, 03, 02, 10, 11),
+                1L
             );
 
             HearingEntity hearingEntity = generateHearingEntity(
@@ -289,16 +301,16 @@ class LinkHearingGroupServiceTest {
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
-                    LinkType.ORDERED.label, "reason"
+                                                             LinkType.ORDERED.label, "reason"
             );
 
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 2);
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
-                    groupDetails,
-                    Arrays.asList(
-                            hearingDetails1,
-                            hearingDetails2
-                    )
+                groupDetails,
+                Arrays.asList(
+                    hearingDetails1,
+                    hearingDetails2
+                )
             );
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
@@ -306,7 +318,6 @@ class LinkHearingGroupServiceTest {
             });
             assertEquals("003 hearing request already in a group", exception.getMessage());
         }
-
 
         @Test
         void shouldFailWithInvalidState() {
@@ -546,9 +557,8 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
+            verify(linkedGroupDetailsRepository, times(2)).save(any());
         }
-
 
         @Test
         void shouldPassWhenHearingOrderIsSameSlotWithOrderZero() {
@@ -595,7 +605,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
+            verify(linkedGroupDetailsRepository, times(2)).save(any());
         }
 
         @Test
@@ -641,7 +651,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
+            verify(linkedGroupDetailsRepository, times(2)).save(any());
         }
 
         @Test
@@ -730,7 +740,7 @@ class LinkHearingGroupServiceTest {
                     hearingDetails2
                 )
             );
-            Exception exception = assertThrows(BadRequestException.class, () -> {
+            Exception exception = assertThrows(FhBadRequestException.class, () -> {
                 service.linkHearing(hearingLinkGroupRequest);
             });
             assertTrue(exception.getMessage().contains(LIST_ASSIST_FAILED_TO_RESPOND));
@@ -1140,7 +1150,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(4)).findById(2000000002L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
+            verify(linkedGroupDetailsRepository, times(2)).save(any());
         }
 
         @Test
@@ -1195,7 +1205,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).existsById(2000000002L);
             verify(hearingRepository, times(4)).findById(2000000002L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
-            verify(linkedGroupDetailsRepository, times(1)).save(any());
+            verify(linkedGroupDetailsRepository, times(2)).save(any());
         }
 
         @Test
@@ -1247,8 +1257,10 @@ class LinkHearingGroupServiceTest {
             errorDetails.setErrorCode(400);
             BadFutureHearingRequestException badFutureHearingRequestException = new BadFutureHearingRequestException(
                 INVALID_REQUEST);
-            doThrow(badFutureHearingRequestException).when(futureHearingRepository).updateLinkedHearingGroup(any(),
-                                                                                                             any());
+            doThrow(badFutureHearingRequestException).when(futureHearingRepository).updateLinkedHearingGroup(
+                any(),
+                any()
+            );
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 service.updateLinkHearing("1", hearingLinkGroupRequest);
@@ -1357,6 +1369,11 @@ class LinkHearingGroupServiceTest {
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID)).willReturn(List.of(hearing1, hearing2));
             given(linkedGroupDetailsAuditMapper.modelToEntity(groupDetails))
                 .willReturn(groupDetailsAudit);
+            given(hearingRepository.findById(HEARING_ID1))
+                .willReturn(Optional.of(hearing1));
+            given(hearingRepository.findById(HEARING_ID2))
+                .willReturn(Optional.of(hearing2));
+            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
             service.deleteLinkedHearingGroup(REQUEST_ID);
 
@@ -1448,7 +1465,7 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing1, hearing2));
-
+            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID));
             assertEquals(
@@ -1481,7 +1498,7 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
-
+            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID));
             assertEquals(
@@ -1511,7 +1528,7 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
-
+            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID));
             assertEquals(
@@ -1559,6 +1576,11 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing1, hearing2));
+            given(hearingRepository.findById(HEARING_ID1))
+                .willReturn(Optional.of(hearing1));
+            given(hearingRepository.findById(HEARING_ID2))
+                .willReturn(Optional.of(hearing2));
+            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 200, "Success");
             doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
@@ -1593,6 +1615,9 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
+            given(hearingRepository.findById(HEARING_ID1))
+                .willReturn(Optional.of(hearing));
+            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 200, "Success");
             doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
@@ -1627,6 +1652,7 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
+            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             listAssistThrows4xxError();
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID));
@@ -1637,7 +1663,6 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
             verify(linkedGroupDetailsRepository, times(1))
                 .getLinkedGroupDetailsByRequestId(any());
-            verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
             assertEquals(REJECTED_BY_LIST_ASSIST, response.getDescription());
             assertEquals(400, response.getResponseCode());
         }
@@ -1664,6 +1689,7 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
+            given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             final HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 500, "006 List Assist failed to respond");
             listAssistThrows5xxError();

@@ -54,6 +54,12 @@ spring:
           oidc:
             client-id: internal
             client-secret: internal
+  cloud:
+    discovery:
+      client:
+        composite-indicator:
+          enabled: false
+
 
 
 #  datasource:

@@ -42,13 +42,12 @@ public class HmiHearingResponseMapper {
         HearingResponseEntity hearingResponseEntity = mapHearingResponseEntity(hearing, hearingEntity);
 
         List<HearingSession> hearingSessions = hearing.getHearing().getHearingSessions();
+        List<HearingDayDetailsEntity> hearingDayDetailsEntitiesList = new ArrayList<>();
         if (hearingSessions != null && !hearingSessions.isEmpty()) {
 
             List<HearingSession> uniqueHearingSessionsPerDay = findUniqueHearingSessionsPerDay(hearingSessions);
 
             // put total attendees and panels here to save later?
-            List<HearingDayDetailsEntity> hearingDayDetailsEntitiesList = new ArrayList<>();
-
             for (HearingSession hearingSession : uniqueHearingSessionsPerDay) {
                 List<HearingDayDetailsEntity> hearingDayDetailsEntities =
                     mapHearingDayDetailsFromSessionDetails(hearingSession);
@@ -65,19 +64,22 @@ public class HmiHearingResponseMapper {
                 }
                 hearingDayDetailsEntitiesList.addAll(hearingDayDetailsEntities);
             }
-            hearingResponseEntity.setHearingDayDetails(hearingDayDetailsEntitiesList);
-        } else {
-            HearingDayDetailsEntity hearingDayDetailsEntity = mapHearingDayDetailsEntity(hearing);
-            List<HearingAttendeeDetailsEntity> hearingAttendeeDetailsEntities =
-                mapHearingAttendeeDetailsEntity(hearing);
-            List<HearingDayPanelEntity> hearingDayPanelEntities = mapHearingDayPanelEntity(hearing);
-
-            setHearingDayDetails(hearingResponseEntity,
-                                 hearingDayDetailsEntity,
-                                 hearingDayPanelEntities,
-                                 hearingAttendeeDetailsEntities);
-            hearingResponseEntity.setHearingDayDetails(new ArrayList<>(List.of(hearingDayDetailsEntity)));
         }
+        HearingDayDetailsEntity hearingDayDetailsEntity = mapHearingDayDetailsEntity(hearing);
+        List<HearingAttendeeDetailsEntity> hearingAttendeeDetailsEntities =
+            mapHearingAttendeeDetailsEntity(hearing);
+        List<HearingDayPanelEntity> hearingDayPanelEntities = mapHearingDayPanelEntity(hearing);
+
+        setHearingDayDetails(
+            hearingResponseEntity,
+            hearingDayDetailsEntity,
+            hearingDayPanelEntities,
+            hearingAttendeeDetailsEntities
+        );
+        hearingResponseEntity.setHearingDayDetails(new ArrayList<>(List.of(hearingDayDetailsEntity)));
+
+        hearingDayDetailsEntitiesList.add(hearingDayDetailsEntity);
+        hearingResponseEntity.setHearingDayDetails(hearingDayDetailsEntitiesList);
 
         hearingEntity.getHearingResponses().add(hearingResponseEntity);
         hearingEntity.setStatus(getHearingStatus(hearing, hearingEntity).name());
