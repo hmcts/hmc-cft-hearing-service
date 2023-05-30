@@ -210,7 +210,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     @Override
     @Transactional
-    public synchronized HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
+    public HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
         validateHearingRequest(hearingRequest);
         hearingIdValidator.validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
         validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
