@@ -39,6 +39,9 @@ public class HearingResponse {
     @Size(max = 40, message = ValidationError.HEARING_CANCELLATION_REASON_MAX_LENGTH)
     private String hearingCancellationReason;
 
+    @JsonProperty("requestVersion")
+    private Integer requestVersion;
+
     private List<HearingDaySchedule> hearingDaySchedule;
 
 }
