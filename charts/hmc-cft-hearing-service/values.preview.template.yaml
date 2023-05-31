@@ -43,22 +43,17 @@ java:
         - name: fh-get-token-url
           alias: FH_GET_TOKEN_URL
 
-hmc:
+
+servicebus:
   enabled: true
-  hmc:
-    servicebus:
-      enabled: true
-    hearingService:
-      enabled: false
-
-  hmc-hmi-outbound-adapter:
-    java:
-      environment:
-        LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CLIENT_FUTUREHEARING: DEBUG
-        HMI_BASE_URL: "http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi"
-
-  hmc-hmi-inbound-adapter:
-    java:
-      ingressHost: inbound-adapter-${SERVICE_FQDN}
-      environment:
-        CFT_HEARING_SERVICE_URL: http://${SERVICE_NAME}-java
+  teamName: CCD
+  resourceGroup: hmc-aks
+  serviceplan: standard
+  setup:
+    topics:
+      - name: hmc-to-cft
+    subscriptions:
+      - name: hmc-subs-to-cft
+    queues:
+      - name: hmc-from-hmi
+      - name: hmc-to-hmi
