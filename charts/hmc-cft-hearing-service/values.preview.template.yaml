@@ -31,8 +31,15 @@ java:
       resourceGroup: hmc-shared
       secrets:
         - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
+        - name: hmc-servicebus-connection-string
+          alias: HMC_SERVICE_BUS_CONNECTION_STRING
         - name: hmc-cft-hearing-service-s2s-secret
           alias: IDAM_KEY_CFT_HEARING_SERVICE
+        - name: idam-hmc-system-user-username
+          alias: HMC_SYSTEM_USER_ID
+        - name: idam-hmc-system-user-password
+          alias: HMC_SYSTEM_USER_PASSWORD
 
 servicebus:
   enabled: true
