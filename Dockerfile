@@ -3,9 +3,9 @@ ARG JAR_FILE=build/libs/hmc-cft-hearing-service.jar
 COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
 
-ARG APP_INSIGHTS_AGENT_VERSION=2.6.1
+ARG APP_INSIGHTS_AGENT_VERSION=3.4.13
 ARG PLATFORM=""
-FROM hmctspublic.azurecr.io/base/java${PLATFORM}:11-distroless
+FROM hmctspublic.azurecr.io/base/java${PLATFORM}:17-distroless
 USER hmcts
 
 COPY lib/AI-Agent.xml /opt/app/
