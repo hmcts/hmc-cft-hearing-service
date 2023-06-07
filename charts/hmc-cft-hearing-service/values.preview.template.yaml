@@ -39,7 +39,7 @@ servicebus:
   teamName: CCD
   resourceGroup: hmc-aso-preview-rg
   sbNamespace: hmc-sb-preview
-  setup:
+  setup:mi
     topics:
       - name: hmc-to-cft
     subscriptions:
