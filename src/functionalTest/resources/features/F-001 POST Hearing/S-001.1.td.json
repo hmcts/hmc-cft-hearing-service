@@ -10,10 +10,7 @@
   ],
   "request": {
     "body": {
-      "_extends_": "createHearingRequestFullData",
-      "caseDetails": {
-        "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
-      }
+      "_extends_": "createHearingRequestFullData"
     }
   },
   "expectedResponse": {
