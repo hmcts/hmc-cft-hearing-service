@@ -61,7 +61,10 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-caa",
             "ccd-import",
             "citizen",
-            "pui-caa"
+            "pui-caa",
+            "hearing-manager",
+            "hearing-viewer",
+            "listed-hearing-viewer"
         );
     }
 
@@ -161,5 +164,11 @@ public class CftLibConfig implements CFTLibConfigurer {
         lib.createIdamUser("ccd.ac.staff7@gmail.com", "caseworker");
         lib.createIdamUser("ccd.ac.staff8@gmail.com", "caseworker");
         lib.createIdamUser("ccd.ac.other1@gmail.com", "caseworker");
+        lib.createIdamUser("hmc.hearing-manager@gmail.com", "hearing-manager", "caseworker", "caseworker-befta_master");
+        lib.createIdamUser("hmc.hearing-viewer@gmail.com", "hearing-viewer", "caseworker", "caseworker-befta_master");
+        lib.createIdamUser("hmc.listed-hearing-viewer@gmail.com",
+                           "listed-hearing-viewer", "caseworker", "caseworker-befta_master");
+        lib.createIdamUser("hmc.superuser@gmail.com",
+                           "hearing-manager", "hearing-viewer", "caseworker", "listed-hearing-viewer", "caseworker-befta_master");
     }
 }
