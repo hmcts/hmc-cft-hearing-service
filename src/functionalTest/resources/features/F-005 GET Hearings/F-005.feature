@@ -3,8 +3,7 @@ Feature: F-005: Search for hearings
 
   Background:
     Given an appropriate test context as detailed in the test data source
-    Given a user with [an active profile in CCD]
-    And a case that has just been created as in [CreateCase],
+    And a user with [an active profile in CCD]
 
   @S-005.1
   Scenario: Successfully search for hearings of a case reference that has 2 hearing requests
