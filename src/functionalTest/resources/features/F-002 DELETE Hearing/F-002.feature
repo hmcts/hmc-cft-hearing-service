@@ -15,6 +15,7 @@ Feature: F-002: Delete hearing request
     And the response [has a versionNumber of 2],
     And the response [has a status of CANCELLATION_REQUESTED],
     And the response has all other details as expected,
+    And a wait time of [60] seconds [to wait for status to change],
     And a call [to verify versionNumber=2 and status=CANCELLATION_REQUESTED] will get the expected response as in [S-002.1-get-hearing].
 
   @S-002.2
@@ -28,6 +29,7 @@ Feature: F-002: Delete hearing request
     And the response [has a versionNumber of 3],
     And the response [has a status of CANCELLATION_REQUESTED],
     And the response has all other details as expected,
+    And a wait time of [60] seconds [to wait for status to change],
     And a call [to verify versionNumber=3 and status=CANCELLATION_REQUESTED] will get the expected response as in [S-002.2-get-hearing].
 
   @S-002.3
@@ -39,4 +41,5 @@ Feature: F-002: Delete hearing request
     Then a negative response is received,
     And the response [has a status of CANCELLATION_REQUESTED],
     And the response has all other details as expected,
+    And a wait time of [60] seconds [to wait for status to change],
     And a call [to verify versionNumber=2 and status=CANCELLATION_REQUESTED] will get the expected response as in [S-002.1-get-hearing]
