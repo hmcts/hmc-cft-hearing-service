@@ -232,7 +232,7 @@ def versions = [
   tomcatEmbedded  : '9.0.73'
 ]
 
-ext['spring-framework.version'] = '5.3.26'
+ext['spring-framework.version'] = '5.3.27'
 ext['log4j2.version'] = '2.17.1'
 ext['spring-security.version'] = '5.8.0'
 ext['snakeyaml.version'] = '1.33'
