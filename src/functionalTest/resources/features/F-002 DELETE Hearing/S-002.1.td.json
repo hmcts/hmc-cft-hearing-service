@@ -19,10 +19,7 @@
       "hearingRequestID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}",
       "status": "CANCELLATION_REQUESTED",
       "timeStamp": "[[ANYTHING_PRESENT]]",
-      "versionNumber": 2,
-      "caseDetails": {
-        "caseRef": "1512672408575038"
-      }
+      "versionNumber": 2
     }
   }
 }
