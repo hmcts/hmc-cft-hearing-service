@@ -32,6 +32,7 @@ public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomatio
             }
         };
     }
+
     @Override
     public Object calculateCustomValue(BackEndFunctionalTestScenarioContext scenarioContext, Object key) {
         if (key.toString().equals("GenerateCaseId")) {
