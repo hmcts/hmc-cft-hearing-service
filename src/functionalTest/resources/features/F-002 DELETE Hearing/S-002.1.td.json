@@ -1,9 +1,6 @@
 {
   "_guid_": "S-002.1",
   "_extends_" : "deleteHearingRequestBase",
-  "caseDetails": {
-    "caseRef": "1512672408575038"
-  },
   "specs": [
     "has the 200 OK code",
     "has a versionNumber of 2",
@@ -22,7 +19,10 @@
       "hearingRequestID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}",
       "status": "CANCELLATION_REQUESTED",
       "timeStamp": "[[ANYTHING_PRESENT]]",
-      "versionNumber": 2
+      "versionNumber": 2,
+      "caseDetails": {
+        "caseRef": "1512672408575038"
+      }
     }
   }
 }
