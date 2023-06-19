@@ -268,7 +268,7 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Message of type ERROR received", logsList.get(0).getMessage());
         assertEquals(Level.INFO, logsList.get(1).getLevel());
         assertEquals(Level.ERROR, logsList.get(2).getLevel());
-        assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(1).getMessage());
+        assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(2).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         logsListMessageProcessor.forEach(System.out::print);
