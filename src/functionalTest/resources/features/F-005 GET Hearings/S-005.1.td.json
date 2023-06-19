@@ -9,7 +9,7 @@
   ],
   "request": {
     "pathVariables": {
-      "caseref": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
+      "caseref": "1512672408575038"
     }
   },
   "expectedResponse": {
