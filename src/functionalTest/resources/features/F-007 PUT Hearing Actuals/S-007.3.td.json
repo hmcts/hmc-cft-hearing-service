@@ -1,0 +1,28 @@
+{
+  "_guid_": "S-007.3",
+  "_extends_" : "PutHearingActualsRequestBase",
+
+  "specs": [
+    "an active profile in CCD",
+    "has 401 status code"
+  ],
+
+  "users": {
+    "invokingUser": {
+      "username": "master.caseworker@gmail.com",
+      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
+    }
+  },
+
+  "request": {
+    "pathVariables": {
+      "id": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 401,
+    "responseMessage" : "Unauthorized",
+    "body" : null
+  }
+}
