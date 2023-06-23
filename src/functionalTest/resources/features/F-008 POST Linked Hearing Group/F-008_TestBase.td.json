@@ -1,0 +1,19 @@
+{
+  "_guid_": "F-008_TestBase",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "Create a group of linked hearing requests",
+  "method": "POST",
+  "uri": "/linkedHearingGroup",
+  "s2sClientId": "xui_webapp",
+
+  "users": {
+    "invokingUser": {
+      "_extends_": "HmcSuperuser"
+    }
+  },
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    }
+  }
+}
