@@ -4,7 +4,7 @@
   "specs": [
     "has the 200 OK code",
     "has a versionNumber of 3",
-    "has a status of CANCELLATION_REQUESTED",
+    "has a status of BAD_REQUEST",
     "an active profile in CCD"
   ],
   "expectedResponse": {

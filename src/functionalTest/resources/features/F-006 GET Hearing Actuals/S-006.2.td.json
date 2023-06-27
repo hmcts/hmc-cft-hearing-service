@@ -1,0 +1,29 @@
+{
+  "_guid_": "S-006.2",
+  "_extends_" : "F-006_TestBase",
+
+  "specs": [
+    "has 404 status code"
+  ],
+
+  "users": {
+    "invokingUser": {
+      "_extends_" : "HmcSuperuser"
+    }
+  },
+
+  "request": {
+    "pathVariables": {
+      "id": "2100000400"
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 404,
+    "responseMessage": "Bad Request",
+    "body" : {
+      "status" : "NOT_FOUND",
+      "errors" : [ "No hearing found for reference: 2100000400" ]
+    }
+  }
+}

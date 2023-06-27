@@ -1,0 +1,8 @@
+{
+  "_guid_": "GetLinkedHearingGroupRequestPositiveGeneric",
+  "_extends_" : "GetLinkedHearingGroupRequestBase",
+
+  "expectedResponse": {
+    "_extends_": "Common_200_Response"
+  }
+}

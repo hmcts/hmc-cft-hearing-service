@@ -9,7 +9,7 @@ plugins {
   id 'uk.gov.hmcts.java' version '0.12.41'
   id 'com.github.spacialcircumstances.gradle-cucumber-reporting' version '0.1.23'
   id 'au.com.dius.pact' version '4.1.7'
-  id 'com.github.hmcts.rse-cft-lib' version '0.15.64'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.233'
 }
 
 ext['diuspactproviderVersion'] = '4.2.14'
@@ -101,7 +101,7 @@ task functional(type: Test) {
       classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
       args = [
         '--strict',
-        '--threads', '10',
+        '--threads', '1',
         '--plugin', "json:${rootDir}/target/cucumber.json",
         '--plugin', "junit:${buildDir}/test-results/functional/cucumber.xml",
         '--tags', 'not @Ignore',
@@ -536,6 +536,7 @@ bootWithCCD {
   environment("CFT_HEARING_SERVICE_DB_NAME", "hmc")
   environment("S2S_URL", "http://localhost:8489")
   environment("HMC_ACCESS_CONTROL_ENABLED", "false")
+  environment("RSE_LIB_S2S_PORT", 4502)
 }
 
 task fortifyScan(type: JavaExec)  {

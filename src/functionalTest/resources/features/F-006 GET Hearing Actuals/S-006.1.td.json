@@ -1,0 +1,56 @@
+{
+  "_guid_": "S-006.1",
+  "_extends_" : "F-006_TestBase",
+
+  "specs": [
+    "has the 200 OK code",
+    "has 200 status code",
+    "contains both hearings"
+  ],
+
+  "request": {
+    "pathVariables": {
+      "id": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 200,
+    "responseMessage": "OK",
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    },
+    "body" : {
+      "hmcStatus" : "HEARING_REQUESTED",
+      "caseDetails" : {
+        "hmctsServiceCode" : "ABA1",
+        "caseRef" : "[[ANYTHING_PRESENT]]",
+        "externalCaseReference" : "EXT/REF123",
+        "caseDeepLink" : "https://www.google.com",
+        "hmctsInternalCaseName" : "Internal case name",
+        "publicCaseName" : "Public case name",
+        "caseAdditionalSecurityFlag" : true,
+        "caseInterpreterRequiredFlag" : true,
+        "caseCategories" : [ {
+          "categoryType" : "caseType",
+          "categoryValue" : "BBA3-002"
+        }, {
+          "categoryType" : "caseSubType",
+          "categoryValue" : "BBA3-002CP",
+          "categoryParent" : "BBA3-002"
+        } ],
+        "caseManagementLocationCode" : "CMLC123",
+        "caserestrictedFlag" : true,
+        "caseSLAStartDate" : "2021-10-10"
+      },
+      "hearingPlanned" : {
+        "plannedHearingType" : "Some hearing type",
+        "plannedHearingDays" : [ ]
+      },
+      "hearingActuals" : null
+    }
+  }
+}

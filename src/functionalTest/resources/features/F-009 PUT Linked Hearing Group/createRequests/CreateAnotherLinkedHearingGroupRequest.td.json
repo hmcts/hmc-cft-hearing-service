@@ -1,0 +1,40 @@
+{
+  "_guid_": "CreateAnotherLinkedHearingGroupRequest",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "create linked group hearing",
+  "method": "POST",
+  "uri": "/linkedHearingGroup",
+  "s2sClientId": "xui_webapp",
+  "userTokenClientId": "xuiwebapp",
+  "specs": [
+    "to create a hearing request"
+  ],
+
+  "users": {
+    "invokingUser": {
+      "_extends_": "HmcSuperuser"
+    }
+  },
+
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    },
+    "body": {
+      "_extends_": "createAnotherLinkedHearingGroupRequestFullData"
+    }
+  },
+  "expectedResponse": {
+    "responseCode": 201,
+    "responseMessage": "OK",
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    },
+    "body": {
+      "hearingGroupRequestId": "[[ANYTHING_PRESENT]]"
+    }
+  }
+}

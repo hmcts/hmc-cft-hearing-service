@@ -1,0 +1,73 @@
+{
+  "_guid_": "S-007.4",
+  "_extends_" : "PutHearingActualsWithValidHearingActualData",
+
+  "specs": [
+    "an active profile in CCD",
+    "has the 400 code"
+  ],
+
+  "request": {
+    "body": {
+      "actualHearingDays": [
+        {
+          "hearingDate": "2022-01-28",
+          "hearingStartTime": "2022-01-28T10:00:00",
+          "hearingEndTime": "2022-01-28T15:00:00",
+          "pauseDateTimes": [
+            {
+              "pauseStartTime": "2022-01-28T12:00:00",
+              "pauseEndTime": "2022-01-28T12:30:00"
+            }
+          ],
+          "actualDayParties": [
+            {
+              "actualPartyId": "123",
+              "partyRole": "43333",
+              "individualDetails": {
+                "firstName": "WitnessForeName1",
+                "lastName": "WitnessLastName1"
+              },
+              "partyChannelSubType": "claiming party",
+              "didNotAttendFlag": "false",
+              "representedParty": null
+            }
+          ]
+        },
+        {
+          "hearingDate": "2022-01-28",
+          "hearingStartTime": "2022-01-28T10:00:00",
+          "hearingEndTime": "2022-01-28T15:00:00",
+          "pauseDateTimes": [
+            {
+              "pauseStartTime": "2022-01-28T12:00:00",
+              "pauseEndTime": "2022-01-28T12:30:00"
+            }
+          ],
+          "actualDayParties": [
+            {
+              "actualPartyId": "123",
+              "partyRole": "43333",
+              "individualDetails": {
+                "firstName": "WitnessForeName1",
+                "lastName": "WitnessLastName1"
+              },
+              "partyChannelSubType": "claiming party",
+              "didNotAttendFlag": "false",
+              "representedParty": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 400,
+    "responseMessage": "Bad Request",
+    "body" : {
+      "status" : "BAD_REQUEST",
+      "errors" : [ "004 non-unique dates" ]
+    }
+  }
+}

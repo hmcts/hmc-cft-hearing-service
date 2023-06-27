@@ -1,0 +1,41 @@
+{
+  "_guid_": "S-007.1-get-hearing",
+  "_extends_" : "GetHearingRequestPositiveGeneric",
+  "specs": [
+    "to verify the party name has been updated"
+  ],
+  "request": {
+    "pathVariables": {
+      "hearingID" : "${[scenarioContext][siblingContexts][CreateHearingActualRequest][testData][actualResponse][body][hearingRequestID]}"
+    }
+  },
+  "expectedResponse": {
+    "_extends_": "Common_200_Response",
+    "body": {
+      "requestDetails": {
+        "timestamp": "[[ANYTHING_PRESENT]]",
+        "status": "AWAITING_ACTUALS",
+        "versionNumber": 1,
+        "hearingRequestID" : "[[ANYTHING_PRESENT]]"
+      },
+      "caseDetails": "[[ANYTHING_PRESENT]]",
+      "hearingDetails" : "[[ANYTHING_PRESENT]]",
+      "partyDetails" : "[[ANYTHING_PRESENT]]",
+      "hearingResponse": {
+        "hearingDaySchedule" : [ {
+          "hearingStartDateTime" : "2022-01-11T09:00:00",
+          "hearingEndDateTime" : "2023-04-20T10:00:00",
+          "hearingVenueId" : "372653",
+          "hearingRoomId" : "Cardiff SSCS - Hearing Room 01",
+          "hearingJudgeId" : null,
+          "panelMemberId" : null,
+          "attendees" : [ ],
+          "listAssistSessionID" : null
+        } ],
+        "laCaseStatus" : "LISTED",
+        "listingStatus" : "FIXED",
+        "receivedDateTime" : "2022-04-20T08:57:36"
+      }
+    }
+  }
+}

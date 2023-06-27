@@ -1,0 +1,25 @@
+{
+  "_guid_": "S-011.3",
+  "_extends_" : "F-011_TestBase",
+
+  "specs": [
+    "an active profile in CCD",
+    "has 404 status code",
+    "has incorrect request invocation"
+  ],
+
+  "request": {
+    "pathVariables": {
+      "id": "987"
+    }
+  },
+
+  "expectedResponse": {
+    "responseCode": 404,
+    "responseMessage": "Not Found",
+    "body" : {
+      "status" : "NOT_FOUND",
+      "errors" : [ "Invalid linked group id" ]
+    }
+  }
+}
