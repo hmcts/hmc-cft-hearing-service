@@ -125,5 +125,42 @@ class HearingResponseRepositoryIT extends BaseTest {
         assertEquals(0, expected.getTotalElements());
     }
 
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
+    void testGetUnNotifiedHearingsReturnUniqueHearingsWithOutStartDateTo() {
+        String dateStr = "2023-06-15 01:01:01";
+        LocalDateTime startFrom = convertDateTime(dateStr);
+        final List<Long> expectedHearingIds = Arrays.asList(2100000003L);
+        Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
+        Page<Long> expected = hearingResponseRepository.getUnNotifiedHearingsWithOutStartDateTo(
+            "AAA2",
+            startFrom,
+            limit
+        );
+        assertNotNull(expected.getContent());
+        assertEquals(1, expected.getTotalElements());
+        assertEquals(expectedHearingIds, expected.getContent());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
+    void testGetUnNotifiedHearingsReturnUniqueHearingsWithStartDateTo() {
+        String dateStr = "2023-06-15 01:01:01";
+        String dateStrTo = "2023-06-20 01:01:01";
+        LocalDateTime startFrom = convertDateTime(dateStr);
+        LocalDateTime startTo = convertDateTime(dateStrTo);
+        final List<Long> expectedHearingIds = Arrays.asList(2100000003L);
+        Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
+        Page<Long> expected = hearingResponseRepository.getUnNotifiedHearingsWithStartDateTo(
+            "AAA2",
+            startFrom,
+            startTo,
+            limit
+        );
+        assertNotNull(expected.getContent());
+        assertEquals(1, expected.getTotalElements());
+        assertEquals(expectedHearingIds, expected.getContent());
+    }
+
 
 }

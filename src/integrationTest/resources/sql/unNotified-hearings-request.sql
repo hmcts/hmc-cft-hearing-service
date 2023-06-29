@@ -33,6 +33,11 @@ values (6, '2100000004', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselisting
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
 values (7, '2100000004', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 2, null);
 
+insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
+values (8, '2100000003', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 2, null);
+insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
+values (9, '2100000003', '2019-08-10 11:00:00', 'listingStatus1-1', 'caselistingStatus1-1', 2, null);
+
 
 insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
 values (1, 1, '2021-01-10 11:00:00', '2020-11-10 11:00:00', 'venue1-1', 'room1-1');
@@ -55,4 +60,8 @@ values (8, 6, '2021-01-10 11:00:00', '2021-08-10 11:00:00', 'venue1-1', 'room1-1
 insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
 values (9, 7, '2011-01-10 11:00:00', '2010-07-10 11:00:00', 'venue2-1', 'room2-1');
 
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (10, 8, '2023-06-15 09:00:00', '2023-06-15 10:00:00', 'venue2-1', 'room2-1');
+insert into hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
+values (11, 9, '2023-06-15 12:00:00', '2023-06-16 13:00:00', 'venue2-1', 'room2-1');
 

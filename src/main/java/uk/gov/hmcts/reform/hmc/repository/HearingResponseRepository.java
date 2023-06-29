@@ -26,7 +26,7 @@ public interface HearingResponseRepository extends JpaRepository<HearingResponse
         + "AND hre.partiesNotifiedDateTime is NOT NULL")
     List<HearingResponseEntity> getPartiesNotified(Long hearingId);
 
-    @Query("select hr.hearing.id from HearingResponseEntity hr where hr.hearingResponseId in "
+    @Query("select distinct(hr.hearing.id) from HearingResponseEntity hr where hr.hearingResponseId in "
         + "(select hdd.hearingResponse.hearingResponseId from HearingDayDetailsEntity hdd "
         + "where hdd.hearingResponse.hearingResponseId in "
         + "(select hr.hearingResponseId from CaseHearingRequestEntity csr "
@@ -40,7 +40,7 @@ public interface HearingResponseRepository extends JpaRepository<HearingResponse
     Page<Long> getUnNotifiedHearingsWithOutStartDateTo(String hmctsServiceCode, LocalDateTime hearingStartDateFrom,
                                                        Pageable pageable);
 
-    @Query("select hr.hearing.id from HearingResponseEntity hr where hr.hearingResponseId in "
+    @Query("select distinct(hr.hearing.id) from HearingResponseEntity hr where hr.hearingResponseId in "
         + "(select hdd.hearingResponse.hearingResponseId from HearingDayDetailsEntity hdd "
         + "where hdd.hearingResponse.hearingResponseId in "
         + "(select hr.hearingResponseId from CaseHearingRequestEntity csr "
