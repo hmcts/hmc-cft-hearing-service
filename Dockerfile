@@ -1,5 +1,5 @@
 ARG PLATFORM=""
-FROM eclipse-temurin${PLATFORM}:latest as builder
+FROM eclipse-temurin${PLATFORM}:17 as builder
 ARG JAR_FILE=build/libs/hmc-cft-hearing-service.jar
 COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
