@@ -28,7 +28,7 @@ java:
       key: connectionString
   keyVaults:
     hmc:
-      resourceGroup: hmc-shared
+      resourceGroup: hmc-aso-preview-rg
       secrets:
         - name: AppInsightsInstrumentationKey
         - name: hmc-cft-hearing-service-s2s-secret
