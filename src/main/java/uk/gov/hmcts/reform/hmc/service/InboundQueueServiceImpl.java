@@ -139,8 +139,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                              hmcHearingResponse.getHmctsServiceCode(),hearingId.toString());
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
-                log.info("Hearing id: " + hearingId + "has response of type :" + MessageType.ERROR);
-                log.error("Hearing id: " + hearingId + " updated to status Exception");
+                log.error("Hearing id: " + hearingId + " has response of type : " + MessageType.ERROR
+                              + " updated to status Exception");
             }
         }
     }
@@ -179,8 +179,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                              hmcHearingResponse.getHmctsServiceCode(),hearingId.toString());
             if (hearingEntity.getStatus().equals(HearingStatus.EXCEPTION.name())) {
-                log.info("Hearing id: " + hearingId + "has response of type :" + MessageType.LA_SYNC_HEARING_RESPONSE);
-                log.error("Hearing id: " + hearingId + " updated to status Exception");
+                log.error("Hearing id: " + hearingId + " has response of type : "
+                              + MessageType.LA_SYNC_HEARING_RESPONSE + " updated to status Exception");
             }
         }
     }
