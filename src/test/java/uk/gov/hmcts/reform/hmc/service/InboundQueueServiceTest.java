@@ -1009,12 +1009,14 @@ class InboundQueueServiceTest {
         List<ILoggingEvent> logsList = listAppender.list;
         int finalErrorIndex = logsList.size() - 1;
         assertEquals(Level.ERROR, logsList.get(finalErrorIndex).getLevel());
-        if(null != messageType){
-            assertEquals("Hearing id: " + hearingID +" has response of type : " + messageType +
-                     " updated to status Exception", logsList.get(finalErrorIndex).getMessage());
+        if (null != messageType) {
+            assertEquals("Hearing id: " + hearingID + " has response of type : " + messageType
+                             +  " updated to status Exception", logsList.get(finalErrorIndex).getMessage());
         } else {
-            assertEquals("Hearing id: " + hearingID + " updated to status Exception",
-                logsList.get(finalErrorIndex).getMessage());
+            assertEquals(
+                "Hearing id: " + hearingID + " updated to status Exception",
+                logsList.get(finalErrorIndex).getMessage()
+            );
         }
     }
 }
