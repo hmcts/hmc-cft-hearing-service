@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
 import uk.gov.hmcts.reform.hmc.data.PreviousLinkedGroupDetails;
-import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.LinkedGroupDetailsAuditMapper;
@@ -308,11 +307,9 @@ public class FutureHearingsLinkedHearingGroupService {
     }
 
     private void verifyAccess(List<HearingEntity> linkedGroupHearings, List<String> requiredRoles) {
-        List<RoleAssignment> filteredRoleAssignments =
-            accessControlService.verifyRoleAccess(requiredRoles);
         linkedGroupHearings.stream()
             .forEach(hearingEntity -> accessControlService
-                .verifyAccessWithFilteredRoleAssignments(hearingEntity.getId(), filteredRoleAssignments));
+                .verifyAccess(hearingEntity.getId(), requiredRoles));
     }
 
 }

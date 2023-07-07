@@ -72,14 +72,6 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     @Override
-    public void verifyAccessWithFilteredRoleAssignments(Long hearingId, List<RoleAssignment> filteredRoleAssignments) {
-        if (!applicationParams.isAccessControlEnabled()) {
-            return;
-        }
-        verifyHearingStatus(filteredRoleAssignments, null, null, hearingId);
-    }
-
-    @Override
     public List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles) {
         if (!applicationParams.isAccessControlEnabled()) {
             return Collections.emptyList();

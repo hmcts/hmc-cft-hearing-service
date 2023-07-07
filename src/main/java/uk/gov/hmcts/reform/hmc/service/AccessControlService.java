@@ -9,8 +9,6 @@ public interface AccessControlService {
 
     void verifyAccess(Long hearingId, List<String> requiredRoles);
 
-    void verifyAccessWithFilteredRoleAssignments(Long hearingId, List<RoleAssignment> filteredRoleAssignments);
-
     List<RoleAssignment> verifyRoleAccess(List<String> requiredRoles);
 
     ApplicationParams getApplicationParams();
