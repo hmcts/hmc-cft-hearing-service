@@ -72,6 +72,14 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     @Override
+    public List<RoleAssignment> verifyUserRoleAccess(List<String> requiredRoles) {
+        if (!applicationParams.isAccessControlEnabled()) {
+            return Collections.emptyList();
+        }
+        return verifyRoleAccess(requiredRoles);
+    }
+
+    @Override
     public List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles) {
         if (!applicationParams.isAccessControlEnabled()) {
             return Collections.emptyList();
@@ -99,7 +107,7 @@ public class AccessControlServiceImpl implements AccessControlService {
         return roleAssignmentsMatches.stream().map(RoleAssignment::getRoleName).collect(Collectors.toList());
     }
 
-    public List<RoleAssignment> verifyRoleAccess(List<String> requiredRoles) {
+    private List<RoleAssignment> verifyRoleAccess(List<String> requiredRoles) {
         RoleAssignments roleAssignments = roleAssignmentService.getRoleAssignments(securityUtils.getUserId());
         if (roleAssignments.getRoleAssignments().isEmpty()) {
             throw new ResourceNotFoundException(String.format(ROLE_ASSIGNMENTS_NOT_FOUND, securityUtils.getUserId()));
@@ -183,9 +191,5 @@ public class AccessControlServiceImpl implements AccessControlService {
     private boolean checkCaseType(RoleAssignmentAttributes attributes, String caseType) {
         return caseType == null || attributes.getCaseType() == null || attributes.getCaseType().isEmpty()
             || attributes.getCaseType().orElse("").equals(caseType);
-    }
-
-    public ApplicationParams getApplicationParams() {
-        return applicationParams;
     }
 }

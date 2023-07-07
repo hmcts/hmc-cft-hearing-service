@@ -48,7 +48,7 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
         isValidHmctsServiceCode(hmctsServiceCode);
         Page<Long> page = getUnNotifiedHearingResults(
             hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo);
-        accessControlService.verifyRoleAccess(Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyUserRoleAccess(Lists.newArrayList(HEARING_MANAGER));
         List<String> hearingIds = getHearingIdInStrings(page.getContent());
         return getUnNotifiedHearingsResponse(hearingIds, page.getTotalElements());
     }
