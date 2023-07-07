@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.UnNotifiedHearingsResponse;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
@@ -48,8 +49,11 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
         isValidHmctsServiceCode(hmctsServiceCode);
         Page<Long> page = getUnNotifiedHearingResults(
             hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo);
-        page.getContent().stream()
-            .forEach(hearingId -> accessControlService.verifyAccess(hearingId, Lists.newArrayList(HEARING_MANAGER)));
+        List<RoleAssignment> filteredRoleAssignments =
+            accessControlService.verifyRoleAccess(Lists.newArrayList(HEARING_MANAGER));
+        page.getContent().stream().forEach(
+            hearingId ->
+                accessControlService.verifyAccessWithFilteredRoleAssignments(hearingId, filteredRoleAssignments));
         List<String> hearingIds = getHearingIdInStrings(page.getContent());
         return getUnNotifiedHearingsResponse(hearingIds, page.getTotalElements());
     }

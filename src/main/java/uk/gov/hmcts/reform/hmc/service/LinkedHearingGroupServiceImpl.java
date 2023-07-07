@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.PreviousLinkedGroupDetails;
+import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.exceptions.BadFutureHearingRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.FhBadRequestException;
@@ -246,9 +247,11 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     private void verifyAccess(List<HearingEntity> linkedGroupHearings, List<String> requiredRoles) {
+        List<RoleAssignment> filteredRoleAssignments =
+            accessControlService.verifyRoleAccess(requiredRoles);
         linkedGroupHearings.stream()
             .forEach(hearingEntity -> accessControlService
-                .verifyAccess(hearingEntity.getId(), requiredRoles));
+                .verifyAccessWithFilteredRoleAssignments(hearingEntity.getId(), filteredRoleAssignments));
     }
 
 }
