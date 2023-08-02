@@ -221,7 +221,7 @@ def versions = [
   lombok          : '1.18.16',
   mapstruct       : '1.4.2.Final',
   pact            : '4.1.7',
-  reformLogging   : '5.1.7',
+  reformLogging   : '6.0.1',
   restAssured     : '4.2.1',
   springBoot      : springBoot.class.package.implementationVersion,
   springCloud     : '2020.0.1',
