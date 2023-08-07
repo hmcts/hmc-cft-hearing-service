@@ -185,7 +185,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     @Override
     @Transactional
-    public HearingResponse saveHearingRequest(HearingRequest createHearingRequest) {
+    public HearingResponse saveHearingRequest(HearingRequest createHearingRequest, String deploymentId) {
         if (createHearingRequest == null) {
             throw new BadRequestException(INVALID_HEARING_REQUEST_DETAILS);
         }

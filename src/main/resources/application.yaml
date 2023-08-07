@@ -30,7 +30,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
   jpa:
     database: postgresql
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: none
     properties:
@@ -105,6 +105,9 @@ jms:
 
 access-control:
   enabled: ${HMC_ACCESS_CONTROL_ENABLED:true}
+
+hmcts-deployment-id:
+  enabled: ${HMCTS_DEPLOYMENT_ID:true}
 
 room-attributes:
   file: ${ROOM_ATTRIBUTES_FILE:classpath:room-attributes.json}

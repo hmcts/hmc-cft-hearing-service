@@ -12,7 +12,7 @@ public interface HearingManagementService {
 
     ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid);
 
-    HearingResponse saveHearingRequest(HearingRequest createHearingRequest);
+    HearingResponse saveHearingRequest(HearingRequest createHearingRequest, String deploymentId);
 
     HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest);
 
