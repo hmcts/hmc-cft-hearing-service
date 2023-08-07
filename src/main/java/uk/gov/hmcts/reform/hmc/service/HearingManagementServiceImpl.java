@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.service;
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -80,6 +81,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_R
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HMCTS_DEPLOYMENT_ID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_VERSION_NUMBER;
@@ -200,7 +202,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             ? 0 : createHearingRequest.getHearingDetails().getFacilitiesRequired().size();
         boolean facilitiesMatch = (facilitiesRoomAttributes.size() == size);
 
-        HearingResponse hearingResponse = insertHearingRequest(createHearingRequest, reasonableMatch, facilitiesMatch);
+        HearingResponse hearingResponse = insertHearingRequest(createHearingRequest, reasonableMatch, facilitiesMatch,
+                                                               deploymentId);
         sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), REQUEST_HEARING, createHearingRequest,
                                     getCaseDetails(hearingResponse.getHearingRequestId(), createHearingRequest),
                                     listing
@@ -210,7 +213,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     @Override
     @Transactional
-    public HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest) {
+    public HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest,
+                                                 String deploymentId) {
         validateHearingRequest(hearingRequest);
         hearingIdValidator.validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
         validateVersionNumber(hearingId, hearingRequest.getRequestDetails().getVersionNumber());
@@ -221,6 +225,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (!existingHearing.getLatestCaseReferenceNumber().equals(hearingRequest.getCaseDetails().getCaseRef())) {
             throw new BadRequestException(INVALID_CASE_REFERENCE);
         }
+        if (!StringUtils.isEmpty(deploymentId) && !StringUtils.isEmpty(existingHearing.getDeploymentId())
+            && !deploymentId.equals(existingHearing.getDeploymentId())) {
+            throw new BadRequestException(INVALID_HMCTS_DEPLOYMENT_ID);
+        }
         String statusToUpdate = getNextPutHearingStatus(existingHearing.getStatus());
         EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest.getPartyDetails());
         Listing listing = getListing(hearingRequest, entities);
@@ -230,12 +238,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         int size = (hearingRequest.getHearingDetails().getFacilitiesRequired() == null)
             ? 0 : hearingRequest.getHearingDetails().getFacilitiesRequired().size();
         boolean facilitiesMatch = (facilitiesRoomAttributes.size() == size);
-
-
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate,
-                           reasonableMatch,
-                           facilitiesMatch);
+                           reasonableMatch, facilitiesMatch);
+        hearingEntity.setDeploymentId(deploymentId);
 
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
@@ -329,18 +335,24 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private HearingResponse insertHearingRequest(HearingRequest createHearingRequest,
                                                  boolean reasonableMatch,
-                                                 boolean facilitiesMatch) {
-        HearingEntity savedEntity = saveHearingDetails(createHearingRequest, reasonableMatch, facilitiesMatch);
+                                                 boolean facilitiesMatch,
+                                                 String deploymentId) {
+        HearingEntity savedEntity = saveHearingDetails(createHearingRequest, reasonableMatch, facilitiesMatch,
+                                                       deploymentId);
         savePartyRelationshipDetails(createHearingRequest, savedEntity);
         return getSaveHearingResponseDetails(savedEntity);
     }
 
     private HearingEntity saveHearingDetails(HearingRequest createHearingRequest,
                                              boolean reasonableMatch,
-                                             boolean facilitiesMatch) {
+                                             boolean facilitiesMatch,
+                                             String deploymentId) {
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(createHearingRequest, new HearingEntity(),
                            VERSION_NUMBER_TO_INCREMENT, POST_HEARING_STATUS, reasonableMatch, facilitiesMatch);
+        if (!StringUtils.isEmpty(deploymentId)) {
+            hearingEntity.setDeploymentId(deploymentId);
+        }
         return hearingRepository.save(hearingEntity);
     }
 
