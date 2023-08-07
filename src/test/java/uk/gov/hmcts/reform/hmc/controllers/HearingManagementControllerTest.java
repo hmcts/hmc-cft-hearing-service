@@ -283,14 +283,16 @@ class HearingManagementControllerTest {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = generateUpdateHearingRequest(false);
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest)).thenReturn(hearingResponse);
+            when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest, ""))
+                    .thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams);
-            controller.updateHearing(hearingRequest, hearingId);
+            controller.updateHearing("",hearingRequest, hearingId);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
-            orderVerifier.verify(hearingManagementService).updateHearingRequest(hearingId, hearingRequest);
+            orderVerifier.verify(hearingManagementService).updateHearingRequest(hearingId, hearingRequest,
+                                                                                "");
             verifyNoMoreInteractions(hearingManagementService);
         }
 
@@ -299,14 +301,16 @@ class HearingManagementControllerTest {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = generateUpdateHearingRequest(true);
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest)).thenReturn(hearingResponse);
+            when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest, ""))
+                .thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams);
-            controller.updateHearing(hearingRequest, hearingId);
+            controller.updateHearing("", hearingRequest, hearingId);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
-            orderVerifier.verify(hearingManagementService).updateHearingRequest(hearingId, hearingRequest);
+            orderVerifier.verify(hearingManagementService).updateHearingRequest(hearingId, hearingRequest,
+                                                                                "");
             verifyNoMoreInteractions(hearingManagementService);
         }
     }
