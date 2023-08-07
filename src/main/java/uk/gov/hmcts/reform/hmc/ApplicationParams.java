@@ -64,6 +64,10 @@ public class ApplicationParams {
     @Value("${fh.hmi.destination-system}")
     private String destinationSystem;
 
+    @Value("${hmcts-deployment-id.enabled}")
+    private boolean hmctsDeploymentIdEnabled;
+
+
     public static String encode(final String stringToEncode) {
         try {
             return URLEncoder.encode(stringToEncode, "UTF-8");
