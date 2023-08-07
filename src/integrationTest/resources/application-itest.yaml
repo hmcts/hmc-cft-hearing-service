@@ -48,4 +48,4 @@ fh:
     destination-system: DESTINATION_SYSTEM
 
 hmcts-deployment-id:
-  enabled: ${HMCTS_DEPLOYMENT_ID:true}
+  enabled: ${HMCTS_DEPLOYMENT_ID:false}

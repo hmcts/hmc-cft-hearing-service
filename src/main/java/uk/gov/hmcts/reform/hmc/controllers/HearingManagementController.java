@@ -96,7 +96,8 @@ public class HearingManagementController {
                 + "\n3) " + ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS
         )
     })
-    public HearingResponse saveHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID) String deploymentId,
+    public HearingResponse saveHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false, defaultValue = "")
+                                           String deploymentId,
                                        @RequestBody @Valid HearingRequest createHearingRequest) {
         if (applicationParams.isHmctsDeploymentIdEnabled() && StringUtils.isEmpty(deploymentId)) {
             throw new BadRequestException(INVALID_HMCTS_DEPLOYMENT_ID);
