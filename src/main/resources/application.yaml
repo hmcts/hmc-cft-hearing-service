@@ -107,7 +107,7 @@ access-control:
   enabled: ${HMC_ACCESS_CONTROL_ENABLED:true}
 
 hmcts-deployment-id:
-  enabled: ${HMCTS_DEPLOYMENT_ID:true}
+  enabled: ${HMCTS_DEPLOYMENT_ID:false}
 
 room-attributes:
   file: ${ROOM_ATTRIBUTES_FILE:classpath:room-attributes.json}
