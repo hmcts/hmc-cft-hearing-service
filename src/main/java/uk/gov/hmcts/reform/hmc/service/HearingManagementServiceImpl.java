@@ -81,7 +81,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_R
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_REQUEST_DETAILS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HMCTS_DEPLOYMENT_ID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_VERSION_NUMBER;
@@ -225,10 +224,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         if (!existingHearing.getLatestCaseReferenceNumber().equals(hearingRequest.getCaseDetails().getCaseRef())) {
             throw new BadRequestException(INVALID_CASE_REFERENCE);
         }
-        if (!StringUtils.isEmpty(deploymentId) && !StringUtils.isEmpty(existingHearing.getDeploymentId())
-            && !deploymentId.equals(existingHearing.getDeploymentId())) {
-            throw new BadRequestException(INVALID_HMCTS_DEPLOYMENT_ID);
-        }
         String statusToUpdate = getNextPutHearingStatus(existingHearing.getStatus());
         EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest.getPartyDetails());
         Listing listing = getListing(hearingRequest, entities);
@@ -238,6 +233,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         int size = (hearingRequest.getHearingDetails().getFacilitiesRequired() == null)
             ? 0 : hearingRequest.getHearingDetails().getFacilitiesRequired().size();
         boolean facilitiesMatch = (facilitiesRoomAttributes.size() == size);
+
+
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate,
                            reasonableMatch, facilitiesMatch);

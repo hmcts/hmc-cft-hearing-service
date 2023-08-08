@@ -41,7 +41,8 @@ import javax.validation.constraints.Size;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HMCTS_DEPLOYMENT_ID;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
@@ -96,12 +97,10 @@ public class HearingManagementController {
                 + "\n3) " + ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS
         )
     })
-    public HearingResponse saveHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false, defaultValue = "")
+    public HearingResponse saveHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false)
                                            String deploymentId,
                                        @RequestBody @Valid HearingRequest createHearingRequest) {
-        if (applicationParams.isHmctsDeploymentIdEnabled() && StringUtils.isEmpty(deploymentId)) {
-            throw new BadRequestException(INVALID_HMCTS_DEPLOYMENT_ID);
-        }
+        verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER));
         return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId);
     }
@@ -178,9 +177,7 @@ public class HearingManagementController {
                                          defaultValue = "") String deploymentId,
                                          @RequestBody @Valid UpdateHearingRequest hearingRequest,
                                          @PathVariable("id") Long hearingId) {
-        if (applicationParams.isHmctsDeploymentIdEnabled() && StringUtils.isEmpty(deploymentId)) {
-            throw new BadRequestException(INVALID_HMCTS_DEPLOYMENT_ID);
-        }
+        verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         return hearingManagementService.updateHearingRequest(hearingId, hearingRequest, deploymentId);
     }
@@ -213,5 +210,14 @@ public class HearingManagementController {
     private boolean hasOnlyListedHearingViewerRoles(List<String> filteredRoleAssignments) {
         return filteredRoleAssignments.stream()
             .allMatch(roleAssignment -> roleAssignment.equals(LISTED_HEARING_VIEWER));
+    }
+
+    private void verifyDeploymentIdEnabled(String deploymentId) {
+        if (applicationParams.isHmctsDeploymentIdEnabled() && StringUtils.isEmpty(deploymentId)) {
+            throw new BadRequestException(HMCTS_DEPLOYMENT_ID_REQUIRED);
+
+        } else if (!applicationParams.isHmctsDeploymentIdEnabled() && !StringUtils.isEmpty(deploymentId)) {
+            throw new BadRequestException(HMCTS_DEPLOYMENT_ID_NOT_REQUIRED);
+        }
     }
 }
