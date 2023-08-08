@@ -478,7 +478,7 @@ class HearingManagementServiceTest {
             mockGetEntities(hearingRequest);
 
             assertThrows(BadRequestException.class, () -> hearingManagementService
-                   .saveHearingRequest(hearingRequest, ""));
+                   .saveHearingRequest(hearingRequest, null));
         }
 
         @Test
