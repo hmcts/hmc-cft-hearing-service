@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.hmc.service;
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -238,8 +237,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate,
                            reasonableMatch, facilitiesMatch);
-        hearingEntity.setDeploymentId(deploymentId);
-
+        if (deploymentId != null) {
+            hearingEntity.setDeploymentId(deploymentId);
+        }
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
@@ -347,7 +347,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(createHearingRequest, new HearingEntity(),
                            VERSION_NUMBER_TO_INCREMENT, POST_HEARING_STATUS, reasonableMatch, facilitiesMatch);
-        if (!StringUtils.isEmpty(deploymentId)) {
+        if (deploymentId != null) {
             hearingEntity.setDeploymentId(deploymentId);
         }
         return hearingRepository.save(hearingEntity);

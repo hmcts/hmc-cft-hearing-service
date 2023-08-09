@@ -405,7 +405,7 @@ class HearingManagementServiceTest {
             given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "");
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
             assertValidHearingResponse(response);
         }
 
@@ -422,7 +422,7 @@ class HearingManagementServiceTest {
             given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(), anyBoolean(), anyBoolean()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "");
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
             assertValidHearingResponse(response);
         }
 
@@ -492,7 +492,7 @@ class HearingManagementServiceTest {
             given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "");
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
             assertValidHearingResponse(response);
         }
 
@@ -529,7 +529,7 @@ class HearingManagementServiceTest {
             final List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntities = List.of(entity1, entity2);
             given(partyRelationshipDetailsMapper.modelToEntity(any(), any()))
                     .willReturn(partyRelationshipDetailsEntities);
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "");
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
             assertValidHearingResponse(response);
         }
 
@@ -548,7 +548,7 @@ class HearingManagementServiceTest {
             given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "");
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
             assertValidHearingResponse(response);
         }
 
@@ -566,7 +566,7 @@ class HearingManagementServiceTest {
             given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "");
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
             assertValidHearingResponse(response);
         }
 
