@@ -1,10 +1,5 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import   com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
-import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,6 +12,11 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
+import lombok.val;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
@@ -402,7 +402,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
             mockGetEntities(hearingRequest);
             mockSubmitRequest();
-            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean()))
+            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean(), any()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
@@ -419,7 +419,7 @@ class HearingManagementServiceTest {
             assertNotNull(hearingRequest.getHearingDetails().getHearingWindow().getDateRangeEnd());
             mockGetEntities(hearingRequest);
             mockSubmitRequest();
-            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(), anyBoolean(), anyBoolean()))
+            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(), anyBoolean(), anyBoolean(), any()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
@@ -489,7 +489,7 @@ class HearingManagementServiceTest {
             hearingRequest.setCaseDetails(TestingUtil.caseDetails());
             mockGetEntities(hearingRequest);
             mockSubmitRequest();
-            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean()))
+            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean(), any()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
@@ -508,7 +508,7 @@ class HearingManagementServiceTest {
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
             mockGetEntities(hearingRequest);
             mockSubmitRequest();
-            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean()))
+            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean(), any()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
 
@@ -545,7 +545,7 @@ class HearingManagementServiceTest {
                 TestingUtil.individualWithoutRelatedPartyDetails());
             mockGetEntities(hearingRequest);
             mockSubmitRequest();
-            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean()))
+            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean(), any()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
@@ -563,10 +563,28 @@ class HearingManagementServiceTest {
             hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
             mockGetEntities(hearingRequest);
             mockSubmitRequest();
-            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean()))
+            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean(), any()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
+            assertValidHearingResponse(response);
+        }
+
+        @Test
+        void shouldPassIfHearingDeploymentIdIsPresent() {
+            HearingRequest hearingRequest = new HearingRequest();
+            hearingRequest.setHearingDetails(TestingUtil.hearingDetails());
+            hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
+
+            assertNotNull(hearingRequest.getHearingDetails().getHearingWindow().getDateRangeStart());
+            assertNotNull(hearingRequest.getHearingDetails().getHearingWindow().getDateRangeEnd());
+            mockGetEntities(hearingRequest);
+            mockSubmitRequest();
+            given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(), anyBoolean(), anyBoolean(),
+                                              eq("ABA1")))
+                .willReturn(TestingUtil.hearingEntity());
+            given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "ABA1");
             assertValidHearingResponse(response);
         }
 
@@ -1084,7 +1102,7 @@ class HearingManagementServiceTest {
 
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),
-                                             anyBoolean(), anyBoolean())).thenReturn(hearingEntity);
+                                             anyBoolean(), anyBoolean(), any())).thenReturn(hearingEntity);
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
@@ -1108,7 +1126,7 @@ class HearingManagementServiceTest {
             );
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),
-                                             anyBoolean(), anyBoolean())).thenReturn(hearingEntity);
+                                             anyBoolean(), anyBoolean(), any())).thenReturn(hearingEntity);
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
@@ -1191,7 +1209,7 @@ class HearingManagementServiceTest {
             );
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),
-                                             anyBoolean(), anyBoolean())).thenReturn(hearingEntity);
+                                             anyBoolean(), anyBoolean(), any())).thenReturn(hearingEntity);
             mockGetEntities(hearingRequest);
             mockSubmitRequest();
 
@@ -1417,6 +1435,22 @@ class HearingManagementServiceTest {
             assertEquals(ValidationError.INVALID_CASE_REFERENCE, exception.getMessage());
         }
 
+        @Test
+        void updateHearingRequestShouldPassWithDeploymentId() {
+            final long hearingId = 2000000000L;
+            UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+            final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
+            mockValidHearing(hearingId, versionNumber, hearingRequest);
+            mockGetEntities(hearingRequest);
+            mockSubmitRequest();
+
+            HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest,
+                                                                                            "ABA");
+            assertEquals(hearingResponse.getVersionNumber(), versionNumber + 1);
+            verify(hearingRepository).existsById(hearingId);
+            verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
+        }
+
         private int mockValidHearing(long hearingId, int versionNumber, UpdateHearingRequest hearingRequest) {
 
             when(caseHearingRequestRepository.getLatestVersionNumber(hearingId)).thenReturn(versionNumber);
@@ -1427,7 +1461,7 @@ class HearingManagementServiceTest {
             );
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),
-                                             anyBoolean(), anyBoolean())).thenReturn(hearingEntity);
+                                             anyBoolean(), anyBoolean(), any())).thenReturn(hearingEntity);
             return versionNumber;
         }
     }

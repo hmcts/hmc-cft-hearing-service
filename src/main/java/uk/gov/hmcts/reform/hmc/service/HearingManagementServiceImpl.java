@@ -236,10 +236,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate,
-                           reasonableMatch, facilitiesMatch);
-        if (deploymentId != null) {
-            hearingEntity.setDeploymentId(deploymentId);
-        }
+                           reasonableMatch, facilitiesMatch, deploymentId);
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
@@ -346,10 +343,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                              String deploymentId) {
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(createHearingRequest, new HearingEntity(),
-                           VERSION_NUMBER_TO_INCREMENT, POST_HEARING_STATUS, reasonableMatch, facilitiesMatch);
-        if (deploymentId != null) {
-            hearingEntity.setDeploymentId(deploymentId);
-        }
+                           VERSION_NUMBER_TO_INCREMENT, POST_HEARING_STATUS, reasonableMatch, facilitiesMatch,
+                           deploymentId);
         return hearingRepository.save(hearingEntity);
     }
 

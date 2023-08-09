@@ -38,7 +38,8 @@ public class HearingMapper {
                                        Integer requestVersion,
                                        String status,
                                        boolean reasonableMatch,
-                                       boolean facilitiesMatch) {
+                                       boolean facilitiesMatch,
+                                       String deploymentId) {
 
 
 
@@ -52,6 +53,9 @@ public class HearingMapper {
         setCaseDetails(hearingRequest.getCaseDetails(), caseHearingRequestEntity);
         setPartyDetails(hearingRequest.getPartyDetails(), caseHearingRequestEntity);
         hearingEntity.setStatus(status);
+        if (deploymentId != null) {
+            hearingEntity.setDeploymentId(deploymentId);
+        }
         hearingEntity.setIsLinkedFlag(hearingRequest.getHearingDetails().getHearingIsLinkedFlag());
         hearingEntity.getCaseHearingRequests().add(caseHearingRequestEntity);
         return hearingEntity;
