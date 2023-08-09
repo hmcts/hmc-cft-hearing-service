@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -46,7 +47,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
 
 @AutoConfigureMockMvc(addFilters = false)
 @ImportAutoConfiguration(TestIdamConfiguration.class)
@@ -173,7 +173,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         Mockito.doThrow(new FeignException.NotFound(testExceptionMessage, request, null,null))
             .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
-        ResultActions result =  this.mockMvc.perform(post("/hearing").header(HMCTS_DEPLOYMENT_ID, true)
+        ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -213,6 +213,24 @@ public class RestExceptionHandlerTest extends BaseTest {
         // THEN
         assertHttpErrorResponse(result, HttpStatus.INTERNAL_SERVER_ERROR.value(), testExceptionMessage,
                                 "INTERNAL_SERVER_ERROR");
+    }
+
+    @DisplayName("should return correct response when BadRequestException is thrown")
+    @Test
+    void shouldHandleBadRequestException_WhenDeploymentIdValueNotPresent() throws Exception {
+        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+
+        /// WHEN
+        Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
+            .saveHearingRequest(any(HearingRequest.class),any());
+
+        ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .contentType(MediaType.APPLICATION_JSON)
+                                                         .content(objectMapper.writeValueAsString(validRequest)));
+
+        // THEN
+        assertHttpErrorResponse(result, HttpStatus.BAD_REQUEST.value(),
+                                "HMCTS deployment id is required", "BAD_REQUEST");
     }
 
     private void assertHttpErrorResponse(ResultActions result, int expectedStatusCode, String expectedMessage,

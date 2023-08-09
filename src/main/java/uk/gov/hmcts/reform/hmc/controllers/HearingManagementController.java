@@ -98,7 +98,7 @@ public class HearingManagementController {
         )
     })
     public HearingResponse saveHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false)
-                                           String deploymentId,
+                                        String deploymentId,
                                        @RequestBody @Valid HearingRequest createHearingRequest) {
         verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER));
@@ -173,8 +173,8 @@ public class HearingManagementController {
         @ApiResponse(code = 404, message = ValidationError.CASE_NOT_FOUND),
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
-    public HearingResponse updateHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false,
-                                         defaultValue = "") String deploymentId,
+    public HearingResponse updateHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false)
+                                                 String deploymentId,
                                          @RequestBody @Valid UpdateHearingRequest hearingRequest,
                                          @PathVariable("id") Long hearingId) {
         verifyDeploymentIdEnabled(deploymentId);
