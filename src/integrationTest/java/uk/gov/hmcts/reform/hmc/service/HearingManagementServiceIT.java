@@ -262,7 +262,7 @@ class HearingManagementServiceIT extends BaseTest {
     void testUpdateHearingRequest_WithInvalidHearingStatus() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.updateHearingRequest(2000000011L, request, "");
+            hearingManagementService.updateHearingRequest(2000000011L, request, null);
         });
         assertEquals(INVALID_PUT_HEARING_STATUS, exception.getMessage());
     }
@@ -274,10 +274,10 @@ class HearingManagementServiceIT extends BaseTest {
     void testUpdateHearingRequest_WithValidData() {
         hearingManagementService.updateHearingRequest(2000000000L,
                                                       TestingUtil.updateHearingRequestWithCaseSubType(1),
-                                                      "");
+                                                      null);
         HearingResponse response = hearingManagementService
             .updateHearingRequest(2000000000L, TestingUtil.updateHearingRequestWithCaseSubType(2),
-                                  "");
+                                  null);
         assertEquals(2000000000L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.HEARING_REQUESTED.name(), response.getStatus());
         assertEquals(3, response.getVersionNumber());
@@ -289,7 +289,8 @@ class HearingManagementServiceIT extends BaseTest {
     void testUpdateHearingRequest_WhenStatus_Update_Requested() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
         request.getCaseDetails().setCaseRef("9856815055686759");
-        HearingResponse response = hearingManagementService.updateHearingRequest(2000000012L, request, "");
+        HearingResponse response = hearingManagementService.updateHearingRequest(2000000012L, request,
+                                                                                 null);
         assertEquals(2000000012L, response.getHearingRequestId());
         assertEquals(response.getStatus(), PutHearingStatus.UPDATE_REQUESTED.name());
         assertEquals(2, response.getVersionNumber());
@@ -302,7 +303,7 @@ class HearingManagementServiceIT extends BaseTest {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
         request.getCaseDetails().setCaseRef("9372710950276233");
         HearingResponse response = hearingManagementService.updateHearingRequest(2000000024L, request,
-                                                                                 "");
+                                                                                 null);
         assertEquals(2000000024L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
         assertEquals(2, response.getVersionNumber());
@@ -315,7 +316,7 @@ class HearingManagementServiceIT extends BaseTest {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
         request.getHearingDetails().setAmendReasonCodes(Collections.emptyList());
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.updateHearingRequest(2000000024L, request, "");
+            hearingManagementService.updateHearingRequest(2000000024L, request, null);
         });
         assertEquals(INVALID_AMEND_REASON_CODE, exception.getMessage());
     }
@@ -326,7 +327,7 @@ class HearingManagementServiceIT extends BaseTest {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
         request.getHearingDetails().setAmendReasonCodes(null);
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.updateHearingRequest(2000000024L, request, "");
+            hearingManagementService.updateHearingRequest(2000000024L, request, null);
         });
         assertEquals(INVALID_AMEND_REASON_CODE, exception.getMessage());
     }
@@ -339,7 +340,7 @@ class HearingManagementServiceIT extends BaseTest {
         request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         request.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.updateHearingRequest(2000000024L, request, "");
+            hearingManagementService.updateHearingRequest(2000000024L, request, null);
         });
         assertEquals(MISSING_INDIVIDUAL_DETAILS, exception.getMessage());
     }
@@ -353,7 +354,7 @@ class HearingManagementServiceIT extends BaseTest {
         request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         request.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
         HearingResponse response = hearingManagementService.updateHearingRequest(2000000024L, request,
-                                                                                 "");
+                                                                                 null);
         assertEquals(2000000024L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
         assertEquals(2, response.getVersionNumber());
@@ -368,7 +369,7 @@ class HearingManagementServiceIT extends BaseTest {
         request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         request.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.updateHearingRequest(2000000024L, request,"");
+            hearingManagementService.updateHearingRequest(2000000024L, request,null);
         });
         assertEquals(MISSING_ORGANISATION_DETAILS, exception.getMessage());
     }
@@ -381,7 +382,7 @@ class HearingManagementServiceIT extends BaseTest {
         request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         request.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.updateHearingRequest(2000000024L, request, "");
+            hearingManagementService.updateHearingRequest(2000000024L, request, null);
         });
         assertEquals(INVALID_CASE_REFERENCE, exception.getMessage());
     }
