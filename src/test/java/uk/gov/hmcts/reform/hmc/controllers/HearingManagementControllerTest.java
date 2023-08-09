@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -41,8 +40,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyObject;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -91,7 +88,7 @@ class HearingManagementControllerTest {
             hearingRequest.setHearingDetails(null);
 
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.saveHearingRequest(hearingRequest, "")).thenReturn(hearingResponse);
+            when(hearingManagementService.saveHearingRequest(hearingRequest, null)).thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
@@ -107,7 +104,7 @@ class HearingManagementControllerTest {
             hearingRequest.setCaseDetails(null);
 
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.saveHearingRequest(hearingRequest, "")).thenReturn(hearingResponse);
+            when(hearingManagementService.saveHearingRequest(hearingRequest, null)).thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
@@ -122,7 +119,7 @@ class HearingManagementControllerTest {
             HearingRequest hearingRequest = generateHearingRequest(false);
 
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.saveHearingRequest(hearingRequest, "")).thenReturn(hearingResponse);
+            when(hearingManagementService.saveHearingRequest(hearingRequest, null)).thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
@@ -138,7 +135,7 @@ class HearingManagementControllerTest {
             HearingRequest hearingRequest = generateHearingRequest(true);
 
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.saveHearingRequest(hearingRequest, "")).thenReturn(hearingResponse);
+            when(hearingManagementService.saveHearingRequest(hearingRequest, null)).thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
@@ -156,7 +153,7 @@ class HearingManagementControllerTest {
 
             HearingResponse hearingResponse = new HearingResponse();
             hearingResponse.setHearingRequestId(1L);
-            when(hearingManagementService.saveHearingRequest(hearingRequest, "")).thenReturn(hearingResponse);
+            when(hearingManagementService.saveHearingRequest(hearingRequest, null)).thenReturn(hearingResponse);
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams);
