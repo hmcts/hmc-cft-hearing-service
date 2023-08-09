@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
@@ -53,7 +54,7 @@ public class HearingMapper {
         setCaseDetails(hearingRequest.getCaseDetails(), caseHearingRequestEntity);
         setPartyDetails(hearingRequest.getPartyDetails(), caseHearingRequestEntity);
         hearingEntity.setStatus(status);
-        if (deploymentId != null) {
+        if (!StringUtils.isEmpty(deploymentId)) {
             hearingEntity.setDeploymentId(deploymentId);
         }
         hearingEntity.setIsLinkedFlag(hearingRequest.getHearingDetails().getHearingIsLinkedFlag());
