@@ -9,6 +9,7 @@ Please note that this microservice is also available within [hmc-docker](https:/
 - [JDK 17](https://java.com)
 - [Docker](https://www.docker.com)
 
+
 ## Building and deploying the application
 
 ### Building the application
