@@ -144,6 +144,23 @@ class HearingEntityTest {
         }
 
         @Test
+        void shouldGetLatestHearingResponseForLatestRequestForUpdateWhenResponsesExist() {
+            HearingEntity hearing = new HearingEntity();
+            CaseHearingRequestEntity caseHearingRequest1 = caseHearingRequest(1);
+            CaseHearingRequestEntity caseHearingRequest2 = caseHearingRequest(2);
+            hearing.setCaseHearingRequests(List.of(caseHearingRequest1, caseHearingRequest2));
+            HearingResponseEntity hearingResponse1 = hearingResponse(1, 2000);
+            HearingResponseEntity hearingResponse2 = hearingResponse(2, 2002);
+            HearingResponseEntity hearingResponse3 = hearingResponse(3, 2004);
+            hearing.setHearingResponses(List.of(hearingResponse1, hearingResponse3, hearingResponse3));
+
+            Optional<HearingResponseEntity> latestResponse = hearing.getHearingResponseForLatestRequestForUpdate();
+
+            assertTrue(latestResponse.isPresent());
+            assertEquals(hearingResponse3, latestResponse.get());
+        }
+
+        @Test
         void shouldReturnEmptyOptionalWhenNoHearingResponsesExistForLatestRequestVersion() {
             HearingEntity hearing = new HearingEntity();
             CaseHearingRequestEntity caseHearingRequest1 = caseHearingRequest(1);
