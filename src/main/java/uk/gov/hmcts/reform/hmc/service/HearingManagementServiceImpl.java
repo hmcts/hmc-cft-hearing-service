@@ -537,13 +537,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public void sendResponse(String json, String hmctsServiceId) {
-        sendRspToTopic(json, hmctsServiceId);
+    public void sendResponse(String json, String hmctsServiceId, String deploymentId) {
+        sendRspToTopic(json, hmctsServiceId, deploymentId);
     }
 
-    private void sendRspToTopic(Object response, String hmctsServiceId) {
+    private void sendRspToTopic(Object response, String hmctsServiceId, String deploymentId) {
         var jsonNode = objectMapperService.convertObjectToJsonNode(response);
-        messageSenderToTopicConfiguration.sendMessage(jsonNode.toString(), hmctsServiceId, NO_DEFINED);
+        messageSenderToTopicConfiguration.sendMessage(jsonNode.toString(), hmctsServiceId, NO_DEFINED, deploymentId);
     }
 
     private void sendRequestToQueue(HmiSubmitHearingRequest hmiSubmitHearingRequest, Long hearingId,

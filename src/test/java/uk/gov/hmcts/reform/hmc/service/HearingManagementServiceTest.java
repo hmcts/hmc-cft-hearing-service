@@ -17,6 +17,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
@@ -270,10 +271,24 @@ class HearingManagementServiceTest {
             String json = "{\"query\": {\"match\": \"blah blah\"}}";
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any(), any(),any());
-            hearingManagementService.sendResponse(json, "test hmctsCode");
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any(), any(),any(), any());
+            hearingManagementService.sendResponse(json, "test hmctsCode", null);
             verify(objectMapperService, times(1)).convertObjectToJsonNode(any());
-            verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any(), any(),any());
+            verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any(), any(),any(),
+                                                                            any());
+        }
+
+        @Test
+        void shouldVerifySubsequentCallsWhenDeploymentIdIsPresent() throws JsonProcessingException {
+            ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+            String json = "{\"query\": {\"match\": \"blah blah\"}}";
+            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+            when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode);
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any(), any(),any(), any());
+            hearingManagementService.sendResponse(json, "test hmctsCode", "ABA1");
+            verify(objectMapperService, times(1)).convertObjectToJsonNode(any());
+            verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any(), any(),any(),
+                                                                            any());
         }
     }
 

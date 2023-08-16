@@ -22,7 +22,7 @@ public interface HearingManagementService {
 
     GetHearingsResponse getEmptyHearingsResponse(String caseRefId);
 
-    void sendResponse(String json, String hmctsServiceId);
+    void sendResponse(String json, String hmctsServiceId, String deploymentId);
 
     ResponseEntity hearingCompletion(Long hearingId);
 
