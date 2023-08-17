@@ -204,7 +204,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                                                deploymentId);
         sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), REQUEST_HEARING, createHearingRequest,
                                     getCaseDetails(hearingResponse.getHearingRequestId(), createHearingRequest),
-                                    listing
+                                    listing, deploymentId
         );
         return hearingResponse;
     }
@@ -240,15 +240,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
-            getCaseDetails(saveHearingResponseDetails.getHearingRequestId(), hearingRequest), listing);
+            getCaseDetails(saveHearingResponseDetails.getHearingRequestId(), hearingRequest), listing, deploymentId);
         return saveHearingResponseDetails;
     }
 
     private void sendRequestToHmiAndQueue(Long hearingId, String messageType, HearingRequest hearingRequest,
-                                          HmiCaseDetails hmiCaseDetails,Listing listing) {
+                                          HmiCaseDetails hmiCaseDetails,Listing listing, String deploymentId) {
         HmiSubmitHearingRequest hmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
             .mapRequest(hearingRequest, hmiCaseDetails, listing);
-        sendRequestToQueue(hmiSubmitHearingRequest, hearingId, messageType);
+        sendRequestToQueue(hmiSubmitHearingRequest, hearingId, messageType,deploymentId);
     }
 
     private void validateHearingStatusForUpdate(Long hearingId) {
@@ -510,7 +510,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             .modelToEntity(deleteRequest, existingHearing, existingHearing.getNextRequestVersion(),
                            caseHearingRequestEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
-        sendRequestToQueue(hearingId, DELETE_HEARING);
+        sendRequestToQueue(hearingId, DELETE_HEARING,existingHearing.getDeploymentId());
         return saveHearingResponseDetails;
     }
 
@@ -547,14 +547,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void sendRequestToQueue(HmiSubmitHearingRequest hmiSubmitHearingRequest, Long hearingId,
-                                    String messageType) {
+                                    String messageType, String deploymentId) {
         var jsonNode = objectMapperService.convertObjectToJsonNode(hmiSubmitHearingRequest);
-        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType);
+        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType, deploymentId);
     }
 
-    private void sendRequestToQueue(Long hearingId, String messageType) {
+    private void sendRequestToQueue(Long hearingId, String messageType, String deploymentId) {
         HmiDeleteHearingRequest hmiDeleteHearingRequest = hmiDeleteHearingRequestMapper.mapRequest();
         var jsonNode = objectMapperService.convertObjectToJsonNode(hmiDeleteHearingRequest);
-        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType);
+        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType, deploymentId);
     }
 }
