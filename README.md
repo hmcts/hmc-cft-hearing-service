@@ -1,4 +1,4 @@
-# hmc-cft-hearing-service
+# hmc-cft-hearing-service x
 
 
 ## Getting Started
@@ -24,7 +24,7 @@ To build the project execute the following command:
 
 ### Running the application
 
-The easiest way to run the application locally is to use the `bootWithCCD` Gradle task. 
+The easiest way to run the application locally is to use the `bootWithCCD` Gradle task.
 
 This task requires:
 - Access to the `hmc-demo` key vault
