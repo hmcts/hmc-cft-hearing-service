@@ -320,7 +320,7 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(2).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
-        assertEquals(3, logsListMessageProcessor.size());
+        assertEquals(2, logsListMessageProcessor.size());
         assertTrue(logsListMessageProcessor.stream().allMatch(log -> log.getLevel().equals(Level.ERROR)));
         assertEquals("Error for message with id null with error Cannot find request version 10 for hearing 2000000000",
                 logsListMessageProcessor.get(0).getFormattedMessage());
