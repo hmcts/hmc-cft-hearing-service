@@ -362,7 +362,7 @@ public class LinkedHearingValidator {
 
     public LocalDate filterHearingResponses(HearingEntity hearingEntity) {
         log.debug("hearing id: {}", hearingEntity.getId());
-        Optional<HearingResponseEntity> hearingResponse = hearingEntity.getHearingResponseForLatestRequestForUpdate();
+        Optional<HearingResponseEntity> hearingResponse = hearingEntity.getHearingResponseForLatestRequest();
         if (log.isDebugEnabled()) {
             if (hearingResponse.isPresent()) {
                 log.debug("hearing response: {} : {}",
