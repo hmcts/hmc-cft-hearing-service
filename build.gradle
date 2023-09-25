@@ -369,7 +369,7 @@ dependencies {
   compileOnly group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
   compileOnly group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
 
-  compileOnly group: 'org.flywaydb', name: 'flyway-core', version: '7.7.0'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.7.0'
   compileOnly group: 'org.mapstruct', name: 'mapstruct', version: versions.mapstruct
 
   annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: versions.mapstruct
