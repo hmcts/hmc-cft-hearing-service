@@ -4,13 +4,4 @@
     "local>hmcts/.github:renovate-config",
     "local>hmcts/.github//renovate/automerge-minor"
   ]
-  "enabledManagers": ["helm-requirements","gradle-wrapper","terraform"],
-  "labels": ["dependencies"],
-  "helm-requirements":
-  {
-    "fileMatch": ["\\Chart.yaml$"],
-    "aliases": {
-      "hmctspublic": "https://hmctspublic.azurecr.io/helm/v1/repo/"
-    }
-  }
 }
