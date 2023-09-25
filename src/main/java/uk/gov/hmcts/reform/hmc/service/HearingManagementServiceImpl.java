@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -174,11 +175,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         } else {
             HearingEntity hearingEntity = hearingRepository.findById(hearingId)
                 .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.set("Latest-Hearing-Request-Version",
+                                String.valueOf(hearingEntity.getLatestRequestVersion()));
+            responseHeaders.set("Latest-Hearing-Status",
+                                String.valueOf(hearingEntity.getStatus()));
             return ResponseEntity.noContent()
-                .header(
-                    "Latest-Hearing-Request-Version",
-                    String.valueOf(hearingEntity.getLatestRequestVersion())
-                )
+                .headers(responseHeaders)
                 .build();
         }
     }
