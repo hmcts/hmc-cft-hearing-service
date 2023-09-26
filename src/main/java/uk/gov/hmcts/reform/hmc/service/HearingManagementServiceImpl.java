@@ -67,6 +67,8 @@ import javax.transaction.Transactional;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_REQUEST_VERSION;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.NO_DEFINED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
@@ -176,9 +178,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             HearingEntity hearingEntity = hearingRepository.findById(hearingId)
                 .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
             HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.set("Latest-Hearing-Request-Version",
+            responseHeaders.set(LATEST_HEARING_REQUEST_VERSION,
                                 String.valueOf(hearingEntity.getLatestRequestVersion()));
-            responseHeaders.set("Latest-Hearing-Status",
+            responseHeaders.set(LATEST_HEARING_STATUS,
                                 String.valueOf(hearingEntity.getStatus()));
             return ResponseEntity.noContent()
                 .headers(responseHeaders)
