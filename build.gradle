@@ -493,6 +493,10 @@ rootProject.tasks.named("processFunctionalTestResources") {
   duplicatesStrategy = 'include'
 }
 
+rootProject.tasks.named("processContractTestResources") {
+  duplicatesStrategy = 'include'
+}
+
 pact {
   publish {
     pactDirectory = 'build/pacts'
