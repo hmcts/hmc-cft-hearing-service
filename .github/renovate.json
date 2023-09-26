@@ -1,6 +1,7 @@
 {
   "enabledManagers": ["helm-requirements","gradle-wrapper","terraform"],
   "labels": ["dependencies"],
+  "extends": ["local>hmcts/.github:renovate-config"],
   "helm-requirements":
   {
     "fileMatch": ["\\Chart.yaml$"],
