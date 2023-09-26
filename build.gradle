@@ -437,14 +437,14 @@ dependencies {
   testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
   testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.9'
 
-  contractTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
-  contractTestCompile group: 'io.rest-assured', name: 'json-path', version: versions.restAssured
-  contractTestCompile group: 'io.rest-assured', name: 'xml-path', version: versions.restAssured
-  contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact
-  contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact
+  contractTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
+  contractTestImplementation group: 'io.rest-assured', name: 'json-path', version: versions.restAssured
+  contractTestImplementation group: 'io.rest-assured', name: 'xml-path', version: versions.restAssured
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact
   contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
