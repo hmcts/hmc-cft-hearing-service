@@ -1,6 +1,6 @@
 {
   "enabledManagers": ["helm-requirements","gradle-wrapper","terraform"],
-  "labels": ["dependencies"],
+  "labels": ["Renovate-dependencies"],
   "extends": ["local>hmcts/.github:renovate-config"],
   "helm-requirements":
   {
