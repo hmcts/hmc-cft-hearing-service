@@ -78,6 +78,10 @@ public class HearingEntity extends BaseEntity implements Serializable {
     @Column(name = "is_linked_flag")
     private Boolean isLinkedFlag;
 
+    @Column(name = "deployment_id")
+    private String deploymentId;
+
+
     @PreUpdate
     public void preUpdate() {
         updatedDateTime = LocalDateTime.now();
