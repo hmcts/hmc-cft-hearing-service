@@ -1,4 +1,4 @@
-# hmc-cft-hearing-service x
+# hmc-cft-hearing-service
 
 
 ## Getting Started
