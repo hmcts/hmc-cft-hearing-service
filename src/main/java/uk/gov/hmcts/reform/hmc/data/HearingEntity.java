@@ -110,11 +110,15 @@ public class HearingEntity extends BaseEntity implements Serializable {
      * Gets the most recent hearing response associated with the latest request while updating Hearing request.
      */
     public Optional<HearingResponseEntity> getHearingResponseForLatestRequestForUpdate() {
-        Integer latestRequestVersion = getLatestHearingResponse().get().getRequestVersion();
-        return hasHearingResponses() ? getHearingResponses().stream()
-            .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
-            .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp))
-            :  Optional.empty();
+        Optional<HearingResponseEntity> hearingResponse = getLatestHearingResponse();
+        if (hearingResponse.isPresent()) {
+            Integer latestRequestVersion = getLatestHearingResponse().get().getRequestVersion();
+            return getHearingResponses().stream()
+                .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
+                .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**

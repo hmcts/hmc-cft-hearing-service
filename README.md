@@ -6,7 +6,7 @@ Please note that this microservice is also available within [hmc-docker](https:/
 
 ### Prerequisites
 
-- [JDK 11](https://java.com)
+- [JDK 17](https://java.com)
 - [Docker](https://www.docker.com)
 
 ## Building and deploying the application
