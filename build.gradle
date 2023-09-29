@@ -12,6 +12,7 @@ plugins {
   id 'com.github.hmcts.rse-cft-lib' version '0.19.169'
 }
 
+
 ext['diuspactproviderVersion'] = '4.2.14'
 
 group = 'uk.gov.hmcts.reform'
