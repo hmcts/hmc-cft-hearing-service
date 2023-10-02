@@ -49,4 +49,5 @@ public final class Constants {
     public static final String CANCEL = "CNCL";
     public static final String AMEND_REASON_CODE = "AMEND";
     public static final String HMCTS_SERVICE_ID = "hmctsServiceId";
+    public static final String HMCTS_DEPLOYMENT_ID = "hmcts-deployment-id";
 }
