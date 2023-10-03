@@ -1178,7 +1178,7 @@ class HearingManagementControllerIT extends BaseTest {
         individualDetails.setVulnerabilityDetails("a".repeat(2001));
         individualDetails.setHearingChannelEmail(List.of("a".repeat(121)));
         individualDetails.setHearingChannelPhone(List.of("a".repeat(31)));
-        individualDetails.setOtherReasonableAdjustmentDetails("a".repeat(201));
+        individualDetails.setOtherReasonableAdjustmentDetails("a".repeat(3001));
         individualDetails.setCustodyStatus("a".repeat(81));
         RelatedParty relatedParty = new RelatedParty();
         relatedParty.setRelatedPartyID("a".repeat(16));
@@ -1749,4 +1749,29 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(status().is(201))
             .andReturn();
     }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn201WhenUpdateHearingRequestContainsValidPartyDetails_reasonable_adjustments() throws Exception {
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334455"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
+        UpdateHearingRequest hearingRequest = TestingUtil.validUpdateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        IndividualDetails individualDetails = TestingUtil.individualDetails();
+        individualDetails.setOtherReasonableAdjustmentDetails("a".repeat(3000));
+        hearingRequest.getPartyDetails().get(0).setIndividualDetails(individualDetails);
+        hearingRequest.getPartyDetails().get(1).setIndividualDetails(individualDetails);
+        hearingRequest.getCaseDetails().setCaseRef("9856815055686759");
+        mockMvc.perform(put(url + "/2000000012")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(201))
+            .andReturn();
+        assertChangeReasons();
+    }
+
 }
