@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -66,6 +67,8 @@ import javax.transaction.Transactional;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_REQUEST_VERSION;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.NO_DEFINED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
@@ -174,11 +177,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         } else {
             HearingEntity hearingEntity = hearingRepository.findById(hearingId)
                 .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.set(LATEST_HEARING_REQUEST_VERSION,
+                                String.valueOf(hearingEntity.getLatestRequestVersion()));
+            responseHeaders.set(LATEST_HEARING_STATUS,
+                                String.valueOf(hearingEntity.getStatus()));
             return ResponseEntity.noContent()
-                .header(
-                    "Latest-Hearing-Request-Version",
-                    String.valueOf(hearingEntity.getLatestRequestVersion())
-                )
+                .headers(responseHeaders)
                 .build();
         }
     }
