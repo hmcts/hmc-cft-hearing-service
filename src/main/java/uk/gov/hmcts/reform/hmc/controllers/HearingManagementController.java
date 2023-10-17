@@ -200,6 +200,50 @@ public class HearingManagementController {
         return hearingManagementService.hearingCompletion(hearingId);
     }
 
+    /**
+     * get Case either by caseRefId OR CaseRefId/caseStatus.
+     * @param ccdCaseRef case Ref
+     * @param status optional Status
+     * @return Hearing
+     */
+    @Transactional
+    @GetMapping(value = {"/hearings"},
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "Get hearings")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Success (with content)"),
+        @ApiResponse(code = 400,
+            message = "One or more of the following reasons:"
+                + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
+                + "\n2) " + ValidationError.CASE_REF_EMPTY
+                + "\n3) " + ValidationError.CASE_REF_INVALID_LENGTH
+                + "\n4) " + ValidationError.CASE_REF_INVALID
+        )
+    })
+    // validate ccdCaseRefs
+    public GetHearingsResponse getHearingsForListOfCases(@RequestParam List<String> ccdCaseRefs,
+                                                         @RequestParam(required = false)
+                                                         String status) {
+        for (String ccdCaseRef : ccdCaseRefs) {
+            List<String> filteredRoleAssignments =
+                accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
+                    HEARING_VIEWER,
+                    LISTED_HEARING_VIEWER
+                ));
+
+            if (hasOnlyListedHearingViewerRoles(filteredRoleAssignments)) {
+                if ((status == null || HearingStatus.LISTED.name().equals(status))) {
+                    status = HearingStatus.LISTED.name();
+                } else {
+                    return hearingManagementService.getEmptyHearingsResponse(ccdCaseRef);
+                }
+            }
+        }
+
+        return hearingManagementService.getHearingsForListOfCases(ccdCaseRefs, status);
+    }
+
     private String getCaseRef(HearingRequest hearingRequest) {
         if (null == hearingRequest || null == hearingRequest.getCaseDetails()) {
             return null;

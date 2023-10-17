@@ -291,6 +291,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      */
     @Override
     public GetHearingsResponse getHearings(String caseRef, String status) {
+        List<CaseHearingRequestEntity> entities = getCaseHearingRequestEntities(caseRef, status);
+        return getHearingsResponseMapper.toHearingsResponse(caseRef, entities);
+    }
+
+    private List<CaseHearingRequestEntity> getCaseHearingRequestEntities(String caseRef, String status) {
         log.debug("caseRef:{} ; status:{}", caseRef, status);
         List<CaseHearingRequestEntity> entities;
         if (!isBlank(status)) {
@@ -298,7 +303,17 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         } else {
             entities = caseHearingRequestRepository.getHearingDetails(caseRef);
         }
-        return getHearingsResponseMapper.toHearingsResponse(caseRef, entities);
+        return entities;
+    }
+
+    @Override
+    public GetHearingsResponse getHearingsForListOfCases(List<String> ccdCaseRefs, String status) {
+        List<CaseHearingRequestEntity> entities = new ArrayList<>();
+        for (String caseRef : ccdCaseRefs) {
+            entities = getCaseHearingRequestEntities(caseRef, status);
+        }
+        // Need to change to caseRef
+        return getHearingsResponseMapper.toHearingsResponse(ccdCaseRefs.get(0), entities);
     }
 
     @Override

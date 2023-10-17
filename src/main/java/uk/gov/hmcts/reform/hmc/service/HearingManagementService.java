@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 
+import java.util.List;
+
 public interface HearingManagementService {
 
     ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid);
@@ -28,4 +30,5 @@ public interface HearingManagementService {
 
     String getStatus(Long hearingId);
 
+    GetHearingsResponse getHearingsForListOfCases(List<String> ccdCaseRefs, String status);
 }
