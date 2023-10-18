@@ -30,5 +30,5 @@ public interface HearingManagementService {
 
     String getStatus(Long hearingId);
 
-    GetHearingsResponse getHearingsForListOfCases(List<String> ccdCaseRefs, String status);
+    List<GetHearingsResponse> getHearingsForListOfCases(List<String> ccdCaseRefs, String status);
 }

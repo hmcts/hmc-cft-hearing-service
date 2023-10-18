@@ -307,13 +307,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public GetHearingsResponse getHearingsForListOfCases(List<String> ccdCaseRefs, String status) {
-        List<CaseHearingRequestEntity> entities = new ArrayList<>();
+    public List<GetHearingsResponse> getHearingsForListOfCases(List<String> ccdCaseRefs, String status) {
+        List<CaseHearingRequestEntity> entities;
+        List<GetHearingsResponse> hearingsResponsesList = new ArrayList<>();
         for (String caseRef : ccdCaseRefs) {
             entities = getCaseHearingRequestEntities(caseRef, status);
+            GetHearingsResponse hearingsResponse = getHearingsResponseMapper.toHearingsResponse(caseRef, entities);
+            hearingsResponsesList.add(hearingsResponse);
         }
-        // Need to change to caseRef
-        return getHearingsResponseMapper.toHearingsResponse(ccdCaseRefs.get(0), entities);
+        return hearingsResponsesList;
     }
 
     @Override

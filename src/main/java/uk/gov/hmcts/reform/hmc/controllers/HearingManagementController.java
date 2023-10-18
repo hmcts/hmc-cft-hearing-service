@@ -210,7 +210,7 @@ public class HearingManagementController {
     @GetMapping(value = {"/hearings"},
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Get hearings")
+    @ApiOperation(value = "Get hearings for list of cases")
     @ApiResponses({
         @ApiResponse(code = 200, message = "Success (with content)"),
         @ApiResponse(code = 400,
@@ -221,10 +221,10 @@ public class HearingManagementController {
                 + "\n4) " + ValidationError.CASE_REF_INVALID
         )
     })
-    // validate ccdCaseRefs
-    public GetHearingsResponse getHearingsForListOfCases(@RequestParam List<String> ccdCaseRefs,
+    public List<GetHearingsResponse> getHearingsForListOfCases(@RequestParam List<String> ccdCaseRefs,
                                                          @RequestParam(required = false)
                                                          String status) {
+        /* List<GetHearingsResponse> hearingsResponseList = new ArrayList<>();
         for (String ccdCaseRef : ccdCaseRefs) {
             List<String> filteredRoleAssignments =
                 accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
@@ -236,10 +236,13 @@ public class HearingManagementController {
                 if ((status == null || HearingStatus.LISTED.name().equals(status))) {
                     status = HearingStatus.LISTED.name();
                 } else {
-                    return hearingManagementService.getEmptyHearingsResponse(ccdCaseRef);
+                    GetHearingsResponse hearingsResponse = hearingManagementService
+                    .getEmptyHearingsResponse(ccdCaseRef);
+                    hearingsResponseList.add(hearingsResponse);
                 }
             }
-        }
+            return hearingsResponseList;
+        }*/
 
         return hearingManagementService.getHearingsForListOfCases(ccdCaseRefs, status);
     }
