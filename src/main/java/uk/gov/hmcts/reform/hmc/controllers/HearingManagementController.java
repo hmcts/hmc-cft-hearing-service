@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -201,10 +202,10 @@ public class HearingManagementController {
     }
 
     /**
-     * get Case either by caseRefId OR CaseRefId/caseStatus.
-     * @param ccdCaseRef case Ref
-     * @param status optional Status
-     * @return Hearing
+     * get list of cases either by caseRefId OR CaseRefId/caseStatus.
+     * @param ccdCaseRefs
+     * @param status
+     * @return
      */
     @Transactional
     @GetMapping(value = {"/hearings"},
@@ -216,34 +217,11 @@ public class HearingManagementController {
         @ApiResponse(code = 400,
             message = "One or more of the following reasons:"
                 + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
-                + "\n2) " + ValidationError.CASE_REF_EMPTY
-                + "\n3) " + ValidationError.CASE_REF_INVALID_LENGTH
-                + "\n4) " + ValidationError.CASE_REF_INVALID
         )
     })
     public List<GetHearingsResponse> getHearingsForListOfCases(@RequestParam List<String> ccdCaseRefs,
                                                          @RequestParam(required = false)
                                                          String status) {
-        /* List<GetHearingsResponse> hearingsResponseList = new ArrayList<>();
-        for (String ccdCaseRef : ccdCaseRefs) {
-            List<String> filteredRoleAssignments =
-                accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
-                    HEARING_VIEWER,
-                    LISTED_HEARING_VIEWER
-                ));
-
-            if (hasOnlyListedHearingViewerRoles(filteredRoleAssignments)) {
-                if ((status == null || HearingStatus.LISTED.name().equals(status))) {
-                    status = HearingStatus.LISTED.name();
-                } else {
-                    GetHearingsResponse hearingsResponse = hearingManagementService
-                    .getEmptyHearingsResponse(ccdCaseRef);
-                    hearingsResponseList.add(hearingsResponse);
-                }
-            }
-            return hearingsResponseList;
-        }*/
-
         return hearingManagementService.getHearingsForListOfCases(ccdCaseRefs, status);
     }
 

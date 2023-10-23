@@ -312,10 +312,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         List<GetHearingsResponse> hearingsResponsesList = new ArrayList<>();
         for (String caseRef : ccdCaseRefs) {
             entities = getCaseHearingRequestEntities(caseRef, status);
-            GetHearingsResponse hearingsResponse = getHearingsResponseMapper.toHearingsResponse(caseRef, entities);
-            hearingsResponsesList.add(hearingsResponse);
+            if(!entities.isEmpty()) {
+                hearingsResponsesList.add(getHearingsResponseMapper.toHearingsResponse(caseRef, entities));
+            }
         }
-        return hearingsResponsesList;
+        return hearingsResponsesList.isEmpty() ? null : hearingsResponsesList;
     }
 
     @Override
