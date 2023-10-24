@@ -42,6 +42,7 @@ import javax.validation.constraints.Size;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
@@ -137,13 +138,13 @@ public class HearingManagementController {
         @ApiResponse(code = 400,
             message = "One or more of the following reasons:"
                 + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
-                + "\n2) " + ValidationError.CASE_REF_EMPTY
+                + "\n2) " + CASE_REF_EMPTY
                 + "\n3) " + ValidationError.CASE_REF_INVALID_LENGTH
                 + "\n4) " + ValidationError.CASE_REF_INVALID
         )
     })
     public GetHearingsResponse getHearings(@PathVariable("ccdCaseRef") @Valid
-                                           @NotEmpty(message = ValidationError.CASE_REF_EMPTY)
+                                           @NotEmpty(message = CASE_REF_EMPTY)
                                            @Size(min = 16, max = 16, message = ValidationError.CASE_REF_INVALID_LENGTH)
                                            @LuhnCheck(message = ValidationError.CASE_REF_INVALID,
                                                ignoreNonDigitCharacters = false)
@@ -203,9 +204,9 @@ public class HearingManagementController {
 
     /**
      * get list of cases either by caseRefId OR CaseRefId/caseStatus.
-     * @param ccdCaseRefs
-     * @param status
-     * @return
+     * @param ccdCaseRefs list of case Ref
+     * @param status optional Status
+     * @return Hearing
      */
     @Transactional
     @GetMapping(value = {"/hearings"},
@@ -222,7 +223,25 @@ public class HearingManagementController {
     public List<GetHearingsResponse> getHearingsForListOfCases(@RequestParam List<String> ccdCaseRefs,
                                                          @RequestParam(required = false)
                                                          String status) {
-        return hearingManagementService.getHearingsForListOfCases(ccdCaseRefs, status);
+        List<GetHearingsResponse> hearingsResponseList = new ArrayList<>();
+        if (ccdCaseRefs.size() == 0) {
+            throw new BadRequestException(CASE_REF_EMPTY);
+        } else {
+            for (String ccdCaseRef : ccdCaseRefs) {
+                List<String> filteredRoleAssignments =
+                    accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
+                        HEARING_VIEWER,
+                        LISTED_HEARING_VIEWER));
+                if (hasOnlyListedHearingViewerRoles(filteredRoleAssignments)) {
+                    if ((status == null || HearingStatus.LISTED.name().equals(status))) {
+                        status = HearingStatus.LISTED.name();
+                        hearingsResponseList.add(hearingManagementService.getHearings(ccdCaseRef, status));
+                    }
+                }
+                hearingsResponseList.add(hearingManagementService.getHearings(ccdCaseRef, status));
+            }
+            return hearingsResponseList.isEmpty() ? null : hearingsResponseList;
+        }
     }
 
     private String getCaseRef(HearingRequest hearingRequest) {
