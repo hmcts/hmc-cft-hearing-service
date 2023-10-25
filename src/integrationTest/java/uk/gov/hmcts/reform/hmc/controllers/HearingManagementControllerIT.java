@@ -823,6 +823,33 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
+    void shouldReturn400_WhenGetHearingsForListOfCases_NoCaseRefs() throws Exception {
+        mockMvc.perform(get("/hearings?ccdCaseRefs=")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andReturn();
+    }
+
+    @Test
+    void shouldReturn200_WhenGetHearingsForListOfCasesForInvalidCaseRef() throws Exception {
+        mockMvc.perform(get("/hearings?ccdCaseRefs=123456")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenGetHearingsForListOfCasesForOneCaseRef() throws Exception {
+        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233")
+                             .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("status", "HEARING_REQUESTED"))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$..caseRef").value("9372710950276233"))
+            .andReturn();
+    }
+
+    @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn201WhenUpdateHearingRequestIsValid() throws Exception {
         stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
