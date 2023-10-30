@@ -853,7 +853,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_LISTED() throws Exception {
+    void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_Listed() throws Exception {
         mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("status", "LISTED"))
@@ -865,7 +865,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_NotLISTED() throws Exception {
+    void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_NotListed() throws Exception {
         mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("status", "HEARING_REQUESTED"))
