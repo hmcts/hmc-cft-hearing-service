@@ -462,7 +462,7 @@ dependencies {
   contractTestImplementation group: 'io.rest-assured', name: 'json-path', version: versions.restAssured
   contractTestImplementation group: 'io.rest-assured', name: 'xml-path', version: versions.restAssured
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact
-  contractTestRuntimeOnly group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact
@@ -486,7 +486,8 @@ dependencies {
 
   cftlibImplementation group: 'org.springframework.boot', name: 'spring-boot-devtools'
 
-  testImplementation 'com.github.hmcts:fortify-client:1.2.0:all'
+  testCompileOnly 'com.github.hmcts:fortify-client:1.2.0:all'
+
 }
 
 mainClassName = 'uk.gov.hmcts.reform.hmc.Application'
