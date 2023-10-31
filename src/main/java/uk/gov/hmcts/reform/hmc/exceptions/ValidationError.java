@@ -193,7 +193,7 @@ public final class ValidationError {
     public static final String HA_HEARING_DAY_ORGANISATION_NAME_MAX_LENGTH = "organisation name must not be more than"
         + " 40 " + CHARACTERS_LONG;
 
-    public static final String OTHER_REASON_LENGTH = "Other reasonable adjustment details cannot be greater than 200 "
+    public static final String OTHER_REASON_LENGTH = "Other reasonable adjustment details cannot be greater than 3000 "
         + CHARACTERS_LONG;
     public static final String CUSTODY_STATUS_LENGTH = "Custody status cannot be greater than 80 " + CHARACTERS_LONG;
     public static final String HEARING_ID_LENGTH = "Hearing id cannot be greater than 30 " + CHARACTERS_LONG;

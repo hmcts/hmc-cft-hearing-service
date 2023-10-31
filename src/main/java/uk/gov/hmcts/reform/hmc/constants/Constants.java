@@ -24,7 +24,7 @@ public final class Constants {
     public static final String TOPIC_HMC_TO_CFT = "hmc-to-cft";
 
     public static final String ERROR_PROCESSING_MESSAGE = "Error occurred during service bus processing. "
-        + "Service:{} . Entity: {}. Method: {}. Hearing ID: {}.";
+        + "Service:{}. Entity:{}. Method:{}. Hearing ID: {}.";
     public static final String ERROR_SENDING_MESSAGE = "Error occurred during service bus sending message. "
         + "Service:{} . Entity: {}. Method: {}. Hearing ID: {}.";
 
@@ -50,4 +50,7 @@ public final class Constants {
     public static final String AMEND_REASON_CODE = "AMEND";
     public static final String HMCTS_SERVICE_ID = "hmctsServiceId";
     public static final String HMCTS_DEPLOYMENT_ID = "hmcts-deployment-id";
+    public static final String LATEST_HEARING_REQUEST_VERSION = "Latest-Hearing-Request-Version";
+    public static final String LATEST_HEARING_STATUS = "Latest-Hearing-Status";
+
 }
