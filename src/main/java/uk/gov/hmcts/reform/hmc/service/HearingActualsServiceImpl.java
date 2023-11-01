@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 
 @Service
+@Slf4j
 public class HearingActualsServiceImpl implements HearingActualsService {
     private final HearingRepository hearingRepository;
     private final HearingResponseRepository hearingResponseRepository;
