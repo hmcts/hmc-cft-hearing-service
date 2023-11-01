@@ -18,17 +18,17 @@ java:
     enabled: true
   secrets:
     HMC_SERVICE_BUS_CONNECTION_STRING:
-      secretRef: servicebus-secret-topic-{{ .Release.Name }}-servicebus-hmc-to-cft
+      secretRef: hmc-sb-preview
       key: connectionString
     HMC_QUEUE_CONNECTION_STRING:
-      secretRef: servicebus-secret-queue-{{ .Release.Name }}-servicebus-hmc-from-hmi
+      secretRef: hmc-sb-preview
       key: connectionString
     HMC_OUTBOUND_QUEUE_CONNECTION_STRING:
-      secretRef: servicebus-secret-queue-{{ .Release.Name }}-servicebus-hmc-to-hmi
+      secretRef: hmc-sb-preview
       key: connectionString
   keyVaults:
     hmc:
-      resourceGroup: hmc-shared
+      resourceGroup: hmc-aso-preview-rg
       secrets:
         - name: AppInsightsInstrumentationKey
         - name: hmc-cft-hearing-service-s2s-secret
@@ -37,8 +37,8 @@ java:
 servicebus:
   enabled: true
   teamName: CCD
-  resourceGroup: hmc-aks
-  serviceplan: standard
+  resourceGroup: hmc-aso-preview-rg
+  sbNamespace: hmc-sb-preview
   setup:
     topics:
       - name: hmc-to-cft

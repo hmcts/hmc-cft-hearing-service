@@ -78,6 +78,10 @@ public class HearingEntity extends BaseEntity implements Serializable {
     @Column(name = "is_linked_flag")
     private Boolean isLinkedFlag;
 
+    @Column(name = "deployment_id")
+    private String deploymentId;
+
+
     @PreUpdate
     public void preUpdate() {
         updatedDateTime = LocalDateTime.now();
@@ -104,6 +108,21 @@ public class HearingEntity extends BaseEntity implements Serializable {
 
     public String getLatestCaseReferenceNumber() {
         return getLatestCaseHearingRequest().getCaseReference();
+    }
+
+    /**
+     * Gets the most recent hearing response associated with the latest request while updating Hearing request.
+     */
+    public Optional<HearingResponseEntity> getHearingResponseForLatestRequestForUpdate() {
+        Optional<HearingResponseEntity> hearingResponse = getLatestHearingResponse();
+        if (hearingResponse.isPresent()) {
+            Integer latestRequestVersion = getLatestHearingResponse().get().getRequestVersion();
+            return getHearingResponses().stream()
+                .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
+                .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**
