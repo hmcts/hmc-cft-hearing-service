@@ -12,17 +12,17 @@ public interface HearingManagementService {
 
     ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid);
 
-    HearingResponse saveHearingRequest(HearingRequest createHearingRequest);
+    HearingResponse saveHearingRequest(HearingRequest createHearingRequest, String deploymentId);
 
     HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest);
 
-    HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest);
+    HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest, String deploymentId);
 
     GetHearingsResponse getHearings(String caseRefId, String caseStatus);
 
     GetHearingsResponse getEmptyHearingsResponse(String caseRefId);
 
-    void sendResponse(String json, String hmctsServiceId);
+    void sendResponse(String json, String hmctsServiceId, String deploymentId);
 
     ResponseEntity hearingCompletion(Long hearingId);
 

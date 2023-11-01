@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -138,7 +139,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
-            .saveHearingRequest(any(HearingRequest.class));
+            .saveHearingRequest(any(HearingRequest.class),any());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -212,6 +213,24 @@ public class RestExceptionHandlerTest extends BaseTest {
         // THEN
         assertHttpErrorResponse(result, HttpStatus.INTERNAL_SERVER_ERROR.value(), testExceptionMessage,
                                 "INTERNAL_SERVER_ERROR");
+    }
+
+    @DisplayName("should return correct response when BadRequestException is thrown")
+    @Test
+    void shouldHandleBadRequestException_WhenDeploymentIdValueNotPresent() throws Exception {
+        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+
+        /// WHEN
+        Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
+            .saveHearingRequest(any(HearingRequest.class),any());
+
+        ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .contentType(MediaType.APPLICATION_JSON)
+                                                         .content(objectMapper.writeValueAsString(validRequest)));
+
+        // THEN
+        assertHttpErrorResponse(result, HttpStatus.BAD_REQUEST.value(),
+                                "HMCTS deployment id is required", "BAD_REQUEST");
     }
 
     private void assertHttpErrorResponse(ResultActions result, int expectedStatusCode, String expectedMessage,
