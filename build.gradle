@@ -256,7 +256,7 @@ def versions = [
 ext['spring-framework.version'] = '5.3.27'
 ext['log4j2.version'] = '2.17.1'
 ext['spring-security.version'] = '5.8.3'
-ext['snakeyaml.version'] = '1.33'
+ext['snakeyaml.version'] = '2.0'
 ext['jackson.version'] = '2.14.1'
 
 // before committing a change, make sure task still works
@@ -381,13 +381,6 @@ dependencies {
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
   implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
   implementation 'net.minidev:json-smart:2.4.7'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j'
-  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceAuthVersion
-  implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '2.0.1'
-  implementation group: 'javax.inject', name: 'javax.inject', version: '1'
-  implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
-  implementation 'net.minidev:json-smart:2.4.7'
   testImplementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '4.0.1'
 
   testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.19.12') {
@@ -398,8 +391,6 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
 
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.7.0'
-  compileOnly group: 'org.mapstruct', name: 'mapstruct', version: versions.mapstruct
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.7.0'
   implementation group: 'org.mapstruct', name: 'mapstruct', version: versions.mapstruct
 
@@ -496,7 +487,7 @@ dependencies {
 
   cftlibImplementation group: 'org.springframework.boot', name: 'spring-boot-devtools'
 
-  testCompileOnly 'com.github.hmcts:fortify-client:1.2.0:all'
+  testImplementation 'com.github.hmcts:fortify-client:1.2.0:all'
 
 }
 
