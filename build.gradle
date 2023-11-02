@@ -369,9 +369,9 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
 
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '6.6'
-  implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
-  implementation group: 'org.slf4j', name: 'jul-to-slf4j', version: '1.7.32'
-  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.8'
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.9'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.9'
+
 
   implementation (group: 'org.glassfish.web', name: 'el-impl', version: '2.2.1-b05') {
     exclude group: 'javax.el', module: 'el-api'
