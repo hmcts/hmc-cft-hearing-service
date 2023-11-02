@@ -368,6 +368,10 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
 
+  implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '6.6'
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.10'
+
   implementation (group: 'org.glassfish.web', name: 'el-impl', version: '2.2.1-b05') {
     exclude group: 'javax.el', module: 'el-api'
   }
@@ -414,11 +418,6 @@ dependencies {
 
   implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.8.0'
   implementation group: 'com.azure', name: 'azure-core', version: '1.28.0'
-
-  implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '6.6'
-  // CVE-2021-42550
-  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
-  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.10'
 
   // CVE-2022-45143
   implementation "org.apache.tomcat.embed:tomcat-embed-core:${versions.tomcatEmbedded}"
