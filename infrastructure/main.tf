@@ -13,8 +13,8 @@ locals {
 }
 
 data "azurerm_key_vault" "hmc_shared_key_vault" {
-  name                = local.vaultName
-  resource_group_name = local.sharedResourceGroup
+  name                = "${local.vaultName}"
+  resource_group_name = "${local.sharedResourceGroup}"
 }
 
 module "hmc-hearing-management-db" {
