@@ -13,8 +13,8 @@ locals {
 }
 
 data "azurerm_key_vault" "hmc_shared_key_vault" {
-  name                = "${local.vaultName}"
-  resource_group_name = "${local.sharedResourceGroup}"
+  name                = local.vaultName
+  resource_group_name = local.sharedResourceGroup
 }
 
 module "hmc-hearing-management-db" {
@@ -78,6 +78,8 @@ module "postgresql_v15" {
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
   }
+
+  subnet_suffix = "expanded"
 
   admin_user_object_id = var.jenkins_AAD_objectId
   business_area        = "cft"
