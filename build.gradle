@@ -242,7 +242,7 @@ def versions = [
   lombok          : '1.18.28',
   mapstruct       : '1.4.2.Final',
   pact            : '4.1.7',
-  reformLogging   : '5.1.7',
+  reformLogging   : '6.0.1',
   restAssured     : '4.2.1',
   springBoot      : springBoot.class.package.implementationVersion,
   springCloud     : '2020.0.1',
@@ -255,7 +255,7 @@ def versions = [
 
 ext['spring-framework.version'] = '5.3.27'
 ext['log4j2.version'] = '2.17.1'
-ext['spring-security.version'] = '5.8.3'
+ext['spring-security.version'] = '5.8.7'
 ext['snakeyaml.version'] = '1.33'
 ext['jackson.version'] = '2.15.3'
 
@@ -368,6 +368,10 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
 
+  implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '6.6'
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.10'
+
   implementation (group: 'org.glassfish.web', name: 'el-impl', version: '2.2.1-b05') {
     exclude group: 'javax.el', module: 'el-api'
   }
@@ -414,10 +418,6 @@ dependencies {
 
   implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.8.0'
   implementation group: 'com.azure', name: 'azure-core', version: '1.28.0'
-
-  // CVE-2021-42550
-  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
-  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.10'
 
   // CVE-2022-45143
   implementation "org.apache.tomcat.embed:tomcat-embed-core:${versions.tomcatEmbedded}"
