@@ -366,9 +366,9 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'io.springfox', name: 'springfox-boot-starter', version: versions.springfoxSwagger
 
-  implementation group: 'com.github.hmcts.java-logging', name: 'logging', versions.reformLogging
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-logging-logback', versions.azureInsightsVersion
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-spring-boot-starter', versions.azureInsightsVersion
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
+  implementation group: 'com.microsoft.azure', name: 'applicationinsights-logging-logback', version: versions.azureInsightsVersion
+  implementation group: 'com.microsoft.azure', name: 'applicationinsights-spring-boot-starter', version: versions.azureInsightsVersion
 
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '6.6'
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
