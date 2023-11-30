@@ -366,8 +366,8 @@ public class LinkedHearingValidator {
         if (log.isDebugEnabled()) {
             if (hearingResponse.isPresent()) {
                 log.debug("hearing response: {} : {}",
-                        hearingResponse.get().getHearingResponseId(),
-                        hearingResponse.get().getRequestTimeStamp());
+                          hearingResponse.get().getHearingResponseId(),
+                          hearingResponse.get().getRequestTimeStamp());
             } else {
                 log.debug("No hearing response found");
             }
@@ -383,9 +383,10 @@ public class LinkedHearingValidator {
         Optional<HearingDayDetailsEntity> hearingDayDetails = hearingResponse.getEarliestHearingDayDetails();
         if (log.isDebugEnabled()) {
             if (hearingDayDetails.isPresent()) {
-                log.debug("hearing day details: {} : {}",
+                log.debug("hearing day details: {} : {} : {}",
                         hearingDayDetails.get().getHearingDayId(),
-                        hearingDayDetails.get().getStartDateTime());
+                        hearingDayDetails.get().getStartDateTime(),
+                        hearingResponse.getListingStatus());
             } else {
                 log.debug("No hearing day details found");
             }
