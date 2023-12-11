@@ -95,7 +95,7 @@ public class HearingManagementController {
                 + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
                 + "\n2) " + ValidationError.HEARING_WINDOW_DETAILS_ARE_INVALID
                 + "\n3) " + ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS
-        )
+            )
     })
     public HearingResponse saveHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false)
                                         String deploymentId,
@@ -139,7 +139,7 @@ public class HearingManagementController {
                 + "\n2) " + ValidationError.CASE_REF_EMPTY
                 + "\n3) " + ValidationError.CASE_REF_INVALID_LENGTH
                 + "\n4) " + ValidationError.CASE_REF_INVALID
-        )
+            )
     })
     public GetHearingsResponse getHearings(@PathVariable("ccdCaseRef") @Valid
                                            @NotEmpty(message = ValidationError.CASE_REF_EMPTY)
