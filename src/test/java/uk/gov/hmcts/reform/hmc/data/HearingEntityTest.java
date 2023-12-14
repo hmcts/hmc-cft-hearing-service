@@ -247,8 +247,6 @@ class HearingEntityTest {
         }
     }
 
-
-
     @Nested
     class GetDerivedHearingResponse {
 
