@@ -212,6 +212,42 @@ class HearingEntityTest {
         }
     }
 
+    @Nested
+    class GetEarliestHearingDayDetails {
+
+        @Test
+        void shouldGetEarliestHearingDayDetailsIgnoringNullStartDates() {
+            HearingResponseEntity hearingResponse = new HearingResponseEntity();
+            HearingDayDetailsEntity dayDetails1 = new HearingDayDetailsEntity();
+            dayDetails1.setStartDateTime(LocalDateTime.of(2023, 1, 2, 10, 0));
+            HearingDayDetailsEntity dayDetails2 = new HearingDayDetailsEntity();
+            dayDetails2.setStartDateTime(null);
+            HearingDayDetailsEntity dayDetails3 = new HearingDayDetailsEntity();
+            dayDetails3.setStartDateTime(LocalDateTime.of(2023, 1, 1, 10, 0));
+            hearingResponse.setHearingDayDetails(List.of(dayDetails1, dayDetails2, dayDetails3));
+
+            Optional<HearingDayDetailsEntity> earliest = hearingResponse.getEarliestHearingDayDetails();
+
+            assertTrue(earliest.isPresent());
+            assertEquals(dayDetails3.getStartDateTime(), earliest.get().getStartDateTime());
+        }
+
+        @Test
+        void shouldReturnEmptyIfAllStartDatesAreNull() {
+            HearingResponseEntity hearingResponse = new HearingResponseEntity();
+            HearingDayDetailsEntity dayDetails1 = new HearingDayDetailsEntity();
+            dayDetails1.setStartDateTime(null);
+            HearingDayDetailsEntity dayDetails2 = new HearingDayDetailsEntity();
+            dayDetails2.setStartDateTime(null);
+            hearingResponse.setHearingDayDetails(List.of(dayDetails1, dayDetails2));
+
+            Optional<HearingDayDetailsEntity> earliest = hearingResponse.getEarliestHearingDayDetails();
+
+            assertFalse(earliest.isPresent());
+        }
+    }
+
+
 
     @Nested
     class GetDerivedHearingResponse {
