@@ -91,7 +91,7 @@ public class HearingResponseEntity extends BaseEntity implements Serializable {
     private String listingTransactionId;
 
     public Optional<HearingDayDetailsEntity> getEarliestHearingDayDetails() {
-        return getHearingDayDetails().stream().filter(Objects::nonNull)
+        return getHearingDayDetails().stream().filter(h -> h.getStartDateTime() != null)
             .min(Comparator.comparing(HearingDayDetailsEntity::getStartDateTime));
     }
 
