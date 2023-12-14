@@ -366,8 +366,8 @@ public class LinkedHearingValidator {
         if (log.isDebugEnabled()) {
             if (hearingResponse.isPresent()) {
                 log.debug("hearing response: {} : {}",
-                          hearingResponse.get().getHearingResponseId(),
-                          hearingResponse.get().getRequestTimeStamp());
+                        hearingResponse.get().getHearingResponseId(),
+                        hearingResponse.get().getRequestTimeStamp());
             } else {
                 log.debug("No hearing response found");
             }
