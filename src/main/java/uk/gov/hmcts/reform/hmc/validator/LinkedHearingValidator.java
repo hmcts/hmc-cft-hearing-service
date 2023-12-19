@@ -397,7 +397,9 @@ public class LinkedHearingValidator {
                 LocalDateTime startDateTime = details.getStartDateTime();
                 if (startDateTime != null) {
                     return startDateTime.toLocalDate();
-                } else return null;
+                } else {
+                    return null;
+                }
             })
             .orElse(null);
     }
