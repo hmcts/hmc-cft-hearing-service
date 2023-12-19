@@ -393,11 +393,13 @@ public class LinkedHearingValidator {
         }
 
         return hearingDayDetails
-                .orElseThrow(() -> new BadRequestException(
-                        INVALID_STATE_FOR_HEARING_REQUEST
-                                .replace(HEARING_ID_PLACEHOLDER, hearingResponse.getHearing().getId().toString())
-                                + " valid hearingDayDetails not found"))
-                .getStartDateTime().toLocalDate();
+            .map(details -> {
+                LocalDateTime startDateTime = details.getStartDateTime();
+                if (startDateTime != null) {
+                    return startDateTime.toLocalDate();
+                } else return null;
+            })
+            .orElse(null);
     }
 
     public void validateHearingActualsStatus(Long hearingId, String errorMessage) {
