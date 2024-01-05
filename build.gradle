@@ -239,7 +239,7 @@ def versions = [
   junit           : '5.7.2',
   junitPlatform   : '1.7.2',
   jsr310          : '2.13.2',
-  lombok          : '1.18.28',
+  lombok          : '1.18.30',
   mapstruct       : '1.4.2.Final',
   pact            : '4.1.7',
   reformLogging   : '6.0.1',
@@ -254,7 +254,7 @@ def versions = [
 ]
 
 ext['spring-framework.version'] = '5.3.31'
-ext['spring-security.version'] = '5.7.11'
+ext['spring-security.version'] = '5.8.7'
 ext['log4j2.version'] = '2.17.2'
 ext['snakeyaml.version'] = '1.33'
 ext['jackson.version'] = '2.15.3'
