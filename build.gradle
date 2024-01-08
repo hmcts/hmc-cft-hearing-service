@@ -250,7 +250,7 @@ def versions = [
   testcontainers  : '1.15.3',
   netty           : '4.1.86.Final',
   serviceAuthVersion: '4.0.3',
-  tomcatEmbedded  : '9.0.84'
+  tomcatEmbedded  : '9.0.68'
 ]
 
 ext['spring-framework.version'] = '5.3.27'
@@ -288,7 +288,7 @@ dependencyManagement {
       entry 'json-path'
       entry 'xml-path'
     }
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.84') {
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.68') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
       entry 'tomcat-embed-websocket'
