@@ -254,8 +254,8 @@ def versions = [
 ]
 
 ext['spring-framework.version'] = '5.3.31'
-ext['spring-security.version'] = '5.8.7'
-ext['log4j2.version'] = '2.17.2'
+ext['spring-framework.version'] = '5.3.27'
+ext['log4j2.version'] = '2.17.1'
 ext['snakeyaml.version'] = '1.33'
 ext['jackson.version'] = '2.15.3'
 
@@ -369,8 +369,8 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
 
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '6.6'
-  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
-  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.10'
 
   implementation (group: 'org.glassfish.web', name: 'el-impl', version: '2.2.1-b05') {
     exclude group: 'javax.el', module: 'el-api'
