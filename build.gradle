@@ -245,7 +245,7 @@ def versions = [
   reformLogging   : '6.0.1',
   restAssured     : '4.2.1',
   springBoot      : springBoot.class.package.implementationVersion,
-  springCloud     : '2020.0.6',
+  springCloud     : '2020.0.1',
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.3',
   netty           : '4.1.104.Final',
