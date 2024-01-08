@@ -250,7 +250,7 @@ def versions = [
   testcontainers  : '1.15.3',
   netty           : '4.1.86.Final',
   serviceAuthVersion: '4.0.3',
-  tomcatEmbedded  : '9.0.68'
+  tomcatEmbedded  : '9.0.73'
 ]
 
 ext['spring-framework.version'] = '5.3.27'
