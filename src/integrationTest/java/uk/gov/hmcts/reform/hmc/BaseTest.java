@@ -25,6 +25,8 @@ import uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository;
 import uk.gov.hmcts.reform.hmc.repository.RoleAssignmentRepository;
 import uk.gov.hmcts.reform.hmc.wiremock.extensions.DynamicOAuthJwkSetResponseTransformer;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -109,6 +111,7 @@ public class BaseTest {
         resource.setRoleName(roleName);
         resource.setRoleType("ORGANISATION");
         resource.setAttributes(new RoleAssignmentAttributesResource());
+        resource.setEndTime(LocalDateTime.now().plusMonths(5).toInstant(ZoneOffset.UTC));
         return resource;
     }
 }
