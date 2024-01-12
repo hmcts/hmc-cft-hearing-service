@@ -47,7 +47,7 @@
         "jurisdiction" : "BEFTA_MASTER",
         "state" : null,
         "version" : null,
-        "case_type_id" : "FT_CRUD",
+        "case_type_id" : "FT_MasterCaseType",
         "created_date" : null,
         "last_modified" : null,
         "last_state_modified_date" : null,
