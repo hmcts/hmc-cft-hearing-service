@@ -20,9 +20,6 @@ import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingManagementInterfaceResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -288,9 +285,7 @@ public class WiremockFixtures {
     // see https://github.com/tomakehurst/wiremock/issues/1127
     private static String getJsonString(Object object) {
         try {
-            String requestBody = OBJECT_MAPPER.writeValueAsString(object);
-            return requestBody.replace("{END_TIME_PLACEHOLDER}",
-                                       LocalDateTime.now().plusMonths(5).toInstant(ZoneOffset.UTC).toString());
+            return OBJECT_MAPPER.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
