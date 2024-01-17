@@ -102,7 +102,8 @@ variable "enable_replica" {
   default     = false
 }
 
-variable "primary_server_fqdn" {
-  description = "Environment specific FQDN (Server name) of the primary Flexbile PostgreSQL server"
+variable "primary_server_id" {
+  description = "Azure resource ID of the primary PostgreSQL server"
   type        = string
 }
+

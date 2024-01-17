@@ -111,6 +111,29 @@ module "postgresql_v15" {
   pgsql_storage_mb = var.pgsql_storage_mb
 }
 
+//////////////////////////////////////
+// Populate Vault with V15 DB info  //
+//////////////////////////////////////
+
+resource "azurerm_key_vault_secret" "POSTGRES-USER-V15" {
+  name         = "${var.component}-POSTGRES-USER-V15"
+  value        = module.postgresql_v15.username
+  key_vault_id = data.azurerm_key_vault.hmc_shared_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-PASS-V15" {
+  name         = "${var.component}-POSTGRES-PASS-V15"
+  value        = module.postgresql_v15.password
+  key_vault_id = data.azurerm_key_vault.hmc_shared_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-HOST-V15" {
+  name         = "${var.component}-POSTGRES-HOST-V15"
+  value        = module.postgresql_v15.fqdn
+  key_vault_id = data.azurerm_key_vault.hmc_shared_key_vault.id
+}
+
+
 ////////////////////////////////////////
 // DB version 15 Replication          //
 ///////////////////////////////////////
@@ -141,28 +164,6 @@ module "postgresql_v15_replica" {
   pgsql_sku                 = var.pgsql_sku
   pgsql_storage_mb          = var.pgsql_storage_mb
   create_mode      = "Replica"
-  source_server_id = var.primary_server_fqdn
+  source_server_id = var.primary_server_id
 
-}
-
-//////////////////////////////////////
-// Populate Vault with V15 DB info  //
-//////////////////////////////////////
-
-resource "azurerm_key_vault_secret" "POSTGRES-USER-V15" {
-  name         = "${var.component}-POSTGRES-USER-V15"
-  value        = module.postgresql_v15.username
-  key_vault_id = data.azurerm_key_vault.hmc_shared_key_vault.id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-PASS-V15" {
-  name         = "${var.component}-POSTGRES-PASS-V15"
-  value        = module.postgresql_v15.password
-  key_vault_id = data.azurerm_key_vault.hmc_shared_key_vault.id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-HOST-V15" {
-  name         = "${var.component}-POSTGRES-HOST-V15"
-  value        = module.postgresql_v15.fqdn
-  key_vault_id = data.azurerm_key_vault.hmc_shared_key_vault.id
 }
