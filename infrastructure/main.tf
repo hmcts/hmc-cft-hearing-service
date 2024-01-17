@@ -44,7 +44,7 @@ module "hmc-hearing-management-db" {
 
 //////////////////////////////////////
 // Populate Vault with V11 DB info  //
-/////////////////////////////////////
+//////////////////////////////////////
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   name         = "${var.component}-POSTGRES-USER"
@@ -117,7 +117,7 @@ module "postgresql_v15" {
 
 module "postgresql_v15_replica" {
   source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
-  count  = var.enable_replica ? 1 : 0 // Conditional creation based on a new variable
+  count  = var.enable_replica ? 1 : 0
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
   }
@@ -140,10 +140,8 @@ module "postgresql_v15_replica" {
   name                      = "${local.app_full_name}-postgres-db-v15-replica01"
   pgsql_sku                 = var.pgsql_sku
   pgsql_storage_mb          = var.pgsql_storage_mb
-
-  // Replication specific configurations
   create_mode      = "Replica"
-  source_server_id = var.primary.primary_server_fqdn
+  source_server_id = var.primary_server_fqdn
 
 }
 
