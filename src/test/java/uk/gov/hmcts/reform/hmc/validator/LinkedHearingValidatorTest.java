@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -1179,6 +1180,36 @@ class LinkedHearingValidatorTest {
             linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
         });
         assertEquals("003 hearing request already in a group", exception.getMessage());
+    }
+
+    @Test
+    void shouldReturnNullIfNoHearingDayDetailsWithNonNullStartDates() {
+        HearingResponseEntity hearingResponse = new HearingResponseEntity();
+        HearingDayDetailsEntity dayDetails1 = new HearingDayDetailsEntity();
+        dayDetails1.setStartDateTime(null);
+        HearingDayDetailsEntity dayDetails2 = new HearingDayDetailsEntity();
+        dayDetails2.setStartDateTime(null);
+        hearingResponse.setHearingDayDetails(List.of(dayDetails1, dayDetails2));
+
+        LocalDate result = linkedHearingValidator.getLowestDate(hearingResponse);
+
+        assertNull(result);
+    }
+
+    @Test
+    void shouldReturnEarliestDateIgnoringNullStartDates() {
+        HearingDayDetailsEntity dayDetails1 = new HearingDayDetailsEntity();
+        dayDetails1.setStartDateTime(LocalDateTime.of(2023, 1, 2, 10, 0));
+        HearingDayDetailsEntity dayDetails2 = new HearingDayDetailsEntity();
+        dayDetails2.setStartDateTime(null);
+        HearingDayDetailsEntity dayDetails3 = new HearingDayDetailsEntity();
+        dayDetails3.setStartDateTime(LocalDateTime.of(2023, 1, 1, 10, 0));
+        HearingResponseEntity hearingResponse = new HearingResponseEntity();
+        hearingResponse.setHearingDayDetails(List.of(dayDetails1, dayDetails2, dayDetails3));
+
+        LocalDate result = linkedHearingValidator.getLowestDate(hearingResponse);
+
+        assertEquals(dayDetails3.getStartDateTime().toLocalDate(), result);
     }
 
     private List<HearingEntity> generateLinkedHearingDetailsListWithBadStatus(LinkedGroupDetails groupDetails) {
