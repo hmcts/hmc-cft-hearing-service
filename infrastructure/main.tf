@@ -160,7 +160,7 @@ module "postgresql_v15_replica" {
   ]
   pgsql_version             = "15"
   product                   = var.product
-  name                      = "${local.app_full_name}-postgres-db-v15-replica01"
+  name                      = "${local.app_full_name}-postgres-db-v15"
   pgsql_sku                 = var.pgsql_sku
   pgsql_storage_mb          = var.pgsql_storage_mb
   create_mode      = "Replica"
