@@ -52,5 +52,6 @@ public final class Constants {
     public static final String HMCTS_DEPLOYMENT_ID = "hmcts-deployment-id";
     public static final String LATEST_HEARING_REQUEST_VERSION = "Latest-Hearing-Request-Version";
     public static final String LATEST_HEARING_STATUS = "Latest-Hearing-Status";
+    public static final Integer HMCTS_DEPLOYMENT_ID_SIZE = 40;
 
 }

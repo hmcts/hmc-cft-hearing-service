@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.LuhnCheck;
 import org.springframework.http.HttpStatus;
@@ -21,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -41,6 +41,8 @@ import javax.validation.constraints.Size;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID_SIZE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
@@ -213,9 +215,12 @@ public class HearingManagementController {
     }
 
     private void verifyDeploymentIdEnabled(String deploymentId) {
-        if (applicationParams.isHmctsDeploymentIdEnabled() && StringUtils.isEmpty(deploymentId)) {
-            throw new BadRequestException(HMCTS_DEPLOYMENT_ID_REQUIRED);
-
+        if (applicationParams.isHmctsDeploymentIdEnabled()) {
+            if (StringUtils.isEmpty(deploymentId)) {
+                throw new BadRequestException(HMCTS_DEPLOYMENT_ID_REQUIRED);
+            } else if (deploymentId.length() > HMCTS_DEPLOYMENT_ID_SIZE) {
+                throw new BadRequestException(HMCTS_DEPLOYMENT_ID_MAX_LENGTH);
+            }
         } else if (!applicationParams.isHmctsDeploymentIdEnabled() && !StringUtils.isEmpty(deploymentId)) {
             throw new BadRequestException(HMCTS_DEPLOYMENT_ID_NOT_REQUIRED);
         }
