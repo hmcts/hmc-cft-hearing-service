@@ -106,4 +106,3 @@ variable "primary_server_id" {
   description = "Azure resource ID of the primary PostgreSQL server"
   type        = string
 }
- 
