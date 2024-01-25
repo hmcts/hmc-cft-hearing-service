@@ -96,8 +96,7 @@ public class HearingManagementController {
     public HearingResponse saveHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false)
                                         String deploymentId,
                                        @RequestBody @Valid HearingRequest createHearingRequest) {
-        // TODO Uncomment the code for HMAN-618
-        // verifyDeploymentIdEnabled(deploymentId);
+        verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER));
         return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId);
     }
@@ -174,8 +173,7 @@ public class HearingManagementController {
                                                  String deploymentId,
                                          @RequestBody @Valid UpdateHearingRequest hearingRequest,
                                          @PathVariable("id") Long hearingId) {
-        // TODO Uncomment the code for HMAN-618
-        // verifyDeploymentIdEnabled(deploymentId);
+        verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         return hearingManagementService.updateHearingRequest(hearingId, hearingRequest, deploymentId);
     }
@@ -210,10 +208,7 @@ public class HearingManagementController {
             .allMatch(roleAssignment -> roleAssignment.equals(LISTED_HEARING_VIEWER));
     }
 
-    // TODO HmctsDeploymentId length check in HMAN-618
-    /**
     private void verifyDeploymentIdEnabled(String deploymentId) {
-        if (applicationParams.isHmctsDeploymentIdEnabled()) {
-        }
-    } **/
+        // TODO validate deployment id size in HMAN-618
+    }
 }
