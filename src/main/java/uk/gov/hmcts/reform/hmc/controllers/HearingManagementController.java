@@ -213,11 +213,8 @@ public class HearingManagementController {
     }
 
     private void verifyDeploymentIdEnabled(String deploymentId) {
-        if (applicationParams.isHmctsDeploymentIdEnabled() && StringUtils.isEmpty(deploymentId)) {
-            throw new BadRequestException(HMCTS_DEPLOYMENT_ID_REQUIRED);
-
-        } else if (!applicationParams.isHmctsDeploymentIdEnabled() && !StringUtils.isEmpty(deploymentId)) {
-            throw new BadRequestException(HMCTS_DEPLOYMENT_ID_NOT_REQUIRED);
+        if (applicationParams.isHmctsDeploymentIdEnabled() {
+            
         }
     }
 }
