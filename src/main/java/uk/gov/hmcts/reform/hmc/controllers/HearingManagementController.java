@@ -211,7 +211,7 @@ public class HearingManagementController {
     }
 
     private void verifyDeploymentIdEnabled(String deploymentId) {
-        if (applicationParams.isHmctsDeploymentIdEnabled() {
+        if (applicationParams.isHmctsDeploymentIdEnabled()) {
             
         }
     }
