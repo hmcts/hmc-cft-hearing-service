@@ -4,7 +4,6 @@ import com.microsoft.applicationinsights.core.dependencies.google.common.collect
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.LuhnCheck;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
-import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
@@ -98,7 +96,8 @@ public class HearingManagementController {
     public HearingResponse saveHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false)
                                         String deploymentId,
                                        @RequestBody @Valid HearingRequest createHearingRequest) {
-        verifyDeploymentIdEnabled(deploymentId);
+        // TODO Uncomment the code for HMAN-618
+        // verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER));
         return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId);
     }
@@ -175,7 +174,8 @@ public class HearingManagementController {
                                                  String deploymentId,
                                          @RequestBody @Valid UpdateHearingRequest hearingRequest,
                                          @PathVariable("id") Long hearingId) {
-        verifyDeploymentIdEnabled(deploymentId);
+        // TODO Uncomment the code for HMAN-618
+        // verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         return hearingManagementService.updateHearingRequest(hearingId, hearingRequest, deploymentId);
     }
@@ -210,9 +210,10 @@ public class HearingManagementController {
             .allMatch(roleAssignment -> roleAssignment.equals(LISTED_HEARING_VIEWER));
     }
 
+    // TODO HmctsDeploymentId length check in HMAN-618
+    /**
     private void verifyDeploymentIdEnabled(String deploymentId) {
         if (applicationParams.isHmctsDeploymentIdEnabled()) {
-            
         }
-    }
+    } **/
 }
