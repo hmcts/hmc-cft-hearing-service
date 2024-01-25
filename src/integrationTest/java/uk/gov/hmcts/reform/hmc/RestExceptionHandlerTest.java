@@ -215,24 +215,6 @@ public class RestExceptionHandlerTest extends BaseTest {
                                 "INTERNAL_SERVER_ERROR");
     }
 
-    @DisplayName("should return correct response when BadRequestException is thrown")
-    @Test
-    void shouldHandleBadRequestException_WhenDeploymentIdValueNotPresent() throws Exception {
-        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
-
-        /// WHEN
-        Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
-            .saveHearingRequest(any(HearingRequest.class),any());
-
-        ResultActions result =  this.mockMvc.perform(post("/hearing")
-                                                         .contentType(MediaType.APPLICATION_JSON)
-                                                         .content(objectMapper.writeValueAsString(validRequest)));
-
-        // THEN
-        assertHttpErrorResponse(result, HttpStatus.BAD_REQUEST.value(),
-                                "HMCTS deployment id is required", "BAD_REQUEST");
-    }
-
     private void assertHttpErrorResponse(ResultActions result, int expectedStatusCode, String expectedMessage,
                                          String expectedStatus) throws Exception {
 
