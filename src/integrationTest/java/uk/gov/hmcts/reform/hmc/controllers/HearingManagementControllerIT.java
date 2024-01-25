@@ -1564,6 +1564,31 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void shouldReturn201_WhenDeploymentIdEnabled_NoDeploymentId() throws Exception {
+        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+        val hearingRequest = getHearingRequest("P1");
+        stubSuccessfullyValidateHearingObject(hearingRequest);
+
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
+        mockMvc.perform(post(url)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(201))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn201_WhenDeploymentIdEnabledFalse_NoDeploymentId() throws Exception {
         ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", false);
         val hearingRequest = getHearingRequest("P1");
