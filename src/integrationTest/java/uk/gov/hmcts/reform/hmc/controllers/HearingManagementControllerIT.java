@@ -1614,7 +1614,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
-    void shouldReturn400_WhenDeploymentIdEnabledFalseWithDeploymentID() throws Exception {
+    void shouldReturn201_WhenDeploymentIdEnabledFalseWithDeploymentID() throws Exception {
         ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", false);
         val hearingRequest = getHearingRequest("P1");
         stubSuccessfullyValidateHearingObject(hearingRequest);
