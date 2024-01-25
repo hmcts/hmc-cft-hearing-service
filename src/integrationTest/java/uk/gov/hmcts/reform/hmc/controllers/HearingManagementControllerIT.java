@@ -1634,7 +1634,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .header(HMCTS_DEPLOYMENT_ID, "ABA1")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
-            .andExpect(status().is(400))
+            .andExpect(status().is(201))
             .andReturn();
     }
 
