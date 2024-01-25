@@ -41,7 +41,7 @@ import javax.validation.constraints.Size;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID_SIZE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID_MAX_SIZE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_REQUIRED;
@@ -218,7 +218,7 @@ public class HearingManagementController {
         if (applicationParams.isHmctsDeploymentIdEnabled()) {
             if (StringUtils.isEmpty(deploymentId)) {
                 throw new BadRequestException(HMCTS_DEPLOYMENT_ID_REQUIRED);
-            } else if (deploymentId.length() > HMCTS_DEPLOYMENT_ID_SIZE) {
+            } else if (deploymentId.length() > HMCTS_DEPLOYMENT_ID_MAX_SIZE) {
                 throw new BadRequestException(HMCTS_DEPLOYMENT_ID_MAX_LENGTH);
             }
         } else if (!applicationParams.isHmctsDeploymentIdEnabled() && !StringUtils.isEmpty(deploymentId)) {
