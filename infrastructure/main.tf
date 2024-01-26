@@ -121,4 +121,3 @@ resource "azurerm_key_vault_secret" "POSTGRES-HOST-V15" {
   value        = module.postgresql_v15.fqdn
   key_vault_id = data.azurerm_key_vault.hmc_shared_key_vault.id
 }
-
