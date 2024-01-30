@@ -72,15 +72,15 @@ sourceSets {
     }
     resources.srcDir file('src/integrationTest/resources')
   }
+}
 
-  idea {
-    module {
-      // config to allow Intellij to mark test source and resource files correctly to help linting tools
-      testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
-      testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
-      testResourceDirs += project.sourceSets.functionalTest.resources.srcDirs
-      testResourceDirs += project.sourceSets.integrationTest.resources.srcDirs
-    }
+idea {
+  module {
+    // config to allow Intellij to mark test source and resource files correctly to help linting tools
+    testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
+    testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
+    testResourceDirs += project.sourceSets.functionalTest.resources.srcDirs
+    testResourceDirs += project.sourceSets.integrationTest.resources.srcDirs
   }
 }
 
@@ -214,8 +214,8 @@ jacoco {
 jacocoTestReport {
   executionData(test, integration)
   reports {
-    xml.enabled = true
-    csv.enabled = false
+    xml.required = true
+    csv.required = false
     xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
   }
 }
@@ -578,7 +578,7 @@ bootWithCCD {
 }
 
 task fortifyScan(type: JavaExec)  {
-  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
   // The line below prevents the build from failing if the Fortify scan detects issues
