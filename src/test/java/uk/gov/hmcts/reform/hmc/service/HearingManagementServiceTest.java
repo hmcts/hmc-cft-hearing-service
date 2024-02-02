@@ -48,6 +48,7 @@ import uk.gov.hmcts.reform.hmc.helper.hmi.EntitiesMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.EntitiesMapperObject;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiCaseDetailsMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
+import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.ListingMapper;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
@@ -221,6 +222,9 @@ class HearingManagementServiceTest {
     @Mock
     EntitiesMapper entitiesMapper;
 
+    @Mock
+    HmiHearingResponseMapper hmiHearingResponseMapper;
+
     JsonNode jsonNode = mock(JsonNode.class);
 
     @BeforeEach
@@ -259,7 +263,8 @@ class HearingManagementServiceTest {
                 hearingActualsValidator,
                 listingMapper,
                 hmiCaseDetailsMapper,
-                entitiesMapper);
+                entitiesMapper,
+                hmiHearingResponseMapper);
     }
 
 
@@ -1077,7 +1082,8 @@ class HearingManagementServiceTest {
                             hearingActualsValidator,
                             listingMapper,
                             hmiCaseDetailsMapper,
-                            entitiesMapper);
+                            entitiesMapper,
+                            hmiHearingResponseMapper);
 
         }
 
