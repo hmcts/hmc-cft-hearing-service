@@ -115,6 +115,8 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_TYPE_MA
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_TYPE_NULL_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_DETAILS_ARE_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_EMPTY_NULL;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_INTERNAL_CASE_NAME_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_INTERNAL_CASE_NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_SERVICE_CODE_EMPTY_INVALID;
@@ -1647,7 +1649,7 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(post(url)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
-            .andExpect(status().is(400))
+            .andExpect(status().is(201))
             .andReturn();
     }
 
@@ -1678,6 +1680,34 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void shouldReturn400_WhenDeploymentIdEnabledAndGreaterThanMaxLength() throws Exception {
+        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+        val hearingRequest = getHearingRequest("P1");
+        stubSuccessfullyValidateHearingObject(hearingRequest);
+
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
+        mockMvc.perform(post(url)
+                            .header(HMCTS_DEPLOYMENT_ID, "a".repeat(41))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem(HMCTS_DEPLOYMENT_ID_MAX_LENGTH)))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn400_WhenDeploymentIdEnabledFalseWithDeploymentID() throws Exception {
         ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", false);
         val hearingRequest = getHearingRequest("P1");
@@ -1699,6 +1729,8 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem(HMCTS_DEPLOYMENT_ID_NOT_REQUIRED)))
             .andReturn();
     }
 
