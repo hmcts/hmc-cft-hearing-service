@@ -206,7 +206,7 @@ public class HearingManagementController {
         @ApiResponse(code = 400,
             message = "One or more of the following reasons:"
                 + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
-        )
+            )
     })
     public List<GetHearingsResponse> getHearingsForListOfCases(@RequestParam List<String> ccdCaseRefs,
                                                          @RequestParam(required = false)
