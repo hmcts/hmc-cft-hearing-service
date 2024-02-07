@@ -246,7 +246,7 @@ def versions = [
   reformLogging   : '6.0.1',
   restAssured     : '4.2.1',
   springBoot      : springBoot.class.package.implementationVersion,
-  springCloud     : '2020.0.6',
+  springCloud     : '2021.0.8',
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.3',
   netty           : '4.1.104.Final',
@@ -257,7 +257,7 @@ def versions = [
 ext['spring-framework.version'] = '5.3.31'
 ext['spring-security.version'] = '5.8.7'
 ext['log4j2.version'] = '2.17.2'
-ext['snakeyaml.version'] = '1.33'
+ext['snakeyaml.version'] = '2.2'
 //ext['jackson.version'] = '2.10.5'
 
 // before committing a change, make sure task still works
@@ -289,7 +289,7 @@ dependencyManagement {
       entry 'json-path'
       entry 'xml-path'
     }
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.84') {
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.85') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
       entry 'tomcat-embed-websocket'
