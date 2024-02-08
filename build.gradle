@@ -29,6 +29,10 @@ configurations {
   cftlibRuntimeClasspath.extendsFrom(runtimeClasspath)
 }
 
+configurations.all {
+  exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+}
+
 configurations.configureEach {
   resolutionStrategy {
     eachDependency { details ->
