@@ -256,7 +256,7 @@ def versions = [
   netty           : '4.1.106.Final',
   serviceAuthVersion: '4.0.3',
   tomcatEmbedded  : '9.0.85',
-  fasterXmlJackson : '2.15.2',
+  fasterXmlJackson : '2.16.1',
 ]
 
 ext['spring-framework.version'] = '5.3.31'
