@@ -255,7 +255,8 @@ def versions = [
   testcontainers  : '1.15.3',
   netty           : '4.1.106.Final',
   serviceAuthVersion: '4.0.3',
-  tomcatEmbedded  : '9.0.85'
+  tomcatEmbedded  : '9.0.85',
+  fasterXmlJackson : '2.15.2',
 ]
 
 ext['spring-framework.version'] = '5.3.31'
@@ -297,6 +298,13 @@ dependencyManagement {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
       entry 'tomcat-embed-websocket'
+    }
+
+    // CVE-2023-35116
+    dependencySet(group: 'com.fasterxml.jackson.core', version: versions.fasterXmlJackson) {
+      entry 'jackson-databind'
+      entry 'jackson-annotations'
+      entry 'jackson-core'
     }
   }
 }

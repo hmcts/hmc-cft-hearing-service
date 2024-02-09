@@ -4,11 +4,9 @@
         CVE-2022-1471 refer [Ticket]
         CVE-2023-34462 refer [Ticket]
         CVE-2023-36052 refer [Ticket]
-        CVE-2023-35116 refer [Ticket]
     </notes>
     <cve>CVE-2022-1471</cve>
     <cve>CVE-2023-34462</cve>
     <cve>CVE-2023-36052</cve>
-    <cve>CVE-2023-35116</cve>
   </suppress>
 </suppressions>
