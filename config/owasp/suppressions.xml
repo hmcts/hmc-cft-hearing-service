@@ -6,5 +6,7 @@
     ]]></notes>
     <cpe>cpe:2.3:a:microsoft:azure_sdk_for_java:1.44.1</cpe>
     <cve>CVE-2023-36052</cve>
+    <cve>CVE-2023-33202</cve>
   </suppress>
+
 </suppressions>
