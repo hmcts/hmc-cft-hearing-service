@@ -250,7 +250,7 @@ def versions = [
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.3',
   netty           : '4.1.106.Final',
-  serviceAuthVersion: '4.0.3',
+  serviceAuthVersion: '4.1.2',
   tomcatEmbedded  : '9.0.85',
   fasterXmlJackson : '2.16.1',
 ]
@@ -393,7 +393,7 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceAuthVersion
-  implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '2.0.1'
+  implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.3'
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
   implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
   implementation 'net.minidev:json-smart:2.4.11'
