@@ -77,6 +77,7 @@ import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
@@ -223,6 +224,9 @@ class HearingManagementServiceTest {
 
     JsonNode jsonNode = mock(JsonNode.class);
 
+    @Mock
+    HearingStatusAuditService hearingStatusAuditService;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -259,7 +263,8 @@ class HearingManagementServiceTest {
                 hearingActualsValidator,
                 listingMapper,
                 hmiCaseDetailsMapper,
-                entitiesMapper);
+                entitiesMapper,
+                hearingStatusAuditService);
     }
 
 
@@ -1077,7 +1082,8 @@ class HearingManagementServiceTest {
                             hearingActualsValidator,
                             listingMapper,
                             hmiCaseDetailsMapper,
-                            entitiesMapper);
+                            entitiesMapper,
+                            hearingStatusAuditService);
 
         }
 

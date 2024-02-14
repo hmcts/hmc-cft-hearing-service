@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -38,7 +38,7 @@ public class HearingStatusAuditEntity extends BaseEntity implements Serializable
     private String status;
 
     @Column(name = "status_update_date_time", nullable = false)
-    private LocalDate statusUpdateDateTime;
+    private LocalDateTime statusUpdateDateTime;
 
     @Column(name = "hearing_event", nullable = false)
     private String hearingEvent;
@@ -61,7 +61,7 @@ public class HearingStatusAuditEntity extends BaseEntity implements Serializable
     private String requestVersion;
 
     @Column(name = "response_date_time")
-    private LocalDate responseDateTime;
+    private LocalDateTime responseDateTime;
 
 
 }

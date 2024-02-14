@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingStatusAudit;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
@@ -50,6 +51,7 @@ import uk.gov.hmcts.reform.hmc.model.hmi.Listing;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
@@ -114,6 +116,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final ListingMapper listingMapper;
     private final HmiCaseDetailsMapper hmiCaseDetailsMapper;
     private final EntitiesMapper entitiesMapper;
+    private final HearingStatusAuditService hearingStatusAuditService;
 
 
     @Autowired
@@ -137,7 +140,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HearingActualsValidator hearingActualsValidator,
                                         ListingMapper listingMapper,
                                         HmiCaseDetailsMapper hmiCaseDetailsMapper,
-                                        EntitiesMapper entitiesMapper) {
+                                        EntitiesMapper entitiesMapper,
+                                        HearingStatusAuditService hearingStatusAuditService) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -159,6 +163,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.listingMapper = listingMapper;
         this.hmiCaseDetailsMapper = hmiCaseDetailsMapper;
         this.entitiesMapper = entitiesMapper;
+        this.hearingStatusAuditService = hearingStatusAuditService;
     }
 
     @Override
@@ -339,6 +344,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingEntity savedEntity = saveHearingDetails(createHearingRequest, reasonableMatch, facilitiesMatch,
                                                        deploymentId);
         savePartyRelationshipDetails(createHearingRequest, savedEntity);
+        // TODO construct HearingStatusAudit
+        HearingStatusAudit hearingStatusAudit = new HearingStatusAudit();
+        hearingStatusAuditService.saveHearingStatusAudit(hearingStatusAudit);
         return getSaveHearingResponseDetails(savedEntity);
     }
 
