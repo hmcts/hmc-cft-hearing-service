@@ -87,7 +87,7 @@ public class HearingEntity extends BaseEntity implements Serializable {
         updatedDateTime = LocalDateTime.now();
     }
 
-    public CaseHearingRequestEntity getLatestCaseHearingRequest() {
+    public CaseHearingRequestEntity         getLatestCaseHearingRequest() {
         return getCaseHearingRequests().stream()
             .max(Comparator.comparingInt(CaseHearingRequestEntity::getVersionNumber))
             .orElseThrow(() -> new ResourceNotFoundException("Cannot find latest case "

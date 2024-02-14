@@ -249,6 +249,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                            reasonableMatch, facilitiesMatch, deploymentId);
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
+
+        // TODO validate the mapped values
+        HearingStatusAudit hearingStatusAudit = hearingStatusAuditService.mapHearingStatusAuditDetails(
+            hearingRequest.getCaseDetails().getHmctsServiceCode(),hearingEntity,"update-hearing-request",
+            "hmc", "hmi",null,saveHearingResponseDetails.getVersionNumber().toString());
+        hearingStatusAuditService.saveHearingStatusAudit(hearingStatusAudit);
+
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
             getCaseDetails(saveHearingResponseDetails.getHearingRequestId(), hearingRequest), listing, deploymentId);
         return saveHearingResponseDetails;
@@ -344,8 +351,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingEntity savedEntity = saveHearingDetails(createHearingRequest, reasonableMatch, facilitiesMatch,
                                                        deploymentId);
         savePartyRelationshipDetails(createHearingRequest, savedEntity);
-        // TODO construct HearingStatusAudit
-        HearingStatusAudit hearingStatusAudit = new HearingStatusAudit();
+        // TODO validate the mapped values
+        HearingStatusAudit hearingStatusAudit = hearingStatusAuditService.mapHearingStatusAuditDetails(
+            createHearingRequest.getCaseDetails().getHmctsServiceCode(), savedEntity,
+            "create-hearing-request", "hmc", "hmi",
+            null, VERSION_NUMBER_TO_INCREMENT.toString());
         hearingStatusAuditService.saveHearingStatusAudit(hearingStatusAudit);
         return getSaveHearingResponseDetails(savedEntity);
     }
@@ -523,6 +533,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             .modelToEntity(deleteRequest, existingHearing, existingHearing.getNextRequestVersion(),
                            caseHearingRequestEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
+        // TODO validate the mapped values
+        HearingStatusAudit hearingStatusAudit = hearingStatusAuditService.mapHearingStatusAuditDetails(
+            caseHearingRequestEntity.getHmctsServiceCode(),hearingEntity,"delete-hearing-request",
+            "hmc", "hmi", null,saveHearingResponseDetails.getVersionNumber().toString());
+        hearingStatusAuditService.saveHearingStatusAudit(hearingStatusAudit);
         sendRequestToQueue(hearingId, DELETE_HEARING,existingHearing.getDeploymentId());
         return saveHearingResponseDetails;
     }

@@ -31,7 +31,7 @@ public class HearingStatusAuditMapper {
         hearingStatusAuditEntity.setTarget(hearingStatusAudit.getTarget());
         hearingStatusAuditEntity.setErrorDescription(hearingStatusAudit.getErrorDescription());
         hearingStatusAuditEntity.setRequestVersion(hearingStatusAudit.getRequestVersion());
-        hearingStatusAuditEntity.setResponseDateTime(hearingStatusAudit.getResponseDateTime());
+        hearingStatusAuditEntity.setResponseDateTime(LocalDateTime.now(utcClock));
         return hearingStatusAuditEntity;
     }
 }
