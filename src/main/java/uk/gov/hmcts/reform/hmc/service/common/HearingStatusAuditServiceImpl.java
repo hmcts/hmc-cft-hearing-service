@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.helper.HearingStatusAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingStatusAudit;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
@@ -19,21 +20,24 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
 
     private final HearingStatusAuditMapper hearingStatusAuditMapper;
     private final HearingStatusAuditRepository hearingStatusAuditRepository;
+    private final SecurityUtils securityUtils;
 
 
     @Autowired
     public HearingStatusAuditServiceImpl(HearingStatusAuditMapper hearingStatusAuditMapper,
-                                         HearingStatusAuditRepository hearingStatusAuditRepository) {
+                                         HearingStatusAuditRepository hearingStatusAuditRepository,
+                                         SecurityUtils securityUtils) {
         this.hearingStatusAuditMapper = hearingStatusAuditMapper;
         this.hearingStatusAuditRepository = hearingStatusAuditRepository;
+        this.securityUtils = securityUtils;
     }
 
     @Override
     public void saveAuditTriageDetails(String hearingServiceId, String hearingId, String status,
                                        LocalDateTime statusUpdateDateTime, String hearingEvent,
-                                       String source, String target, JsonNode errorDescription,
+                                       String clientS2SToken, String target, JsonNode errorDescription,
                                        String requestVersion) {
-
+        String source = securityUtils.getServiceNameFromS2SToken(clientS2SToken);
         HearingStatusAudit hearingStatusAudit = mapHearingStatusAuditDetails(hearingServiceId,
              hearingId,  status,  statusUpdateDateTime, hearingEvent, source,  target,
                                                                              errorDescription, requestVersion);

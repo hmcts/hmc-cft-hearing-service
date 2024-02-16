@@ -77,6 +77,8 @@ class HearingManagementControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
+    private static final String CLIENT_S2S_TOKEN = "s2s_token";
+
     @Nested
     @DisplayName("saveHearing")
     class SaveHearing {
@@ -88,13 +90,14 @@ class HearingManagementControllerTest {
             hearingRequest.setHearingDetails(null);
 
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.saveHearingRequest(hearingRequest, null)).thenReturn(hearingResponse);
+            when(hearingManagementService.saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN))
+                .thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams);
-            controller.saveHearing(null, hearingRequest);
-            verify(hearingManagementService, times(1)).saveHearingRequest(any(), any());
+            controller.saveHearing(null, CLIENT_S2S_TOKEN, hearingRequest);
+            verify(hearingManagementService, times(1)).saveHearingRequest(any(), any(), any());
         }
 
         @Test
@@ -104,13 +107,14 @@ class HearingManagementControllerTest {
             hearingRequest.setCaseDetails(null);
 
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.saveHearingRequest(hearingRequest, null)).thenReturn(hearingResponse);
+            when(hearingManagementService.saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN))
+                .thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams);
-            controller.saveHearing(null, hearingRequest);
-            verify(hearingManagementService, times(1)).saveHearingRequest(any(),any());
+            controller.saveHearing(null, CLIENT_S2S_TOKEN,hearingRequest);
+            verify(hearingManagementService, times(1)).saveHearingRequest(any(),any(), any());
         }
 
         @Test
@@ -119,13 +123,14 @@ class HearingManagementControllerTest {
             HearingRequest hearingRequest = generateHearingRequest(false);
 
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.saveHearingRequest(hearingRequest, null)).thenReturn(hearingResponse);
+            when(hearingManagementService.saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN))
+                .thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams);
-            controller.saveHearing(null, hearingRequest);
-            verify(hearingManagementService, times(1)).saveHearingRequest(any(), any());
+            controller.saveHearing(null, CLIENT_S2S_TOKEN, hearingRequest);
+            verify(hearingManagementService, times(1)).saveHearingRequest(any(), any(), any());
         }
 
 
@@ -135,13 +140,13 @@ class HearingManagementControllerTest {
             HearingRequest hearingRequest = generateHearingRequest(true);
 
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.saveHearingRequest(hearingRequest, null)).thenReturn(hearingResponse);
+            when(hearingManagementService.saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN)).thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams);
-            controller.saveHearing(null, hearingRequest);
-            verify(hearingManagementService, times(1)).saveHearingRequest(any(), any());
+            controller.saveHearing(null, CLIENT_S2S_TOKEN, hearingRequest);
+            verify(hearingManagementService, times(1)).saveHearingRequest(any(), any(), any());
         }
 
         @Test
@@ -153,13 +158,15 @@ class HearingManagementControllerTest {
 
             HearingResponse hearingResponse = new HearingResponse();
             hearingResponse.setHearingRequestId(1L);
-            when(hearingManagementService.saveHearingRequest(hearingRequest, null)).thenReturn(hearingResponse);
+            when(hearingManagementService.saveHearingRequest(hearingRequest, null ,CLIENT_S2S_TOKEN))
+                .thenReturn(hearingResponse);
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams);
-            controller.saveHearing(null, hearingRequest);
+             controller.saveHearing(null, CLIENT_S2S_TOKEN, hearingRequest);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
-            orderVerifier.verify(hearingManagementService).saveHearingRequest(hearingRequest, null);
+            orderVerifier.verify(hearingManagementService).saveHearingRequest(hearingRequest, null,
+                                                                              CLIENT_S2S_TOKEN);
             verifyNoMoreInteractions(hearingManagementService);
         }
     }
@@ -192,12 +199,12 @@ class HearingManagementControllerTest {
         @Test
         void shouldReturn200_whenDeleteRequestIdIsValid() {
             doReturn(TestingUtil.deleteHearingResponse()).when(hearingManagementService)
-                .deleteHearingRequest(any(), any());
+                .deleteHearingRequest(any(), any(), any());
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams);
-            controller.deleteHearing(1234L, TestingUtil.deleteHearingRequest());
-            verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());
+            controller.deleteHearing(1234L, CLIENT_S2S_TOKEN, TestingUtil.deleteHearingRequest());
+            verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any(), any());
         }
 
         @Test
@@ -206,13 +213,13 @@ class HearingManagementControllerTest {
             request.setCancellationReasonCodes(List.of(""));
 
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.deleteHearingRequest(any(), any())).thenReturn(hearingResponse);
+            when(hearingManagementService.deleteHearingRequest(any(), any(), any())).thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams);
-            controller.deleteHearing(1234L, request);
-            verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any());
+            controller.deleteHearing(1234L, CLIENT_S2S_TOKEN, request);
+            verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any(), any());
         }
     }
 
@@ -280,16 +287,17 @@ class HearingManagementControllerTest {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = generateUpdateHearingRequest(false);
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest, ""))
+            when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest, "",
+                                                               CLIENT_S2S_TOKEN))
                     .thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams);
-            controller.updateHearing("",hearingRequest, hearingId);
+            controller.updateHearing("",hearingRequest,CLIENT_S2S_TOKEN,  hearingId);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
             orderVerifier.verify(hearingManagementService).updateHearingRequest(hearingId, hearingRequest,
-                                                                                "");
+                                                                                "", CLIENT_S2S_TOKEN);
             verifyNoMoreInteractions(hearingManagementService);
         }
 
@@ -298,16 +306,17 @@ class HearingManagementControllerTest {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = generateUpdateHearingRequest(true);
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest, ""))
+            when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest, "",
+                                                               CLIENT_S2S_TOKEN))
                 .thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams);
-            controller.updateHearing("", hearingRequest, hearingId);
+            controller.updateHearing("", hearingRequest, CLIENT_S2S_TOKEN, hearingId);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
             orderVerifier.verify(hearingManagementService).updateHearingRequest(hearingId, hearingRequest,
-                                                                                "");
+                                                                                "", CLIENT_S2S_TOKEN);
             verifyNoMoreInteractions(hearingManagementService);
         }
     }

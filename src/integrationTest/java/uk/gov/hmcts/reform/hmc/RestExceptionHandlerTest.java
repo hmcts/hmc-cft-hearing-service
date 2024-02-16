@@ -141,7 +141,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
-            .saveHearingRequest(any(HearingRequest.class),any());
+            .saveHearingRequest(any(HearingRequest.class),any(), any());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -224,7 +224,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
-            .saveHearingRequest(any(HearingRequest.class),any());
+            .saveHearingRequest(any(HearingRequest.class),any(), any());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .header(HMCTS_DEPLOYMENT_ID, "a".repeat(41))

@@ -43,6 +43,7 @@ import javax.validation.constraints.Size;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID_MAX_SIZE;
+import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
@@ -102,10 +103,11 @@ public class HearingManagementController {
     })
     public HearingResponse saveHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false)
                                         String deploymentId,
+                                       @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
                                        @RequestBody @Valid HearingRequest createHearingRequest) {
         verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER));
-        return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId);
+        return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId, clientS2SToken);
     }
 
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -117,10 +119,11 @@ public class HearingManagementController {
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
+                                         @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
                                          @RequestBody @Valid DeleteHearingRequest deleteRequest) {
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         return hearingManagementService.deleteHearingRequest(
-            hearingId, deleteRequest);
+            hearingId, deleteRequest, clientS2SToken);
     }
 
     /**
@@ -166,10 +169,11 @@ public class HearingManagementController {
     public HearingResponse updateHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false)
                                                  String deploymentId,
                                          @RequestBody @Valid UpdateHearingRequest hearingRequest,
+                                         @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
                                          @PathVariable("id") Long hearingId) {
         verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
-        return hearingManagementService.updateHearingRequest(hearingId, hearingRequest, deploymentId);
+        return hearingManagementService.updateHearingRequest(hearingId, hearingRequest, deploymentId, clientS2SToken);
     }
 
     @PostMapping(path = "/hearingActualsCompletion/{id}")

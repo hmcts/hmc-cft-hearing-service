@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public interface HearingStatusAuditService {
 
     void saveAuditTriageDetails(String serviceCode, String hearingId, String status,
-                           LocalDateTime statusUpdateDateTime, String hearingEvent, String source,
+                           LocalDateTime statusUpdateDateTime, String hearingEvent, String clientS2SToken,
                            String target, JsonNode errorDescription, String requestVersion);
 
 }
