@@ -41,7 +41,4 @@ public class HearingStatusAudit implements Serializable {
     @NotNull
     private String requestVersion;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime responseDateTime;
-
 }

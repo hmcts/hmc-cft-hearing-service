@@ -53,4 +53,10 @@ public final class Constants {
     public static final String LATEST_HEARING_REQUEST_VERSION = "Latest-Hearing-Request-Version";
     public static final String LATEST_HEARING_STATUS = "Latest-Hearing-Status";
     public static final Integer HMCTS_DEPLOYMENT_ID_MAX_SIZE = 40;
+    public static final String UPDATE_HEARING_REQUEST = "update-hearing-request";
+    public static final String CREATE_HEARING_REQUEST = "create-hearing-request";
+    public static final String DELETE_HEARING_REQUEST = "delete-hearing-request";
+    public static final String HMI_TARGET = "hmi";
+    public static final String FH_TARGET = "fh";
+    public static final String HMC_TARGET = "hmc";
 }

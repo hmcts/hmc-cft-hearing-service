@@ -6,14 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.helper.HearingStatusAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingStatusAudit;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -31,8 +29,23 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
     }
 
     @Override
-    public HearingStatusAudit mapHearingStatusAuditDetails(String hearingServiceId,
-                                                           HearingEntity savedEntity, String hearingEvent,
+    public void saveAuditTriageDetails(String hearingServiceId, String hearingId, String status,
+                                       LocalDateTime statusUpdateDateTime, String hearingEvent,
+                                       String source, String target, JsonNode errorDescription,
+                                       String requestVersion) {
+
+        HearingStatusAudit hearingStatusAudit = mapHearingStatusAuditDetails(hearingServiceId,
+             hearingId,  status,  statusUpdateDateTime, hearingEvent, source,  target,
+                                                                             errorDescription, requestVersion);
+        saveHearingStatusAudit(hearingStatusAudit);
+
+    }
+
+
+    private HearingStatusAudit mapHearingStatusAuditDetails(String hearingServiceId,
+                                                           String hearingId, String status,
+                                                            LocalDateTime statusUpdatedTime,
+                                                           String hearingEvent,
                                                            String source, String target, Object errorDescription,
                                                            String versionNumber) {
         JsonNode jsonNode = null;
@@ -43,10 +56,10 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
         }
         HearingStatusAudit hearingStatusAudit = new HearingStatusAudit();
         hearingStatusAudit.setHearingServiceId(hearingServiceId);
-        hearingStatusAudit.setHearingId(savedEntity.getId().toString());
-        hearingStatusAudit.setStatus(savedEntity.getStatus());
+        hearingStatusAudit.setHearingId(hearingId);
+        hearingStatusAudit.setStatus(status);
         // TODO need this? can this be set in Entity directly?
-        hearingStatusAudit.setStatusUpdateDateTime(LocalDate.EPOCH.atTime(LocalTime.now()));
+        hearingStatusAudit.setStatusUpdateDateTime(statusUpdatedTime);
         // TODo how to retrieve?
         hearingStatusAudit.setHearingEvent(hearingEvent);
         hearingStatusAudit.setHttpStatus("200");
@@ -55,15 +68,15 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
         // TODo how to retrieve?
         hearingStatusAudit.setErrorDescription(jsonNode);
         hearingStatusAudit.setRequestVersion(versionNumber);
-        hearingStatusAudit.setResponseDateTime(LocalDate.EPOCH.atTime(LocalTime.now()));
         return  hearingStatusAudit;
     }
 
-    @Override
-    public void saveHearingStatusAudit(HearingStatusAudit hearingStatusAudit) {
+
+    private void saveHearingStatusAudit(HearingStatusAudit hearingStatusAudit) {
 
         HearingStatusAuditEntity hearingStatusAuditEntity = hearingStatusAuditMapper
             .modelToEntity(hearingStatusAudit);
         hearingStatusAuditRepository.save(hearingStatusAuditEntity);
     }
+
 }

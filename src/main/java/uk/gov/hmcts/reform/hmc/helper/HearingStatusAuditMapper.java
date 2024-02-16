@@ -19,12 +19,11 @@ public class HearingStatusAuditMapper {
     }
 
     public HearingStatusAuditEntity modelToEntity(HearingStatusAudit hearingStatusAudit) {
-
         HearingStatusAuditEntity hearingStatusAuditEntity = new HearingStatusAuditEntity();
         hearingStatusAuditEntity.setHmctsServiceId(hearingStatusAudit.getHearingServiceId());
         hearingStatusAuditEntity.setHearingId(hearingStatusAudit.getHearingId());
         hearingStatusAuditEntity.setStatus(hearingStatusAudit.getStatus());
-        hearingStatusAuditEntity.setStatusUpdateDateTime(LocalDateTime.now(utcClock));
+        hearingStatusAuditEntity.setStatusUpdateDateTime(hearingStatusAudit.getStatusUpdateDateTime());
         hearingStatusAuditEntity.setHearingEvent(hearingStatusAudit.getHearingEvent());
         hearingStatusAuditEntity.setHttpStatus(hearingStatusAudit.getHttpStatus());
         hearingStatusAuditEntity.setSource(hearingStatusAudit.getSource());
