@@ -357,10 +357,16 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                                        deploymentId);
         savePartyRelationshipDetails(createHearingRequest, savedEntity);
         // TODO validate the mapped values
-        hearingStatusAuditService.saveAuditTriageDetails(createHearingRequest.getCaseDetails().getHmctsServiceCode(),
-                               savedEntity.getId().toString(), savedEntity.getStatus(),
-                               savedEntity.getCreatedDateTime(), CREATE_HEARING_REQUEST,
-                               clientS2SToken, HMC_TARGET,null, VERSION_NUMBER_TO_INCREMENT.toString());
+        hearingStatusAuditService.saveAuditTriageDetails(savedEntity.getLatestCaseHearingRequest()
+                                                             .getHmctsServiceCode(),
+                                                         savedEntity.getId().toString(),
+                                                         savedEntity.getStatus(),
+                                                         savedEntity.getCreatedDateTime(),
+                                                         CREATE_HEARING_REQUEST,
+                                                         clientS2SToken,
+                                                         HMC_TARGET,
+                                                         null,
+                                                         VERSION_NUMBER_TO_INCREMENT.toString());
         return getSaveHearingResponseDetails(savedEntity);
     }
 

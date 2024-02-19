@@ -48,6 +48,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
+import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -70,6 +71,8 @@ public class RestExceptionHandlerTest extends BaseTest {
 
     @Autowired
     protected ObjectMapper objectMapper;
+
+    private static final String CLIENT_S2S_TOKEN = "s2s_token";
 
     @BeforeEach
     void setUp() {
@@ -128,6 +131,7 @@ public class RestExceptionHandlerTest extends BaseTest {
             .verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -144,6 +148,7 @@ public class RestExceptionHandlerTest extends BaseTest {
             .saveHearingRequest(any(HearingRequest.class),any(), any());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -160,6 +165,7 @@ public class RestExceptionHandlerTest extends BaseTest {
             .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -176,6 +182,7 @@ public class RestExceptionHandlerTest extends BaseTest {
             .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -193,6 +200,7 @@ public class RestExceptionHandlerTest extends BaseTest {
             .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -209,6 +217,7 @@ public class RestExceptionHandlerTest extends BaseTest {
             .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -228,6 +237,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .header(HMCTS_DEPLOYMENT_ID, "a".repeat(41))
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 

@@ -17,6 +17,9 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.TextCodec;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
@@ -25,6 +28,7 @@ import uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository;
 import uk.gov.hmcts.reform.hmc.repository.RoleAssignmentRepository;
 import uk.gov.hmcts.reform.hmc.wiremock.extensions.DynamicOAuthJwkSetResponseTransformer;
 
+import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -110,5 +114,13 @@ public class BaseTest {
         resource.setRoleType("ORGANISATION");
         resource.setAttributes(new RoleAssignmentAttributesResource());
         return resource;
+    }
+
+    public static String generateDummyS2SToken(String serviceName) {
+        return Jwts.builder()
+            .setSubject(serviceName)
+            .setIssuedAt(new Date())
+            .signWith(SignatureAlgorithm.HS256, TextCodec.BASE64.encode("AA"))
+            .compact();
     }
 }

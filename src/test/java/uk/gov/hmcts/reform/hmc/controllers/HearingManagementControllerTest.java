@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
+import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.util.List;
@@ -72,9 +74,13 @@ class HearingManagementControllerTest {
     @MockBean
     ApplicationParams applicationParams;
 
+    @Mock
+    HearingStatusAuditService hearingStatusAuditService;
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any(),any(),any());
     }
 
     private static final String CLIENT_S2S_TOKEN = "s2s_token";
@@ -140,7 +146,8 @@ class HearingManagementControllerTest {
             HearingRequest hearingRequest = generateHearingRequest(true);
 
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN)).thenReturn(hearingResponse);
+            when(hearingManagementService.saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN))
+                .thenReturn(hearingResponse);
 
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
@@ -158,12 +165,12 @@ class HearingManagementControllerTest {
 
             HearingResponse hearingResponse = new HearingResponse();
             hearingResponse.setHearingRequestId(1L);
-            when(hearingManagementService.saveHearingRequest(hearingRequest, null ,CLIENT_S2S_TOKEN))
+            when(hearingManagementService.saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN))
                 .thenReturn(hearingResponse);
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams);
-             controller.saveHearing(null, CLIENT_S2S_TOKEN, hearingRequest);
+            controller.saveHearing(null, CLIENT_S2S_TOKEN, hearingRequest);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
             orderVerifier.verify(hearingManagementService).saveHearingRequest(hearingRequest, null,
                                                                               CLIENT_S2S_TOKEN);

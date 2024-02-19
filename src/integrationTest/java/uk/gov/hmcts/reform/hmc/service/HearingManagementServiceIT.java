@@ -69,7 +69,7 @@ class HearingManagementServiceIT extends BaseTest {
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         createHearingRequest.setCaseDetails(TestingUtil.caseDetailsWithCaseSubType());
         HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null,
-                                                                               CLIENT_S2S_TOKEN );
+                                                                               CLIENT_S2S_TOKEN);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
