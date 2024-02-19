@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.hmc.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import org.apache.http.HttpStatus;
 import org.slf4j.helpers.MessageFormatter;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
@@ -19,6 +23,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.IndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
@@ -34,6 +39,7 @@ import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayParties;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPartyDetail;
@@ -54,6 +60,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
+import uk.gov.hmcts.reform.hmc.model.HearingStatusAudit;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.LocationType;
@@ -81,6 +88,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC_TARGET;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI_TARGET;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_DOW_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_RANGE_TYPE;
@@ -1433,6 +1442,40 @@ public class TestingUtil {
 
     public static String formatLogMessage(String message, Object... objects) {
         return MessageFormatter.arrayFormat(message, objects).getMessage();
+    }
+
+    public static HearingStatusAuditEntity hearingStatusAuditEntity() {
+        HearingStatusAuditEntity hearingStatusAuditEntity = new HearingStatusAuditEntity();
+        hearingStatusAuditEntity.setHmctsServiceId("ABA1");
+        hearingStatusAuditEntity.setHearingId("2000000000");
+        hearingStatusAuditEntity.setStatus(PutHearingStatus.HEARING_REQUESTED.name());
+        hearingStatusAuditEntity.setHearingEvent("create-hearing- request");
+        hearingStatusAuditEntity.setHttpStatus(String.valueOf(HttpStatus.SC_OK));
+        hearingStatusAuditEntity.setSource(HMC_TARGET);
+        hearingStatusAuditEntity.setTarget(HMI_TARGET);
+        hearingStatusAuditEntity.setRequestVersion("1");
+        return hearingStatusAuditEntity;
+    }
+
+    public static HearingStatusAudit hearingStatusAudit() {
+        JsonNode jsonNode = null;
+        try {
+            jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        HearingStatusAudit hearingStatusAudit = new HearingStatusAudit();
+        hearingStatusAudit.setHearingServiceId("ABA1");
+        hearingStatusAudit.setHearingId("2000000000");
+        hearingStatusAudit.setStatus(PutHearingStatus.HEARING_REQUESTED.name());
+        hearingStatusAudit.setStatusUpdateDateTime(LocalDateTime.now());
+        hearingStatusAudit.setHearingEvent("create-hearing- request");
+        hearingStatusAudit.setHttpStatus(String.valueOf(HttpStatus.SC_OK));
+        hearingStatusAudit.setSource(HMC_TARGET);
+        hearingStatusAudit.setTarget(HMI_TARGET);
+        hearingStatusAudit.setErrorDescription(jsonNode);
+        hearingStatusAudit.setRequestVersion("1");
+        return hearingStatusAudit;
     }
 }
 

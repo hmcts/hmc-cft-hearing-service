@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 import java.time.LocalDateTime;
 
 @Service
+@Component
 @Slf4j
 public class HearingStatusAuditServiceImpl implements HearingStatusAuditService {
 
