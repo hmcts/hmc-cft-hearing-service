@@ -945,6 +945,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getCaseDetails().setCaseRef("9856815055686759");
         mockMvc.perform(put(url + "/2000000012")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(201))
