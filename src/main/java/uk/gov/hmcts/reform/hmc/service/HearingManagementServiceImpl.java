@@ -148,7 +148,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         ListingMapper listingMapper,
                                         HmiCaseDetailsMapper hmiCaseDetailsMapper,
                                         EntitiesMapper entitiesMapper,
-                                        HmiHearingResponseMapper hmiHearingResponseMapper) {
+                                        HmiHearingResponseMapper hmiHearingResponseMapper,
                                         HearingStatusAuditService hearingStatusAuditService) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
