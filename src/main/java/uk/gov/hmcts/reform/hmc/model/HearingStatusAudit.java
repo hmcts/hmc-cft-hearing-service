@@ -5,13 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
-public class HearingStatusAudit implements Serializable {
+public class HearingStatusAudit {
 
     @NotNull
     private String hearingServiceId;

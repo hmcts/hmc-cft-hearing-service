@@ -14,11 +14,14 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDateTime;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC_TARGET;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI_TARGET;
 
-public class HearingStatusAuditServiceImplTest {
+class HearingStatusAuditServiceImplTest {
 
     @InjectMocks
     private HearingStatusAuditServiceImpl hearingStatusAuditService;
@@ -51,10 +54,10 @@ public class HearingStatusAuditServiceImplTest {
                 TestingUtil.hearingStatusAuditEntity());
             given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
                 TestingUtil.hearingStatusAuditEntity());
-            hearingStatusAuditService. saveAuditTriageDetails("ABA1","2000000000",
-                                                              "HEARING_REQUESTED", LocalDateTime.now(),
+            hearingStatusAuditService. saveAuditTriageDetails(TestingUtil.hearingEntity(), LocalDateTime.now(),
                                                               "create-hearing- request",HMC_TARGET,
                                                               HMI_TARGET,null,"1");
+            verify(hearingStatusAuditRepository, times(1)).save(any());
         }
     }
 }

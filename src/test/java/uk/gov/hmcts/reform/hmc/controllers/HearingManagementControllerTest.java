@@ -80,7 +80,7 @@ class HearingManagementControllerTest {
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
     }
 
     private static final String CLIENT_S2S_TOKEN = "s2s_token";

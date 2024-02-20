@@ -254,12 +254,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
 
-        // TODO validate the mapped values
-        hearingStatusAuditService.saveAuditTriageDetails(hearingRequest.getCaseDetails().getHmctsServiceCode(),
-                               hearingEntity.getId().toString(), hearingEntity.getStatus(),
-                               hearingEntity.getUpdatedDateTime(), UPDATE_HEARING_REQUEST,
-                                                         clientS2SToken, HMC_TARGET,null,
-                               saveHearingResponseDetails.getVersionNumber().toString());
+        hearingStatusAuditService.saveAuditTriageDetails(hearingEntity,hearingEntity.getUpdatedDateTime(),
+                                                         UPDATE_HEARING_REQUEST, clientS2SToken, HMC_TARGET,
+                                                         null,
+                                                         saveHearingResponseDetails.getVersionNumber().toString());
 
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
             getCaseDetails(saveHearingResponseDetails.getHearingRequestId(), hearingRequest), listing, deploymentId);
@@ -356,16 +354,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingEntity savedEntity = saveHearingDetails(createHearingRequest, reasonableMatch, facilitiesMatch,
                                                        deploymentId);
         savePartyRelationshipDetails(createHearingRequest, savedEntity);
-        // TODO validate the mapped values
-        hearingStatusAuditService.saveAuditTriageDetails(savedEntity.getLatestCaseHearingRequest()
-                                                             .getHmctsServiceCode(),
-                                                         savedEntity.getId().toString(),
-                                                         savedEntity.getStatus(),
-                                                         savedEntity.getCreatedDateTime(),
-                                                         CREATE_HEARING_REQUEST,
-                                                         clientS2SToken,
-                                                         HMC_TARGET,
-                                                         null,
+        hearingStatusAuditService.saveAuditTriageDetails(savedEntity, savedEntity.getCreatedDateTime(),
+                                                         CREATE_HEARING_REQUEST, clientS2SToken, HMC_TARGET, null,
                                                          VERSION_NUMBER_TO_INCREMENT.toString());
         return getSaveHearingResponseDetails(savedEntity);
     }
@@ -545,10 +535,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                            caseHearingRequestEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
         // TODO validate the mapped values
-        hearingStatusAuditService.saveAuditTriageDetails(caseHearingRequestEntity.getHmctsServiceCode(),
-                               hearingEntity.getId().toString(),
-                               hearingEntity.getStatus(), hearingEntity.getUpdatedDateTime(),
-                               DELETE_HEARING_REQUEST, clientS2SToken, HMC_TARGET, null,
+        hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
+                                                         DELETE_HEARING_REQUEST, clientS2SToken,
+                                                         HMC_TARGET, null,
                                saveHearingResponseDetails.getVersionNumber().toString());
         sendRequestToQueue(hearingId, DELETE_HEARING,existingHearing.getDeploymentId());
         return saveHearingResponseDetails;
