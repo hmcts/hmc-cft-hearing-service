@@ -32,8 +32,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.FH_TARGET;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC_TARGET;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.FH;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_FAILURE_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_RESPONSE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_SUCCESS_STATUS;
@@ -132,15 +132,16 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             }
         } else if (messageType.equals(MessageType.LA_SYNC_HEARING_RESPONSE)) {
             SyncResponse syncResponse = objectMapper.treeToValue(message, SyncResponse.class);
-            updateHearingAndStatus(hearingId, syncResponse);
+            updateHearingAndStatus(hearingId, syncResponse, message);
         } else if (messageType.equals(MessageType.ERROR)) {
             ErrorDetails errorResponse = objectMapper.treeToValue(message, ErrorDetails.class);
             log.debug("Successfully converted message to ErrorResponse " + errorResponse);
-            updateHearingAndStatus(hearingId, errorResponse);
+            updateHearingAndStatus(hearingId, errorResponse, message);
         }
     }
 
-    private void updateHearingAndStatus(Long hearingId, ErrorDetails errorDetails) {
+    // not sync
+    private void updateHearingAndStatus(Long hearingId, ErrorDetails errorDetails, JsonNode message) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiHearingErrorToEntity(
@@ -160,7 +161,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             hearingStatusAuditService.saveAuditTriageDetails(hearingToSave,
                                                              hearingToSave.getUpdatedDateTime(),
                                                              LA_RESPONSE, LA_FAILURE_STATUS,
-                                                             FH_TARGET, HMC_TARGET, null);
+                                                             FH, HMC, message);
         }
     }
 
@@ -184,14 +185,14 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
                 hearingStatusAuditService.saveAuditTriageDetails(hearingEntity.get(),
                                                                  hearingEntity.get().getUpdatedDateTime(),
-                                                                 LA_RESPONSE,LA_SUCCESS_STATUS, FH_TARGET,
-                                                                 HMC_TARGET, null);
+                                                                 LA_RESPONSE,LA_SUCCESS_STATUS, FH,
+                                                                 HMC, null);
             }
         }
     }
 
     @Transactional
-    private void updateHearingAndStatus(Long hearingId, SyncResponse syncResponse) {
+    private void updateHearingAndStatus(Long hearingId, SyncResponse syncResponse, JsonNode message) {
         String hearingAuditStatus = LA_SUCCESS_STATUS;
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
@@ -211,8 +212,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 log.error("Hearing id: " + hearingId + " updated to status Exception");
             }
             hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
-                                                             LA_RESPONSE, hearingAuditStatus, FH_TARGET,
-                                                             HMC_TARGET, null);
+                                                             LA_RESPONSE, hearingAuditStatus, FH,
+                                                             HMC, message);
         }
     }
 

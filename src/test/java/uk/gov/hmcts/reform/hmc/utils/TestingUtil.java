@@ -88,9 +88,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC_TARGET;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI_TARGET;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_DOW_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_RANGE_TYPE;
 
@@ -1451,8 +1452,8 @@ public class TestingUtil {
         hearingStatusAuditEntity.setStatus(PutHearingStatus.HEARING_REQUESTED.name());
         hearingStatusAuditEntity.setHearingEvent("create-hearing- request");
         hearingStatusAuditEntity.setHttpStatus(String.valueOf(HttpStatus.SC_OK));
-        hearingStatusAuditEntity.setSource(HMC_TARGET);
-        hearingStatusAuditEntity.setTarget(HMI_TARGET);
+        hearingStatusAuditEntity.setSource(HMC);
+        hearingStatusAuditEntity.setTarget(HMI);
         hearingStatusAuditEntity.setRequestVersion("1");
         return hearingStatusAuditEntity;
     }
@@ -1470,9 +1471,9 @@ public class TestingUtil {
         hearingStatusAudit.setStatus(PutHearingStatus.HEARING_REQUESTED.name());
         hearingStatusAudit.setStatusUpdateDateTime(LocalDateTime.now());
         hearingStatusAudit.setHearingEvent("create-hearing- request");
-        hearingStatusAudit.setHttpStatus(String.valueOf(HttpStatus.SC_OK));
-        hearingStatusAudit.setSource(HMC_TARGET);
-        hearingStatusAudit.setTarget(HMI_TARGET);
+        hearingStatusAudit.setHttpStatus(SUCCESS_STATUS);
+        hearingStatusAudit.setSource(HMC);
+        hearingStatusAudit.setTarget(HMI);
         hearingStatusAudit.setErrorDescription(jsonNode);
         hearingStatusAudit.setRequestVersion("1");
         return hearingStatusAudit;

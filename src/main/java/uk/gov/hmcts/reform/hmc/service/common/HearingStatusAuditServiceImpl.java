@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service.common;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,10 +32,10 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
     @Override
     public void saveAuditTriageDetails(HearingEntity hearingEntity, LocalDateTime statusUpdateDateTime,
                                        String hearingEvent,String httpStatus, String source, String target,
-                                       JsonNode errorDescription) {
+                                       JsonNode errorDetails) {
         HearingStatusAudit hearingStatusAudit = mapHearingStatusAuditDetails(hearingEntity, statusUpdateDateTime,
                                                                              hearingEvent,httpStatus, source, target,
-                                                                             errorDescription);
+                                                                             errorDetails);
         saveHearingStatusAudit(hearingStatusAudit);
 
     }
@@ -46,18 +44,11 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
     private HearingStatusAudit mapHearingStatusAuditDetails(HearingEntity hearingEntity,
                                                             LocalDateTime statusUpdateDateTime,String hearingEvent,
                                                             String httpStatus, String source, String target,
-                                                            Object errorDescription) {
-        JsonNode jsonNode = null;
-        try {
-            jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
-        } catch (JsonProcessingException e) {
-            log.debug(e.getMessage());
-        }
+                                                            JsonNode errorDetails) {
         HearingStatusAudit hearingStatusAudit = new HearingStatusAudit();
         hearingStatusAudit.setHearingServiceId(hearingEntity.getLatestCaseHearingRequest().getHmctsServiceCode());
         hearingStatusAudit.setHearingId(hearingEntity.getId().toString());
         hearingStatusAudit.setStatus(hearingEntity.getStatus());
-        // TODO need this? can this be set in Entity directly?
         hearingStatusAudit.setStatusUpdateDateTime(statusUpdateDateTime);
         // TODo how to retrieve?
         hearingStatusAudit.setHearingEvent(hearingEvent);
@@ -65,7 +56,7 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
         hearingStatusAudit.setSource(source);
         hearingStatusAudit.setTarget(target);
         // TODo how to retrieve?
-        hearingStatusAudit.setErrorDescription(jsonNode);
+        hearingStatusAudit.setErrorDescription(errorDetails);
         hearingStatusAudit.setRequestVersion(hearingEntity.getLatestCaseHearingRequest().getVersionNumber().toString());
         return  hearingStatusAudit;
     }

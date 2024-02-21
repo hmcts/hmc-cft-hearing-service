@@ -56,10 +56,11 @@ public final class Constants {
     public static final String UPDATE_HEARING_REQUEST = "update-hearing-request";
     public static final String CREATE_HEARING_REQUEST = "create-hearing-request";
     public static final String DELETE_HEARING_REQUEST = "delete-hearing-request";
-    public static final String LA_RESPONSE = "list-assist- response";
-    public static final String HMI_TARGET = "hmi";
-    public static final String FH_TARGET = "fh";
-    public static final String HMC_TARGET = "hmc";
+    public static final String LA_RESPONSE = "list-assist-response";
+    public static final String HMI = "hmi";
+    public static final String FH = "fh";
+    public static final String HMC = "hmc";
     public static final String LA_SUCCESS_STATUS = "202";
     public static final String LA_FAILURE_STATUS = "400";
+    public static final String SUCCESS_STATUS = "200";
 }

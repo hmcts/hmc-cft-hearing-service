@@ -17,8 +17,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC_TARGET;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI_TARGET;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.SUCCESS_STATUS;
 
 class HearingStatusAuditServiceImplTest {
 
@@ -49,8 +50,8 @@ class HearingStatusAuditServiceImplTest {
             given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
                 TestingUtil.hearingStatusAuditEntity());
             hearingStatusAuditService. saveAuditTriageDetails(TestingUtil.hearingEntity(), LocalDateTime.now(),
-                                                              "create-hearing- request","200",
-                                                              HMC_TARGET, HMI_TARGET,null);
+                                                              "create-hearing- request",SUCCESS_STATUS,
+                                                              HMC, HMI,null);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
     }
