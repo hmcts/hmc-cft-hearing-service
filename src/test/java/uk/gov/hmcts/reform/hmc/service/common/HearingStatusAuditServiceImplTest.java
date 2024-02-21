@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.helper.HearingStatusAuditMapper;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -32,16 +31,12 @@ class HearingStatusAuditServiceImplTest {
     @Mock
     HearingStatusAuditMapper hearingStatusAuditMapper;
 
-    @Mock
-    SecurityUtils securityUtils;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         hearingStatusAuditService =
             new HearingStatusAuditServiceImpl(hearingStatusAuditMapper,
-                                              hearingStatusAuditRepository,
-                                              securityUtils);
+                                              hearingStatusAuditRepository);
     }
 
     @Nested
@@ -49,14 +44,13 @@ class HearingStatusAuditServiceImplTest {
     class HearingStatusAuditDetails {
         @Test
         void shouldSaveAuditTriageDetails() {
-            given(securityUtils.getServiceNameFromS2SToken(HMC_TARGET)).willReturn(HMC_TARGET);
             given(hearingStatusAuditMapper.modelToEntity(TestingUtil.hearingStatusAudit())).willReturn(
                 TestingUtil.hearingStatusAuditEntity());
             given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
                 TestingUtil.hearingStatusAuditEntity());
             hearingStatusAuditService. saveAuditTriageDetails(TestingUtil.hearingEntity(), LocalDateTime.now(),
-                                                              "create-hearing- request",HMC_TARGET,
-                                                              HMI_TARGET,null,"1");
+                                                              "create-hearing- request","200",
+                                                              HMC_TARGET, HMI_TARGET,null);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
     }

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
-import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.helper.HearingStatusAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingStatusAudit;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
@@ -23,26 +22,22 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
 
     private final HearingStatusAuditMapper hearingStatusAuditMapper;
     private final HearingStatusAuditRepository hearingStatusAuditRepository;
-    private final SecurityUtils securityUtils;
 
 
     @Autowired
     public HearingStatusAuditServiceImpl(HearingStatusAuditMapper hearingStatusAuditMapper,
-                                         HearingStatusAuditRepository hearingStatusAuditRepository,
-                                         SecurityUtils securityUtils) {
+                                         HearingStatusAuditRepository hearingStatusAuditRepository) {
         this.hearingStatusAuditMapper = hearingStatusAuditMapper;
         this.hearingStatusAuditRepository = hearingStatusAuditRepository;
-        this.securityUtils = securityUtils;
     }
 
     @Override
     public void saveAuditTriageDetails(HearingEntity hearingEntity, LocalDateTime statusUpdateDateTime,
-                                       String hearingEvent, String clientS2SToken, String target,
-                                       JsonNode errorDescription, String requestVersion) {
-        String source = securityUtils.getServiceNameFromS2SToken(clientS2SToken);
+                                       String hearingEvent,String httpStatus, String source, String target,
+                                       JsonNode errorDescription) {
         HearingStatusAudit hearingStatusAudit = mapHearingStatusAuditDetails(hearingEntity, statusUpdateDateTime,
-                                                                             hearingEvent, source, target,
-                                                                             errorDescription, requestVersion);
+                                                                             hearingEvent,httpStatus, source, target,
+                                                                             errorDescription);
         saveHearingStatusAudit(hearingStatusAudit);
 
     }
@@ -50,8 +45,8 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
 
     private HearingStatusAudit mapHearingStatusAuditDetails(HearingEntity hearingEntity,
                                                             LocalDateTime statusUpdateDateTime,String hearingEvent,
-                                                           String source, String target, Object errorDescription,
-                                                           String versionNumber) {
+                                                            String httpStatus, String source, String target,
+                                                            Object errorDescription) {
         JsonNode jsonNode = null;
         try {
             jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
@@ -66,12 +61,12 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
         hearingStatusAudit.setStatusUpdateDateTime(statusUpdateDateTime);
         // TODo how to retrieve?
         hearingStatusAudit.setHearingEvent(hearingEvent);
-        hearingStatusAudit.setHttpStatus("200");
+        hearingStatusAudit.setHttpStatus(httpStatus);
         hearingStatusAudit.setSource(source);
         hearingStatusAudit.setTarget(target);
         // TODo how to retrieve?
         hearingStatusAudit.setErrorDescription(jsonNode);
-        hearingStatusAudit.setRequestVersion(versionNumber);
+        hearingStatusAudit.setRequestVersion(hearingEntity.getLatestCaseHearingRequest().getVersionNumber().toString());
         return  hearingStatusAudit;
     }
 

@@ -72,8 +72,6 @@ public class RestExceptionHandlerTest extends BaseTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    private static final String CLIENT_S2S_TOKEN = "s2s_token";
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -254,4 +252,6 @@ public class RestExceptionHandlerTest extends BaseTest {
             .andExpect(jsonPath(ERROR_PATH_STATUS).value(expectedStatus))
             .andExpect(jsonPath(ERROR_PATH_ERROR).value(expectedMessage));
     }
+
+    private static final String CLIENT_S2S_TOKEN = generateDummyS2SToken("ccd_definition");
 }

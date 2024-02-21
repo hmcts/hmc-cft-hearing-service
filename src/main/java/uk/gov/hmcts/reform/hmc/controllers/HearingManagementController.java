@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -58,13 +59,16 @@ public class HearingManagementController {
     private final HearingManagementService hearingManagementService;
     private final AccessControlService accessControlService;
     private final ApplicationParams applicationParams;
+    private final SecurityUtils securityUtils;
 
     public HearingManagementController(HearingManagementService hearingManagementService,
                                        AccessControlService accessControlService,
-                                       ApplicationParams applicationParams) {
+                                       ApplicationParams applicationParams,
+                                       SecurityUtils securityUtils) {
         this.hearingManagementService = hearingManagementService;
         this.accessControlService = accessControlService;
         this.applicationParams = applicationParams;
+        this.securityUtils = securityUtils;
     }
 
     @GetMapping(path = "/hearing/{id}", produces = APPLICATION_JSON_VALUE)
@@ -107,7 +111,8 @@ public class HearingManagementController {
                                        @RequestBody @Valid HearingRequest createHearingRequest) {
         verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER));
-        return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId, clientS2SToken);
+        return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId,
+                                                           getServiceName(clientS2SToken));
     }
 
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -123,7 +128,7 @@ public class HearingManagementController {
                                          @RequestBody @Valid DeleteHearingRequest deleteRequest) {
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         return hearingManagementService.deleteHearingRequest(
-            hearingId, deleteRequest, clientS2SToken);
+            hearingId, deleteRequest, getServiceName(clientS2SToken));
     }
 
     /**
@@ -173,7 +178,8 @@ public class HearingManagementController {
                                          @PathVariable("id") Long hearingId) {
         verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
-        return hearingManagementService.updateHearingRequest(hearingId, hearingRequest, deploymentId, clientS2SToken);
+        return hearingManagementService.updateHearingRequest(hearingId, hearingRequest, deploymentId,
+                                                             getServiceName(clientS2SToken));
     }
 
     @PostMapping(path = "/hearingActualsCompletion/{id}")
@@ -266,5 +272,9 @@ public class HearingManagementController {
         } else if (!applicationParams.isHmctsDeploymentIdEnabled() && !StringUtils.isEmpty(deploymentId)) {
             throw new BadRequestException(HMCTS_DEPLOYMENT_ID_NOT_REQUIRED);
         }
+    }
+
+    private String getServiceName(String clientS2SToken) {
+        return securityUtils.getServiceNameFromS2SToken(clientS2SToken);
     }
 }

@@ -261,9 +261,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
 
         hearingStatusAuditService.saveAuditTriageDetails(hearingEntity,hearingEntity.getUpdatedDateTime(),
-                                                         UPDATE_HEARING_REQUEST, clientS2SToken, HMC_TARGET,
-                                                         null,
-                                                         saveHearingResponseDetails.getVersionNumber().toString());
+                                                         UPDATE_HEARING_REQUEST,"200", clientS2SToken,
+                                                         HMC_TARGET, null);
 
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
             getCaseDetails(saveHearingResponseDetails.getHearingRequestId(), hearingRequest), listing, deploymentId);
@@ -374,8 +373,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                                        deploymentId);
         savePartyRelationshipDetails(createHearingRequest, savedEntity);
         hearingStatusAuditService.saveAuditTriageDetails(savedEntity, savedEntity.getCreatedDateTime(),
-                                                         CREATE_HEARING_REQUEST, clientS2SToken, HMC_TARGET, null,
-                                                         VERSION_NUMBER_TO_INCREMENT.toString());
+                                                         CREATE_HEARING_REQUEST, "200", clientS2SToken,
+                                                         HMC_TARGET, null);
         return getSaveHearingResponseDetails(savedEntity);
     }
 
@@ -555,9 +554,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
         // TODO validate the mapped values
         hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
-                                                         DELETE_HEARING_REQUEST, clientS2SToken,
-                                                         HMC_TARGET, null,
-                               saveHearingResponseDetails.getVersionNumber().toString());
+                                                         DELETE_HEARING_REQUEST, "200", clientS2SToken,
+                                                         HMC_TARGET, null);
         sendRequestToQueue(hearingId, DELETE_HEARING,existingHearing.getDeploymentId());
         return saveHearingResponseDetails;
     }
