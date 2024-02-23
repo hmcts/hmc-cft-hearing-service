@@ -57,6 +57,7 @@ public final class Constants {
     public static final String CREATE_HEARING_REQUEST = "create-hearing-request";
     public static final String DELETE_HEARING_REQUEST = "delete-hearing-request";
     public static final String LA_RESPONSE = "list-assist-response";
+    public static final String LA_ACK = "list-assist-ack";
     public static final String HMI = "hmi";
     public static final String FH = "fh";
     public static final String HMC = "hmc";
