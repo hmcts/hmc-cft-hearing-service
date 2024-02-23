@@ -34,7 +34,6 @@ import javax.validation.ValidatorFactory;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.FH;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_ACK;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_FAILURE_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_RESPONSE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_SUCCESS_STATUS;
@@ -193,7 +192,6 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
     @Transactional
     private void updateHearingAndStatus(Long hearingId, SyncResponse syncResponse) {
-        String hearingAuditStatus = syncResponse.getListAssistHttpStatus().toString();
         JsonNode errorDescription = null;
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
@@ -208,14 +206,13 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                              hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
                              getDeploymentIdForHearing(hearingResult.get()));
             if (hearingEntity.getStatus().equals(HearingStatus.EXCEPTION.name())) {
-                hearingAuditStatus = LA_FAILURE_STATUS;
                 errorDescription = objectMapper.convertValue(syncResponse, JsonNode.class);
                 log.info("Hearing id: " + hearingId + "has response of type :" + MessageType.LA_SYNC_HEARING_RESPONSE);
                 log.error("Hearing id: " + hearingId + " updated to status Exception");
             }
             hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
-                                                             LA_ACK, hearingAuditStatus, HMC,
-                                                             FH, errorDescription);
+                                                             LA_RESPONSE, syncResponse.getListAssistHttpStatus()
+                                                                 .toString(), FH, HMC, errorDescription);
         }
     }
 
