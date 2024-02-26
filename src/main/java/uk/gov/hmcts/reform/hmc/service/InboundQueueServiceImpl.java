@@ -34,6 +34,7 @@ import javax.validation.ValidatorFactory;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.FH;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_ACK;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_FAILURE_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_RESPONSE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_SUCCESS_STATUS;
@@ -211,8 +212,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 log.error("Hearing id: " + hearingId + " updated to status Exception");
             }
             hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
-                                                             LA_RESPONSE, syncResponse.getListAssistHttpStatus()
-                                                                 .toString(), FH, HMC, errorDescription);
+                                                             LA_ACK, syncResponse.getListAssistHttpStatus()
+                                                                 .toString(), HMC, FH, errorDescription);
         }
     }
 

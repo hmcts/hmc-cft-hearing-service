@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.hmc.service.common;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -44,7 +47,21 @@ class HearingStatusAuditServiceImplTest {
     @DisplayName("HearingStatusAudit")
     class HearingStatusAuditDetails {
         @Test
-        void shouldSaveAuditTriageDetails() {
+        void shouldSaveAuditTriageDetailsWhenFailure() throws JsonProcessingException  {
+            JsonNode errorDetails = new ObjectMapper().readTree("{\"deadLetterReason\":"
+                                                                    + " \"MaxDeliveryCountExceeded \"}");
+            given(hearingStatusAuditMapper.modelToEntity(TestingUtil.hearingStatusAudit())).willReturn(
+                TestingUtil.hearingStatusAuditEntity());
+            given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
+                TestingUtil.hearingStatusAuditEntity());
+            hearingStatusAuditService. saveAuditTriageDetails(TestingUtil.hearingEntity(), LocalDateTime.now(),
+                                                              "create-hearing- request",SUCCESS_STATUS,
+                                                              HMC, HMI,errorDetails);
+            verify(hearingStatusAuditRepository, times(1)).save(any());
+        }
+
+        @Test
+        void shouldSaveAuditTriageDetailsWhenSuccess() {
             given(hearingStatusAuditMapper.modelToEntity(TestingUtil.hearingStatusAudit())).willReturn(
                 TestingUtil.hearingStatusAuditEntity());
             given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
