@@ -1798,6 +1798,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenHearingIdNotAvailableHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000001")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andExpect(jsonPath("$.errors", hasSize(1)))
@@ -1809,6 +1810,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenHearingIdIsNotValidHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/30000000")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.errors", hasSize(1)))
@@ -1820,6 +1822,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenHearingStatusIsNotVaidHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000009")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.errors", hasSize(1)))
@@ -1831,6 +1834,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenHearingStatusListedAndMinStartDateIsBeforeTodayHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000010")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
@@ -1845,6 +1849,7 @@ class HearingManagementControllerIT extends BaseTest {
                                            + "\t\"case_type\": \"CaseType\"\n"
                                            + "}")));
         mockMvc.perform(post(hearingCompletion + "/2000000012")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.errors", hasSize(1)))
@@ -1857,6 +1862,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn200WhenActualHearingDayMissingForResultTypeAdjourned() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000013")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
@@ -1866,6 +1872,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn200WhenActualHearingDayMissingForResultTypeCompleted() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000015")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
@@ -1875,6 +1882,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn200WhenActualHearingDayExistsForCanceledResultTypeResponseHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000014")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
@@ -1890,6 +1898,7 @@ class HearingManagementControllerIT extends BaseTest {
                                            + "}")));
         stubRoleAssignments();
         mockMvc.perform(post(hearingCompletion + "/2000000000")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();

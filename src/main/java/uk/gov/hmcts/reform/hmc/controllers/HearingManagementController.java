@@ -195,9 +195,10 @@ public class HearingManagementController {
                 + "\n4) " + ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME),
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
-    public ResponseEntity hearingCompletion(@PathVariable("id") Long hearingId) {
+    public ResponseEntity hearingCompletion(@PathVariable("id") Long hearingId,
+                                            @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken) {
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
-        return hearingManagementService.hearingCompletion(hearingId);
+        return hearingManagementService.hearingCompletion(hearingId, getServiceName(clientS2SToken));
     }
 
     /**

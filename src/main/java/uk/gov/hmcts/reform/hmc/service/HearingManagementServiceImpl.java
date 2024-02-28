@@ -77,9 +77,9 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_REQUEST_VERSION;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.NO_DEFINED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_ACTUALS_COMPLETION;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UPDATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_ID_NOT_FOUND;
@@ -262,7 +262,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
 
         hearingStatusAuditService.saveAuditTriageDetails(hearingEntity,hearingEntity.getUpdatedDateTime(),
-                                                         UPDATE_HEARING_REQUEST,SUCCESS_STATUS, clientS2SToken,
+                                                         UPDATE_HEARING_REQUEST,null, clientS2SToken,
                                                          HMC, null);
 
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
@@ -328,12 +328,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
-    public ResponseEntity hearingCompletion(Long hearingId) {
+    public ResponseEntity hearingCompletion(Long hearingId, String clientS2SToken) {
         hearingIdValidator.validateHearingId(hearingId, HEARING_ACTUALS_ID_NOT_FOUND);
         linkedHearingValidator.validateHearingActualsStatus(hearingId, HEARING_ACTUALS_INVALID_STATUS);
         hearingActualsValidator.validateHearingOutcomeInformation(hearingId);
         HearingEntity hearingEntity = updateStatus(hearingId);
         HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
+        hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
+                                                         POST_HEARING_ACTUALS_COMPLETION, null, clientS2SToken,
+                                                         HMC, null);
         messageSenderToTopicConfiguration
             .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                          hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
@@ -374,7 +377,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                                        deploymentId);
         savePartyRelationshipDetails(createHearingRequest, savedEntity);
         hearingStatusAuditService.saveAuditTriageDetails(savedEntity, savedEntity.getCreatedDateTime(),
-                                                         CREATE_HEARING_REQUEST, SUCCESS_STATUS, clientS2SToken,
+                                                         CREATE_HEARING_REQUEST, null, clientS2SToken,
                                                          HMC, null);
         return getSaveHearingResponseDetails(savedEntity);
     }
@@ -553,9 +556,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             .modelToEntity(deleteRequest, existingHearing, existingHearing.getNextRequestVersion(),
                            caseHearingRequestEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
-        // TODO validate the mapped values
         hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
-                                                         DELETE_HEARING_REQUEST, SUCCESS_STATUS, clientS2SToken,
+                                                         DELETE_HEARING_REQUEST, null, clientS2SToken,
                                                          HMC, null);
         sendRequestToQueue(hearingId, DELETE_HEARING,existingHearing.getDeploymentId());
         return saveHearingResponseDetails;

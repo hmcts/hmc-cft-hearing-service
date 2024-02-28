@@ -351,9 +351,9 @@ class HearingManagementControllerTest {
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams, securityUtils);
-            controller.hearingCompletion(hearingId);
+            controller.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
-            orderVerifier.verify(hearingManagementService).hearingCompletion(hearingId);
+            orderVerifier.verify(hearingManagementService).hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
         }
     }
 

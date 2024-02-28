@@ -50,12 +50,10 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
         hearingStatusAudit.setHearingId(hearingEntity.getId().toString());
         hearingStatusAudit.setStatus(hearingEntity.getStatus());
         hearingStatusAudit.setStatusUpdateDateTime(statusUpdateDateTime);
-        // TODo how to retrieve?
         hearingStatusAudit.setHearingEvent(hearingEvent);
         hearingStatusAudit.setHttpStatus(httpStatus);
         hearingStatusAudit.setSource(source);
         hearingStatusAudit.setTarget(target);
-        // TODo how to retrieve?
         hearingStatusAudit.setErrorDescription(errorDetails);
         hearingStatusAudit.setRequestVersion(hearingEntity.getLatestCaseHearingRequest().getVersionNumber().toString());
         return  hearingStatusAudit;

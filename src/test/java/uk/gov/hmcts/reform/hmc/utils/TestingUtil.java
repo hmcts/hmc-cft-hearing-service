@@ -1461,7 +1461,7 @@ public class TestingUtil {
     public static HearingStatusAudit hearingStatusAudit() {
         JsonNode jsonNode = null;
         try {
-            jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+            jsonNode = new ObjectMapper().readTree("{\"errorDescription\": \"timeout\"}");
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

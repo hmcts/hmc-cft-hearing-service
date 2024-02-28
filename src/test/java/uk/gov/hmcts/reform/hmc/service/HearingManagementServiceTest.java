@@ -1578,7 +1578,8 @@ class HearingManagementServiceTest {
         @Test
         void shouldThrowExceptionWhenHearingIdIsNull() {
             Exception exception = assertThrows(BadRequestException.class,
-                                               () -> hearingManagementService.hearingCompletion(null));
+                                               () -> hearingManagementService.hearingCompletion(null,
+                                                                                                CLIENT_S2S_TOKEN));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
         }
 
@@ -1588,7 +1589,8 @@ class HearingManagementServiceTest {
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
             when(hearingRepository.existsById(hearingId)).thenReturn(false);
             Exception exception = assertThrows(HearingNotFoundException.class,
-                                               () -> hearingManagementService.hearingCompletion(hearingId));
+                                               () -> hearingManagementService.hearingCompletion(hearingId,
+                                                                                                CLIENT_S2S_TOKEN));
             assertEquals("001 No such id: 2000000000", exception.getMessage());
             verify(hearingRepository).existsById(hearingId);
         }
@@ -1596,7 +1598,7 @@ class HearingManagementServiceTest {
         @Test
         void shouldThrowErrorWhenHearingIdIsNotValidFormat() {
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .hearingCompletion(30000000L));
+                .hearingCompletion(30000000L, CLIENT_S2S_TOKEN));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
         }
 
@@ -1613,7 +1615,7 @@ class HearingManagementServiceTest {
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .hearingCompletion(hearingId));
+                .hearingCompletion(hearingId, CLIENT_S2S_TOKEN));
             assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
         }
 
@@ -1630,7 +1632,7 @@ class HearingManagementServiceTest {
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .hearingCompletion(hearingId));
+                .hearingCompletion(hearingId, CLIENT_S2S_TOKEN));
             assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
         }
 
@@ -1650,7 +1652,7 @@ class HearingManagementServiceTest {
                 .thenReturn(Optional.empty());
 
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .hearingCompletion(hearingId));
+                .hearingCompletion(hearingId, CLIENT_S2S_TOKEN));
             assertEquals(HEARING_ACTUALS_MISSING_HEARING_OUTCOME, exception.getMessage());
         }
 
@@ -1677,7 +1679,7 @@ class HearingManagementServiceTest {
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             Exception exception = assertThrows(BadRequestException.class, () ->
-                    hearingManagementService.hearingCompletion(hearingId));
+                    hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN));
 
             assertTrue(exception.getMessage().contains(ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY));
         }
@@ -1701,7 +1703,7 @@ class HearingManagementServiceTest {
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             mockHearingCompletionRequest(hearingEntity);
-            ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId);
+            ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
             assertNotNull(responseEntity);
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -1727,7 +1729,7 @@ class HearingManagementServiceTest {
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             mockHearingCompletionRequest(hearingEntity);
-            hearingManagementService.hearingCompletion(hearingId);
+            hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
         }
 
         @Test
@@ -1750,7 +1752,7 @@ class HearingManagementServiceTest {
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                     .thenReturn(Optional.of(actualHearingEntity));
             mockHearingCompletionRequest(hearingEntity);
-            hearingManagementService.hearingCompletion(hearingId);
+            hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
         }
 
         @Test
@@ -1773,7 +1775,7 @@ class HearingManagementServiceTest {
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             mockHearingCompletionRequest(hearingEntity);
-            ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId);
+            ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
             assertNotNull(responseEntity);
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());

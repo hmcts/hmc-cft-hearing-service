@@ -25,7 +25,7 @@ public interface HearingManagementService {
 
     void sendResponse(String json, String hmctsServiceId, String deploymentId);
 
-    ResponseEntity hearingCompletion(Long hearingId);
+    ResponseEntity hearingCompletion(Long hearingId, String clientS2SToken);
 
     String getStatus(Long hearingId);
 

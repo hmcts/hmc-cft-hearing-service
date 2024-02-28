@@ -405,7 +405,7 @@ class HearingManagementServiceIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
     void testUpdateHearingCompletion_WithValidData() {
-        ResponseEntity responseEntity = hearingManagementService.hearingCompletion(2000000000L);
+        ResponseEntity responseEntity = hearingManagementService.hearingCompletion(2000000000L, HMC);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         HearingEntity hearingEntity = hearingRepository.findById(2000000000L).get();
         assertEquals("ADJOURNED", hearingEntity.getStatus());
