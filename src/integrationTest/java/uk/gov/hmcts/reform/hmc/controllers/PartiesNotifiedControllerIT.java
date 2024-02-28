@@ -84,7 +84,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             stubRoleAssignments();
         }
 
-        private final String serviceJwtXuiWeb = generateDummyS2SToken("xui_webapp");
+        private final String serviceJwtXuiWeb = "CLIENT_S2S_TOKEN";
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
