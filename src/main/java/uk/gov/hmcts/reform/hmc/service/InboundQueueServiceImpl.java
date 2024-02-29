@@ -218,12 +218,10 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             } else if (HearingStatus.shouldUpdateLastGoodStatus(lastGoodStatus, currentStatus)) {
                 hearingEntity.setLastGoodStatus(String.valueOf(currentStatus));
                 return hearingEntity;
-              //  hearingRepository.updateLastGoodStatus(hearingEntity.getId(), String.valueOf(currentStatus));
             }
         } else if (lastGoodStatus == null && HearingStatus.shouldUpdateLastGoodStatus(null, currentStatus)) {
             hearingEntity.setLastGoodStatus(String.valueOf(currentStatus));
             return hearingEntity;
-         //   hearingRepository.updateLastGoodStatus(hearingEntity.getId(), String.valueOf(currentStatus));
         }
         return hearingEntity;
     }
