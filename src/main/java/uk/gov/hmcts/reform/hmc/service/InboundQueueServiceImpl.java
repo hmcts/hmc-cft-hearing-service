@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -138,6 +139,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 errorDetails,
                 hearingResult.get()
             );
+            hearingToSave = updateLastGoodStatus(hearingToSave);
             hearingRepository.save(hearingToSave);
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingToSave);
             messageSenderToTopicConfiguration
@@ -160,6 +162,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 hearingResponse,
                 hearingResult.get()
             );
+            hearingToSave = updateLastGoodStatus(hearingToSave);
             hearingRepository.save(hearingToSave);
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
             if (hearingEntity.isPresent()) {
@@ -180,6 +183,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 syncResponse,
                 hearingResult.get()
             );
+            hearingToSave = updateLastGoodStatus(hearingToSave);
             HearingEntity hearingEntity = hearingRepository.save(hearingToSave);
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
             messageSenderToTopicConfiguration
@@ -202,5 +206,25 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
     private String getDeploymentIdForHearing(HearingEntity hearingEntity) {
         return applicationParams.isHmctsDeploymentIdEnabled() ? hearingEntity.getDeploymentId() : null;
+    }
+
+    public HearingEntity updateLastGoodStatus(HearingEntity hearingEntity) {
+        HearingStatus currentStatus = hearingEntity.getStatus()!=null ? HearingStatus.valueOf(hearingEntity.getStatus()):null;
+        HearingStatus lastGoodStatus = hearingEntity.getLastGoodStatus()!=null ? HearingStatus.valueOf(hearingEntity.getLastGoodStatus()):null;
+
+        if (lastGoodStatus != null && lastGoodStatus != currentStatus) {
+            if (HearingStatus.isFinalStatus(lastGoodStatus)) {
+                throw new BadRequestException("Status is in a Final State" + currentStatus);
+            } else if (HearingStatus.shouldUpdateLastGoodStatus(lastGoodStatus, currentStatus)) {
+                hearingEntity.setLastGoodStatus(String.valueOf(currentStatus));
+                return hearingEntity;
+              //  hearingRepository.updateLastGoodStatus(hearingEntity.getId(), String.valueOf(currentStatus));
+            }
+        } else if (lastGoodStatus == null && HearingStatus.shouldUpdateLastGoodStatus(null, currentStatus)) {
+            hearingEntity.setLastGoodStatus(String.valueOf(currentStatus));
+            return hearingEntity;
+         //   hearingRepository.updateLastGoodStatus(hearingEntity.getId(), String.valueOf(currentStatus));
+        }
+        return hearingEntity;
     }
 }
