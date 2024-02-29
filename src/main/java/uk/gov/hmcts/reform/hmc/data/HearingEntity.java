@@ -81,6 +81,9 @@ public class HearingEntity extends BaseEntity implements Serializable {
     @Column(name = "deployment_id")
     private String deploymentId;
 
+    @Column(name = "last_good_status")
+    private String lastGoodStatus;
+
 
     @PreUpdate
     public void preUpdate() {

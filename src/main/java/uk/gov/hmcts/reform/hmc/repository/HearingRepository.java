@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -21,4 +22,8 @@ public interface HearingRepository extends CrudRepository<HearingEntity, Long> {
 
     @Query("FROM HearingEntity he WHERE he.linkedGroupDetails.requestId = :requestId")
     List<HearingEntity> findByRequestId(String requestId);
+
+    @Modifying
+    @Query("UPDATE HearingEntity he SET he.lastGoodStatus = :lastGoodStatus WHERE he.id = :hearingId")
+    void updateLastGoodStatus(Long hearingId, String lastGoodStatus);
 }
