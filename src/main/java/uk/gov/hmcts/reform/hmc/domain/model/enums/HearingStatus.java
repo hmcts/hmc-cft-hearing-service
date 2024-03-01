@@ -17,20 +17,23 @@ public enum HearingStatus {
     EXCEPTION;
 
     private static final EnumSet<HearingStatus> FINAL_STATUSES = EnumSet.of(COMPLETED, ADJOURNED, CANCELLED);
+    private static final EnumSet<HearingStatus> GOOD_STATUSES = EnumSet.of(COMPLETED, ADJOURNED, CANCELLED, 
+        AWAITING_LISTING, UPDATE_SUBMITTED, CANCELLATION_SUBMITTED, LISTED);
 
     public static boolean isFinalStatus(HearingStatus status) {
         return FINAL_STATUSES.contains(status);
     }
 
-    public static boolean shouldUpdateLastGoodStatus(HearingStatus lastGoodStatus, HearingStatus currentStatus) {
-        if (lastGoodStatus == null) {
-            return EnumSet.of(COMPLETED, ADJOURNED, CANCELLED, AWAITING_LISTING,
-                              UPDATE_SUBMITTED, CANCELLATION_SUBMITTED, LISTED)
-                .contains(currentStatus);
+    public static boolean isGoodStatus(HearingStatus status) {
+        return GOOD_STATUSES.contains(status);
+    }
+
+    public static boolean shouldUpdateLastGoodStatus(HearingStatus lastGoodState, HearingStatus currentStatus) {
+        if (lastGoodState == null) {
+            return isGoodStatus(currentStatus);
         } else {
-            return EnumSet.of(AWAITING_LISTING, UPDATE_SUBMITTED, CANCELLATION_SUBMITTED, LISTED)
-                .contains(lastGoodStatus);
+            return !isFinalStatus(lastGoodState)
+                && isGoodStatus(currentStatus);
         }
     }
 }
-
