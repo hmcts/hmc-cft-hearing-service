@@ -46,20 +46,29 @@ public class HearingStatusTest {
         assertTrue(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.AWAITING_LISTING, HearingStatus.CANCELLED));
         assertTrue(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.AWAITING_LISTING, HearingStatus.COMPLETED));
         assertTrue(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.AWAITING_LISTING, HearingStatus.LISTED));
-        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.AWAITING_LISTING, HearingStatus.UPDATE_REQUESTED));
-        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.AWAITING_LISTING, HearingStatus.HEARING_REQUESTED));
-        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.AWAITING_LISTING, HearingStatus.EXCEPTION));
+        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.AWAITING_LISTING,
+                                                                HearingStatus.UPDATE_REQUESTED));
+        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.AWAITING_LISTING,
+                                                                HearingStatus.HEARING_REQUESTED));
+        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.AWAITING_LISTING,
+                                                                HearingStatus.EXCEPTION));
 
         assertTrue(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.UPDATE_SUBMITTED, HearingStatus.CANCELLED));
         assertTrue(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.UPDATE_SUBMITTED, HearingStatus.COMPLETED));
         assertTrue(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.UPDATE_SUBMITTED, HearingStatus.LISTED));
-        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.UPDATE_SUBMITTED, HearingStatus.UPDATE_REQUESTED));
-        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.UPDATE_SUBMITTED, HearingStatus.HEARING_REQUESTED));
-        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.UPDATE_SUBMITTED, HearingStatus.EXCEPTION));
+        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.UPDATE_SUBMITTED,
+                                                                HearingStatus.UPDATE_REQUESTED));
+        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.UPDATE_SUBMITTED,
+                                                                HearingStatus.HEARING_REQUESTED));
+        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.UPDATE_SUBMITTED,
+                                                                HearingStatus.EXCEPTION));
 
-        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.COMPLETED, HearingStatus.CANCELLED));
-        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.ADJOURNED, HearingStatus.UPDATE_REQUESTED));
-        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.CANCELLED, HearingStatus.CANCELLATION_SUBMITTED));
+        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.COMPLETED,
+                                                                HearingStatus.CANCELLED));
+        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.ADJOURNED,
+                                                                HearingStatus.UPDATE_REQUESTED));
+        assertFalse(HearingStatus.shouldUpdateLastGoodStatus(HearingStatus.CANCELLED,
+                                                                HearingStatus.CANCELLATION_SUBMITTED));
 
     }
 }
