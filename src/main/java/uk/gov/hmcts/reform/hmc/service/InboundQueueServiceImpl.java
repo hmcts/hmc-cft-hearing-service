@@ -209,8 +209,10 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     }
 
     public HearingEntity updateLastGoodStatus(HearingEntity hearingEntity) {
-        HearingStatus currentStatus = hearingEntity.getStatus()!=null ? HearingStatus.valueOf(hearingEntity.getStatus()):null;
-        HearingStatus lastGoodStatus = hearingEntity.getLastGoodStatus()!=null ? HearingStatus.valueOf(hearingEntity.getLastGoodStatus()):null;
+        HearingStatus currentStatus = hearingEntity.getStatus() != null 
+            ? HearingStatus.valueOf(hearingEntity.getStatus()) : null;
+        HearingStatus lastGoodStatus = hearingEntity.getLastGoodStatus() != null 
+            ? HearingStatus.valueOf(hearingEntity.getLastGoodStatus()) : null;
 
         if (lastGoodStatus != null && lastGoodStatus != currentStatus) {
             if (HearingStatus.isFinalStatus(lastGoodStatus)) {
