@@ -139,7 +139,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 errorDetails,
                 hearingResult.get()
             );
-            hearingToSave = updateLastGoodState(hearingToSave);
+            hearingToSave = updateLastGoodStatus(hearingToSave);
             hearingRepository.save(hearingToSave);
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingToSave);
             messageSenderToTopicConfiguration
@@ -162,7 +162,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 hearingResponse,
                 hearingResult.get()
             );
-            hearingToSave = updateLastGoodState(hearingToSave);
+            hearingToSave = updateLastGoodStatus(hearingToSave);
             hearingRepository.save(hearingToSave);
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
             if (hearingEntity.isPresent()) {
@@ -183,7 +183,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 syncResponse,
                 hearingResult.get()
             );
-            hearingToSave = updateLastGoodState(hearingToSave);
+            hearingToSave = updateLastGoodStatus(hearingToSave);
             HearingEntity hearingEntity = hearingRepository.save(hearingToSave);
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
             messageSenderToTopicConfiguration
@@ -208,20 +208,20 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         return applicationParams.isHmctsDeploymentIdEnabled() ? hearingEntity.getDeploymentId() : null;
     }
 
-    public HearingEntity updateLastGoodState(HearingEntity hearingEntity) {
+    public HearingEntity updateLastGoodStatus(HearingEntity hearingEntity) {
         HearingStatus currentStatus = hearingEntity.getStatus() != null 
             ? HearingStatus.valueOf(hearingEntity.getStatus()) : null;
-        HearingStatus lastGoodState = hearingEntity.getLastGoodStatus() != null 
+        HearingStatus lastGoodStatus = hearingEntity.getLastGoodStatus() != null 
             ? HearingStatus.valueOf(hearingEntity.getLastGoodStatus()) : null;
 
-        if (lastGoodState != null && lastGoodState != currentStatus) {
-            if (HearingStatus.isFinalState(lastGoodState)) {
-                throw new BadRequestException("Status is in a Final State " + currentStatus);
-            } else if (HearingStatus.shouldUpdateLastGoodState(lastGoodState, currentStatus)) {
+        if (lastGoodStatus != null && lastGoodStatus != currentStatus) {
+            if (HearingStatus.isFinalStatus(lastGoodStatus)) {
+                throw new BadRequestException("Status is in a Final State" + currentStatus);
+            } else if (HearingStatus.shouldUpdateLastGoodStatus(lastGoodStatus, currentStatus)) {
                 hearingEntity.setLastGoodStatus(String.valueOf(currentStatus));
                 return hearingEntity;
             }
-        } else if (lastGoodState == null && HearingStatus.shouldUpdateLastGoodState(null, currentStatus)) {
+        } else if (lastGoodStatus == null && HearingStatus.shouldUpdateLastGoodStatus(null, currentStatus)) {
             hearingEntity.setLastGoodStatus(String.valueOf(currentStatus));
             return hearingEntity;
         }
