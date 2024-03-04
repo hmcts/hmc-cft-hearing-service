@@ -55,6 +55,7 @@ public class MessageProcessor {
 
         if (applicationProperties.containsKey(MESSAGE_TYPE)) {
             try {
+                log.debug("processing message " + messageContext.getMessage().getMessageId());
                 inboundQueueService.processMessage(message, messageContext);
             } catch (HearingNotFoundException ex) {
                 log.error(MESSAGE_ERROR +  messageContext.getMessage().getMessageId() + WITH_ERROR + ex.getMessage());
