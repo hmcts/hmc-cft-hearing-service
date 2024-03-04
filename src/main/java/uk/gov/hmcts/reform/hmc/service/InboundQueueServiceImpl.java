@@ -185,8 +185,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
                 hearingStatusAuditService.saveAuditTriageDetails(hearingEntity.get(),
                                                                  hearingEntity.get().getUpdatedDateTime(),
-                                                                 LA_RESPONSE,LA_SUCCESS_STATUS, FH,
-                                                                 HMC, null);
+                                                                 LA_RESPONSE,LA_SUCCESS_STATUS, HMC,
+                                                                 FH, null);
             }
         }
     }
@@ -213,7 +213,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             }
             hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
                                                              LA_ACK, syncResponse.getListAssistHttpStatus()
-                                                                 .toString(), HMC, FH, errorDescription);
+                                                                 .toString(),HMC, FH, errorDescription);
         }
     }
 
