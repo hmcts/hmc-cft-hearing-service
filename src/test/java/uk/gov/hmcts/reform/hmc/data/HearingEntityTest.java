@@ -345,9 +345,9 @@ class HearingEntityTest {
     }
 
     @Nested
-    class updateLastGoodStatus {
+    class UpdateLastGoodStatus {
         @Test
-        void UpdateNullLastGoodStatusWithGoodStatus() {
+        void updateNullLastGoodStatusWithGoodStatus() {
             HearingEntity hearingEntity = new HearingEntity();
             hearingEntity.setStatus("AWAITING_LISTING");
             HearingEntity updatedEntity = hearingEntity.updateLastGoodStatus();
@@ -355,7 +355,7 @@ class HearingEntityTest {
         }
 
         @Test
-        void UpdateNullLastGoodStatusWithFinalStatus() {
+        void updateNullLastGoodStatusWithFinalStatus() {
             HearingEntity hearingEntity = new HearingEntity();
             hearingEntity.setStatus("CANCELLED");
             HearingEntity updatedEntity = hearingEntity.updateLastGoodStatus();
@@ -363,7 +363,7 @@ class HearingEntityTest {
         }
 
         @Test
-        void UpdateLastGoodStatusWithSameStatus() {
+        void updateLastGoodStatusWithSameStatus() {
             HearingEntity hearingEntity = new HearingEntity();
             hearingEntity.setStatus("AWAITING_LISTING");
             hearingEntity.setLastGoodStatus("AWAITING_LISTING");
@@ -372,7 +372,7 @@ class HearingEntityTest {
         }
 
         @Test
-        void UpdateLastGoodStatusWithFinalStatus() {
+        void updateLastGoodStatusWithFinalStatus() {
             HearingEntity hearingEntity = new HearingEntity();
             hearingEntity.setStatus("COMPLETED");
             hearingEntity.setLastGoodStatus("CANCELLED");
@@ -380,7 +380,7 @@ class HearingEntityTest {
         }
 
         @Test
-        void UpdateLastGoodStatusWithShouldUpdate() {
+        void updateLastGoodStatusWithShouldUpdate() {
             HearingEntity hearingEntity = new HearingEntity();
             hearingEntity.setStatus("LISTED");
             hearingEntity.setLastGoodStatus("AWAITING_LISTING");
