@@ -7,7 +7,6 @@ import org.hibernate.annotations.LazyCollectionOption;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
-import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
