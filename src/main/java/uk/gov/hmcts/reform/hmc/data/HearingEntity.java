@@ -4,7 +4,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -185,5 +188,25 @@ public class HearingEntity extends BaseEntity implements Serializable {
 
     public boolean hasHearingResponses() {
         return getHearingResponses() != null && !getHearingResponses().isEmpty();
+    }
+
+    public HearingEntity updateLastGoodStatus() {
+        HearingStatus currentStatus = this.getStatus() != null
+            ? HearingStatus.valueOf(this.getStatus()) : null;
+        HearingStatus lastGoodStatus = this.getLastGoodStatus() != null
+            ? HearingStatus.valueOf(this.getLastGoodStatus()) : null;
+
+        if (lastGoodStatus != null && lastGoodStatus != currentStatus) {
+            if (HearingStatus.isFinalStatus(lastGoodStatus)) {
+                throw new BadRequestException("Status is in a Final State" + currentStatus);
+            } else if (HearingStatus.shouldUpdateLastGoodStatus(lastGoodStatus, currentStatus)) {
+                this.setLastGoodStatus(String.valueOf(currentStatus));
+                return this;
+            }
+        } else if (lastGoodStatus == null && HearingStatus.shouldUpdateLastGoodStatus(null, currentStatus)) {
+            this.setLastGoodStatus(String.valueOf(currentStatus));
+            return this;
+        }
+        return this;
     }
 }

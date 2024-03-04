@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
@@ -341,5 +342,50 @@ class HearingEntityTest {
         hearingResponse.setHearingDayDetails(List.of(hearingDayDetailsEntity));
 
         return hearingResponse;
+    }
+
+    @Nested
+    class updateLastGoodStatus {
+        @Test
+        void UpdateNullLastGoodStatusWithGoodStatus() {
+            HearingEntity hearingEntity = new HearingEntity();
+            hearingEntity.setStatus("AWAITING_LISTING");
+            HearingEntity updatedEntity = hearingEntity.updateLastGoodStatus();
+            assertEquals("AWAITING_LISTING", updatedEntity.getLastGoodStatus());
+        }
+
+        @Test
+        void UpdateNullLastGoodStatusWithFinalStatus() {
+            HearingEntity hearingEntity = new HearingEntity();
+            hearingEntity.setStatus("CANCELLED");
+            HearingEntity updatedEntity = hearingEntity.updateLastGoodStatus();
+            assertEquals("CANCELLED", updatedEntity.getLastGoodStatus());
+        }
+
+        @Test
+        void UpdateLastGoodStatusWithSameStatus() {
+            HearingEntity hearingEntity = new HearingEntity();
+            hearingEntity.setStatus("AWAITING_LISTING");
+            hearingEntity.setLastGoodStatus("AWAITING_LISTING");
+            HearingEntity updatedEntity = hearingEntity.updateLastGoodStatus();
+            assertEquals("AWAITING_LISTING", updatedEntity.getLastGoodStatus());
+        }
+
+        @Test
+        void UpdateLastGoodStatusWithFinalStatus() {
+            HearingEntity hearingEntity = new HearingEntity();
+            hearingEntity.setStatus("COMPLETED");
+            hearingEntity.setLastGoodStatus("CANCELLED");
+            assertThrows(BadRequestException.class, hearingEntity::updateLastGoodStatus);
+        }
+
+        @Test
+        void UpdateLastGoodStatusWithShouldUpdate() {
+            HearingEntity hearingEntity = new HearingEntity();
+            hearingEntity.setStatus("LISTED");
+            hearingEntity.setLastGoodStatus("AWAITING_LISTING");
+            HearingEntity updatedEntity = hearingEntity.updateLastGoodStatus();
+            assertEquals("LISTED", updatedEntity.getLastGoodStatus());
+        }
     }
 }
