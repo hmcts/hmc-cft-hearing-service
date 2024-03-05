@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
@@ -14,6 +13,8 @@ import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingActualsService;
+
+import java.util.Arrays;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
@@ -40,7 +41,7 @@ public class HearingActualsController {
         @ApiResponse(code = 400, message = ValidationError.INVALID_HEARING_ID_DETAILS)
     })
     public ResponseEntity<HearingActualResponse> getHearingActuals(@PathVariable("id") Long hearingId) {
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(
+        accessControlService.verifyHearingCaseAccess(hearingId, Arrays.asList(
             HEARING_VIEWER,
             LISTED_HEARING_VIEWER));
         return hearingActualsService.getHearingActuals(hearingId);

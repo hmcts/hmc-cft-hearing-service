@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -35,6 +34,7 @@ import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -79,9 +79,10 @@ public class HearingManagementController {
         if (!isValid) {
             // Only verify access if the user is requesting more than just confirmation of a valid hearing id
             String status = hearingManagementService.getStatus(hearingId);
-            List<String> requiredRoles = Lists.newArrayList(HEARING_VIEWER);
+            List<String> requiredRoles = Arrays.asList(HEARING_VIEWER);
+            List<String> requiredRolesList = new ArrayList<>(requiredRoles);
             if (HearingStatus.LISTED.name().equals(status)) {
-                requiredRoles.add(LISTED_HEARING_VIEWER);
+                requiredRolesList.add(LISTED_HEARING_VIEWER);
             }
 
             accessControlService.verifyHearingCaseAccess(hearingId, requiredRoles);
@@ -104,7 +105,7 @@ public class HearingManagementController {
                                         String deploymentId,
                                        @RequestBody @Valid HearingRequest createHearingRequest) {
         verifyDeploymentIdEnabled(deploymentId);
-        accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Arrays.asList(HEARING_MANAGER));
         return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId);
     }
 
@@ -118,7 +119,7 @@ public class HearingManagementController {
     })
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
                                          @RequestBody @Valid DeleteHearingRequest deleteRequest) {
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyHearingCaseAccess(hearingId, Arrays.asList(HEARING_MANAGER));
         return hearingManagementService.deleteHearingRequest(
             hearingId, deleteRequest);
     }
@@ -168,7 +169,7 @@ public class HearingManagementController {
                                          @RequestBody @Valid UpdateHearingRequest hearingRequest,
                                          @PathVariable("id") Long hearingId) {
         verifyDeploymentIdEnabled(deploymentId);
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyHearingCaseAccess(hearingId, Arrays.asList(HEARING_MANAGER));
         return hearingManagementService.updateHearingRequest(hearingId, hearingRequest, deploymentId);
     }
 
@@ -186,7 +187,7 @@ public class HearingManagementController {
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
     public ResponseEntity hearingCompletion(@PathVariable("id") Long hearingId) {
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyHearingCaseAccess(hearingId, Arrays.asList(HEARING_MANAGER));
         return hearingManagementService.hearingCompletion(hearingId);
     }
 
@@ -227,7 +228,7 @@ public class HearingManagementController {
 
     private GetHearingsResponse getHearingsResponse(String ccdCaseRef, String status) {
         List<String> filteredRoleAssignments =
-            accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
+            accessControlService.verifyCaseAccess(ccdCaseRef,Arrays.asList(
                 HEARING_VIEWER,
                 LISTED_HEARING_VIEWER));
 

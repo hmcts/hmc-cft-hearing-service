@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,7 @@ import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -178,7 +178,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     public GetLinkedHearingGroupResponse getLinkedHearingGroupResponse(String requestId) {
         linkedHearingValidator.validateRequestId(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByRequestId(requestId);
-        verifyAccess(linkedGroupHearings, Lists.newArrayList(HEARING_VIEWER));
+        verifyAccess(linkedGroupHearings, Arrays.asList(HEARING_VIEWER));
         return getLinkedHearingGroupDetails(requestId);
     }
 

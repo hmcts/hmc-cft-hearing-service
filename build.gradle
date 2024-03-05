@@ -244,7 +244,6 @@ def versions = [
   mapstruct       : '1.4.2.Final',
   pact            : '4.1.7',
   reformLogging   : '6.0.1',
-  azureInsightsVersion: '2.4.1',
   restAssured     : '4.2.1',
   springBoot      : springBoot.class.package.implementationVersion,
   springCloud     : '2020.0.6',
@@ -372,13 +371,10 @@ dependencies {
   implementation group: 'io.springfox', name: 'springfox-boot-starter', version: versions.springfoxSwagger
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-logging-logback', version: versions.azureInsightsVersion
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-spring-boot-starter', version: versions.azureInsightsVersion
 
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '6.6'
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
-
   implementation (group: 'org.glassfish.web', name: 'el-impl', version: '2.2.1-b05') {
     exclude group: 'javax.el', module: 'el-api'
   }
