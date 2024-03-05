@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.PartiesNotifiedService;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import javax.validation.Valid;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -55,7 +55,7 @@ public class PartiesNotifiedController {
                                    @RequestParam("received")
                                    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
                                    LocalDateTime receivedDateTime) {
-        accessControlService.verifyAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyAccess(hearingId, Arrays.asList(HEARING_MANAGER));
         partiesNotifiedService.getPartiesNotified(hearingId, requestVersion, receivedDateTime, partiesNotified);
     }
 
@@ -70,7 +70,7 @@ public class PartiesNotifiedController {
         @ApiResponse(code = 404, message = ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND)
     })
     public PartiesNotifiedResponses getPartiesNotified(@PathVariable("id") Long hearingId) {
-        accessControlService.verifyAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyAccess(hearingId, Arrays.asList(HEARING_MANAGER));
         return partiesNotifiedService.getPartiesNotified(hearingId);
     }
 }

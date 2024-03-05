@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.base.Enums;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
@@ -401,7 +400,7 @@ public class LinkedHearingValidator {
 
     public void validateHearingActualsStatus(Long hearingId, String errorMessage) {
         String status = hearingRepository.getStatus(hearingId);
-        DeleteHearingStatus deleteHearingStatus = Enums.getIfPresent(DeleteHearingStatus.class, status).orNull();
+        DeleteHearingStatus deleteHearingStatus = DeleteHearingStatus.getByLabel(status);
         if (deleteHearingStatus != null) {
             boolean isValidStatus = DeleteHearingStatus.isValidHearingActuals(deleteHearingStatus);
             LocalDate minStartDate = filterHearingResponses(hearingRepository.findById(hearingId)

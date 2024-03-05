@@ -23,6 +23,11 @@ public enum DeleteHearingStatus {
                 return false;
         }
     }
+
+    public static DeleteHearingStatus getByLabel(String status) {
+        return Arrays.stream(DeleteHearingStatus.values())
+            .filter(eachLinkType -> eachLinkType.name().equals(status)).findAny().orElse(null);
+    }
 }
 
 

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,8 @@ import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     public static final String HEARING_VIEWER = "hearing-viewer";
     public static final String LISTED_HEARING_VIEWER = "listed-hearing-viewer";
 
-    private static final List<String> HMC_ROLE_NAMES = Lists.newArrayList(
+    private static final List<String> HMC_ROLE_NAMES = Arrays.asList(
         HEARING_MANAGER,
         HEARING_VIEWER,
         LISTED_HEARING_VIEWER);
@@ -134,7 +135,7 @@ public class AccessControlServiceImpl implements AccessControlService {
 
     private List<RoleAssignment> verifyRequiredRolesExistsAndFilter(List<String> requiredRoles,
                                                                     List<RoleAssignment> filteredRoleAssignments) {
-        List<RoleAssignment> requiredRoleAssignments = Lists.newArrayList();
+        List<RoleAssignment> requiredRoleAssignments = new ArrayList<>();
         if (!requiredRoles.isEmpty()) {
             requiredRoleAssignments = filteredRoleAssignments.stream()
                 .filter(roleAssignment -> requiredRoles.contains(roleAssignment.getRoleName()))
