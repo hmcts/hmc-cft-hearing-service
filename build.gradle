@@ -29,6 +29,10 @@ configurations {
   cftlibRuntimeClasspath.extendsFrom(runtimeClasspath)
 }
 
+configurations.all {
+  exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+}
+
 configurations.configureEach {
   resolutionStrategy {
     eachDependency { details ->
@@ -247,13 +251,13 @@ def versions = [
   azureInsightsVersion: '2.4.1',
   restAssured     : '4.2.1',
   springBoot      : springBoot.class.package.implementationVersion,
-  springCloud     : '2020.0.6',
+  springCloud     : '2021.0.8',
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.3',
-  netty           : '4.1.104.Final',
-  serviceAuthVersion: '4.0.3',
-  tomcatEmbedded  : '9.0.84' ,
-  snakeyaml       : '2.2'
+  netty           : '4.1.106.Final',
+  serviceAuthVersion: '4.1.2',
+  tomcatEmbedded  : '9.0.85',
+  fasterXmlJackson : '2.16.1',
 ]
 
 ext['spring-framework.version'] = '5.3.31'
@@ -281,7 +285,6 @@ dependencyCheck {
 
 dependencyManagement {
   dependencies {
-    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.77'
     // CVE-2018-10237 - Unbounded memory allocation
     dependencySet(group: 'com.google.guava', version: '33.0.0-jre') {
       entry 'guava'
@@ -291,10 +294,17 @@ dependencyManagement {
       entry 'json-path'
       entry 'xml-path'
     }
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.84') {
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.85') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
       entry 'tomcat-embed-websocket'
+    }
+
+    // CVE-2023-35116
+    dependencySet(group: 'com.fasterxml.jackson.core', version: versions.fasterXmlJackson) {
+      entry 'jackson-databind'
+      entry 'jackson-annotations'
+      entry 'jackson-core'
     }
   }
 }
@@ -388,10 +398,10 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceAuthVersion
-  implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '2.0.1'
+  implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.3'
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
   implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
-  implementation 'net.minidev:json-smart:2.4.9'
+  implementation 'net.minidev:json-smart:2.4.11'
 
   testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.19.12') {
     exclude group: 'com.github.hmcts.befta-fw', module: 'befta-fw'
@@ -452,6 +462,9 @@ dependencies {
   implementation group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyaml
   implementation group: 'io.projectreactor.netty', name: 'reactor-netty-core', version: '1.1.15'
   implementation group: 'io.projectreactor.netty', name: 'reactor-netty-http', version: '1.1.15'
+  implementation group: 'io.netty', name: 'netty-resolver-dns-classes-macos', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-transport-classes-epoll', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-transport-classes-kqueue', version: versions.netty
 
   implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
   implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
