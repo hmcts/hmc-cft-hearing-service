@@ -175,6 +175,7 @@ LOGGING:
         hmcts:
           reform:
             hmc:
+              repository: ${APPLICATION_LOGGING_LEVEL:DEBUG}
               service: ${APPLICATION_LOGGING_LEVEL:DEBUG}
               config:  ${APPLICATION_LOGGING_LEVEL:DEBUG}
 
