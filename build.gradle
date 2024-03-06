@@ -29,10 +29,6 @@ configurations {
   cftlibRuntimeClasspath.extendsFrom(runtimeClasspath)
 }
 
-configurations.all {
-  exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
-}
-
 configurations.configureEach {
   resolutionStrategy {
     eachDependency { details ->
@@ -251,17 +247,18 @@ def versions = [
   azureInsightsVersion: '2.4.1',
   restAssured     : '4.2.1',
   springBoot      : springBoot.class.package.implementationVersion,
-  springCloud     : '2021.0.8',
+  springCloud     : '2020.0.6',
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.3',
   netty           : '4.1.106.Final',
   serviceAuthVersion: '4.1.2',
   tomcatEmbedded  : '9.0.85',
   fasterXmlJackson : '2.16.1',
+  snakeyaml       : '2.2'
 ]
 
 ext['spring-framework.version'] = '5.3.31'
-ext['spring-security.version'] = '5.8.7'
+ext['spring-security.version'] = '5.8.10'
 ext['log4j2.version'] = '2.17.2'
 ext['snakeyaml.version'] = '2.2'
 //ext['jackson.version'] = '2.10.5'
@@ -458,7 +455,8 @@ dependencies {
   implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: versions.netty
   implementation group: 'io.netty', name: 'netty-transport-native-kqueue', version: versions.netty
   implementation group: 'io.netty', name: 'netty-transport-native-unix-common', version: versions.netty
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.5'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.8'
+  implementation group: 'org.springframework.security', name: 'spring-security-rsa', version: '1.0.12.RELEASE'
   implementation group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyaml
   implementation group: 'io.projectreactor.netty', name: 'reactor-netty-core', version: '1.1.15'
   implementation group: 'io.projectreactor.netty', name: 'reactor-netty-http', version: '1.1.15'
