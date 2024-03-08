@@ -219,7 +219,7 @@ jacocoTestReport {
   reports {
     xml.getRequired().set(true)
     csv.getRequired().set(false)
-    xml.destination file(getLayout().getBuildDirectory().file("/reports/jacoco/test/jacocoTestReport.xml"))
+    xml.destination file("${getLayout().getBuildDirectory()}/reports/jacoco/test/jacocoTestReport.xml")
   }
 }
 
