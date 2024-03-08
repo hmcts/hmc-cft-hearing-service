@@ -29,6 +29,7 @@ public class MessageSenderToTopicConfiguration {
 
     public void sendMessage(String message, String hmctsServiceId, String hearingId, String deploymentId) {
         try {
+            log.debug("preparing to connect to Topic {}", applicationParams.getExternalTopicName());
             final ServiceBusSenderClient senderClient = new ServiceBusClientBuilder()
                 .connectionString(applicationParams.getExternalConnectionString())
                 .sender()

@@ -41,6 +41,7 @@ public class MessageProcessor {
     }
 
     public void processMessage(ServiceBusReceivedMessageContext messageContext) {
+        log.debug("In Queue config process message method ");
         var processingResult = tryProcessMessage(messageContext);
         if (processingResult.resultType.equals(MessageProcessingResultType.SUCCESS)) {
             log.info(MESSAGE_SUCCESS, messageContext.getMessage().getMessageId());
@@ -50,11 +51,11 @@ public class MessageProcessor {
     public void processMessage(JsonNode message,
                                ServiceBusReceivedMessageContext messageContext)
             throws JsonProcessingException {
-
+        log.debug("processing message in Message Processor " + message);
         Map<String, Object> applicationProperties = messageContext.getMessage().getApplicationProperties();
-
         if (applicationProperties.containsKey(MESSAGE_TYPE)) {
             try {
+                log.debug("calling inbound process message");
                 inboundQueueService.processMessage(message, messageContext);
             } catch (HearingNotFoundException ex) {
                 log.error(MESSAGE_ERROR +  messageContext.getMessage().getMessageId() + WITH_ERROR + ex.getMessage());
@@ -80,6 +81,7 @@ public class MessageProcessor {
     }
 
     private MessageProcessingResult tryProcessMessage(ServiceBusReceivedMessageContext messageContext) {
+        log.debug("tryProcessMessage method");
         try {
             processMessage(
                     convertMessage(messageContext.getMessage().getBody()),

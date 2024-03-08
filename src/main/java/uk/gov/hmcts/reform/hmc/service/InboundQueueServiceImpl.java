@@ -75,9 +75,13 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         Map<String, Object> applicationProperties = messageContext.getMessage().getApplicationProperties();
         MessageType messageType = MessageType.valueOf(applicationProperties.get(MESSAGE_TYPE).toString());
         log.info("Message of type " + messageType + " received");
+        log.debug("Received message {} ", message);
         if (applicationProperties.containsKey(HEARING_ID)) {
             Long hearingId = Long.valueOf(applicationProperties.get(HEARING_ID).toString());
+            log.debug("Message received for hearingId {} ", hearingId);
             hearingIdValidator.validateHearingId(hearingId, HEARING_ID_NOT_FOUND);
+            log.debug("Received message for hearing Id{} : messageType {}", hearingId, messageType);
+            log.debug("Received message for hearing Id{} : message {}", hearingId, message);
             validateResponse(message, messageType, hearingId);
         } else {
             log.error("Error processing message, exception was " + MISSING_HEARING_ID);
@@ -108,6 +112,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     private void validateResponse(JsonNode message, MessageType messageType, Long hearingId)
         throws JsonProcessingException {
         if (messageType.equals(MessageType.HEARING_RESPONSE)) {
+            log.info("Validate response : Message of type " + messageType + " received");
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             Validator validator = factory.getValidator();
             HearingResponse hearingResponse = objectMapper.treeToValue(message, HearingResponse.class);
@@ -122,6 +127,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 }
             }
         } else if (messageType.equals(MessageType.LA_SYNC_HEARING_RESPONSE)) {
+            log.info("Validate response : Message of type " + messageType + " received");
             SyncResponse syncResponse = objectMapper.treeToValue(message, SyncResponse.class);
             updateHearingAndStatus(hearingId, syncResponse);
         } else if (messageType.equals(MessageType.ERROR)) {
@@ -153,6 +159,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
     @Transactional
     private void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse) {
+        log.debug("updateHearingAndStatus for hearingId {}, {}", hearingId, hearingResponse);
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = null;
@@ -164,6 +171,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
             if (hearingEntity.isPresent()) {
                 HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity.get());
+                log.debug("Sending message to topic {}", hmcHearingResponse.getHearingID());
                 messageSenderToTopicConfiguration
                     .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                                  hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
@@ -182,6 +190,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             );
             HearingEntity hearingEntity = hearingRepository.save(hearingToSave);
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
+            log.debug("Message sending to topic");
             messageSenderToTopicConfiguration
                 .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                              hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
