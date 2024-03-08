@@ -1,3 +1,6 @@
+import uk.gov.hmcts.rse.AuthMode
+import java.nio.charset.StandardCharsets
+
 plugins {
   id 'application'
   id 'idea'
@@ -16,7 +19,7 @@ ext['diuspactproviderVersion'] = '4.2.21'
 
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
-//2.10.5 and 2.12.2!!
+
 java {
   toolchain {
     languageVersion = JavaLanguageVersion.of(17)
@@ -37,10 +40,10 @@ configurations.configureEach {
       }
     }
   }
+}
 
-  tasks.withType(Copy).configureEach {
-    duplicatesStrategy 'exclude'
-  }
+tasks.withType(Copy).configureEach {
+  duplicatesStrategy 'exclude'
 }
 
 sourceSets {
@@ -72,19 +75,19 @@ sourceSets {
     }
     resources.srcDir file('src/integrationTest/resources')
   }
+}
 
-  idea {
-    module {
-      // config to allow Intellij to mark test source and resource files correctly to help linting tools
-      testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
-      testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
-      testResourceDirs += project.sourceSets.functionalTest.resources.srcDirs
-      testResourceDirs += project.sourceSets.integrationTest.resources.srcDirs
-    }
+idea {
+  module {
+    // config to allow Intellij to mark test source and resource files correctly to help linting tools
+    testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
+    testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
+    testResourceDirs += project.sourceSets.functionalTest.resources.srcDirs
+    testResourceDirs += project.sourceSets.integrationTest.resources.srcDirs
   }
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
@@ -120,7 +123,7 @@ task functional(type: Test) {
         '--strict',
         '--threads', '10',
         '--plugin', "json:${rootDir}/target/cucumber.json",
-        '--plugin', "junit:${buildDir}/test-results/functional/cucumber.xml",
+        '--plugin', "junit:${getLayout().getBuildDirectory()}/test-results/functional/cucumber.xml",
         '--tags', 'not @Ignore',
         '--glue', 'uk.gov.hmcts.befta.player', 'src/functionalTest/resources/features'
       ]
@@ -154,10 +157,10 @@ task smoke(type: Test) {
   description = 'Executes smoke tests against an the HMC CFT Hearing Service API instance just deployed'
   dependsOn functionalTestClasses
 
-  new File("$buildDir/test-results/test").mkdirs()
+  new File("${getLayout().getBuildDirectory()}/test-results/test").mkdirs()
   copy {
     from "src/functional/resources/DummyTest.xml"
-    into "$buildDir/test-results/test"
+    into "${getLayout().getBuildDirectory()}/test-results/test"
   }
 
   doLast {
@@ -170,7 +173,7 @@ task smoke(type: Test) {
         '--strict',
         '--threads', '10',
         '--plugin', "json:${rootDir}/target/cucumber.json",
-        '--plugin', "junit:${buildDir}/test-results/functional/cucumber.xml",
+        '--plugin', "junit:${getLayout().getBuildDirectory()}/test-results/functional/cucumber.xml",
         '--tags', '@Smoke and not @Ignore',
         '--glue', 'uk.gov.hmcts.befta.player', 'src/functionalTest/resources/features'
       ]
@@ -190,7 +193,6 @@ task smoke(type: Test) {
       }
     }
   }
-
   outputs.upToDateWhen { false }
 }
 
@@ -205,6 +207,7 @@ task customCleanBeftaReports(type:Delete) {
   delete "${rootDir}/target/cucumber"
   delete "${rootDir}/target/cucumber.json"
 }
+
 tasks.clean.dependsOn(tasks.customCleanBeftaReports)
 
 jacoco {
@@ -214,9 +217,9 @@ jacoco {
 jacocoTestReport {
   executionData(test, integration)
   reports {
-    xml.enabled = true
-    csv.enabled = false
-    xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    xml.getRequired().set(true)
+    csv.getRequired().set(false)
+    xml.destination file(getLayout().getBuildDirectory().file("/reports/jacoco/test/jacocoTestReport.xml"))
   }
 }
 
@@ -314,7 +317,7 @@ def static getCheckedOutGitCommitHash() {
   'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
-task contract(type: Test, description: 'Runs contract tests.', group: 'Verification') {
+tasks.register('contract', Test) {
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
 }
@@ -526,7 +529,7 @@ jar {
 }
 
 wrapper {
-    distributionType = Wrapper.DistributionType.ALL
+  distributionType = Wrapper.DistributionType.ALL
 }
 
 // Gradle 7.x issue, workaround from: https://github.com/gradle/gradle/issues/17236#issuecomment-894768083
@@ -559,7 +562,7 @@ task loadEnvSecrets() {
           commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'hmc-demo', '-o', 'tsv', '--query', 'value', '--name', 'hmc-local-env-config'
           standardOutput = os
         }
-        project.file('./.demo-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
+        project.file('./.demo-env').write(new String(os.toString().replace('\n', '').decodeBase64(), StandardCharsets.UTF_8))
       }
     }
   }
@@ -585,7 +588,7 @@ bootWithCCD {
     }
   }
 
-  authMode = uk.gov.hmcts.rse.AuthMode.Local
+  authMode = AuthMode.Local
 
   environment("RSE_LIB_ADDITIONAL_DATABASES", "hmc");
   environment("CFT_HEARING_SERVICE_DB_USERNAME", "postgres")
@@ -597,7 +600,7 @@ bootWithCCD {
 }
 
 task fortifyScan(type: JavaExec)  {
-  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  getMainClass().set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
   // The line below prevents the build from failing if the Fortify scan detects issues
