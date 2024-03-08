@@ -259,12 +259,12 @@ class MessageProcessorIT extends BaseTest {
         messageProcessor.processMessage(errorJsonNode, messageContext);
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(5, logsList.size());
+        assertEquals(8, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
         assertEquals("Message of type ERROR received", logsList.get(0).getMessage());
-        assertEquals(Level.INFO, logsList.get(3).getLevel());
-        assertEquals(Level.ERROR, logsList.get(4).getLevel());
-        assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(4).getMessage());
+        assertEquals(Level.INFO, logsList.get(6).getLevel());
+        assertEquals(Level.ERROR, logsList.get(7).getLevel());
+        assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(7).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         logsListMessageProcessor.forEach(System.out::print);
@@ -303,14 +303,14 @@ class MessageProcessorIT extends BaseTest {
         }
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(6, logsList.size());
+        assertEquals(10, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals(Level.ERROR, logsList.get(4).getLevel());
-        assertEquals(Level.ERROR, logsList.get(5).getLevel());
+        assertEquals(Level.ERROR, logsList.get(8).getLevel());
+        assertEquals(Level.ERROR, logsList.get(9).getLevel());
         assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
         assertEquals("Error processing message with Hearing id 2000000000 exception was "
-                         + "Cannot find request version 10 for hearing 2000000000", logsList.get(4).getMessage());
-        assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(5).getMessage());
+                         + "Cannot find request version 10 for hearing 2000000000", logsList.get(8).getMessage());
+        assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(9).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         assertEquals(4, logsListMessageProcessor.size());
@@ -392,12 +392,12 @@ class MessageProcessorIT extends BaseTest {
         }
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(2, logsList.size());
+        assertEquals(3, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals(Level.ERROR, logsList.get(1).getLevel());
+        assertEquals(Level.ERROR, logsList.get(2).getLevel());
         assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
         assertEquals("Error processing message, exception was Message is missing custom header hearing_id",
-                     logsList.get(1).getMessage());
+                     logsList.get(2).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         assertEquals(2, logsListMessageProcessor.size());
@@ -431,7 +431,7 @@ class MessageProcessorIT extends BaseTest {
         }
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(2, logsList.size());
+        assertEquals(3, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
         assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
 
@@ -470,14 +470,14 @@ class MessageProcessorIT extends BaseTest {
         }
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(4, logsList.size());
+        assertEquals(5, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals(Level.ERROR, logsList.get(2).getLevel());
-        assertEquals(Level.ERROR, logsList.get(2).getLevel());
+        assertEquals(Level.ERROR, logsList.get(3).getLevel());
+        assertEquals(Level.ERROR, logsList.get(4).getLevel());
         assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
         assertEquals("Error processing message with Hearing id 1000000000 exception was "
-                         + "Invalid hearing Id", logsList.get(2).getMessage());
-        assertEquals("Hearing id 1000000000 not found", logsList.get(3).getMessage());
+                         + "Invalid hearing Id", logsList.get(3).getMessage());
+        assertEquals("Hearing id 1000000000 not found", logsList.get(4).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.ERROR)));
