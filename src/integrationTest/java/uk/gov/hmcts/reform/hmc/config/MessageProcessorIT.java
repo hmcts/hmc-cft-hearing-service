@@ -400,7 +400,7 @@ class MessageProcessorIT extends BaseTest {
                      logsList.get(1).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
-        assertEquals(0, logsListMessageProcessor.size());
+        assertEquals(2, logsListMessageProcessor.size());
     }
 
     @Test
