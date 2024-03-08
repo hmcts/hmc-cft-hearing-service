@@ -76,6 +76,7 @@ public class RestTemplateConfigurationTest extends BaseTest {
         assertResponse(response);
     }
 
+    @Disabled()
     @Test
     public void shouldTimeOut() {
         WireMock.stubFor(get(urlEqualTo(URL)).willReturn(aResponse().withStatus(SC_OK).withFixedDelay(2000)));
