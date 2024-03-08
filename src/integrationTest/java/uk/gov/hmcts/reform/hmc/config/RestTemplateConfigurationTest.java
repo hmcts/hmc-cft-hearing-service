@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,7 @@ import static org.apache.http.protocol.HTTP.CONTENT_TYPE;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
-import static org.springframework.http.HttpMethod.GET;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.http.HttpMethod.PUT;
 import static wiremock.org.apache.http.entity.ContentType.APPLICATION_JSON;
 
@@ -78,11 +77,11 @@ public class RestTemplateConfigurationTest extends BaseTest {
     }
 
     @Test
-    public void shouldTimeOut() throws ResourceAccessException {
-        WireMock.stubFor(get(urlEqualTo(URL)).willReturn(aResponse().withStatus(SC_OK).withFixedDelay(2500)));
-
-        final RequestEntity<String> request = new RequestEntity<>(GET, URI.create(getBaseUrl() + URL));
-        Assertions.assertThrows(ResourceAccessException.class, () -> restTemplate.exchange(request, String.class));
+    public void shouldTimeOut() {
+        WireMock.stubFor(get(urlEqualTo(URL)).willReturn(aResponse().withStatus(SC_OK).withFixedDelay(2000)));
+        RestTemplate restTemplate = new RestTemplate();
+        final RequestEntity<Void> request = RequestEntity.get(URI.create("http://localhost:" + wiremockPort + URL)).build();
+        assertThrows(ResourceAccessException.class, () -> restTemplate.exchange(request, String.class));
     }
 
     @Disabled("for local dev only")
