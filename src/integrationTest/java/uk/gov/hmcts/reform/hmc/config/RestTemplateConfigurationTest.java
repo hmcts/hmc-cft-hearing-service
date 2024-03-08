@@ -50,7 +50,7 @@ public class RestTemplateConfigurationTest extends BaseTest {
         return "http://localhost:" + wiremockPort;
     }
 
-    private static final String RESPONSE_BODY = "{ \"test\": \"name\"}";
+    private static final JsonNode RESPONSE_BODY = new ObjectMapper().createObjectNode().put("test", "name");
     private static final String URL = "/ng/itb";
     private static final String MIME_TYPE = APPLICATION_JSON.getMimeType();
 
@@ -78,8 +78,8 @@ public class RestTemplateConfigurationTest extends BaseTest {
     }
 
     @Test
-    public void shouldTimeOut() {
-        WireMock.stubFor(get(urlEqualTo(URL)).willReturn(aResponse().withStatus(SC_OK).withFixedDelay(2000)));
+    public void shouldTimeOut() throws ResourceAccessException {
+        WireMock.stubFor(get(urlEqualTo(URL)).willReturn(aResponse().withStatus(SC_OK).withFixedDelay(2500)));
 
         final RequestEntity<String> request = new RequestEntity<>(GET, URI.create(getBaseUrl() + URL));
         Assertions.assertThrows(ResourceAccessException.class, () -> restTemplate.exchange(request, String.class));
@@ -112,7 +112,7 @@ public class RestTemplateConfigurationTest extends BaseTest {
         WireMock.stubFor(put(urlEqualTo(URL))
                              .willReturn(aResponse().withStatus(SC_OK)
                                              .withHeader(CONTENT_TYPE, MIME_TYPE)
-                                             .withBody(RESPONSE_BODY)));
+                                             .withBody(RESPONSE_BODY.toString())));
     }
 
     private void assertResponse(final ResponseEntity<JsonNode> response) {
