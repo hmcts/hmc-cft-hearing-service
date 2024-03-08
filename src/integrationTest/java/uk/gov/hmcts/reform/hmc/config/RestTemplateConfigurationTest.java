@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
@@ -28,8 +30,6 @@ import static org.apache.http.protocol.HTTP.CONTENT_TYPE;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PUT;
 import static wiremock.com.google.common.collect.Lists.newArrayList;
@@ -51,7 +51,7 @@ public class RestTemplateConfigurationTest extends BaseTest {
 
     @Test
     public void restTemplateShouldBeUsable() throws Exception {
-        assertNotNull(restTemplate);
+        Assertions.assertNotNull(restTemplate);
 
         stubResponse();
 
@@ -63,19 +63,18 @@ public class RestTemplateConfigurationTest extends BaseTest {
         assertResponse(response);
     }
 
-    @Test(expected = ResourceAccessException.class)
+    @Test()
     public void shouldTimeOut() {
-        assertNotNull(restTemplate);
+        Assertions.assertNotNull(restTemplate);
         WireMock.stubFor(get(urlEqualTo(URL)).willReturn(aResponse().withStatus(SC_OK).withFixedDelay(2000)));
 
         final RequestEntity<String>
             request =
             new RequestEntity<>(GET, URI.create("http://localhost:" + wiremockPort + URL));
-
-        restTemplate.exchange(request, String.class);
+        Assertions.assertThrows(ResourceAccessException.class, () -> restTemplate.exchange(request, String.class));
     }
 
-    @Ignore("for local dev only")
+    @Disabled("for local dev only")
     @Test
     public void shouldBeAbleToUseMultipleTimes() throws Exception {
         stubResponse();
@@ -94,10 +93,10 @@ public class RestTemplateConfigurationTest extends BaseTest {
             }));
         }
 
-        assertThat(futures, hasSize(totalNumberOfCalls));
+        MatcherAssert.assertThat(futures, hasSize(totalNumberOfCalls));
 
         for (Future<Integer> future: futures) {
-            assertThat(future.get(), is(SC_OK));
+            MatcherAssert.assertThat(future.get(), is(SC_OK));
         }
     }
 
@@ -110,9 +109,9 @@ public class RestTemplateConfigurationTest extends BaseTest {
     private void assertResponse(final ResponseEntity<JsonNode> response) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        assertThat(response.getBody(), is(objectMapper.readValue(RESPONSE_BODY, JsonNode.class)));
-        assertThat(response.getHeaders().get(CONTENT_TYPE), contains(MIME_TYPE));
-        assertThat(response.getStatusCode().value(), is(SC_OK));
+        MatcherAssert.assertThat(response.getBody(), is(objectMapper.readValue(RESPONSE_BODY, JsonNode.class)));
+        MatcherAssert.assertThat(response.getHeaders().get(CONTENT_TYPE), contains(MIME_TYPE));
+        MatcherAssert.assertThat(response.getStatusCode().value(), is(SC_OK));
     }
 }
 
