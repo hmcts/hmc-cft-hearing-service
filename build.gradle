@@ -104,53 +104,41 @@ test {
   failFast = true
 }
 
-ext {
-  functionalTestSourceSet = sourceSets.functionalTest
-  functionalTestClasspath = functionalTestSourceSet.runtimeClasspath
-  functionalTestOutputDirs = functionalTestSourceSet.output.classesDirs
-  mainOutputDir = sourceSets.main.output
-  testOutputDir = sourceSets.test.output
-  featuresDir = "${projectDir}/src/functionalTest/resources/features"
-  cucumberReportsDir = "${getLayout().getBuildDirectory()}/test-results/functional"
-  beftaReportDir = "${rootDir}/BEFTA Report for Functional Tests"
-}
-
-
 task functional(type: Test) {
-  description = "Runs functional tests using Cucumber"
+  description = "Runs functional tests"
   group = "Verification"
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  classpath = sourceSets.functionalTest.runtimeClasspath
 
-  testClassesDirs = functionalTestOutputDirs
-  classpath = functionalTestClasspath
-
-
-  systemProperty "cucumber.plugin", "json:${getLayout().getBuildDirectory()}/cucumber.json,junit:${cucumberReportsDir}/cucumber.xml"
-  systemProperty "cucumber.glue", "uk.gov.hmcts.befta.player"
-  systemProperty "cucumber.tags", "not @Ignore"
-  systemProperty "cucumber.features", featuresDir
+  generateCucumberReports.enabled = false
 
   doLast {
-    jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
-    environment "OAUTH2_CLIENT_SECRET", "DUMMY"
-    main = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
-    args = [
-      '--strict',
-      '--threads', '5',
-      '--plugin', "json:${getLayout().getBuildDirectory()}/cucumber.json",
-      '--plugin', "junit:${cucumberReportsDir}/cucumber.xml",
-      '--tags', 'not @Ignore',
-      '--glue', 'uk.gov.hmcts.befta.player',
-      featuresDir
-    ]
+    generateCucumberReports.enabled = true
+
+    javaexec {
+      environment "OAUTH2_CLIENT_SECRET", "DUMMY"
+      main = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
+      classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
+      args = [
+        '--strict',
+        '--threads', '10',
+        '--plugin', "json:${rootDir}/target/cucumber.json",
+        '--plugin', "junit:${getLayout().getBuildDirectory()}/test-results/functional/cucumber.xml",
+        '--tags', 'not @Ignore',
+        '--glue', 'uk.gov.hmcts.befta.player', 'src/functionalTest/resources/features'
+      ]
+      // '--add-opens=...' added to suppress 'WARNING: An illegal reflective access operation has occurred' in uk.gov.hmcts.befta.util.CucumberStepAnnotationUtils
+      jvmArgs = [ '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED' ]
+    }
   }
 
   finalizedBy {
-    task moveBeftaReport {
-      doLast {
-        delete beftaReportDir
-        new File(beftaReportDir).mkdirs()
-        file("${getLayout().getBuildDirectory()}/cucumber/cucumber-html-reports").renameTo(file(beftaReportDir))
-        logger.quiet("Functional test report moved to --> file://${beftaReportDir}/overview-features.html")
+    generateCucumberReports {
+      doLast{
+        delete "${rootDir}/BEFTA Report for Functional Tests/"
+        new File("${rootDir}/BEFTA Report for Functional Tests").mkdirs()
+        file("${rootDir}/target/cucumber/cucumber-html-reports").renameTo(file("${rootDir}/BEFTA Report for Functional Tests"))
+        logger.quiet("Functional test report moved to ---> file://${rootDir}/BEFTA%20Report%20for%20Functional%20Tests/overview-features.html")
       }
     }
   }
