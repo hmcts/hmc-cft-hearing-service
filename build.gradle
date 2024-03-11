@@ -171,7 +171,7 @@ task smoke(type: Test) {
       classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
       args = [
         '--strict',
-        '--threads', '10',
+        '--threads', '5',
         '--plugin', "json:${rootDir}/target/cucumber.json",
         '--plugin', "junit:${getLayout().getBuildDirectory()}/test-results/functional/cucumber.xml",
         '--tags', '@Smoke and not @Ignore',
