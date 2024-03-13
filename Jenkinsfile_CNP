@@ -12,6 +12,7 @@ properties(
 
 @Library("Infrastructure")
 
+
 import uk.gov.hmcts.contino.GradleBuilder
 
 def type = "java"
