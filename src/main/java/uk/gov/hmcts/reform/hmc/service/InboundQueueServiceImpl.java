@@ -176,7 +176,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
     @Transactional
     private void updateHearingAndStatus(Long hearingId, SyncResponse syncResponse) {
-        log.debug(MessageType.LA_SYNC_HEARING_RESPONSE.toString() + " received for hearing id {} ,{} ", hearingId,
+        log.debug(MessageType.LA_SYNC_HEARING_RESPONSE + " received for hearing id {} ,{} ", hearingId,
                   syncResponse.toString());
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
