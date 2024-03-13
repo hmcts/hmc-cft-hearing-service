@@ -63,7 +63,7 @@ sourceSets {
       srcDir('src/contractTest/resources')
     }
   }
-
+  
   integrationTest {
     java {
       compileClasspath += main.output
@@ -73,15 +73,15 @@ sourceSets {
     resources.srcDir file('src/integrationTest/resources')
   }
 
-  idea {
-    module {
-      // config to allow Intellij to mark test source and resource files correctly to help linting tools
-      testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
-      testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
-      testResourceDirs += project.sourceSets.functionalTest.resources.srcDirs
-      testResourceDirs += project.sourceSets.integrationTest.resources.srcDirs
-    }
-  }
+  // idea {
+    // module {
+  //     // config to allow Intellij to mark test source and resource files correctly to help linting tools
+      // testSources.from(sourceSets.functionalTest.java.srcDirs)
+  //     testSources.from(sourceSets.integrationTest.java.srcDirs)
+  //     testResources.from(sourceSets.functionalTest.resources.srcDirs)
+  //     testResource.from(sourceSets.integrationTest.resources.srcDirs)
+    // }
+  // }
 }
 
 tasks.withType(JavaCompile) {
@@ -214,8 +214,8 @@ jacoco {
 jacocoTestReport {
   executionData(test, integration)
   reports {
-    xml.enabled = true
-    csv.enabled = false
+    xml.required = true
+    csv.required = false
     xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
   }
 }
