@@ -1,8 +1,8 @@
 java:
   # Don't modify below here
+  devmemoryRequests: 1024Mi
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
-  memoryRequests: '1Gi'
   environment:
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft
     HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft
