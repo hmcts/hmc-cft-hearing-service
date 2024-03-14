@@ -10,7 +10,7 @@ properties(
     ]
 )
 
-@Library("Infrastructure")
+@Library("Infrastructure@upgrade-mem-gradle")
 
 
 import uk.gov.hmcts.contino.GradleBuilder
