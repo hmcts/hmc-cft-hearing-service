@@ -53,7 +53,7 @@ class UnNotifiedHearingServiceIT extends BaseTest {
         assertNotNull(response.getHearingIds());
         assertEquals(2, response.getHearingIds().size());
         assertEquals(2, response.getTotalFound());
-        assertArrayEquals(expectedHearingIds.toArray(), actualHearingIds.toArray());
+        assertArrayEquals(expectedHearingIds.toArray(), response.getHearingIds().toArray());
     }
 
     @Test
