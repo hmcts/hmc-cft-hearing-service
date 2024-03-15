@@ -107,6 +107,11 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 hearingEntity.setErrorDescription(exception.getMessage());
                 hearingRepository.save(hearingEntity);
                 log.error("Hearing id: " +  hearingId + " updated to status Exception");
+                JsonNode errorDescription = objectMapper.convertValue(exception.getMessage(), JsonNode.class);
+                hearingStatusAuditService.saveAuditTriageDetails(hearingEntity,
+                                                                 hearingEntity.getUpdatedDateTime(),
+                                                                 LA_RESPONSE, LA_FAILURE_STATUS,
+                                                                 FH, HMC, errorDescription);
             } else {
                 log.error("Hearing id " + hearingId + " not found");
             }
@@ -185,8 +190,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
                 hearingStatusAuditService.saveAuditTriageDetails(hearingEntity.get(),
                                                                  hearingEntity.get().getUpdatedDateTime(),
-                                                                 LA_RESPONSE,LA_SUCCESS_STATUS, HMC,
-                                                                 FH, null);
+                                                                 LA_RESPONSE,LA_SUCCESS_STATUS, FH, HMC,
+                                                                 null);
             }
         }
     }
