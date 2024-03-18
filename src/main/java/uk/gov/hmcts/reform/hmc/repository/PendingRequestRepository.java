@@ -9,15 +9,17 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.PendingRequestEntity;
 
-import javax.persistence.LockModeType;
 import java.sql.Timestamp;
+import javax.persistence.LockModeType;
+
 
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 @Repository
 public interface PendingRequestRepository extends CrudRepository<PendingRequestEntity, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query(value = "SELECT * FROM pending_requests WHERE status = 'PENDING' ORDER BY submitted_date_time ASC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM pending_requests WHERE status = 'PENDING' ORDER "
+        + "BY submitted_date_time ASC LIMIT 1", nativeQuery = true)
     PendingRequestEntity findOldestPendingRequestForProcessing();
 
     @Modifying
@@ -37,7 +39,8 @@ public interface PendingRequestRepository extends CrudRepository<PendingRequestE
     void markRequestAsException(Long id);
 
     @Modifying
-    @Query("UPDATE PendingRequestEntity SET incidentFlag = true WHERE submittedDateTime < :thresholdDateTime AND incidentFlag = false")
+    @Query("UPDATE PendingRequestEntity SET incidentFlag = true WHERE submittedDateTime < "
+        + ":thresholdDateTime AND incidentFlag = false")
     void identifyRequestsForEscalation(Timestamp thresholdDateTime);
 
     @Modifying
