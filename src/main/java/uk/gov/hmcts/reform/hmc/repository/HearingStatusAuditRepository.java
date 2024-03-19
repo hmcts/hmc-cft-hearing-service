@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface HearingStatusAuditRepository extends JpaRepository<HearingStatusAuditEntity, Long> {
 
-    @Query("from HearingStatusAuditEntity hs where hs.hearingId = :hearingId")
+    @Query("from HearingStatusAuditEntity hs where hs.hearingId = :hearingId order by hs.id desc")
     List<HearingStatusAuditEntity> findByHearingId(String hearingId);
 
 }
