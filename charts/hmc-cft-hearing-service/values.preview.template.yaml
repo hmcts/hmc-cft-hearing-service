@@ -1,5 +1,6 @@
 java:
   # Don't modify below here
+  devmemoryRequests: 1024Mi
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
