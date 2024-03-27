@@ -1,5 +1,6 @@
 java:
   applicationPort: 4561
+  
   image: 'hmctspublic.azurecr.io/hmc/cft-hearing-service:latest'
   ingressHost: hmc-cft-hearing-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: hmc
@@ -60,6 +61,7 @@ java:
     HMI_DESTINATION_SYSTEM: SNL
     GRANT_TYPE: client_credentials
     FH_BASE_URL: https://login.microsoftonline.com
+
 
 servicebus:
   enabled: false
