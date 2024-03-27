@@ -7,6 +7,7 @@ bin/main/application.yaml
 target/
 /BEFTA Report for Smoke Tests/
 /BEFTA Report for Functional Tests/
+/bin/
 applicationinsights-agent-*.jar
 *.log
 
