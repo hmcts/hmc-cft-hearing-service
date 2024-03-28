@@ -197,7 +197,7 @@ public class HearingEntity extends BaseEntity implements Serializable {
 
         if (lastGoodStatus != null && lastGoodStatus != currentStatus) {
             if (HearingStatus.isFinalStatus(lastGoodStatus)) {
-                throw new BadRequestException("Status is in a Final State" + currentStatus);
+                throw new BadRequestException("Status is already in a Final State: " + currentStatus);
             } else if (HearingStatus.shouldUpdateLastGoodStatus(lastGoodStatus, currentStatus)) {
                 this.setLastGoodStatus(String.valueOf(currentStatus));
                 return this;
