@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import   com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
@@ -145,9 +145,6 @@ class HearingManagementServiceTest {
     public static final String USER_ID = "UserId";
     public static final String ROLE_NAME = "hearing-manager";
     public static final String ROLE_TYPE = "ORGANISATION";
-    public static final String VALID_HEARING_STATUS = "UPDATE_REQUESTED";
-    public static final long INVALID_HEARING_ID = 1000000000L;
-    public static final Long HEARING_ID = 2000000000L;
     private static final String CLIENT_S2S_TOKEN = "s2s_token";
 
     @InjectMocks
@@ -465,7 +462,7 @@ class HearingManagementServiceTest {
         void shouldFailIfNullHearingRequest() {
             HearingRequest hearingRequest = null;
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                 .saveHearingRequest(hearingRequest, null,CLIENT_S2S_TOKEN));
+                .saveHearingRequest(hearingRequest,  null, CLIENT_S2S_TOKEN));
             assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
         }
 
@@ -479,7 +476,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().setHearingChannels(List.of("sameChannelType","sameChannelType"));
 
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                  .saveHearingRequest(hearingRequest, null,CLIENT_S2S_TOKEN));
+                 .saveHearingRequest(hearingRequest,  null, CLIENT_S2S_TOKEN));
             assertEquals(ValidationError.NON_UNIQUE_CHANNEL_TYPE, exception.getMessage());
         }
 
@@ -487,7 +484,7 @@ class HearingManagementServiceTest {
         void shouldFailAsDetailsNotPresent() {
             HearingRequest hearingRequest = new HearingRequest();
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                 .saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN));
+                .saveHearingRequest(hearingRequest,  null, CLIENT_S2S_TOKEN));
             assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
         }
 
@@ -643,7 +640,7 @@ class HearingManagementServiceTest {
             partyDetails.get(0).setOrganisationDetails(TestingUtil.organisationDetails());
             hearingRequest.setPartyDetails(partyDetails);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                  .saveHearingRequest(hearingRequest, null,CLIENT_S2S_TOKEN));
+                 .saveHearingRequest(hearingRequest,  null, CLIENT_S2S_TOKEN));
             assertEquals("Either Individual or Organisation details should be present", exception.getMessage());
         }
 

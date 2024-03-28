@@ -69,7 +69,6 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        //hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
     }
 
     @Nested

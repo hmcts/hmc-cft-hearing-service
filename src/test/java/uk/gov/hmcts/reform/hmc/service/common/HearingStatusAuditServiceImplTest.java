@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.SUCCESS_STATUS;
@@ -55,7 +56,7 @@ class HearingStatusAuditServiceImplTest {
             given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
                 TestingUtil.hearingStatusAuditEntity());
             hearingStatusAuditService. saveAuditTriageDetails(TestingUtil.hearingEntity(), LocalDateTime.now(),
-                                                              "create-hearing- request",SUCCESS_STATUS,
+                                                              CREATE_HEARING_REQUEST,SUCCESS_STATUS,
                                                               HMC, HMI,errorDetails);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
@@ -67,7 +68,7 @@ class HearingStatusAuditServiceImplTest {
             given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
                 TestingUtil.hearingStatusAuditEntity());
             hearingStatusAuditService. saveAuditTriageDetails(TestingUtil.hearingEntity(), LocalDateTime.now(),
-                                                              "create-hearing- request",SUCCESS_STATUS,
+                                                              CREATE_HEARING_REQUEST,SUCCESS_STATUS,
                                                               HMC, HMI,null);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }

@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.SUCCESS_STATUS;
 
 class HearingStatusAuditMapperTest {
@@ -21,8 +22,8 @@ class HearingStatusAuditMapperTest {
         HearingStatusAuditMapper mapper = new HearingStatusAuditMapper(CLOCK);
         HearingStatusAudit hearingStatusAudit = TestingUtil.hearingStatusAudit();
         HearingStatusAuditEntity entity = mapper.modelToEntity(hearingStatusAudit);
-        assertEquals("ABA1", entity.getHmctsServiceId());
+        assertEquals(hearingStatusAudit.getHearingServiceId(), entity.getHmctsServiceId());
         assertEquals(SUCCESS_STATUS, entity.getHttpStatus());
-        assertEquals("create-hearing- request", entity.getHearingEvent());
+        assertEquals(CREATE_HEARING_REQUEST, entity.getHearingEvent());
     }
 }

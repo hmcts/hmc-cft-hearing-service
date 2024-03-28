@@ -88,6 +88,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
@@ -1450,7 +1451,7 @@ public class TestingUtil {
         hearingStatusAuditEntity.setHmctsServiceId("ABA1");
         hearingStatusAuditEntity.setHearingId("2000000000");
         hearingStatusAuditEntity.setStatus(PutHearingStatus.HEARING_REQUESTED.name());
-        hearingStatusAuditEntity.setHearingEvent("create-hearing- request");
+        hearingStatusAuditEntity.setHearingEvent(CREATE_HEARING_REQUEST);
         hearingStatusAuditEntity.setHttpStatus(String.valueOf(HttpStatus.SC_OK));
         hearingStatusAuditEntity.setSource(HMC);
         hearingStatusAuditEntity.setTarget(HMI);
@@ -1470,7 +1471,7 @@ public class TestingUtil {
         hearingStatusAudit.setHearingId("2000000000");
         hearingStatusAudit.setStatus(PutHearingStatus.HEARING_REQUESTED.name());
         hearingStatusAudit.setStatusUpdateDateTime(LocalDateTime.now());
-        hearingStatusAudit.setHearingEvent("create-hearing- request");
+        hearingStatusAudit.setHearingEvent(CREATE_HEARING_REQUEST);
         hearingStatusAudit.setHttpStatus(SUCCESS_STATUS);
         hearingStatusAudit.setSource(HMC);
         hearingStatusAudit.setTarget(HMI);
