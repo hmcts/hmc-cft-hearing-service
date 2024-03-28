@@ -53,4 +53,18 @@ public final class Constants {
     public static final String LATEST_HEARING_REQUEST_VERSION = "Latest-Hearing-Request-Version";
     public static final String LATEST_HEARING_STATUS = "Latest-Hearing-Status";
     public static final Integer HMCTS_DEPLOYMENT_ID_MAX_SIZE = 40;
+    public static final String UPDATE_HEARING_REQUEST = "update-hearing-request";
+    public static final String CREATE_HEARING_REQUEST = "create-hearing-request";
+    public static final String DELETE_HEARING_REQUEST = "delete-hearing-request";
+    public static final String POST_HEARING_ACTUALS_COMPLETION = "post-hearing-actuals-completion";
+    public static final String PUT_HEARING_ACTUALS_COMPLETION = "put-hearing-actuals-completion";
+    public static final String PUT_PARTIES_NOTIFIED = "put-parties-notified";
+    public static final String LA_RESPONSE = "list-assist-response";
+    public static final String LA_ACK = "list-assist-ack";
+    public static final String HMI = "hmi";
+    public static final String FH = "fh";
+    public static final String HMC = "hmc";
+    public static final String LA_SUCCESS_STATUS = "202";
+    public static final String LA_FAILURE_STATUS = "400";
+    public static final String SUCCESS_STATUS = "200";
 }

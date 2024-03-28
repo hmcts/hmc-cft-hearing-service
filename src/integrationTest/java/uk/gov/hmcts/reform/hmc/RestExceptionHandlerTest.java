@@ -48,6 +48,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
+import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -128,6 +129,7 @@ public class RestExceptionHandlerTest extends BaseTest {
             .verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -141,9 +143,10 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
-            .saveHearingRequest(any(HearingRequest.class),any());
+            .saveHearingRequest(any(HearingRequest.class),any(), any());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -160,6 +163,7 @@ public class RestExceptionHandlerTest extends BaseTest {
             .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -176,6 +180,7 @@ public class RestExceptionHandlerTest extends BaseTest {
             .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -193,6 +198,7 @@ public class RestExceptionHandlerTest extends BaseTest {
             .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -209,6 +215,7 @@ public class RestExceptionHandlerTest extends BaseTest {
             .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -224,10 +231,11 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
-            .saveHearingRequest(any(HearingRequest.class),any());
+            .saveHearingRequest(any(HearingRequest.class),any(), any());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .header(HMCTS_DEPLOYMENT_ID, "a".repeat(41))
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
@@ -244,4 +252,6 @@ public class RestExceptionHandlerTest extends BaseTest {
             .andExpect(jsonPath(ERROR_PATH_STATUS).value(expectedStatus))
             .andExpect(jsonPath(ERROR_PATH_ERROR).value(expectedMessage));
     }
+
+    private static final String CLIENT_S2S_TOKEN = generateDummyS2SToken("ccd_definition");
 }

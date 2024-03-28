@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import javax.validation.Valid;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 
 @RestController
@@ -50,13 +52,15 @@ public class PartiesNotifiedController {
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
     public void putPartiesNotified(@RequestBody @Valid PartiesNotified partiesNotified,
+                                   @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
                                    @PathVariable("id") Long hearingId,
                                    @RequestParam("version") int requestVersion,
                                    @RequestParam("received")
                                    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
                                    LocalDateTime receivedDateTime) {
         accessControlService.verifyAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
-        partiesNotifiedService.getPartiesNotified(hearingId, requestVersion, receivedDateTime, partiesNotified);
+        partiesNotifiedService.getPartiesNotified(hearingId, requestVersion, receivedDateTime, partiesNotified,
+                                                  clientS2SToken);
     }
 
     @GetMapping(path = "/partiesNotified/{id}", produces = APPLICATION_JSON_VALUE)

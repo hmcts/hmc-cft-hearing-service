@@ -64,6 +64,8 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
     @MockBean
     private AccessControlService accessControlService;
 
+    private static final String CLIENT_S2S_TOKEN = "xui_webapp";
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -82,14 +84,16 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
                 anyLong(),
                 anyInt(),
                 any(),
-                any(PartiesNotified.class)
+                any(PartiesNotified.class),
+                any()
             );
 
             PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService,
                                                                                  accessControlService);
-            controller.putPartiesNotified(partiesNotified, 1L, 10, LocalDateTime.now());
+            controller.putPartiesNotified(partiesNotified,CLIENT_S2S_TOKEN, 1L, 10,
+                                          LocalDateTime.now());
             verify(partiesNotifiedService, times(1))
-                .getPartiesNotified(anyLong(), anyInt(), any(), any(PartiesNotified.class));
+                .getPartiesNotified(anyLong(), anyInt(), any(), any(PartiesNotified.class), any());
         }
     }
 
