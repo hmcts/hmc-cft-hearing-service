@@ -66,7 +66,8 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
 
     @Override
-    public HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
+    public HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest,
+                                                String clientS2SToken) {
         //POST
         linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
         LinkedGroupDetails linkedGroupDetails =
@@ -99,7 +100,8 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Override
-    public void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest) {
+    public void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest,
+                                  String clientS2SToken) {
         //PUT
         linkedHearingValidator.validateHearingLinkGroupRequestForUpdate(requestId, hearingLinkGroupRequest);
         //HMAN-94
@@ -149,7 +151,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
 
     @Override
-    public void deleteLinkedHearingGroup(String requestId) {
+    public void deleteLinkedHearingGroup(String requestId, String clientS2SToken) {
         Long linkedGroupId = linkedHearingValidator.validateHearingGroup(requestId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(linkedGroupId);
         Optional<LinkedGroupDetails> linkedGroupDetailsOptional = linkedGroupDetailsRepository.findById(linkedGroupId);

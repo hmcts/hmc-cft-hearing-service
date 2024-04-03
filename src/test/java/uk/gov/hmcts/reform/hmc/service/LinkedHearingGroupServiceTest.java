@@ -85,6 +85,7 @@ class LinkedHearingGroupServiceTest {
     public static final String REQUEST_ID = "44444";
     public static final String INVALID_REQUEST_ID = "string value";
     public static final String TOKEN = "example-token";
+    private static final String CLIENT_S2S_TOKEN = "xui_webapp";
 
     @InjectMocks
     private LinkedHearingGroupServiceImpl service;
@@ -212,7 +213,7 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(Optional.of(hearing2));
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
-            service.deleteLinkedHearingGroup(REQUEST_ID);
+            service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN);
 
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
@@ -224,7 +225,7 @@ class LinkedHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(null);
 
             Exception exception = assertThrows(LinkedGroupNotFoundException.class, () ->
-                service.deleteLinkedHearingGroup(REQUEST_ID));
+                service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN));
             assertEquals(INVALID_LINKED_GROUP_REQUEST_ID_DETAILS, exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
@@ -238,7 +239,7 @@ class LinkedHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
 
             Exception exception = assertThrows(BadRequestException.class, () ->
-                service.deleteLinkedHearingGroup(REQUEST_ID));
+                service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN));
             assertEquals("007 group is in a PENDING state", exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
@@ -252,7 +253,7 @@ class LinkedHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
 
             Exception exception = assertThrows(BadRequestException.class, () ->
-                service.deleteLinkedHearingGroup(REQUEST_ID));
+                service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN));
             assertEquals("007 group is in a ERROR state", exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
@@ -302,7 +303,7 @@ class LinkedHearingGroupServiceTest {
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
 
             Exception exception = assertThrows(BadRequestException.class, () ->
-                service.deleteLinkedHearingGroup(REQUEST_ID));
+                service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN));
             assertEquals(
                 "008 Invalid state for unlinking hearing request " + HEARING_ID2,
                 exception.getMessage()
@@ -334,7 +335,7 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(List.of(hearing));
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             Exception exception = assertThrows(BadRequestException.class, () ->
-                service.deleteLinkedHearingGroup(REQUEST_ID));
+                service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN));
             assertEquals(
                 "008 Invalid state for unlinking hearing request " + HEARING_ID1,
                 exception.getMessage()
@@ -362,7 +363,7 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(List.of(hearing));
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             Exception exception = assertThrows(BadRequestException.class, () ->
-                service.deleteLinkedHearingGroup(REQUEST_ID));
+                service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN));
             assertEquals(
                 "008 Invalid state for unlinking hearing request " + HEARING_ID1,
                 exception.getMessage()
@@ -412,7 +413,7 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(Optional.of(hearing2));
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
-            service.deleteLinkedHearingGroup(REQUEST_ID);
+            service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN);
 
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
@@ -445,7 +446,7 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(Optional.of(hearing));
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
-            service.deleteLinkedHearingGroup(REQUEST_ID);
+            service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN);
 
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
@@ -477,7 +478,7 @@ class LinkedHearingGroupServiceTest {
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             listAssistThrows4xxError();
             Exception exception = assertThrows(BadRequestException.class, () ->
-                service.deleteLinkedHearingGroup(REQUEST_ID));
+                service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN));
             final HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 400, "005 rejected by List Assist");
             assertEquals(REJECTED_BY_LIST_ASSIST, exception.getMessage());
@@ -514,7 +515,7 @@ class LinkedHearingGroupServiceTest {
                 500, "006 List Assist failed to respond");
             listAssistThrows5xxError();
             Exception exception = assertThrows(BadRequestException.class, () ->
-                service.deleteLinkedHearingGroup(REQUEST_ID));
+                service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN));
             assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
@@ -604,7 +605,7 @@ class LinkedHearingGroupServiceTest {
                     hearingDetails2
                 )
             );
-            service.updateLinkHearing(REQUEST_ID, hearingLinkGroupRequest);
+            service.updateLinkHearing(REQUEST_ID, hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             GetLinkedHearingGroupResponse response =
                 service.getLinkedHearingGroupResponse(REQUEST_ID);
 
