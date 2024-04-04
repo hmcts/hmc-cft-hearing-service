@@ -573,7 +573,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+            verify(hearingStatusAuditService, times(4)).saveAuditTriageDetails(any(),any(),
                                                                                any(),any(),any(),any(),any());
         }
 
@@ -623,7 +623,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+            verify(hearingStatusAuditService, times(4)).saveAuditTriageDetails(any(),any(),
                                                                                any(),any(),any(),any(),any());
         }
 
@@ -671,7 +671,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+            verify(hearingStatusAuditService, times(4)).saveAuditTriageDetails(any(),any(),
                                                                                any(),any(),any(),any(),any());
         }
 
@@ -720,7 +720,7 @@ class LinkHearingGroupServiceTest {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             });
             assertTrue(exception.getMessage().contains(REJECTED_BY_LIST_ASSIST));
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+            verify(hearingStatusAuditService, times(4)).saveAuditTriageDetails(any(),any(),
                                                                                any(),any(),any(),any(),any());
         }
 
@@ -767,7 +767,7 @@ class LinkHearingGroupServiceTest {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             });
             assertTrue(exception.getMessage().contains(LIST_ASSIST_FAILED_TO_RESPOND));
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+            verify(hearingStatusAuditService, times(4)).saveAuditTriageDetails(any(),any(),
                                                                                any(),any(),any(),any(),any());
         }
     }

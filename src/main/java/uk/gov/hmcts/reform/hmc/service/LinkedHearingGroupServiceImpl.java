@@ -89,7 +89,11 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             linkedHearingValidator.updateHearingWithLinkGroup(hearingLinkGroupRequest);
         LinkedHearingGroup linkedHearingGroup =
             futureHearingsLinkedHearingGroupService.processRequestForListAssist(linkedGroupDetails);
-
+        hearingEntities.forEach(hearingEntity -> {
+            hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getCreatedDateTime(),
+                                                             CREATE_LINKED_HEARING_REQUEST, null,
+                                                             clientS2SToken, FH, null);
+        });
         try {
             futureHearingRepository.createLinkedHearingGroup(objectMapperService
                                                                  .convertObjectToJsonNode(linkedHearingGroup));
