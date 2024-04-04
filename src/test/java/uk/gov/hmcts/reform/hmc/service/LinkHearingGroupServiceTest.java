@@ -14,6 +14,8 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
@@ -44,6 +46,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
@@ -138,7 +141,15 @@ class LinkHearingGroupServiceTest {
     private DefaultFutureHearingRepository futureHearingRepository;
 
     @Mock
-    ObjectMapperService objectMapper;
+    ObjectMapperService objectMapperService;
+
+    private static final ObjectMapper objectMapper = new Jackson2ObjectMapperBuilder()
+        .modules(new Jdk8Module())
+        .build();
+
+
+    @Mock
+    HearingStatusAuditService hearingStatusAuditService;
 
     private static final String CLIENT_S2S_TOKEN = "xui_webapp";
 
@@ -168,9 +179,11 @@ class LinkHearingGroupServiceTest {
                 linkedGroupDetailsRepository,
                 linkedHearingValidator,
                 futureHearingRepository,
-                objectMapper,
+                objectMapperService,
                 accessControlService,
-                futureHearingsLinkedHearingGroupService
+                futureHearingsLinkedHearingGroupService,
+                hearingStatusAuditService,
+                objectMapper
             );
     }
 
@@ -560,6 +573,8 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
+            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -608,6 +623,8 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
+            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -654,6 +671,8 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
+            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -701,6 +720,8 @@ class LinkHearingGroupServiceTest {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             });
             assertTrue(exception.getMessage().contains(REJECTED_BY_LIST_ASSIST));
+            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -746,6 +767,8 @@ class LinkHearingGroupServiceTest {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             });
             assertTrue(exception.getMessage().contains(LIST_ASSIST_FAILED_TO_RESPOND));
+            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
     }
 

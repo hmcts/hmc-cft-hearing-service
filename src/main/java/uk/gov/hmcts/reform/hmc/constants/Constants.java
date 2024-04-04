@@ -56,6 +56,9 @@ public final class Constants {
     public static final String UPDATE_HEARING_REQUEST = "update-hearing-request";
     public static final String CREATE_HEARING_REQUEST = "create-hearing-request";
     public static final String DELETE_HEARING_REQUEST = "delete-hearing-request";
+    public static final String UPDATE_LINKED_HEARING_REQUEST = "update-linked_hearing-request";
+    public static final String CREATE_LINKED_HEARING_REQUEST = "create-linked_hearing-request";
+    public static final String DELETE_LINKED_HEARING_REQUEST = "delete-linked_hearing-request";
     public static final String POST_HEARING_ACTUALS_COMPLETION = "post-hearing-actuals-completion";
     public static final String PUT_HEARING_ACTUALS_COMPLETION = "put-hearing-actuals-completion";
     public static final String PUT_PARTIES_NOTIFIED = "put-parties-notified";

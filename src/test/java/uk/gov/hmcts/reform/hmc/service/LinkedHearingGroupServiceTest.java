@@ -9,6 +9,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
@@ -36,6 +39,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
@@ -127,10 +131,18 @@ class LinkedHearingGroupServiceTest {
     DefaultFutureHearingRepository futureHearingRepository;
 
     @Mock
-    ObjectMapperService objectMapper;
+    ObjectMapperService objectMapperService;
 
     @Mock
     AccessControlService accessControlService;
+
+    @Mock
+    HearingStatusAuditService hearingStatusAuditService;
+
+    private static final ObjectMapper objectMapper = new Jackson2ObjectMapperBuilder()
+        .modules(new Jdk8Module())
+        .build();
+
 
     @BeforeEach
     public void setUp() {
@@ -158,10 +170,14 @@ class LinkedHearingGroupServiceTest {
             linkedGroupDetailsRepository,
             linkedHearingValidator,
             futureHearingRepository,
-            objectMapper,
+            objectMapperService,
             accessControlService,
-            futureHearingsLinkedHearingGroupService
+            futureHearingsLinkedHearingGroupService,
+            hearingStatusAuditService,
+            objectMapper
         );
+
+        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
     }
 
     @Nested
