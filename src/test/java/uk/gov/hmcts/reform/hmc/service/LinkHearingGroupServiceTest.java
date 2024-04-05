@@ -1176,6 +1176,8 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(4)).findById(2000000002L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
+            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1231,6 +1233,8 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(4)).findById(2000000002L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
+            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1291,6 +1295,8 @@ class LinkHearingGroupServiceTest {
                 service.updateLinkHearing("1", hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             });
             assertTrue(exception.getMessage().contains(REJECTED_BY_LIST_ASSIST));
+            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1348,6 +1354,8 @@ class LinkHearingGroupServiceTest {
                 service.updateLinkHearing("1", hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             });
             assertTrue(exception.getMessage().contains(LIST_ASSIST_FAILED_TO_RESPOND));
+            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
     }
 

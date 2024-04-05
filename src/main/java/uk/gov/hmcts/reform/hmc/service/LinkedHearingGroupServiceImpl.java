@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_FAILURE_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LIST_ASSIST_SUCCESSFUL_RESPONSE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.SUCCESS_STATUS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.UPDATE_LINKED_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
@@ -155,6 +156,11 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             currentHearings,
             requestId
         );
+        currentHearings.forEach(hearingEntity -> {
+            hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getCreatedDateTime(),
+                                                             UPDATE_LINKED_HEARING_REQUEST, null,
+                                                             clientS2SToken, FH, null);
+        });
 
         //HMAN-95
         LinkedHearingGroup linkedHearingGroup =
@@ -166,6 +172,11 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             log.info(LIST_ASSIST_SUCCESSFUL_RESPONSE);
             linkedGroupDetails.setStatus("ACTIVE");
             linkedGroupDetailsRepository.save(linkedGroupDetails);
+            currentHearings.forEach(hearingEntity -> {
+                hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getCreatedDateTime(),
+                                                                 UPDATE_LINKED_HEARING_REQUEST, SUCCESS_STATUS,
+                                                                 FH, HMC, null);
+            });
         } catch (BadFutureHearingRequestException requestException) {
             futureHearingsLinkedHearingGroupService.processAmendLinkedHearingResponse(
                 hearingLinkGroupRequest,
@@ -173,6 +184,12 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
                 linkedGroupDetails,
                 previousLinkedGroupDetails
             );
+            JsonNode errorDescription = objectMapper.convertValue(REJECTED_BY_LIST_ASSIST, JsonNode.class);
+            currentHearings.forEach(hearingEntity -> {
+                hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getCreatedDateTime(),
+                                                                 UPDATE_LINKED_HEARING_REQUEST, LA_FAILURE_STATUS,
+                                                                 FH, HMC, errorDescription);
+            });
             throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
         } catch (FutureHearingServerException serverException) {
             futureHearingsLinkedHearingGroupService.processAmendLinkedHearingResponse(
@@ -181,6 +198,12 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
                 linkedGroupDetails,
                 previousLinkedGroupDetails
             );
+            JsonNode errorDescription = objectMapper.convertValue(LIST_ASSIST_FAILED_TO_RESPOND, JsonNode.class);
+            currentHearings.forEach(hearingEntity -> {
+                hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getCreatedDateTime(),
+                                                                 UPDATE_LINKED_HEARING_REQUEST, LA_FAILURE_STATUS,
+                                                                 FH, HMC, errorDescription);
+            });
             throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
         }
     }
