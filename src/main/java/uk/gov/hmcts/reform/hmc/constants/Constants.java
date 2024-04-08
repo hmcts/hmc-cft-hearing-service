@@ -67,6 +67,8 @@ public final class Constants {
     public static final String HMI = "hmi";
     public static final String FH = "fh";
     public static final String HMC = "hmc";
+    public static final String HEARING_TYPE = "hearing";
+    public static final String LINKED_HEARING_TYPE = "linked_hearing";
     public static final String LA_SUCCESS_STATUS = "202";
     public static final String LA_FAILURE_STATUS = "400";
     public static final String SUCCESS_STATUS = "200";

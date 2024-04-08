@@ -177,7 +177,7 @@ class LinkedHearingGroupServiceTest {
             objectMapper
         );
 
-        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any(),any());
     }
 
     @Nested

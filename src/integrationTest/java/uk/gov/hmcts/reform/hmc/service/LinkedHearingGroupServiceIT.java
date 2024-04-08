@@ -8,12 +8,14 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetailsAudit;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingDetailsAudit;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 
@@ -27,6 +29,7 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGr
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn4XX;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGroupsReturn5XX;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyDeleteLinkedHearingGroups;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_LINKED_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
@@ -76,7 +79,6 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         //checking Audit tables
         validateLinkedGroupAuditDetails();
         validateHearingAuditDetails(linkedOrder);
-
     }
 
     @Test
@@ -256,4 +258,5 @@ class LinkedHearingGroupServiceIT extends BaseTest {
                                                          LinkedGroupDetailsAudit.class).getResultList());
 
     }
+
 }
