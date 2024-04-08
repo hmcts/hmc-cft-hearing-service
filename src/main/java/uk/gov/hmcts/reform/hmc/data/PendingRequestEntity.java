@@ -39,5 +39,5 @@ public class PendingRequestEntity implements Serializable {
     private Boolean incidentFlag;
 
     @Column(name = "message")
-    private String extraData;
+    private String message;
 }
