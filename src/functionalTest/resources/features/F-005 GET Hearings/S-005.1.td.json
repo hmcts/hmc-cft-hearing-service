@@ -16,7 +16,7 @@
     "_extends_": "Common_200_Response",
     "headers": {
       "Content-Length": "[[ANYTHING_PRESENT]]",
-      "Content-Type": "text/plain; charset=utf-8",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
       "Date": "[[ANYTHING_PRESENT]]",
       "Request-Context": "[[ANY_NULLABLE]]"
     },

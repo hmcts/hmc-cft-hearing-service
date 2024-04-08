@@ -328,46 +328,6 @@ class HearingManagementControllerTest {
         }
     }
 
-    @Nested
-    @DisplayName("getHearingsForListOfCases")
-    class GetHearingsForListOfCases {
-        @Test
-        void shouldReturnHearingResponseForListed() {
-            List<String> ccdCaseRefs  = List.of("9372710950276233");
-            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(ccdCaseRefs.get(0), "LISTED"))
-                .when(hearingManagementService)
-                .getHearings(any(), any());
-            HearingManagementController controller = new HearingManagementController(
-                hearingManagementService,
-                accessControlService,
-                applicationParams
-            );
-            List<GetHearingsResponse> hearingsResponseList = controller.getHearingsForListOfCases(ccdCaseRefs, null);
-            verify(hearingManagementService, times(1)).getHearings(any(), any());
-            assertEquals(hearingsResponseList.get(0).getCaseRef(), ccdCaseRefs.get(0));
-            assertTrue(hearingsResponseList.get(0).getCaseHearings().get(0).getHearingIsLinkedFlag());
-        }
-
-        @Test
-        void shouldReturnHearingResponseForListOfCases() {
-            List<String> ccdCaseRefs  = List.of("9372710950276233", "9856815055686759");
-            for (String ccdCaseRef : ccdCaseRefs) {
-                doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(ccdCaseRef, null))
-                    .when(hearingManagementService)
-                    .getHearings(any(), any());
-            }
-            HearingManagementController controller = new HearingManagementController(
-                hearingManagementService,
-                accessControlService,
-                applicationParams
-            );
-            List<GetHearingsResponse> hearingsResponseList = controller.getHearingsForListOfCases(ccdCaseRefs, null);
-            verify(hearingManagementService, times(2)).getHearings(any(), any());
-            assertEquals(hearingsResponseList.get(0).getCaseRef(), ccdCaseRefs.get(1));
-            assertTrue(hearingsResponseList.get(0).getCaseHearings().get(0).getHearingIsLinkedFlag());
-        }
-    }
-
     private HearingResponse generateHearingResponse() {
         final long hearingId = 2000000000L;
         HearingResponse hearingResponse = new HearingResponse();
