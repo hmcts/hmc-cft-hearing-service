@@ -136,7 +136,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             if (violations.isEmpty()) {
                 log.debug("Successfully converted message to HearingResponseType " + hearingResponse);
                 updateHearingAndStatus(hearingId, hearingResponse);
-                saveMessage(objectMapperService.convertObjectToJsonNode(message).toString(), hearingId, hearingResponse.getHearing().getHearingCaseVersionId());
+                saveMessage(objectMapperService.convertObjectToJsonNode(message).toString(), hearingId,
+                            hearingResponse.getHearing().getHearingCaseVersionId());
             } else {
                 log.info("Total violations found: " + violations.size());
                 for (ConstraintViolation<HearingResponse> violation : violations) {
