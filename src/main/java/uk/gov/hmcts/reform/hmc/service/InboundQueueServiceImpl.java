@@ -83,10 +83,10 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         pendingRequestEntity.setSubmittedDateTime(new Timestamp(System.currentTimeMillis()));
         pendingRequestEntity.setRetryCount(0);
         pendingRequestEntity.setIncidentFlag(false);
-        pendingRequestEntity.setExtraData(message.toString());
+        pendingRequestEntity.setMessage(message.toString());
         pendingRequestRepository.save(pendingRequestEntity);
     }
-    
+
     @Override
     public void processMessage(JsonNode message,
                                ServiceBusReceivedMessageContext messageContext)
