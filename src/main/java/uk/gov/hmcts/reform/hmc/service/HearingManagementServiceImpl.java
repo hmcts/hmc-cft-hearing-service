@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
@@ -33,7 +32,6 @@ import uk.gov.hmcts.reform.hmc.helper.hmi.EntitiesMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.EntitiesMapperObject;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiCaseDetailsMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
-import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.ListingMapper;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
@@ -42,7 +40,6 @@ import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
-import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
@@ -117,7 +114,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final ListingMapper listingMapper;
     private final HmiCaseDetailsMapper hmiCaseDetailsMapper;
     private final EntitiesMapper entitiesMapper;
-    private final HmiHearingResponseMapper hmiHearingResponseMapper;
 
 
     @Autowired
@@ -141,8 +137,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HearingActualsValidator hearingActualsValidator,
                                         ListingMapper listingMapper,
                                         HmiCaseDetailsMapper hmiCaseDetailsMapper,
-                                        EntitiesMapper entitiesMapper,
-                                        HmiHearingResponseMapper hmiHearingResponseMapper) {
+                                        EntitiesMapper entitiesMapper) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -164,7 +159,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.listingMapper = listingMapper;
         this.hmiCaseDetailsMapper = hmiCaseDetailsMapper;
         this.entitiesMapper = entitiesMapper;
-        this.hmiHearingResponseMapper = hmiHearingResponseMapper;
     }
 
     @Override
@@ -317,30 +311,17 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         hearingIdValidator.validateHearingId(hearingId, HEARING_ACTUALS_ID_NOT_FOUND);
         linkedHearingValidator.validateHearingActualsStatus(hearingId, HEARING_ACTUALS_INVALID_STATUS);
         hearingActualsValidator.validateHearingOutcomeInformation(hearingId);
-        HearingEntity hearingEntity = updateStatus(hearingId);
-        HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
-        messageSenderToTopicConfiguration
-            .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
-                         hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
-                         hearingEntity.getDeploymentId());
+        updateStatus(hearingId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    private HmcHearingResponse getHmcHearingResponse(HearingEntity hearingEntity) {
-        Optional<HearingResponseEntity> hearingResponseEntity = hearingEntity.getLatestHearingResponse();
-        return hearingResponseEntity.isPresent()
-            ? hmiHearingResponseMapper.mapEntityToHmcModel(hearingResponseEntity.get(), hearingEntity)
-            : hmiHearingResponseMapper.mapEntityToHmcModel(hearingEntity);
-    }
-
-    private HearingEntity updateStatus(Long hearingId) {
+    private void updateStatus(Long hearingId) {
         ActualHearingEntity actualHearingEntity = hearingIdValidator.getActualHearing(hearingId)
             .orElseThrow(() -> new BadRequestException(HEARING_ACTUALS_MISSING_HEARING_OUTCOME));
         HearingEntity hearingEntity = hearingRepository.findById(hearingId)
             .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
         hearingEntity.setStatus(actualHearingEntity.getHearingResultType().getLabel());
         hearingRepository.save(hearingEntity);
-        return hearingEntity;
     }
 
     private String getNextPutHearingStatus(String currentStatus) {
