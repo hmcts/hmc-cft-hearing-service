@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.PendingRequestRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
@@ -84,6 +85,8 @@ class InboundQueueServiceTest {
 
     @Mock
     ObjectMapperService objectMapperService;
+
+    PendingRequestRepository pendingRequestRepository;
 
     HearingIdValidator hearingIdValidator;
 
@@ -194,6 +197,7 @@ class InboundQueueServiceTest {
         inboundQueueService = new InboundQueueServiceImpl(
             OBJECT_MAPPER,
             hearingRepository,
+            pendingRequestRepository,
             hmiHearingResponseMapper,
             messageSenderToTopicConfiguration,
             objectMapperService,

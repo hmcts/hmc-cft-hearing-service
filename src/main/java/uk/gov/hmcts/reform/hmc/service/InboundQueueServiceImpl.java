@@ -75,15 +75,13 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     }
 
     public void saveMessage(String message, Long hearingId, int versionNumber) {
-        Optional<PendingRequestEntity> pendingRequestEntityOptional = pendingRequestRepository.findById(hearingId);
-        PendingRequestEntity pendingRequestEntity;
-        pendingRequestEntity = new PendingRequestEntity();
+        PendingRequestEntity pendingRequestEntity = new PendingRequestEntity();
         pendingRequestEntity.setHearingId(hearingId);
         pendingRequestEntity.setVersionNumber(versionNumber);
         pendingRequestEntity.setSubmittedDateTime(new Timestamp(System.currentTimeMillis()));
         pendingRequestEntity.setRetryCount(0);
         pendingRequestEntity.setIncidentFlag(false);
-        pendingRequestEntity.setMessage(message.toString());
+        pendingRequestEntity.setMessage(message);
         pendingRequestRepository.save(pendingRequestEntity);
     }
 
