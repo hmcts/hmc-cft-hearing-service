@@ -15,13 +15,16 @@ import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.PendingRequestEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.repository.PendingRequestRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
+import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -42,6 +45,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
     private final ObjectMapper objectMapper;
     private HearingRepository hearingRepository;
+    private PendingRequestRepository pendingRequestRepository;
     private HearingIdValidator hearingIdValidator;
     private final HmiHearingResponseMapper hmiHearingResponseMapper;
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
@@ -53,6 +57,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
     public InboundQueueServiceImpl(ObjectMapper objectMapper,
                                    HearingRepository hearingRepository,
+                                   PendingRequestRepository pendingRequestRepository,
                                    HmiHearingResponseMapper hmiHearingResponseMapper,
                                    MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
                                    ObjectMapperService objectMapperService,
@@ -60,6 +65,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                                    ApplicationParams applicationParams) {
         this.objectMapper = objectMapper;
         this.hearingRepository = hearingRepository;
+        this.pendingRequestRepository = pendingRequestRepository;
         this.hmiHearingResponseMapper = hmiHearingResponseMapper;
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
@@ -68,6 +74,19 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
     }
 
+    public void saveMessage(String message, Long hearingId, int versionNumber) {
+        Optional<PendingRequestEntity> pendingRequestEntityOptional = pendingRequestRepository.findById(hearingId);
+        PendingRequestEntity pendingRequestEntity;
+        pendingRequestEntity = new PendingRequestEntity();
+        pendingRequestEntity.setHearingId(hearingId);
+        pendingRequestEntity.setVersionNumber(versionNumber);
+        pendingRequestEntity.setSubmittedDateTime(new Timestamp(System.currentTimeMillis()));
+        pendingRequestEntity.setRetryCount(0);
+        pendingRequestEntity.setIncidentFlag(false);
+        pendingRequestEntity.setExtraData(message.toString());
+        pendingRequestRepository.save(pendingRequestEntity);
+    }
+    
     @Override
     public void processMessage(JsonNode message,
                                ServiceBusReceivedMessageContext messageContext)
@@ -117,6 +136,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             if (violations.isEmpty()) {
                 log.debug("Successfully converted message to HearingResponseType " + hearingResponse);
                 updateHearingAndStatus(hearingId, hearingResponse);
+                saveMessage(objectMapperService.convertObjectToJsonNode(message).toString(), hearingId, hearingResponse.getHearing().getHearingCaseVersionId());
             } else {
                 log.info("Total violations found: " + violations.size());
                 for (ConstraintViolation<HearingResponse> violation : violations) {
