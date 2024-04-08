@@ -72,6 +72,9 @@ class InboundQueueServiceTest {
     private HearingRepository hearingRepository;
 
     @Mock
+    private PendingRequestRepository pendingRequestRepository;
+
+    @Mock
     private ActualHearingRepository actualHearingRepository;
 
     @Mock
@@ -86,7 +89,6 @@ class InboundQueueServiceTest {
     @Mock
     ObjectMapperService objectMapperService;
 
-    PendingRequestRepository pendingRequestRepository;
 
     HearingIdValidator hearingIdValidator;
 
