@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
+import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +50,9 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    LinkedHearingStatusAuditRepository linkedHearingStatusAuditRepository;
+
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
     private static final String INSERT_LINKED_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-linked-hearings.sql";
@@ -79,6 +83,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         //checking Audit tables
         validateLinkedGroupAuditDetails();
         validateHearingAuditDetails(linkedOrder);
+        validateLinkedHearingAuditDetails("2100000005");
     }
 
     @Test
@@ -112,6 +117,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         //checking Audit tables
         validateLinkedGroupAuditDetailsAfterDelete();
         validateHearingAuditDetailsAfterDelete();
+        validateLinkedHearingAuditDetails("2100000005");
     }
 
     @Test
@@ -141,6 +147,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         //checking Audit tables
         validateLinkedGroupAuditDetailsAfterDelete();
         validateHearingAuditDetailsAfterDelete();
+        validateLinkedHearingAuditDetails("2100000005");
     }
 
     @Test
@@ -170,6 +177,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         //checking Audit tables
         validateLinkedGroupAuditDetailsAfterDelete();
         validateHearingAuditDetailsAfterDelete();
+        validateLinkedHearingAuditDetails("2100000005");
     }
 
     @Test
@@ -204,6 +212,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         //checking Audit tables
         validateLinkedGroupAuditDetailsAfterDelete();
         validateHearingAuditDetailsAfterDelete();
+        validateLinkedHearingAuditDetails("2100000005");
     }
 
     @Test
@@ -258,5 +267,14 @@ class LinkedHearingGroupServiceIT extends BaseTest {
                                                          LinkedGroupDetailsAudit.class).getResultList());
 
     }
+
+    private void validateLinkedHearingAuditDetails(String hearingId) {
+        List<LinkedHearingStatusAuditEntity> auditEntityList = linkedHearingStatusAuditRepository.findByLinkedHearingId(
+                                                                                                         hearingId);
+        assertNotNull(auditEntityList);
+        assertEquals(hearingId, auditEntityList.get(0).getLinkedHearingGroupId());
+        assertEquals(DELETE_LINKED_HEARING_REQUEST, auditEntityList.get(0).getHearingEvent());
+    }
+
 
 }
