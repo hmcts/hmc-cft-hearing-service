@@ -28,7 +28,7 @@ class CapitalizedEnumPatternValidatorTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY", "MoNdAy",
-        "TUEsday", "wednesday", "THuRSDAY", "FridaY", "saturday", "sUNDAY"})
+            "TUEsday", "wednesday", "THuRSDAY", "FridaY", "saturday", "sUNDAY"})
     void whenInvalidCaseUnavailabilityDow(String dowValue) {
         final Set<ConstraintViolation<UnavailabilityDow>> violations =
                 createAndValidateUnavailabilityDow(dowValue);

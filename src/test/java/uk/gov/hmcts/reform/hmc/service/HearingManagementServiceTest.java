@@ -34,7 +34,6 @@ import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
@@ -49,7 +48,6 @@ import uk.gov.hmcts.reform.hmc.helper.hmi.EntitiesMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.EntitiesMapperObject;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiCaseDetailsMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiDeleteHearingRequestMapper;
-import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiSubmitHearingRequestMapper;
 import uk.gov.hmcts.reform.hmc.helper.hmi.ListingMapper;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
@@ -58,8 +56,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
-import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
-import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
@@ -225,9 +221,6 @@ class HearingManagementServiceTest {
     @Mock
     EntitiesMapper entitiesMapper;
 
-    @Mock
-    HmiHearingResponseMapper hmiHearingResponseMapper;
-
     JsonNode jsonNode = mock(JsonNode.class);
 
     @BeforeEach
@@ -266,8 +259,7 @@ class HearingManagementServiceTest {
                 hearingActualsValidator,
                 listingMapper,
                 hmiCaseDetailsMapper,
-                entitiesMapper,
-                hmiHearingResponseMapper);
+                entitiesMapper);
     }
 
 
@@ -1085,8 +1077,7 @@ class HearingManagementServiceTest {
                             hearingActualsValidator,
                             listingMapper,
                             hmiCaseDetailsMapper,
-                            entitiesMapper,
-                            hmiHearingResponseMapper);
+                            entitiesMapper);
 
         }
 
@@ -1677,7 +1668,6 @@ class HearingManagementServiceTest {
             when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(3));
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
-            mockHearingCompletionRequest(hearingEntity);
             ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId);
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
             assertNotNull(responseEntity);
@@ -1703,7 +1693,6 @@ class HearingManagementServiceTest {
             when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(13));
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
-            mockHearingCompletionRequest(hearingEntity);
             hearingManagementService.hearingCompletion(hearingId);
         }
 
@@ -1726,7 +1715,6 @@ class HearingManagementServiceTest {
             when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(13));
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                     .thenReturn(Optional.of(actualHearingEntity));
-            mockHearingCompletionRequest(hearingEntity);
             hearingManagementService.hearingCompletion(hearingId);
         }
 
@@ -1749,24 +1737,11 @@ class HearingManagementServiceTest {
             when(actualHearingEntity.getHearingResultReasonType()).thenReturn("MADE UP REASON");
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
-            mockHearingCompletionRequest(hearingEntity);
             ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId);
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
             assertNotNull(responseEntity);
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         }
-    }
-
-    private void mockHearingCompletionRequest(HearingEntity hearingEntity) {
-        HmcHearingResponse hmcHearingResponse = new HmcHearingResponse();
-        hmcHearingResponse.setHearingID("2000000000");
-        HmcHearingUpdate hmcHearingUpdate = new HmcHearingUpdate();
-        hmcHearingUpdate.setHmcStatus(HearingStatus.LISTED.name());
-
-        hmcHearingResponse.setHearingUpdate(hmcHearingUpdate);
-        when(hmiHearingResponseMapper.mapEntityToHmcModel(any(HearingResponseEntity.class),
-                                                          any(HearingEntity.class))).thenReturn(hmcHearingResponse);
-        when(objectMapperService.convertObjectToJsonNode(hmcHearingResponse)).thenReturn(jsonNode);
     }
 
     /**

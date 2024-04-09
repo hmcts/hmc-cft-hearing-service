@@ -122,8 +122,9 @@ public class HearingActualsMapper {
                                       ActualHearingPartyEntity partyEntity) {
         if (actualHearingDayParty.getActualPartyId() == null) {
             if (actualHearingDayParty.getIndividualDetails() != null) {
-                partyEntity.setPartyId(String.valueOf(actualHearingDayParty.hashCode()));
-                actualHearingDayParty.setActualPartyId(String.valueOf(actualHearingDayParty.hashCode()));
+                partyEntity.setPartyId(String.valueOf(actualHearingDayParty.getIndividualDetails().hashCode()));
+                actualHearingDayParty.setActualPartyId(String.valueOf(actualHearingDayParty
+                                                                          .getIndividualDetails().hashCode()));
             } else {
                 partyEntity.setPartyId(String.valueOf(actualHearingDayParty.getActualOrganisationName().hashCode()));
                 actualHearingDayParty.setActualPartyId(String.valueOf(actualHearingDayParty

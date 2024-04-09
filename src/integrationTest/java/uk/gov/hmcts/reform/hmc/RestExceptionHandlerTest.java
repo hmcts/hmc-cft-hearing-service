@@ -47,8 +47,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 
 @AutoConfigureMockMvc(addFilters = false)
 @ImportAutoConfiguration(TestIdamConfiguration.class)
@@ -227,13 +225,12 @@ public class RestExceptionHandlerTest extends BaseTest {
             .saveHearingRequest(any(HearingRequest.class),any());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
-                                                         .header(HMCTS_DEPLOYMENT_ID, "a".repeat(41))
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
         // THEN
         assertHttpErrorResponse(result, HttpStatus.BAD_REQUEST.value(),
-                                HMCTS_DEPLOYMENT_ID_MAX_LENGTH, "BAD_REQUEST");
+                                "HMCTS deployment id is required", "BAD_REQUEST");
     }
 
     private void assertHttpErrorResponse(ResultActions result, int expectedStatusCode, String expectedMessage,
