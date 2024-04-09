@@ -33,7 +33,7 @@ class HearingResponseRepositoryIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void testGetUnNotifiedHearingsWithOutStartDateTo() {
-        final List<Long> expectedHearingIds = Arrays.asList(2100000000L, 2100000001L);
+        final List<Long> expectedHearingIds = Arrays.asList(2100000001L, 2100000000L);
         String dateStr = "2019-12-10 11:00:00";
         LocalDateTime startFrom = convertDateTime(dateStr);
         Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
