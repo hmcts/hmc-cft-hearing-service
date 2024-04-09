@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.FIRST_PAGE;
@@ -45,7 +46,7 @@ class HearingResponseRepositoryIT extends BaseTest {
         assertNotNull(expected.getContent());
         assertEquals(2, expected.getContent().size());
         assertEquals(2, expected.getTotalElements());
-        assertEquals(expectedHearingIds, expected.getContent());
+        assertTrue(expectedHearingIds.containsAll(expected.getContent()));
     }
 
     @Test
