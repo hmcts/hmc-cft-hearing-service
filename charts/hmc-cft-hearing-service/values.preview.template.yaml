@@ -2,6 +2,10 @@ java:
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  devmemoryRequests: 2048Mi
+  devcpuRequests: 2000m
+  devmemoryLimits: 4096Mi
+  devcpuLimits: 4000m
   environment:
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft
     HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft
@@ -13,7 +17,7 @@ java:
     CFT_HEARING_SERVICE_DB_PASSWORD: "{{ .Values.postgresql.auth.password}}"
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
     CFT_HEARING_SERVICE_DB_PORT: 5432
-    CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api-pr-1260-java.ccd/
+    CCD_DATA_STORE_API_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal
   postgresql:
     enabled: true
   secrets:

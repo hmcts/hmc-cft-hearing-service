@@ -107,6 +107,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
     private void validateResponse(JsonNode message, MessageType messageType, Long hearingId)
         throws JsonProcessingException {
+        log.debug("message received for hearing id :{}, messageType: {}, message: {} ",hearingId, messageType,
+                  message.toString());
         if (messageType.equals(MessageType.HEARING_RESPONSE)) {
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             Validator validator = factory.getValidator();
@@ -174,6 +176,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
     @Transactional
     private void updateHearingAndStatus(Long hearingId, SyncResponse syncResponse) {
+        log.debug(MessageType.LA_SYNC_HEARING_RESPONSE + " received for hearing id {} ,{} ", hearingId,
+                  syncResponse.toString());
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiSyncResponseToEntity(
