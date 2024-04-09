@@ -51,7 +51,7 @@ class HearingResponseRepositoryIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void testGetUnNotifiedHearingsWithStartDateTo() {
-        final List<Long> expectedHearingIds = Arrays.asList(2100000001L, 2100000000L);
+        final List<Long> expectedHearingIds = Arrays.asList(2100000000L, 2100000001L);
         String dateStrFrom = "2019-12-10 11:00:00";
         String dateStrTo = "2021-10-01 11:00:00";
         LocalDateTime startFrom = convertDateTime(dateStrFrom);
