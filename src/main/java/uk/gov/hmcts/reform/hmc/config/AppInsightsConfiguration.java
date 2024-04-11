@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.hmc;
+package uk.gov.hmcts.reform.hmc.config;
 
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.springframework.context.annotation.Bean;
