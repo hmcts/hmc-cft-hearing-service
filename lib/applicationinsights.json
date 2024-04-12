@@ -4,6 +4,8 @@
     "name": "hmc-cft-hearing-service"
   }, 
   "preview": {
+    "captureControllerSpans": true,
+    "captureLoggingLevelAsCustomDimension": true,
     "sampling": {
       "overrides": [
         {
