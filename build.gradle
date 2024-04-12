@@ -243,7 +243,7 @@ def versions = [
   lombok          : '1.18.30',
   mapstruct       : '1.4.2.Final',
   pact            : '4.1.7',
-  reformLogging   : '6.0.1',
+  reformLogging   : '6.1.4',
   azureInsightsVersion: '2.4.1',
   restAssured     : '4.2.1',
   springBoot      : springBoot.class.package.implementationVersion,
