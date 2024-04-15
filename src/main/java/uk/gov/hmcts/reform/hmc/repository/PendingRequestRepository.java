@@ -16,12 +16,6 @@ import javax.persistence.LockModeType;
 @Repository
 public interface PendingRequestRepository extends CrudRepository<PendingRequestEntity, Long> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query(value = "SELECT * FROM pending_requests WHERE status = 'PENDING' "
-        + "AND (last_tried_date_time IS NULL OR last_tried_date_time < NOW() - INTERVAL '15' MINUTE) "
-        + "ORDER BY submitted_date_time ASC LIMIT 1")
-    PendingRequestEntity findOldestPendingRequestForProcessing();
-
     @Modifying
     @Query("UPDATE PendingRequestEntity SET status = 'PROCESSING' WHERE id = :id")
     void markRequestAsProcessing(Long id);
