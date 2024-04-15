@@ -4,6 +4,8 @@ provider "azurerm" {
 
 locals {
   app_full_name = "${var.product}-${var.component}"
+  replica_suffix = var.enable_replica ? "-replica01" : ""
+  resource_name = "${local.app_full_name}${local.replica_suffix}"
 
   // Shared Resource Group
   sharedResourceGroup = "${var.raw_product}-shared-${var.env}"
@@ -106,7 +108,7 @@ module "postgresql_v15" {
   ]
   pgsql_version    = "15"
   product          = var.product
-  name             = "${local.app_full_name}-postgres-db-v15"
+  name             = local.resource_name
   pgsql_sku        = var.pgsql_sku
   pgsql_storage_mb = var.pgsql_storage_mb
 }
@@ -160,7 +162,7 @@ module "postgresql_v15_replica" {
   ]
   pgsql_version    = "15"
   product          = var.product
-  name             = "${local.app_full_name}-postgres-db-v15"
+  name             = local.resource_name
   pgsql_sku        = var.pgsql_sku
   pgsql_storage_mb = var.pgsql_storage_mb
   create_mode      = "Replica"
