@@ -38,18 +38,4 @@ public interface PendingRequestRepository extends CrudRepository<PendingRequestE
     @Modifying
     @Query("UPDATE PendingRequestEntity SET status = 'EXCEPTION' WHERE id = :id")
     void markRequestAsException(Long id);
-
-    @Query("SELECT pr FROM PendingRequestEntity pr WHERE pr.submittedDateTime < :CURRENT_TIMESTAMP "
-        + "- INTERVAL '1' DAY AND pr.incidentFlag = false")
-    List<PendingRequestEntity> findRequestsForEscalation();
-
-    @Modifying
-    @Query("UPDATE PendingRequestEntity SET incidentFlag = true WHERE submittedDateTime < CURRENT_TIMESTAMP "
-        + "- INTERVAL '1' DAY AND incidentFlag = false")
-    void identifyRequestsForEscalation();
-
-    @Modifying
-    @Query("DELETE FROM PendingRequestEntity WHERE status = 'COMPLETED' "
-        + "AND submittedDateTime < CURRENT_TIMESTAMP - INTERVAL '30' DAY")
-    void deleteCompletedRecords();
 }
