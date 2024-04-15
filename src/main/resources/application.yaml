@@ -175,4 +175,4 @@ LOGGING:
         hmcts:
           reform:
             hmc:
-              config: INFO
+              config: DEBUG
