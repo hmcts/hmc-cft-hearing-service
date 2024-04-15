@@ -50,6 +50,6 @@ public interface PendingRequestRepository extends CrudRepository<PendingRequestE
 
     @Modifying
     @Query("DELETE FROM PendingRequestEntity WHERE status = 'COMPLETED' "
-        + "AND submittedDateTime < CURRENT_TIMESTAMP - INTERVAL '30' DAYS")
+        + "AND submittedDateTime < CURRENT_TIMESTAMP - INTERVAL '30' DAY")
     void deleteCompletedRecords();
 }
