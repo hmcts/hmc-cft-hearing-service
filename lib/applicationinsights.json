@@ -4,8 +4,16 @@
     "name": "hmc-cft-hearing-service"
   }, 
   "preview": {
+    "instrumentation": {
+      "springIntegration": {
+        "enabled": true
+      }
+    },
     "captureControllerSpans": true,
     "captureLoggingLevelAsCustomDimension": true,
+    "captureLogbackMarker":  true,
+    "captureLog4jMarker":  true,
+    "captureLogbackCodeAttributes": true,
     "sampling": {
       "overrides": [
         {
