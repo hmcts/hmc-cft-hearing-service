@@ -2,7 +2,6 @@ ARG PLATFORM=""
 ARG APP_INSIGHTS_AGENT_VERSION=3.4.13
 FROM eclipse-temurin${PLATFORM}:17 as builder
 ARG JAR_FILE=build/libs/hmc-cft-hearing-service.jar
-ARG APP_INSIGHTS_AGENT_VERSION=3.4.13
 COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
 
