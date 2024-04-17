@@ -275,4 +275,5 @@ public final class ValidationError {
     public static final String HMCTS_DEPLOYMENT_ID_NOT_REQUIRED = "HMCTS deployment id is not required";
     public static final String HMCTS_DEPLOYMENT_ID_MAX_LENGTH = "HMCTS deployment id must not be more than 40 "
         + CHARACTERS_LONG;
+    public static final String HEARING_STATUS_EXCEPTION = "Hearing status can not be Exception";
 }

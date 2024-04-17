@@ -42,6 +42,8 @@ public class UnNotifiedHearingServiceTest {
     @Mock
     AccessControlService accessControlService;
 
+    List<String> hearingStatus  = List.of("LISTED");
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -59,7 +61,8 @@ public class UnNotifiedHearingServiceTest {
             LocalDateTime startFrom = LocalDateTime.of(2019, 1, 10, 11, 20, 00);
 
             Exception exception = assertThrows(BadRequestException.class, () ->
-                unNotifiedHearingService.getUnNotifiedHearings("AA", startFrom, null));
+                unNotifiedHearingService.getUnNotifiedHearings("AA", startFrom, null,
+                                                               null));
             assertEquals(INVALID_HMCTS_SERVICE_CODE, exception.getMessage());
         }
 
@@ -68,7 +71,8 @@ public class UnNotifiedHearingServiceTest {
             LocalDateTime startFrom = LocalDateTime.of(2019, 1, 10, 11, 20, 00);
 
             Exception exception = assertThrows(BadRequestException.class, () ->
-                unNotifiedHearingService.getUnNotifiedHearings(null, startFrom, null));
+                unNotifiedHearingService.getUnNotifiedHearings(null, startFrom, null,
+                                                               null));
             assertEquals(INVALID_HMCTS_SERVICE_CODE, exception.getMessage());
         }
 
@@ -77,7 +81,8 @@ public class UnNotifiedHearingServiceTest {
             LocalDateTime startFrom = LocalDateTime.of(2019, 1, 10, 11, 20, 00);
 
             Exception exception = assertThrows(BadRequestException.class, () ->
-                unNotifiedHearingService.getUnNotifiedHearings("", startFrom, null));
+                unNotifiedHearingService.getUnNotifiedHearings("", startFrom, null,
+                                                               hearingStatus));
             assertEquals(INVALID_HMCTS_SERVICE_CODE, exception.getMessage());
         }
 
@@ -92,7 +97,7 @@ public class UnNotifiedHearingServiceTest {
                                                                                    dateTime, limit
             )).willReturn(unNotifiedHearingsData);
             UnNotifiedHearingsResponse response = unNotifiedHearingService
-                .getUnNotifiedHearings("ABA1", dateTime, dateTime);
+                .getUnNotifiedHearings("ABA1", dateTime, dateTime, hearingStatus);
             assertEquals(3, response.getHearingIds().size());
             assertEquals(3, response.getTotalFound());
         }
@@ -108,7 +113,7 @@ public class UnNotifiedHearingServiceTest {
                                                                                    limit
             )).willReturn(unNotifiedHearingsData);
             UnNotifiedHearingsResponse response = unNotifiedHearingService
-                .getUnNotifiedHearings("ABA1", dateTime, null);
+                .getUnNotifiedHearings("ABA1", dateTime, null, null);
             assertEquals(3, response.getHearingIds().size());
             assertEquals(3, response.getTotalFound());
         }
@@ -124,7 +129,7 @@ public class UnNotifiedHearingServiceTest {
                                                                                     limit
             )).willReturn(unNotifiedHearingsData);
             UnNotifiedHearingsResponse response = unNotifiedHearingService
-                .getUnNotifiedHearings("ABA1", dateTime, null);
+                .getUnNotifiedHearings("ABA1", dateTime, null, hearingStatus);
             assertEquals(0, response.getHearingIds().size());
             assertEquals(0, response.getTotalFound());
         }
@@ -141,7 +146,7 @@ public class UnNotifiedHearingServiceTest {
                                                                                    dateTime, limit
             )).willReturn(unNotifiedHearingsData);
             UnNotifiedHearingsResponse response = unNotifiedHearingService
-                .getUnNotifiedHearings("ABA1", dateTime, dateTime);
+                .getUnNotifiedHearings("ABA1", dateTime, dateTime, hearingStatus);
             assertEquals(0, response.getHearingIds().size());
             assertEquals(0, response.getTotalFound());
         }
