@@ -13,4 +13,4 @@ COPY lib/applicationinsights.json /opt/app/
 COPY --from=builder application.jar /opt/app/
 
 EXPOSE 4561
-ENTRYPOINT ["java", "-jar", "/opt/app/hmc-hearing-service.jar"]
+ENTRYPOINT ["java", "-jar", "/opt/app/application.jar"]
