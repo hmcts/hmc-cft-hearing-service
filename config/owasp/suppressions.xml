@@ -6,12 +6,10 @@
     ]]> Temporary Suppression
         CVE-2023-34462 refer [Ticket]
         CVE-2023-44487 refer [Ticket]
-    
-        CVE-2024-1597 refer [Ticket]</notes>
+        CVE-2023-36052 refer [Ticket]</notes>
     <cpe>cpe:2.3:a:microsoft:azure_sdk_for_java:1.44.1</cpe>
     <cve>CVE-2023-34462</cve>
     <cve>CVE-2023-44487</cve>
     <cve>CVE-2023-36052</cve>
-    <cve>CVE-2024-1597</cve>
   </suppress>
 </suppressions>
