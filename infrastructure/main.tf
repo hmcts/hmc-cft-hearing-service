@@ -161,5 +161,6 @@ module "postgresql_v15_replica" {
   pgsql_storage_mb = var.pgsql_storage_mb
   create_mode      = "Replica"
   source_server_id = var.primary_server_id
+  high_availability = false
 
 }
