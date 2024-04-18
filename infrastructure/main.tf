@@ -17,6 +17,18 @@ data "azurerm_key_vault" "hmc_shared_key_vault" {
   resource_group_name = local.sharedResourceGroup
 }
 
+module "key-vault" {
+  source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
+  product                 = var.product
+  env                     = var.env
+  tenant_id               = var.tenant_id
+  object_id               = var.jenkins_AAD_objectId
+  resource_group_name     = azurerm_resource_group.rg.name
+  product_group_name      = "dcd_ccd"
+  common_tags             = var.common_tags
+  create_managed_identity = true
+}
+
 ////////////////////////////////
 // DB version 11              //
 ////////////////////////////////
@@ -109,7 +121,18 @@ module "postgresql_v15" {
   name             = "${local.app_full_name}-postgres-db-v15"
   pgsql_sku        = var.pgsql_sku
   pgsql_storage_mb = var.pgsql_storage_mb
+  # Setup Access Reader db user
+  force_user_permissions_trigger = "1"
+
+  # Sets correct DB owner after migration to fix permissions
+  enable_schema_ownership = var.enable_schema_ownership
+  force_schema_ownership_trigger = "1"
+  kv_subscription = var.kv_subscription
+  kv_name = module.key-vault.key_vault_id
+  user_secret_name = azurerm_key_vault_secret.POSTGRES-USER.name
+  pass_secret_name = azurerm_key_vault_secret.POSTGRES-PASS.name
 }
+
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER-V15" {
   name         = "${var.component}-POSTGRES-USER-V15"
