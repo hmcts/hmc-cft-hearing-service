@@ -134,7 +134,7 @@ resource "azurerm_key_vault_secret" "POSTGRES-HOST-V15" {
 ////////////////////////////////////////
 
 module "postgresql_v15_replica" {
-  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=fix/high-availability-override"
+  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   count  = var.enable_replica ? 1 : 0
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
