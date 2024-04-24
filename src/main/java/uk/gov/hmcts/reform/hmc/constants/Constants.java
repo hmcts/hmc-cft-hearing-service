@@ -54,4 +54,5 @@ public final class Constants {
     public static final String LATEST_HEARING_STATUS = "Latest-Hearing-Status";
     public static final Integer HMCTS_DEPLOYMENT_ID_MAX_SIZE = 40;
     public static final String EXCEPTION_STATUS = "Exception";
+    public static final String CANCELLED = "CANCELLED";
 }

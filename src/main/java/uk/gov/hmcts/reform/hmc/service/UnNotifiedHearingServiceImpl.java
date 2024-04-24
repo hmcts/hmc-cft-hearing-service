@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.hmc.service;
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -17,8 +15,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.EXCEPTION_STATUS;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.FIRST_PAGE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.UN_NOTIFIED_HEARINGS_LIMIT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_STATUS_EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HMCTS_SERVICE_CODE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
@@ -74,21 +70,18 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
     private List<Long> getUnNotifiedHearingResults(String hmctsServiceCode, LocalDateTime hearingStartDateFrom,
                                                                        LocalDateTime hearingStartDateTo,
                                                    List<String> hearingStatus) {
-        Pageable limitUnNotifiedHearingsTo = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
         if (null != hearingStartDateTo) {
             return unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo(
                 hmctsServiceCode,
                 hearingStartDateFrom,
                 hearingStartDateTo,
-                hearingStatus,
-                limitUnNotifiedHearingsTo
+                hearingStatus
             );
         } else {
             return unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
                 hmctsServiceCode,
                 hearingStartDateFrom,
-                hearingStatus,
-                limitUnNotifiedHearingsTo);
+                hearingStatus);
         }
     }
 
