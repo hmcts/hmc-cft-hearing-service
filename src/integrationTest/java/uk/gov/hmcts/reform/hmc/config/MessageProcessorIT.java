@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.Spliterator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
+
 import javax.inject.Inject;
 
 import static java.time.LocalDateTime.parse;
@@ -496,7 +498,7 @@ class MessageProcessorIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldInitiateRequest_shouldStoreSingleHearingSessionForDay() throws JsonProcessingException {
 
-        JsonNode hearingSessionsJsonNode = OBJECT_MAPPER.readTree(String.format(HEARING, 3,
+        JsonNode hearingSessionsJsonNode = OBJECT_MAPPER.readTree(String.format(HEARING, 1,
                 createHearingSessions(
                         List.of("2022-02-10T10:30:00", "2022-02-10T12:00:00", "2022-02-10T14:30:00"),
                         List.of("2022-02-10T11:30:00", "2022-02-10T12:30:00", "2022-02-10T16:30:00"))
@@ -506,7 +508,7 @@ class MessageProcessorIT extends BaseTest {
 
         final Iterable<HearingDayDetailsEntity> hearingDayDetailsEntities = hearingDayDetailsRepository.findAll();
 
-        assertEquals(2, hearingDayDetailsEntities.spliterator().estimateSize());
+        assertEquals(1, StreamSupport.stream(hearingDayDetailsEntities.spliterator(), false).count());
         final HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetailsEntities.iterator().next();
 
         assertEquals(parse("2022-02-10T10:30:00"), hearingDayDetailsEntity.getStartDateTime());
