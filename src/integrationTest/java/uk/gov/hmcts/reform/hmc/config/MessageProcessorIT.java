@@ -496,7 +496,7 @@ class MessageProcessorIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldInitiateRequest_shouldStoreSingleHearingSessionForDay() throws JsonProcessingException {
 
-        JsonNode hearingSessionsJsonNode = OBJECT_MAPPER.readTree(String.format(HEARING, 1,
+        JsonNode hearingSessionsJsonNode = OBJECT_MAPPER.readTree(String.format(HEARING, 3,
                 createHearingSessions(
                         List.of("2022-02-10T10:30:00", "2022-02-10T12:00:00", "2022-02-10T14:30:00"),
                         List.of("2022-02-10T11:30:00", "2022-02-10T12:30:00", "2022-02-10T16:30:00"))
