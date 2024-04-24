@@ -87,7 +87,7 @@ public class UnNotifiedHearingsRepositoryImpl implements UnNotifiedHearingsRepos
         }
         hqlQuery.append(") GROUP BY hr.hearing.id, hdd.startDateTime ");
         hqlQuery.append("HAVING MIN(hdd.startDateTime) >= :hearingStartDateFrom ");
-        hqlQuery.append("HAVING MAX(hdd.endDateTime) >= :hearingStartDateTo ");
+        hqlQuery.append("AND MAX(hdd.endDateTime) >= :hearingStartDateTo ");
         if (null != hearingStatus && hearingStatus.stream().anyMatch(e -> e.equalsIgnoreCase(CANCELLED))) {
             hqlQuery.append("OR hdd.startDateTime IS NULL");
         }

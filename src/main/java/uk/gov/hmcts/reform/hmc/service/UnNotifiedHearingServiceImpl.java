@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.EXCEPTION_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_STATUS_EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HMCTS_SERVICE_CODE;
@@ -43,8 +44,7 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
                                                             LocalDateTime hearingStartDateFrom,
                                                             LocalDateTime hearingStartDateTo,
                                                             List<String> hearingStatus) {
-        if (null != hearingStatus && hearingStatus.size() == 1
-            && hearingStatus.get(0).equalsIgnoreCase(EXCEPTION_STATUS)) {
+        if (null != hearingStatus && hearingStatus.stream().anyMatch(e -> e.equalsIgnoreCase(EXCEPTION_STATUS))) {
             throw new BadRequestException(HEARING_STATUS_EXCEPTION);
         }
         isValidHmctsServiceCode(hmctsServiceCode);
