@@ -37,7 +37,7 @@ class UnNotifiedHearingsRepositoryImplTest {
             .thenReturn(expectedHearingIds);
         List<Long> hearingIds = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
             "Test", startFrom, hearingStatusListed);
-        assertNotNull(hearingIds.size());
+        assertNotNull(hearingIds);
         assertEquals(2, hearingIds.size());
         assertTrue(expectedHearingIds.containsAll(hearingIds));
     }
@@ -53,7 +53,7 @@ class UnNotifiedHearingsRepositoryImplTest {
             .thenReturn(expectedHearingIds);
         List<Long> hearingIds = unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo(
             "Test", startFrom, startTo, hearingStatusListed);
-        assertNotNull(hearingIds.size());
+        assertNotNull(hearingIds);
         assertEquals(2, hearingIds.size());
         assertTrue(expectedHearingIds.containsAll(hearingIds));
     }
@@ -68,7 +68,7 @@ class UnNotifiedHearingsRepositoryImplTest {
             .thenReturn(expectedHearingIds);
         List<Long> hearingIds = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
             "Test", startFrom, hearingStatusCancelled);
-        assertNotNull(hearingIds.size());
+        assertNotNull(hearingIds);
         assertEquals(1, hearingIds.size());
         assertTrue(expectedHearingIds.containsAll(hearingIds));
     }
@@ -83,7 +83,7 @@ class UnNotifiedHearingsRepositoryImplTest {
             .thenReturn(expectedHearingIds);
         List<Long> hearingIds = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
             "Test", startFrom, hearingStatus);
-        assertNotNull(hearingIds.size());
+        assertNotNull(hearingIds);
         assertEquals(1, hearingIds.size());
         assertTrue(expectedHearingIds.containsAll(hearingIds));
     }
