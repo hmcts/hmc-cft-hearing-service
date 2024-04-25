@@ -1,7 +1,7 @@
-insert into hearing ( hearing_id, status) values ('2100000000', 'HEARING_REQUESTED');
-insert into hearing ( hearing_id, status) values ('2100000001', 'HEARING_REQUESTED');
-insert into hearing ( hearing_id, status) values ('2100000003', 'HEARING_REQUESTED');
-insert into hearing ( hearing_id, status) values ('2100000004', 'HEARING_REQUESTED');
+insert into hearing ( hearing_id, status) values ('2100000000', 'LISTED');
+insert into hearing ( hearing_id, status) values ('2100000001', 'LISTED');
+insert into hearing ( hearing_id, status) values ('2100000003', 'LISTED');
+insert into hearing ( hearing_id, status) values ('2100000004', 'LISTED');
 insert into hearing ( hearing_id, status) values ('2100000005', 'CANCELLED');
 
 insert into case_hearing_request (
