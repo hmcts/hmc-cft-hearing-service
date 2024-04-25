@@ -66,7 +66,6 @@ class HearingResponseRepositoryIT extends BaseTest {
             limit
         );
         assertNotNull(expected.getContent());
-        assertNotNull(expected.getContent());
         assertEquals(2, expected.getContent().size());
         assertEquals(2, expected.getTotalElements());
         List<Long> actualHearingIds = expected.getContent().stream().sorted().collect(Collectors.toList());;
