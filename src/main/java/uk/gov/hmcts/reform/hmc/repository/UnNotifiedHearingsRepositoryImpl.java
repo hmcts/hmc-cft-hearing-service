@@ -85,7 +85,7 @@ public class UnNotifiedHearingsRepositoryImpl implements UnNotifiedHearingsRepos
         hqlQuery.append(") and hr.partiesNotifiedDateTime IS NULL "
                             + "AND (hdd.startDateTime >= :hearingStartDateFrom ");
         if (null != hearingStatus && hearingStatus.stream().anyMatch(e -> e.equalsIgnoreCase(CANCELLED))) {
-            hqlQuery.append("OR hdd.startDateTime IS NULL");
+            hqlQuery.append("OR hdd.startDateTime IS NULL AND he.status = 'CANCELLED'");
         }
         hqlQuery.append(") GROUP BY hr.hearing.id, hdd.startDateTime ");
         hqlQuery.append("HAVING MIN(hdd.startDateTime) >= :hearingStartDateFrom ");
