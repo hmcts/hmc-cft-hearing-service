@@ -20,7 +20,7 @@ class CaseCategoriesEntityTest {
             assertEquals(CaseCategoryType.CASETYPE, response.getCategoryType());
             assertEquals("PROBATE", response.getCaseCategoryValue());
             assertEquals("A001", response.getCaseCategoryParent());
-            assertEquals("ABA1", response.getCaseHearing().getHmctsServiceCode());
+            assertEquals("TEST", response.getCaseHearing().getHmctsServiceCode());
             assertEquals("12345", response.getCaseHearing().getCaseReference());
         }
     }

@@ -293,7 +293,7 @@ class HearingManagementServiceTest {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode);
             doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any(), any(),any(), any());
-            hearingManagementService.sendResponse(json, "test hmctsCode", "ABA1");
+            hearingManagementService.sendResponse(json, "test hmctsCode", "TEST");
             verify(objectMapperService, times(1)).convertObjectToJsonNode(any());
             verify(messageSenderToTopicConfiguration, times(1)).sendMessage(any(), any(),any(),
                                                                             any());
@@ -610,10 +610,10 @@ class HearingManagementServiceTest {
             mockGetEntities(hearingRequest);
             mockSubmitRequest();
             given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(), anyBoolean(), anyBoolean(),
-                                              eq("ABA1")))
+                                              eq("TEST")))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "ABA1");
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "TEST");
             assertValidHearingResponse(response);
         }
 
@@ -1089,9 +1089,6 @@ class HearingManagementServiceTest {
                             hmiHearingResponseMapper);
 
         }
-
-
-
 
         @Test
         void updateHearingRequestShouldPassWithValidDetails() {
