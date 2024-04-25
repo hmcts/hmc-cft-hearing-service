@@ -82,12 +82,14 @@ public class UnNotifiedHearingsRepositoryImpl implements UnNotifiedHearingsRepos
         if (null != hearingStatus && hearingStatus.stream().anyMatch(e -> e.equalsIgnoreCase(CANCELLED))) {
             hqlQuery.append(" OR (he.status = 'CANCELLED' AND he.id=hr.hearing.id)");
         }
-        hqlQuery.append(") and hr.partiesNotifiedDateTime IS NULL "
-                            + "AND (hdd.startDateTime >= :hearingStartDateFrom ");
+        hqlQuery.append(") and hr.partiesNotifiedDateTime IS NULL ");
         if (null != hearingStatus && hearingStatus.stream().anyMatch(e -> e.equalsIgnoreCase(CANCELLED))) {
-            hqlQuery.append("OR hdd.startDateTime IS NULL AND he.status = 'CANCELLED'");
+            hqlQuery.append("AND (hdd.startDateTime >= :hearingStartDateFrom OR hdd.startDateTime IS NULL)");
         }
-        hqlQuery.append(") GROUP BY hr.hearing.id, hdd.startDateTime ");
+        if (null != hearingStatus && hearingStatus.size() ==1 && hearingStatus.get(0).equalsIgnoreCase(CANCELLED)) {
+            hqlQuery.append(" AND he.status = 'CANCELLED'");
+        }
+        hqlQuery.append(" GROUP BY hr.hearing.id, hdd.startDateTime ");
         hqlQuery.append("HAVING MIN(hdd.startDateTime) >= :hearingStartDateFrom ");
         return hqlQuery;
     }
