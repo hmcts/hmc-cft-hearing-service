@@ -17,7 +17,7 @@ class PanelAuthorisationRequirementsEntityTest {
             PanelAuthorisationRequirementsEntity response = new PanelAuthorisationRequirementsEntity(entity);
             assertEquals("AuthorisationType1", response.getAuthorisationType());
             assertEquals("AuthorisationSubType2", response.getAuthorisationSubType());
-            assertEquals("ABA1", response.getCaseHearing().getHmctsServiceCode());
+            assertEquals("TEST", response.getCaseHearing().getHmctsServiceCode());
             assertEquals("12345", response.getCaseHearing().getCaseReference());
             assertEquals("Some hearing type", response.getCaseHearing().getHearingType());
         }

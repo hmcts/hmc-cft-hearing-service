@@ -103,4 +103,7 @@ variable "enable_replica" {
 variable "primary_server_id" {
   description = "Azure resource ID of the primary PostgreSQL server"
   type        = string
+  default     = "not_applicable" // Dummy Value for none replica environments
 }
+
+

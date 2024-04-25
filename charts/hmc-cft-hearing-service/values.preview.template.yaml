@@ -35,6 +35,8 @@ java:
       resourceGroup: hmc-aso-preview-rg
       secrets:
         - name: AppInsightsInstrumentationKey
+        - name: app-insights-connection-string
+          alias: app-insights-connection-string
         - name: hmc-cft-hearing-service-s2s-secret
           alias: IDAM_KEY_CFT_HEARING_SERVICE
 
