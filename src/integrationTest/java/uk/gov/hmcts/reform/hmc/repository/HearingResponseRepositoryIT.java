@@ -169,7 +169,7 @@ class HearingResponseRepositoryIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void testGetUnNotifiedHearingsWithOutStartDateToForMultiStatus() {
-        final List<Long> expectedHearingIds = Arrays.asList(2100000003L,2100000005L);
+        final List<Long> expectedHearingIds = Arrays.asList(2100000003L);
         String dateStr = "2023-05-10 11:00:00";
         LocalDateTime startFrom = convertDateTime(dateStr);
         List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
@@ -178,7 +178,7 @@ class HearingResponseRepositoryIT extends BaseTest {
             hearingStatusCancelled
         );
         assertNotNull(expected.size());
-        assertEquals(2, expected.size());
+        assertEquals(1, expected.size());
         assertTrue(expectedHearingIds.containsAll(expected));
     }
 
