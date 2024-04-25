@@ -4,7 +4,7 @@
     This suppresses false positives on Azure SDK for Java.
     More information can be found on https://github.com/jeremylong/DependencyCheck/issues/6100
     ]]> Temporary Suppression
-        CVE-2023-36052 refer [Ticket]</notes>
+        CVE-2023-36052 refer HMAN-678 waiting for a version that fixes this azure-core</notes>
     <cpe>cpe:2.3:a:microsoft:azure_sdk_for_java:1.44.1</cpe>
     <cve>CVE-2023-36052</cve>
   </suppress>
