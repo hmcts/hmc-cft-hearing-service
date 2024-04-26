@@ -89,7 +89,6 @@ class InboundQueueServiceTest {
     @Mock
     ObjectMapperService objectMapperService;
 
-
     HearingIdValidator hearingIdValidator;
 
     @Mock
