@@ -2,9 +2,6 @@ package uk.gov.hmcts.reform.hmc.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
@@ -12,21 +9,18 @@ import uk.gov.hmcts.reform.hmc.BaseTest;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.FIRST_PAGE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.UN_NOTIFIED_HEARINGS_LIMIT;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.convertDateTime;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class HearingResponseRepositoryIT extends BaseTest {
 
     @Autowired
-    HearingResponseRepository hearingResponseRepository;
+    UnNotifiedHearingsRepository unNotifiedHearingsRepository;
 
     private static final String UN_NOTIFIED_HEARINGS_DATA_SCRIPT = "classpath:sql/unNotified-hearings-request.sql";
 
