@@ -36,11 +36,7 @@ public class UnNotifiedHearingsRepositoryImpl implements UnNotifiedHearingsRepos
             .setParameter("hearingStartDateFrom", hearingStartDateFrom)
             .setMaxResults(UN_NOTIFIED_HEARINGS_LIMIT)
             .getResultList();
-        List<Long> hearingsLong = new ArrayList<>();
-        Iterator it = hearings.iterator();
-        while (it.hasNext()) {
-            hearingsLong.add((Long) it.next());
-        }
+        List<Long> hearingsLong = getHearings(hearings);
         return hearingsLong;
     }
 
@@ -60,11 +56,7 @@ public class UnNotifiedHearingsRepositoryImpl implements UnNotifiedHearingsRepos
             .setParameter("hearingStartDateTo", hearingStartDateTo)
             .setMaxResults(UN_NOTIFIED_HEARINGS_LIMIT)
             .getResultList();
-        List<Long> hearingsLong = new ArrayList<>();
-        Iterator it = hearings.iterator();
-        while (it.hasNext()) {
-            hearingsLong.add((Long) it.next());
-        }
+        List<Long> hearingsLong = getHearings(hearings);
         return hearingsLong;
     }
 
@@ -93,4 +85,14 @@ public class UnNotifiedHearingsRepositoryImpl implements UnNotifiedHearingsRepos
         hqlQuery.append("HAVING MIN(hdd.startDateTime) >= :hearingStartDateFrom ");
         return hqlQuery;
     }
+
+    private List<Long> getHearings(List hearings) {
+        List<Long> hearingsLong = new ArrayList<>();
+        Iterator it = hearings.iterator();
+        while (it.hasNext()) {
+            hearingsLong.add((Long) it.next());
+        }
+        return hearingsLong;
+    }
+
 }
