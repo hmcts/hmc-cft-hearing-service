@@ -507,7 +507,7 @@ class MessageProcessorIT extends BaseTest {
 
         final Iterable<HearingDayDetailsEntity> hearingDayDetailsEntities = hearingDayDetailsRepository.findAll();
 
-        assertEquals(2, StreamSupport.stream(hearingDayDetailsEntities.spliterator(), false).count());
+        assertEquals(3, StreamSupport.stream(hearingDayDetailsEntities.spliterator(), false).count());
         final HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetailsEntities.iterator().next();
 
         assertEquals(parse("2022-02-10T10:30:00"), hearingDayDetailsEntity.getStartDateTime());
