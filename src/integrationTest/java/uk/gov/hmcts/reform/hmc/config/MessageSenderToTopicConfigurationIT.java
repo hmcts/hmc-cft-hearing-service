@@ -22,6 +22,6 @@ class MessageSenderToTopicConfigurationIT extends BaseTest  {
         ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
         messageSenderToTopicConfiguration.sendMessage("Test Message",
                                                       "Test service code","hearingID",
-                                                      "ABA1");
+                                                      "TEST");
     }
 }

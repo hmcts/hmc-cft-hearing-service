@@ -32,7 +32,7 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
         {SecurityConfiguration.class, JwtGrantedAuthoritiesConverter.class}))
 @AutoConfigureMockMvc(addFilters = false)
 @ImportAutoConfiguration(TestIdamConfiguration.class)
-public class UnNotifiedHearingsControllerTest {
+class UnNotifiedHearingsControllerTest {
 
     @Autowired
     protected MockMvc mockMvc;
@@ -53,19 +53,15 @@ public class UnNotifiedHearingsControllerTest {
     @Test
     void shouldReturn200_whenRequestIdIsValid() {
         UnNotifiedHearingsController controller = new UnNotifiedHearingsController(unNotifiedHearingService);
-        controller.getUnNotifiedHearings("ABA1", LocalDateTime.now(), LocalDateTime.now(),
-                                         hearingStatus);
-        verify(unNotifiedHearingService, times(1)).getUnNotifiedHearings(any(), any(),any(),
-                                                                         any());
+        controller.getUnNotifiedHearings("TEST", LocalDateTime.now(), LocalDateTime.now(), hearingStatus);
+        verify(unNotifiedHearingService, times(1)).getUnNotifiedHearings(any(), any(),any(), any());
     }
 
     @Test
     void shouldReturn200_whenHearingStartDateToNotPresent() {
         UnNotifiedHearingsController controller = new UnNotifiedHearingsController(unNotifiedHearingService);
-        controller.getUnNotifiedHearings("ABA1", LocalDateTime.now(), null,
-                                         hearingStatus);
-        verify(unNotifiedHearingService, times(1)).getUnNotifiedHearings(any(), any(),any(),
-                                                                         any());
+        controller.getUnNotifiedHearings("TEST", LocalDateTime.now(), null, hearingStatus);
+        verify(unNotifiedHearingService, times(1)).getUnNotifiedHearings(any(), any(),any(), any());
     }
 
 }

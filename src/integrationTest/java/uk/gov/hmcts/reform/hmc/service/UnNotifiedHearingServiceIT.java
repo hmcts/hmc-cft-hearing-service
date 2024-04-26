@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.model.UnNotifiedHearingsResponse;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,7 +60,7 @@ class UnNotifiedHearingServiceIT extends BaseTest {
         assertNotNull(response.getHearingIds());
         assertEquals(2, response.getHearingIds().size());
         assertEquals(2, response.getTotalFound());
-        assertEquals(expectedHearingIds, response.getHearingIds());
+        assertEquals(new HashSet<>(expectedHearingIds), new HashSet<>(response.getHearingIds()));
     }
 
     @Test

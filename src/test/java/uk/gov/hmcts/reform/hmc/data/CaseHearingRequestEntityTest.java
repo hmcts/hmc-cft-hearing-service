@@ -69,7 +69,7 @@ class CaseHearingRequestEntityTest {
 
     private void assert2(CaseHearingRequestEntity cloned) {
         assertEquals("Some hearing type", cloned.getHearingType());
-        assertEquals("ABA1", cloned.getHmctsServiceCode());
+        assertEquals("TEST", cloned.getHmctsServiceCode());
         assertEquals("12345", cloned.getCaseReference());
         assertEquals(1, cloned.getNonStandardDurations().size());
         assertEquals("Reason", cloned.getNonStandardDurations().get(0)

@@ -84,13 +84,13 @@ public class UnNotifiedHearingServiceTest {
         @Test
         void shouldPassWithAllMandatoryDetails() {
             LocalDateTime dateTime = LocalDateTime.now();
-            given(caseHearingRequestRepository.getHmctsServiceCodeCount("ABA1")).willReturn(1L);
+            given(caseHearingRequestRepository.getHmctsServiceCodeCount("TEST")).willReturn(1L);
             List<Long> hearingIds = Arrays.asList(2000000207L, 2000000206L, 2000000205L);
-            given(unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo("ABA1", dateTime,
+            given(unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo("TEST", dateTime,
                                                                                    dateTime, hearingStatus
             )).willReturn(hearingIds);
             UnNotifiedHearingsResponse response = unNotifiedHearingService
-                .getUnNotifiedHearings("ABA1", dateTime, dateTime, hearingStatus);
+                .getUnNotifiedHearings("TEST", dateTime, dateTime, hearingStatus);
             assertEquals(3, response.getHearingIds().size());
             assertEquals(3, response.getTotalFound());
         }
@@ -99,12 +99,12 @@ public class UnNotifiedHearingServiceTest {
         void shouldPassWithOnlyStartDateFrom() {
             LocalDateTime dateTime = LocalDateTime.now();
             List<Long> hearingIds = Arrays.asList(2000000207L, 2000000206L, 2000000205L);
-            given(caseHearingRequestRepository.getHmctsServiceCodeCount("ABA1")).willReturn(1L);
-            given(unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo("ABA1", dateTime,
-                                                                                   null
+            given(caseHearingRequestRepository.getHmctsServiceCodeCount("TEST")).willReturn(1L);
+            given(unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo("TEST", dateTime,
+                                                                                       null
             )).willReturn(hearingIds);
             UnNotifiedHearingsResponse response = unNotifiedHearingService
-                .getUnNotifiedHearings("ABA1", dateTime, null, null);
+                .getUnNotifiedHearings("TEST", dateTime, null, null);
             assertEquals(3, response.getHearingIds().size());
             assertEquals(3, response.getTotalFound());
         }
@@ -113,12 +113,12 @@ public class UnNotifiedHearingServiceTest {
         void testWhenCriteriaDoesNotHaveDataForStartDateFrom() {
             LocalDateTime dateTime = LocalDateTime.now();
             List<Long> hearingIds = new ArrayList<>();
-            given(caseHearingRequestRepository.getHmctsServiceCodeCount("ABA1")).willReturn(1L);
-            given(unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo("ABA1", dateTime,
+            given(caseHearingRequestRepository.getHmctsServiceCodeCount("TEST")).willReturn(1L);
+            given(unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo("TEST", dateTime,
                                                                                        hearingStatus
             )).willReturn(hearingIds);
             UnNotifiedHearingsResponse response = unNotifiedHearingService
-                .getUnNotifiedHearings("ABA1", dateTime, null, hearingStatus);
+                .getUnNotifiedHearings("TEST", dateTime, null, null);
             assertEquals(0, response.getHearingIds().size());
             assertEquals(0, response.getTotalFound());
         }
@@ -128,12 +128,12 @@ public class UnNotifiedHearingServiceTest {
         void testWhenCriteriaDoesNotHaveDataForStartDateTo() {
             LocalDateTime dateTime = LocalDateTime.now();
             List<Long> hearingIds = new ArrayList<>();
-            given(caseHearingRequestRepository.getHmctsServiceCodeCount("ABA1")).willReturn(1L);
-            given(unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo("ABA1", dateTime,
+            given(caseHearingRequestRepository.getHmctsServiceCodeCount("TEST")).willReturn(1L);
+            given(unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo("TEST", dateTime,
                                                                                    dateTime, hearingStatus
             )).willReturn(hearingIds);
             UnNotifiedHearingsResponse response = unNotifiedHearingService
-                .getUnNotifiedHearings("ABA1", dateTime, dateTime, hearingStatus);
+                .getUnNotifiedHearings("TEST", dateTime, dateTime, hearingStatus);
             assertEquals(0, response.getHearingIds().size());
             assertEquals(0, response.getTotalFound());
         }
