@@ -82,7 +82,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         pendingRequestEntity.setRetryCount(0);
         pendingRequestEntity.setIncidentFlag(false);
         pendingRequestEntity.setMessage(message);
-        pendingRequestRepository.save(pendingRequestEntity);
+        // pendingRequestRepository.save(pendingRequestEntity);
     }
 
     @Override
