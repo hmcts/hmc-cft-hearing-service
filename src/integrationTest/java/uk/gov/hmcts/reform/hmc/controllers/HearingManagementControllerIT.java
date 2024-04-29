@@ -337,7 +337,6 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
-
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn201_WhenHearingRequestHasPartyDetails() throws Exception {
@@ -793,7 +792,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("HEARING_UPDATED"))
             .andExpect(jsonPath("$.caseHearings[1].hmcStatus").value("HEARING_REQUESTED"))
             .andExpect(jsonPath("$.caseHearings[2].hmcStatus").value("HEARING_REQUESTED"))
-            .andExpect(jsonPath("$.hmctsServiceCode").value("ABA1"))
+            .andExpect(jsonPath("$.hmctsServiceCode").value("TEST"))
             .andReturn();
     }
 
@@ -810,7 +809,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.caseHearings[1].hearingID").value("2000000000"))
             .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("HEARING_REQUESTED"))
             .andExpect(jsonPath("$.caseHearings[1].hmcStatus").value("HEARING_REQUESTED"))
-            .andExpect(jsonPath("$.hmctsServiceCode").value("ABA1"))
+            .andExpect(jsonPath("$.hmctsServiceCode").value("TEST"))
             .andReturn();
     }
 
@@ -1678,7 +1677,7 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(post(url)
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .header(HMCTS_DEPLOYMENT_ID, "ABA1")
+                            .header(HMCTS_DEPLOYMENT_ID, "TEST")
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(201))
             .andReturn();
@@ -1786,6 +1785,7 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(post(url)
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .header(HMCTS_DEPLOYMENT_ID, "ABA1")
+                            .header(HMCTS_DEPLOYMENT_ID, "TEST")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))

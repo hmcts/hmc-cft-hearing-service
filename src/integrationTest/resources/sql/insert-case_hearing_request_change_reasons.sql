@@ -33,7 +33,7 @@ VALUES ('t', 'Some hearing type2', 62, 'Priority type2', 5, 't', 'f', 'AB333', n
         'CMLC333', 't', '2020-10-10 00:00:00', 1, 2000000011, 't', 'Some listing comments2', 'Some judge2',
         '2021-11-01 00:00:00', '2021-11-12 00:00:00'),
 
-       ('t', 'Some hearing type', 60, 'Priority type', 4, 'f', 'f', 'AB123', null, 'ABA1', 1111222233334455,
+       ('t', 'Some hearing type', 60, 'Priority type', 4, 'f', 'f', 'AB123', null, 'TEST', 1111222233334455,
         '2021-08-10 11:20:00', 'EXT/REF123', 'https://www.google.com', 'Internal case name', 'Public case name', 't',
         'CMLC123', 't', '2021-10-10 00:00:00', 1, 2000000012, 't', 'Some listing comments', 'Some judge',
         '2021-11-01 00:00:00', '2021-11-12 00:00:00');
