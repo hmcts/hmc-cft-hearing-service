@@ -36,7 +36,7 @@ class HearingResponseRepositoryIT extends BaseTest {
         String dateStr = "2019-12-10 11:00:00";
         LocalDateTime startFrom = convertDateTime(dateStr);
         List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
-            "Test1",
+            "ACA2",
             startFrom,
             hearingStatusListed
         );
@@ -54,7 +54,7 @@ class HearingResponseRepositoryIT extends BaseTest {
         LocalDateTime startFrom = convertDateTime(dateStrFrom);
         LocalDateTime startTo = convertDateTime(dateStrTo);
         List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo(
-            "Test1",
+            "ACA2",
             startFrom,
             startTo,
             hearingStatusListed
@@ -89,7 +89,7 @@ class HearingResponseRepositoryIT extends BaseTest {
         String dateStr = "2025-12-10 11:00:00";
         LocalDateTime startFrom = convertDateTime(dateStr);
         List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
-            "Test1",
+            "ACA2",
             startFrom,
             hearingStatusListed
         );
@@ -105,7 +105,7 @@ class HearingResponseRepositoryIT extends BaseTest {
         LocalDateTime startFrom = convertDateTime(dateStr);
         LocalDateTime startTo = convertDateTime(dateStrTo);
         List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo(
-            "Test1",
+            "ACA2",
             startFrom,
             startTo,
             hearingStatusListed
@@ -121,7 +121,7 @@ class HearingResponseRepositoryIT extends BaseTest {
         LocalDateTime startFrom = convertDateTime(dateStr);
         final List<Long> expectedHearingIds = Arrays.asList(2100000003L);
         List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
-            "Test2",
+            "AAA2",
             startFrom,
             hearingStatusListed
         );
@@ -139,7 +139,7 @@ class HearingResponseRepositoryIT extends BaseTest {
         LocalDateTime startTo = convertDateTime(dateStrTo);
         final List<Long> expectedHearingIds = Arrays.asList(2100000003L);
         List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo(
-            "Test2",
+            "AAA2",
             startFrom,
             startTo,
             hearingStatusListed
@@ -156,7 +156,7 @@ class HearingResponseRepositoryIT extends BaseTest {
         String dateStr = "2024-12-10 11:00:00";
         LocalDateTime startFrom = convertDateTime(dateStr);
         List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
-            "Test2",
+            "AAA2",
             startFrom,
             hearingStatusCancelled
         );
@@ -172,7 +172,7 @@ class HearingResponseRepositoryIT extends BaseTest {
         String dateStr = "2023-05-10 11:00:00";
         LocalDateTime startFrom = convertDateTime(dateStr);
         List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
-            "Test2",
+            "AAA2",
             startFrom,
             hearingStatusCancelled
         );
