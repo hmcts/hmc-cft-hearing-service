@@ -599,6 +599,7 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals(hearingEvent, auditEntityList.get(0).getHearingEvent());
         assertEquals(response.getVersionNumber().toString(), auditEntityList.get(0).getRequestVersion());
         assertEquals(response.getStatus(), auditEntityList.get(0).getStatus());
+        assertNull(auditEntityList.get(0).getOtherInfo());
     }
 
 }

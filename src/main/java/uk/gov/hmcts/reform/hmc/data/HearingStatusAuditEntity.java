@@ -60,5 +60,9 @@ public class HearingStatusAuditEntity {
     @Column(name = "response_date_time")
     private LocalDateTime responseDateTime;
 
+    @Column(name = "other_info", columnDefinition = "jsonb")
+    @Convert(converter = JsonDataConverter.class)
+    @SuppressWarnings("java:S2789")
+    private JsonNode otherInfo = null;
 
 }
