@@ -43,4 +43,7 @@ public class PendingRequestEntity implements Serializable {
     @Column(name = "incident_flag")
     private Boolean incidentFlag;
 
+    @Column(name = "message")
+    private String message;
+
 }
