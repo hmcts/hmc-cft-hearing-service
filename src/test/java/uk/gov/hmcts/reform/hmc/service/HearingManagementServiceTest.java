@@ -624,9 +624,8 @@ class HearingManagementServiceTest {
                                               eq("TEST")))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "ABA1",
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "TEST",
                                                                                    CLIENT_S2S_TOKEN);
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "TEST");
             assertValidHearingResponse(response);
         }
 
