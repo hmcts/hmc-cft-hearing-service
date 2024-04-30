@@ -20,6 +20,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.SERVICE_CODE_ABA1;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_STATUS_EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HMCTS_SERVICE_CODE;
 
@@ -143,7 +144,7 @@ public class UnNotifiedHearingServiceTest {
             LocalDateTime dateTime = LocalDateTime.now();
             List<String> hearingStatus  = List.of("Exception");
             Exception exception = assertThrows(BadRequestException.class, () ->
-                unNotifiedHearingService.getUnNotifiedHearings("ABA1", dateTime, dateTime,
+                unNotifiedHearingService.getUnNotifiedHearings(SERVICE_CODE_ABA1, dateTime, dateTime,
                                                                hearingStatus));
             assertEquals(HEARING_STATUS_EXCEPTION, exception.getMessage());
         }
@@ -153,7 +154,7 @@ public class UnNotifiedHearingServiceTest {
             LocalDateTime dateTime = LocalDateTime.now();
             List<String> hearingStatus  = List.of("Listed","Exception");
             Exception exception = assertThrows(BadRequestException.class, () ->
-                unNotifiedHearingService.getUnNotifiedHearings("ABA1", dateTime, dateTime,
+                unNotifiedHearingService.getUnNotifiedHearings(SERVICE_CODE_ABA1, dateTime, dateTime,
                                                                hearingStatus));
             assertEquals(HEARING_STATUS_EXCEPTION, exception.getMessage());
         }

@@ -55,4 +55,5 @@ public final class Constants {
     public static final Integer HMCTS_DEPLOYMENT_ID_MAX_SIZE = 40;
     public static final String EXCEPTION_STATUS = "Exception";
     public static final String CANCELLED = "CANCELLED";
+    public static final String SERVICE_CODE_ABA1 = "ABA1";
 }
