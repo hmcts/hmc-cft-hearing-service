@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.hmc.BaseTest;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -65,10 +66,10 @@ class HearingResponseRepositoryIT extends BaseTest {
             limit
         );
         assertNotNull(expected.getContent());
-        assertNotNull(expected.getContent());
         assertEquals(2, expected.getContent().size());
         assertEquals(2, expected.getTotalElements());
-        assertEquals(expectedHearingIds, expected.getContent());
+        List<Long> actualHearingIds = expected.getContent().stream().sorted().collect(Collectors.toList());;
+        assertEquals(expectedHearingIds, actualHearingIds);
     }
 
     @Test

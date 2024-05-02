@@ -243,7 +243,7 @@ def versions = [
   lombok          : '1.18.30',
   mapstruct       : '1.4.2.Final',
   pact            : '4.1.7',
-  reformLogging   : '6.0.1',
+  reformLogging   : '6.1.4',
   azureInsightsVersion: '2.4.1',
   restAssured     : '4.2.1',
   springBoot      : springBoot.class.package.implementationVersion,
@@ -259,7 +259,6 @@ def versions = [
 
 ext['spring-framework.version'] = '5.3.31'
 ext['spring-security.version'] = '5.8.10'
-ext['log4j2.version'] = '2.17.2'
 ext['snakeyaml.version'] = '2.2'
 //ext['jackson.version'] = '2.10.5'
 
@@ -378,12 +377,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'io.springfox', name: 'springfox-boot-starter', version: versions.springfoxSwagger
 
-  implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-logging-logback', version: versions.azureInsightsVersion
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-spring-boot-starter', version: versions.azureInsightsVersion
-
-  implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '6.6'
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
 
@@ -393,8 +387,6 @@ dependencies {
   implementation group: 'org.glassfish', name: 'jakarta.el', version: '4.0.2'
   implementation group: 'javax.el', name: 'javax.el-api', version: '3.0.1-b06'
 
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceAuthVersion
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.3'
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
@@ -503,7 +495,7 @@ dependencies {
   functionalTestImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '8.7.11'
   functionalTestImplementation libraries.junit5
 
-  runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.5.1'
+  runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.5.5'
 
   cftlibImplementation group: 'org.springframework.boot', name: 'spring-boot-devtools'
 

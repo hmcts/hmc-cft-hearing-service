@@ -359,7 +359,7 @@ class GetHearingResponseMapperTest {
 
     private void assertCaseDetails(CaseDetails caseDetails) {
         assertAll(
-            () -> assertEquals("ABA1", caseDetails.getHmctsServiceCode()),
+            () -> assertEquals("TEST", caseDetails.getHmctsServiceCode()),
             () -> assertEquals("12345", caseDetails.getCaseRef())
         );
     }

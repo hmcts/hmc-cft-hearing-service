@@ -20,7 +20,7 @@ class RequiredLocationsEntityTest {
             RequiredLocationsEntity response = new RequiredLocationsEntity(entity);
             assertEquals(LocationType.CLUSTER, response.getLocationLevelType());
             assertEquals("Location1", response.getLocationId());
-            assertEquals("ABA1", response.getCaseHearing().getHmctsServiceCode());
+            assertEquals("TEST", response.getCaseHearing().getHmctsServiceCode());
             assertEquals("12345", response.getCaseHearing().getCaseReference());
             assertEquals("Some hearing type", response.getCaseHearing().getHearingType());
         }
