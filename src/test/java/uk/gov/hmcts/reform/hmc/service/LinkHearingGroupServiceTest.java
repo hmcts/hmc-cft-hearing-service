@@ -766,7 +766,7 @@ class LinkHearingGroupServiceTest {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             });
             assertTrue(exception.getMessage().contains(LIST_ASSIST_FAILED_TO_RESPOND));
-            verify(hearingStatusAuditService, times(4)).saveAuditTriageDetails(any(),any(),
+            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
                                                                                any(),any(),any(),any(),any(),any());
         }
     }

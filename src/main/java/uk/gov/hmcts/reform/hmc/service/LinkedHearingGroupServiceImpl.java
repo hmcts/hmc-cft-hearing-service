@@ -97,7 +97,6 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             invokeLinkedHearingAuditService(clientS2SToken, hearingEntity,hearingEntity.getCreatedDateTime(),
                                             CREATE_LINKED_HEARING_REQUEST, null, FH, null);
         });
-
         try {
             futureHearingRepository.createLinkedHearingGroup(objectMapperService
                                                                  .convertObjectToJsonNode(linkedHearingGroup));
