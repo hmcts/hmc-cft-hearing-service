@@ -337,7 +337,6 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
-
     @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void shouldReturn201_WhenHearingRequestHasPartyDetails() throws Exception {
@@ -1786,7 +1785,6 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(post(url)
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .header(HMCTS_DEPLOYMENT_ID, "TEST")
-                            .header(HMCTS_DEPLOYMENT_ID, "ABA1")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
             .andExpect(status().is(400))
