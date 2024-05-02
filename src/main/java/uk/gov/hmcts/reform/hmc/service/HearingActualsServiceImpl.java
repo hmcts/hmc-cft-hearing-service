@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PUT_HEARING_ACTUALS_COMPLETION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_ID_NOT_FOUND;
@@ -96,7 +97,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         actualHearingRepository.save(actualHearing);
         hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
                                                          PUT_HEARING_ACTUALS_COMPLETION, null, clientS2SToken,
-                                                         HMC, null);
+                                                         HMC, null, HEARING_TYPE);
     }
 
     private void validateRequestPayload(HearingActual request, HearingEntity hearing) {

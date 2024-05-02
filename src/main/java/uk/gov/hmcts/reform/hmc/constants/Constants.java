@@ -67,4 +67,9 @@ public final class Constants {
     public static final String LA_SUCCESS_STATUS = "202";
     public static final String LA_FAILURE_STATUS = "400";
     public static final String SUCCESS_STATUS = "200";
+    public static final String LINKED_HEARING_TYPE = "linked_hearing";
+    public static final String HEARING_TYPE = "hearing";
+    public static final String UPDATE_LINKED_HEARING_REQUEST = "update-linked_hearing-request";
+    public static final String CREATE_LINKED_HEARING_REQUEST = "create-linked_hearing-request";
+    public static final String DELETE_LINKED_HEARING_REQUEST = "delete-linked_hearing-request";
 }

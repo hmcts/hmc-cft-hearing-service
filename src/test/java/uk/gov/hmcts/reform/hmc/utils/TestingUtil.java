@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.IndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
 import uk.gov.hmcts.reform.hmc.data.OrganisationDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelAuthorisationRequirementsEntity;
@@ -1459,7 +1460,7 @@ public class TestingUtil {
         return hearingStatusAuditEntity;
     }
 
-    public static HearingStatusAudit hearingStatusAudit() {
+    public static HearingStatusAudit hearingStatusAudit(String source) {
         JsonNode jsonNode = null;
         try {
             jsonNode = new ObjectMapper().readTree("{\"errorDescription\": \"timeout\"}");
@@ -1471,7 +1472,7 @@ public class TestingUtil {
         hearingStatusAudit.setHearingId("2000000000");
         hearingStatusAudit.setStatus(PutHearingStatus.HEARING_REQUESTED.name());
         hearingStatusAudit.setStatusUpdateDateTime(LocalDateTime.now());
-        hearingStatusAudit.setHearingEvent(CREATE_HEARING_REQUEST);
+        hearingStatusAudit.setHearingEvent(source);
         hearingStatusAudit.setHttpStatus(SUCCESS_STATUS);
         hearingStatusAudit.setSource(HMC);
         hearingStatusAudit.setTarget(HMI);
@@ -1479,5 +1480,19 @@ public class TestingUtil {
         hearingStatusAudit.setRequestVersion("1");
         return hearingStatusAudit;
     }
+
+    public static LinkedHearingStatusAuditEntity linkedHearingStatusAuditEntity() {
+        LinkedHearingStatusAuditEntity linkedHearingStatusAuditEntity = new LinkedHearingStatusAuditEntity();
+        linkedHearingStatusAuditEntity.setHmctsServiceId("ABA1");
+        linkedHearingStatusAuditEntity.setLinkedHearingGroupId("2000000000");
+        linkedHearingStatusAuditEntity.setStatus(PutHearingStatus.HEARING_REQUESTED.name());
+        linkedHearingStatusAuditEntity.setHearingEvent(CREATE_HEARING_REQUEST);
+        linkedHearingStatusAuditEntity.setHttpStatus(String.valueOf(HttpStatus.SC_OK));
+        linkedHearingStatusAuditEntity.setSource(HMC);
+        linkedHearingStatusAuditEntity.setTarget(HMI);
+        linkedHearingStatusAuditEntity.setRequestVersion("1");
+        return linkedHearingStatusAuditEntity;
+    }
+
 }
 

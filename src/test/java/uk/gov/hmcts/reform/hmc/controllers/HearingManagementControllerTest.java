@@ -88,7 +88,7 @@ class HearingManagementControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         doReturn("xui_webapp").when(securityUtils)
             .getServiceNameFromS2SToken(any());
-        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any(), any());
     }
 
 

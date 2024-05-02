@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +22,25 @@ import uk.gov.hmcts.reform.hmc.model.listassist.LinkedHearingGroup;
 import uk.gov.hmcts.reform.hmc.repository.DefaultFutureHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
+import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_LINKED_HEARING_REQUEST;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_LINKED_HEARING_REQUEST;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.FH;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_FAILURE_STATUS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.LINKED_HEARING_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LIST_ASSIST_SUCCESSFUL_RESPONSE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.SUCCESS_STATUS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.UPDATE_LINKED_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
@@ -45,6 +57,8 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     private final ObjectMapperService objectMapperService;
     private final AccessControlService accessControlService;
     private final FutureHearingsLinkedHearingGroupService futureHearingsLinkedHearingGroupService;
+    private final HearingStatusAuditService hearingStatusAuditService;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public LinkedHearingGroupServiceImpl(HearingRepository hearingRepository,
@@ -54,7 +68,9 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
                                          ObjectMapperService objectMapperService,
                                          AccessControlService accessControlService,
                                          FutureHearingsLinkedHearingGroupService
-                                                 futureHearingsLinkedHearingGroupService) {
+                                                 futureHearingsLinkedHearingGroupService,
+                                         HearingStatusAuditService hearingStatusAuditService,
+                                         ObjectMapper objectMapper) {
         this.linkedGroupDetailsRepository = linkedGroupDetailsRepository;
         this.linkedHearingValidator = linkedHearingValidator;
         this.hearingRepository = hearingRepository;
@@ -62,17 +78,25 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         this.objectMapperService = objectMapperService;
         this.accessControlService = accessControlService;
         this.futureHearingsLinkedHearingGroupService = futureHearingsLinkedHearingGroupService;
+        this.hearingStatusAuditService = hearingStatusAuditService;
+        this.objectMapper = objectMapper;
     }
 
 
     @Override
-    public HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest) {
+    public HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest,
+                                                String clientS2SToken) {
         //POST
-        linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
+        List<HearingEntity> hearingEntities = linkedHearingValidator.validateHearingLinkGroupRequest(
+            hearingLinkGroupRequest, null);
         LinkedGroupDetails linkedGroupDetails =
             linkedHearingValidator.updateHearingWithLinkGroup(hearingLinkGroupRequest);
         LinkedHearingGroup linkedHearingGroup =
             futureHearingsLinkedHearingGroupService.processRequestForListAssist(linkedGroupDetails);
+        hearingEntities.forEach(hearingEntity -> {
+            invokeLinkedHearingAuditService(clientS2SToken, hearingEntity,hearingEntity.getCreatedDateTime(),
+                                            CREATE_LINKED_HEARING_REQUEST, null, FH, null);
+        });
 
         try {
             futureHearingRepository.createLinkedHearingGroup(objectMapperService
@@ -80,11 +104,21 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             log.debug(LIST_ASSIST_SUCCESSFUL_RESPONSE);
             linkedGroupDetails.setStatus("ACTIVE");
             linkedGroupDetailsRepository.save(linkedGroupDetails);
+            hearingEntities.forEach(hearingEntity -> {
+                invokeLinkedHearingAuditService(FH, hearingEntity, hearingEntity.getCreatedDateTime(),
+                                                CREATE_LINKED_HEARING_REQUEST, SUCCESS_STATUS, HMC, null);
+            });
         } catch (BadFutureHearingRequestException requestException) {
             futureHearingsLinkedHearingGroupService.deleteLinkedHearingGroups(
                 linkedHearingGroup.getLinkedHearingGroup().getGroupClientReference(),
                 hearingLinkGroupRequest
             );
+            JsonNode errorDescription = objectMapper.convertValue(LIST_ASSIST_FAILED_TO_RESPOND, JsonNode.class);
+            hearingEntities.forEach(hearingEntity -> {
+                invokeLinkedHearingAuditService(FH, hearingEntity, hearingEntity.getCreatedDateTime(),
+                                                CREATE_LINKED_HEARING_REQUEST, LA_FAILURE_STATUS, HMC,
+                                                errorDescription);
+            });
             throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
         } catch (FutureHearingServerException serverException) {
             futureHearingsLinkedHearingGroupService.deleteLinkedHearingGroups(
@@ -99,7 +133,8 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     }
 
     @Override
-    public void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest) {
+    public void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest,
+                                  String clientS2SToken) {
         //PUT
         linkedHearingValidator.validateHearingLinkGroupRequestForUpdate(requestId, hearingLinkGroupRequest);
         //HMAN-94
@@ -117,6 +152,10 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             currentHearings,
             requestId
         );
+        currentHearings.forEach(hearingEntity -> {
+            invokeLinkedHearingAuditService(clientS2SToken, hearingEntity,hearingEntity.getUpdatedDateTime(),
+                                            UPDATE_LINKED_HEARING_REQUEST, null, HMC, null);
+        });
 
         //HMAN-95
         LinkedHearingGroup linkedHearingGroup =
@@ -128,6 +167,10 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             log.info(LIST_ASSIST_SUCCESSFUL_RESPONSE);
             linkedGroupDetails.setStatus("ACTIVE");
             linkedGroupDetailsRepository.save(linkedGroupDetails);
+            currentHearings.forEach(hearingEntity -> {
+                invokeLinkedHearingAuditService(FH, hearingEntity,hearingEntity.getUpdatedDateTime(),
+                                                UPDATE_LINKED_HEARING_REQUEST, SUCCESS_STATUS, HMC, null);
+            });
         } catch (BadFutureHearingRequestException requestException) {
             futureHearingsLinkedHearingGroupService.processAmendLinkedHearingResponse(
                 hearingLinkGroupRequest,
@@ -135,6 +178,12 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
                 linkedGroupDetails,
                 previousLinkedGroupDetails
             );
+            JsonNode errorDescription = objectMapper.convertValue(REJECTED_BY_LIST_ASSIST, JsonNode.class);
+            currentHearings.forEach(hearingEntity -> {
+                invokeLinkedHearingAuditService(FH, hearingEntity,hearingEntity.getUpdatedDateTime(),
+                                                UPDATE_LINKED_HEARING_REQUEST, LA_FAILURE_STATUS, HMC,
+                                                errorDescription);
+            });
             throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
         } catch (FutureHearingServerException serverException) {
             futureHearingsLinkedHearingGroupService.processAmendLinkedHearingResponse(
@@ -143,18 +192,28 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
                 linkedGroupDetails,
                 previousLinkedGroupDetails
             );
+            JsonNode errorDescription = objectMapper.convertValue(LIST_ASSIST_FAILED_TO_RESPOND, JsonNode.class);
+            currentHearings.forEach(hearingEntity -> {
+                invokeLinkedHearingAuditService(FH, hearingEntity,hearingEntity.getUpdatedDateTime(),
+                                                UPDATE_LINKED_HEARING_REQUEST, LA_FAILURE_STATUS, HMC,
+                                                errorDescription);
+            });
             throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
         }
     }
 
 
     @Override
-    public void deleteLinkedHearingGroup(String requestId) {
+    public void deleteLinkedHearingGroup(String requestId, String clientS2SToken) {
         Long linkedGroupId = linkedHearingValidator.validateHearingGroup(requestId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(linkedGroupId);
         Optional<LinkedGroupDetails> linkedGroupDetailsOptional = linkedGroupDetailsRepository.findById(linkedGroupId);
         LinkedGroupDetails linkedGroupDetails;
         linkedGroupDetails = (linkedGroupDetailsOptional.isPresent()) ? linkedGroupDetailsOptional.get() : null;
+        linkedGroupHearings.forEach(hearingEntity -> {
+            invokeLinkedHearingAuditService(clientS2SToken, hearingEntity,hearingEntity.getUpdatedDateTime(),
+                                            DELETE_LINKED_HEARING_REQUEST, null, HMC, null);
+        });
         if (linkedGroupDetails != null) {
             futureHearingsLinkedHearingGroupService
                 .processDeleteHearingRequest(linkedGroupHearings, linkedGroupDetails);
@@ -163,12 +222,27 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
                 log.debug(LIST_ASSIST_SUCCESSFUL_RESPONSE);
                 unlinkHearingsFromGroup(linkedGroupHearings);
                 linkedGroupDetailsRepository.delete(linkedGroupDetails);
-
+                linkedGroupHearings.forEach(hearingEntity -> {
+                    invokeLinkedHearingAuditService(FH, hearingEntity,hearingEntity.getUpdatedDateTime(),
+                                                    DELETE_LINKED_HEARING_REQUEST, SUCCESS_STATUS, HMC, null);
+                });
             } catch (BadFutureHearingRequestException requestException) {
                 futureHearingsLinkedHearingGroupService.processDeleteHearingResponse(linkedGroupDetails);
+                JsonNode errorDescription = objectMapper.convertValue(REJECTED_BY_LIST_ASSIST, JsonNode.class);
+                linkedGroupHearings.forEach(hearingEntity -> {
+                    invokeLinkedHearingAuditService(FH, hearingEntity,hearingEntity.getUpdatedDateTime(),
+                                                    DELETE_LINKED_HEARING_REQUEST, LA_FAILURE_STATUS, HMC,
+                                                    errorDescription);
+                });
                 throw new BadRequestException(REJECTED_BY_LIST_ASSIST);
             } catch (FutureHearingServerException serverException) {
                 futureHearingsLinkedHearingGroupService.processDeleteHearingResponse(linkedGroupDetails);
+                JsonNode errorDescription = objectMapper.convertValue(LIST_ASSIST_FAILED_TO_RESPOND, JsonNode.class);
+                linkedGroupHearings.forEach(hearingEntity -> {
+                    invokeLinkedHearingAuditService(FH, hearingEntity,hearingEntity.getUpdatedDateTime(),
+                                                    DELETE_LINKED_HEARING_REQUEST, LA_FAILURE_STATUS, HMC,
+                                                    errorDescription);
+                });
                 throw new BadRequestException(LIST_ASSIST_FAILED_TO_RESPOND);
             }
         }
@@ -249,6 +323,14 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         linkedGroupHearings.stream()
             .forEach(hearingEntity -> accessControlService
                 .verifyAccess(hearingEntity.getId(), requiredRoles));
+    }
+
+    private void invokeLinkedHearingAuditService(String source, HearingEntity hearingEntity,
+                                                 LocalDateTime statusUpdateDateTime, String hearingEvent,
+                                                 String httpStatus, String target, JsonNode errorDesc) {
+        hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, statusUpdateDateTime,
+                                                         hearingEvent, httpStatus,
+                                                         source, target, errorDesc, LINKED_HEARING_TYPE);
     }
 
 }
