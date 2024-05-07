@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -46,9 +45,6 @@ class LinkedHearingGroupServiceIT extends BaseTest {
 
     @Autowired
     private EntityManager entityManager;
-
-    @Autowired
-    LinkedHearingStatusAuditRepository linkedHearingStatusAuditRepository;
 
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
@@ -264,12 +260,4 @@ class LinkedHearingGroupServiceIT extends BaseTest {
                                                          LinkedGroupDetailsAudit.class).getResultList());
 
     }
-
-    /*private void validateLinkedHearingAuditDetails(String hearingId) {
-        List<LinkedHearingStatusAuditEntity> auditEntityList = linkedHearingStatusAuditRepository.findByLinkedHearingId(
-            hearingId);
-        assertNotNull(auditEntityList);
-        assertEquals(hearingId, auditEntityList.get(0).getLinkedHearingGroupId());
-        assertEquals(DELETE_LINKED_HEARING_REQUEST, auditEntityList.get(0).getHearingEvent());
-    }*/
 }
