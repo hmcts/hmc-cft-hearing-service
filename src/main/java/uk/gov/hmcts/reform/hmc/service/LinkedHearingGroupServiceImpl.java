@@ -209,6 +209,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         Optional<LinkedGroupDetails> linkedGroupDetailsOptional = linkedGroupDetailsRepository.findById(linkedGroupId);
         LinkedGroupDetails linkedGroupDetails;
         linkedGroupDetails = (linkedGroupDetailsOptional.isPresent()) ? linkedGroupDetailsOptional.get() : null;
+
         linkedGroupHearings.forEach(hearingEntity -> {
             invokeLinkedHearingAuditService(clientS2SToken, hearingEntity,hearingEntity.getUpdatedDateTime(),
                                             DELETE_LINKED_HEARING_REQUEST, null, HMC, null);

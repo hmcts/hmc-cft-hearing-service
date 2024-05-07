@@ -1,16 +1,16 @@
 CREATE TABLE public.linked_hearing_status_audit (
                          id bigint not null,
                          hmcts_service_id varchar(4) not null,
-                         linked_hearing_group_id varchar(20) not null,
-                         status varchar(30) not null,
-                         status_update_date_time timestamp without time zone,
-                         hearing_event varchar(40) not null,
+                         linked_group_id varchar(20) not null,
+                         linked_group_version varchar(5) not null,
+                         linked_hearing_event_date_Time timestamp without time zone,
+                         linked_hearing_event varchar(40) not null,
                          http_status varchar(3),
                          source varchar(15),
                          target varchar(15),
                          error_description jsonb,
-                         request_version varchar(5) not null,
-                         response_date_time timestamp without time zone
+                         other_info jsonb,
+                         linked_group_hearings jsonb
 );
 
 ALTER TABLE ONLY public.linked_hearing_status_audit

@@ -82,10 +82,13 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
     }
 
     private void saveLinkedHearingStatusAudit(HearingStatusAudit hearingStatusAudit) {
-        LinkedHearingStatusAuditEntity linkedHearingStatusAuditEntity = linkedHearingStatusAuditMapper
-            .modelToEntity(hearingStatusAudit);
-        linkedHearingStatusAuditRepository.save(linkedHearingStatusAuditEntity);
+        try {
+            LinkedHearingStatusAuditEntity linkedHearingStatusAuditEntity = linkedHearingStatusAuditMapper
+                .modelToEntity(hearingStatusAudit);
+            linkedHearingStatusAuditRepository.save(linkedHearingStatusAuditEntity);
+        } catch (Exception e) {
+            log.info("Exception occurred " + e.getMessage());
+        }
     }
-
 
 }

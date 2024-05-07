@@ -28,17 +28,17 @@ public class LinkedHearingStatusAuditEntity {
     @Column(name = "hmcts_service_id", nullable = false)
     private String hmctsServiceId;
 
-    @Column(name = "linked_hearing_group_id", nullable = false)
-    private String linkedHearingGroupId;
+    @Column(name = "linked_group_id", nullable = false)
+    private String linkedGroupId;
 
-    @Column(name = "status", nullable = false)
-    private String status;
+    @Column(name = "linked_group_version", nullable = false)
+    private String linkedGroupVersion;
 
-    @Column(name = "status_update_date_time", nullable = false)
-    private LocalDateTime statusUpdateDateTime;
+    @Column(name = "linked_hearing_event_date_time", nullable = false)
+    private LocalDateTime linkedHearingEventDateTime;
 
-    @Column(name = "hearing_event", nullable = false)
-    private String hearingEvent;
+    @Column(name = "linked_hearing_event", nullable = false)
+    private String linkedHearingEvent;
 
     @Column(name = "http_status")
     private String httpStatus;
@@ -54,10 +54,14 @@ public class LinkedHearingStatusAuditEntity {
     @SuppressWarnings("java:S2789")
     private JsonNode errorDescription;
 
-    @Column(name = "request_version", nullable = false)
-    private String requestVersion;
+    @Column(name = "other_info", columnDefinition = "jsonb")
+    @Convert(converter = JsonDataConverter.class)
+    @SuppressWarnings("java:S2789")
+    private JsonNode otherInfo;
 
-    @Column(name = "response_date_time")
-    private LocalDateTime responseDateTime;
+    @Column(name = "linked_group_hearings", columnDefinition = "jsonb")
+    @Convert(converter = JsonDataConverter.class)
+    @SuppressWarnings("java:S2789")
+    private JsonNode linkedGroupHearings;
 
 }
