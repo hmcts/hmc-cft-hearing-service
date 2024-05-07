@@ -4,13 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import uk.gov.hmcts.reform.hmc.helper.HearingStatusAuditMapper;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -33,26 +31,19 @@ class HearingStatusAuditServiceImplTest {
     @Mock
     HearingStatusAuditRepository hearingStatusAuditRepository;
 
-    @Mock
-    HearingStatusAuditMapper hearingStatusAuditMapper;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         hearingStatusAuditService =
-            new HearingStatusAuditServiceImpl(hearingStatusAuditMapper,
-                                              hearingStatusAuditRepository);
+            new HearingStatusAuditServiceImpl(hearingStatusAuditRepository);
     }
 
     @Nested
-    @DisplayName("HearingStatusAudit")
     class HearingStatusAuditDetails {
         @Test
         void shouldSaveAuditTriageDetailsWhenFailure() throws JsonProcessingException  {
             JsonNode errorDetails = new ObjectMapper().readTree("{\"deadLetterReason\":"
                                                                     + " \"MaxDeliveryCountExceeded \"}");
-            given(hearingStatusAuditMapper.modelToEntity(TestingUtil.hearingStatusAudit(CREATE_HEARING_REQUEST)))
-                .willReturn(TestingUtil.hearingStatusAuditEntity());
             given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
                 TestingUtil.hearingStatusAuditEntity());
             hearingStatusAuditService. saveAuditTriageDetails(TestingUtil.hearingEntity(), LocalDateTime.now(),
@@ -63,8 +54,6 @@ class HearingStatusAuditServiceImplTest {
 
         @Test
         void shouldSaveAuditTriageDetailsWhenSuccess() {
-            given(hearingStatusAuditMapper.modelToEntity(TestingUtil.hearingStatusAudit(CREATE_HEARING_REQUEST)))
-                .willReturn(TestingUtil.hearingStatusAuditEntity());
             given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
                 TestingUtil.hearingStatusAuditEntity());
             hearingStatusAuditService. saveAuditTriageDetails(TestingUtil.hearingEntity(), LocalDateTime.now(),
