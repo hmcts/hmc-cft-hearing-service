@@ -3,9 +3,11 @@ package uk.gov.hmcts.reform.hmc.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.common.collect.Lists;
 import org.apache.http.HttpStatus;
 import org.slf4j.helpers.MessageFormatter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
@@ -1483,16 +1485,22 @@ public class TestingUtil {
 
     public static LinkedHearingStatusAuditEntity linkedHearingStatusAuditEntity() {
         LinkedHearingStatusAuditEntity linkedHearingStatusAuditEntity = new LinkedHearingStatusAuditEntity();
-        linkedHearingStatusAuditEntity.setHmctsServiceId("ABA1");
-        linkedHearingStatusAuditEntity.setLinkedHearingGroupId("2000000000");
-        linkedHearingStatusAuditEntity.setStatus(PutHearingStatus.HEARING_REQUESTED.name());
-        linkedHearingStatusAuditEntity.setHearingEvent(CREATE_HEARING_REQUEST);
+        linkedHearingStatusAuditEntity.setHmctsServiceId("Test");
+        linkedHearingStatusAuditEntity.setLinkedGroupId("2341");
+        linkedHearingStatusAuditEntity.setLinkedGroupVersion("1");
+        linkedHearingStatusAuditEntity.setLinkedHearingEventDateTime(LocalDateTime.now());
+        linkedHearingStatusAuditEntity.setLinkedHearingEvent(CREATE_HEARING_REQUEST);
         linkedHearingStatusAuditEntity.setHttpStatus(String.valueOf(HttpStatus.SC_OK));
         linkedHearingStatusAuditEntity.setSource(HMC);
         linkedHearingStatusAuditEntity.setTarget(HMI);
-        linkedHearingStatusAuditEntity.setRequestVersion("1");
+        JsonNode linkedGroupHearings = OBJECT_MAPPER.convertValue("2000000000", JsonNode.class);
+        linkedHearingStatusAuditEntity.setLinkedGroupHearings(linkedGroupHearings);
         return linkedHearingStatusAuditEntity;
     }
+
+    private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
+        .modules(new Jdk8Module())
+        .build();
 
 }
 

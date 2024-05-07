@@ -73,7 +73,6 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING_REQUEST;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_REQUEST_VERSION;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_STATUS;
@@ -264,7 +263,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         hearingStatusAuditService.saveAuditTriageDetails(hearingEntity,hearingEntity.getUpdatedDateTime(),
                                                          UPDATE_HEARING_REQUEST,null, clientS2SToken,
-                                                         HMC, null, HEARING_TYPE);
+                                                         HMC, null);
 
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
             getCaseDetails(saveHearingResponseDetails.getHearingRequestId(), hearingRequest), listing, deploymentId);
@@ -337,7 +336,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
         hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
                                                          POST_HEARING_ACTUALS_COMPLETION, null, clientS2SToken,
-                                                         HMC, null, HEARING_TYPE);
+                                                         HMC, null);
         messageSenderToTopicConfiguration
             .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                          hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
@@ -379,7 +378,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         savePartyRelationshipDetails(createHearingRequest, savedEntity);
         hearingStatusAuditService.saveAuditTriageDetails(savedEntity, savedEntity.getCreatedDateTime(),
                                                          CREATE_HEARING_REQUEST, null, clientS2SToken,
-                                                         HMC, null, HEARING_TYPE);
+                                                         HMC, null);
         return getSaveHearingResponseDetails(savedEntity);
     }
 
@@ -559,7 +558,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
         hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
                                                          DELETE_HEARING_REQUEST, null, clientS2SToken,
-                                                         HMC, null, HEARING_TYPE);
+                                                         HMC, null);
         sendRequestToQueue(hearingId, DELETE_HEARING,existingHearing.getDeploymentId());
         return saveHearingResponseDetails;
     }

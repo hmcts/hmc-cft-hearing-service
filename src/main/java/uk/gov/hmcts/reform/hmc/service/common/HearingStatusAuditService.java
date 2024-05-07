@@ -9,6 +9,6 @@ import java.time.LocalDateTime;
 public interface HearingStatusAuditService {
 
     void saveAuditTriageDetails(HearingEntity hearingEntity, LocalDateTime statusUpdateDateTime, String hearingEvent,
-        String httpStatus,String source, String target, JsonNode errorDescription, String hearingType);
+        String httpStatus,String source, String target, JsonNode errorDescription);
 
 }

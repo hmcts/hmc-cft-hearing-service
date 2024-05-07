@@ -176,13 +176,12 @@ public class LinkedHearingValidator {
             log.debug("hearingId: {}", details.getHearingId());
             hearingIdValidator.validateHearingId(Long.valueOf(details.getHearingId()), HEARING_ID_NOT_FOUND);
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(Long.valueOf(details.getHearingId()));
-
             if (hearingEntity.isPresent()) {
-                linkedHearingDetails.add(hearingEntity.get());
                 checkHearingRequestAllowsLinking(hearingEntity);
                 checkHearingRequestIsNotInAnotherGroup(details, requestId);
                 checkValidStateForHearingRequest(hearingEntity, details);
                 checkHearingOrderIsUnique(hearingLinkGroupRequest, details);
+                linkedHearingDetails.add(hearingEntity.get());
             }
         });
         return linkedHearingDetails;

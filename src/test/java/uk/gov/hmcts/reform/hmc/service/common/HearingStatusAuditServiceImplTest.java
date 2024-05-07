@@ -11,9 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.helper.HearingStatusAuditMapper;
-import uk.gov.hmcts.reform.hmc.helper.LinkedHearingStatusAuditMapper;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDateTime;
@@ -23,7 +21,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.SUCCESS_STATUS;
@@ -39,20 +36,12 @@ class HearingStatusAuditServiceImplTest {
     @Mock
     HearingStatusAuditMapper hearingStatusAuditMapper;
 
-    @Mock
-    LinkedHearingStatusAuditRepository linkedHearingStatusAuditRepository;
-
-    @Mock
-    LinkedHearingStatusAuditMapper linkedHearingStatusAuditMapper;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         hearingStatusAuditService =
             new HearingStatusAuditServiceImpl(hearingStatusAuditMapper,
-                                              hearingStatusAuditRepository,
-                                              linkedHearingStatusAuditMapper,
-                                              linkedHearingStatusAuditRepository);
+                                              hearingStatusAuditRepository);
     }
 
     @Nested
@@ -68,7 +57,7 @@ class HearingStatusAuditServiceImplTest {
                 TestingUtil.hearingStatusAuditEntity());
             hearingStatusAuditService. saveAuditTriageDetails(TestingUtil.hearingEntity(), LocalDateTime.now(),
                                                               CREATE_HEARING_REQUEST,SUCCESS_STATUS,
-                                                              HMC, HMI,errorDetails, HEARING_TYPE);
+                                                              HMC, HMI,errorDetails);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
 
@@ -80,7 +69,7 @@ class HearingStatusAuditServiceImplTest {
                 TestingUtil.hearingStatusAuditEntity());
             hearingStatusAuditService. saveAuditTriageDetails(TestingUtil.hearingEntity(), LocalDateTime.now(),
                                                               CREATE_HEARING_REQUEST,SUCCESS_STATUS,
-                                                              HMC, HMI,null, HEARING_TYPE);
+                                                              HMC, HMI,null);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
     }

@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PUT_PARTIES_NOTIFIED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ALREADY_SET;
@@ -62,7 +61,7 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
             HearingEntity hearingEntity = hearingResponseEntity.getHearing();
             hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
                                                              PUT_PARTIES_NOTIFIED, null, clientS2SToken,
-                                                             HMC, null, HEARING_TYPE);
+                                                             HMC, null);
         }
     }
 

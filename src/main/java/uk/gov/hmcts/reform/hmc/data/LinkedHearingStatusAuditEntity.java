@@ -57,7 +57,7 @@ public class LinkedHearingStatusAuditEntity {
     @Column(name = "other_info", columnDefinition = "jsonb")
     @Convert(converter = JsonDataConverter.class)
     @SuppressWarnings("java:S2789")
-    private JsonNode otherInfo;
+    private JsonNode otherInfo = null;
 
     @Column(name = "linked_group_hearings", columnDefinition = "jsonb")
     @Convert(converter = JsonDataConverter.class)

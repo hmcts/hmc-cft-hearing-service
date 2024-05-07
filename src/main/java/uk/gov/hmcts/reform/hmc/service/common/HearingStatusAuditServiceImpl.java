@@ -7,16 +7,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
-import uk.gov.hmcts.reform.hmc.data.LinkedHearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.helper.HearingStatusAuditMapper;
-import uk.gov.hmcts.reform.hmc.helper.LinkedHearingStatusAuditMapper;
 import uk.gov.hmcts.reform.hmc.model.HearingStatusAudit;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
-import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 
 import java.time.LocalDateTime;
-
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_TYPE;
 
 @Service
 @Component
@@ -25,34 +20,23 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
 
     private final HearingStatusAuditMapper hearingStatusAuditMapper;
     private final HearingStatusAuditRepository hearingStatusAuditRepository;
-    private final LinkedHearingStatusAuditMapper linkedHearingStatusAuditMapper;
-    private final LinkedHearingStatusAuditRepository linkedHearingStatusAuditRepository;
-
 
     @Autowired
     public HearingStatusAuditServiceImpl(HearingStatusAuditMapper hearingStatusAuditMapper,
-                                         HearingStatusAuditRepository hearingStatusAuditRepository,
-                                         LinkedHearingStatusAuditMapper linkedHearingStatusAuditMapper,
-                                         LinkedHearingStatusAuditRepository linkedHearingStatusAuditRepository) {
+                                         HearingStatusAuditRepository hearingStatusAuditRepository) {
         this.hearingStatusAuditMapper = hearingStatusAuditMapper;
         this.hearingStatusAuditRepository = hearingStatusAuditRepository;
-        this.linkedHearingStatusAuditMapper = linkedHearingStatusAuditMapper;
-        this.linkedHearingStatusAuditRepository =  linkedHearingStatusAuditRepository;
+
     }
 
     @Override
     public void saveAuditTriageDetails(HearingEntity hearingEntity, LocalDateTime statusUpdateDateTime,
                                        String hearingEvent,String httpStatus, String source, String target,
-                                       JsonNode errorDetails, String hearingType) {
+                                       JsonNode errorDetails) {
         HearingStatusAudit hearingStatusAudit = mapHearingStatusAuditDetails(hearingEntity, statusUpdateDateTime,
                                                                              hearingEvent,httpStatus, source, target,
                                                                              errorDetails);
-        if (HEARING_TYPE.equals(hearingType)) {
-            saveHearingStatusAudit(hearingStatusAudit);
-        } else {
-            saveLinkedHearingStatusAudit(hearingStatusAudit);
-        }
-
+        saveHearingStatusAudit(hearingStatusAudit);
     }
 
     private HearingStatusAudit mapHearingStatusAuditDetails(HearingEntity hearingEntity,
@@ -79,16 +63,6 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
         HearingStatusAuditEntity hearingStatusAuditEntity = hearingStatusAuditMapper
             .modelToEntity(hearingStatusAudit);
         hearingStatusAuditRepository.save(hearingStatusAuditEntity);
-    }
-
-    private void saveLinkedHearingStatusAudit(HearingStatusAudit hearingStatusAudit) {
-        try {
-            LinkedHearingStatusAuditEntity linkedHearingStatusAuditEntity = linkedHearingStatusAuditMapper
-                .modelToEntity(hearingStatusAudit);
-            linkedHearingStatusAuditRepository.save(linkedHearingStatusAuditEntity);
-        } catch (Exception e) {
-            log.info("Exception occurred " + e.getMessage());
-        }
     }
 
 }

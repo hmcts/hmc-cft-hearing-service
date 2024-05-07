@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
-import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
+import uk.gov.hmcts.reform.hmc.service.common.LinkedHearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
@@ -137,7 +137,7 @@ class LinkedHearingGroupServiceTest {
     AccessControlService accessControlService;
 
     @Mock
-    HearingStatusAuditService hearingStatusAuditService;
+    LinkedHearingStatusAuditService linkedHearingStatusAuditService;
 
     private static final ObjectMapper objectMapper = new Jackson2ObjectMapperBuilder()
         .modules(new Jdk8Module())
@@ -172,10 +172,10 @@ class LinkedHearingGroupServiceTest {
             objectMapperService,
             accessControlService,
             futureHearingsLinkedHearingGroupService,
-            hearingStatusAuditService,
+            linkedHearingStatusAuditService,
             objectMapper
         );
-        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any(),any());
+        linkedHearingStatusAuditService.saveLinkedHearingAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
     }
 
     @Nested

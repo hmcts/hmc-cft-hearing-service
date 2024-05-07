@@ -33,7 +33,6 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.FH;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_ACK;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_FAILURE_STATUS;
@@ -112,7 +111,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 hearingStatusAuditService.saveAuditTriageDetails(hearingEntity,
                                                                  hearingEntity.getUpdatedDateTime(),
                                                                  LA_RESPONSE, LA_FAILURE_STATUS,
-                                                                 FH, HMC, errorDescription, HEARING_TYPE);
+                                                                 FH, HMC, errorDescription);
             } else {
                 log.error("Hearing id " + hearingId + " not found");
             }
@@ -169,7 +168,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             hearingStatusAuditService.saveAuditTriageDetails(hearingToSave,
                                                              hearingToSave.getUpdatedDateTime(),
                                                              LA_RESPONSE, LA_FAILURE_STATUS,
-                                                             FH, HMC, message, HEARING_TYPE);
+                                                             FH, HMC, message);
         }
     }
 
@@ -194,7 +193,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 hearingStatusAuditService.saveAuditTriageDetails(hearingEntity.get(),
                                                                  hearingEntity.get().getUpdatedDateTime(),
                                                                  LA_RESPONSE,LA_SUCCESS_STATUS, FH, HMC,
-                                                                 null, HEARING_TYPE);
+                                                                 null);
             }
         }
     }
@@ -223,7 +222,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             }
             hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
                                                              LA_ACK, syncResponse.getListAssistHttpStatus()
-                                                                 .toString(),HMC, FH, errorDescription, HEARING_TYPE);
+                                                                 .toString(),HMC, FH, errorDescription);
         }
     }
 

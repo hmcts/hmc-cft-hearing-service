@@ -46,7 +46,7 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
-import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
+import uk.gov.hmcts.reform.hmc.service.common.LinkedHearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
@@ -148,7 +148,7 @@ class LinkHearingGroupServiceTest {
         .build();
 
     @Mock
-    HearingStatusAuditService hearingStatusAuditService;
+    LinkedHearingStatusAuditService linkedHearingStatusAuditService;
 
     private static final String CLIENT_S2S_TOKEN = "xui_webapp";
 
@@ -181,7 +181,7 @@ class LinkHearingGroupServiceTest {
                 objectMapperService,
                 accessControlService,
                 futureHearingsLinkedHearingGroupService,
-                hearingStatusAuditService,
+                linkedHearingStatusAuditService,
                 objectMapper
             );
     }
@@ -572,8 +572,8 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
-            verify(hearingStatusAuditService, times(4)).saveAuditTriageDetails(any(),any(),
-                                                                              any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(4)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                              any(),any(),any(),any(),any());
         }
 
         @Test
@@ -622,8 +622,8 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
-            verify(hearingStatusAuditService, times(4)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(4)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -670,8 +670,8 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(3)).findById(2000000002L);
             verify(hearingRepository, times(2)).save(any());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
-            verify(hearingStatusAuditService, times(4)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(4)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -719,8 +719,8 @@ class LinkHearingGroupServiceTest {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             });
             assertTrue(exception.getMessage().contains(REJECTED_BY_LIST_ASSIST));
-            verify(hearingStatusAuditService, times(4)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(4)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -766,8 +766,8 @@ class LinkHearingGroupServiceTest {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             });
             assertTrue(exception.getMessage().contains(LIST_ASSIST_FAILED_TO_RESPOND));
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
     }
 
@@ -1175,8 +1175,8 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(4)).findById(2000000002L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1232,8 +1232,8 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository, times(4)).findById(2000000002L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1294,8 +1294,8 @@ class LinkHearingGroupServiceTest {
                 service.updateLinkHearing("1", hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             });
             assertTrue(exception.getMessage().contains(REJECTED_BY_LIST_ASSIST));
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1353,8 +1353,8 @@ class LinkHearingGroupServiceTest {
                 service.updateLinkHearing("1", hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             });
             assertTrue(exception.getMessage().contains(LIST_ASSIST_FAILED_TO_RESPOND));
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
     }
 
@@ -1414,8 +1414,8 @@ class LinkHearingGroupServiceTest {
                 .getLinkedGroupDetailsByRequestId(any());
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
             verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
-            verify(hearingStatusAuditService, times(4)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(4)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1427,8 +1427,8 @@ class LinkHearingGroupServiceTest {
             assertEquals(INVALID_LINKED_GROUP_REQUEST_ID_DETAILS, exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
-            verify(hearingStatusAuditService, never()).saveAuditTriageDetails(any(),any(),
-                                                                              any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, never()).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                              any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1443,8 +1443,8 @@ class LinkHearingGroupServiceTest {
             assertEquals("007 group is in a PENDING state", exception.getMessage());
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, never()).findByLinkedGroupId(anyLong());
-            verify(hearingStatusAuditService, never()).saveAuditTriageDetails(any(),any(),
-                                                                              any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, never()).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                              any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1514,8 +1514,8 @@ class LinkHearingGroupServiceTest {
             verify(linkedGroupDetailsRepository, times(1))
                 .getLinkedGroupDetailsByRequestId(any());
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1549,8 +1549,8 @@ class LinkHearingGroupServiceTest {
             verify(linkedGroupDetailsRepository, times(1))
                 .getLinkedGroupDetailsByRequestId(any());
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(hearingStatusAuditService, times(1)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(1)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1581,8 +1581,8 @@ class LinkHearingGroupServiceTest {
             verify(linkedGroupDetailsRepository, times(1))
                 .getLinkedGroupDetailsByRequestId(any());
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
-            verify(hearingStatusAuditService, times(1)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(1)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1635,8 +1635,8 @@ class LinkHearingGroupServiceTest {
                 .getLinkedGroupDetailsByRequestId(any());
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
             verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
-            verify(hearingStatusAuditService, times(4)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(4)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1674,8 +1674,8 @@ class LinkHearingGroupServiceTest {
                 .getLinkedGroupDetailsByRequestId(any());
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
             verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
-                                                                               any(),any(),any(),any(),any(),any());
+            verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                               any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1713,8 +1713,8 @@ class LinkHearingGroupServiceTest {
                 .getLinkedGroupDetailsByRequestId(any());
             assertEquals(REJECTED_BY_LIST_ASSIST, response.getDescription());
             assertEquals(400, response.getResponseCode());
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
-                                                                              any(),any(),any(),any(),any(), any());
+            verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                              any(),any(),any(),any(),any());
         }
 
         @Test
@@ -1752,8 +1752,8 @@ class LinkHearingGroupServiceTest {
                 .getLinkedGroupDetailsByRequestId(any());
             assertEquals(LIST_ASSIST_FAILED_TO_RESPOND, response.getDescription());
             assertEquals(500, response.getResponseCode());
-            verify(hearingStatusAuditService, times(2)).saveAuditTriageDetails(any(),any(),
-                                                                              any(),any(),any(),any(),any(), any());
+            verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
+                                                                              any(),any(),any(),any(),any());
         }
 
         private HearingResponseEntity createHearingResponseEntityWithHearingDays(
