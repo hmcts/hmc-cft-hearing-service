@@ -10,7 +10,9 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Component
@@ -56,13 +58,22 @@ public class LinkedHearingStatusAuditServiceImpl implements  LinkedHearingStatus
         linkedHearingStatusAuditEntity.setSource(source);
         linkedHearingStatusAuditEntity.setTarget(target);
         linkedHearingStatusAuditEntity.setErrorDescription(errorDetails);
-        JsonNode hearingsJson = objectMapperService.convertObjectToJsonNode(hearingEntities);
+        JsonNode hearingsJson = objectMapperService.convertObjectToJsonNode(getHearingIdInStrings(hearingEntities));
         linkedHearingStatusAuditEntity.setLinkedGroupHearings(hearingsJson);
         return linkedHearingStatusAuditEntity;
+    }
+
+    private List<String> getHearingIdInStrings(List<HearingEntity> hearingEntities) {
+        List<Long> hearingIdsLong = new ArrayList<>();
+        hearingEntities.stream()
+            .forEach(hearingEntity -> hearingIdsLong.add(hearingEntity.getId()));
+        return hearingIdsLong.stream().map(Object::toString)
+            .collect(Collectors.toList());
     }
 
     private void saveLinkedHearingStatusAudit(LinkedHearingStatusAuditEntity linkedHearingStatusAuditEntity) {
         linkedHearingStatusAuditRepository.save(linkedHearingStatusAuditEntity);
     }
+
 
 }
