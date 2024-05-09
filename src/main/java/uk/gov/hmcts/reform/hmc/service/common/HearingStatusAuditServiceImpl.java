@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
-import uk.gov.hmcts.reform.hmc.helper.HearingStatusAuditMapper;
-import uk.gov.hmcts.reform.hmc.model.HearingStatusAudit;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 
 import java.time.LocalDateTime;
@@ -18,52 +16,47 @@ import java.time.LocalDateTime;
 @Slf4j
 public class HearingStatusAuditServiceImpl implements HearingStatusAuditService {
 
-    private final HearingStatusAuditMapper hearingStatusAuditMapper;
     private final HearingStatusAuditRepository hearingStatusAuditRepository;
 
-
     @Autowired
-    public HearingStatusAuditServiceImpl(HearingStatusAuditMapper hearingStatusAuditMapper,
-                                         HearingStatusAuditRepository hearingStatusAuditRepository) {
-        this.hearingStatusAuditMapper = hearingStatusAuditMapper;
+    public HearingStatusAuditServiceImpl(HearingStatusAuditRepository hearingStatusAuditRepository) {
         this.hearingStatusAuditRepository = hearingStatusAuditRepository;
+
     }
 
     @Override
     public void saveAuditTriageDetails(HearingEntity hearingEntity, LocalDateTime statusUpdateDateTime,
                                        String hearingEvent,String httpStatus, String source, String target,
                                        JsonNode errorDetails) {
-        HearingStatusAudit hearingStatusAudit = mapHearingStatusAuditDetails(hearingEntity, statusUpdateDateTime,
-                                                                             hearingEvent,httpStatus, source, target,
-                                                                             errorDetails);
-        saveHearingStatusAudit(hearingStatusAudit);
-
+        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetails(hearingEntity,
+                                                                                         statusUpdateDateTime,
+                                                                                         hearingEvent,httpStatus,
+                                                                                         source, target, errorDetails);
+        saveHearingStatusAudit(hearingStatusAuditEntity);
     }
 
-
-    private HearingStatusAudit mapHearingStatusAuditDetails(HearingEntity hearingEntity,
-                                                            LocalDateTime statusUpdateDateTime,String hearingEvent,
-                                                            String httpStatus, String source, String target,
-                                                            JsonNode errorDetails) {
-        HearingStatusAudit hearingStatusAudit = new HearingStatusAudit();
-        hearingStatusAudit.setHearingServiceId(hearingEntity.getLatestCaseHearingRequest().getHmctsServiceCode());
-        hearingStatusAudit.setHearingId(hearingEntity.getId().toString());
-        hearingStatusAudit.setStatus(hearingEntity.getStatus());
-        hearingStatusAudit.setStatusUpdateDateTime(statusUpdateDateTime);
-        hearingStatusAudit.setHearingEvent(hearingEvent);
-        hearingStatusAudit.setHttpStatus(httpStatus);
-        hearingStatusAudit.setSource(source);
-        hearingStatusAudit.setTarget(target);
-        hearingStatusAudit.setErrorDescription(errorDetails);
-        hearingStatusAudit.setRequestVersion(hearingEntity.getLatestCaseHearingRequest().getVersionNumber().toString());
-        return  hearingStatusAudit;
+    private HearingStatusAuditEntity mapHearingStatusAuditDetails(HearingEntity hearingEntity,
+                                                                   LocalDateTime statusUpdateDateTime,
+                                                                   String hearingEvent, String httpStatus,
+                                                                   String source, String target,
+                                                                   JsonNode errorDetails) {
+        HearingStatusAuditEntity hearingStatusAuditEntity = new HearingStatusAuditEntity();
+        hearingStatusAuditEntity.setHmctsServiceId(hearingEntity.getLatestCaseHearingRequest().getHmctsServiceCode());
+        hearingStatusAuditEntity.setHearingId(hearingEntity.getId().toString());
+        hearingStatusAuditEntity.setStatus(hearingEntity.getStatus());
+        hearingStatusAuditEntity.setStatusUpdateDateTime(statusUpdateDateTime);
+        hearingStatusAuditEntity.setHearingEvent(hearingEvent);
+        hearingStatusAuditEntity.setHttpStatus(httpStatus);
+        hearingStatusAuditEntity.setSource(source);
+        hearingStatusAuditEntity.setTarget(target);
+        hearingStatusAuditEntity.setErrorDescription(errorDetails);
+        hearingStatusAuditEntity.setRequestVersion(hearingEntity.getLatestCaseHearingRequest().getVersionNumber()
+                                                       .toString());
+        hearingStatusAuditEntity.setResponseDateTime(LocalDateTime.now());
+        return hearingStatusAuditEntity;
     }
 
-
-    private void saveHearingStatusAudit(HearingStatusAudit hearingStatusAudit) {
-
-        HearingStatusAuditEntity hearingStatusAuditEntity = hearingStatusAuditMapper
-            .modelToEntity(hearingStatusAudit);
+    private void saveHearingStatusAudit(HearingStatusAuditEntity hearingStatusAuditEntity) {
         hearingStatusAuditRepository.save(hearingStatusAuditEntity);
     }
 

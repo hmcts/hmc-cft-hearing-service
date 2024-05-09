@@ -1,11 +1,12 @@
 package uk.gov.hmcts.reform.hmc.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.common.collect.Lists;
 import org.apache.http.HttpStatus;
 import org.slf4j.helpers.MessageFormatter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.IndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
+import uk.gov.hmcts.reform.hmc.data.LinkedHearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.NonStandardDurationsEntity;
 import uk.gov.hmcts.reform.hmc.data.OrganisationDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelAuthorisationRequirementsEntity;
@@ -60,7 +62,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
-import uk.gov.hmcts.reform.hmc.model.HearingStatusAudit;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.LocationType;
@@ -92,7 +93,6 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_DOW_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_RANGE_TYPE;
 
@@ -1459,25 +1459,24 @@ public class TestingUtil {
         return hearingStatusAuditEntity;
     }
 
-    public static HearingStatusAudit hearingStatusAudit() {
-        JsonNode jsonNode = null;
-        try {
-            jsonNode = new ObjectMapper().readTree("{\"errorDescription\": \"timeout\"}");
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        HearingStatusAudit hearingStatusAudit = new HearingStatusAudit();
-        hearingStatusAudit.setHearingServiceId("ABA1");
-        hearingStatusAudit.setHearingId("2000000000");
-        hearingStatusAudit.setStatus(PutHearingStatus.HEARING_REQUESTED.name());
-        hearingStatusAudit.setStatusUpdateDateTime(LocalDateTime.now());
-        hearingStatusAudit.setHearingEvent(CREATE_HEARING_REQUEST);
-        hearingStatusAudit.setHttpStatus(SUCCESS_STATUS);
-        hearingStatusAudit.setSource(HMC);
-        hearingStatusAudit.setTarget(HMI);
-        hearingStatusAudit.setErrorDescription(jsonNode);
-        hearingStatusAudit.setRequestVersion("1");
-        return hearingStatusAudit;
+    public static LinkedHearingStatusAuditEntity linkedHearingStatusAuditEntity() {
+        LinkedHearingStatusAuditEntity linkedHearingStatusAuditEntity = new LinkedHearingStatusAuditEntity();
+        linkedHearingStatusAuditEntity.setHmctsServiceId("Test");
+        linkedHearingStatusAuditEntity.setLinkedGroupId("2341");
+        linkedHearingStatusAuditEntity.setLinkedGroupVersion("1");
+        linkedHearingStatusAuditEntity.setLinkedHearingEventDateTime(LocalDateTime.now());
+        linkedHearingStatusAuditEntity.setLinkedHearingEvent(CREATE_HEARING_REQUEST);
+        linkedHearingStatusAuditEntity.setHttpStatus(String.valueOf(HttpStatus.SC_OK));
+        linkedHearingStatusAuditEntity.setSource(HMC);
+        linkedHearingStatusAuditEntity.setTarget(HMI);
+        JsonNode linkedGroupHearings = OBJECT_MAPPER.convertValue("2000000000", JsonNode.class);
+        linkedHearingStatusAuditEntity.setLinkedGroupHearings(linkedGroupHearings);
+        return linkedHearingStatusAuditEntity;
     }
+
+    private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
+        .modules(new Jdk8Module())
+        .build();
+
 }
 

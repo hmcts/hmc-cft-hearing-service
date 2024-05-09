@@ -43,7 +43,6 @@ public final class Constants {
     public static final Integer FIRST_PAGE = 0;
     public static final String PENDING = "PENDING";
     public static final Integer DURATION_OF_DAY = 360;
-    public static final String LIST_ASSIST = "ListAssist";
     public static final String ERROR = "ERROR";
     public static final String LIST_ASSIST_SUCCESSFUL_RESPONSE = "Response received from ListAssist successfully";
     public static final String CANCEL = "CNCL";
@@ -66,5 +65,9 @@ public final class Constants {
     public static final String HMC = "hmc";
     public static final String LA_SUCCESS_STATUS = "202";
     public static final String LA_FAILURE_STATUS = "400";
+    public static final String LA_FAILURE_SERVER_STATUS = "500";
     public static final String SUCCESS_STATUS = "200";
+    public static final String UPDATE_LINKED_HEARING_REQUEST = "update-linked_hearing-request";
+    public static final String CREATE_LINKED_HEARING_REQUEST = "create-linked_hearing-request";
+    public static final String DELETE_LINKED_HEARING_REQUEST = "delete-linked_hearing-request";
 }
