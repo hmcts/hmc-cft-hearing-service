@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -14,10 +15,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Table(name = "linked_hearing_status_audit")
-@EqualsAndHashCode()
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class LinkedHearingStatusAuditEntity {
+public class LinkedHearingStatusAuditEntity extends AuditBaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 8647223748985181708L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,
@@ -39,25 +42,6 @@ public class LinkedHearingStatusAuditEntity {
 
     @Column(name = "linked_hearing_event", nullable = false)
     private String linkedHearingEvent;
-
-    @Column(name = "http_status")
-    private String httpStatus;
-
-    @Column(name = "source")
-    private String source;
-
-    @Column(name = "target")
-    private String target;
-
-    @Column(name = "error_description", columnDefinition = "jsonb")
-    @Convert(converter = JsonDataConverter.class)
-    @SuppressWarnings("java:S2789")
-    private JsonNode errorDescription;
-
-    @Column(name = "other_info", columnDefinition = "jsonb")
-    @Convert(converter = JsonDataConverter.class)
-    @SuppressWarnings("java:S2789")
-    private JsonNode otherInfo = null;
 
     @Column(name = "linked_group_hearings", columnDefinition = "jsonb")
     @Convert(converter = JsonDataConverter.class)
