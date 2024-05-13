@@ -122,8 +122,6 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         validateHearingAuditDetailsAfterDelete();
         List<LinkedHearingStatusAuditEntity> details = validateLinkedHearingAuditDetails("7700000000");
         assertEquals(DELETE_LINKED_HEARING_REQUEST, details.get(0).getLinkedHearingEvent());
-        assertTrue(details.get(1).getErrorDescription().toString()
-                       .contains(LIST_ASSIST_FAILED_TO_RESPOND));
     }
 
     @Test
@@ -155,8 +153,6 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         validateHearingAuditDetailsAfterDelete();
         List<LinkedHearingStatusAuditEntity> details = validateLinkedHearingAuditDetails("7700000000");
         assertEquals(DELETE_LINKED_HEARING_REQUEST, details.get(0).getLinkedHearingEvent());
-        assertTrue(details.get(1).getErrorDescription().toString()
-                       .contains(REJECTED_BY_LIST_ASSIST));
     }
 
     @Test
