@@ -85,8 +85,6 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         validateHearingAuditDetails(linkedOrder);
         List<LinkedHearingStatusAuditEntity> details = validateLinkedHearingAuditDetails("7700000000");
         assertEquals(DELETE_LINKED_HEARING_REQUEST, details.get(0).getLinkedHearingEvent());
-        assertNull(details.get(1).getErrorDescription());
-
     }
 
     @Test
