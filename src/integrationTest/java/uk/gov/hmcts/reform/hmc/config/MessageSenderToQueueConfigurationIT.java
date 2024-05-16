@@ -27,6 +27,6 @@ class MessageSenderToQueueConfigurationIT extends BaseTest {
             new MessageSenderToQueueConfiguration(applicationParams);
         ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
         messageSenderToQueueConfiguration.sendMessageToQueue("Test Message",1L,AMEND_HEARING,
-                                                             "ABA1");
+                                                             "TEST");
     }
 }
