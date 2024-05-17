@@ -422,6 +422,54 @@ class HearingActualsMapperTest {
                 .getActualAttendeeIndividualDetail().getLastName());
     }
 
+    @Test
+    void processHearingRequestToEntityForIndWhenPartyIdIsNullAndDuplicatePartyParticipants() {
+        ActualHearingDayPartyDetail individualDetails = new ActualHearingDayPartyDetail();
+        individualDetails.setFirstName("fname");
+        individualDetails.setLastName("lname");
+        ActualHearingDayParties hearingDayParty1 = TestingUtil.getHearingActualDayParties(
+            null,
+            "RoleType1",
+            individualDetails,
+            null,
+            "SubType1",
+            false,
+            "P1"
+        );
+
+        ActualHearingDayParties hearingDayParty2 = TestingUtil.getHearingActualDayParties(
+            null,
+            "RoleType2",
+            individualDetails,
+            null,
+            "SubType1",
+            false,
+            "P1"
+        );
+        ActualHearingDayParties hearingDayParty3 = TestingUtil.getHearingActualDayParties(
+            "P1",
+            "RoleType1",
+            individualDetails,
+            null,
+            "SubType1",
+            null,
+            null
+        );
+
+        HearingActual hearingActual = getHearingActual(individualDetails, null,
+                                                       "1", null,
+                                                       List.of(hearingDayParty1, hearingDayParty2, hearingDayParty3)
+        );
+
+        HearingActualsMapper actualsMapper = new HearingActualsMapper();
+        ActualHearingEntity response = actualsMapper.toActualHearingEntity(hearingActual);
+
+        assertEquals(0, response.getActualHearingDay().get(0).getActualHearingDayPauses().size());
+        assertNotNull(response.getActualHearingDay().get(0).getActualHearingParty().get(0).getPartyId());
+        assertNotNull(response.getActualHearingDay().get(0).getActualHearingParty().get(1).getPartyId());
+
+    }
+
     private void assertCommonFields(ActualHearingEntity response) {
         assertEquals("witness hearing", response.getActualHearingType());
         assertTrue(response.getActualHearingIsFinalFlag());

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.client.hmi.SyncResponse;
@@ -45,6 +46,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     private final HmiHearingResponseMapper hmiHearingResponseMapper;
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
     private final ObjectMapperService objectMapperService;
+    private final ApplicationParams applicationParams;
     private static final String HEARING_ID = "hearing_id";
     public static final String UNSUPPORTED_HEARING_STATUS = "Hearing has unsupported value for hearing status";
     public static final String MISSING_HEARING_ID = "Message is missing custom header hearing_id";
@@ -54,13 +56,16 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                                    HmiHearingResponseMapper hmiHearingResponseMapper,
                                    MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
                                    ObjectMapperService objectMapperService,
-                                   HearingIdValidator hearingIdValidator) {
+                                   HearingIdValidator hearingIdValidator,
+                                   ApplicationParams applicationParams) {
         this.objectMapper = objectMapper;
         this.hearingRepository = hearingRepository;
         this.hmiHearingResponseMapper = hmiHearingResponseMapper;
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
         this.hearingIdValidator = hearingIdValidator;
+        this.applicationParams = applicationParams;
+
     }
 
     @Override
@@ -102,6 +107,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
     private void validateResponse(JsonNode message, MessageType messageType, Long hearingId)
         throws JsonProcessingException {
+        log.debug("message received for hearing id :{}, messageType: {}, message: {} ",hearingId, messageType,
+                  message.toString());
         if (messageType.equals(MessageType.HEARING_RESPONSE)) {
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             Validator validator = factory.getValidator();
@@ -137,7 +144,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingToSave);
             messageSenderToTopicConfiguration
                 .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
-                             hmcHearingResponse.getHmctsServiceCode(),hearingId.toString());
+                             hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
+                             getDeploymentIdForHearing(hearingResult.get()));
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
                 log.info("Hearing id: " + hearingId + "has response of type :" + MessageType.ERROR);
                 log.error("Hearing id: " + hearingId + " updated to status Exception");
@@ -160,13 +168,16 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity.get());
                 messageSenderToTopicConfiguration
                     .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
-                                 hmcHearingResponse.getHmctsServiceCode(),hearingId.toString());
+                                 hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
+                                 getDeploymentIdForHearing(hearingResult.get()));
             }
         }
     }
 
     @Transactional
     private void updateHearingAndStatus(Long hearingId, SyncResponse syncResponse) {
+        log.debug(MessageType.LA_SYNC_HEARING_RESPONSE + " received for hearing id {} ,{} ", hearingId,
+                  syncResponse.toString());
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiSyncResponseToEntity(
@@ -177,7 +188,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
             messageSenderToTopicConfiguration
                 .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
-                             hmcHearingResponse.getHmctsServiceCode(),hearingId.toString());
+                             hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
+                             getDeploymentIdForHearing(hearingResult.get()));
             if (hearingEntity.getStatus().equals(HearingStatus.EXCEPTION.name())) {
                 log.info("Hearing id: " + hearingId + "has response of type :" + MessageType.LA_SYNC_HEARING_RESPONSE);
                 log.error("Hearing id: " + hearingId + " updated to status Exception");
@@ -190,5 +202,9 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         return hearingResponseEntity.isPresent()
             ? hmiHearingResponseMapper.mapEntityToHmcModel(hearingResponseEntity.get(), hearingEntity)
             : hmiHearingResponseMapper.mapEntityToHmcModel(hearingEntity);
+    }
+
+    private String getDeploymentIdForHearing(HearingEntity hearingEntity) {
+        return applicationParams.isHmctsDeploymentIdEnabled() ? hearingEntity.getDeploymentId() : null;
     }
 }

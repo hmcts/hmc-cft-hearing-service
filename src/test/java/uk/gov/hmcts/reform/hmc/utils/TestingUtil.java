@@ -366,7 +366,7 @@ public class TestingUtil {
         entity.setHearingType("Some hearing type");
         entity.setRequiredDurationInMinutes(10);
         entity.setHearingPriorityType("Priority type");
-        entity.setHmctsServiceCode("ABA1");
+        entity.setHmctsServiceCode("TEST");
         entity.setCaseReference("1111222233334444");
         entity.setCaseUrlContextPath("https://www.google.com");
         entity.setHmctsInternalCaseName("Internal case name");
@@ -485,7 +485,7 @@ public class TestingUtil {
 
     public static CaseDetails caseDetails() {
         CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setHmctsServiceCode("ABA1");
+        caseDetails.setHmctsServiceCode("TEST");
         caseDetails.setCaseRef(CASE_REFERENCE);
         caseDetails.setCaseDeepLink("https://www.google.com");
         caseDetails.setHmctsInternalCaseName("Internal case name");
@@ -504,7 +504,7 @@ public class TestingUtil {
 
     public static CaseDetails caseDetailsWithCaseSubType() {
         CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setHmctsServiceCode("ABA1");
+        caseDetails.setHmctsServiceCode("TEST");
         caseDetails.setCaseRef(CASE_REFERENCE);
         caseDetails.setCaseDeepLink("https://www.google.com");
         caseDetails.setHmctsInternalCaseName("Internal case name");
@@ -529,7 +529,7 @@ public class TestingUtil {
     public static CaseDetails getValidCaseDetails() {
 
         CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setHmctsServiceCode("ABA1");
+        caseDetails.setHmctsServiceCode("TEST");
         caseDetails.setCaseRef(CASE_REFERENCE);
         caseDetails.setCaseDeepLink("https://www.google.com");
         caseDetails.setHmctsInternalCaseName("Internal case name");
@@ -606,7 +606,7 @@ public class TestingUtil {
         hearingEntity.setIsLinkedFlag(true);
         hearingEntity.setLinkedGroupDetails(getLinkedGroupDetails());
         entity.setHearing(hearingEntity);
-        entity.setHmctsServiceCode("ABA1");
+        entity.setHmctsServiceCode("TEST");
         entity.setCaseReference("12345");
         entity.setHearingType("Some hearing type");
         entity.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
@@ -627,7 +627,7 @@ public class TestingUtil {
         hearingEntity.setIsLinkedFlag(true);
         hearingEntity.setLinkedGroupDetails(getLinkedGroupDetails());
         entity.setHearing(hearingEntity);
-        entity.setHmctsServiceCode("ABA1");
+        entity.setHmctsServiceCode("TEST");
         entity.setCaseReference("12345");
         entity.setHearingType("Some hearing type");
         entity.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
@@ -665,7 +665,7 @@ public class TestingUtil {
         entity1.setCaseHearingID(ID);
         hearingEntity.setStatus("HEARING_REQUESTED");
         entity1.setHearing(hearingEntity);
-        entity1.setHmctsServiceCode("ABA1");
+        entity1.setHmctsServiceCode("TEST");
         entity1.setCaseReference("12345");
         entity1.setHearingType("Some hearing type");
         entity1.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
@@ -737,7 +737,7 @@ public class TestingUtil {
         entity1.setCaseHearingID(2000000001L);
         hearingEntity.setStatus("HEARING_UPDATED");
         entity1.setHearing(hearingEntity);
-        entity1.setHmctsServiceCode("ABA1");
+        entity1.setHmctsServiceCode("TEST");
         entity1.setCaseReference("4567");
         entity1.setHearingType("Some hearing type");
         entity1.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
@@ -1088,7 +1088,7 @@ public class TestingUtil {
         CaseHearingRequestEntity entity1 = new CaseHearingRequestEntity();
         entity1.setVersionNumber(1);
         entity1.setCaseHearingID(ID);
-        entity1.setHmctsServiceCode("ABA1");
+        entity1.setHmctsServiceCode("TEST");
         entity1.setCaseReference("12345");
         entity1.setHearingType("Some hearing type");
         entity1.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel());
@@ -1101,7 +1101,7 @@ public class TestingUtil {
         CaseHearingRequestEntity entity1 = new CaseHearingRequestEntity();
         entity1.setVersionNumber(1);
         entity1.setCaseHearingID(ID);
-        entity1.setHmctsServiceCode("ABA1");
+        entity1.setHmctsServiceCode("TEST");
         entity1.setCaseReference("12345");
         entity1.setHearingType("Some hearing type");
         entity1.setHearingParties(List.of(hearingPartyEntityOrg()));
@@ -1134,7 +1134,7 @@ public class TestingUtil {
         entity1.setCaseHearingID(ID);
 
         entity1.setHearing(getCaseHearingsEntity());
-        entity1.setHmctsServiceCode("ABA1");
+        entity1.setHmctsServiceCode("TEST");
         entity1.setCaseReference("12345");
         entity1.setHearingType("Some hearing type");
         entity1.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel());

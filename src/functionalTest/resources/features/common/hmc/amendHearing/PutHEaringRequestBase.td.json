@@ -89,7 +89,7 @@
         "hearingIsLinkedFlag": false
       },
       "caseDetails": {
-        "hmctsServiceCode": "ABA1",
+        "hmctsServiceCode": "TEST",
         "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
         "requestTimeStamp": "2000-08-10T12:20:00.000Z",
         "externalCaseReference": "EXT/REF123",
@@ -154,7 +154,7 @@
   "expectedResponse": {
     "headers": {
       "Content-Length": "[[ANYTHING_PRESENT]]",
-      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Content-Type": "text/plain; charset=utf-8",
       "Date": "[[ANYTHING_PRESENT]]",
       "Request-Context": "[[ANY_NULLABLE]]"
     }
