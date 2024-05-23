@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.hmc.model.UnNotifiedHearingsResponse;
 import uk.gov.hmcts.reform.hmc.service.UnNotifiedHearingService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 
@@ -49,11 +50,14 @@ public class UnNotifiedHearingsController {
                                                             @RequestParam(name = "hearing_start_date_to",
                                                                 required = false)
                                                             @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                                LocalDateTime hearingStartDateTo) {
+                                                                LocalDateTime hearingStartDateTo,
+                                                            @RequestParam(required = false)
+                                                                    List<String> hearingStatus) {
         return unNotifiedHearingService.getUnNotifiedHearings(
             hmctsServiceCode,
             hearingStartDateFrom,
-            hearingStartDateTo
+            hearingStartDateTo,
+            hearingStatus
         );
     }
 }

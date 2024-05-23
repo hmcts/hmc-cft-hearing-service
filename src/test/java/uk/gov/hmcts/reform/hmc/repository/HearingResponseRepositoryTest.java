@@ -4,10 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import uk.gov.hmcts.reform.hmc.PartiesNotifiedCommonGeneration;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 
@@ -26,13 +22,15 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.FIRST_PAGE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.UN_NOTIFIED_HEARINGS_LIMIT;
 
 class HearingResponseRepositoryTest extends PartiesNotifiedCommonGeneration {
 
     @Mock
     private HearingResponseRepository hearingResponseRepository;
+
+    @Mock
+    private UnNotifiedHearingsRepository unNotifiedHearingsRepository;
+
 
     @BeforeEach
     void setUp() {
@@ -59,19 +57,17 @@ class HearingResponseRepositoryTest extends PartiesNotifiedCommonGeneration {
 
     @Test
     void testGetUnNotifiedHearingsWithOutStartDateTo() {
-        Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
         List<Long> expectedHearingIds = Arrays.asList(2000000207L, 2000000206L, 2000000205L);
-        Page<Long> expectedUnNotifiedHearings = new PageImpl<>(expectedHearingIds, limit, expectedHearingIds.size());
-        doReturn(expectedUnNotifiedHearings).when(hearingResponseRepository).getUnNotifiedHearingsWithOutStartDateTo(
+        doReturn(expectedHearingIds).when(unNotifiedHearingsRepository).getUnNotifiedHearingsWithOutStartDateTo(
             anyString(), any(), any());
-        Page<Long> hearingIds = hearingResponseRepository.getUnNotifiedHearingsWithOutStartDateTo(
+        List<Long> hearingIds = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
             anyString(),
             any(),
             any()
         );
         assertAll(
-            () -> assertThat(hearingIds.getContent(), is(expectedUnNotifiedHearings.getContent())),
-            () -> verify(hearingResponseRepository, times(1)).getUnNotifiedHearingsWithOutStartDateTo(
+            () -> assertThat(hearingIds, is(expectedHearingIds)),
+            () -> verify(unNotifiedHearingsRepository, times(1)).getUnNotifiedHearingsWithOutStartDateTo(
                 anyString(),
                 any(),
                 any()
@@ -81,20 +77,18 @@ class HearingResponseRepositoryTest extends PartiesNotifiedCommonGeneration {
 
     @Test
     void testGetUnNotifiedHearingsWithStartDateTo() {
-        Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
         List<Long> expectedHearingIds = Arrays.asList(2000000207L, 2000000206L, 2000000205L);
-        Page<Long> expectedUnNotifiedHearings = new PageImpl<>(expectedHearingIds, limit, expectedHearingIds.size());
-        doReturn(expectedUnNotifiedHearings).when(hearingResponseRepository).getUnNotifiedHearingsWithStartDateTo(
+        doReturn(expectedHearingIds).when(unNotifiedHearingsRepository).getUnNotifiedHearingsWithStartDateTo(
             anyString(), any(), any(),any());
-        Page<Long> hearingIds = hearingResponseRepository.getUnNotifiedHearingsWithStartDateTo(
+        List<Long> hearingIds = unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo(
             anyString(),
             any(),
             any(),
             any()
         );
         assertAll(
-            () -> assertThat(hearingIds.getContent(), is(expectedUnNotifiedHearings.getContent())),
-            () -> verify(hearingResponseRepository, times(1)).getUnNotifiedHearingsWithStartDateTo(
+            () -> assertThat(hearingIds, is(expectedHearingIds)),
+            () -> verify(unNotifiedHearingsRepository, times(1)).getUnNotifiedHearingsWithStartDateTo(
                 anyString(),
                 any(),
                 any(),
