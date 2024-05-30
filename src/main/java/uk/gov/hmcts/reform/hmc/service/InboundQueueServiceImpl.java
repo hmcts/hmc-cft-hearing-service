@@ -156,8 +156,10 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiHearingErrorToEntity(
-                    errorDetails,
-                    hearingResult.get());
+                errorDetails,
+                hearingResult.get()
+            );
+            hearingToSave = hearingToSave.updateLastGoodStatus();
             hearingRepository.save(hearingToSave);
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingToSave);
             messageSenderToTopicConfiguration
@@ -177,8 +179,10 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = null;
             hearingToSave = hmiHearingResponseMapper.mapHmiHearingToEntity(
-                    hearingResponse,
-                    hearingResult.get());
+                hearingResponse,
+                hearingResult.get()
+            );
+            hearingToSave = hearingToSave.updateLastGoodStatus();
             hearingRepository.save(hearingToSave);
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
             if (hearingEntity.isPresent()) {
@@ -198,8 +202,10 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiSyncResponseToEntity(
-                    syncResponse,
-                    hearingResult.get());
+                syncResponse,
+                hearingResult.get()
+            );
+            hearingToSave = hearingToSave.updateLastGoodStatus();
             HearingEntity hearingEntity = hearingRepository.save(hearingToSave);
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
             messageSenderToTopicConfiguration

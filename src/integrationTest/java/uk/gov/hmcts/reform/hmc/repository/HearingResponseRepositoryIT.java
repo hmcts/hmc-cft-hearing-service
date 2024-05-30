@@ -2,9 +2,6 @@ package uk.gov.hmcts.reform.hmc.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
@@ -12,25 +9,25 @@ import uk.gov.hmcts.reform.hmc.BaseTest;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.FIRST_PAGE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.UN_NOTIFIED_HEARINGS_LIMIT;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.convertDateTime;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class HearingResponseRepositoryIT extends BaseTest {
 
     @Autowired
-    HearingResponseRepository hearingResponseRepository;
+    UnNotifiedHearingsRepository unNotifiedHearingsRepository;
 
     private static final String UN_NOTIFIED_HEARINGS_DATA_SCRIPT = "classpath:sql/unNotified-hearings-request.sql";
 
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
+
+    List<String> hearingStatusListed  = List.of("LISTED");
+    List<String> hearingStatusCancelled  = List.of("CANCELLED");
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
@@ -38,16 +35,14 @@ class HearingResponseRepositoryIT extends BaseTest {
         final List<Long> expectedHearingIds = Arrays.asList(2100000001L, 2100000000L);
         String dateStr = "2019-12-10 11:00:00";
         LocalDateTime startFrom = convertDateTime(dateStr);
-        Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
-        Page<Long> expected = hearingResponseRepository.getUnNotifiedHearingsWithOutStartDateTo(
+        List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
             "ACA2",
             startFrom,
-            limit
+            hearingStatusListed
         );
-        assertNotNull(expected.getContent());
-        assertEquals(2, expected.getContent().size());
-        assertEquals(2, expected.getTotalElements());
-        assertTrue(expectedHearingIds.containsAll(expected.getContent()));
+        assertNotNull(expected.size());
+        assertEquals(2, expected.size());
+        assertTrue(expectedHearingIds.containsAll(expected));
     }
 
     @Test
@@ -58,19 +53,15 @@ class HearingResponseRepositoryIT extends BaseTest {
         String dateStrTo = "2021-10-01 11:00:00";
         LocalDateTime startFrom = convertDateTime(dateStrFrom);
         LocalDateTime startTo = convertDateTime(dateStrTo);
-        Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
-        Page<Long> expected = hearingResponseRepository.getUnNotifiedHearingsWithStartDateTo(
+        List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo(
             "ACA2",
             startFrom,
             startTo,
-            limit
+            hearingStatusListed
         );
-        assertNotNull(expected.getContent());
-        assertNotNull(expected.getContent());
-        assertEquals(2, expected.getContent().size());
-        assertEquals(2, expected.getTotalElements());
-        List<Long> actualHearingIds = expected.getContent().stream().sorted().collect(Collectors.toList());;
-        assertEquals(expectedHearingIds, actualHearingIds);
+        assertNotNull(expected.size());
+        assertEquals(2, expected.size());
+        assertEquals(expectedHearingIds, expected);
     }
 
     @Test
@@ -81,18 +72,15 @@ class HearingResponseRepositoryIT extends BaseTest {
         final List<Long> expectedHearingIds = Arrays.asList(2100000004L);
         LocalDateTime startFrom = convertDateTime(dateStrFrom);
         LocalDateTime startTo = convertDateTime(dateStrTo);
-        Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
-        Page<Long> expected = hearingResponseRepository.getUnNotifiedHearingsWithStartDateTo(
+        List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo(
             "AAA2",
             startFrom,
             startTo,
-            limit
+            hearingStatusListed
         );
-        assertNotNull(expected.getContent());
-        assertNotNull(expected.getContent());
-        assertEquals(1, expected.getContent().size());
-        assertEquals(1, expected.getTotalElements());
-        assertEquals(expectedHearingIds, expected.getContent());
+        assertNotNull(expected.size());
+        assertEquals(1, expected.size());
+        assertEquals(expectedHearingIds, expected);
     }
 
     @Test
@@ -100,14 +88,13 @@ class HearingResponseRepositoryIT extends BaseTest {
     void testGetUnNotifiedHearingsStartDateTimeIsGreater() {
         String dateStr = "2025-12-10 11:00:00";
         LocalDateTime startFrom = convertDateTime(dateStr);
-        Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
-        Page<Long> expected = hearingResponseRepository.getUnNotifiedHearingsWithOutStartDateTo(
+        List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
             "ACA2",
             startFrom,
-            limit
+            hearingStatusListed
         );
-        assertThat(expected.getContent().isEmpty());
-        assertEquals(0, expected.getTotalElements());
+        assertThat(expected.isEmpty());
+        assertEquals(0, expected.size());
     }
 
     @Test
@@ -117,15 +104,14 @@ class HearingResponseRepositoryIT extends BaseTest {
         String dateStrTo = "2025-12-12 12:00:00";
         LocalDateTime startFrom = convertDateTime(dateStr);
         LocalDateTime startTo = convertDateTime(dateStrTo);
-        Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
-        Page<Long> expected = hearingResponseRepository.getUnNotifiedHearingsWithStartDateTo(
+        List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo(
             "ACA2",
             startFrom,
             startTo,
-            limit
+            hearingStatusListed
         );
-        assertThat(expected.getContent().isEmpty());
-        assertEquals(0, expected.getTotalElements());
+        assertThat(expected.isEmpty());
+        assertEquals(0, expected.size());
     }
 
     @Test
@@ -134,15 +120,14 @@ class HearingResponseRepositoryIT extends BaseTest {
         String dateStr = "2023-06-15 01:01:01";
         LocalDateTime startFrom = convertDateTime(dateStr);
         final List<Long> expectedHearingIds = Arrays.asList(2100000003L);
-        Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
-        Page<Long> expected = hearingResponseRepository.getUnNotifiedHearingsWithOutStartDateTo(
+        List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
             "AAA2",
             startFrom,
-            limit
+            hearingStatusListed
         );
-        assertNotNull(expected.getContent());
-        assertEquals(1, expected.getTotalElements());
-        assertEquals(expectedHearingIds, expected.getContent());
+        assertNotNull(expected.isEmpty());
+        assertEquals(1, expected.size());
+        assertEquals(expectedHearingIds, expected);
     }
 
     @Test
@@ -153,16 +138,47 @@ class HearingResponseRepositoryIT extends BaseTest {
         LocalDateTime startFrom = convertDateTime(dateStr);
         LocalDateTime startTo = convertDateTime(dateStrTo);
         final List<Long> expectedHearingIds = Arrays.asList(2100000003L);
-        Pageable limit = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
-        Page<Long> expected = hearingResponseRepository.getUnNotifiedHearingsWithStartDateTo(
+        List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo(
             "AAA2",
             startFrom,
             startTo,
-            limit
+            hearingStatusListed
         );
-        assertNotNull(expected.getContent());
-        assertEquals(1, expected.getTotalElements());
-        assertEquals(expectedHearingIds, expected.getContent());
+        assertNotNull(expected.isEmpty());
+        assertEquals(1, expected.size());
+        assertEquals(expectedHearingIds, expected);
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
+    void testGetUnNotifiedHearingsWithOutStartDateToForCancelled() {
+        final List<Long> expectedHearingIds = Arrays.asList(2100000005L);
+        String dateStr = "2024-12-10 11:00:00";
+        LocalDateTime startFrom = convertDateTime(dateStr);
+        List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
+            "AAA2",
+            startFrom,
+            hearingStatusCancelled
+        );
+        assertNotNull(expected.size());
+        assertEquals(1, expected.size());
+        assertTrue(expectedHearingIds.containsAll(expected));
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
+    void testGetUnNotifiedHearingsWithOutStartDateToForMultiStatus() {
+        final List<Long> expectedHearingIds = Arrays.asList(2100000005L);
+        String dateStr = "2023-05-10 11:00:00";
+        LocalDateTime startFrom = convertDateTime(dateStr);
+        List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
+            "AAA2",
+            startFrom,
+            hearingStatusCancelled
+        );
+        assertNotNull(expected.size());
+        assertEquals(1, expected.size());
+        assertTrue(expectedHearingIds.containsAll(expected));
     }
 
 }

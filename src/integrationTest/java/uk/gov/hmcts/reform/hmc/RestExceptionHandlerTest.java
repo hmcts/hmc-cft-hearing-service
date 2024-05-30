@@ -99,7 +99,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         hearingDetails.setHearingChannels(List.of(""));
         hearingDetails.setAmendReasonCodes(List.of("reason"));
         CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setHmctsServiceCode("ABA1");
+        caseDetails.setHmctsServiceCode("TEST");
         caseDetails.setCaseRef("1111222233334444");
         caseDetails.setCaseDeepLink("https://www.google.com");
         caseDetails.setHmctsInternalCaseName("Internal case name");

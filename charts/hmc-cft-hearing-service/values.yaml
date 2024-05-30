@@ -3,6 +3,8 @@ java:
   image: 'hmctspublic.azurecr.io/hmc/cft-hearing-service:latest'
   ingressHost: hmc-cft-hearing-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: hmc
+  autoscaling:
+    enabled: false
   keyVaults:
     hmc:
       secrets:
