@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 
 @TestPropertySource("/contract-test.properties")
 @ExtendWith(SpringExtension.class)
-@Provider("hmc_cftHearingService")
+@Provider(BasePactTesting.PROVIDER_NAME)
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
     host = "${PACT_BROKER_URL:localhost}",
     port = "${PACT_BROKER_PORT:}",
