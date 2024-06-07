@@ -37,7 +37,10 @@ public class HearingMapper {
                                        HearingEntity hearingEntity,
                                        Integer requestVersion,
                                        String status,
-                                       RoomAttributesMapper roomAttributesMapper) {
+                                       boolean reasonableMatch,
+                                       boolean facilitiesMatch,
+                                       String deploymentId) {
+
 
 
         hearingRequest.getHearingDetails().setDuration(
@@ -45,11 +48,12 @@ public class HearingMapper {
         );
 
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestMapper.modelToEntity(
-            hearingRequest, hearingEntity, requestVersion, roomAttributesMapper);
+            hearingRequest, hearingEntity, requestVersion, reasonableMatch, facilitiesMatch);
         setHearingDetails(hearingRequest.getHearingDetails(), caseHearingRequestEntity);
         setCaseDetails(hearingRequest.getCaseDetails(), caseHearingRequestEntity);
         setPartyDetails(hearingRequest.getPartyDetails(), caseHearingRequestEntity);
         hearingEntity.setStatus(status);
+        hearingEntity.setDeploymentId(deploymentId);
         hearingEntity.setIsLinkedFlag(hearingRequest.getHearingDetails().getHearingIsLinkedFlag());
         hearingEntity.getCaseHearingRequests().add(caseHearingRequestEntity);
         return hearingEntity;

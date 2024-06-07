@@ -2,6 +2,10 @@ java:
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  devmemoryRequests: 2048Mi
+  devcpuRequests: 2000m
+  devmemoryLimits: 4096Mi
+  devcpuLimits: 4000m
   environment:
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft
     HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft
@@ -13,44 +17,39 @@ java:
     CFT_HEARING_SERVICE_DB_PASSWORD: "{{ .Values.postgresql.auth.password}}"
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
     CFT_HEARING_SERVICE_DB_PORT: 5432
-    CCD_DATA_STORE_API_BASE_URL: "http://ccd-test-stubs-service-aat.service.core-compute-aat.internal"
-
+    CCD_DATA_STORE_API_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal
   postgresql:
     enabled: true
   secrets:
     HMC_SERVICE_BUS_CONNECTION_STRING:
-      secretRef: servicebus-secret-topic-{{ .Release.Name }}-servicebus-hmc-to-cft
+      secretRef: hmc-sb-preview
       key: connectionString
     HMC_QUEUE_CONNECTION_STRING:
-      secretRef: servicebus-secret-queue-{{ .Release.Name }}-servicebus-hmc-from-hmi
+      secretRef: hmc-sb-preview
       key: connectionString
     HMC_OUTBOUND_QUEUE_CONNECTION_STRING:
-      secretRef: servicebus-secret-queue-{{ .Release.Name }}-servicebus-hmc-to-hmi
+      secretRef: hmc-sb-preview
       key: connectionString
   keyVaults:
     hmc:
-      resourceGroup: hmc-shared
+      resourceGroup: hmc-aso-preview-rg
       secrets:
         - name: AppInsightsInstrumentationKey
+        - name: app-insights-connection-string
+          alias: app-insights-connection-string
         - name: hmc-cft-hearing-service-s2s-secret
           alias: IDAM_KEY_CFT_HEARING_SERVICE
 
-hmc:
+servicebus:
   enabled: true
-  hmc:
-    servicebus:
-      enabled: true
-    hearingService:
-      enabled: false
-
-  hmc-hmi-outbound-adapter:
-    java:
-      environment:
-        LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CLIENT_FUTUREHEARING: DEBUG
-        HMI_BASE_URL: "http://ccd-test-stubs-service-pr-174-java.ccd/hmi"
-
-  hmc-hmi-inbound-adapter:
-    java:
-      ingressHost: inbound-adapter-${SERVICE_FQDN}
-      environment:
-        CFT_HEARING_SERVICE_URL: http://${SERVICE_NAME}-java
+  teamName: CCD
+  resourceGroup: hmc-aso-preview-rg
+  sbNamespace: hmc-sb-preview
+  setup:
+    topics:
+      - name: hmc-to-cft
+    subscriptions:
+      - name: hmc-subs-to-cft
+    queues:
+      - name: hmc-from-hmi
+      - name: hmc-to-hmi

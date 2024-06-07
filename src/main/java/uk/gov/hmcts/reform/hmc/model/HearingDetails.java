@@ -31,7 +31,7 @@ public class HearingDetails {
     private Boolean autoListFlag;
 
     @ListingReasonCodeEnumPattern(enumClass = ListingReasonCode.class, fieldName = "listingAutoChangeReasonCode")
-    @ApiModelProperty(allowableValues = "no_mapping_available")
+    @ApiModelProperty(allowableValues = "no-mapping-available, user-added-comments")
     @Size(max = 70, message = ValidationError.LISTING_REASON_CODE_MAX_LENGTH)
     private String listingAutoChangeReasonCode;
 

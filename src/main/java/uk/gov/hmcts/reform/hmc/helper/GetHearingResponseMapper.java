@@ -234,6 +234,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
                 hearingResponse.setListingStatus(hearingResponseEntity.getListingStatus());
             }
             hearingResponse.setHearingCancellationReason(hearingResponseEntity.getCancellationReasonType());
+            hearingResponse.setRequestVersion(hearingResponseEntity.getRequestVersion());
             setHearingDaySchedule(hearingResponse, List.of(hearingResponseEntity));
         }
         return hearingResponse;
@@ -434,7 +435,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
                 for (HearingDayDetailsEntity detailEntity : hearingDayDetailEntities) {
                     HearingDaySchedule hearingDaySchedule = setHearingDayScheduleDetails(detailEntity);
                     if (!CollectionUtils.isEmpty(detailEntity.getHearingDayPanel())) {
-                        setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel().get(0), hearingDaySchedule);
+                        setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel(), hearingDaySchedule);
                     }
                     setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
                     scheduleList.add(hearingDaySchedule);

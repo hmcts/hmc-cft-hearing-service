@@ -2,13 +2,10 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
-import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
-import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
@@ -36,6 +33,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_INDIVIDUAL_DETAILS;
@@ -45,12 +43,6 @@ class HearingManagementServiceIT extends BaseTest {
 
     @Autowired
     private HearingManagementService hearingManagementService;
-
-    @MockBean
-    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
-
-    @MockBean
-    private ApplicationParams applicationParams;
 
     @Autowired
     HearingRepository hearingRepository;
@@ -74,7 +66,7 @@ class HearingManagementServiceIT extends BaseTest {
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         createHearingRequest.setCaseDetails(TestingUtil.caseDetailsWithCaseSubType());
-        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
+        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -91,7 +83,7 @@ class HearingManagementServiceIT extends BaseTest {
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
+        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -108,7 +100,7 @@ class HearingManagementServiceIT extends BaseTest {
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
+        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -125,7 +117,7 @@ class HearingManagementServiceIT extends BaseTest {
         createHearingRequest.setPartyDetails(TestingUtil.partyDetailsWithOrgType());
         createHearingRequest.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
         createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
-        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
+        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -143,7 +135,7 @@ class HearingManagementServiceIT extends BaseTest {
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-            .saveHearingRequest(createHearingRequest));
+            .saveHearingRequest(createHearingRequest,  null));
         assertEquals(MISSING_INDIVIDUAL_DETAILS, exception.getMessage());
     }
 
@@ -159,7 +151,7 @@ class HearingManagementServiceIT extends BaseTest {
             TestingUtil.individualWithoutRelatedPartyDetails());
         createHearingRequest.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-            .saveHearingRequest(createHearingRequest));
+            .saveHearingRequest(createHearingRequest,  null));
         assertEquals(MISSING_ORGANISATION_DETAILS, exception.getMessage());
     }
 
@@ -174,7 +166,7 @@ class HearingManagementServiceIT extends BaseTest {
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(
             TestingUtil.individualWithoutRelatedPartyDetails());
         createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
+        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -193,7 +185,7 @@ class HearingManagementServiceIT extends BaseTest {
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
+        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -210,7 +202,7 @@ class HearingManagementServiceIT extends BaseTest {
         createHearingRequest.setPartyDetails(TestingUtil.partyDetails());
         createHearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest);
+        HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -270,7 +262,7 @@ class HearingManagementServiceIT extends BaseTest {
     void testUpdateHearingRequest_WithInvalidHearingStatus() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequest();
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.updateHearingRequest(2000000011L, request);
+            hearingManagementService.updateHearingRequest(2000000011L, request, null);
         });
         assertEquals(INVALID_PUT_HEARING_STATUS, exception.getMessage());
     }
@@ -281,9 +273,11 @@ class HearingManagementServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testUpdateHearingRequest_WithValidData() {
         hearingManagementService.updateHearingRequest(2000000000L,
-                                                      TestingUtil.updateHearingRequestWithCaseSubType(1));
+                                                      TestingUtil.updateHearingRequestWithCaseSubType(1),
+                                                      null);
         HearingResponse response = hearingManagementService
-            .updateHearingRequest(2000000000L, TestingUtil.updateHearingRequestWithCaseSubType(2));
+            .updateHearingRequest(2000000000L, TestingUtil.updateHearingRequestWithCaseSubType(2),
+                                  null);
         assertEquals(2000000000L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.HEARING_REQUESTED.name(), response.getStatus());
         assertEquals(3, response.getVersionNumber());
@@ -294,7 +288,9 @@ class HearingManagementServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void testUpdateHearingRequest_WhenStatus_Update_Requested() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
-        HearingResponse response = hearingManagementService.updateHearingRequest(2000000012L, request);
+        request.getCaseDetails().setCaseRef("9856815055686759");
+        HearingResponse response = hearingManagementService.updateHearingRequest(2000000012L, request,
+                                                                                 null);
         assertEquals(2000000012L, response.getHearingRequestId());
         assertEquals(response.getStatus(), PutHearingStatus.UPDATE_REQUESTED.name());
         assertEquals(2, response.getVersionNumber());
@@ -305,7 +301,9 @@ class HearingManagementServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
     void testUpdateHearingRequest_WhenStatus_Awaiting_Listing() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
-        HearingResponse response = hearingManagementService.updateHearingRequest(2000000024L, request);
+        request.getCaseDetails().setCaseRef("9372710950276233");
+        HearingResponse response = hearingManagementService.updateHearingRequest(2000000024L, request,
+                                                                                 null);
         assertEquals(2000000024L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
         assertEquals(2, response.getVersionNumber());
@@ -318,7 +316,7 @@ class HearingManagementServiceIT extends BaseTest {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
         request.getHearingDetails().setAmendReasonCodes(Collections.emptyList());
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.updateHearingRequest(2000000024L, request);
+            hearingManagementService.updateHearingRequest(2000000024L, request, null);
         });
         assertEquals(INVALID_AMEND_REASON_CODE, exception.getMessage());
     }
@@ -329,7 +327,7 @@ class HearingManagementServiceIT extends BaseTest {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
         request.getHearingDetails().setAmendReasonCodes(null);
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.updateHearingRequest(2000000024L, request);
+            hearingManagementService.updateHearingRequest(2000000024L, request, null);
         });
         assertEquals(INVALID_AMEND_REASON_CODE, exception.getMessage());
     }
@@ -342,7 +340,7 @@ class HearingManagementServiceIT extends BaseTest {
         request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         request.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.updateHearingRequest(2000000024L, request);
+            hearingManagementService.updateHearingRequest(2000000024L, request, null);
         });
         assertEquals(MISSING_INDIVIDUAL_DETAILS, exception.getMessage());
     }
@@ -351,10 +349,12 @@ class HearingManagementServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
     void testUpdateHearingRequest_WhenPartyDetailsAreValid() {
         UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
+        request.getCaseDetails().setCaseRef("9372710950276233");
         request.setPartyDetails(TestingUtil.partyDetails());
         request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         request.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
-        HearingResponse response = hearingManagementService.updateHearingRequest(2000000024L, request);
+        HearingResponse response = hearingManagementService.updateHearingRequest(2000000024L, request,
+                                                                                 null);
         assertEquals(2000000024L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
         assertEquals(2, response.getVersionNumber());
@@ -369,9 +369,22 @@ class HearingManagementServiceIT extends BaseTest {
         request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         request.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingManagementService.updateHearingRequest(2000000024L, request);
+            hearingManagementService.updateHearingRequest(2000000024L, request,null);
         });
         assertEquals(MISSING_ORGANISATION_DETAILS, exception.getMessage());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
+    void testUpdateHearingRequest_WhenCaseRefIsChanged() {
+        UpdateHearingRequest request = TestingUtil.updateHearingRequestWithCaseSubType(1);
+        request.setPartyDetails(TestingUtil.partyDetails());
+        request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
+        request.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingManagementService.updateHearingRequest(2000000024L, request, null);
+        });
+        assertEquals(INVALID_CASE_REFERENCE, exception.getMessage());
     }
 
     @Test
@@ -393,7 +406,7 @@ class HearingManagementServiceIT extends BaseTest {
 
     void testGetHearings_WithValidCaseRef_assertPt1(GetHearingsResponse response) {
         assertEquals("9372710950276233", response.getCaseRef());
-        assertEquals("ABA1", response.getHmctsServiceCode());
+        assertEquals("TEST", response.getHmctsServiceCode());
         assertEquals(3, response.getCaseHearings().size());
         assertEquals(2000000010L, response.getCaseHearings().get(0).getHearingId());
         assertEquals(2000000009L, response.getCaseHearings().get(1).getHearingId());
@@ -428,15 +441,17 @@ class HearingManagementServiceIT extends BaseTest {
     void testGetHearings_WithValidCaseRef_assertPt2(GetHearingsResponse response) {
         assertEquals("panel2-1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getHearingJudgeId());
-        assertNull(response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getPanelMemberId());
+        assertEquals(0,
+                     response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getPanelMemberIds().size());
         assertEquals("panel3-1", response.getCaseHearings().get(1)
-            .getHearingDaySchedule().get(0).getPanelMemberId());
+            .getHearingDaySchedule().get(0).getPanelMemberIds().get(0));
         assertNull(response.getCaseHearings().get(1).getHearingDaySchedule().get(0).getHearingJudgeId());
         assertEquals("panel1-1", response.getCaseHearings().get(2)
             .getHearingDaySchedule().get(0).getHearingJudgeId());
-        assertNull(response.getCaseHearings().get(2).getHearingDaySchedule().get(0).getPanelMemberId());
+        assertEquals("panel1-2",
+                     response.getCaseHearings().get(2).getHearingDaySchedule().get(0).getPanelMemberIds().get(0));
         assertEquals("panel1-2", response.getCaseHearings().get(2)
-            .getHearingDaySchedule().get(1).getPanelMemberId());
+            .getHearingDaySchedule().get(1).getPanelMemberIds().get(0));
         assertNull(response.getCaseHearings().get(2).getHearingDaySchedule().get(1).getHearingJudgeId());
         assertEquals("panel1-1", response.getCaseHearings().get(2)
             .getHearingDaySchedule().get(0).getHearingJudgeId());
@@ -474,7 +489,7 @@ class HearingManagementServiceIT extends BaseTest {
 
     void testGetHearings_WithValidCaseRefAndStatus_assertPart1(GetHearingsResponse response) {
         assertEquals("9372710950276233", response.getCaseRef());
-        assertEquals("ABA1", response.getHmctsServiceCode());
+        assertEquals("TEST", response.getHmctsServiceCode());
         assertEquals(2, response.getCaseHearings().size());
         assertEquals(2000000009L, response.getCaseHearings().get(0).getHearingId());
         assertEquals(2000000000L, response.getCaseHearings().get(1).getHearingId());
@@ -497,14 +512,15 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("room1-1", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getHearingRoomId());
         assertEquals("panel3-1", response.getCaseHearings().get(0)
-            .getHearingDaySchedule().get(0).getPanelMemberId());
+            .getHearingDaySchedule().get(0).getPanelMemberIds().get(0));
         assertNull(response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getHearingJudgeId());
-        assertNull(response.getCaseHearings().get(1).getHearingDaySchedule().get(0).getPanelMemberId());
+        assertEquals("panel1-2",
+                     response.getCaseHearings().get(1).getHearingDaySchedule().get(0).getPanelMemberIds().get(0));
         assertEquals("panel1-1", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getHearingJudgeId());
         assertNull(response.getCaseHearings().get(1).getHearingDaySchedule().get(1).getHearingJudgeId());
         assertEquals("panel1-2", response.getCaseHearings().get(1)
-            .getHearingDaySchedule().get(1).getPanelMemberId());
+            .getHearingDaySchedule().get(1).getPanelMemberIds().get(0));
         assertEquals(1, response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getAttendees().size());
         assertEquals(2, response.getCaseHearings().get(1)

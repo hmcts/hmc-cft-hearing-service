@@ -38,7 +38,7 @@ public class IndividualDetails {
 
     private Boolean vulnerableFlag;
 
-    @Size(max = 256, message = ValidationError.VULNERABLE_DETAILS_MAX_LENGTH)
+    @Size(max = 2000, message = ValidationError.VULNERABLE_DETAILS_MAX_LENGTH)
     private String vulnerabilityDetails;
 
     private List<
@@ -56,10 +56,10 @@ public class IndividualDetails {
     @Valid
     private List<RelatedParty> relatedParties;
 
-    @Size(max = 80, message = ValidationError.OTHER_REASON_LENGTH)
+    @Size(max = 80, message = ValidationError.CUSTODY_STATUS_LENGTH)
     private String custodyStatus;
 
-    @Size(max = 200, message = ValidationError.CUSTODY_STATUS_LENGTH)
+    @Size(max = 3000, message = ValidationError.OTHER_REASON_LENGTH)
     private String otherReasonableAdjustmentDetails;
 
 }

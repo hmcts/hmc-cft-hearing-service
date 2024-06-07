@@ -39,7 +39,9 @@ public class CaseHearingRequestMapper {
     public CaseHearingRequestEntity modelToEntity(HearingRequest hearingRequest,
                                                   HearingEntity hearingEntity,
                                                   Integer requestVersion,
-                                                  RoomAttributesMapper roomAttributesMapper) {
+                                                  boolean reasonableMatch,
+                                                  boolean facilitiesMatch) {
+
 
         final CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
         HearingDetails hearingDetails = hearingRequest.getHearingDetails();
@@ -77,15 +79,15 @@ public class CaseHearingRequestMapper {
                                                                       .getDateRangeEnd());
         }
 
-        if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag()) && roomAttributesMapper.isMappedTo()) {
+        if (Boolean.TRUE.equals(hearingDetails.getAutoListFlag()) && !(reasonableMatch && facilitiesMatch)) {
             caseHearingRequestEntity.setAutoListFlag(false);
-            caseHearingRequestEntity.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.label);
+            caseHearingRequestEntity.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel());
         }
 
         if (hearingDetails.getListingAutoChangeReasonCode() != null) {
             if (Boolean.FALSE.equals(hearingDetails.getAutoListFlag())) {
                 caseHearingRequestEntity.setListingAutoChangeReasonCode(
-                    ListingReasonCode.valueOf(hearingDetails.getListingAutoChangeReasonCode()).label);
+                    hearingDetails.getListingAutoChangeReasonCode());
             } else {
                 throw new BadRequestException(ValidationError.MUST_BE_FALSE_IF_YOU_SUPPLY_A_CHANGE_REASONCODE);
             }

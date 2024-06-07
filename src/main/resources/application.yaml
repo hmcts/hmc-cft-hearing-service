@@ -54,6 +54,12 @@ spring:
           oidc:
             client-id: internal
             client-secret: internal
+  cloud:
+    discovery:
+      client:
+        composite-indicator:
+          enabled: false
+
 
 
 #  datasource:
@@ -102,6 +108,9 @@ jms:
 access-control:
   enabled: ${HMC_ACCESS_CONTROL_ENABLED:true}
 
+hmcts-deployment-id:
+  enabled: ${HMCTS_DEPLOYMENT_ID_ENABLED:false}
+
 room-attributes:
   file: ${ROOM_ATTRIBUTES_FILE:classpath:room-attributes.json}
 
@@ -118,7 +127,7 @@ idam:
     totp_secret: ${IDAM_KEY_CFT_HEARING_SERVICE:AAAAAAAAAAAAAAAA}
     url: ${S2S_URL:http://localhost:4502}
   s2s-authorised:
-    services: ${CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES:xui_webapp,hmc_hmi_inbound_adapter,sscs}
+    services: ${CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES:xui_webapp,hmc_hmi_inbound_adapter,sscs,fis_hmc_api}
   client:
     id: hmc_cft_hearing_service
     scope: openid roles profile
@@ -160,3 +169,12 @@ fh:
     host: ${HMI_BASE_URL:base/url}
     source-system: ${HMI_SOURCE_SYSTEM:source-system}
     destination-system: ${HMI_DESTINATION_SYSTEM:destination-system}
+
+LOGGING:
+  LEVEL:
+    uk:
+      gov:
+        hmcts:
+          reform:
+            hmc:
+              config: INFO

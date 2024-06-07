@@ -17,7 +17,7 @@ class PanelRequirementsEntityTest {
             entity.setCaseHearing(caseHearingRequestEntityWithPartyOrg());
             PanelRequirementsEntity response = new PanelRequirementsEntity(entity);
             assertEquals("RoleType1", response.getRoleType());
-            assertEquals("ABA1", response.getCaseHearing().getHmctsServiceCode());
+            assertEquals("TEST", response.getCaseHearing().getHmctsServiceCode());
             assertEquals("12345", response.getCaseHearing().getCaseReference());
             assertEquals("Some hearing type", response.getCaseHearing().getHearingType());
         }

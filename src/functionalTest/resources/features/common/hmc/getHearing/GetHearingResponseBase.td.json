@@ -8,7 +8,7 @@
         "hearingRequestID" : "[[ANYTHING_PRESENT]]"
       },
       "caseDetails" : {
-        "hmctsServiceCode" : "ABA1",
+        "hmctsServiceCode" : "TEST",
         "caseRef": "1512672408575038",
         "externalCaseReference" : "EXT/REF123",
         "caseDeepLink" : "https://www.google.com",

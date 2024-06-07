@@ -77,3 +77,33 @@ variable "database_name" {
 variable "postgresql_version" {
   default = "11"
 }
+
+variable "db_replicas" {
+  type    = list(string)
+  default = []
+}
+
+variable "pgsql_sku" {
+  description = "The PGSql flexible server instance sku"
+  default     = "GP_Standard_D2s_v3"
+}
+
+variable "aks_subscription_id" {}
+
+variable "pgsql_storage_mb" {
+  description = "Max storage allowed for the PGSql Flexibile instance"
+  type        = number
+  default     = 65536
+}
+variable "enable_replica" {
+  description = "Flag to enable the creation of a PostgreSQL Flexible server replica"
+  type        = bool
+  default     = false
+}
+variable "primary_server_id" {
+  description = "Azure resource ID of the primary PostgreSQL server"
+  type        = string
+  default     = "not_applicable" // Dummy Value for none replica environments
+}
+
+

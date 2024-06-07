@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository;
 import uk.gov.hmcts.reform.hmc.repository.RoleAssignmentRepository;
+import uk.gov.hmcts.reform.hmc.wiremock.extensions.DynamicOAuthJwkSetResponseTransformer;
 
 import java.util.List;
 import javax.inject.Inject;
@@ -67,6 +68,7 @@ public class BaseTest {
         when(authentication.getPrincipal()).thenReturn(jwt);
         SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
         ReflectionTestUtils.setField(applicationParams, "roleAssignmentServiceHost", hostUrl);
+        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", false);
 
         stubRoleAssignments();
         stubFor(WireMock.get(urlMatching("/cases/.*"))
@@ -80,7 +82,8 @@ public class BaseTest {
     static class WireMockTestConfiguration {
         @Bean
         public WireMockConfigurationCustomizer wireMockConfigurationCustomizer() {
-            return config -> config.extensions(new WiremockFixtures.ConnectionClosedTransformer());
+            return config -> config.extensions(new WiremockFixtures.ConnectionClosedTransformer(),
+                                               new DynamicOAuthJwkSetResponseTransformer());
         }
     }
 

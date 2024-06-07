@@ -359,7 +359,7 @@ class GetHearingResponseMapperTest {
 
     private void assertCaseDetails(CaseDetails caseDetails) {
         assertAll(
-            () -> assertEquals("ABA1", caseDetails.getHmctsServiceCode()),
+            () -> assertEquals("TEST", caseDetails.getHmctsServiceCode()),
             () -> assertEquals("12345", caseDetails.getCaseRef())
         );
     }
@@ -368,7 +368,7 @@ class GetHearingResponseMapperTest {
         assertAll(
             () -> assertEquals("Some hearing type", hearingDetails.getHearingType()),
             () -> assertEquals(
-                ListingReasonCode.NO_MAPPING_AVAILABLE.label, hearingDetails.getListingAutoChangeReasonCode())
+                ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel(), hearingDetails.getListingAutoChangeReasonCode())
         );
     }
 
@@ -384,7 +384,8 @@ class GetHearingResponseMapperTest {
         assertAll(
             () -> assertEquals(ListAssistCaseStatus.CASE_CREATED.name(), hearingResponse.getLaCaseStatus()),
             () -> assertEquals("Fixed", hearingResponse.getListingStatus()),
-            () -> assertEquals("Cancelled Reason 1", hearingResponse.getHearingCancellationReason())
+            () -> assertEquals("Cancelled Reason 1", hearingResponse.getHearingCancellationReason()),
+            () -> assertEquals(10, hearingResponse.getRequestVersion())
         );
     }
 
@@ -392,7 +393,7 @@ class GetHearingResponseMapperTest {
         assertAll(
             () -> assertEquals("venue1", hearingDaySchedule.getHearingVenueId()),
             () -> assertEquals("room1", hearingDaySchedule.getHearingRoomId()),
-            () -> assertEquals("PanelUser1", hearingDaySchedule.getPanelMemberId())
+            () -> assertEquals("PanelUser1", hearingDaySchedule.getPanelMemberIds().get(0))
         );
     }
 

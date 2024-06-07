@@ -2,11 +2,8 @@ package uk.gov.hmcts.reform.hmc.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.jdbc.Sql;
-import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
-import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.ChangeReasonsEntity;
 
@@ -23,12 +20,6 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
 
     @Autowired
     CaseHearingRequestRepository caseHearingRequestRepository;
-
-    @MockBean
-    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
-
-    @Autowired
-    private ApplicationParams applicationParams;
 
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
 
@@ -70,7 +61,7 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
         assertEquals("9372710950276233", entities.get(2).getCaseReference());
         assertEquals(2000000000L, entities.get(2).getHearing().getId());
         assertEquals(10, entities.get(2).getVersionNumber());
-        assertEquals("ABA1", entities.get(0).getHmctsServiceCode());
+        assertEquals("TEST", entities.get(0).getHmctsServiceCode());
         assertEquals("HEARING_UPDATED", entities.get(0).getHearing().getStatus());
         assertEquals("HEARING_REQUESTED", entities.get(1).getHearing().getStatus());
         assertEquals("HEARING_REQUESTED", entities.get(2).getHearing().getStatus());
@@ -92,7 +83,7 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
         assertEquals("9372710950276233", entities.get(1).getCaseReference());
         assertEquals(2000000000L, entities.get(1).getHearing().getId());
         assertEquals(10, entities.get(1).getVersionNumber());
-        assertEquals("ABA1", entities.get(0).getHmctsServiceCode());
+        assertEquals("TEST", entities.get(0).getHmctsServiceCode());
         assertEquals("HEARING_REQUESTED", entities.get(0).getHearing().getStatus());
         assertEquals(3, entities.get(0).getHearing().getHearingResponses().get(0).getHearingResponseId());
         assertFalse(entities.get(0).getHearing().getIsLinkedFlag());
