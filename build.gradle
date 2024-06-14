@@ -227,7 +227,7 @@ sonarqube {
   properties {
     property "sonar.projectName", "Reform :: hmc-cft-hearing-service"
     property "sonar.projectKey", "uk.gov.hmcts.reform:hmc-cft-hearing-service"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.outputLocation}"
     property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/hmc/Application.java," +
       "**/config/SecurityConfiguration.java," +
       "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageReaderFromQueueConfiguration.java," +
@@ -503,7 +503,9 @@ dependencies {
 
 }
 
-mainClassName = 'uk.gov.hmcts.reform.hmc.Application'
+application {
+  mainClass = 'uk.gov.hmcts.reform.hmc.Application'
+}
 
 bootJar {
   getArchiveFileName().set(provider {
@@ -591,7 +593,7 @@ bootWithCCD {
 }
 
 task fortifyScan(type: JavaExec)  {
-  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
   // The line below prevents the build from failing if the Fortify scan detects issues
