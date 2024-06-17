@@ -16,7 +16,7 @@ Feature: F-002: Delete hearing request
     And the response [has a status of CANCELLATION_REQUESTED],
     And the response has all other details as expected,
 
-    And a wait time of [5] seconds [to wait for status to come back from hmi]
+    And a wait time of [15] seconds [to wait for status to come back from hmi]
     And a call [to verify versionNumber=2 and status=CANCELLATION_SUBMITTED] will get the expected response as in [S-002.1-get-hearing].
 
   @S-002.2
