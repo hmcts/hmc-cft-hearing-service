@@ -12,11 +12,11 @@ java:
           alias: azure.application-insights.instrumentation-key
         - name: app-insights-connection-string
           alias: app-insights-connection-string
-        - name: cft-hearing-service-POSTGRES-USER
+        - name: cft-hearing-service-POSTGRES-USER-V15
           alias: CFT_HEARING_SERVICE_DB_USERNAME
-        - name: cft-hearing-service-POSTGRES-PASS
+        - name: cft-hearing-service-POSTGRES-PASS-V15
           alias: CFT_HEARING_SERVICE_DB_PASSWORD
-        - name: cft-hearing-service-POSTGRES-HOST
+        - name: cft-hearing-service-POSTGRES-HOST-V15
           alias: CFT_HEARING_SERVICE_DB_HOST
         - name: cft-hearing-service-POSTGRES-PORT
           alias: CFT_HEARING_SERVICE_DB_PORT
