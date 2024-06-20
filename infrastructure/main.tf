@@ -21,32 +21,6 @@ data "azurerm_key_vault" "hmc_shared_key_vault" {
   resource_group_name = local.sharedResourceGroup
 }
 
-////////////////////////////////
-// DB version 11              //
-////////////////////////////////
-
-module "hmc-hearing-management-db" {
-  source                = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product               = var.product
-  component             = var.component
-  name                  = "${local.app_full_name}-postgres-db"
-  location              = var.location
-  env                   = var.env
-  subscription          = var.subscription
-  postgresql_user       = var.postgresql_user
-  postgresql_version    = var.postgresql_version
-  database_name         = var.database_name
-  sku_name              = var.sku_name
-  sku_tier              = var.sku_tier
-  sku_capacity          = var.sku_capacity
-  ssl_enforcement       = var.ssl_enforcement
-  storage_mb            = var.storage_mb
-  backup_retention_days = var.backup_retention_days
-  georedundant_backup   = var.georedundant_backup
-  replicas              = var.db_replicas
-  common_tags           = var.common_tags
-}
-
 //////////////////////////////////////
 // Postgres DB info.                //
 //////////////////////////////////////
