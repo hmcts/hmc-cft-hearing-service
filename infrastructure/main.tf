@@ -110,14 +110,14 @@ module "postgresql_v15_replica" {
       value = "plpgsql,pg_stat_statements,pg_buffercache,hypopg"
     }
   ]
-  pgsql_version    = "15"
-  product          = var.product
-  name             = "${local.app_full_name}-postgres-db-v15-replica"
+  pgsql_version       = "15"
+  product             = var.product
+  name                = "${local.app_full_name}-postgres-db-v15-replica"
   resource_group_name = "hmc-cft-hearing-service-postgres-db-v15-data-${var.env}"
-  pgsql_sku        = var.pgsql_sku
-  pgsql_storage_mb = var.pgsql_storage_mb
-  create_mode      = "Replica"
-  source_server_id = var.primary_server_id
-  high_availability = false
+  pgsql_sku           = var.pgsql_sku
+  pgsql_storage_mb    = var.pgsql_storage_mb
+  create_mode         = "Replica"
+  source_server_id    = var.primary_server_id
+  high_availability   = false
 
 }
