@@ -48,7 +48,7 @@ module "hmc-hearing-management-db" {
 }
 
 //////////////////////////////////////
-// Postgres DB info                 //
+// Postgres DB info.                //
 //////////////////////////////////////
 
 module "postgresql_v15" {
