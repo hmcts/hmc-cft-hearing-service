@@ -113,14 +113,13 @@ task functional(type: Test) {
     generateCucumberReports.enabled = true
 
     javaexec {
-      environment "OAUTH2_CLIENT_SECRET", "DUMMY"
       main = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
       classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
       args = [
         '--threads', '10',
         '--plugin', "json:${rootDir}/target/cucumber.json",
         '--plugin', "junit:${buildDir}/test-results/functional/cucumber.xml",
-        '--tags', 'not @Ignore',
+        '--tags', '@S-002.1',
         '--glue', 'uk.gov.hmcts.befta.player', 'src/functionalTest/resources/features'
       ]
       // '--add-opens=...' added to suppress 'WARNING: An illegal reflective access operation has occurred' in uk.gov.hmcts.befta.util.CucumberStepAnnotationUtils
@@ -395,7 +394,7 @@ dependencies {
   testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.19.12') {
     exclude group: 'com.github.hmcts.befta-fw', module: 'befta-fw'
   }
-  testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: 'v9.0.3-HMAN-385.3'
+  testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: 'v9.0.3-HMAN-385.4'
 
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
@@ -490,7 +489,7 @@ dependencies {
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
-  functionalTestImplementation group: 'com.github.hmcts', name: 'befta-fw', version: 'v9.0.3-HMAN-385.3'
+  functionalTestImplementation group: 'com.github.hmcts', name: 'befta-fw', version: 'v9.0.3-HMAN-385.4'
   functionalTestImplementation libraries.junit5
 
   runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.5.5'
