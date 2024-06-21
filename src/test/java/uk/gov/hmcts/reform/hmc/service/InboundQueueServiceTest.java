@@ -5,7 +5,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
-import com.azure.messaging.servicebus.ServiceBusReceiverClient;
+import com.azure.messaging.servicebus.ServiceBusReceivedMessageContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageType;
@@ -47,7 +48,9 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,6 +65,9 @@ class InboundQueueServiceTest {
     private InboundQueueServiceImpl inboundQueueService;
 
     @Mock
+    private ServiceBusReceivedMessage message;
+
+    @Mock
     private HearingRepository hearingRepository;
 
     @Mock
@@ -72,11 +78,9 @@ class InboundQueueServiceTest {
 
     @Mock
     private HmiHearingResponseMapper hmiHearingResponseMapper;
-    @Mock
-    ServiceBusReceiverClient client;
 
     @Mock
-    ServiceBusReceivedMessage serviceBusReceivedMessage;
+    private ServiceBusReceivedMessageContext messageContext = mock(ServiceBusReceivedMessageContext.class);
 
     @Mock
     ObjectMapperService objectMapperService;
@@ -85,6 +89,9 @@ class InboundQueueServiceTest {
 
     @Mock
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
+
+    @Mock
+    private ApplicationParams applicationParams;
 
     private static ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -190,7 +197,8 @@ class InboundQueueServiceTest {
             hmiHearingResponseMapper,
             messageSenderToTopicConfiguration,
             objectMapperService,
-            hearingIdValidator
+            hearingIdValidator,
+            applicationParams
         );
     }
 
@@ -212,9 +220,7 @@ class InboundQueueServiceTest {
                 .thenReturn(java.util.Optional.of(hearingEntity));
 
             ListAppender<ILoggingEvent> listAppender = setupLogger();
-
             inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, exception);
-
             assertDynatraceLogMessage(listAppender, "2000000000");
 
             verify(hearingRepository, times(1)).findById(2000000000L);
@@ -240,8 +246,11 @@ class InboundQueueServiceTest {
             applicationProperties.put(HEARING_ID, "2000000000");
             applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
 
+            given(messageContext.getMessage()).willReturn(message);
+            given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+
             Exception exception = assertThrows(HearingNotFoundException.class, () ->
-                inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage));
+                inboundQueueService.processMessage(jsonNode, messageContext));
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
 
         }
@@ -251,11 +260,9 @@ class InboundQueueServiceTest {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "2000000000");
             applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
-
             JsonNode data = OBJECT_MAPPER.convertValue(
                 generateErrorDetails("Unable to create case", 2000),
                 JsonNode.class);
-
             HearingEntity hearingEntity = generateHearingEntity(2000000000L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L))
@@ -264,12 +271,11 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(data);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
-
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(), any(), any());
+            given(messageContext.getMessage()).willReturn(message);
+            given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             ListAppender<ILoggingEvent> listAppender = setupLogger();
-
-            inboundQueueService.processMessage(data, applicationProperties, client, serviceBusReceivedMessage);
-
+            inboundQueueService.processMessage(data, messageContext);
             assertDynatraceLogMessage(listAppender, "2000000000");
         }
 
@@ -297,12 +303,11 @@ class InboundQueueServiceTest {
                 .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
             when(hearingRepository.save(any()))
                 .thenReturn(hearingEntity);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
-
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(), any(), any());
+            given(messageContext.getMessage()).willReturn(message);
+            given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             ListAppender<ILoggingEvent> listAppender = setupLogger();
-
-            inboundQueueService.processMessage(syncJsonNode, applicationProperties, client, serviceBusReceivedMessage);
-
+            inboundQueueService.processMessage(syncJsonNode, messageContext);
             assertDynatraceLogMessage(listAppender, "2000000000");
         }
 
@@ -312,8 +317,11 @@ class InboundQueueServiceTest {
             applicationProperties.put(HEARING_ID, "1000000000");
             applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
 
+            given(messageContext.getMessage()).willReturn(message);
+            given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+
             Exception exception = assertThrows(BadRequestException.class, () ->
-                inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage));
+                inboundQueueService.processMessage(jsonNode, messageContext));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
 
         }
@@ -323,7 +331,10 @@ class InboundQueueServiceTest {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
 
-            inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage);
+            given(messageContext.getMessage()).willReturn(message);
+            given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+
+            inboundQueueService.processMessage(jsonNode, messageContext);
             verify(hearingRepository, times(0)).save(any());
             verify(hmiHearingResponseMapper, times(0)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(0)).existsById(any());
@@ -344,9 +355,12 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.AWAITING_LISTING));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any(), any());
 
-            inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage);
+            given(messageContext.getMessage()).willReturn(message);
+            given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+
+            inboundQueueService.processMessage(jsonNode, messageContext);
             verify(hearingRepository).save(hearingEntity);
             verify(hmiHearingResponseMapper, times(1)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).existsById(2000000000L);
@@ -457,9 +471,10 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.AWAITING_LISTING));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
-
-            inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage);
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(), any(), any());
+            given(messageContext.getMessage()).willReturn(message);
+            given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+            inboundQueueService.processMessage(jsonNode, messageContext);
             verify(hearingRepository).save(hearingEntity);
             verify(hmiHearingResponseMapper, times(1)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).existsById(2000000000L);
@@ -471,6 +486,9 @@ class InboundQueueServiceTest {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "2000000000");
             applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            given(messageContext.getMessage()).willReturn(message);
+            given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             JsonNode jsonNode = OBJECT_MAPPER.readTree("{\n"
                                                            + "  \"meta\": {\n"
                                                            + "    \"transactionIdCaseHQ\": \"<transactionIdCaseHQ>\"\n"
@@ -557,8 +575,7 @@ class InboundQueueServiceTest {
                                                            + "    }]\n"
                                                            + "  }\n"
                                                            + "}");
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage);
+            inboundQueueService.processMessage(jsonNode, messageContext);
             verify(hmiHearingResponseMapper, times(0)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).existsById(2000000000L);
             verify(hearingRepository, times(0)).findById(2000000000L);
@@ -570,6 +587,9 @@ class InboundQueueServiceTest {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "2000000000");
             applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            given(messageContext.getMessage()).willReturn(message);
+            given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             JsonNode jsonNode = OBJECT_MAPPER.readTree("{\n"
                                                            + "  \"meta\": {\n"
                                                            + "    \"transactionIdCaseHQ\": \"<transactionIdCaseHQ>\",\n"
@@ -657,8 +677,7 @@ class InboundQueueServiceTest {
                                                            + "    }]\n"
                                                            + "  }\n"
                                                            + "}");
-            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage);
+            inboundQueueService.processMessage(jsonNode, messageContext);
             verify(hmiHearingResponseMapper, times(0)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).existsById(2000000000L);
             verify(hearingRepository, times(0)).findById(2000000000L);
@@ -673,7 +692,6 @@ class InboundQueueServiceTest {
             ErrorDetails errorDetails = new ErrorDetails();
             errorDetails.setErrorCode(2000);
             errorDetails.setErrorDescription("Unable to create case");
-
             HearingEntity hearingEntity = generateHearingEntity(2000000000L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L))
@@ -682,11 +700,11 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any(), any());
 
             JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
             Exception exception = assertThrows(ListAssistResponseException.class, () ->
-                inboundQueueService.processMessage(data, applicationProperties, client, serviceBusReceivedMessage));
+                inboundQueueService.processMessage(data, messageContext));
             assertEquals("Error received for hearing Id: 2000000000 with an "
                              + "error message of 2000 Unable to create case", exception.getMessage());
         }
@@ -700,10 +718,11 @@ class InboundQueueServiceTest {
             errorDetails.setErrorCode(2000);
             errorDetails.setErrorDescription("Unable to create case");
             JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
+            given(messageContext.getMessage()).willReturn(message);
+            given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             Exception exception = assertThrows(HearingNotFoundException.class, () ->
-                inboundQueueService.processMessage(data, applicationProperties, client, serviceBusReceivedMessage));
+                inboundQueueService.processMessage(data, messageContext));
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
-
         }
 
         @Test
@@ -711,14 +730,15 @@ class InboundQueueServiceTest {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "1000000000");
             applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
+            given(messageContext.getMessage()).willReturn(message);
+            given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             ErrorDetails errorDetails = new ErrorDetails();
             errorDetails.setErrorCode(2000);
             errorDetails.setErrorDescription("Unable to create case");
             JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
             Exception exception = assertThrows(BadRequestException.class, () ->
-                inboundQueueService.processMessage(data, applicationProperties, client, serviceBusReceivedMessage));
+                inboundQueueService.processMessage(data, messageContext));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
-
         }
 
         @Test
@@ -729,8 +749,9 @@ class InboundQueueServiceTest {
             errorDetails.setErrorCode(2000);
             errorDetails.setErrorDescription("Unable to create case");
             JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
-
-            inboundQueueService.processMessage(data, applicationProperties, client, serviceBusReceivedMessage);
+            given(messageContext.getMessage()).willReturn(message);
+            given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+            inboundQueueService.processMessage(data, messageContext);
             verify(hearingRepository, times(0)).save(any());
             verify(hmiHearingResponseMapper, times(0)).mapHmiHearingErrorToEntity(any(), any());
             verify(hearingRepository, times(0)).existsById(any());
@@ -743,6 +764,11 @@ class InboundQueueServiceTest {
         Map<String, Object> applicationProperties = new HashMap<>();
         applicationProperties.put(HEARING_ID, "2000000000");
         applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+        HearingEntity hearingEntity = generateHearingEntity(2000000000L);
+        hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        given(messageContext.getMessage()).willReturn(message);
+        given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
         JsonNode jsonNode = OBJECT_MAPPER.readTree("{\n"
                                                        + "  \"meta\": {\n"
                                                        + "    \"transactionIdCaseHQ\": \"<transactionIdCaseHQ>\",\n"
@@ -832,12 +858,8 @@ class InboundQueueServiceTest {
                                                        + "    }]\n"
                                                        + "  }\n"
                                                        + "}");
-        HearingEntity hearingEntity = generateHearingEntity(2000000000L);
-        hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
-        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         ListAppender<ILoggingEvent> listAppender = setupLogger();
-        inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage);
-
+        inboundQueueService.processMessage(jsonNode, messageContext);
         assertLogMessageForHearingStatusMaxLength(listAppender,
                                                   "Violations are Hearing status code must not be more "
                                                       + "than 30 characters long");
@@ -848,6 +870,11 @@ class InboundQueueServiceTest {
         Map<String, Object> applicationProperties = new HashMap<>();
         applicationProperties.put(HEARING_ID, "2000000000");
         applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+        HearingEntity hearingEntity = generateHearingEntity(2000000000L);
+        hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+        given(messageContext.getMessage()).willReturn(message);
+        given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
         JsonNode jsonNode = OBJECT_MAPPER.readTree("{\n"
                                                        + "  \"meta\": {\n"
                                                        + "    \"transactionIdCaseHQ\": \"<transactionIdCaseHQ>\",\n"
@@ -935,13 +962,8 @@ class InboundQueueServiceTest {
                                                        + "    }]\n"
                                                        + "  }\n"
                                                        + "}");
-        HearingEntity hearingEntity = generateHearingEntity(2000000000L);
-        hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
-        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         ListAppender<ILoggingEvent> listAppender = setupLogger();
-
-        inboundQueueService.processMessage(jsonNode, applicationProperties, client, serviceBusReceivedMessage);
-
+        inboundQueueService.processMessage(jsonNode, messageContext);
         assertLogMessageForHearingStatusMaxLength(listAppender,
                                                   "Violations are Hearing status code can not be null "
                                                       + "or empty");
@@ -958,7 +980,6 @@ class InboundQueueServiceTest {
     private HearingEntity generateHearingEntity(Long hearingId) {
         HearingEntity entity = new HearingEntity();
         entity.setId(hearingId);
-
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingResponseEntity.setRequestVersion(1);
         entity.setHearingResponses(List.of(hearingResponseEntity));

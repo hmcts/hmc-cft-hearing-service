@@ -46,3 +46,6 @@ fh:
     host: http://localhost:${wiremock.server.port:5124}
     source-system: SOURCE_SYSTEM
     destination-system: DESTINATION_SYSTEM
+
+hmcts-deployment-id:
+  enabled: ${HMCTS_DEPLOYMENT_ID:false}

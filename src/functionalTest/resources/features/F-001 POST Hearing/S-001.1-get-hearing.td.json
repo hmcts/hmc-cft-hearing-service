@@ -16,7 +16,7 @@
       "Cache-Control" : "no-cache, no-store, max-age=0, must-revalidate",
       "Connection" : "keep-alive",
       "Content-Length": "[[ANYTHING_PRESENT]]",
-      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Content-Type": "text/plain; charset=utf-8",
       "Date": "[[ANYTHING_PRESENT]]",
       "Expires" : "[[ANYTHING_PRESENT]]",
       "Request-Context": "[[ANY_NULLABLE]]"

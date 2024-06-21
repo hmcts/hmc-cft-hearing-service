@@ -3,16 +3,20 @@ java:
   image: 'hmctspublic.azurecr.io/hmc/cft-hearing-service:latest'
   ingressHost: hmc-cft-hearing-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: hmc
+  autoscaling:
+    enabled: false
   keyVaults:
     hmc:
       secrets:
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
-        - name: cft-hearing-service-POSTGRES-USER
+        - name: app-insights-connection-string
+          alias: app-insights-connection-string
+        - name: cft-hearing-service-POSTGRES-USER-V15
           alias: CFT_HEARING_SERVICE_DB_USERNAME
-        - name: cft-hearing-service-POSTGRES-PASS
+        - name: cft-hearing-service-POSTGRES-PASS-V15
           alias: CFT_HEARING_SERVICE_DB_PASSWORD
-        - name: cft-hearing-service-POSTGRES-HOST
+        - name: cft-hearing-service-POSTGRES-HOST-V15
           alias: CFT_HEARING_SERVICE_DB_HOST
         - name: cft-hearing-service-POSTGRES-PORT
           alias: CFT_HEARING_SERVICE_DB_PORT
@@ -37,6 +41,7 @@ java:
         - name: fh-get-token-url
           alias: FH_GET_TOKEN_URL
   environment:
+    CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES: xui_webapp,hmc_hmi_inbound_adapter,sscs,fis_hmc_api
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified&sslmode=require&gssEncMode=disable"
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft-{{ .Values.global.environment }}
     HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft-{{ .Values.global.environment }}

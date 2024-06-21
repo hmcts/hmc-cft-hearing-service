@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
@@ -73,6 +74,7 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidat
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404FromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyValidateHearingObject;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AMEND_REASON_CODE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AUTHORISATION_TYPE_MAX_LENGTH_MSG;
@@ -113,6 +115,8 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_TYPE_MA
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_TYPE_NULL_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_DETAILS_ARE_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_EMPTY_NULL;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_INTERNAL_CASE_NAME_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_INTERNAL_CASE_NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_SERVICE_CODE_EMPTY_INVALID;
@@ -766,7 +770,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("HEARING_UPDATED"))
             .andExpect(jsonPath("$.caseHearings[1].hmcStatus").value("HEARING_REQUESTED"))
             .andExpect(jsonPath("$.caseHearings[2].hmcStatus").value("HEARING_REQUESTED"))
-            .andExpect(jsonPath("$.hmctsServiceCode").value("ABA1"))
+            .andExpect(jsonPath("$.hmctsServiceCode").value("TEST"))
             .andReturn();
     }
 
@@ -783,7 +787,7 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$.caseHearings[1].hearingID").value("2000000000"))
             .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("HEARING_REQUESTED"))
             .andExpect(jsonPath("$.caseHearings[1].hmcStatus").value("HEARING_REQUESTED"))
-            .andExpect(jsonPath("$.hmctsServiceCode").value("ABA1"))
+            .andExpect(jsonPath("$.hmctsServiceCode").value("TEST"))
             .andReturn();
     }
 
@@ -817,6 +821,70 @@ class HearingManagementControllerIT extends BaseTest {
         mockMvc.perform(get("/hearings/123456")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
+            .andReturn();
+    }
+
+    @Test
+    void shouldReturn400_WhenGetHearingsForListOfCases_NoCaseRefs() throws Exception {
+        mockMvc.perform(get("/hearings?ccdCaseRefs=")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andReturn();
+    }
+
+    @Test
+    void shouldReturn200_WhenGetHearingsForListOfCasesForInvalidCaseRef() throws Exception {
+        mockMvc.perform(get("/hearings?ccdCaseRefs=123456")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenGetHearingsForListOfCasesForOneCaseRef() throws Exception {
+        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9372710950276239")
+                             .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("status", "HEARING_REQUESTED"))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.*", hasSize(2)))
+            .andExpect(jsonPath("$[0].caseRef").value("9372710950276233"))
+            .andExpect(jsonPath("$[1].caseRef").value("9372710950276239"))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_Listed() throws Exception {
+        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("status", "LISTED"))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.*", hasSize(1)))
+            .andExpect(jsonPath("$[0].caseRef").value("9856815055686759"))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_NotListed() throws Exception {
+        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("status", "HEARING_REQUESTED"))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.*", hasSize(1)))
+            .andExpect(jsonPath("$[0].caseRef").value("9372710950276233"))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_NoStatus() throws Exception {
+        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.*", hasSize(2)))
+            .andExpect(jsonPath("$[0].caseRef").value("9372710950276233"))
             .andReturn();
     }
 
@@ -1173,10 +1241,10 @@ class HearingManagementControllerIT extends BaseTest {
         individualDetails.setPreferredHearingChannel("a".repeat(71));
         individualDetails.setInterpreterLanguage("a".repeat(11));
         individualDetails.setReasonableAdjustments(Collections.singletonList("a".repeat(11)));
-        individualDetails.setVulnerabilityDetails("a".repeat(257));
+        individualDetails.setVulnerabilityDetails("a".repeat(2001));
         individualDetails.setHearingChannelEmail(List.of("a".repeat(121)));
         individualDetails.setHearingChannelPhone(List.of("a".repeat(31)));
-        individualDetails.setOtherReasonableAdjustmentDetails("a".repeat(201));
+        individualDetails.setOtherReasonableAdjustmentDetails("a".repeat(3001));
         individualDetails.setCustodyStatus("a".repeat(81));
         RelatedParty relatedParty = new RelatedParty();
         relatedParty.setRelatedPartyID("a".repeat(16));
@@ -1535,6 +1603,138 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void shouldReturn201_WhenDeploymentIdEnabledWithValue() throws Exception {
+        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+        val hearingRequest = getHearingRequest("P1");
+        stubSuccessfullyValidateHearingObject(hearingRequest);
+
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
+        mockMvc.perform(post(url)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header(HMCTS_DEPLOYMENT_ID, "TEST")
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(201))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void shouldReturn201_WhenDeploymentIdEnabled_NoDeploymentId() throws Exception {
+        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+        val hearingRequest = getHearingRequest("P1");
+        stubSuccessfullyValidateHearingObject(hearingRequest);
+
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
+        mockMvc.perform(post(url)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(201))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void shouldReturn201_WhenDeploymentIdEnabledFalse_NoDeploymentId() throws Exception {
+        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", false);
+        val hearingRequest = getHearingRequest("P1");
+        stubSuccessfullyValidateHearingObject(hearingRequest);
+
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
+        mockMvc.perform(post(url)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(201))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void shouldReturn400_WhenDeploymentIdEnabledAndGreaterThanMaxLength() throws Exception {
+        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+        val hearingRequest = getHearingRequest("P1");
+        stubSuccessfullyValidateHearingObject(hearingRequest);
+
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
+        mockMvc.perform(post(url)
+                            .header(HMCTS_DEPLOYMENT_ID, "a".repeat(41))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem(HMCTS_DEPLOYMENT_ID_MAX_LENGTH)))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(DELETE_HEARING_DATA_SCRIPT)
+    void shouldReturn400_WhenDeploymentIdEnabledFalseWithDeploymentID() throws Exception {
+        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", false);
+        val hearingRequest = getHearingRequest("P1");
+        stubSuccessfullyValidateHearingObject(hearingRequest);
+
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
+        DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+            .caseTypeId(CASE_TYPE)
+            .jurisdiction(JURISDICTION)
+            .build();
+        stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
+        mockMvc.perform(post(url)
+                            .header(HMCTS_DEPLOYMENT_ID, "TEST")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.errors", hasSize(1)))
+            .andExpect(jsonPath("$.errors", hasItem(HMCTS_DEPLOYMENT_ID_NOT_REQUIRED)))
+            .andReturn();
+    }
+
+    @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenHearingIdNotAvailableHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000001")
@@ -1645,4 +1845,29 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(status().is(201))
             .andReturn();
     }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn201WhenUpdateHearingRequestContainsValidPartyDetails_reasonable_adjustments() throws Exception {
+        stubFor(WireMock.get(urlMatching("/cases/1111222233334455"))
+                    .willReturn(okJson("{\n"
+                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
+                                           + "\t\"case_type\": \"CaseType1\"\n"
+                                           + "}")));
+        stubRoleAssignments();
+        UpdateHearingRequest hearingRequest = TestingUtil.validUpdateHearingRequest();
+        hearingRequest.setPartyDetails(TestingUtil.partyDetails());
+        IndividualDetails individualDetails = TestingUtil.individualDetails();
+        individualDetails.setOtherReasonableAdjustmentDetails("a".repeat(3000));
+        hearingRequest.getPartyDetails().get(0).setIndividualDetails(individualDetails);
+        hearingRequest.getPartyDetails().get(1).setIndividualDetails(individualDetails);
+        hearingRequest.getCaseDetails().setCaseRef("9856815055686759");
+        mockMvc.perform(put(url + "/2000000012")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(hearingRequest)))
+            .andExpect(status().is(201))
+            .andReturn();
+        assertChangeReasons();
+    }
+
 }

@@ -40,6 +40,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(FhBadRequestException.class)
+    protected ResponseEntity<Object> handleBadRequestException(FhBadRequestException ex) {
+        log.debug(BAD_REQUEST_EXCEPTION + ": {}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     protected ResponseEntity<Object> handleBadRequestException(IllegalArgumentException ex) {
         log.debug("IllegalArgumentException: {}", ex.getLocalizedMessage());

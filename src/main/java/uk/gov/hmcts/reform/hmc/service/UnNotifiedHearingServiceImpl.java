@@ -3,22 +3,19 @@ package uk.gov.hmcts.reform.hmc.service;
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.UnNotifiedHearingsResponse;
 import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
-import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
+import uk.gov.hmcts.reform.hmc.repository.UnNotifiedHearingsRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.FIRST_PAGE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.UN_NOTIFIED_HEARINGS_LIMIT;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.EXCEPTION_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_STATUS_EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HMCTS_SERVICE_CODE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 
@@ -28,30 +25,33 @@ import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_M
 public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
 
     private final CaseHearingRequestRepository caseHearingRequestRepository;
-    private final HearingResponseRepository hearingResponseRepository;
+    private final UnNotifiedHearingsRepository unNotifiedHearingsRepository;
     private AccessControlService accessControlService;
 
 
     @Autowired
     public UnNotifiedHearingServiceImpl(CaseHearingRequestRepository caseHearingRequestRepository,
-                                        HearingResponseRepository hearingResponseRepository,
+                                        UnNotifiedHearingsRepository unNotifiedHearingsRepository,
                                         AccessControlService accessControlService) {
         this.caseHearingRequestRepository = caseHearingRequestRepository;
-        this.hearingResponseRepository = hearingResponseRepository;
+        this.unNotifiedHearingsRepository = unNotifiedHearingsRepository;
         this.accessControlService = accessControlService;
     }
 
     @Override
     public UnNotifiedHearingsResponse getUnNotifiedHearings(String hmctsServiceCode,
                                                             LocalDateTime hearingStartDateFrom,
-                                                            LocalDateTime hearingStartDateTo) {
+                                                            LocalDateTime hearingStartDateTo,
+                                                            List<String> hearingStatus) {
+        if (null != hearingStatus && hearingStatus.stream().anyMatch(e -> e.equalsIgnoreCase(EXCEPTION_STATUS))) {
+            throw new BadRequestException(HEARING_STATUS_EXCEPTION);
+        }
         isValidHmctsServiceCode(hmctsServiceCode);
-        Page<Long> page = getUnNotifiedHearingResults(
-            hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo);
-        page.getContent().stream()
-            .forEach(hearingId -> accessControlService.verifyAccess(hearingId, Lists.newArrayList(HEARING_MANAGER)));
-        List<String> hearingIds = getHearingIdInStrings(page.getContent());
-        return getUnNotifiedHearingsResponse(hearingIds, page.getTotalElements());
+        List<Long> hearings = getUnNotifiedHearingResults(
+            hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo, hearingStatus);
+        accessControlService.verifyUserRoleAccess(Lists.newArrayList(HEARING_MANAGER));
+        List<String> hearingIds = getHearingIdInStrings(hearings);
+        return getUnNotifiedHearingsResponse(hearingIds, Long.valueOf(hearings.size()));
     }
 
     private List<String> getHearingIdInStrings(List<Long> hearingIdsLong) {
@@ -66,21 +66,21 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
         return response;
     }
 
-    private Page<Long> getUnNotifiedHearingResults(String hmctsServiceCode, LocalDateTime hearingStartDateFrom,
-                                                                       LocalDateTime hearingStartDateTo) {
-        Pageable limitUnNotifiedHearingsTo = PageRequest.of(FIRST_PAGE, UN_NOTIFIED_HEARINGS_LIMIT);
+    private List<Long> getUnNotifiedHearingResults(String hmctsServiceCode, LocalDateTime hearingStartDateFrom,
+                                                                       LocalDateTime hearingStartDateTo,
+                                                   List<String> hearingStatus) {
         if (null != hearingStartDateTo) {
-            return hearingResponseRepository.getUnNotifiedHearingsWithStartDateTo(
+            return unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo(
                 hmctsServiceCode,
                 hearingStartDateFrom,
                 hearingStartDateTo,
-                limitUnNotifiedHearingsTo
+                hearingStatus
             );
         } else {
-            return hearingResponseRepository.getUnNotifiedHearingsWithOutStartDateTo(
+            return unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
                 hmctsServiceCode,
                 hearingStartDateFrom,
-                limitUnNotifiedHearingsTo);
+                hearingStatus);
         }
     }
 

@@ -89,7 +89,7 @@ public final class ValidationError {
         + CHARACTERS_LONG;
     public static final String REASONABLE_ADJUSTMENTS_MAX_LENGTH_MSG = "Reasonable adjustments must not be more than "
         + "10 " + CHARACTERS_LONG;
-    public static final String VULNERABLE_DETAILS_MAX_LENGTH = "Vulnerable details must not be more than 256 "
+    public static final String VULNERABLE_DETAILS_MAX_LENGTH = "Vulnerable details must not be more than 2000 "
         + CHARACTERS_LONG;
     public static final String HEARING_CHANNEL_EMAIL_MAX_LENGTH = "Hearing channel email must not be more than 120 "
         + CHARACTERS_LONG;
@@ -193,7 +193,7 @@ public final class ValidationError {
     public static final String HA_HEARING_DAY_ORGANISATION_NAME_MAX_LENGTH = "organisation name must not be more than"
         + " 40 " + CHARACTERS_LONG;
 
-    public static final String OTHER_REASON_LENGTH = "Other reasonable adjustment details cannot be greater than 200 "
+    public static final String OTHER_REASON_LENGTH = "Other reasonable adjustment details cannot be greater than 3000 "
         + CHARACTERS_LONG;
     public static final String CUSTODY_STATUS_LENGTH = "Custody status cannot be greater than 80 " + CHARACTERS_LONG;
     public static final String HEARING_ID_LENGTH = "Hearing id cannot be greater than 30 " + CHARACTERS_LONG;
@@ -272,4 +272,8 @@ public final class ValidationError {
     public static final String MISSING_INDIVIDUAL_DETAILS = "Individual details are missing";
     public static final String MISSING_ORGANISATION_DETAILS = "Organisation details are missing";
     public static final String INVALID_CASE_REFERENCE = "Invalid case reference";
+    public static final String HMCTS_DEPLOYMENT_ID_NOT_REQUIRED = "HMCTS deployment id is not required";
+    public static final String HMCTS_DEPLOYMENT_ID_MAX_LENGTH = "HMCTS deployment id must not be more than 40 "
+        + CHARACTERS_LONG;
+    public static final String HEARING_STATUS_EXCEPTION = "Hearing status can not be Exception";
 }

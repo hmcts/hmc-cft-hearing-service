@@ -15,9 +15,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.CaseCouldNotBeFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
@@ -47,6 +47,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 
 @AutoConfigureMockMvc(addFilters = false)
 @ImportAutoConfiguration(TestIdamConfiguration.class)
@@ -68,12 +70,6 @@ public class RestExceptionHandlerTest extends BaseTest {
 
     @Autowired
     protected ObjectMapper objectMapper;
-
-    @MockBean
-    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
-
-    @MockBean
-    private ApplicationParams applicationParams;
 
     @BeforeEach
     void setUp() {
@@ -103,7 +99,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         hearingDetails.setHearingChannels(List.of(""));
         hearingDetails.setAmendReasonCodes(List.of("reason"));
         CaseDetails caseDetails = new CaseDetails();
-        caseDetails.setHmctsServiceCode("ABA1");
+        caseDetails.setHmctsServiceCode("TEST");
         caseDetails.setCaseRef("1111222233334444");
         caseDetails.setCaseDeepLink("https://www.google.com");
         caseDetails.setHmctsInternalCaseName("Internal case name");
@@ -145,7 +141,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
-            .saveHearingRequest(any(HearingRequest.class));
+            .saveHearingRequest(any(HearingRequest.class),any());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .contentType(MediaType.APPLICATION_JSON)
@@ -219,6 +215,25 @@ public class RestExceptionHandlerTest extends BaseTest {
         // THEN
         assertHttpErrorResponse(result, HttpStatus.INTERNAL_SERVER_ERROR.value(), testExceptionMessage,
                                 "INTERNAL_SERVER_ERROR");
+    }
+
+    @DisplayName("should return correct response when BadRequestException is thrown")
+    @Test
+    void shouldHandleBadRequestException_WhenDeploymentIdValueNotPresent() throws Exception {
+        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+
+        /// WHEN
+        Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
+            .saveHearingRequest(any(HearingRequest.class),any());
+
+        ResultActions result =  this.mockMvc.perform(post("/hearing")
+                                                         .header(HMCTS_DEPLOYMENT_ID, "a".repeat(41))
+                                                         .contentType(MediaType.APPLICATION_JSON)
+                                                         .content(objectMapper.writeValueAsString(validRequest)));
+
+        // THEN
+        assertHttpErrorResponse(result, HttpStatus.BAD_REQUEST.value(),
+                                HMCTS_DEPLOYMENT_ID_MAX_LENGTH, "BAD_REQUEST");
     }
 
     private void assertHttpErrorResponse(ResultActions result, int expectedStatusCode, String expectedMessage,
