@@ -7,6 +7,8 @@ bin/main/application.yaml
 target/
 /BEFTA Report for Smoke Tests/
 /BEFTA Report for Functional Tests/
+applicationinsights-agent-*.jar
+*.log
 
 ### STS ###
 .apt_generated

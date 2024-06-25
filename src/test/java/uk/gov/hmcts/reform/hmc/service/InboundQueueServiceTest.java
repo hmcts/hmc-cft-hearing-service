@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageType;
@@ -88,6 +89,9 @@ class InboundQueueServiceTest {
 
     @Mock
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
+
+    @Mock
+    private ApplicationParams applicationParams;
 
     private static ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -193,7 +197,8 @@ class InboundQueueServiceTest {
             hmiHearingResponseMapper,
             messageSenderToTopicConfiguration,
             objectMapperService,
-            hearingIdValidator
+            hearingIdValidator,
+            applicationParams
         );
     }
 
@@ -266,7 +271,7 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(data);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(), any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(), any(), any());
             given(messageContext.getMessage()).willReturn(message);
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             ListAppender<ILoggingEvent> listAppender = setupLogger();
@@ -298,7 +303,7 @@ class InboundQueueServiceTest {
                 .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
             when(hearingRepository.save(any()))
                 .thenReturn(hearingEntity);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(), any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(), any(), any());
             given(messageContext.getMessage()).willReturn(message);
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             ListAppender<ILoggingEvent> listAppender = setupLogger();
@@ -350,7 +355,7 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.AWAITING_LISTING));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any(), any());
 
             given(messageContext.getMessage()).willReturn(message);
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
@@ -466,7 +471,7 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.AWAITING_LISTING));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(), any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(), any(), any());
             given(messageContext.getMessage()).willReturn(message);
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             inboundQueueService.processMessage(jsonNode, messageContext);
@@ -695,7 +700,7 @@ class InboundQueueServiceTest {
             when(hmiHearingResponseMapper.mapEntityToHmcModel(any(), any()))
                 .thenReturn(generateHmcResponse(HearingStatus.EXCEPTION));
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(jsonNode);
-            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any());
+            doNothing().when(messageSenderToTopicConfiguration).sendMessage(any(), any(),any(), any());
 
             JsonNode data = OBJECT_MAPPER.convertValue(errorDetails, JsonNode.class);
             Exception exception = assertThrows(ListAssistResponseException.class, () ->

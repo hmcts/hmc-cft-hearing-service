@@ -72,6 +72,14 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     @Override
+    public List<RoleAssignment> verifyUserRoleAccess(List<String> requiredRoles) {
+        if (!applicationParams.isAccessControlEnabled()) {
+            return Collections.emptyList();
+        }
+        return verifyRoleAccess(requiredRoles);
+    }
+
+    @Override
     public List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles) {
         if (!applicationParams.isAccessControlEnabled()) {
             return Collections.emptyList();

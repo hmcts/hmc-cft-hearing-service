@@ -68,6 +68,7 @@ public class BaseTest {
         when(authentication.getPrincipal()).thenReturn(jwt);
         SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
         ReflectionTestUtils.setField(applicationParams, "roleAssignmentServiceHost", hostUrl);
+        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", false);
 
         stubRoleAssignments();
         stubFor(WireMock.get(urlMatching("/cases/.*"))
