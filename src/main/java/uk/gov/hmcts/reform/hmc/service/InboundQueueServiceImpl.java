@@ -155,6 +155,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 errorDetails,
                 hearingResult.get()
             );
+            hearingToSave = hearingToSave.updateLastGoodStatus();
             hearingRepository.save(hearingToSave);
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingToSave);
             messageSenderToTopicConfiguration
@@ -181,6 +182,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 hearingResponse,
                 hearingResult.get()
             );
+            hearingToSave = hearingToSave.updateLastGoodStatus();
             hearingRepository.save(hearingToSave);
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
             if (hearingEntity.isPresent()) {
@@ -209,6 +211,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 syncResponse,
                 hearingResult.get()
             );
+            hearingToSave = hearingToSave.updateLastGoodStatus();
             HearingEntity hearingEntity = hearingRepository.save(hearingToSave);
             HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
             messageSenderToTopicConfiguration

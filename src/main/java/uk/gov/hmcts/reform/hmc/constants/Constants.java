@@ -70,4 +70,7 @@ public final class Constants {
     public static final String UPDATE_LINKED_HEARING_REQUEST = "update-linked_hearing-request";
     public static final String CREATE_LINKED_HEARING_REQUEST = "create-linked_hearing-request";
     public static final String DELETE_LINKED_HEARING_REQUEST = "delete-linked_hearing-request";
+    public static final String EXCEPTION_STATUS = "Exception";
+    public static final String CANCELLED = "CANCELLED";
+    public static final String SERVICE_CODE_ABA1 = "ABA1";
 }
