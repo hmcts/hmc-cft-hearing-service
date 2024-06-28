@@ -221,7 +221,7 @@ class InboundQueueServiceTest {
 
             ListAppender<ILoggingEvent> listAppender = setupLogger();
             inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, exception);
-            assertDynatraceLogMessage(listAppender, "2000000000");
+            assertDynatraceLogMessage(listAppender, "2000000000", null);
 
             verify(hearingRepository, times(1)).findById(2000000000L);
             verify(hearingRepository, times(1)).save(any());
@@ -276,7 +276,7 @@ class InboundQueueServiceTest {
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             ListAppender<ILoggingEvent> listAppender = setupLogger();
             inboundQueueService.processMessage(data, messageContext);
-            assertDynatraceLogMessage(listAppender, "2000000000");
+            assertDynatraceLogMessage(listAppender, "2000000000",MessageType.ERROR);
         }
 
         @Test
@@ -308,7 +308,7 @@ class InboundQueueServiceTest {
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             ListAppender<ILoggingEvent> listAppender = setupLogger();
             inboundQueueService.processMessage(syncJsonNode, messageContext);
-            assertDynatraceLogMessage(listAppender, "2000000000");
+            assertDynatraceLogMessage(listAppender, "2000000000", MessageType.LA_SYNC_HEARING_RESPONSE);
         }
 
         @Test
@@ -1009,11 +1009,19 @@ class InboundQueueServiceTest {
         return listAppender;
     }
 
-    private void assertDynatraceLogMessage(ListAppender<ILoggingEvent> listAppender, String hearingID) {
+    private void assertDynatraceLogMessage(ListAppender<ILoggingEvent> listAppender, String hearingID,
+                                           MessageType messageType) {
         List<ILoggingEvent> logsList = listAppender.list;
         int finalErrorIndex = logsList.size() - 1;
         assertEquals(Level.ERROR, logsList.get(finalErrorIndex).getLevel());
-        assertEquals("Hearing id: " + hearingID + " updated to status Exception",
-                     logsList.get(finalErrorIndex).getMessage());
+        if (null != messageType) {
+            assertEquals("Hearing id: " + hearingID + " has response of type : " + messageType
+                             +  " updated to status Exception", logsList.get(finalErrorIndex).getMessage());
+        } else {
+            assertEquals(
+                "Hearing id: " + hearingID + " updated to status Exception",
+                logsList.get(finalErrorIndex).getMessage()
+            );
+        }
     }
 }
