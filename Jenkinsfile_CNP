@@ -18,7 +18,7 @@ import uk.gov.hmcts.contino.GradleBuilder
 def type = "java"
 def product = "hmc"
 def component = "cft-hearing-service"
-def branchesToSync = ['ithc', 'perftest']
+def branchesToSync = ['demo', 'ithc', 'perftest']
 
 // Variables to switch pipeline logic and wiring per type of build
 def definitionStoreDevelopPr = "PR-575"  // This doesn't change frequently, but when it does, only change this value.
