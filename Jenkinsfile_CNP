@@ -33,7 +33,7 @@ def secrets = [
     secret('mc-idam-client-secret', 'OAUTH2_CLIENT_SECRET')
   ],
   'ccd-${env}': [
-//    secret('idam-data-store-client-secret', 'OAUTH2_CLIENT_SECRET'),
+    secret('idam-data-store-client-secret', 'OAUTH2_CLIENT_SECRET'),
     secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
     secret('definition-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
     secret('ccd-caseworker-autotest-password', 'CCD_CASEWORKER_AUTOTEST_PASSWORD')
