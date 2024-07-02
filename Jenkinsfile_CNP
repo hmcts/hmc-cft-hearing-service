@@ -1,5 +1,6 @@
 #!groovy
 import uk.gov.hmcts.contino.AppPipelineDsl
+import jenkins.model.Jenkins
 properties(
     [
         [
@@ -28,10 +29,11 @@ GradleBuilder builder = new GradleBuilder(this, product)
 
 def secrets = [
   'rpx-${env}': [
-    secret('mc-idam-client-secret', 'BEFTA_OAUTH2_CLIENT_SECRET_OF_XUIWEBAPP')
+    secret('mc-idam-client-secret', 'BEFTA_OAUTH2_CLIENT_SECRET_OF_XUIWEBAPP'),
+    secret('mc-idam-client-secret', 'OAUTH2_CLIENT_SECRET')
   ],
   'ccd-${env}': [
-    secret('ccd-api-gateway-oauth2-client-secret', 'OAUTH2_CLIENT_SECRET'),
+    secret('idam-data-store-client-secret', 'OAUTH2_CLIENT_SECRET'),
     secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
     secret('definition-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
     secret('ccd-caseworker-autotest-password', 'CCD_CASEWORKER_AUTOTEST_PASSWORD')
@@ -41,15 +43,15 @@ def secrets = [
     secret('hmc-queue-connection-string', 'HMC_QUEUE_CONNECTION_STRING'),
     secret('hmc-outbound-queue-connection-string', 'HMC_OUTBOUND_QUEUE_CONNECTION_STRING'),
     secret('hmc-fta-password', 'HMC_FTA_PASSWORD'),
-    secret('hmc-hearing-service-users-pwd', 'HMC_HEARING_SERVICE_USERS_PWD'),
-
+    secret('hmc-hearing-service-users-pwd', 'HMC_HEARING_SERVICE_USERS_PWD')
   ],
   's2s-${env}': [
     secret('microservicekey-ccd-data', 'BEFTA_S2S_CLIENT_SECRET_OF_CCD_DATA'),
     secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_KEY'),
     secret('microservicekey-ccd-gw', 'BEFTA_S2S_CLIENT_SECRET'),
     secret('microservicekey-aac-manage-case-assignment', 'BEFTA_S2S_CLIENT_SECRET_OF_AAC_MANAGE_CASE_ASSIGNMENT'),
-    secret('microservicekey-xui-webapp', 'BEFTA_S2S_CLIENT_SECRET_OF_XUI_WEBAPP')
+    secret('microservicekey-xui-webapp', 'BEFTA_S2S_CLIENT_SECRET_OF_XUI_WEBAPP'),
+    secret('microservicekey-ccd-data', 'ROLE_ASSIGNMENT_API_GATEWAY_S2S_CLIENT_KEY')
   ]
 ]
 
@@ -77,10 +79,6 @@ env.HMC_SERVICE_BUS_SUBSCRIPTION = "hmc-subs-to-cft"
 env.HMC_SERVICE_BUS_QUEUE = "hmc-from-hmi"
 env.HMC_OUTBOUND_SERVICE_BUS_QUEUE = "hmc-to-hmi"
 
-
-
-
-
 //----------------
 // vars needed for functional tests
 // Assume a feature build branched off 'develop', with dependencies develop-to-develop.
@@ -94,16 +92,43 @@ env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
 //env.BEFTA_S2S_CLIENT_ID = "xui_webapp"
 env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID = "ccd_gateway"
 env.CCD_API_GATEWAY_OAUTH2_REDIRECT_URL = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
+
+env.OAUTH2_CLIENT_ID = "xuiwebapp"
+env.OAUTH2_REDIRECT_URI = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
+env.OAUTH2_ACCESS_TOKEN_TYPE = "OIDC"
+env.OAUTH2_SCOPE_VARIABLES = "profile openid roles manage-user create-user search-user"
+
+//env.OAUTH2_CLIENT_ID = "ccd_data_store_api"
+//env.OAUTH2_REDIRECT_URI = "http://ccd-data-store-api/oauth2redirect"
+//env.OAUTH2_SCOPE_VARIABLES = "profile openid roles manage-user"
+//env.OAUTH2_ACCESS_TOKEN_TYPE = "OIDC"
+
 env.DM_STORE_BASE_URL = "http://dm-store-aat.service.core-compute-aat.internal"
 env.RD_PROFESSIONAL_API_BASE_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
 env.CCD_API_GATEWAY_S2S_ID = "ccd_gw"
 env.BEFTA_S2S_CLIENT_ID = "ccd_gw"
 env.BEFTA_S2S_CLIENT_ID_OF_XUI_WEBAPP = "xui_webapp"
 env.BEFTA_S2S_CLIENT_ID_OF_CCD_DATA = "ccd_data"
+
+//might need to comment these:
 env.BEFTA_OAUTH2_CLIENT_ID_OF_XUIWEBAPP = "xuiwebapp"
 env.BEFTA_OAUTH2_REDIRECT_URI_OF_XUIWEBAPP = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
 env.BEFTA_OAUTH2_ACCESS_TOKEN_TYPE_OF_XUIWEBAPP = "OIDC"
 env.BEFTA_OAUTH2_SCOPE_VARIABLES_OF_XUIWEBAPP = "profile openid roles manage-user create-user search-user"
+
+// Env variables needed to add Role Assignments.
+env.ROLE_ASSIGNMENT_API_GATEWAY_S2S_CLIENT_ID = "ccd_data"
+env.ROLE_ASSIGNMENT_HOST="http://am-role-assignment-service-aat.service.core-compute-aat.internal"
+env.ROLE_ASSIGNMENT_USER_EMAIL="ccd.ac.solicitor1@gmail.com"
+env.ROLE_ASSIGNMENT_USER_PASSWORD="Pa55word11"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER="hmc.superuser@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER_PWD="PesZvqrb78"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER="hmc.listed-hearing-viewer@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER_PWD="PesZvqrb78"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER="hmc.hearing-viewer@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER_PWD="PesZvqrb78"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER="hmc.hearing-manager@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER_PWD="PesZvqrb78"
 
 // temporary workaround for platform changes: turn BEFTA header checks to warning mode
 env.BEFTA_RESPONSE_HEADER_CHECK_POLICY="JUST_WARN"
@@ -130,6 +155,8 @@ withPipeline(type, product, component) {
 
   afterAlways('smoketest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/BEFTA Report for Smoke Tests/**/*'
+    def envVars = Jenkins.instance.getGlobalNodeProperties()[0].getEnvVars()
+    println envVars['myVar']
   }
 
   afterAlways('smoketest:aat') {
