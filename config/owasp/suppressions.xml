@@ -4,5 +4,7 @@
         CVE-2023-36052 refer HMAN-678 waiting for a version that fixes this azure-core
     </notes>
     <cve>CVE-2023-36052</cve>
+    <cve>CVE-2024-26308</cve>
+    <cve>CVE-2024-25710</cve>
   </suppress>
 </suppressions>
