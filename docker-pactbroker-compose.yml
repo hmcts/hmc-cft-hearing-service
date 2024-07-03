@@ -2,7 +2,7 @@ version: "3"
 
 services:
   postgres:
-    image: hmctspublic.azurecr.io/imported/postgres:15-alpine
+    image: postgres
     healthcheck:
       test: psql postgres --command "select 1" -U postgres
     ports:
