@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
-import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
@@ -32,8 +31,6 @@ import uk.gov.hmcts.reform.hmc.service.common.DefaultObjectMapperService;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
@@ -64,17 +61,10 @@ class LinkHearingGroupControllerTest {
     @MockBean
     private AccessControlService accessControlService;
 
-    @MockBean
-    SecurityUtils securityUtils;
-
-    private static final String CLIENT_S2S_TOKEN = "xui_webapp";
-
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         objectMapperService = new DefaultObjectMapperService(objectMapper);
-        doReturn("xui_webapp").when(securityUtils)
-            .getServiceNameFromS2SToken(any());
     }
 
     @Nested
@@ -96,12 +86,11 @@ class LinkHearingGroupControllerTest {
             );
 
             LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService,
-                                                                                   accessControlService, securityUtils);
+                                                                                   accessControlService);
             var jsonNode = objectMapperService.convertObjectToJsonNode(hearingLinkGroupRequest);
             logger.info("jsonNode: {}", jsonNode);
-            controller.validateLinkHearing(CLIENT_S2S_TOKEN, hearingLinkGroupRequest);
-            verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest,
-                                                                    CLIENT_S2S_TOKEN);
+            controller.validateLinkHearing(hearingLinkGroupRequest);
+            verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest);
         }
 
         @Test
@@ -118,10 +107,9 @@ class LinkHearingGroupControllerTest {
             );
 
             LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService,
-                                                                                   accessControlService, securityUtils);
-            controller.validateLinkHearing(CLIENT_S2S_TOKEN, hearingLinkGroupRequest);
-            verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest,
-                                                                    CLIENT_S2S_TOKEN);
+                                                                                   accessControlService);
+            controller.validateLinkHearing(hearingLinkGroupRequest);
+            verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest);
         }
     }
 

@@ -38,7 +38,6 @@ import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
@@ -93,9 +92,6 @@ class InboundQueueServiceTest {
 
     @Mock
     private ApplicationParams applicationParams;
-
-    @Mock
-    private HearingStatusAuditService hearingStatusAuditService;
 
     private static ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -202,11 +198,8 @@ class InboundQueueServiceTest {
             messageSenderToTopicConfiguration,
             objectMapperService,
             hearingIdValidator,
-            applicationParams,
-            hearingStatusAuditService
+            applicationParams
         );
-
-        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
     }
 
     @Nested
@@ -267,11 +260,10 @@ class InboundQueueServiceTest {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "2000000000");
             applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
-            HearingEntity hearingEntity = generateHearingEntity(2000000000L);
-            hearingEntity.setErrorCode(500);
             JsonNode data = OBJECT_MAPPER.convertValue(
                 generateErrorDetails("Unable to create case", 2000),
                 JsonNode.class);
+            HearingEntity hearingEntity = generateHearingEntity(2000000000L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L))
                 .thenReturn(java.util.Optional.of(hearingEntity));
@@ -302,7 +294,6 @@ class InboundQueueServiceTest {
 
             HearingEntity hearingEntity = generateHearingEntity(2000000000L);
             hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
-            hearingEntity.setErrorCode(400);
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(syncJsonNode);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L))

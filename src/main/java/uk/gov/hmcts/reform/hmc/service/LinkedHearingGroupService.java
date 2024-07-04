@@ -6,11 +6,11 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupResponse
 
 public interface LinkedHearingGroupService {
 
-    HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest, String clientS2SToken);
+    HearingLinkGroupResponse linkHearing(HearingLinkGroupRequest hearingLinkGroupRequest);
 
-    void deleteLinkedHearingGroup(String requestId, String clientS2SToken);
+    void deleteLinkedHearingGroup(String requestId);
 
-    void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest, String clientS2SToken);
+    void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest);
 
     GetLinkedHearingGroupResponse getLinkedHearingGroupResponse(String requestId);
 }

@@ -32,7 +32,6 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteLinkedHearingGr
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubPostCreateLinkHearingGroup;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubPutUpdateLinkHearingGroup;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyDeleteLinkedHearingGroups;
-import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LIST_ASSIST_FAILED_TO_RESPOND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.REJECTED_BY_LIST_ASSIST;
 
@@ -73,7 +72,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup));
 
             mockMvc.perform(post(url)
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
@@ -96,7 +94,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup));
 
             mockMvc.perform(post(url)
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
@@ -123,7 +120,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
             mockMvc.perform(post(url)
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(404))
@@ -150,7 +146,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
             mockMvc.perform(post(url)
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
@@ -177,7 +172,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
             mockMvc.perform(post(url)
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -203,7 +197,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
             mockMvc.perform(post(url)
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -229,7 +222,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
             mockMvc.perform(post(url)
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -255,7 +247,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
             mockMvc.perform(post(url)
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -283,7 +274,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             stubPostCreateLinkHearingGroup(200, HMI_REQUEST_URL, TOKEN);
 
             mockMvc.perform(post(url)
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(201))
@@ -309,7 +299,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
 
             stubPostCreateLinkHearingGroup(400, HMI_REQUEST_URL, TOKEN);
             mockMvc.perform(post(url)
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -335,7 +324,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
 
             stubPostCreateLinkHearingGroup(500, HMI_REQUEST_URL, TOKEN);
             mockMvc.perform(post(url)
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -360,7 +348,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup));
 
             mockMvc.perform(put(url + "?id=2")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                     .andExpect(status().is(400))
@@ -382,7 +369,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup));
 
             mockMvc.perform(put(url + "?id=12")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -409,7 +395,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
             mockMvc.perform(put(url + "?id=12")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(404))
@@ -436,7 +421,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
             mockMvc.perform(put(url + "?id=12")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -463,7 +447,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
             mockMvc.perform(put(url + "?id=12")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -489,7 +472,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
             mockMvc.perform(put(url + "?id=12")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -515,7 +497,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
             mockMvc.perform(post(url)
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -541,7 +522,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
             mockMvc.perform(post(url)
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -567,7 +547,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             logger.info("json: {}", objectMapper.writeValueAsString(hearingLinkGroupRequest));
 
             mockMvc.perform(put(url + "?id=88782")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(404))
@@ -595,7 +574,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             logger.info(objectMapper.writeValueAsString(hearingLinkGroupRequest));
             stubPutUpdateLinkHearingGroup(200, "12", TOKEN);
             mockMvc.perform(put(url + "?id=12")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(200))
@@ -621,7 +599,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             logger.info(objectMapper.writeValueAsString(hearingLinkGroupRequest));
             stubPutUpdateLinkHearingGroup(400, "12", TOKEN);
             mockMvc.perform(put(url + "?id=12")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -648,7 +625,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
             logger.info(objectMapper.writeValueAsString(hearingLinkGroupRequest));
             stubPutUpdateLinkHearingGroup(500, "12", TOKEN);
             mockMvc.perform(put(url + "?id=12")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hearingLinkGroupRequest)))
                 .andExpect(status().is(400))
@@ -665,7 +641,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
         void shouldReturn404_WhenHearingGroupDoesNotExist() throws Exception {
             mockMvc.perform(delete(url + "/11111")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(404))
                 .andReturn();
@@ -675,7 +650,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_WhenHearingGroupStatusIsPending() throws Exception {
             mockMvc.perform(delete(url + "/44445")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(ERROR_PATH_ERROR).value("007 group is in a PENDING state"))
@@ -686,7 +660,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
         void shouldReturn400_WhenHearingGroupStatusIsError() throws Exception {
             mockMvc.perform(delete(url + "/44446")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(ERROR_PATH_ERROR).value("007 group is in a ERROR state"))
@@ -698,7 +671,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
         void shouldReturn400_WhenHearingGroupHearingResponseStartDateIsInThePastForHearingStatusHearingRequested()
             throws Exception {
             mockMvc.perform(delete(url + "/44447")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(ERROR_PATH_ERROR)
@@ -711,7 +683,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
         void shouldReturn400_WhenHearingGroupHearingResponseStartDateIsInThePastForHearingStatusUpdateRequested()
             throws Exception {
             mockMvc.perform(delete(url + "/44448")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(ERROR_PATH_ERROR)
@@ -724,7 +695,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
         void shouldReturn200_WhenHearingGroupExists() throws Exception {
             stubSuccessfullyDeleteLinkedHearingGroups(TOKEN, "12345");
             mockMvc.perform(delete(url + "/12345")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(200))
                 .andReturn();
@@ -735,7 +705,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
         void shouldReturn4xx_WhenDeleteLinkedHearing() throws Exception {
             stubDeleteLinkedHearingGroupsReturn4XX(TOKEN, "12345");
             mockMvc.perform(delete(url + "/12345")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasItem(REJECTED_BY_LIST_ASSIST)))
@@ -747,7 +716,6 @@ class LinkHearingGroupControllerIT extends BaseTest {
         void shouldReturn5xx_WhenDeleteLinkedHearing() throws Exception {
             stubDeleteLinkedHearingGroupsReturn5XX(TOKEN, "12345");
             mockMvc.perform(delete(url + "/12345")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasItem(LIST_ASSIST_FAILED_TO_RESPOND)))
@@ -796,6 +764,4 @@ class LinkHearingGroupControllerIT extends BaseTest {
         groupDetails.setGroupReason("reason");
         return groupDetails;
     }
-
-    private final String serviceJwtXuiWeb = generateDummyS2SToken("xui_webapp");
 }

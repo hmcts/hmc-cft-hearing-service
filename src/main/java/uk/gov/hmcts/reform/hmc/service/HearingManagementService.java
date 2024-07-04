@@ -12,12 +12,11 @@ public interface HearingManagementService {
 
     ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid);
 
-    HearingResponse saveHearingRequest(HearingRequest createHearingRequest, String deploymentId, String clientS2SToken);
+    HearingResponse saveHearingRequest(HearingRequest createHearingRequest, String deploymentId);
 
-    HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest,String clientS2SToken);
+    HearingResponse deleteHearingRequest(Long hearingId, DeleteHearingRequest deleteRequest);
 
-    HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest, String deploymentId,
-                                         String clientS2SToken);
+    HearingResponse updateHearingRequest(Long hearingId, UpdateHearingRequest hearingRequest, String deploymentId);
 
     GetHearingsResponse getHearings(String caseRefId, String caseStatus);
 
@@ -25,7 +24,7 @@ public interface HearingManagementService {
 
     void sendResponse(String json, String hmctsServiceId, String deploymentId);
 
-    ResponseEntity hearingCompletion(Long hearingId, String clientS2SToken);
+    ResponseEntity hearingCompletion(Long hearingId);
 
     String getStatus(Long hearingId);
 

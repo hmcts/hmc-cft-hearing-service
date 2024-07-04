@@ -81,7 +81,6 @@ import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
-import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
@@ -145,7 +144,9 @@ class HearingManagementServiceTest {
     public static final String USER_ID = "UserId";
     public static final String ROLE_NAME = "hearing-manager";
     public static final String ROLE_TYPE = "ORGANISATION";
-    private static final String CLIENT_S2S_TOKEN = "s2s_token";
+    public static final String VALID_HEARING_STATUS = "UPDATE_REQUESTED";
+    public static final long INVALID_HEARING_ID = 1000000000L;
+    public static final Long HEARING_ID = 2000000000L;
 
     @InjectMocks
     private HearingManagementServiceImpl hearingManagementService;
@@ -229,9 +230,6 @@ class HearingManagementServiceTest {
 
     JsonNode jsonNode = mock(JsonNode.class);
 
-    @Mock
-    HearingStatusAuditService hearingStatusAuditService;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -269,10 +267,7 @@ class HearingManagementServiceTest {
                 listingMapper,
                 hmiCaseDetailsMapper,
                 entitiesMapper,
-                hmiHearingResponseMapper,
-                hearingStatusAuditService);
-
-        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
+                hmiHearingResponseMapper);
     }
 
 
@@ -381,7 +376,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(null);
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .saveHearingRequest(hearingRequest, null,CLIENT_S2S_TOKEN));
+                .saveHearingRequest(hearingRequest, null));
             assertEquals(HEARING_WINDOW_EMPTY_NULL, exception.getMessage());
         }
 
@@ -393,7 +388,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(LocalDate.parse("2017-03-01"));
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .saveHearingRequest(hearingRequest, null,CLIENT_S2S_TOKEN));
+                .saveHearingRequest(hearingRequest, null));
             assertEquals(HEARING_WINDOW_DETAILS_ARE_INVALID, exception.getMessage());
         }
 
@@ -405,7 +400,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(null);
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .saveHearingRequest(hearingRequest, null,CLIENT_S2S_TOKEN));
+                .saveHearingRequest(hearingRequest, null));
             assertEquals(HEARING_WINDOW_DETAILS_ARE_INVALID, exception.getMessage());
         }
 
@@ -417,7 +412,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(LocalDate.parse("2017-03-01"));
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .saveHearingRequest(hearingRequest, null,CLIENT_S2S_TOKEN));
+                .saveHearingRequest(hearingRequest, null));
             assertEquals(HEARING_WINDOW_DETAILS_ARE_INVALID, exception.getMessage());
         }
 
@@ -434,8 +429,7 @@ class HearingManagementServiceTest {
                                               any()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService. saveHearingRequest(hearingRequest, null,
-                                                                                   CLIENT_S2S_TOKEN);
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
             assertValidHearingResponse(response);
         }
 
@@ -453,8 +447,7 @@ class HearingManagementServiceTest {
                                               any()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null,
-                                                                                   CLIENT_S2S_TOKEN);
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
             assertValidHearingResponse(response);
         }
 
@@ -462,7 +455,7 @@ class HearingManagementServiceTest {
         void shouldFailIfNullHearingRequest() {
             HearingRequest hearingRequest = null;
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .saveHearingRequest(hearingRequest,  null, CLIENT_S2S_TOKEN));
+                .saveHearingRequest(hearingRequest,  null));
             assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
         }
 
@@ -476,7 +469,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().setHearingChannels(List.of("sameChannelType","sameChannelType"));
 
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                 .saveHearingRequest(hearingRequest,  null, CLIENT_S2S_TOKEN));
+                 .saveHearingRequest(hearingRequest,  null));
             assertEquals(ValidationError.NON_UNIQUE_CHANNEL_TYPE, exception.getMessage());
         }
 
@@ -484,7 +477,7 @@ class HearingManagementServiceTest {
         void shouldFailAsDetailsNotPresent() {
             HearingRequest hearingRequest = new HearingRequest();
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .saveHearingRequest(hearingRequest,  null, CLIENT_S2S_TOKEN));
+                .saveHearingRequest(hearingRequest,  null));
             assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
         }
 
@@ -510,7 +503,7 @@ class HearingManagementServiceTest {
             mockGetEntities(hearingRequest);
 
             assertThrows(BadRequestException.class, () -> hearingManagementService
-                   .saveHearingRequest(hearingRequest, null,CLIENT_S2S_TOKEN));
+                   .saveHearingRequest(hearingRequest, null));
         }
 
         @Test
@@ -525,8 +518,7 @@ class HearingManagementServiceTest {
                                               any()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null,
-                CLIENT_S2S_TOKEN);
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
             assertValidHearingResponse(response);
         }
 
@@ -564,8 +556,7 @@ class HearingManagementServiceTest {
             final List<PartyRelationshipDetailsEntity> partyRelationshipDetailsEntities = List.of(entity1, entity2);
             given(partyRelationshipDetailsMapper.modelToEntity(any(), any()))
                     .willReturn(partyRelationshipDetailsEntities);
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null,
-                                                                                   CLIENT_S2S_TOKEN);
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
             assertValidHearingResponse(response);
         }
 
@@ -585,8 +576,7 @@ class HearingManagementServiceTest {
                                               any()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null,
-                                                                                   CLIENT_S2S_TOKEN);
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
             assertValidHearingResponse(response);
         }
 
@@ -605,8 +595,7 @@ class HearingManagementServiceTest {
                                               any()))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null,
-                                                                                   CLIENT_S2S_TOKEN);
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null);
             assertValidHearingResponse(response);
         }
 
@@ -624,8 +613,7 @@ class HearingManagementServiceTest {
                                               eq("TEST")))
                 .willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "TEST",
-                                                                                   CLIENT_S2S_TOKEN);
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "TEST");
             assertValidHearingResponse(response);
         }
 
@@ -640,7 +628,7 @@ class HearingManagementServiceTest {
             partyDetails.get(0).setOrganisationDetails(TestingUtil.organisationDetails());
             hearingRequest.setPartyDetails(partyDetails);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                 .saveHearingRequest(hearingRequest,  null, CLIENT_S2S_TOKEN));
+                 .saveHearingRequest(hearingRequest,  null));
             assertEquals("Either Individual or Organisation details should be present", exception.getMessage());
         }
 
@@ -967,7 +955,7 @@ class HearingManagementServiceTest {
             mockDeleteRequest();
 
             HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
-                hearingId, TestingUtil.deleteHearingRequest(), CLIENT_S2S_TOKEN);
+                hearingId, TestingUtil.deleteHearingRequest());
             assertEquals(versionNumber + 1, hearingResponse.getVersionNumber());
             assertEquals(CANCELLATION_REQUESTED, hearingResponse.getStatus());
             assertNotNull(hearingResponse.getHearingRequestId());
@@ -982,7 +970,7 @@ class HearingManagementServiceTest {
             when(hearingRepository.getStatus(hearingId)).thenReturn("UPDATE_NOT_SUBMITTED");
 
             Exception exception = assertThrows(BadRequestException.class, () ->
-                hearingManagementService.deleteHearingRequest(hearingId, deleteHearingRequest,CLIENT_S2S_TOKEN));
+                hearingManagementService.deleteHearingRequest(hearingId, deleteHearingRequest));
             assertEquals(INVALID_DELETE_HEARING_STATUS, exception.getMessage());
             verify(hearingRepository).existsById(hearingId);
         }
@@ -993,7 +981,7 @@ class HearingManagementServiceTest {
             when(hearingRepository.existsById(hearingId)).thenReturn(false);
             DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
             Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
-                .deleteHearingRequest(hearingId, deleteHearingRequest,CLIENT_S2S_TOKEN));
+                .deleteHearingRequest(hearingId, deleteHearingRequest));
             assertEquals("No hearing found for reference: " + hearingId, exception.getMessage());
         }
 
@@ -1001,7 +989,7 @@ class HearingManagementServiceTest {
         void testExpectedException_DeleteHearing_HearingId_Null() {
             DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .deleteHearingRequest(null, deleteHearingRequest,CLIENT_S2S_TOKEN));
+                .deleteHearingRequest(null, deleteHearingRequest));
             assertEquals("Invalid hearing Id", exception.getMessage());
         }
 
@@ -1009,7 +997,7 @@ class HearingManagementServiceTest {
         void testExpectedException_DeleteHearing_HearingId_Exceeds_MaxLength() {
             DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .deleteHearingRequest(20000000001111L, deleteHearingRequest,CLIENT_S2S_TOKEN));
+                .deleteHearingRequest(20000000001111L, deleteHearingRequest));
             assertEquals("Invalid hearing Id", exception.getMessage());
         }
 
@@ -1017,7 +1005,7 @@ class HearingManagementServiceTest {
         void testExpectedException_DeleteHearing_HearingId_First_Char_Is_Not_2() {
             DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .deleteHearingRequest(1000000100L, deleteHearingRequest,CLIENT_S2S_TOKEN));
+                .deleteHearingRequest(1000000100L, deleteHearingRequest));
             assertEquals("Invalid hearing Id", exception.getMessage());
         }
 
@@ -1039,7 +1027,7 @@ class HearingManagementServiceTest {
             mockDeleteRequest();
 
             HearingResponse hearingResponse = hearingManagementService.deleteHearingRequest(
-                hearingId, hearingRequest,CLIENT_S2S_TOKEN);
+                hearingId, hearingRequest);
             // Check that version number has been incremented
             assertNotNull(hearingResponse.getVersionNumber());
         }
@@ -1098,8 +1086,7 @@ class HearingManagementServiceTest {
                             listingMapper,
                             hmiCaseDetailsMapper,
                             entitiesMapper,
-                            hmiHearingResponseMapper,
-                            hearingStatusAuditService);
+                            hmiHearingResponseMapper);
 
         }
 
@@ -1113,7 +1100,7 @@ class HearingManagementServiceTest {
             mockSubmitRequest();
 
             HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest,
-                                                                                            null,CLIENT_S2S_TOKEN);
+                                                                                            null);
             assertEquals(hearingResponse.getVersionNumber(), versionNumber + 1);
             verify(hearingRepository).existsById(hearingId);
             verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
@@ -1150,8 +1137,7 @@ class HearingManagementServiceTest {
             mockGetEntities(hearingRequest);
 
             HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest,
-                                                                                            null,
-                                                                                            CLIENT_S2S_TOKEN);
+                                                                                            null);
             assertEquals(hearingResponse.getVersionNumber(), versionNumber + 1);
             verify(hearingRepository).existsById(hearingId);
             verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
@@ -1175,8 +1161,7 @@ class HearingManagementServiceTest {
             mockSubmitRequest();
 
             HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest,
-                                                                                            null,
-                                                                                            CLIENT_S2S_TOKEN);
+                                                                                            null);
             assertEquals(hearingResponse.getVersionNumber(), versionNumber + 1);
             verify(hearingRepository).existsById(hearingId);
             verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
@@ -1211,7 +1196,7 @@ class HearingManagementServiceTest {
             when(hearingRepository.getStatus(hearingId)).thenReturn(UPDATE_REQUESTED.name());
 
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .updateHearingRequest(hearingId, hearingRequest, null,CLIENT_S2S_TOKEN));
+                .updateHearingRequest(hearingId, hearingRequest, null));
             assertEquals(INVALID_PUT_HEARING_STATUS, exception.getMessage());
         }
 
@@ -1222,7 +1207,7 @@ class HearingManagementServiceTest {
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .updateHearingRequest(hearingId, updateHearingRequest, null,CLIENT_S2S_TOKEN));
+                .updateHearingRequest(hearingId, updateHearingRequest, null));
             assertEquals(INVALID_VERSION_NUMBER, exception.getMessage());
         }
 
@@ -1234,7 +1219,7 @@ class HearingManagementServiceTest {
             when(hearingRepository.getStatus(hearingId)).thenReturn("HEARING_NOT_REQUESTED");
             UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .updateHearingRequest(hearingId, updateHearingRequest, null,CLIENT_S2S_TOKEN));
+                .updateHearingRequest(hearingId, updateHearingRequest, null));
             assertEquals(INVALID_PUT_HEARING_STATUS, exception.getMessage());
         }
 
@@ -1256,8 +1241,7 @@ class HearingManagementServiceTest {
             mockSubmitRequest();
 
             HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest,
-                                                                                            null,
-                                                                                            CLIENT_S2S_TOKEN);
+                                                                                            null);
             assertEquals(hearingResponse.getHearingRequestId(), hearingId);
             verify(hearingRepository).existsById(hearingId);
             verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
@@ -1267,7 +1251,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenHearingRequestDetailsNull() {
             UpdateHearingRequest request = new UpdateHearingRequest();
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .updateHearingRequest(2000000000L, request, null,CLIENT_S2S_TOKEN));
+                .updateHearingRequest(2000000000L, request, null));
             assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
         }
 
@@ -1281,7 +1265,7 @@ class HearingManagementServiceTest {
             hearingDetails.setHearingWindow(hearingWindow);
             request.setHearingDetails(hearingDetails);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .updateHearingRequest(2000000000L, request, null,CLIENT_S2S_TOKEN));
+                .updateHearingRequest(2000000000L, request, null));
             assertEquals(HEARING_WINDOW_EMPTY_NULL, exception.getMessage());
         }
 
@@ -1295,7 +1279,7 @@ class HearingManagementServiceTest {
             request.setHearingDetails(hearingDetails);
             request.setPartyDetails(partyDetailsList);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .updateHearingRequest(2000000000L, request, null,CLIENT_S2S_TOKEN));
+                .updateHearingRequest(2000000000L, request, null));
             assertEquals(INVALID_ORG_INDIVIDUAL_DETAILS, exception.getMessage());
         }
 
@@ -1313,7 +1297,7 @@ class HearingManagementServiceTest {
             request.setHearingDetails(hearingDetails);
             request.setPartyDetails(partyDetailsList);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .updateHearingRequest(2000000000L, request, null,CLIENT_S2S_TOKEN));
+                .updateHearingRequest(2000000000L, request, null));
             assertEquals(INVALID_ORG_INDIVIDUAL_DETAILS, exception.getMessage());
         }
 
@@ -1341,9 +1325,7 @@ class HearingManagementServiceTest {
             mockGetEntities(request);
             mockSubmitRequest();
 
-            HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, request,
-                                                                                            null,
-                                                                                            CLIENT_S2S_TOKEN);
+            HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, request, null);
             assertEquals(hearingResponse.getVersionNumber(), versionNumber + 1);
             verify(hearingRepository).existsById(hearingId);
             verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
@@ -1373,9 +1355,7 @@ class HearingManagementServiceTest {
             mockGetEntities(request);
             mockSubmitRequest();
 
-            HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, request,
-                                                                                            null,
-                                                                                            CLIENT_S2S_TOKEN);
+            HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, request, null);
             assertEquals(hearingResponse.getVersionNumber(), versionNumber + 1);
             verify(hearingRepository).existsById(hearingId);
             verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
@@ -1408,7 +1388,7 @@ class HearingManagementServiceTest {
             mockSubmitRequest();
 
             HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, request,
-                                                                                            null,CLIENT_S2S_TOKEN);
+                                                                                            null);
             assertEquals(hearingResponse.getVersionNumber(), versionNumber + 1);
             verify(hearingRepository).existsById(hearingId);
             verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
@@ -1418,7 +1398,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenHearingIdIsNull() {
             UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .updateHearingRequest(null, updateHearingRequest,null,CLIENT_S2S_TOKEN));
+                .updateHearingRequest(null, updateHearingRequest,null));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
         }
 
@@ -1426,7 +1406,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenHearingIdExceedsMaxLength() {
             UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .updateHearingRequest(20000000001111L, updateHearingRequest, null,CLIENT_S2S_TOKEN));
+                .updateHearingRequest(20000000001111L, updateHearingRequest, null));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
         }
 
@@ -1434,7 +1414,7 @@ class HearingManagementServiceTest {
         void updateHearingRequestShouldThrowErrorWhenHearingIdDoesNotStartWith2() {
             UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .updateHearingRequest(1000000100L, updateHearingRequest, null,CLIENT_S2S_TOKEN));
+                .updateHearingRequest(1000000100L, updateHearingRequest, null));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
         }
 
@@ -1443,7 +1423,7 @@ class HearingManagementServiceTest {
             when(hearingRepository.existsById(2000000000L)).thenReturn(false);
             UpdateHearingRequest updateHearingRequest = TestingUtil.updateHearingRequest();
             Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
-                .updateHearingRequest(2000000000L, updateHearingRequest, null,CLIENT_S2S_TOKEN));
+                .updateHearingRequest(2000000000L, updateHearingRequest, null));
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
         }
 
@@ -1457,7 +1437,7 @@ class HearingManagementServiceTest {
             mockSubmitRequest();
 
             HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest,
-                                                                                            null,CLIENT_S2S_TOKEN);
+                                                                                            null);
             assertEquals(hearingResponse.getVersionNumber(), versionNumber + 1);
             verify(hearingRepository).existsById(hearingId);
             verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
@@ -1478,7 +1458,7 @@ class HearingManagementServiceTest {
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .updateHearingRequest(2000000000L, hearingRequest, null,CLIENT_S2S_TOKEN));
+                .updateHearingRequest(2000000000L, hearingRequest, null));
             assertEquals(ValidationError.INVALID_CASE_REFERENCE, exception.getMessage());
         }
 
@@ -1492,7 +1472,7 @@ class HearingManagementServiceTest {
             mockSubmitRequest();
 
             HearingResponse hearingResponse = hearingManagementService.updateHearingRequest(hearingId, hearingRequest,
-                                                                                            "ABA",CLIENT_S2S_TOKEN);
+                                                                                            "ABA");
             assertEquals(hearingResponse.getVersionNumber(), versionNumber + 1);
             verify(hearingRepository).existsById(hearingId);
             verify(caseHearingRequestRepository).getLatestVersionNumber(hearingId);
@@ -1572,8 +1552,7 @@ class HearingManagementServiceTest {
         @Test
         void shouldThrowExceptionWhenHearingIdIsNull() {
             Exception exception = assertThrows(BadRequestException.class,
-                                               () -> hearingManagementService.hearingCompletion(null,
-                                                                                                CLIENT_S2S_TOKEN));
+                                               () -> hearingManagementService.hearingCompletion(null));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
         }
 
@@ -1583,8 +1562,7 @@ class HearingManagementServiceTest {
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
             when(hearingRepository.existsById(hearingId)).thenReturn(false);
             Exception exception = assertThrows(HearingNotFoundException.class,
-                                               () -> hearingManagementService.hearingCompletion(hearingId,
-                                                                                                CLIENT_S2S_TOKEN));
+                                               () -> hearingManagementService.hearingCompletion(hearingId));
             assertEquals("001 No such id: 2000000000", exception.getMessage());
             verify(hearingRepository).existsById(hearingId);
         }
@@ -1592,7 +1570,7 @@ class HearingManagementServiceTest {
         @Test
         void shouldThrowErrorWhenHearingIdIsNotValidFormat() {
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .hearingCompletion(30000000L, CLIENT_S2S_TOKEN));
+                .hearingCompletion(30000000L));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
         }
 
@@ -1609,7 +1587,7 @@ class HearingManagementServiceTest {
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .hearingCompletion(hearingId, CLIENT_S2S_TOKEN));
+                .hearingCompletion(hearingId));
             assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
         }
 
@@ -1626,7 +1604,7 @@ class HearingManagementServiceTest {
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .hearingCompletion(hearingId, CLIENT_S2S_TOKEN));
+                .hearingCompletion(hearingId));
             assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
         }
 
@@ -1646,7 +1624,7 @@ class HearingManagementServiceTest {
                 .thenReturn(Optional.empty());
 
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
-                .hearingCompletion(hearingId, CLIENT_S2S_TOKEN));
+                .hearingCompletion(hearingId));
             assertEquals(HEARING_ACTUALS_MISSING_HEARING_OUTCOME, exception.getMessage());
         }
 
@@ -1673,7 +1651,7 @@ class HearingManagementServiceTest {
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             Exception exception = assertThrows(BadRequestException.class, () ->
-                    hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN));
+                    hearingManagementService.hearingCompletion(hearingId));
 
             assertTrue(exception.getMessage().contains(ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY));
         }
@@ -1697,7 +1675,7 @@ class HearingManagementServiceTest {
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             mockHearingCompletionRequest(hearingEntity);
-            ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
+            ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId);
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
             assertNotNull(responseEntity);
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -1723,7 +1701,7 @@ class HearingManagementServiceTest {
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             mockHearingCompletionRequest(hearingEntity);
-            hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
+            hearingManagementService.hearingCompletion(hearingId);
         }
 
         @Test
@@ -1746,7 +1724,7 @@ class HearingManagementServiceTest {
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                     .thenReturn(Optional.of(actualHearingEntity));
             mockHearingCompletionRequest(hearingEntity);
-            hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
+            hearingManagementService.hearingCompletion(hearingId);
         }
 
         @Test
@@ -1769,7 +1747,7 @@ class HearingManagementServiceTest {
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             mockHearingCompletionRequest(hearingEntity);
-            ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
+            ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId);
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
             assertNotNull(responseEntity);
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());

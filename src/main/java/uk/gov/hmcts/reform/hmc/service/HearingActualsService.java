@@ -8,5 +8,5 @@ public interface HearingActualsService {
 
     ResponseEntity<HearingActualResponse> getHearingActuals(Long hearingId);
 
-    void updateHearingActuals(Long hearingId, String clientS2SToken, HearingActual request);
+    void updateHearingActuals(Long hearingId, HearingActual request);
 }

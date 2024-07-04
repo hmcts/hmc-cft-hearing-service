@@ -28,7 +28,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_NOT_EMPTY;
@@ -69,7 +68,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Test
         void shouldReturn404_WhenHearingIdDoesNotExist() throws Exception {
             mockMvc.perform(put(URL + "/2990000001")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
@@ -82,7 +80,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Test
         void shouldReturn400_WhenHearingIdIsInvalid() throws Exception {
             mockMvc.perform(put(URL + "/1000000000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
@@ -97,7 +94,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenHearingHasInvalidStatusOfHearingRequested() throws Exception {
             mockMvc.perform(put(URL + "/2000000000") // status HEARING_REQUESTED
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
@@ -112,7 +108,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenHearingHasInvalidStatusOfAwaitingListing() throws Exception {
             mockMvc.perform(put(URL + "/2000000200") // status AWAITING_LISTING
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
@@ -127,7 +122,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenSuppliedHearingActualPayloadContainsDuplicateHearingDates() throws Exception {
             mockMvc.perform(put(URL + "/2000000100")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(
                                     TestingUtil.hearingActualWithDuplicatedHearingDate())))
@@ -142,7 +136,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenSuppliedHearingActualPayloadContainsDuplicateHearingDates1() throws Exception {
             mockMvc.perform(put(URL + "/2000000100")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(
                                     TestingUtil.hearingActualWithHearingDateInFuture())))
@@ -157,7 +150,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenSuppliedHearingDatesBeforeFirstPlannedHearingDate() throws Exception {
             mockMvc.perform(put(URL + "/2000000302")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(
                                     TestingUtil.hearingActualWithHearingDates(
@@ -175,7 +167,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn400_WhenSuppliedHearingHasHearingResultOfAdjournedWithoutHearingResultReasonType()
             throws Exception {
             mockMvc.perform(put(URL + "/2000001000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(
                                     TestingUtil.hearingActual(
@@ -195,7 +186,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn200_WhenSuppliedValidPayloadForHearingStatusOfListed()
             throws Exception {
             mockMvc.perform(put(URL + "/2000001000") // LISTED
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
@@ -244,7 +234,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn200_WhenSuppliedValidPayloadForMultiplePutRequests()
             throws Exception {
             mockMvc.perform(put(URL + "/2000000000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN-276-ValidPayload7.json")))
@@ -255,7 +244,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(status().is(200));
 
             mockMvc.perform(put(URL + "/2000000000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN-276-ValidPayload7.json")))
@@ -283,7 +271,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[1].hearingDate").value("2022-02-06"));
 
             mockMvc.perform(put(URL + "/2000000000") // LISTED
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
@@ -350,7 +337,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[1].hearingDate").value("2022-02-06"));
 
             mockMvc.perform(put(URL + "/2000000000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN-259-ValidPayload6-actualPartyId-null.json")))
@@ -417,7 +403,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn200_WhenSuppliedValidPayloadForHearingStatusOfUpdateRequested()
             throws Exception {
             mockMvc.perform(put(URL + "/2000001100") // UPDATE_REQUESTED
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload2.json")))
@@ -436,7 +421,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn200_WhenSuppliedValidPayloadForHearingStatusOfUpdateSubmitted()
             throws Exception {
             mockMvc.perform(put(URL + "/2000001200") // UPDATE_SUBMITTED
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload3-no-partyId-supplied.json")))
@@ -454,7 +438,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn200_WhenSuppliedValidPayloadWithHearingResultAsCompleted()
             throws Exception {
             mockMvc.perform(put(URL + "/2000001200") // UPDATE_SUBMITTED
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json")))
@@ -472,7 +455,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn200_WhenSuppliedValidPayloadWithHearingResultAsCancelled()
             throws Exception {
             mockMvc.perform(put(URL + "/2000001200") // UPDATE_SUBMITTED
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload5-Cancelled.json")))
@@ -489,7 +471,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn200_WhenSuppliedValidPayloadWithNoActualHearingDaysElementPresent()
             throws Exception {
             mockMvc.perform(put(URL + "/2000001200") // UPDATE_SUBMITTED
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload5-no-actualHearingDays.json")))
@@ -507,7 +488,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         void shouldReturn400_WhenSuppliedHearingHasHearingResultOfCancelledWithoutHearingResultReasonType()
             throws Exception {
             mockMvc.perform(put(URL + "/2000001000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(
                                     TestingUtil.hearingActual(
@@ -522,7 +502,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldSupportMultipleRequests() throws Exception {
             mockMvc.perform(put(URL + "/2000001000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
@@ -530,7 +509,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andReturn();
 
             mockMvc.perform(put(URL + "/2000001000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload2.json")))
@@ -552,7 +530,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
     void shouldReturn200WhenHearingStartTimeIsNotPresentEndTimeIsPresentAndNotRequiredIsTrue() throws Exception {
         String preparedJson = getString("$['actualHearingDays'][0]['hearingStartTime']");
         mockMvc.perform(put(URL + "/2000001000")
-                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(preparedJson))
             .andExpect(status().is(200))
@@ -564,7 +541,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
     void shouldReturn200WhenEndTimeIsNotPresentAndStartTimeIsPresentAndNotRequiredIsTrue() throws Exception {
         String preparedJson = getString("$['actualHearingDays'][0]['hearingEndTime']");
         mockMvc.perform(put(URL + "/2000001000")
-                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(preparedJson))
             .andExpect(status().is(200))
@@ -581,7 +557,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
             "$['actualHearingDays'][0]['hearingEndTime']"
         );
         mockMvc.perform(put(URL + "/2000001000")
-                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(preparedJson))
             .andExpect(status().is(200))
@@ -608,7 +583,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
         String preparedJson = deleteByJsonPath(json, "$['actualHearingDays'][0]['notRequired']");
         mockMvc.perform(put(URL + "/2000001000")
-                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(preparedJson))
             .andExpect(status().is(200))
@@ -621,7 +595,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json");
         String preparedJson = addByJsonPath(json, "$['actualHearingDays'][0]['notRequired']", "false");
         mockMvc.perform(put(URL + "/2000001000")
-                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(preparedJson))
             .andExpect(status().is(200))
@@ -760,7 +733,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
             String preparedJson = deleteByJsonPath(json, pathToDelete);
 
             mockMvc.perform(put(URL + "/2000001000") // LISTED
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
                 .andExpect(status().is(400))
@@ -777,7 +749,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
             preparedJson = deleteByJsonPath(preparedJson, "$['actualHearingDays'][0]['hearingEndTime']");
             preparedJson = deleteByJsonPath(preparedJson, "$['actualHearingDays'][0]['notRequired']");
             mockMvc.perform(put(URL + "/2000001000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
                 .andExpect(status().is(200))
@@ -791,7 +762,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
             String preparedJson = deleteByJsonPath(json, "$['actualHearingDays'][0]['hearingEndTime']");
             preparedJson = addByJsonPath(preparedJson, "$['actualHearingDays'][0]['notRequired']", "false");
             mockMvc.perform(put(URL + "/2000001000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
                 .andExpect(status().is(200))
@@ -805,7 +775,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
             String preparedJson = deleteByJsonPath(json, "$['actualHearingDays'][0]['hearingStartTime']");
             preparedJson = addByJsonPath(preparedJson, "$['actualHearingDays'][0]['notRequired']", "false");
             mockMvc.perform(put(URL + "/2000001000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
                 .andExpect(status().is(200))
@@ -820,7 +789,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
             preparedJson = deleteByJsonPath(preparedJson, "$['actualHearingDays'][0]['hearingEndTime']");
             preparedJson = addByJsonPath(preparedJson, "$['actualHearingDays'][0]['notRequired']", "false");
             mockMvc.perform(put(URL + "/2000001000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
                 .andExpect(status().is(200))
@@ -837,7 +805,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 "$['actualHearingDays'][0]['notRequired']"
             );
             mockMvc.perform(put(URL + "/2000001000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
                 .andExpect(status().is(200))
@@ -854,7 +821,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 "$['actualHearingDays'][0]['notRequired']"
             );
             mockMvc.perform(put(URL + "/2000001000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
                 .andExpect(status().is(200))
@@ -884,7 +850,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
             String preparedJson = updateWithRandomStringByJsonPath(json, pathToUpdate, length);
 
             mockMvc.perform(put(URL + "/2000001000") // LISTED
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
                 .andExpect(status().is(400))
@@ -903,7 +868,4 @@ class HearingActualsManagementControllerIT extends BaseTest {
             return RandomStringUtils.random(length);
         }
     }
-
-    private final String serviceJwtXuiWeb = "client_token";
-
 }

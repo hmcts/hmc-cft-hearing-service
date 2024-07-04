@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public interface PartiesNotifiedService {
 
     void getPartiesNotified(Long hearingId, Integer requestVersion, LocalDateTime receivedDateTime,
-                            PartiesNotified partiesNotified, String clientS2SToken);
+                            PartiesNotified partiesNotified);
 
     PartiesNotifiedResponses getPartiesNotified(Long hearingId);
 
