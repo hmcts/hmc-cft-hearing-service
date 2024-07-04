@@ -249,7 +249,7 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   springCloud     : '2020.0.6',
   springfoxSwagger: '3.0.0',
-  testcontainers  : '2.27.2',
+  testcontainers  : '1.18.3',
   netty           : '4.1.106.Final',
   serviceAuthVersion: '4.1.2',
   tomcatEmbedded  : '9.0.85',
