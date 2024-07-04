@@ -1,4 +1,4 @@
-FROM hmctspublic.azurecr.io/imported/postgres:15.0
+FROM hmctspublic.azurecr.io/imported/postgres:15
 USER postgres
 
 ENV TZ="UTC"
