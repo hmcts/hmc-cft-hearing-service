@@ -13,7 +13,6 @@ def product = "hmc"
 def component = "cft-hearing-service"
 
 
-env.TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX = "hmctspublic.azurecr.io/imported/"
 
 withNightlyPipeline(type, product, component) {
   enableFortifyScan('hmc-aat')
