@@ -376,8 +376,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'io.springfox', name: 'springfox-boot-starter', version: versions.springfoxSwagger
-
-  implementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
+  
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
@@ -471,7 +470,8 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.11.1'
   testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
   testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.9'
-
+  testImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
+  
   contractTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
   contractTestImplementation group: 'io.rest-assured', name: 'json-path', version: versions.restAssured
   contractTestImplementation group: 'io.rest-assured', name: 'xml-path', version: versions.restAssured
@@ -481,7 +481,9 @@ dependencies {
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact
   contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-
+  contractTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
+  
+  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
   integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
