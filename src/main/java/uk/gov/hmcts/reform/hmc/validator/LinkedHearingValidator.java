@@ -167,24 +167,22 @@ public class LinkedHearingValidator {
         return errorMessages;
     }
 
-    public List<HearingEntity> validateHearingLinkGroupRequest(HearingLinkGroupRequest hearingLinkGroupRequest,
-                                                               String requestId) {
+    public void validateHearingLinkGroupRequest(HearingLinkGroupRequest hearingLinkGroupRequest, String requestId) {
         checkLinkedGroupInActiveStatus(requestId);
-        List<HearingEntity> linkedHearingDetails = new ArrayList<>();
+
         hearingLinkGroupRequest.getHearingsInGroup().forEach(details -> {
             checkSufficientRequestIds(hearingLinkGroupRequest, details);
             log.debug("hearingId: {}", details.getHearingId());
             hearingIdValidator.validateHearingId(Long.valueOf(details.getHearingId()), HEARING_ID_NOT_FOUND);
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(Long.valueOf(details.getHearingId()));
+
             if (hearingEntity.isPresent()) {
                 checkHearingRequestAllowsLinking(hearingEntity);
                 checkHearingRequestIsNotInAnotherGroup(details, requestId);
                 checkValidStateForHearingRequest(hearingEntity, details);
                 checkHearingOrderIsUnique(hearingLinkGroupRequest, details);
-                linkedHearingDetails.add(hearingEntity.get());
             }
         });
-        return linkedHearingDetails;
     }
 
     public void checkSufficientRequestIds(HearingLinkGroupRequest hearingLinkGroupRequest,

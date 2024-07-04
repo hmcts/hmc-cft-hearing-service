@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
-import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -44,7 +43,6 @@ import javax.validation.constraints.Size;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID_MAX_SIZE;
-import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
@@ -59,16 +57,13 @@ public class HearingManagementController {
     private final HearingManagementService hearingManagementService;
     private final AccessControlService accessControlService;
     private final ApplicationParams applicationParams;
-    private final SecurityUtils securityUtils;
 
     public HearingManagementController(HearingManagementService hearingManagementService,
                                        AccessControlService accessControlService,
-                                       ApplicationParams applicationParams,
-                                       SecurityUtils securityUtils) {
+                                       ApplicationParams applicationParams) {
         this.hearingManagementService = hearingManagementService;
         this.accessControlService = accessControlService;
         this.applicationParams = applicationParams;
-        this.securityUtils = securityUtils;
     }
 
     @GetMapping(path = "/hearing/{id}", produces = APPLICATION_JSON_VALUE)
@@ -107,12 +102,10 @@ public class HearingManagementController {
     })
     public HearingResponse saveHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false)
                                         String deploymentId,
-                                       @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
                                        @RequestBody @Valid HearingRequest createHearingRequest) {
         verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER));
-        return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId,
-                                                           getServiceName(clientS2SToken));
+        return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId);
     }
 
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -124,11 +117,10 @@ public class HearingManagementController {
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
-                                         @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
                                          @RequestBody @Valid DeleteHearingRequest deleteRequest) {
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         return hearingManagementService.deleteHearingRequest(
-            hearingId, deleteRequest, getServiceName(clientS2SToken));
+            hearingId, deleteRequest);
     }
 
     /**
@@ -174,12 +166,10 @@ public class HearingManagementController {
     public HearingResponse updateHearing(@RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false)
                                                  String deploymentId,
                                          @RequestBody @Valid UpdateHearingRequest hearingRequest,
-                                         @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
                                          @PathVariable("id") Long hearingId) {
         verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
-        return hearingManagementService.updateHearingRequest(hearingId, hearingRequest, deploymentId,
-                                                             getServiceName(clientS2SToken));
+        return hearingManagementService.updateHearingRequest(hearingId, hearingRequest, deploymentId);
     }
 
     @PostMapping(path = "/hearingActualsCompletion/{id}")
@@ -195,10 +185,9 @@ public class HearingManagementController {
                 + "\n4) " + ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME),
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
-    public ResponseEntity hearingCompletion(@PathVariable("id") Long hearingId,
-                                            @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken) {
+    public ResponseEntity hearingCompletion(@PathVariable("id") Long hearingId) {
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
-        return hearingManagementService.hearingCompletion(hearingId, getServiceName(clientS2SToken));
+        return hearingManagementService.hearingCompletion(hearingId);
     }
 
     /**
@@ -273,9 +262,5 @@ public class HearingManagementController {
         } else if (!applicationParams.isHmctsDeploymentIdEnabled() && !StringUtils.isEmpty(deploymentId)) {
             throw new BadRequestException(HMCTS_DEPLOYMENT_ID_NOT_REQUIRED);
         }
-    }
-
-    private String getServiceName(String clientS2SToken) {
-        return securityUtils.getServiceNameFromS2SToken(clientS2SToken);
     }
 }

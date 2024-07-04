@@ -1,9 +1,6 @@
 package uk.gov.hmcts.reform.hmc;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.TextCodec;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,7 +25,6 @@ import uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository;
 import uk.gov.hmcts.reform.hmc.repository.RoleAssignmentRepository;
 import uk.gov.hmcts.reform.hmc.wiremock.extensions.DynamicOAuthJwkSetResponseTransformer;
 
-import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -114,13 +110,5 @@ public class BaseTest {
         resource.setRoleType("ORGANISATION");
         resource.setAttributes(new RoleAssignmentAttributesResource());
         return resource;
-    }
-
-    public static String generateDummyS2SToken(String serviceName) {
-        return Jwts.builder()
-            .setSubject(serviceName)
-            .setIssuedAt(new Date())
-            .signWith(SignatureAlgorithm.HS256, TextCodec.BASE64.encode("AA"))
-            .compact();
     }
 }

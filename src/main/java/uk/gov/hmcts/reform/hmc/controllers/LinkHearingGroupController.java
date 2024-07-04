@@ -10,11 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupResponse;
@@ -24,7 +22,6 @@ import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
 import javax.validation.Valid;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 
 @RestController
@@ -33,14 +30,11 @@ public class LinkHearingGroupController {
 
     private final LinkedHearingGroupService linkedHearingGroupService;
     private AccessControlService accessControlService;
-    private final SecurityUtils securityUtils;
 
     public LinkHearingGroupController(LinkedHearingGroupService linkedHearingGroupService,
-                                      AccessControlService accessControlService,
-                                      SecurityUtils securityUtils) {
+                                      AccessControlService accessControlService) {
         this.linkedHearingGroupService = linkedHearingGroupService;
         this.accessControlService = accessControlService;
-        this.securityUtils = securityUtils;
     }
 
     @PostMapping(path = "/linkedHearingGroup", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -55,11 +49,10 @@ public class LinkHearingGroupController {
                 + "\n4) " + ValidationError.INVALID_STATE_FOR_HEARING_REQUEST
                 + "\n5) " + ValidationError.HEARING_ORDER_NOT_UNIQUE)
     })
-    public HearingLinkGroupResponse validateLinkHearing(
-        @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken, @RequestBody @Valid
+    public HearingLinkGroupResponse validateLinkHearing(@RequestBody @Valid
                                                             HearingLinkGroupRequest hearingLinkGroupRequest) {
         verifyAccess(hearingLinkGroupRequest);
-        return linkedHearingGroupService.linkHearing(hearingLinkGroupRequest, getServiceName(clientS2SToken));
+        return linkedHearingGroupService.linkHearing(hearingLinkGroupRequest);
     }
 
     @PutMapping(path = "/linkedHearingGroup", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -76,11 +69,10 @@ public class LinkHearingGroupController {
                 + "\n6) " + ValidationError.INVALID_STATE_FOR_LINKED_GROUP
                 + "\n7) " + ValidationError.INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST)
     })
-    public void updateHearing(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
-                              @RequestParam("id") String requestId,
+    public void updateHearing(@RequestParam("id") String requestId,
                               @RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
         verifyAccess(hearingLinkGroupRequest);
-        linkedHearingGroupService.updateLinkHearing(requestId, hearingLinkGroupRequest, getServiceName(clientS2SToken));
+        linkedHearingGroupService.updateLinkHearing(requestId, hearingLinkGroupRequest);
     }
 
     @DeleteMapping(path = "/linkedHearingGroup/{id}", produces = APPLICATION_JSON_VALUE)
@@ -91,9 +83,8 @@ public class LinkHearingGroupController {
         @ApiResponse(code = 404, message = ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS),
         @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
     })
-    public void deleteHearingGroup(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
-                                   @PathVariable("id") String requestId) {
-        linkedHearingGroupService.deleteLinkedHearingGroup(requestId, getServiceName(clientS2SToken));
+    public void deleteHearingGroup(@PathVariable("id") String requestId) {
+        linkedHearingGroupService.deleteLinkedHearingGroup(requestId);
     }
 
     private void verifyAccess(HearingLinkGroupRequest request) {
@@ -103,9 +94,5 @@ public class LinkHearingGroupController {
                 Long.valueOf(hearingId),
                 Lists.newArrayList(HEARING_MANAGER)
             ));
-    }
-
-    private String getServiceName(String clientS2SToken) {
-        return securityUtils.getServiceNameFromS2SToken(clientS2SToken);
     }
 }

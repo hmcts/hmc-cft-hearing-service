@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
@@ -32,12 +31,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import static uk.gov.hmcts.reform.hmc.constants.Constants.FH;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_ACK;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_FAILURE_STATUS;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_RESPONSE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
@@ -54,7 +47,6 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     private MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
     private final ObjectMapperService objectMapperService;
     private final ApplicationParams applicationParams;
-    private final HearingStatusAuditService hearingStatusAuditService;
     private static final String HEARING_ID = "hearing_id";
     public static final String UNSUPPORTED_HEARING_STATUS = "Hearing has unsupported value for hearing status";
     public static final String MISSING_HEARING_ID = "Message is missing custom header hearing_id";
@@ -65,8 +57,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                                    MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
                                    ObjectMapperService objectMapperService,
                                    HearingIdValidator hearingIdValidator,
-                                   ApplicationParams applicationParams,
-                                   HearingStatusAuditService hearingStatusAuditService) {
+                                   ApplicationParams applicationParams) {
         this.objectMapper = objectMapper;
         this.hearingRepository = hearingRepository;
         this.hmiHearingResponseMapper = hmiHearingResponseMapper;
@@ -74,7 +65,6 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         this.objectMapperService = objectMapperService;
         this.hearingIdValidator = hearingIdValidator;
         this.applicationParams = applicationParams;
-        this.hearingStatusAuditService = hearingStatusAuditService;
 
     }
 
@@ -107,11 +97,6 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 hearingEntity.setErrorDescription(exception.getMessage());
                 hearingRepository.save(hearingEntity);
                 log.error("Hearing id: " +  hearingId + " updated to status Exception");
-                JsonNode errorDescription = objectMapper.convertValue(exception.getMessage(), JsonNode.class);
-                hearingStatusAuditService.saveAuditTriageDetails(hearingEntity,
-                                                                 hearingEntity.getUpdatedDateTime(),
-                                                                 LA_RESPONSE, LA_FAILURE_STATUS,
-                                                                 FH, HMC, errorDescription);
             } else {
                 log.error("Hearing id " + hearingId + " not found");
             }
@@ -142,13 +127,13 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             SyncResponse syncResponse = objectMapper.treeToValue(message, SyncResponse.class);
             updateHearingAndStatus(hearingId, syncResponse);
         } else if (messageType.equals(MessageType.ERROR)) {
-            updateHearingAndStatus(hearingId, message);
+            ErrorDetails errorResponse = objectMapper.treeToValue(message, ErrorDetails.class);
+            log.debug("Successfully converted message to ErrorResponse " + errorResponse);
+            updateHearingAndStatus(hearingId, errorResponse);
         }
     }
 
-    private void updateHearingAndStatus(Long hearingId, JsonNode message) throws JsonProcessingException {
-        ErrorDetails errorDetails = objectMapper.treeToValue(message, ErrorDetails.class);
-        log.debug("Successfully converted message to ErrorResponse " + errorDetails);
+    private void updateHearingAndStatus(Long hearingId, ErrorDetails errorDetails) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiHearingErrorToEntity(
@@ -166,10 +151,6 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 log.info("Hearing id: " + hearingId + "has response of type :" + MessageType.ERROR);
                 log.error("Hearing id: " + hearingId + " updated to status Exception");
             }
-            hearingStatusAuditService.saveAuditTriageDetails(hearingToSave,
-                                                             hearingToSave.getUpdatedDateTime(),
-                                                             LA_RESPONSE, LA_FAILURE_STATUS,
-                                                             FH, HMC, message);
         }
     }
 
@@ -191,11 +172,6 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                     .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                                  hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
                                  getDeploymentIdForHearing(hearingResult.get()));
-
-                hearingStatusAuditService.saveAuditTriageDetails(hearingEntity.get(),
-                                                                 hearingEntity.get().getUpdatedDateTime(),
-                                                                 LA_RESPONSE,LA_SUCCESS_STATUS, FH, HMC,
-                                                                 null);
             }
         }
     }
@@ -204,7 +180,6 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     private void updateHearingAndStatus(Long hearingId, SyncResponse syncResponse) {
         log.debug(MessageType.LA_SYNC_HEARING_RESPONSE + " received for hearing id {} ,{} ", hearingId,
                   syncResponse.toString());
-        JsonNode errorDescription = null;
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiSyncResponseToEntity(
@@ -219,13 +194,9 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                              hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
                              getDeploymentIdForHearing(hearingResult.get()));
             if (hearingEntity.getStatus().equals(HearingStatus.EXCEPTION.name())) {
-                errorDescription = objectMapper.convertValue(syncResponse, JsonNode.class);
                 log.info("Hearing id: " + hearingId + "has response of type :" + MessageType.LA_SYNC_HEARING_RESPONSE);
                 log.error("Hearing id: " + hearingId + " updated to status Exception");
             }
-            hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
-                                                             LA_ACK, syncResponse.getListAssistHttpStatus()
-                                                                 .toString(),HMC, FH, errorDescription);
         }
     }
 

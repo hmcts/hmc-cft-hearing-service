@@ -19,8 +19,6 @@ public class HearingActualsManagementControllerTest {
 
     public static final long HEARING_ID = 2000000000L;
 
-    private static final String CLIENT_S2S_TOKEN = "xui_webapp";
-
     @Mock
     private HearingActual hearingActual;
 
@@ -40,10 +38,9 @@ public class HearingActualsManagementControllerTest {
 
     @Test
     void shouldUpdateHearingActuals() {
-        controller.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
+        controller.updateHearingActuals(HEARING_ID, hearingActual);
 
-        verify(hearingActualsService, times(1)).updateHearingActuals(HEARING_ID,
-                                                                     CLIENT_S2S_TOKEN,hearingActual);
+        verify(hearingActualsService, times(1)).updateHearingActuals(HEARING_ID, hearingActual);
     }
 
 }
