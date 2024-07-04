@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.PartiesNotifiedCommonGeneration;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedBadRequestException;
@@ -63,6 +64,9 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
     @Mock
     HearingResponseRepository hearingResponseRepository;
 
+    @Mock
+    SecurityUtils securityUtils;
+
     private HearingIdValidator hearingIdValidator;
 
     @Mock
@@ -78,7 +82,8 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
         partiesNotifiedService =
             new PartiesNotifiedServiceImpl(hearingResponseRepository,
                                            hearingIdValidator,
-                                           hearingStatusAuditService);
+                                           hearingStatusAuditService,
+                                           securityUtils);
     }
 
     @Nested

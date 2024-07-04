@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingActualsResponseMapper;
@@ -75,6 +76,9 @@ class HearingActualsServiceTest {
     @Mock
     private HearingStatusAuditService hearingStatusAuditService;
 
+    @Mock
+    private SecurityUtils securityUtils;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -91,7 +95,8 @@ class HearingActualsServiceTest {
                 hearingActualsMapper,
                 hearingIdValidator,
                 hearingActualsValidator,
-                hearingStatusAuditService
+                hearingStatusAuditService,
+                securityUtils
             );
         hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
     }
@@ -153,7 +158,8 @@ class HearingActualsServiceTest {
                     hearingActualsMapper,
                     hearingIdValidator,
                     hearingActualsValidator,
-                    hearingStatusAuditService
+                    hearingStatusAuditService,
+                    securityUtils
                 );
             hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
         }

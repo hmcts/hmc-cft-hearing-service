@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingActualsResponseMapper;
@@ -41,6 +42,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     private final HearingIdValidator hearingIdValidator;
     private final HearingActualsValidator hearingActualsValidator;
     private final HearingStatusAuditService hearingStatusAuditService;
+    private final SecurityUtils securityUtils;
 
     @Autowired
     public HearingActualsServiceImpl(HearingRepository hearingRepository,
@@ -50,7 +52,8 @@ public class HearingActualsServiceImpl implements HearingActualsService {
                                      HearingActualsMapper hearingActualsMapper,
                                      HearingIdValidator hearingIdValidator,
                                      HearingActualsValidator hearingActualsValidator,
-                                     HearingStatusAuditService hearingStatusAuditService) {
+                                     HearingStatusAuditService hearingStatusAuditService,
+                                     SecurityUtils securityUtils) {
         this.hearingRepository = hearingRepository;
         this.hearingResponseRepository = hearingResponseRepository;
         this.actualHearingRepository = actualHearingRepository;
@@ -59,6 +62,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         this.hearingActualsMapper = hearingActualsMapper;
         this.hearingActualsValidator = hearingActualsValidator;
         this.hearingStatusAuditService = hearingStatusAuditService;
+        this.securityUtils = securityUtils;
     }
 
     @Override
@@ -84,7 +88,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         if (latestVersionHearingResponse.isEmpty()) {
             throw new BadRequestException(String.format(HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND, hearingId));
         }
-        upsertNewHearingActuals(latestVersionHearingResponse.get(), request, clientS2SToken, hearing);
+        upsertNewHearingActuals(latestVersionHearingResponse.get(), request, getServiceName(clientS2SToken), hearing);
     }
 
     private void upsertNewHearingActuals(HearingResponseEntity latestVersionHearingResponse, HearingActual request,
@@ -95,7 +99,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         actualHearing.setHearingResponse(latestVersionHearingResponse);
         actualHearingRepository.save(actualHearing);
         hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
-                                                         PUT_HEARING_ACTUALS_COMPLETION, null, clientS2SToken,
+                                                         PUT_HEARING_ACTUALS_COMPLETION, null, getServiceName(clientS2SToken),
                                                          HMC, null);
     }
 
@@ -114,5 +118,9 @@ public class HearingActualsServiceImpl implements HearingActualsService {
             throw new HearingNotFoundException(hearingId, HEARING_ACTUALS_ID_NOT_FOUND);
         }
         return hearingEntityOptional.get();
+    }
+
+    private String getServiceName(String clientS2SToken) {
+        return securityUtils.getServiceNameFromS2SToken(clientS2SToken);
     }
 }
