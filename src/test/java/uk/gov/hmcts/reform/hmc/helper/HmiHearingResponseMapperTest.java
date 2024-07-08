@@ -63,6 +63,7 @@ import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_R
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.LISTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SUBMITTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus.CASE_CLOSED;
 
 class HmiHearingResponseMapperTest {
 
@@ -739,6 +740,24 @@ class HmiHearingResponseMapperTest {
                 generateHearingEntity("CANCELLATION_SUBMITTED", 1)
             );
             assertEquals(response.getStatus(), CANCELLED.name());
+        }
+
+        @Test
+        void shouldStoreCorrectRequestVersionWhenAboutToCancel() {
+            HearingResponse hearingResponse = generateHmiHearing("random", HearingCode.CLOSED, 1,
+                                                                 "Draft");
+
+            uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus hearingStatus =
+                new uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus();
+            hearingStatus.setCode(CASE_CLOSED.name());
+            hearingStatus.setDescription("Case Closed");
+            hearingResponse.getHearing().setHearingStatus(hearingStatus);
+
+            HearingEntity hearingEntity = generateHearingEntity("CANCELLATION_SUBMITTED", 11);
+            HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(hearingResponse, hearingEntity);
+
+            assertEquals(response.getStatus(), CANCELLED.name());
+            assertEquals(11, response.getLatestHearingResponse().get().getRequestVersion());
         }
 
         @Test
