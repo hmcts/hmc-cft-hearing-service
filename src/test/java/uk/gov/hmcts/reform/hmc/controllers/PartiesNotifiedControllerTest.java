@@ -21,6 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.PartiesNotifiedCommonGeneration;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponse;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
@@ -39,6 +40,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,11 +66,16 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
     @MockBean
     private AccessControlService accessControlService;
 
+    @MockBean
+    SecurityUtils securityUtils;
+
     private static final String CLIENT_S2S_TOKEN = "xui_webapp";
 
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        doReturn("xui_webapp").when(securityUtils)
+            .getServiceNameFromS2SToken(any());
     }
 
     @Nested
@@ -89,7 +96,8 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
             );
 
             PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService,
-                                                                                 accessControlService);
+                                                                                 accessControlService,
+                                                                                 securityUtils);
             controller.putPartiesNotified(partiesNotified,CLIENT_S2S_TOKEN, 1L, 10,
                                           LocalDateTime.now());
             verify(partiesNotifiedService, times(1))
@@ -109,7 +117,8 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
             when(partiesNotifiedService.getPartiesNotified(hearingId)).thenReturn(responsesExpected);
 
             PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService,
-                                                                                 accessControlService);
+                                                                                 accessControlService,
+                                                                                 securityUtils);
             PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
             assertTrue(responses.getResponses().isEmpty());
             verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
@@ -125,7 +134,8 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
             when(partiesNotifiedService.getPartiesNotified(hearingId)).thenReturn(responsesExpected);
 
             PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService,
-                                                                                 accessControlService);
+                                                                                 accessControlService,
+                                                                                 securityUtils);
             PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
             assertFalse(responses.getResponses().isEmpty());
             verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
@@ -135,7 +145,8 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
         void shouldReturn400_when_null_hearingId() {
             final Long hearingId = null;
             PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService,
-                                                                                 accessControlService);
+                                                                                 accessControlService,
+                                                                                 securityUtils);
             PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
             assertNull(responses);
             verify(partiesNotifiedService, times(1)).getPartiesNotified(any());
@@ -145,7 +156,8 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
         void shouldReturn400_when_invalid_hearingId() {
             final Long hearingId = 1000000099L;
             PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService,
-                                                                                 accessControlService);
+                                                                                 accessControlService,
+                                                                                 securityUtils);
             PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
 
             assertNull(responses);
@@ -156,7 +168,8 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
         void shouldReturn404_when_hearingIdNotFound() {
             final Long hearingId = 2000000099L;
             PartiesNotifiedController controller = new PartiesNotifiedController(partiesNotifiedService,
-                                                                                 accessControlService);
+                                                                                 accessControlService,
+                                                                                 securityUtils);
             PartiesNotifiedResponses responses = controller.getPartiesNotified(hearingId);
             assertNull(responses);
             verify(partiesNotifiedService, times(1)).getPartiesNotified(any());

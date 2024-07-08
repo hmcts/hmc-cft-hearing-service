@@ -904,6 +904,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
         }
     }
 
-    private final String serviceJwtXuiWeb = "client_token";
+    private final String serviceJwtXuiWeb = generateDummyS2SToken("ccd_definition");
 
 }

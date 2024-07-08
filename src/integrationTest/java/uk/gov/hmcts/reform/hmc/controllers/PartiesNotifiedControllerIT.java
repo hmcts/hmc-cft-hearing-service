@@ -84,7 +84,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             stubRoleAssignments();
         }
 
-        private final String serviceJwtXuiWeb = "client_token";
+        private final String serviceJwtXuiWeb =  generateDummyS2SToken("ccd_definition");
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})

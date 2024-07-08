@@ -6,10 +6,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingActualsService;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -33,9 +36,15 @@ public class HearingActualsManagementControllerTest {
     @InjectMocks
     private HearingActualsManagementController controller;
 
+    @Mock
+    SecurityUtils securityUtils;
+
     @BeforeEach
     public void setUp() {
-        controller = new HearingActualsManagementController(hearingActualsService, accessControlService);
+        controller = new HearingActualsManagementController(hearingActualsService, accessControlService,
+                                                            securityUtils);
+        doReturn("xui_webapp").when(securityUtils)
+            .getServiceNameFromS2SToken(any());
     }
 
     @Test
