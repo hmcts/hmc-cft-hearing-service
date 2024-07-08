@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.UnNotifiedHearingService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -42,6 +43,8 @@ class UnNotifiedHearingsControllerTest {
     @MockBean
     private UnNotifiedHearingService unNotifiedHearingService;
 
+    List<String> hearingStatus  = List.of("LISTED");
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -50,15 +53,15 @@ class UnNotifiedHearingsControllerTest {
     @Test
     void shouldReturn200_whenRequestIdIsValid() {
         UnNotifiedHearingsController controller = new UnNotifiedHearingsController(unNotifiedHearingService);
-        controller.getUnNotifiedHearings("TEST", LocalDateTime.now(), LocalDateTime.now());
-        verify(unNotifiedHearingService, times(1)).getUnNotifiedHearings(any(), any(),any());
+        controller.getUnNotifiedHearings("TEST", LocalDateTime.now(), LocalDateTime.now(), hearingStatus);
+        verify(unNotifiedHearingService, times(1)).getUnNotifiedHearings(any(), any(),any(), any());
     }
 
     @Test
     void shouldReturn200_whenHearingStartDateToNotPresent() {
         UnNotifiedHearingsController controller = new UnNotifiedHearingsController(unNotifiedHearingService);
-        controller.getUnNotifiedHearings("TEST", LocalDateTime.now(), null);
-        verify(unNotifiedHearingService, times(1)).getUnNotifiedHearings(any(), any(),any());
+        controller.getUnNotifiedHearings("TEST", LocalDateTime.now(), null, hearingStatus);
+        verify(unNotifiedHearingService, times(1)).getUnNotifiedHearings(any(), any(),any(), any());
     }
 
 }
