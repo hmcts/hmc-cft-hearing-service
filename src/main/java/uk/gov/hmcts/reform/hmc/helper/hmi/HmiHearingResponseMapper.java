@@ -307,12 +307,11 @@ public class HmiHearingResponseMapper {
             hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode());
             if (hearingResponseEntity.getListingStatus().equals(ListAssistCaseStatus.CASE_CLOSED.name())) {
                 hearingResponseEntity.setRequestVersion(hearing.getLatestCaseHearingRequest().getVersionNumber());
-             if (hearingResponseEntity.getListingStatus().equals(ListAssistCaseStatus.CASE_CLOSED.name())) {
-                hearingResponseEntity.setRequestVersion(hearing.getLatestCaseHearingRequest().getVersionNumber());
-            } 
-            else 
-            {
-              hearingResponseEntity.setRequestVersion(hearingResponse.getHearing().getHearingCaseVersionId());
+                if (hearingResponseEntity.getListingStatus().equals(ListAssistCaseStatus.CASE_CLOSED.name())) {
+                    hearingResponseEntity.setRequestVersion(hearing.getLatestCaseHearingRequest().getVersionNumber());
+                } else {
+                    hearingResponseEntity.setRequestVersion(hearingResponse.getHearing().getHearingCaseVersionId());
+                }
             }
         }
 
