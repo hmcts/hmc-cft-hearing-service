@@ -99,7 +99,8 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         actualHearing.setHearingResponse(latestVersionHearingResponse);
         actualHearingRepository.save(actualHearing);
         hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
-                                                         PUT_HEARING_ACTUALS_COMPLETION, null, getServiceName(clientS2SToken),
+                                                         PUT_HEARING_ACTUALS_COMPLETION, null,
+                                                         getServiceName(clientS2SToken),
                                                          HMC, null);
     }
 
