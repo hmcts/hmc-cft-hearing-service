@@ -56,7 +56,7 @@ public class HearingActualsManagementController {
                                      @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
                                      @RequestBody @Valid HearingActual request) {
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
-        hearingActualsService.updateHearingActuals(hearingId,getServiceName(clientS2SToken), request);
+        hearingActualsService.updateHearingActuals(hearingId, getServiceName(clientS2SToken), request);
     }
 
     private String getServiceName(String clientS2SToken) {

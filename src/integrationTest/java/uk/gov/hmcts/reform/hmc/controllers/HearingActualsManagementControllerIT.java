@@ -854,7 +854,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 "$['actualHearingDays'][0]['notRequired']"
             );
             mockMvc.perform(put(URL + "/2000001000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .header(SERVICE_AUTHORIZATION,  serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(preparedJson))
                 .andExpect(status().is(200))
@@ -905,5 +905,4 @@ class HearingActualsManagementControllerIT extends BaseTest {
     }
 
     private final String serviceJwtXuiWeb = generateDummyS2SToken("ccd_definition");
-
 }

@@ -88,7 +88,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         if (latestVersionHearingResponse.isEmpty()) {
             throw new BadRequestException(String.format(HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND, hearingId));
         }
-        upsertNewHearingActuals(latestVersionHearingResponse.get(), request, getServiceName(clientS2SToken), hearing);
+        upsertNewHearingActuals(latestVersionHearingResponse.get(), request, clientS2SToken, hearing);
     }
 
     private void upsertNewHearingActuals(HearingResponseEntity latestVersionHearingResponse, HearingActual request,
@@ -100,8 +100,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         actualHearingRepository.save(actualHearing);
         hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
                                                          PUT_HEARING_ACTUALS_COMPLETION, null,
-                                                         getServiceName(clientS2SToken),
-                                                         HMC, null);
+                                                         clientS2SToken, HMC, null);
     }
 
     private void validateRequestPayload(HearingActual request, HearingEntity hearing) {
@@ -121,7 +120,4 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         return hearingEntityOptional.get();
     }
 
-    private String getServiceName(String clientS2SToken) {
-        return securityUtils.getServiceNameFromS2SToken(clientS2SToken);
-    }
 }

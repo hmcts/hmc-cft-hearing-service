@@ -85,4 +85,5 @@ public class PartiesNotifiedController {
     private String getServiceName(String clientS2SToken) {
         return securityUtils.getServiceNameFromS2SToken(clientS2SToken);
     }
+
 }

@@ -64,8 +64,8 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
             hearingResponseRepository.save(hearingResponseEntity);
             HearingEntity hearingEntity = hearingResponseEntity.getHearing();
             hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
-                                                             PUT_PARTIES_NOTIFIED, null, getServiceName(clientS2SToken),
-                                                             HMC, null);
+                                                             PUT_PARTIES_NOTIFIED, null,
+                                                            clientS2SToken, HMC, null);
         }
     }
 
@@ -102,7 +102,4 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
         return responses;
     }
 
-    private String getServiceName(String clientS2SToken) {
-        return securityUtils.getServiceNameFromS2SToken(clientS2SToken);
-    }
 }
