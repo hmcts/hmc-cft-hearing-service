@@ -90,7 +90,7 @@ env.MCA_API_BASE_URL = "https://aac-manage-case-assignment-${env.BRANCH_NAME}.pr
 // Other env variables needed for BEFTA.
 env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
-//env.BEFTA_S2S_CLIENT_ID = "xui_webapp"
+env.BEFTA_S2S_CLIENT_ID = "xui_webapp"
 env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID = "ccd_gateway"
 env.CCD_API_GATEWAY_OAUTH2_REDIRECT_URL = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
 
