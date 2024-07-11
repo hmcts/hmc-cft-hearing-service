@@ -306,7 +306,7 @@ public class HmiHearingResponseMapper {
             && hearingResponse.getHearing().getHearingStatus().getCode() != null) {
             hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode());
             if (hearingResponseEntity.getListingStatus().equals(ListAssistCaseStatus.CASE_CLOSED.name())) {
-                hearingResponseEntity.setRequestVersion(hearing.getLatestCaseHearingRequest().getVersionNumber());
+                hearingResponseEntity.setRequestVersion(hearing.getLatestRequestVersion());
             }
         }
 

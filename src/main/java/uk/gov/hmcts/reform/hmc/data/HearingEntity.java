@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 import javax.persistence.CascadeType;
@@ -147,16 +145,12 @@ public class HearingEntity extends BaseEntity implements Serializable {
      * Gets the *latest* hearing response - note that this will not necessarily be associated with the latest request.
      */
     public Optional<HearingResponseEntity> getLatestHearingResponse() {
-        return hasHearingResponses() && getHearingResponses() != null
-            ? Optional.ofNullable(getHearingResponses().stream()
-                 .filter(Objects::nonNull) // Filter out any null HearingResponseEntity
-                 .filter(entity -> entity.getRequestVersion() != null)
-                 .collect(groupingBy(HearingResponseEntity::getRequestVersion, TreeMap::new, toList()))
-                 .lastEntry())
-            .map(Map.Entry::getValue)
-            .flatMap(list -> list.stream()
-                .filter(Objects::nonNull) // Filter out any null HearingResponseEntity in the grouped list
-                .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp)))
+        return hasHearingResponses() ? getHearingResponses().stream()
+            .collect(groupingBy(HearingResponseEntity::getRequestVersion, TreeMap::new, toList()))
+            .lastEntry()
+            .getValue()
+            .stream()
+            .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp))
             : Optional.empty();
     }
 

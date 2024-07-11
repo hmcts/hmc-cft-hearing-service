@@ -420,7 +420,7 @@ class HmiHearingResponseMapperTest {
 
     private static void assertHearingDayDetails(HearingResponseEntity hearingResponseEntity,
                                                 List<HearingSession> hearingSessions) {
-        hearingSessions.stream().forEach((hearingSession) -> {
+        hearingSessions.stream().forEach(hearingSession -> {
             assertThat(
                 hearingResponseEntity
                     .getHearingDayDetails().stream()
@@ -435,7 +435,7 @@ class HmiHearingResponseMapperTest {
             );
         });
         hearingResponseEntity.getHearingDayDetails().stream()
-            .forEach((hearingDayDetailsEntity) -> {
+            .forEach(hearingDayDetailsEntity -> {
                 assertThat(hearingDayDetailsEntity.getRoomId(), is("multiDayRoomName"));
                 assertThat(hearingDayDetailsEntity.getVenueId(), is(nullValue()));
                 assertThat(hearingDayDetailsEntity
@@ -757,7 +757,7 @@ class HmiHearingResponseMapperTest {
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(hearingResponse, hearingEntity);
 
             assertEquals(response.getStatus(), CANCELLED.name());
-            assertEquals(11, response.getLatestHearingResponse().get().getRequestVersion());
+            assertEquals(11, response.getLatestRequestVersion());
         }
 
         @Test

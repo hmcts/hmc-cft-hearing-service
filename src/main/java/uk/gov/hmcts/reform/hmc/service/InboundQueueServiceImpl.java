@@ -115,7 +115,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             HearingResponse hearingResponse = objectMapper.treeToValue(message, HearingResponse.class);
             Set<ConstraintViolation<HearingResponse>> violations = validator.validate(hearingResponse);
             if (violations.isEmpty()) {
-                log.debug("Successfully converted message to HearingResponseType " + hearingResponse);
+                // TODO: revert to debug log message
+                log.info("Successfully converted message to HearingResponseType " + hearingResponse);
                 updateHearingAndStatus(hearingId, hearingResponse);
             } else {
                 log.info("Total violations found: " + violations.size());
@@ -135,7 +136,10 @@ public class InboundQueueServiceImpl implements InboundQueueService {
 
     private void updateHearingAndStatus(Long hearingId, ErrorDetails errorDetails) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
-        if (hearingResult.isPresent()) {
+        log.info("Look for Hearing id: {}", hearingId);
+        if (!hearingResult.isPresent()) {
+            log.info("Not present?! Hearing id: {}", hearingId);
+        } else {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiHearingErrorToEntity(
                 errorDetails,
                 hearingResult.get()
@@ -157,7 +161,9 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     @Transactional
     private void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
-        if (hearingResult.isPresent()) {
+        if (!hearingResult.isPresent()) {
+            log.info("Not present?! Hearing id: {}", hearingId);
+        } else {
             HearingEntity hearingToSave = null;
             hearingToSave = hmiHearingResponseMapper.mapHmiHearingToEntity(
                 hearingResponse,
@@ -181,7 +187,9 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         log.debug(MessageType.LA_SYNC_HEARING_RESPONSE + " received for hearing id {} ,{} ", hearingId,
                   syncResponse.toString());
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
-        if (hearingResult.isPresent()) {
+        if (!hearingResult.isPresent()) {
+            log.info("Not present?! Hearing id: {}", hearingId);
+        } else {
             HearingEntity hearingToSave = hmiHearingResponseMapper.mapHmiSyncResponseToEntity(
                 syncResponse,
                 hearingResult.get()
