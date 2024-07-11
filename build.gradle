@@ -51,6 +51,9 @@ sourceSets {
       srcDir file('src/functionalTest/java')
     }
     resources.srcDir file('src/functionalTest/resources')
+    resources {
+            srcDir 'src/functionalTest/resources'
+        }
   }
 
   contractTest {
