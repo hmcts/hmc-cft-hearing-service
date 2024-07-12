@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
-import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingActualsResponseMapper;
@@ -22,7 +21,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
@@ -71,13 +69,7 @@ class HearingActualsServiceTest {
     private GetHearingActualsResponseMapper getHearingActualsResponseMapper;
 
     @Mock
-    private HearingResponseRepository hearingResponseRepository;
-
-    @Mock
     private HearingStatusAuditService hearingStatusAuditService;
-
-    @Mock
-    private SecurityUtils securityUtils;
 
     @BeforeEach
     public void setUp() {
@@ -89,14 +81,12 @@ class HearingActualsServiceTest {
         hearingActualsService =
             new HearingActualsServiceImpl(
                 hearingRepository,
-                hearingResponseRepository,
                 actualHearingRepository,
                 getHearingActualsResponseMapper,
                 hearingActualsMapper,
                 hearingIdValidator,
                 hearingActualsValidator,
-                hearingStatusAuditService,
-                securityUtils
+                hearingStatusAuditService
             );
         hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
     }
@@ -152,14 +142,12 @@ class HearingActualsServiceTest {
             hearingActualsService =
                 new HearingActualsServiceImpl(
                     hearingRepository,
-                    hearingResponseRepository,
                     actualHearingRepository,
                     getHearingActualsResponseMapper,
                     hearingActualsMapper,
                     hearingIdValidator,
                     hearingActualsValidator,
-                    hearingStatusAuditService,
-                    securityUtils
+                    hearingStatusAuditService
                 );
             hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
         }
@@ -192,8 +180,6 @@ class HearingActualsServiceTest {
 
         @Test
         void shouldThrowExceptionWhenInvalidHearingId() {
-            // doThrow(new BadRequestException(INVALID_HEARING_ID_DETAILS)).when(hearingIdValidatorMock)
-            //      .isValidFormat(anyString());
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 hearingActualsService.updateHearingActuals(INVALID_HEARING_ID, CLIENT_S2S_TOKEN,
                                                            TestingUtil.hearingActual());

@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
-import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingActualsResponseMapper;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
@@ -35,34 +33,28 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_
 @Slf4j
 public class HearingActualsServiceImpl implements HearingActualsService {
     private final HearingRepository hearingRepository;
-    private final HearingResponseRepository hearingResponseRepository;
     private final ActualHearingRepository actualHearingRepository;
     private final HearingActualsMapper hearingActualsMapper;
     private final GetHearingActualsResponseMapper getHearingActualsResponseMapper;
     private final HearingIdValidator hearingIdValidator;
     private final HearingActualsValidator hearingActualsValidator;
     private final HearingStatusAuditService hearingStatusAuditService;
-    private final SecurityUtils securityUtils;
 
     @Autowired
     public HearingActualsServiceImpl(HearingRepository hearingRepository,
-                                     HearingResponseRepository hearingResponseRepository,
                                      ActualHearingRepository actualHearingRepository,
                                      GetHearingActualsResponseMapper getHearingActualsResponseMapper,
                                      HearingActualsMapper hearingActualsMapper,
                                      HearingIdValidator hearingIdValidator,
                                      HearingActualsValidator hearingActualsValidator,
-                                     HearingStatusAuditService hearingStatusAuditService,
-                                     SecurityUtils securityUtils) {
+                                     HearingStatusAuditService hearingStatusAuditService) {
         this.hearingRepository = hearingRepository;
-        this.hearingResponseRepository = hearingResponseRepository;
         this.actualHearingRepository = actualHearingRepository;
         this.getHearingActualsResponseMapper = getHearingActualsResponseMapper;
         this.hearingIdValidator = hearingIdValidator;
         this.hearingActualsMapper = hearingActualsMapper;
         this.hearingActualsValidator = hearingActualsValidator;
         this.hearingStatusAuditService = hearingStatusAuditService;
-        this.securityUtils = securityUtils;
     }
 
     @Override

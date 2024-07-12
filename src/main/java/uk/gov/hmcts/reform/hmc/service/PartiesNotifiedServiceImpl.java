@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
-import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedBadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
@@ -34,17 +33,14 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
     private final HearingResponseRepository hearingResponseRepository;
     private final HearingIdValidator hearingIdValidator;
     private final HearingStatusAuditService hearingStatusAuditService;
-    private final SecurityUtils securityUtils;
 
     @Autowired
     public PartiesNotifiedServiceImpl(HearingResponseRepository hearingResponseRepository,
                                       HearingIdValidator hearingIdValidator,
-                                      HearingStatusAuditService hearingStatusAuditService,
-                                      SecurityUtils securityUtils) {
+                                      HearingStatusAuditService hearingStatusAuditService) {
         this.hearingResponseRepository = hearingResponseRepository;
         this.hearingIdValidator = hearingIdValidator;
         this.hearingStatusAuditService = hearingStatusAuditService;
-        this.securityUtils = securityUtils;
     }
 
     @Override

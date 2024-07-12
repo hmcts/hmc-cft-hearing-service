@@ -12,7 +12,8 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Component
@@ -67,8 +68,7 @@ public class LinkedHearingStatusAuditServiceImpl implements  LinkedHearingStatus
         List<Long> hearingIdsLong = new ArrayList<>();
         hearingEntities.stream()
             .forEach(hearingEntity -> hearingIdsLong.add(hearingEntity.getId()));
-        return hearingIdsLong.stream().map(Object::toString)
-            .collect(Collectors.toList());
+        return hearingIdsLong.stream().map(Object::toString).toList();
     }
 
     private void saveLinkedHearingStatusAudit(LinkedHearingStatusAuditEntity linkedHearingStatusAuditEntity) {
