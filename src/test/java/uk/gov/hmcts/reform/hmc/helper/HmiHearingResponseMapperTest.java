@@ -747,11 +747,11 @@ class HmiHearingResponseMapperTest {
             HearingResponse hearingResponse = generateHmiHearing("random", HearingCode.CLOSED, 1,
                                                                  "Draft");
 
-            uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus hearingStatus =
-                new uk.gov.hmcts.reform.hmc.client.hmi.HearingStatus();
-            hearingStatus.setCode("8");
-            hearingStatus.setDescription(CASE_CLOSED.label);
-            hearingResponse.getHearing().setHearingStatus(hearingStatus);
+            uk.gov.hmcts.reform.hmc.client.hmi.HearingCaseStatus hearingCaseStatus =
+                new uk.gov.hmcts.reform.hmc.client.hmi.HearingCaseStatus();
+            hearingCaseStatus.setCode("8");
+            hearingCaseStatus.setDescription(CASE_CLOSED.label);
+            hearingResponse.getHearing().setHearingCaseStatus(hearingCaseStatus);
 
             HearingEntity hearingEntity = generateHearingEntity("CANCELLATION_SUBMITTED", 11);
             HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(hearingResponse, hearingEntity);
