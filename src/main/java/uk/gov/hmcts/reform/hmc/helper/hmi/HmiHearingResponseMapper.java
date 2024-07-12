@@ -306,11 +306,11 @@ public class HmiHearingResponseMapper {
             && hearingResponse.getHearing().getHearingStatus().getCode() != null) {
             hearingResponseEntity.setListingStatus(hearingResponse.getHearing().getHearingStatus().getCode());
         }
-        if (hearingResponse.getHearing().getHearingCaseStatus() != null
-            && hearingResponse.getHearing().getHearingCaseStatus().getDescription() != null
-            && hearingResponse.getHearing().getHearingCaseStatus().getDescription()
-            .equals(ListAssistCaseStatus.CASE_CLOSED.label)) {
-            hearingResponseEntity.setRequestVersion(hearing.getLatestRequestVersion());
+        if (hearingResponse.getHearing().getHearingCaseStatus() != null) {
+            HearingCode laStatus = HearingCode.getByNumber(hearingResponse.getHearing().getHearingCaseStatus().getCode());
+            if (laStatus.name().equals(HearingStatus.CLOSED.name())) {
+                hearingResponseEntity.setRequestVersion(hearing.getLatestRequestVersion());
+            }
         }
 
         hearingResponseEntity.setCancellationReasonType(hearingResponse.getHearing().getHearingCancellationReason());
