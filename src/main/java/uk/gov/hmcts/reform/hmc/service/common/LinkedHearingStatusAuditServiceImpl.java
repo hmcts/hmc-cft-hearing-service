@@ -13,8 +13,6 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @Service
 @Component
 @Slf4j
