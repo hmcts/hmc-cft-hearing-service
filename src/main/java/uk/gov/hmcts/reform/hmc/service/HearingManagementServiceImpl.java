@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.hmc.service;
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
@@ -101,6 +103,8 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_ORGANIS
 @Service
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HearingManagementServiceImpl.class);
 
     private final DataStoreRepository dataStoreRepository;
     private final RoleAssignmentService roleAssignmentService;
@@ -223,6 +227,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         HearingResponse hearingResponse = insertHearingRequest(createHearingRequest, reasonableMatch, facilitiesMatch,
                                                                deploymentId, clientS2SToken);
+
+
+        logHearingResponse(hearingResponse);
+
         sendRequestToHmiAndQueue(hearingResponse.getHearingRequestId(), REQUEST_HEARING, createHearingRequest,
                                     getCaseDetails(hearingResponse.getHearingRequestId(), createHearingRequest),
                                     listing, deploymentId
@@ -265,9 +273,20 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                                          UPDATE_HEARING_REQUEST,null,
                                                          clientS2SToken, HMC, null);
 
+
+        logHearingResponse(saveHearingResponseDetails);
+
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
             getCaseDetails(saveHearingResponseDetails.getHearingRequestId(), hearingRequest), listing, deploymentId);
         return saveHearingResponseDetails;
+    }
+
+    private void logHearingResponse(HearingResponse hearingResponse) {
+        LOGGER.info("HearingResponse: hearingId<{}> timeStamp<{}> status<{}> versionNumber<{}>",
+                     hearingResponse.getHearingRequestId(),
+                     hearingResponse.getTimeStamp(),
+                     hearingResponse.getStatus(),
+                     hearingResponse.getVersionNumber());
     }
 
     private void sendRequestToHmiAndQueue(Long hearingId, String messageType, HearingRequest hearingRequest,
@@ -606,5 +625,4 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         var jsonNode = objectMapperService.convertObjectToJsonNode(hmiDeleteHearingRequest);
         messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType, deploymentId);
     }
-
 }
