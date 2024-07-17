@@ -1474,9 +1474,7 @@ public class TestingUtil {
         return linkedHearingStatusAuditEntity;
     }
 
-    private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
-        .modules(new Jdk8Module())
-        .build();
+    private static final ObjectMapper OBJECT_MAPPER =new ObjectMapper().findAndRegisterModules();
 
 }
 
