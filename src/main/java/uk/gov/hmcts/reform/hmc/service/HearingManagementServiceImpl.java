@@ -254,14 +254,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         }
         String statusToUpdate = getNextPutHearingStatus(existingHearing.getStatus());
         EntitiesMapperObject entities = entitiesMapper.getEntities(hearingRequest.getPartyDetails());
-        Listing listing = getListing(hearingRequest, entities);
         boolean reasonableMatch = listingMapper.checkRoomAttributesByReasonableAdjustmentCode(entities.getEntities());
         List<String> facilitiesRoomAttributes =
             listingMapper.getRoomAttributesByAttributeCode(hearingRequest.getHearingDetails().getFacilitiesRequired());
         int size = (hearingRequest.getHearingDetails().getFacilitiesRequired() == null)
             ? 0 : hearingRequest.getHearingDetails().getFacilitiesRequired().size();
         boolean facilitiesMatch = (facilitiesRoomAttributes.size() == size);
-
 
         HearingEntity hearingEntity = hearingMapper
             .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate,
@@ -275,7 +273,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
 
         logHearingResponse(saveHearingResponseDetails);
-
+        Listing listing = getListing(hearingRequest, entities);
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
             getCaseDetails(saveHearingResponseDetails.getHearingRequestId(), hearingRequest), listing, deploymentId);
         return saveHearingResponseDetails;
