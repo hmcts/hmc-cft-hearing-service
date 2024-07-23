@@ -11,9 +11,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.convertDateTime;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -153,7 +153,7 @@ class HearingResponseRepositoryIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void testGetUnNotifiedHearingsWithOutStartDateToForCancelled() {
         final List<Long> expectedHearingIds = Arrays.asList(2100000005L);
-        String dateStr = "2024-12-10 11:00:00";
+        String dateStr = "2021-08-10 08:00:00";
         LocalDateTime startFrom = convertDateTime(dateStr);
         List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
             "AAA2",
