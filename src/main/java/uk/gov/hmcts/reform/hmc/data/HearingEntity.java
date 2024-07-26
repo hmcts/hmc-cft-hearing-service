@@ -157,9 +157,7 @@ public class HearingEntity extends BaseEntity implements Serializable {
     public String getDerivedHearingStatus() {
         String hearingStatus = "";
         switch (this.status) {
-            case "LISTED":
-            case "UPDATE_REQUESTED":
-            case "UPDATE_SUBMITTED":
+            case "LISTED","UPDATE_REQUESTED",  "UPDATE_SUBMITTED":
                 hearingStatus = this.status;
                 Optional<HearingResponseEntity> hearingResponse = getLatestHearingResponse();
                 if (hearingResponse.isPresent()) {
@@ -192,17 +190,18 @@ public class HearingEntity extends BaseEntity implements Serializable {
     public HearingEntity updateLastGoodStatus() {
         HearingStatus currentStatus = this.getStatus() != null
             ? HearingStatus.valueOf(this.getStatus()) : null;
-        HearingStatus lastGoodStatus = this.getLastGoodStatus() != null
+        HearingStatus lastGoodStatusLocal = this.getLastGoodStatus() != null
             ? HearingStatus.valueOf(this.getLastGoodStatus()) : null;
 
-        if (lastGoodStatus != null && lastGoodStatus != currentStatus) {
-            if (HearingStatus.isFinalStatus(lastGoodStatus)) {
+        if (lastGoodStatusLocal != null && lastGoodStatusLocal != currentStatus) {
+            if (HearingStatus.isFinalStatus(lastGoodStatusLocal)) {
                 throw new BadRequestException("Status is already in a Final State: " + currentStatus);
-            } else if (HearingStatus.shouldUpdateLastGoodStatus(lastGoodStatus, currentStatus)) {
+            } else if (HearingStatus.shouldUpdateLastGoodStatus(lastGoodStatusLocal, currentStatus)) {
                 this.setLastGoodStatus(String.valueOf(currentStatus));
                 return this;
             }
-        } else if (lastGoodStatus == null && HearingStatus.shouldUpdateLastGoodStatus(null, currentStatus)) {
+        } else if (lastGoodStatusLocal == null
+            && HearingStatus.shouldUpdateLastGoodStatus(null, currentStatus)) {
             this.setLastGoodStatus(String.valueOf(currentStatus));
             return this;
         }

@@ -27,7 +27,7 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
 
     @Override
     public void saveAuditTriageDetailsWithCreatedDate(HearingEntity hearingEntity,
-                                       String hearingEvent,String httpStatus, String source, String target,
+                                       String hearingEvent, String httpStatus, String source, String target,
                                        JsonNode errorDetails) {
         HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetailsWithCreatedDate(hearingEntity,
                                                                                          hearingEvent,httpStatus,

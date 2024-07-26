@@ -106,7 +106,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 hearingEntity.setStatus(EXCEPTION.name());
                 hearingEntity.setErrorDescription(exception.getMessage());
                 hearingRepository.save(hearingEntity);
-                log.error("Hearing id: " +  hearingId + " updated to status Exception");
+                log.error("Hearing id: {} updated to status Exception", hearingId);
                 JsonNode errorDescription = objectMapper.convertValue(exception.getMessage(), JsonNode.class);
                 hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                                  LA_RESPONSE, LA_FAILURE_STATUS,

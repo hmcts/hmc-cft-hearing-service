@@ -268,8 +268,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
 
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                         UPDATE_HEARING_REQUEST,null,
-                                                         clientS2SToken, HMC, null);
+                                                                        UPDATE_HEARING_REQUEST,
+                                                                        String.valueOf(HttpStatus.OK.value()),
+                                                                        clientS2SToken, HMC, null);
 
         Listing listing = getListing(hearingRequest, entities);
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
@@ -296,8 +297,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                         DELETE_HEARING_REQUEST, null, clientS2SToken,
-                                                         HMC, null);
+                                                         DELETE_HEARING_REQUEST, String.valueOf(HttpStatus.OK.value()),
+                                                         clientS2SToken, HMC, null);
         sendRequestToQueue(hearingId, DELETE_HEARING,existingHearing.getDeploymentId());
         return saveHearingResponseDetails;
     }
@@ -339,7 +340,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken);
         HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                         POST_HEARING_ACTUALS_COMPLETION, null,
+                                                         POST_HEARING_ACTUALS_COMPLETION,
+                                                         String.valueOf(HttpStatus.OK.value()),
                                                          clientS2SToken, HMC, null);
         messageSenderToTopicConfiguration
             .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
@@ -365,9 +367,11 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             : String.format("requestVersion set to <%d>", updatedRequestVersion);
 
         try {
-            JsonNode otherInfo = new ObjectMapper().readTree("{\"detailMsg\":" + " \"" + versionMessage + "\"}");
+            JsonNode otherInfo = new ObjectMapper().readTree("{\"detailMsg\":" + " \""
+                                                                 + versionMessage + "\"}");
             hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                             REQUEST_VERSION_UPDATE, null,
+                                                             REQUEST_VERSION_UPDATE,
+                                                             String.valueOf(HttpStatus.OK.value()),
                                                              clientS2SToken, HMC, null, otherInfo);
         } catch (JsonProcessingException e) {
             log.error("Unable to audit requestVersion update: {}", versionMessage);
@@ -445,8 +449,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         savePartyRelationshipDetails(createHearingRequest, savedEntity);
         hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(savedEntity,
-                                                         CREATE_HEARING_REQUEST, null, clientS2SToken,
-                                                         HMC, null);
+                                                         CREATE_HEARING_REQUEST, String.valueOf(HttpStatus.OK.value()),
+                                                         clientS2SToken, HMC, null);
         return getSaveHearingResponseDetails(savedEntity);
     }
 
@@ -467,16 +471,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private HmiCaseDetails getCaseDetails(Long hearingId, HearingRequest hearingRequest) {
         Boolean isLinkedFlag = hearingRequest.getHearingDetails().getHearingIsLinkedFlag();
-        int versionNumber = 1;
-        if (hearingRequest instanceof UpdateHearingRequest) {
-            UpdateHearingRequest request = (UpdateHearingRequest) hearingRequest;
-            if (null != request.getRequestDetails()) {
-                versionNumber = request.getRequestDetails().getVersionNumber() + VERSION_NUMBER_TO_INCREMENT;
-            }
+        int versionNumberLocal = 1;
+        if ((hearingRequest instanceof UpdateHearingRequest updateHearingRequest)
+            && (null != updateHearingRequest.getRequestDetails())) {
+            versionNumberLocal = updateHearingRequest.getRequestDetails().getVersionNumber()
+                + VERSION_NUMBER_TO_INCREMENT;
         }
         return hmiCaseDetailsMapper.getCaseDetails(
             hearingRequest.getCaseDetails(),
-            versionNumber,
+            versionNumberLocal,
             hearingId,
             isLinkedFlag);
     }
@@ -485,7 +488,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         final List<PartyDetails> partyDetails = hearingRequest.getPartyDetails();
         final List<HearingPartyEntity> hearingParties = hearingEntity.getLatestCaseHearingRequest().getHearingParties();
-
 
         if (!CollectionUtils.isEmpty(partyDetails) && !CollectionUtils.isEmpty(hearingParties)) {
             for (PartyDetails partyDetail : partyDetails) {
