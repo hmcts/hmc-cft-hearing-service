@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -44,11 +45,14 @@ class HearingStatusAuditServiceImplTest {
     class HearingStatusAuditDetails {
         @Test
         void shouldSaveAuditTriageDetailsWhenFailure() throws JsonProcessingException  {
-            JsonNode errorDetails = new ObjectMapper().readTree("{\"deadLetterReason\":"
-                                                                    + " \"MaxDeliveryCountExceeded \"}");
             given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
                 TestingUtil.hearingStatusAuditEntity());
-            hearingStatusAuditService. saveAuditTriageDetails(TestingUtil.hearingEntity(), LocalDateTime.now(),
+            HearingEntity hearingEntity = TestingUtil.hearingEntity();
+            hearingEntity.setCreatedDateTime(LocalDateTime.now());
+            hearingEntity.setUpdatedDateTime(LocalDateTime.now());
+            final JsonNode errorDetails = new ObjectMapper().readTree("{\"deadLetterReason\":"
+                                                                          + " \"MaxDeliveryCountExceeded \"}");
+            hearingStatusAuditService. saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                               CREATE_HEARING_REQUEST,LA_FAILURE_STATUS,
                                                               HMC, HMI,errorDetails);
             verify(hearingStatusAuditRepository, times(1)).save(any());
@@ -58,7 +62,10 @@ class HearingStatusAuditServiceImplTest {
         void shouldSaveAuditTriageDetailsWhenSuccess() {
             given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
                 TestingUtil.hearingStatusAuditEntity());
-            hearingStatusAuditService.saveAuditTriageDetails(TestingUtil.hearingEntity(), LocalDateTime.now(),
+            HearingEntity hearingEntity = TestingUtil.hearingEntity();
+            hearingEntity.setCreatedDateTime(LocalDateTime.now());
+            hearingEntity.setUpdatedDateTime(LocalDateTime.now());
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                               CREATE_HEARING_REQUEST,SUCCESS_STATUS,
                                                               HMC, HMI,null);
             verify(hearingStatusAuditRepository, times(1)).save(any());
@@ -66,11 +73,14 @@ class HearingStatusAuditServiceImplTest {
 
         @Test
         void shouldSaveAuditTriageDetailsWithOtherInfoWhenSuccess() throws JsonProcessingException  {
-            JsonNode otherInfo = new ObjectMapper().readTree("{\"detail\":"
-                                                                    + " \"requestVersion starts at 1\"}");
             given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
                 TestingUtil.hearingStatusAuditEntity());
-            hearingStatusAuditService.saveAuditTriageDetails(TestingUtil.hearingEntity(), LocalDateTime.now(),
+            HearingEntity hearingEntity = TestingUtil.hearingEntity();
+            hearingEntity.setCreatedDateTime(LocalDateTime.now());
+            hearingEntity.setUpdatedDateTime(LocalDateTime.now());
+            final JsonNode otherInfo = new ObjectMapper().readTree("{\"detail\":"
+                                                                       + " \"requestVersion starts at 1\"}");
+            hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(hearingEntity,
                                                               CREATE_HEARING_REQUEST, REQUEST_VERSION_UPDATE,
                                                               HMC, HMI,null,otherInfo);
             verify(hearingStatusAuditRepository, times(1)).save(any());

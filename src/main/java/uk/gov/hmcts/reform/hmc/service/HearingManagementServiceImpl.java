@@ -267,7 +267,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
 
-        hearingStatusAuditService.saveAuditTriageDetails(hearingEntity,hearingEntity.getUpdatedDateTime(),
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                          UPDATE_HEARING_REQUEST,null,
                                                          clientS2SToken, HMC, null);
 
@@ -295,7 +295,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken);
 
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
-        hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                          DELETE_HEARING_REQUEST, null, clientS2SToken,
                                                          HMC, null);
         sendRequestToQueue(hearingId, DELETE_HEARING,existingHearing.getDeploymentId());
@@ -338,7 +338,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken);
         HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
-        hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                          POST_HEARING_ACTUALS_COMPLETION, null,
                                                          clientS2SToken, HMC, null);
         messageSenderToTopicConfiguration
@@ -366,7 +366,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         try {
             JsonNode otherInfo = new ObjectMapper().readTree("{\"detailMsg\":" + " \"" + versionMessage + "\"}");
-            hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                              REQUEST_VERSION_UPDATE, null,
                                                              clientS2SToken, HMC, null, otherInfo);
         } catch (JsonProcessingException e) {
@@ -444,7 +444,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         auditChangeInRequestVersion(savedEntity, 0, clientS2SToken);
 
         savePartyRelationshipDetails(createHearingRequest, savedEntity);
-        hearingStatusAuditService.saveAuditTriageDetails(savedEntity, savedEntity.getCreatedDateTime(),
+        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(savedEntity,
                                                          CREATE_HEARING_REQUEST, null, clientS2SToken,
                                                          HMC, null);
         return getSaveHearingResponseDetails(savedEntity);

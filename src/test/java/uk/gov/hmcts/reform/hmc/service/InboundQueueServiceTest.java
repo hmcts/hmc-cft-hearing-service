@@ -206,7 +206,8 @@ class InboundQueueServiceTest {
             hearingStatusAuditService
         );
 
-        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any(),any());
     }
 
     @Nested

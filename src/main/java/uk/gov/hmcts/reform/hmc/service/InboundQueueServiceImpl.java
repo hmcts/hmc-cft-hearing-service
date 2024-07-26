@@ -108,8 +108,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 hearingRepository.save(hearingEntity);
                 log.error("Hearing id: " +  hearingId + " updated to status Exception");
                 JsonNode errorDescription = objectMapper.convertValue(exception.getMessage(), JsonNode.class);
-                hearingStatusAuditService.saveAuditTriageDetails(hearingEntity,
-                                                                 hearingEntity.getUpdatedDateTime(),
+                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                                  LA_RESPONSE, LA_FAILURE_STATUS,
                                                                  FH, HMC, errorDescription);
             } else {
@@ -166,15 +165,14 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 log.info("Hearing id: " + hearingId + "has response of type :" + MessageType.ERROR);
                 log.error("Hearing id: " + hearingId + " updated to status Exception");
             }
-            hearingStatusAuditService.saveAuditTriageDetails(hearingToSave,
-                                                             hearingToSave.getUpdatedDateTime(),
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingToSave,
                                                              LA_RESPONSE, LA_FAILURE_STATUS,
                                                              FH, HMC, message);
         }
     }
 
     @Transactional
-    private void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse) {
+    public void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
             HearingEntity hearingToSave = null;
@@ -192,8 +190,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                                  hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
                                  getDeploymentIdForHearing(hearingResult.get()));
 
-                hearingStatusAuditService.saveAuditTriageDetails(hearingEntity.get(),
-                                                                 hearingEntity.get().getUpdatedDateTime(),
+                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity.get(),
                                                                  LA_RESPONSE,LA_SUCCESS_STATUS, FH, HMC,
                                                                  null);
             }
@@ -223,7 +220,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 log.info("Hearing id: " + hearingId + "has response of type :" + MessageType.LA_SYNC_HEARING_RESPONSE);
                 log.error("Hearing id: " + hearingId + " updated to status Exception");
             }
-            hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                              LA_ACK, syncResponse.getListAssistHttpStatus()
                                                                  .toString(),HMC, FH, errorDescription);
         }

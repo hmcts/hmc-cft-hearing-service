@@ -88,7 +88,8 @@ class HearingManagementControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         doReturn("xui_webapp").when(securityUtils)
             .getServiceNameFromS2SToken(any());
-        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any(),any());
     }
 
 
@@ -278,7 +279,7 @@ class HearingManagementControllerTest {
             GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, null);
             verify(hearingManagementService, times(1)).getHearings(validCaseRef, "LISTED");
             assertEquals(hearingRequest.getCaseRef(), validCaseRef);
-            assertEquals(hearingRequest.getCaseHearings().get(0).getHmcStatus(), "LISTED");
+            assertEquals("LISTED", hearingRequest.getCaseHearings().get(0).getHmcStatus());
             assertTrue(hearingRequest.getCaseHearings().get(0).getHearingIsLinkedFlag());
         }
 
