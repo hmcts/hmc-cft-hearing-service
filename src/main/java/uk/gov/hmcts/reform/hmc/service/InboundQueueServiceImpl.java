@@ -96,7 +96,9 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 hearingEntity.setStatus(EXCEPTION.name());
                 hearingEntity.setErrorDescription(exception.getMessage());
                 hearingRepository.save(hearingEntity);
-                log.error("Hearing id: " +  hearingId + " updated to status Exception");
+                log.error("Hearing id: " + hearingId + " Case ref: " + hearingEntity.getLatestCaseReferenceNumber()
+                              + " Service Code: " + hearingEntity.getLatestCaseHearingRequest().getHmctsServiceCode()
+                              + " updated to status Exception");
             } else {
                 log.error("Hearing id " + hearingId + " not found");
             }
@@ -148,8 +150,9 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                              hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
                              getDeploymentIdForHearing(hearingResult.get()));
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
-                log.error("Hearing id: " + hearingId + " has response of type : " + MessageType.ERROR
-                              + " updated to status Exception");
+                log.error("Hearing id: " + hearingId + " Case ref: " + hearingToSave.getLatestCaseReferenceNumber()
+                              + " Service Code: " + hearingToSave.getLatestCaseHearingRequest().getHmctsServiceCode()
+                              + " has response of type : " + MessageType.ERROR + " updated to status Exception");
             }
         }
     }
@@ -194,8 +197,10 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                              hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
                              getDeploymentIdForHearing(hearingResult.get()));
             if (hearingEntity.getStatus().equals(HearingStatus.EXCEPTION.name())) {
-                log.error("Hearing id: " + hearingId + " has response of type : "
-                              + MessageType.LA_SYNC_HEARING_RESPONSE + " updated to status Exception");
+                log.error("Hearing id: " + hearingId + " Case ref: " + hearingToSave.getLatestCaseReferenceNumber()
+                              + " Service Code: " + hearingToSave.getLatestCaseHearingRequest().getHmctsServiceCode()
+                              + " has response of type : " + MessageType.LA_SYNC_HEARING_RESPONSE
+                              + " updated to status Exception");
             }
         }
     }
