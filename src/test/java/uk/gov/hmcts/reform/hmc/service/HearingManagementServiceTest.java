@@ -248,9 +248,6 @@ class HearingManagementServiceTest {
                                                             applicationParams);
         hearingManagementService =
             new HearingManagementServiceImpl(
-                roleAssignmentService,
-                securityUtils,
-                dataStoreRepository,
                 hearingRepository,
                 hearingMapper,
                 caseHearingRequestRepository,
@@ -1077,9 +1074,6 @@ class HearingManagementServiceTest {
                     applicationParams);
             hearingManagementService =
                     new HearingManagementServiceImpl(
-                            roleAssignmentService,
-                            securityUtils,
-                            dataStoreRepository,
                             hearingRepository,
                             hearingMapper,
                             caseHearingRequestRepository,
