@@ -100,6 +100,9 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_ORGANIS
 @Service
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HearingManagementServiceImpl.class);
+    
     private final HearingMapper hearingMapper;
     private final GetHearingsResponseMapper getHearingsResponseMapper;
     private final GetHearingResponseMapper getHearingResponseMapper;
@@ -142,7 +145,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         ListingMapper listingMapper,
                                         HmiCaseDetailsMapper hmiCaseDetailsMapper,
                                         EntitiesMapper entitiesMapper,
-                                        HmiHearingResponseMapper hmiHearingResponseMapper) {
+                                        HmiHearingResponseMapper hmiHearingResponseMapper,
+                                        HearingStatusAuditService hearingStatusAuditService) {
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.hmiSubmitHearingRequestMapper = hmiSubmitHearingRequestMapper;

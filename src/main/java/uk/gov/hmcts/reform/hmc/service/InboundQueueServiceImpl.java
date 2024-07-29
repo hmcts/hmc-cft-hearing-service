@@ -70,7 +70,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
             ObjectMapperService objectMapperService,
             HearingIdValidator hearingIdValidator,
-            ApplicationParams applicationParams) {
+            ApplicationParams applicationParams,
+            HearingStatusAuditService hearingStatusAuditService) {
         this.objectMapper = objectMapper;
         this.hearingRepository = hearingRepository;
         this.pendingRequestRepository = pendingRequestRepository;

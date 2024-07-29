@@ -207,7 +207,8 @@ class InboundQueueServiceTest {
                 messageSenderToTopicConfiguration,
                 objectMapperService,
                 hearingIdValidator,
-                applicationParams);
+                applicationParams,
+                hearingStatusAuditService);
 
         hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
     }
