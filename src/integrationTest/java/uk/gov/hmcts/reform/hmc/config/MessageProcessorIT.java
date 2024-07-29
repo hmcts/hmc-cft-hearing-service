@@ -42,6 +42,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR_PROCESSING_MESSAGE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.EXCEPTION_LOG;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC_FROM_HMI;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.READ;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.formatLogMessage;
@@ -242,7 +243,7 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Message of type ERROR received", logsList.get(0).getMessage());
         assertEquals(Level.ERROR, logsList.get(1).getLevel());
         assertEquals("Hearing id: 2000000000 Case ref: 9372710950276233 Service Code: TEST "
-                         + "has response of type : " + MessageType.ERROR + " updated to status Exception",
+                         + "has response of type : " + MessageType.ERROR + EXCEPTION_LOG,
                      logsList.get(1).getMessage());
 
 
@@ -294,7 +295,7 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Error processing message with Hearing id 2000000000 exception was "
                          + "Cannot find request version 10 for hearing 2000000000", logsList.get(1).getMessage());
         assertEquals("Hearing id: 2000000000 Case ref: 9372710950276233 Service Code: TEST"
-                         + " updated to status Exception", logsList.get(2).getMessage());
+                         + EXCEPTION_LOG, logsList.get(2).getMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         assertEquals(2, logsListMessageProcessor.size());

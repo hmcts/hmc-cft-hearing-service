@@ -73,4 +73,9 @@ public final class Constants {
     public static final String EXCEPTION_STATUS = "Exception";
     public static final String CANCELLED = "CANCELLED";
     public static final String SERVICE_CODE_ABA1 = "ABA1";
+    public static final String CASE_REF = " Case ref: ";
+    public static final String SERVICE_CODE = " Service Code: ";
+    public static final String HEARING_ID_FOR_LOG = "Hearing id: ";
+    public static final String EXCEPTION_LOG = " updated to status Exception";
+
 }
