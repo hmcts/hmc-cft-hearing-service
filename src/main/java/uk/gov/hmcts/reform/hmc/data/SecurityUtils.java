@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import com.auth0.jwt.JWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -75,6 +76,20 @@ public class SecurityUtils {
         return authorities.stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.joining(","));
+    }
+
+    public String getServiceNameFromS2SToken(String serviceAuthenticationToken) {
+        // NB: this grabs the servce name straight from the token under the assumption
+        // that the S2S token has already been verified elsewhere
+        return JWT.decode(removeBearerFromToken(serviceAuthenticationToken)).getSubject();
+    }
+
+    private String removeBearerFromToken(String token) {
+        if (!token.startsWith(BEARER)) {
+            return token;
+        } else {
+            return token.substring(BEARER.length());
+        }
     }
 }
 

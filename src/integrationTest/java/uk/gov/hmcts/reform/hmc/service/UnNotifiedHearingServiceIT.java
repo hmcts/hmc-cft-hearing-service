@@ -15,8 +15,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.EXCEPTION_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_STATUS_EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.convertDateTime;
 
@@ -36,10 +39,10 @@ class UnNotifiedHearingServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void testValidateUnNotifiedHearing_WithAllMandatoryFields() {
         String dateStr = "2019-12-10 11:00:00";
-        List<String> hearingStatus  = List.of("LISTED");
+        List<String> hearingStatusListed  = List.of("LISTED");
         LocalDateTime startFrom = convertDateTime(dateStr);
         UnNotifiedHearingsResponse response = unNotifiedHearingService
-            .getUnNotifiedHearings("ACA2", startFrom, null,hearingStatus);
+            .getUnNotifiedHearings("ACA2", startFrom, null,hearingStatusListed);
         final List<String> expectedHearingIds = Arrays.asList("2100000000", "2100000001");
         assertNotNull(response.getHearingIds());
         assertEquals(2, response.getHearingIds().size());
@@ -113,10 +116,27 @@ class UnNotifiedHearingServiceIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void testValidateUnNotifiedHearing_WithHearingStatus_Exception() {
         String dateStr = "2019-12-10 11:00:00";
-        List<String> hearingStatus  = List.of("Exception");
+        List<String> hearingStatusException  = List.of(EXCEPTION_STATUS);
         LocalDateTime startFrom = convertDateTime(dateStr);
         Exception exception = assertThrows(BadRequestException.class, () -> unNotifiedHearingService
-            .getUnNotifiedHearings("ACA2", startFrom, null,hearingStatus));
+            .getUnNotifiedHearings("ACA2", startFrom, null,hearingStatusException));
         assertEquals(HEARING_STATUS_EXCEPTION, exception.getMessage());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
+    void getUnNotifiedHearing_WithHearingStatus_Cancelled() {
+        String dateStr = "2019-12-10 11:00:00";
+        final List<String> expectedHearingIds = Arrays.asList("2100000005");
+        List<String> hearingStatusCancelled  = List.of(CANCELLED);
+        LocalDateTime startFrom = convertDateTime(dateStr);
+        UnNotifiedHearingsResponse response = unNotifiedHearingService
+            .getUnNotifiedHearings(
+                "AAA2",
+                startFrom, null, hearingStatusCancelled
+            );
+        assertFalse(response.getHearingIds().isEmpty());
+        assertEquals(expectedHearingIds, response.getHearingIds());
+
     }
 }

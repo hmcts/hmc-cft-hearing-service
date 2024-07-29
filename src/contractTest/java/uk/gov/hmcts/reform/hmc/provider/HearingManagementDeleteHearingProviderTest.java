@@ -69,13 +69,13 @@ public class HearingManagementDeleteHearingProviderTest {
 
     @State("hmcCftHearingService successfully acknowledges delete hearing")
     public void deleteHearing() {
-        doNothing().when(mockService).deleteHearingRequest(any(Long.class), any(DeleteHearingRequest.class));
+        doNothing().when(mockService).deleteHearingRequest(any(Long.class), any(DeleteHearingRequest.class), any());
     }
 
     @State("hmcCftHearingService throws validation error while trying to delete hearing")
     public void validationErrorForDeleteHearing() {
         doThrow(new Exception(ValidationError.INVALID_HEARING_REQUEST_DETAILS))
-            .when(mockService).deleteHearingRequest(any(Long.class), any(DeleteHearingRequest.class));
+            .when(mockService).deleteHearingRequest(any(Long.class), any(DeleteHearingRequest.class), any());
     }
 
 }

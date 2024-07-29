@@ -10,7 +10,7 @@ SELECT distinct hr.hearing_id
     JOIN hearing_day_details hdd ON hr.hearing_response_id = hdd.hearing_response_id
     JOIN hearing he ON hr.hearing_id = he.hearing_id
     WHERE csr.hmcts_service_code = :hmcts_service_code
-      AND (hr.request_version = mrv.max_hearing_request_version OR (he.status = 'CANCELLED' AND he.hearing_id = hr.hearing_id))
+      AND (hr.request_version = mrv.max_hearing_request_version)
       AND hr.parties_notified_datetime IS NULL
       AND (hdd.start_date_time >= :hearing_start_date_from
        OR hdd.start_date_time IS NULL)
