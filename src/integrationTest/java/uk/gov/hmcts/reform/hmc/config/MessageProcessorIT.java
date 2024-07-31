@@ -240,7 +240,8 @@ class MessageProcessorIT extends BaseTest {
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(3, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals("Message of type ERROR received", logsList.get(0).getFormattedMessage());
+        assertEquals("Message of type " + MessageType.ERROR.name() + " received",
+                     logsList.get(0).getFormattedMessage());
         assertEquals(Level.INFO, logsList.get(1).getLevel());
         assertEquals(Level.ERROR, logsList.get(2).getLevel());
         assertEquals("Hearing id: 2000000000 updated to status " + HearingStatus.EXCEPTION.name(),
@@ -338,7 +339,7 @@ class MessageProcessorIT extends BaseTest {
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         logger.info("{} : {}", logsListMessageProcessor.size(), logsListMessageProcessor.toArray());
-        assertTrue(logsListMessageProcessor.size() > 0);
+        assertFalse(logsListMessageProcessor.isEmpty());
         List<Level> levels = new ArrayList<>();
         List<String> messages = new ArrayList<>();
         logsListMessageProcessor.forEach(e ->  {
