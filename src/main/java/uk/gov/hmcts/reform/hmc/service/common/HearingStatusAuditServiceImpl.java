@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @Component
@@ -65,16 +64,6 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
                                                                                          source, target, errorDetails,
                                                                                          otherInfo);
         saveHearingStatusAudit(hearingStatusAuditEntity);
-    }
-
-    @Override
-    public HearingStatusAuditEntity getLastAuditTriageDetailsForHearingId(String hearingId) {
-        List<HearingStatusAuditEntity> hearingStatusAuditEntityList =
-            hearingStatusAuditRepository.findByHearingId(hearingId);
-        if (null != hearingStatusAuditEntityList && !hearingStatusAuditEntityList.isEmpty()) {
-            return hearingStatusAuditEntityList.get(hearingStatusAuditEntityList.size());
-        }
-        return null;
     }
 
     private HearingStatusAuditEntity mapHearingStatusAuditDetailsWithCreatedDate(HearingEntity hearingEntity,

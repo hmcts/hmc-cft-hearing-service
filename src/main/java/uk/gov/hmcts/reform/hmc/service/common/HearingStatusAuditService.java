@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.service.common;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
-import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
 
 public interface HearingStatusAuditService {
 
@@ -21,7 +20,5 @@ public interface HearingStatusAuditService {
     void saveAuditTriageDetailsWithUpdatedDate(HearingEntity hearingEntity,
                                 String hearingEvent,String httpStatus, String source, String target,
                                 JsonNode errorDetails, JsonNode otherInfo);
-
-    HearingStatusAuditEntity getLastAuditTriageDetailsForHearingId(String hearingId);
 
 }

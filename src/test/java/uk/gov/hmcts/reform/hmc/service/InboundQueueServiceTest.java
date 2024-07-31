@@ -97,7 +97,7 @@ class InboundQueueServiceTest {
     @Mock
     private HearingStatusAuditService hearingStatusAuditService;
 
-    private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
 
     JsonNode jsonNode = OBJECT_MAPPER.readTree("""
                {
