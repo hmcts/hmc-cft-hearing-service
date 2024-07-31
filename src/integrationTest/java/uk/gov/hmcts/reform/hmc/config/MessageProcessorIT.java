@@ -18,6 +18,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.repository.HearingDayDetailsRepository;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl;
@@ -204,7 +205,8 @@ class MessageProcessorIT extends BaseTest {
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
+        assertEquals("Message of type " + MessageType.HEARING_RESPONSE.name() + " received",
+                     logsList.get(0).getFormattedMessage());
     }
 
     @Test
@@ -241,7 +243,8 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Message of type ERROR received", logsList.get(0).getFormattedMessage());
         assertEquals(Level.INFO, logsList.get(1).getLevel());
         assertEquals(Level.ERROR, logsList.get(2).getLevel());
-        assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(2).getFormattedMessage());
+        assertEquals("Hearing id: 2000000000 updated to status " + HearingStatus.EXCEPTION.name(),
+            logsList.get(2).getFormattedMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         logsListMessageProcessor.forEach(System.out::print);
@@ -287,10 +290,13 @@ class MessageProcessorIT extends BaseTest {
         assertEquals(Level.INFO, logsList.get(0).getLevel());
         assertEquals(Level.ERROR, logsList.get(1).getLevel());
         assertEquals(Level.ERROR, logsList.get(2).getLevel());
-        assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
+        assertEquals("Message of type " + MessageType.HEARING_RESPONSE.name() + " received",
+                     logsList.get(0).getFormattedMessage());
         assertEquals("Error processing message with Hearing id 2000000000 exception was "
-                         + "Cannot find request version 10 for hearing 2000000000", logsList.get(1).getMessage());
-        assertEquals("Hearing id: 2000000000 updated to status Exception", logsList.get(2).getFormattedMessage());
+                         + "Cannot find request version 10 for hearing 2000000000",
+                     logsList.get(1).getFormattedMessage());
+        assertEquals("Hearing id: 2000000000 updated to status " + HearingStatus.EXCEPTION.name(),
+                     logsList.get(2).getFormattedMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         assertEquals(2, logsListMessageProcessor.size());
@@ -375,9 +381,10 @@ class MessageProcessorIT extends BaseTest {
         assertEquals(2, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
         assertEquals(Level.ERROR, logsList.get(1).getLevel());
-        assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
+        assertEquals("Message of type " + MessageType.HEARING_RESPONSE.name() + " received",
+                     logsList.get(0).getFormattedMessage());
         assertEquals("Error processing message, exception was Message is missing custom header hearing_id",
-                     logsList.get(1).getMessage());
+                     logsList.get(1).getFormattedMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         assertEquals(0, logsListMessageProcessor.size());
@@ -413,11 +420,12 @@ class MessageProcessorIT extends BaseTest {
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
+        assertEquals("Message of type " + MessageType.HEARING_RESPONSE.name() + " received",
+                     logsList.get(0).getFormattedMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.ERROR)));
-        assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getMessage()
+        assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getFormattedMessage()
                 .matches(
                         "Error for message with id null with error No hearing found for reference: 2000000001")));
     }
@@ -454,14 +462,15 @@ class MessageProcessorIT extends BaseTest {
         assertEquals(Level.INFO, logsList.get(0).getLevel());
         assertEquals(Level.ERROR, logsList.get(2).getLevel());
         assertEquals(Level.ERROR, logsList.get(2).getLevel());
-        assertEquals("Message of type HEARING_RESPONSE received", logsList.get(0).getMessage());
+        assertEquals("Message of type " + MessageType.HEARING_RESPONSE.name() + " received",
+                     logsList.get(0).getFormattedMessage());
         assertEquals("Error processing message with Hearing id 1000000000 exception was "
-                         + "Invalid hearing Id", logsList.get(1).getMessage());
-        assertEquals("Hearing id 1000000000 not found", logsList.get(2).getMessage());
+                         + "Invalid hearing Id", logsList.get(1).getFormattedMessage());
+        assertEquals("Hearing id 1000000000 not found", logsList.get(2).getFormattedMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getLevel().equals(Level.ERROR)));
-        assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getMessage()
+        assertTrue(logsListMessageProcessor.stream().anyMatch(log -> log.getFormattedMessage()
                 .matches("Error for message with id null with error Invalid hearing Id")));
     }
 
