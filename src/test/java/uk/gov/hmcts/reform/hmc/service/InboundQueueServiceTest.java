@@ -97,7 +97,7 @@ class InboundQueueServiceTest {
     @Mock
     private HearingStatusAuditService hearingStatusAuditService;
 
-    private static ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
+    private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
 
     JsonNode jsonNode = OBJECT_MAPPER.readTree("""
                {
@@ -185,7 +185,7 @@ class InboundQueueServiceTest {
                    "hearingSessions": [{}]
                  }
                }
-                                                   """);
+               """);
 
     InboundQueueServiceTest() throws JsonProcessingException {
     }
@@ -300,7 +300,7 @@ class InboundQueueServiceTest {
                                      "listAssistErrorCode": 2000,
                                      "listAssistErrorDescription": "unable to create case"
                                    }
-                                                               """);
+                                   """);
             HearingEntity hearingEntity = generateHearingEntity(2000000000L);
             hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
             hearingEntity.setErrorCode(400);
@@ -472,7 +472,7 @@ class InboundQueueServiceTest {
                                }]
                              }
                            }
-                                                           """);
+                           """);
             HearingEntity hearingEntity = generateHearingEntity(2000000000L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L))
@@ -584,7 +584,7 @@ class InboundQueueServiceTest {
                            "hearingSessions": [{}]
                          }
                        }
-                                                           """);
+                       """);
             inboundQueueService.processMessage(jsonNodeLocal, messageContext);
             verify(hmiHearingResponseMapper, times(0)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).existsById(2000000000L);
@@ -686,7 +686,7 @@ class InboundQueueServiceTest {
                                        "hearingSessions": [{}]
                                      }
                                    }
-                                                           """);
+                                   """);
             inboundQueueService.processMessage(jsonNodeLocal, messageContext);
             verify(hmiHearingResponseMapper, times(0)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).existsById(2000000000L);
@@ -980,7 +980,7 @@ class InboundQueueServiceTest {
         List<ILoggingEvent> logsList = listAppender.list;
         int finalErrorIndex = logsList.size() - 1;
         assertEquals(Level.ERROR, logsList.get(finalErrorIndex).getLevel());
-        assertEquals(errorMessage, logsList.get(finalErrorIndex).getMessage());
+        assertEquals(errorMessage, logsList.get(finalErrorIndex).getFormattedMessage());
     }
 
     private HearingEntity generateHearingEntity(Long hearingId) {
@@ -1019,7 +1019,7 @@ class InboundQueueServiceTest {
         List<ILoggingEvent> logsList = listAppender.list;
         int finalErrorIndex = logsList.size() - 1;
         assertEquals(Level.ERROR, logsList.get(finalErrorIndex).getLevel());
-        assertEquals("Hearing id: " + hearingID + " updated to status Exception",
+        assertEquals("Hearing id: " + hearingID + " updated to status " + HearingStatus.EXCEPTION.name(),
                      logsList.get(finalErrorIndex).getFormattedMessage());
     }
 }

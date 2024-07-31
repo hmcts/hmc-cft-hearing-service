@@ -33,6 +33,7 @@ import javax.persistence.Table;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AWAITING_ACTUALS;
 
 @Table(name = "hearing")
 @EqualsAndHashCode(callSuper = true)
@@ -156,25 +157,24 @@ public class HearingEntity extends BaseEntity implements Serializable {
 
     public String getDerivedHearingStatus() {
         String hearingStatus = "";
-        switch (this.status) {
-            case "LISTED","UPDATE_REQUESTED",  "UPDATE_SUBMITTED":
-                hearingStatus = this.status;
-                Optional<HearingResponseEntity> hearingResponse = getLatestHearingResponse();
-                if (hearingResponse.isPresent()) {
-                    HearingResponseEntity latestHearingResponse = hearingResponse.get();
-                    Optional<HearingDayDetailsEntity> hearingDayDetails =
-                        latestHearingResponse.getEarliestHearingDayDetails();
-                    if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
-                        HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
-                        if (hearingDayDetailsEntity.getStartDateTime() != null
-                            && !LocalDate.now().isBefore(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
-                            return "AWAITING_ACTUALS";
-                        }
+        if (this.status.equals(HearingStatus.LISTED.name()) || this.status.equals(HearingStatus.UPDATE_REQUESTED.name())
+            || this.status.equals(HearingStatus.UPDATE_SUBMITTED.name())) {
+            hearingStatus = this.status;
+            Optional<HearingResponseEntity> hearingResponse = getLatestHearingResponse();
+            if (hearingResponse.isPresent()) {
+                HearingResponseEntity latestHearingResponse = hearingResponse.get();
+                Optional<HearingDayDetailsEntity> hearingDayDetails =
+                    latestHearingResponse.getEarliestHearingDayDetails();
+                if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
+                    HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
+                    if (hearingDayDetailsEntity.getStartDateTime() != null
+                        && !LocalDate.now().isBefore(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
+                        return AWAITING_ACTUALS;
                     }
                 }
-                break;
-            default:
-                hearingStatus = this.status;
+            }
+        } else {
+            hearingStatus = this.status;
         }
         return hearingStatus;
     }

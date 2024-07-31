@@ -31,6 +31,7 @@ public final class Constants {
     public static final String NO_DEFINED = "NO_DEFINED";
     public static final String REQUEST_HEARING = "REQUEST_HEARING";
     public static final String AMEND_HEARING = "AMEND_HEARING";
+    public static final String AWAITING_ACTUALS = "AWAITING_ACTUALS";
     public static final String DELETE_HEARING = "DELETE_HEARING";
     public static final String CASE_HQ = "CASEHQ";
     public static final String EPIMS = "EPIMS";
@@ -40,8 +41,7 @@ public final class Constants {
     public static final String REQUIRED = "Required";
     public static final String NOT_REQUIRED = "Not Required";
     public static final Integer UN_NOTIFIED_HEARINGS_LIMIT = 1000;
-    public static final Integer FIRST_PAGE = 0;
-    public static final String PENDING = "PENDING";
+     public static final String PENDING = "PENDING";
     public static final Integer DURATION_OF_DAY = 360;
     public static final String ERROR = "ERROR";
     public static final String LIST_ASSIST_SUCCESSFUL_RESPONSE = "Response received from ListAssist successfully";
