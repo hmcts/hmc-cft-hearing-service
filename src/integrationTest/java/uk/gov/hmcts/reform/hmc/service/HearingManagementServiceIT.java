@@ -31,13 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING_REQUEST;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.UPDATE_HEARING_REQUEST;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.*;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
@@ -619,7 +613,7 @@ class HearingManagementServiceIT extends BaseTest {
             response.getHearingRequestId().toString());
         assertNotNull(auditEntityList);
         assertNotNull(auditEntityList.get(1).getOtherInfo());
-        assertNotNull(auditEntityList.get(1).getOtherInfo().get("detailMsg"));
+        assertNotNull(auditEntityList.get(1).getOtherInfo().get(REQUEST_VERSION_UPDATE));
     }
 
 }

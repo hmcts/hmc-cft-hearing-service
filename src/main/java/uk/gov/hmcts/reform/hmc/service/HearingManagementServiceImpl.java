@@ -367,7 +367,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             : String.format("requestVersion set to <%d>", updatedRequestVersion);
 
         try {
-            JsonNode otherInfo = new ObjectMapper().readTree("{\"detailMsg\":" + " \""
+            JsonNode otherInfo = new ObjectMapper().readTree("{\"" + REQUEST_VERSION_UPDATE + "\":" + " \""
                                                                  + versionMessage + "\"}");
             hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                              REQUEST_VERSION_UPDATE,
