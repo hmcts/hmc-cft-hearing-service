@@ -41,7 +41,7 @@ public final class Constants {
     public static final String REQUIRED = "Required";
     public static final String NOT_REQUIRED = "Not Required";
     public static final Integer UN_NOTIFIED_HEARINGS_LIMIT = 1000;
-     public static final String PENDING = "PENDING";
+    public static final String PENDING = "PENDING";
     public static final Integer DURATION_OF_DAY = 360;
     public static final String ERROR = "ERROR";
     public static final String LIST_ASSIST_SUCCESSFUL_RESPONSE = "Response received from ListAssist successfully";
