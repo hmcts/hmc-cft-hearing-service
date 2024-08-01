@@ -369,10 +369,19 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         try {
             JsonNode otherInfo = new ObjectMapper().readTree("{\"" + REQUEST_VERSION_UPDATE + "\":" + " \""
                                                                  + versionMessage + "\"}");
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                             REQUEST_VERSION_UPDATE,
-                                                             String.valueOf(HttpStatus.OK.value()),
-                                                             clientS2SToken, HMC, null, otherInfo);
+            if (existingRequestVersion > 0) {
+                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
+                                                                                REQUEST_VERSION_UPDATE,
+                                                                                String.valueOf(HttpStatus.OK.value()),
+                                                                                clientS2SToken, HMC, null,
+                                                                                otherInfo);
+            } else {
+                hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(hearingEntity,
+                                                                                REQUEST_VERSION_UPDATE,
+                                                                                String.valueOf(HttpStatus.OK.value()),
+                                                                                clientS2SToken, HMC, null,
+                                                                                otherInfo);
+            }
         } catch (JsonProcessingException e) {
             log.error("Unable to audit requestVersion update: {}", versionMessage);
         }
