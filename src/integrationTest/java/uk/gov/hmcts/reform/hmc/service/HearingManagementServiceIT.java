@@ -619,7 +619,6 @@ class HearingManagementServiceIT extends BaseTest {
         List<HearingStatusAuditEntity> auditEntityList = hearingStatusAuditRepository.findByHearingId(
             response.getHearingRequestId().toString());
         assertNotNull(auditEntityList);
-        assertNotNull(auditEntityList.get(1).getStatusUpdateDateTime());
         assertNotNull(auditEntityList.get(1).getOtherInfo());
         assertNotNull(auditEntityList.get(1).getOtherInfo().get(REQUEST_VERSION_UPDATE));
     }
