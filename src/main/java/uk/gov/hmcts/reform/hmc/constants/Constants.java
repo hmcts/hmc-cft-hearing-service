@@ -31,16 +31,16 @@ public final class Constants {
     public static final String NO_DEFINED = "NO_DEFINED";
     public static final String REQUEST_HEARING = "REQUEST_HEARING";
     public static final String AMEND_HEARING = "AMEND_HEARING";
+    public static final String AWAITING_ACTUALS = "AWAITING_ACTUALS";
     public static final String DELETE_HEARING = "DELETE_HEARING";
     public static final String CASE_HQ = "CASEHQ";
     public static final String EPIMS = "EPIMS";
-    public static final String Region = "Region";
+    public static final String REGION = "Region";
     public static final String COURT = "Court";
     public static final String CLUSTER = "Cluster";
     public static final String REQUIRED = "Required";
     public static final String NOT_REQUIRED = "Not Required";
     public static final Integer UN_NOTIFIED_HEARINGS_LIMIT = 1000;
-    public static final Integer FIRST_PAGE = 0;
     public static final String PENDING = "PENDING";
     public static final Integer DURATION_OF_DAY = 360;
     public static final String ERROR = "ERROR";
@@ -58,6 +58,7 @@ public final class Constants {
     public static final String POST_HEARING_ACTUALS_COMPLETION = "post-hearing-actuals-completion";
     public static final String PUT_HEARING_ACTUALS_COMPLETION = "put-hearing-actuals-completion";
     public static final String PUT_PARTIES_NOTIFIED = "put-parties-notified";
+    public static final String REQUEST_VERSION_UPDATE = "request-version-update";
     public static final String LA_RESPONSE = "list-assist-response";
     public static final String LA_ACK = "list-assist-ack";
     public static final String HMI = "hmi";

@@ -1416,7 +1416,7 @@ public class TestingUtil {
         request.setCaseDetails(caseDetails);
         request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         RequestDetails requestDetails = new RequestDetails();
-        requestDetails.setVersionNumber(1);
+        requestDetails.setVersionNumber(version);
         request.setRequestDetails(requestDetails);
         return request;
     }

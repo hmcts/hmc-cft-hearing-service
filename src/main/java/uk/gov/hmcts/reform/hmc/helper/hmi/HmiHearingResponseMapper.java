@@ -358,8 +358,7 @@ public class HmiHearingResponseMapper {
             case HEARING_REQUESTED:
                 postStatus = AWAITING_LISTING;
                 break;
-            case UPDATE_REQUESTED:
-            case UPDATE_SUBMITTED:
+            case UPDATE_REQUESTED, UPDATE_SUBMITTED:
                 postStatus = UPDATE_SUBMITTED;
                 break;
             case CANCELLATION_REQUESTED:
@@ -379,9 +378,7 @@ public class HmiHearingResponseMapper {
                                                                int currentVersion) {
         HearingStatus postStatus = null;
         switch (currentStatus) {
-            case AWAITING_LISTING:
-            case UPDATE_SUBMITTED:
-            case LISTED:
+            case AWAITING_LISTING, UPDATE_SUBMITTED, LISTED:
                 postStatus = HearingStatus.LISTED;
                 break;
             case UPDATE_REQUESTED:
@@ -418,12 +415,8 @@ public class HmiHearingResponseMapper {
     private HearingStatus getHearingStatusWhenLaStatusIsClosed(HearingStatus currentStatus) {
         HearingStatus postStatus = null;
         switch (currentStatus) {
-            case AWAITING_LISTING:
-            case UPDATE_SUBMITTED:
-            case LISTED:
-            case UPDATE_REQUESTED:
-            case CANCELLATION_REQUESTED:
-            case CANCELLATION_SUBMITTED:
+            case AWAITING_LISTING, UPDATE_SUBMITTED, LISTED, UPDATE_REQUESTED,
+                 CANCELLATION_REQUESTED, CANCELLATION_SUBMITTED:
                 postStatus = HearingStatus.CANCELLED;
                 break;
             case EXCEPTION:

@@ -25,26 +25,97 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
     }
 
     @Override
-    public void saveAuditTriageDetails(HearingEntity hearingEntity, LocalDateTime statusUpdateDateTime,
-                                       String hearingEvent,String httpStatus, String source, String target,
+    public void saveAuditTriageDetailsWithCreatedDate(HearingEntity hearingEntity,
+                                       String hearingEvent, String httpStatus, String source, String target,
                                        JsonNode errorDetails) {
-        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetails(hearingEntity,
-                                                                                         statusUpdateDateTime,
+        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetailsWithCreatedDate(hearingEntity,
                                                                                          hearingEvent,httpStatus,
                                                                                          source, target, errorDetails);
         saveHearingStatusAudit(hearingStatusAuditEntity);
     }
 
-    private HearingStatusAuditEntity mapHearingStatusAuditDetails(HearingEntity hearingEntity,
-                                                                   LocalDateTime statusUpdateDateTime,
+    @Override
+    public void saveAuditTriageDetailsWithCreatedDate(HearingEntity hearingEntity,
+                                                      String hearingEvent,String httpStatus, String source,
+                                                      String target, JsonNode errorDetails, JsonNode otherInfo) {
+        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetailsWithCreatedDate(hearingEntity,
+                                                                                         hearingEvent,httpStatus,
+                                                                                         source, target, errorDetails,
+                                                                                         otherInfo);
+        saveHearingStatusAudit(hearingStatusAuditEntity);
+    }
+
+    @Override
+    public void saveAuditTriageDetailsWithUpdatedDate(HearingEntity hearingEntity,
+                                       String hearingEvent,String httpStatus, String source, String target,
+                                       JsonNode errorDetails) {
+        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetailsWithUpdatedDate(hearingEntity,
+                                                                                         hearingEvent,httpStatus,
+                                                                                         source, target, errorDetails);
+        saveHearingStatusAudit(hearingStatusAuditEntity);
+    }
+
+    @Override
+    public void saveAuditTriageDetailsWithUpdatedDate(HearingEntity hearingEntity, String hearingEvent,
+                                                      String httpStatus, String source, String target,
+                                                      JsonNode errorDetails, JsonNode otherInfo) {
+        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetailsWithUpdatedDate(hearingEntity,
+                                                                                         hearingEvent,httpStatus,
+                                                                                         source, target, errorDetails,
+                                                                                         otherInfo);
+        saveHearingStatusAudit(hearingStatusAuditEntity);
+    }
+
+    private HearingStatusAuditEntity mapHearingStatusAuditDetailsWithCreatedDate(HearingEntity hearingEntity,
+                                                                  String hearingEvent, String httpStatus,
+                                                                  String source, String target,
+                                                                  JsonNode errorDetails) {
+        return mapHearingStatusAuditDetailsWithCreatedDate(hearingEntity, hearingEvent, httpStatus, source,
+                                            target, errorDetails, null);
+    }
+
+    private HearingStatusAuditEntity mapHearingStatusAuditDetailsWithCreatedDate(HearingEntity hearingEntity,
+                                                                                 String hearingEvent, String httpStatus,
+                                                                                 String source, String target,
+                                                                                 JsonNode errorDetails,
+                                                                                 JsonNode otherInfo) {
+        HearingStatusAuditEntity hearingStatusAuditEntity = generateHearingStatusAuditEntity(hearingEntity,
+                                                                                             hearingEvent, httpStatus,
+                                                                                             source, target,
+                                                                                             errorDetails, otherInfo);
+        hearingStatusAuditEntity.setStatusUpdateDateTime(hearingEntity.getCreatedDateTime());
+        return hearingStatusAuditEntity;
+    }
+
+    private HearingStatusAuditEntity mapHearingStatusAuditDetailsWithUpdatedDate(HearingEntity hearingEntity,
                                                                    String hearingEvent, String httpStatus,
                                                                    String source, String target,
                                                                    JsonNode errorDetails) {
+        return mapHearingStatusAuditDetailsWithUpdatedDate(hearingEntity, hearingEvent, httpStatus, source,
+                                            target, errorDetails, null);
+    }
+
+    private HearingStatusAuditEntity mapHearingStatusAuditDetailsWithUpdatedDate(HearingEntity hearingEntity,
+                                                                                 String hearingEvent, String httpStatus,
+                                                                                 String source, String target,
+                                                                                 JsonNode errorDetails,
+                                                                                 JsonNode otherInfo) {
+        HearingStatusAuditEntity hearingStatusAuditEntity = generateHearingStatusAuditEntity(hearingEntity,
+                                                                                             hearingEvent, httpStatus,
+                                                                                             source, target,
+                                                                                             errorDetails, otherInfo);
+        hearingStatusAuditEntity.setStatusUpdateDateTime(hearingEntity.getUpdatedDateTime());
+        return hearingStatusAuditEntity;
+    }
+
+    private HearingStatusAuditEntity generateHearingStatusAuditEntity(HearingEntity hearingEntity,
+                                                                      String hearingEvent, String httpStatus,
+                                                                      String source, String target,
+                                                                      JsonNode errorDetails, JsonNode otherInfo) {
         HearingStatusAuditEntity hearingStatusAuditEntity = new HearingStatusAuditEntity();
         hearingStatusAuditEntity.setHmctsServiceId(hearingEntity.getLatestCaseHearingRequest().getHmctsServiceCode());
         hearingStatusAuditEntity.setHearingId(hearingEntity.getId().toString());
         hearingStatusAuditEntity.setStatus(hearingEntity.getStatus());
-        hearingStatusAuditEntity.setStatusUpdateDateTime(statusUpdateDateTime);
         hearingStatusAuditEntity.setHearingEvent(hearingEvent);
         hearingStatusAuditEntity.setHttpStatus(httpStatus);
         hearingStatusAuditEntity.setSource(source);
@@ -53,6 +124,7 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
         hearingStatusAuditEntity.setRequestVersion(hearingEntity.getLatestCaseHearingRequest().getVersionNumber()
                                                        .toString());
         hearingStatusAuditEntity.setResponseDateTime(LocalDateTime.now());
+        hearingStatusAuditEntity.setOtherInfo(otherInfo);
         return hearingStatusAuditEntity;
     }
 

@@ -3,12 +3,22 @@ package uk.gov.hmcts.reform.hmc.service.common;
 import com.fasterxml.jackson.databind.JsonNode;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 
-import java.time.LocalDateTime;
-
-
 public interface HearingStatusAuditService {
 
-    void saveAuditTriageDetails(HearingEntity hearingEntity, LocalDateTime statusUpdateDateTime, String hearingEvent,
-        String httpStatus,String source, String target, JsonNode errorDescription);
+    void saveAuditTriageDetailsWithCreatedDate(HearingEntity hearingEntity, String hearingEvent,
+                                String httpStatus,String source, String target, JsonNode errorDescription);
+
+
+    void saveAuditTriageDetailsWithCreatedDate(HearingEntity hearingEntity,
+                                       String hearingEvent,String httpStatus, String source, String target,
+                                       JsonNode errorDetails, JsonNode otherInfo);
+
+    void saveAuditTriageDetailsWithUpdatedDate(HearingEntity hearingEntity, String hearingEvent,
+                                               String httpStatus,String source, String target,
+                                               JsonNode errorDescription);
+
+    void saveAuditTriageDetailsWithUpdatedDate(HearingEntity hearingEntity,
+                                String hearingEvent,String httpStatus, String source, String target,
+                                JsonNode errorDetails, JsonNode otherInfo);
 
 }
