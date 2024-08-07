@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
+import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.util.HashMap;
@@ -229,7 +230,8 @@ class InboundQueueServiceTest {
 
             ListAppender<ILoggingEvent> listAppender = setupLogger();
             inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, exception);
-            assertDynatraceLogMessage(listAppender, "2000000000");
+            assertDynatraceLogMessage(listAppender, "2000000000", "1111222233334444",
+                                      "TEST");
 
             verify(hearingRepository, times(1)).findById(2000000000L);
             verify(hearingRepository, times(1)).save(any());
@@ -285,7 +287,8 @@ class InboundQueueServiceTest {
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             ListAppender<ILoggingEvent> listAppender = setupLogger();
             inboundQueueService.processMessage(data, messageContext);
-            assertDynatraceLogMessage(listAppender, "2000000000");
+            assertDynatraceLogMessage(listAppender, "2000000000", "1111222233334444",
+                                      "TEST");
         }
 
         @Test
@@ -318,7 +321,8 @@ class InboundQueueServiceTest {
             given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
             ListAppender<ILoggingEvent> listAppender = setupLogger();
             inboundQueueService.processMessage(syncJsonNode, messageContext);
-            assertDynatraceLogMessage(listAppender, "2000000000");
+            assertDynatraceLogMessage(listAppender, "2000000000", "1111222233334444",
+                                      "TEST");
         }
 
         @Test
@@ -989,6 +993,7 @@ class InboundQueueServiceTest {
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingResponseEntity.setRequestVersion(1);
         entity.setHearingResponses(List.of(hearingResponseEntity));
+        entity.setCaseHearingRequests(List.of(TestingUtil.caseHearingRequestEntity()));
         return entity;
     }
 
@@ -1015,11 +1020,13 @@ class InboundQueueServiceTest {
         return listAppender;
     }
 
-    private void assertDynatraceLogMessage(ListAppender<ILoggingEvent> listAppender, String hearingID) {
+    private void assertDynatraceLogMessage(ListAppender<ILoggingEvent> listAppender, String hearingID,  String caseRef,
+                                           String serviceCode) {
         List<ILoggingEvent> logsList = listAppender.list;
         int finalErrorIndex = logsList.size() - 1;
         assertEquals(Level.ERROR, logsList.get(finalErrorIndex).getLevel());
-        assertEquals("Hearing id: " + hearingID + " updated to status " + HearingStatus.EXCEPTION.name(),
-                     logsList.get(finalErrorIndex).getFormattedMessage());
+        assertEquals("Hearing id: " + hearingID + " with Case reference: "
+                         + caseRef + " and Service Code: " + serviceCode + " updated to status "
+                         + HearingStatus.EXCEPTION.name(), logsList.get(finalErrorIndex).getFormattedMessage());
     }
 }

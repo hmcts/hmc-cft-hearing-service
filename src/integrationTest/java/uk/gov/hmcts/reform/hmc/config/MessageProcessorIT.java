@@ -244,9 +244,11 @@ class MessageProcessorIT extends BaseTest {
                      logsList.get(0).getFormattedMessage());
         assertEquals(Level.INFO, logsList.get(1).getLevel());
         assertEquals(Level.ERROR, logsList.get(2).getLevel());
-        assertEquals("Hearing id: 2000000000 updated to status " + HearingStatus.EXCEPTION.name(),
-            logsList.get(2).getFormattedMessage());
-
+        assertEquals(
+            "Hearing id: 2000000000 with Case reference: 9372710950276233 and Service Code: "
+                + "TEST updated to status " + HearingStatus.EXCEPTION.name(),
+            logsList.get(2).getFormattedMessage()
+        );
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         logsListMessageProcessor.forEach(System.out::print);
         // There could be message entity not found error due to the way the pipeline structure works with our variables
@@ -296,8 +298,10 @@ class MessageProcessorIT extends BaseTest {
         assertEquals("Error processing message with Hearing id 2000000000 exception was "
                          + "Cannot find request version 10 for hearing 2000000000",
                      logsList.get(1).getFormattedMessage());
-        assertEquals("Hearing id: 2000000000 updated to status " + HearingStatus.EXCEPTION.name(),
-                     logsList.get(2).getFormattedMessage());
+        assertEquals("Hearing id: 2000000000 with Case reference: 9372710950276233 and Service Code: TEST "
+                + "updated to status " + HearingStatus.EXCEPTION.name(),
+            logsList.get(2).getFormattedMessage()
+        );
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         assertEquals(2, logsListMessageProcessor.size());
