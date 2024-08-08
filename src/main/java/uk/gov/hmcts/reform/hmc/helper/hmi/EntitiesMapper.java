@@ -61,6 +61,9 @@ public class EntitiesMapper {
                         .entityTypeCode(party.getPartyType())
                         .entityRoleCode(party.getPartyRole())
                         .entitySubType(entitySubTypeMapper.getOrgEntitySubType(party.getOrganisationDetails()))
+                        .entityUnavailableDays(unavailableDaysMapper.getUnavailableDays(party.getUnavailabilityDow()))
+                        .entityUnavailableDates(unavailableDatesMapper.getUnavailableDates(party
+                                                                                            .getUnavailabilityRanges()))
                         .build();
                     entities.add(entity);
                 }
