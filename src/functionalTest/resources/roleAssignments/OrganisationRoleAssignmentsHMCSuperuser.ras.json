@@ -1,0 +1,53 @@
+{
+  "roleRequest" : {
+    "assignerId" : "[[$ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER]]",
+    "process" : "ccd-fta-data-setup",
+    "reference" : "[[$ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER]]",
+    "replaceExisting" : true
+  },
+  "requestedRoles" : [
+    {
+      "actorId" : "[[$ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER]]",
+      "actorIdType" : "IDAM",
+      "roleType" : "ORGANISATION",
+      "roleName" : "hearing-manager",
+      "roleCategory" : "PROFESSIONAL",
+      "classification" : "PUBLIC",
+      "grantType" : "STANDARD",
+      "readOnly" : false,
+      "beginTime" : "2021-01-01T00:00:00Z",
+      "attributes" : {
+        "jurisdiction": "BEFTA_MASTER"
+      }
+    },
+    {
+      "actorId" : "[[$ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER]]",
+      "actorIdType" : "IDAM",
+      "roleType" : "ORGANISATION",
+      "roleName" : "hearing-viewer",
+      "roleCategory" : "PROFESSIONAL",
+      "classification" : "PUBLIC",
+      "grantType" : "STANDARD",
+      "readOnly" : false,
+      "beginTime" : "2021-01-01T00:00:00Z",
+      "attributes" : {
+        "jurisdiction": "BEFTA_MASTER"
+      }
+    },
+    {
+      "actorId" : "[[$ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER]]",
+      "actorIdType" : "IDAM",
+      "roleType" : "ORGANISATION",
+      "roleName" : "listed-hearing-viewer",
+      "roleCategory" : "PROFESSIONAL",
+      "classification" : "PUBLIC",
+      "grantType" : "STANDARD",
+      "readOnly" : false,
+      "beginTime" : "2021-01-01T00:00:00Z",
+      "attributes" : {
+        "jurisdiction": "BEFTA_MASTER"
+      }
+    }
+  ]
+}
+
