@@ -9,7 +9,7 @@
   ],
   "request": {
     "pathVariables": {
-      "caseref": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
+      "caseref": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}"
     }
   },
   "expectedResponse": {
@@ -21,7 +21,7 @@
       "Request-Context": "[[ANY_NULLABLE]]"
     },
     "body" : {
-      "caseRef" : "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
+      "caseRef" : "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}",
       "caseHearings" : [
         {
           "__ordering__": "unordered",
