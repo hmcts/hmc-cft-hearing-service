@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
@@ -70,9 +69,6 @@ class HearingActualsServiceTest {
     private GetHearingActualsResponseMapper getHearingActualsResponseMapper;
 
     @Mock
-    private HearingResponseRepository hearingResponseRepository;
-
-    @Mock
     private HearingStatusAuditService hearingStatusAuditService;
 
     @BeforeEach
@@ -85,7 +81,6 @@ class HearingActualsServiceTest {
         hearingActualsService =
             new HearingActualsServiceImpl(
                 hearingRepository,
-                hearingResponseRepository,
                 actualHearingRepository,
                 getHearingActualsResponseMapper,
                 hearingActualsMapper,
@@ -93,7 +88,8 @@ class HearingActualsServiceTest {
                 hearingActualsValidator,
                 hearingStatusAuditService
             );
-        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any(),any());
     }
 
     @Nested
@@ -147,7 +143,6 @@ class HearingActualsServiceTest {
             hearingActualsService =
                 new HearingActualsServiceImpl(
                     hearingRepository,
-                    hearingResponseRepository,
                     actualHearingRepository,
                     getHearingActualsResponseMapper,
                     hearingActualsMapper,
@@ -155,7 +150,8 @@ class HearingActualsServiceTest {
                     hearingActualsValidator,
                     hearingStatusAuditService
                 );
-            hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
+            hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any(),any());
         }
 
         @Test
@@ -186,8 +182,6 @@ class HearingActualsServiceTest {
 
         @Test
         void shouldThrowExceptionWhenInvalidHearingId() {
-            // doThrow(new BadRequestException(INVALID_HEARING_ID_DETAILS)).when(hearingIdValidatorMock)
-            //      .isValidFormat(anyString());
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 hearingActualsService.updateHearingActuals(INVALID_HEARING_ID, CLIENT_S2S_TOKEN,
                                                            TestingUtil.hearingActual());
@@ -205,9 +199,9 @@ class HearingActualsServiceTest {
 
         @Test
         void shouldThrowExceptionWhenHearingStatusNotAllowingActuals() {
-            HearingEntity hearingEntity = mock(HearingEntity.class);
-            given(hearingEntity.getStatus()).willReturn("HEARING_REQUESTED");
-            given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearingEntity));
+            HearingEntity hearing = mock(HearingEntity.class);
+            given(hearing.getStatus()).willReturn("HEARING_REQUESTED");
+            given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearing));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, TestingUtil.hearingActual());
@@ -217,9 +211,9 @@ class HearingActualsServiceTest {
 
         @Test
         void shouldThrowExceptionWhenDuplicatesInHearingActualsDays() {
-            HearingEntity hearingEntity = mock(HearingEntity.class);
-            given(hearingEntity.getStatus()).willReturn(VALID_HEARING_STAUS);
-            given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearingEntity));
+            HearingEntity hearing = mock(HearingEntity.class);
+            given(hearing.getStatus()).willReturn(VALID_HEARING_STAUS);
+            given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearing));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN,
@@ -230,9 +224,9 @@ class HearingActualsServiceTest {
 
         @Test
         void shouldThrowExceptionWhenOneHearingActualsDayInTheFuture() {
-            HearingEntity hearingEntity = mock(HearingEntity.class);
-            given(hearingEntity.getStatus()).willReturn(VALID_HEARING_STAUS);
-            given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearingEntity));
+            HearingEntity hearing = mock(HearingEntity.class);
+            given(hearing.getStatus()).willReturn(VALID_HEARING_STAUS);
+            given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearing));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN,
@@ -243,12 +237,12 @@ class HearingActualsServiceTest {
 
         @Test
         void shouldThrowExceptionWhenHasHearingResultOfCancelledWithoutHearingResultReasonType() {
-            HearingEntity hearingEntity = mock(HearingEntity.class);
-            given(hearingEntity.getStatus()).willReturn(VALID_HEARING_STAUS);
-            given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearingEntity));
+            HearingEntity hearing = mock(HearingEntity.class);
+            given(hearing.getStatus()).willReturn(VALID_HEARING_STAUS);
+            given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearing));
             HearingResponseEntity hearingResponseEntity = mock(HearingResponseEntity.class);
 
-            given(hearingEntity.getHearingResponseForLatestRequest()).willReturn(Optional.of(hearingResponseEntity));
+            given(hearing.getHearingResponseForLatestRequest()).willReturn(Optional.of(hearingResponseEntity));
 
             HearingDayDetailsEntity hearingDayDetailsEntity = new HearingDayDetailsEntity();
             final LocalDateTime earliestHearingDate = LocalDateTime.of(2022, 1, 29, 10,
@@ -268,14 +262,14 @@ class HearingActualsServiceTest {
 
         @Test
         void shouldThrowExceptionWhenHearingActualDateInFuture() {
-            HearingEntity hearingEntity = mock(HearingEntity.class);
+            HearingEntity hearing = mock(HearingEntity.class);
             final LocalDate lowestStartDate = LocalDate.of(2022, 1, 31);
             final LocalDateTime earliestHearingDate = LocalDateTime.of(2022, 2, 25, 10,
                     30, 00);
-            given(hearingEntity.getStatus()).willReturn(VALID_HEARING_STAUS);
-            given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearingEntity));
+            given(hearing.getStatus()).willReturn(VALID_HEARING_STAUS);
+            given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearing));
             HearingResponseEntity hearingResponseEntity = mock(HearingResponseEntity.class);
-            given(hearingEntity.getHearingResponseForLatestRequest()).willReturn(Optional.of(hearingResponseEntity));
+            given(hearing.getHearingResponseForLatestRequest()).willReturn(Optional.of(hearingResponseEntity));
             HearingDayDetailsEntity hearingDayDetailsEntity = new HearingDayDetailsEntity();
             hearingDayDetailsEntity.setStartDateTime(earliestHearingDate);
             given(hearingResponseEntity.getEarliestHearingDayDetails()).willReturn(

@@ -26,4 +26,3 @@ CREATE SEQUENCE public.hearing_status_audit_id_seq
 ALTER SEQUENCE public.hearing_status_audit_id_seq OWNED BY public.hearing_status_audit.id;
 
 ALTER TABLE ONLY public.hearing_status_audit ALTER COLUMN id SET DEFAULT nextval('public.hearing_status_audit_id_seq'::regclass);
-

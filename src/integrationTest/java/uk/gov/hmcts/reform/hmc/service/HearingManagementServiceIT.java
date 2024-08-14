@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_VERSION_UPDATE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UPDATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
@@ -76,6 +77,7 @@ class HearingManagementServiceIT extends BaseTest {
         HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null,
                                                                                HMC);
         validateStatusAudit(response, CREATE_HEARING_REQUEST);
+        validateRequestVersionAudit(response);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -95,6 +97,7 @@ class HearingManagementServiceIT extends BaseTest {
         HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null,
                                                                                HMC);
         validateStatusAudit(response, CREATE_HEARING_REQUEST);
+        validateRequestVersionAudit(response);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -114,6 +117,7 @@ class HearingManagementServiceIT extends BaseTest {
         HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null,
                                                                                HMC);
         validateStatusAudit(response, CREATE_HEARING_REQUEST);
+        validateRequestVersionAudit(response);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -133,6 +137,7 @@ class HearingManagementServiceIT extends BaseTest {
         HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null,
                                                                                HMC);
         validateStatusAudit(response, CREATE_HEARING_REQUEST);
+        validateRequestVersionAudit(response);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -184,6 +189,7 @@ class HearingManagementServiceIT extends BaseTest {
         HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null,
                                                                                HMC);
         validateStatusAudit(response, CREATE_HEARING_REQUEST);
+        validateRequestVersionAudit(response);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -205,6 +211,7 @@ class HearingManagementServiceIT extends BaseTest {
         HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null,
                                                                                HMC);
         validateStatusAudit(response, CREATE_HEARING_REQUEST);
+        validateRequestVersionAudit(response);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -224,6 +231,7 @@ class HearingManagementServiceIT extends BaseTest {
         HearingResponse response = hearingManagementService.saveHearingRequest(createHearingRequest, null,
                                                                                HMC);
         validateStatusAudit(response, CREATE_HEARING_REQUEST);
+        validateRequestVersionAudit(response);
         assertEquals(VERSION_NUMBER_TO_INCREMENT, response.getVersionNumber());
         assertEquals(POST_HEARING_STATUS, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -237,6 +245,7 @@ class HearingManagementServiceIT extends BaseTest {
         HearingResponse response = hearingManagementService.deleteHearingRequest(2000000000L, request,
                                                                                  HMC);
         validateStatusAudit(response, DELETE_HEARING_REQUEST);
+        validateRequestVersionAudit(response);
         assertNotNull(response.getVersionNumber());
         assertEquals(CANCELLATION_REQUESTED, response.getStatus());
         assertNotNull(response.getHearingRequestId());
@@ -303,6 +312,7 @@ class HearingManagementServiceIT extends BaseTest {
             .updateHearingRequest(2000000000L, TestingUtil.updateHearingRequestWithCaseSubType(2),
                                   null, HMC);
         validateStatusAudit(response, UPDATE_HEARING_REQUEST);
+        validateRequestVersionAudit(response);
         assertEquals(2000000000L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.HEARING_REQUESTED.name(), response.getStatus());
         assertEquals(3, response.getVersionNumber());
@@ -317,6 +327,7 @@ class HearingManagementServiceIT extends BaseTest {
         HearingResponse response = hearingManagementService.updateHearingRequest(2000000012L, request,
                                                                                  null, HMC);
         validateStatusAudit(response, UPDATE_HEARING_REQUEST);
+        validateRequestVersionAudit(response);
         assertEquals(2000000012L, response.getHearingRequestId());
         assertEquals(response.getStatus(), PutHearingStatus.UPDATE_REQUESTED.name());
         assertEquals(2, response.getVersionNumber());
@@ -331,6 +342,7 @@ class HearingManagementServiceIT extends BaseTest {
         HearingResponse response = hearingManagementService.updateHearingRequest(2000000024L, request,
                                                                                  null, HMC);
         validateStatusAudit(response, UPDATE_HEARING_REQUEST);
+        validateRequestVersionAudit(response);
         assertEquals(2000000024L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
         assertEquals(2, response.getVersionNumber());
@@ -386,6 +398,7 @@ class HearingManagementServiceIT extends BaseTest {
         HearingResponse response = hearingManagementService.updateHearingRequest(2000000024L, request,
                                                                                  null, HMC);
         validateStatusAudit(response, UPDATE_HEARING_REQUEST);
+        validateRequestVersionAudit(response);
         assertEquals(2000000024L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
         assertEquals(2, response.getVersionNumber());
@@ -600,6 +613,14 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals(response.getVersionNumber().toString(), auditEntityList.get(0).getRequestVersion());
         assertEquals(response.getStatus(), auditEntityList.get(0).getStatus());
         assertNull(auditEntityList.get(0).getOtherInfo());
+    }
+
+    private void validateRequestVersionAudit(HearingResponse response) {
+        List<HearingStatusAuditEntity> auditEntityList = hearingStatusAuditRepository.findByHearingId(
+            response.getHearingRequestId().toString());
+        assertNotNull(auditEntityList);
+        assertNotNull(auditEntityList.get(1).getOtherInfo());
+        assertNotNull(auditEntityList.get(1).getOtherInfo().get(REQUEST_VERSION_UPDATE));
     }
 
 }
