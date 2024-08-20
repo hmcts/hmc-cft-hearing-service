@@ -21,7 +21,7 @@ Feature: F-005: Search for hearings
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     And another successful call [to create a second hearing request] as in [CreateSecondHearingRequest],
     And a successful call [to delete a hearing request] as in [deleteHearingRequest],
-    And a wait time of [15] seconds [to wait for status to come back from hmi]
+    And a wait time of [35] seconds [to wait for status to come back from hmi]
     And a successful call [to check the hearing status is AWAITING_LISTING] as in [GetHearingRequestAwaitingListingStatus],
 
     When a request is prepared with appropriate values,
