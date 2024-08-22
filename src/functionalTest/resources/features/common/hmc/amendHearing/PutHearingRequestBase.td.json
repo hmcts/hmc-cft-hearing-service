@@ -90,7 +90,7 @@
       },
       "caseDetails": {
         "hmctsServiceCode": "TEST",
-        "caseRef": "1512672408575038",
+        "caseRef": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}",
         "requestTimeStamp": "2000-08-10T12:20:00.000Z",
         "externalCaseReference": "EXT/REF123",
         "caseDeepLink": "https://www.google.com",
