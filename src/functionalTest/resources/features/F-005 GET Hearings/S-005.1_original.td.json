@@ -1,16 +1,13 @@
 {
-  "_guid_": "S-005.1",
+  "_guid_": "S-005.1_original",
   "_extends_" : "F-005_TestBase",
   "specs": [
     "has the 200 OK code",
     "an active profile in CCD",
     "has 200 status code",
-    "contains the hearing with LISTED status"
+    "contains both hearings"
   ],
   "request": {
-    "queryParams": {
-      "status": "LISTED"
-    },
     "pathVariables": {
       "caseref": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}"
     }
@@ -25,18 +22,36 @@
     },
     "body" : {
       "caseRef" : "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}",
-      "caseHearings" : [ {
+      "caseHearings" : [
+        {
+          "__ordering__": "unordered",
+          "__elementId__": "hmcStatus"
+        },
+        {
         "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
         "hearingType" : "Some hearing type",
-        "hmcStatus" : "AWAITING_ACTUALS",
-        "lastResponseReceivedDateTime" : "[[ANYTHING_PRESENT]]",
-        "requestVersion" : "[[ANYTHING_PRESENT]]",
-        "hearingListingStatus" : "[[ANYTHING_PRESENT]]",
-        "listAssistCaseStatus" : "[[ANYTHING_PRESENT]]",
-        "hearingDaySchedule" : "[[ANYTHING_PRESENT]]",
+        "hmcStatus" : "HEARING_REQUESTED",
+        "lastResponseReceivedDateTime" : null,
+        "requestVersion" : null,
+        "hearingListingStatus" : null,
+        "listAssistCaseStatus" : null,
+        "hearingDaySchedule" : null,
         "hearingGroupRequestId" : null,
         "hearingIsLinkedFlag" : false,
         "hearingChannels" : [ "INTER" ],
+        "hearingID" : "[[ANY_NUMBER_NOT_NULLABLE]]"
+      }, {
+        "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
+        "hearingType" : "Some hearing type",
+        "hmcStatus" : "HEARING_REQUESTED",
+        "lastResponseReceivedDateTime" : null,
+        "requestVersion" : null,
+        "hearingListingStatus" : null,
+        "listAssistCaseStatus" : null,
+        "hearingDaySchedule" : null,
+        "hearingGroupRequestId" : null,
+        "hearingIsLinkedFlag" : false,
+          "hearingChannels" : [ "INTER" ],
         "hearingID" : "[[ANY_NUMBER_NOT_NULLABLE]]"
       } ],
       "hmctsServiceCode" : "[[ANYTHING_PRESENT]]"

@@ -1,16 +1,14 @@
 {
-  "_guid_": "S-005.1",
+  "_guid_": "S-005.3",
   "_extends_" : "F-005_TestBase",
   "specs": [
     "has the 200 OK code",
     "an active profile in CCD",
     "has 200 status code",
+    "contains both hearings",
     "contains the hearing with LISTED status"
   ],
   "request": {
-    "queryParams": {
-      "status": "LISTED"
-    },
     "pathVariables": {
       "caseref": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}"
     }
