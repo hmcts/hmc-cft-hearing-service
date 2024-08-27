@@ -5,14 +5,14 @@
     "has the 200 OK code",
     "an active profile in CCD",
     "has 200 status code",
-    "contains only the hearing with AWAITING_LISTING status"
+    "contains only the hearing with HEARING_REQUESTED status"
   ],
   "request": {
     "pathVariables": {
       "caseref": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}"
     },
     "queryParams": {
-      "status": "AWAITING_LISTING"
+      "status": "HEARING_REQUESTED"
     }
   },
   "expectedResponse": {
@@ -29,7 +29,7 @@
       "caseHearings" : [ {
         "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
         "hearingType" : "Some hearing type",
-        "hmcStatus" : "AWAITING_LISTING",
+        "hmcStatus" : "HEARING_REQUESTED",
         "lastResponseReceivedDateTime" : null,
         "requestVersion" : null,
         "hearingListingStatus" : null,
