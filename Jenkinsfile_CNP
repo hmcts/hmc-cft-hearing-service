@@ -77,6 +77,8 @@ env.HMC_SERVICE_BUS_TOPIC = "hmc-to-cft"
 env.HMC_SERVICE_BUS_SUBSCRIPTION = "hmc-subs-to-cft"
 env.HMC_SERVICE_BUS_QUEUE = "hmc-from-hmi"
 env.HMC_OUTBOUND_SERVICE_BUS_QUEUE = "hmc-to-hmi"
+env.FH_BASE_URL = "https://login.microsoftonline.com"
+env.HMI_BASE_URL = "http://ccd-test-stubs-service:5555/hmi"
 
 //env.HMC_INBOUND_ADAPTER_URL = "https://inbound-adapter-hmc-cft-hearing-service-${env.BRANCH_NAME}.service.core-compute-preview.internal".toLowerCase()
 env.HMC_INBOUND_ADAPTER_URL = "http://hmc-hmi-inbound-adapter-aat.service.core-compute-aat.internal"
