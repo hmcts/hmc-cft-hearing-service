@@ -55,6 +55,12 @@ servicebus:
       - name: hmc-to-hmi
       
 hmc:
+  enabled: true
+  hmc:
+    hearingService:
+      enabled: false
+      
+hmc:
   hmc-hmi-outbound-adapter:
     java:
       environment:
