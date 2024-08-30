@@ -59,11 +59,9 @@ hmc:
   hmc:
     hearingService:
       enabled: false
-      
-  hmc:
-    hmc-hmi-outbound-adapter:
-      java:
-        environment:
-          HMI_BASE_URL: http://localhost:5555/hmi
+  hmc-hmi-outbound-adapter:
+    java:
+      environment:
+        HMI_BASE_URL: http://localhost:5555/hmi
         
 
