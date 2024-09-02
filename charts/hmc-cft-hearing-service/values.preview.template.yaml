@@ -60,7 +60,7 @@ hmc:
     hearingService:
       enabled: false
     inboundAdapter:
-      enabled: true
+      enabled: false
     outboundAdapter:
       enabled: true
     servicebus:
