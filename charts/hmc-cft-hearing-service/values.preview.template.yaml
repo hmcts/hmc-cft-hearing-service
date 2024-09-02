@@ -53,15 +53,20 @@ servicebus:
     queues:
       - name: hmc-from-hmi
       - name: hmc-to-hmi
-      
+
 hmc:
   enabled: true
   hmc:
     hearingService:
       enabled: false
+    inboundAdapter:
+      enabled: true
+    outboundAdapter:
+      enabled: true
+    servicebus:
+      enabled: false
   hmc-hmi-outbound-adapter:
     java:
       environment:
         HMI_BASE_URL: http://localhost:5555/hmi
-        
 
