@@ -39,7 +39,7 @@ configurations.configureEach {
   }
 
   tasks.withType(Copy).configureEach {
-    duplicatesStrategy 'exclude'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
   }
 }
 
@@ -84,11 +84,11 @@ sourceSets {
   }
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
   useJUnitPlatform()
 
   testLogging {
@@ -101,7 +101,7 @@ test {
   failFast = true
 }
 
-task functional(type: Test) {
+tasks.register('functional', Test) {
   description = "Runs functional tests"
   group = "Verification"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
@@ -140,7 +140,7 @@ task functional(type: Test) {
   outputs.upToDateWhen { false }
 }
 
-task integration(type: Test) {
+tasks.register('integration', Test) {
   description = "Runs integration tests"
   group = "Verification"
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
@@ -148,7 +148,7 @@ task integration(type: Test) {
   failFast = true
 }
 
-task smoke(type: Test) {
+tasks.register('smoke', Test) {
   description = 'Executes smoke tests against an the HMC CFT Hearing Service API instance just deployed'
   dependsOn functionalTestClasses
 
@@ -162,7 +162,7 @@ task smoke(type: Test) {
     generateCucumberReports.enabled = true
     javaexec {
       environment "OAUTH2_CLIENT_SECRET", "DUMMY"
-      mainClass = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
+      main = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
       classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
       args = [
         '--threads', '10',
@@ -197,7 +197,7 @@ cucumberReports {
   reports = files("${rootDir}/target/cucumber.json")
 }
 
-task customCleanBeftaReports(type:Delete) {
+tasks.register('customCleanBeftaReports', Delete) {
   delete "${rootDir}/BEFTA Report for Smoke Tests/"
   delete "${rootDir}/BEFTA Report for Functional Tests/"
   delete "${rootDir}/target/cucumber"
@@ -212,19 +212,21 @@ jacoco {
 jacocoTestReport {
   executionData(test, integration)
   reports {
-    xml.enabled = true
-    csv.enabled = false
+    xml.required.set(true)
+    csv.required.set(false)
     xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
   }
 }
 
-project.tasks['sonarqube'].dependsOn jacocoTestReport
+tasks.named('sonarqube') {
+  dependsOn jacocoTestReport
+}
 
 sonarqube {
   properties {
     property "sonar.projectName", "Reform :: hmc-cft-hearing-service"
     property "sonar.projectKey", "uk.gov.hmcts.reform:hmc-cft-hearing-service"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.outputLocation.get().asFile.path}"
     property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/hmc/Application.java," +
       "**/config/SecurityConfiguration.java," +
       "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageReaderFromQueueConfiguration.java," +
@@ -311,12 +313,14 @@ def static getCheckedOutGitCommitHash() {
   'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
-task contract(type: Test, description: 'Runs contract tests.', group: 'Verification') {
+tasks.register('contract', Test) {
+  description = 'Runs contract tests.'
+  group = 'Verification'
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
 }
 
-task runAndPublishConsumerPactTests(type: Test) {
+tasks.register('runAndPublishConsumerPactTests', Test) {
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
   include "uk/gov/hmcts/reform/hmc/consumer/**"
@@ -324,7 +328,7 @@ task runAndPublishConsumerPactTests(type: Test) {
 
 runAndPublishConsumerPactTests.finalizedBy pactPublish
 
-task runProviderPactVerification(type:Test) {
+tasks.register('runProviderPactVerification', Test) {
   logger.lifecycle("Runs provider pact Tests")
   useJUnitPlatform()
   testClassesDirs = sourceSets.contractTest.output.classesDirs
@@ -350,7 +354,6 @@ repositories {
     url "https://jitpack.io"
   }
 }
-
 
 ext.libraries = [
   junit5: [
@@ -559,7 +562,9 @@ task loadEnvSecrets() {
   }
 }
 
-task reloadEnvSecrets(dependsOn: [loadEnvSecrets]) {
+tasks.register('reloadEnvSecrets') {
+  dependsOn(loadEnvSecrets)
+
   doFirst {
     if (project.file('./.demo-env').exists()) {
       project.file('./.demo-env').delete()
@@ -581,7 +586,7 @@ bootWithCCD {
 
   authMode = uk.gov.hmcts.rse.AuthMode.Local
 
-  environment("RSE_LIB_ADDITIONAL_DATABASES", "hmc");
+  environment("RSE_LIB_ADDITIONAL_DATABASES", "hmc")
   environment("CFT_HEARING_SERVICE_DB_USERNAME", "postgres")
   environment("CFT_HEARING_SERVICE_DB_PASSWORD", "postgres")
   environment("CFT_HEARING_SERVICE_DB_PORT", "6432")
