@@ -65,8 +65,23 @@ hmc:
       enabled: true
     servicebus:
       enabled: false
+      
   hmc-hmi-outbound-adapter:
     java:
+      secrets:
+        HMC_SERVICE_BUS_OUTBOUND_CONNECTION_STRING:
+          secretRef: hmc-sb-preview
+          key: connectionString
+        HMC_SERVICE_BUS_INBOUND_CONNECTION_STRING:
+          secretRef: hmc-sb-preview
+          key: connectionString
       environment:
         HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
-
+        
+  hmc-hmi-inbound-adapter:
+    java:
+      secrets:
+        HMC_SERVICE_BUS_CONNECTION_STRING:
+          secretRef: hmc-sb-preview
+          key: connectionString
+  
