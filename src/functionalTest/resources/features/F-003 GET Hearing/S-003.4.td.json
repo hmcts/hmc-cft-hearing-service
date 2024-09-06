@@ -23,7 +23,7 @@
         "status": "LISTED"
       },
       "caseDetails" : {
-        "hmctsServiceCode" : "ABA1",
+        "hmctsServiceCode" : "TEST",
         "caseRef": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}",
         "externalCaseReference" : "EXT/REF123",
         "caseDeepLink" : "https://www.google.com",
@@ -118,13 +118,14 @@
           "hearingVenueId" : "372653",
           "hearingRoomId" : "Cardiff SSCS - Hearing Room 01",
           "hearingJudgeId" : null,
-          "panelMemberId" : null,
+          "panelMemberIds" : null,
           "attendees" : [ ],
           "listAssistSessionID" : null
         } ],
         "laCaseStatus" : "LISTED",
         "listingStatus" : "FIXED",
-        "receivedDateTime" : "[[ANYTHING_PRESENT]]"
+        "receivedDateTime" : "[[ANYTHING_PRESENT]]",
+        "requestVersion" : "[[ANYTHING_PRESENT]]"
       }
     }
   }
