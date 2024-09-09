@@ -28,7 +28,7 @@
       "caseHearings" : [ {
         "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
         "hearingType" : "Some hearing type",
-        "hmcStatus" : "AWAITING_ACTUALS",
+        "hmcStatus" : "LISTED",
         "lastResponseReceivedDateTime" : "[[ANYTHING_PRESENT]]",
         "requestVersion" : "[[ANYTHING_PRESENT]]",
         "hearingListingStatus" : "[[ANYTHING_PRESENT]]",

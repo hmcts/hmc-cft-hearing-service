@@ -28,8 +28,8 @@
             "code": "FIXED",
             "description": "Fixed - Unlikely to be moved"
           },
-          "hearingStartTime": "2023-04-20T09:00:00Z",
-          "hearingEndTime": "2023-04-20T10:00:00Z",
+          "hearingStartTime": "2054-04-20T09:00:00Z",
+          "hearingEndTime": "2054-04-20T10:00:00Z",
           "hearingPrivate": false,
           "hearingRisk": false,
           "hearingTranslatorRequired": false,

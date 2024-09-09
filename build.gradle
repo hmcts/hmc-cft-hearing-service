@@ -119,7 +119,7 @@ task functional(type: Test) {
         '--threads', '2',
         '--plugin', "json:${rootDir}/target/cucumber.json",
         '--plugin', "junit:${buildDir}/test-results/functional/cucumber.xml",
-        '--tags', '@S-002.1',
+        '--tags', 'not @Ignore',
         '--glue', 'uk.gov.hmcts.befta.player', 'src/functionalTest/resources/features'
       ]
       // '--add-opens=...' added to suppress 'WARNING: An illegal reflective access operation has occurred' in uk.gov.hmcts.befta.util.CucumberStepAnnotationUtils
