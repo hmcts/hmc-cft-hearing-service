@@ -68,5 +68,3 @@ java:
 hmc:
   enabled: false
 
-servicebus:
-  enabled: false
