@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
@@ -33,11 +34,14 @@ public class PartiesNotifiedController {
 
     private final PartiesNotifiedService partiesNotifiedService;
     private AccessControlService accessControlService;
+    private final SecurityUtils securityUtils;
 
     public PartiesNotifiedController(PartiesNotifiedService partiesNotifiedService,
-                                     AccessControlService accessControlService) {
+                                     AccessControlService accessControlService,
+                                     SecurityUtils securityUtils) {
         this.partiesNotifiedService = partiesNotifiedService;
         this.accessControlService = accessControlService;
+        this.securityUtils = securityUtils;
     }
 
     @PutMapping(path = "/partiesNotified/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -60,7 +64,7 @@ public class PartiesNotifiedController {
                                    LocalDateTime receivedDateTime) {
         accessControlService.verifyAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         partiesNotifiedService.getPartiesNotified(hearingId, requestVersion, receivedDateTime, partiesNotified,
-                                                  clientS2SToken);
+                                                  getServiceName(clientS2SToken));
     }
 
     @GetMapping(path = "/partiesNotified/{id}", produces = APPLICATION_JSON_VALUE)
@@ -77,4 +81,9 @@ public class PartiesNotifiedController {
         accessControlService.verifyAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
         return partiesNotifiedService.getPartiesNotified(hearingId);
     }
+
+    private String getServiceName(String clientS2SToken) {
+        return securityUtils.getServiceNameFromS2SToken(clientS2SToken);
+    }
+
 }

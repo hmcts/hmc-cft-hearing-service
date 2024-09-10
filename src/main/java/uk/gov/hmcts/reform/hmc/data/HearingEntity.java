@@ -33,6 +33,7 @@ import javax.persistence.Table;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AWAITING_ACTUALS;
 
 @Table(name = "hearing")
 @EqualsAndHashCode(callSuper = true)
@@ -156,27 +157,24 @@ public class HearingEntity extends BaseEntity implements Serializable {
 
     public String getDerivedHearingStatus() {
         String hearingStatus = "";
-        switch (this.status) {
-            case "LISTED":
-            case "UPDATE_REQUESTED":
-            case "UPDATE_SUBMITTED":
-                hearingStatus = this.status;
-                Optional<HearingResponseEntity> hearingResponse = getLatestHearingResponse();
-                if (hearingResponse.isPresent()) {
-                    HearingResponseEntity latestHearingResponse = hearingResponse.get();
-                    Optional<HearingDayDetailsEntity> hearingDayDetails =
-                        latestHearingResponse.getEarliestHearingDayDetails();
-                    if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
-                        HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
-                        if (hearingDayDetailsEntity.getStartDateTime() != null
-                            && !LocalDate.now().isBefore(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
-                            return "AWAITING_ACTUALS";
-                        }
+        if (this.status.equals(HearingStatus.LISTED.name()) || this.status.equals(HearingStatus.UPDATE_REQUESTED.name())
+            || this.status.equals(HearingStatus.UPDATE_SUBMITTED.name())) {
+            hearingStatus = this.status;
+            Optional<HearingResponseEntity> hearingResponse = getLatestHearingResponse();
+            if (hearingResponse.isPresent()) {
+                HearingResponseEntity latestHearingResponse = hearingResponse.get();
+                Optional<HearingDayDetailsEntity> hearingDayDetails =
+                    latestHearingResponse.getEarliestHearingDayDetails();
+                if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
+                    HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
+                    if (hearingDayDetailsEntity.getStartDateTime() != null
+                        && !LocalDate.now().isBefore(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
+                        return AWAITING_ACTUALS;
                     }
                 }
-                break;
-            default:
-                hearingStatus = this.status;
+            }
+        } else {
+            hearingStatus = this.status;
         }
         return hearingStatus;
     }
@@ -192,17 +190,18 @@ public class HearingEntity extends BaseEntity implements Serializable {
     public HearingEntity updateLastGoodStatus() {
         HearingStatus currentStatus = this.getStatus() != null
             ? HearingStatus.valueOf(this.getStatus()) : null;
-        HearingStatus lastGoodStatus = this.getLastGoodStatus() != null
+        HearingStatus lastGoodStatusLocal = this.getLastGoodStatus() != null
             ? HearingStatus.valueOf(this.getLastGoodStatus()) : null;
 
-        if (lastGoodStatus != null && lastGoodStatus != currentStatus) {
-            if (HearingStatus.isFinalStatus(lastGoodStatus)) {
+        if (lastGoodStatusLocal != null && lastGoodStatusLocal != currentStatus) {
+            if (HearingStatus.isFinalStatus(lastGoodStatusLocal)) {
                 throw new BadRequestException("Status is already in a Final State: " + currentStatus);
-            } else if (HearingStatus.shouldUpdateLastGoodStatus(lastGoodStatus, currentStatus)) {
+            } else if (HearingStatus.shouldUpdateLastGoodStatus(lastGoodStatusLocal, currentStatus)) {
                 this.setLastGoodStatus(String.valueOf(currentStatus));
                 return this;
             }
-        } else if (lastGoodStatus == null && HearingStatus.shouldUpdateLastGoodStatus(null, currentStatus)) {
+        } else if (lastGoodStatusLocal == null
+            && HearingStatus.shouldUpdateLastGoodStatus(null, currentStatus)) {
             this.setLastGoodStatus(String.valueOf(currentStatus));
             return this;
         }

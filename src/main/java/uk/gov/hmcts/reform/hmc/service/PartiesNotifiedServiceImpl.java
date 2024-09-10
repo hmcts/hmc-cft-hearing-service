@@ -59,9 +59,9 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
             hearingResponseEntity.setServiceData(partiesNotified.getServiceData());
             hearingResponseRepository.save(hearingResponseEntity);
             HearingEntity hearingEntity = hearingResponseEntity.getHearing();
-            hearingStatusAuditService.saveAuditTriageDetails(hearingEntity, hearingEntity.getUpdatedDateTime(),
-                                                             PUT_PARTIES_NOTIFIED, null, clientS2SToken,
-                                                             HMC, null);
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
+                                                             PUT_PARTIES_NOTIFIED, null,
+                                                            clientS2SToken, HMC, null);
         }
     }
 
@@ -97,6 +97,5 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
         responses.setHearingID(hearingId.toString());
         return responses;
     }
-
 
 }

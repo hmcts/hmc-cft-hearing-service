@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import   com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
@@ -272,7 +272,8 @@ class HearingManagementServiceTest {
                 hmiHearingResponseMapper,
                 hearingStatusAuditService);
 
-        hearingStatusAuditService.saveAuditTriageDetails(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any(),any());
     }
 
 
@@ -282,8 +283,8 @@ class HearingManagementServiceTest {
         @Test
         void shouldVerifySubsequentCalls() throws JsonProcessingException {
             String json = "{\"query\": {\"match\": \"blah blah\"}}";
-            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
-            when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode);
+            JsonNode jsonNode1 = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+            when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode1);
             doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any(), any(),any(), any());
             hearingManagementService.sendResponse(json, "test hmctsCode", null);
             verify(objectMapperService, times(1)).convertObjectToJsonNode(any());
@@ -295,8 +296,8 @@ class HearingManagementServiceTest {
         void shouldVerifySubsequentCallsWhenDeploymentIdIsPresent() throws JsonProcessingException {
             ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
             String json = "{\"query\": {\"match\": \"blah blah\"}}";
-            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
-            when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode);
+            JsonNode jsonNode1 = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+            when(objectMapperService.convertObjectToJsonNode(json)).thenReturn(jsonNode1);
             doNothing().when(messageSenderToTopicConfiguration).sendMessage(Mockito.any(), any(),any(), any());
             hearingManagementService.sendResponse(json, "test hmctsCode", "TEST");
             verify(objectMapperService, times(1)).convertObjectToJsonNode(any());
@@ -1696,7 +1697,7 @@ class HearingManagementServiceTest {
             when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(3));
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
-            mockHearingCompletionRequest(hearingEntity);
+            mockHearingCompletionRequest();
             ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
             assertNotNull(responseEntity);
@@ -1722,7 +1723,9 @@ class HearingManagementServiceTest {
             when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(13));
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
-            mockHearingCompletionRequest(hearingEntity);
+            verify(hearingStatusAuditService, times(1)).saveAuditTriageDetailsWithUpdatedDate(
+                any(), any(), any(), any(), any(), any(), any());
+            mockHearingCompletionRequest();
             hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
         }
 
@@ -1745,8 +1748,9 @@ class HearingManagementServiceTest {
             when(actualHearingEntity.getHearingResultDate()).thenReturn(LocalDate.now().minusDays(13));
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                     .thenReturn(Optional.of(actualHearingEntity));
-            mockHearingCompletionRequest(hearingEntity);
+            mockHearingCompletionRequest();
             hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
+            assertEquals(COMPLETED.getLabel(), hearingEntity.getStatus());
         }
 
         @Test
@@ -1768,7 +1772,7 @@ class HearingManagementServiceTest {
             when(actualHearingEntity.getHearingResultReasonType()).thenReturn("MADE UP REASON");
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
-            mockHearingCompletionRequest(hearingEntity);
+            mockHearingCompletionRequest();
             ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
             assertNotNull(responseEntity);
@@ -1776,7 +1780,7 @@ class HearingManagementServiceTest {
         }
     }
 
-    private void mockHearingCompletionRequest(HearingEntity hearingEntity) {
+    private void mockHearingCompletionRequest() {
         HmcHearingResponse hmcHearingResponse = new HmcHearingResponse();
         hmcHearingResponse.setHearingID("2000000000");
         HmcHearingUpdate hmcHearingUpdate = new HmcHearingUpdate();
@@ -1824,10 +1828,6 @@ class HearingManagementServiceTest {
     }
 
     private HmiDeleteHearingRequest getHmiDeleteHearingRequest() {
-        HmiCaseDetails hmiCaseDetails = HmiCaseDetails.builder().build();
-        Listing listing = Listing.builder().build();
-        Entity entity = Entity.builder().build();
-
         return HmiDeleteHearingRequest.builder()
             .build();
     }

@@ -2,11 +2,9 @@ package uk.gov.hmcts.reform.hmc.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.common.collect.Lists;
 import org.apache.http.HttpStatus;
 import org.slf4j.helpers.MessageFormatter;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
@@ -1418,7 +1416,7 @@ public class TestingUtil {
         request.setCaseDetails(caseDetails);
         request.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         RequestDetails requestDetails = new RequestDetails();
-        requestDetails.setVersionNumber(1);
+        requestDetails.setVersionNumber(version);
         request.setRequestDetails(requestDetails);
         return request;
     }
@@ -1474,9 +1472,7 @@ public class TestingUtil {
         return linkedHearingStatusAuditEntity;
     }
 
-    private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
-        .modules(new Jdk8Module())
-        .build();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
 
 }
 

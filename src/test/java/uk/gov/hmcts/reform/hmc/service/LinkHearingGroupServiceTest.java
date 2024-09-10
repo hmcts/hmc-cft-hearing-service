@@ -662,7 +662,7 @@ class LinkHearingGroupServiceTest {
                 )
             );
 
-            logger.info("hearingLinkGroupRequest : {}", hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
+            logger.info("hearingLinkGroupRequest : {}", hearingLinkGroupRequest);
             service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             verify(hearingRepository).existsById(2000000000L);
             verify(hearingRepository, times(3)).findById(2000000000L);

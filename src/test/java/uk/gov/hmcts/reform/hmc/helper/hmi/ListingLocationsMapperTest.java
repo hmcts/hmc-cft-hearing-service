@@ -12,7 +12,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.CASE_HQ;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CLUSTER;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.COURT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.EPIMS;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.Region;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.REGION;
 
 class ListingLocationsMapperTest {
 
@@ -39,7 +39,7 @@ class ListingLocationsMapperTest {
             .build();
         ListingLocation listingLocationTwo = ListingLocation.builder()
             .locationId(LOCATION_ID_TWO)
-            .locationType(Region)
+            .locationType(REGION)
             .locationReferenceType(CASE_HQ)
             .build();
         List<ListingLocation> expectedListingLocations = Arrays.asList(listingLocation, listingLocationTwo);
@@ -64,7 +64,7 @@ class ListingLocationsMapperTest {
             .build();
         ListingLocation listingLocationTwo = ListingLocation.builder()
             .locationId(LOCATION_ID_TWO)
-            .locationType(Region)
+            .locationType(REGION)
             .locationReferenceType(CASE_HQ)
             .build();
         List<ListingLocation> expectedListingLocations = Arrays.asList(listingLocation, listingLocationTwo);
