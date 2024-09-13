@@ -299,7 +299,8 @@ class MessageProcessorIT extends BaseTest {
                          + "Cannot find request version 10 for hearing 2000000000",
                      logsList.get(1).getFormattedMessage());
         assertEquals("Hearing id: 2000000000 with Case reference: 9372710950276233 , Service Code: TEST "
-                + "updated to status " + HearingStatus.EXCEPTION.name(),
+                + "and Error Description: Cannot find request version 10 for hearing 2000000000  "
+                         + "updated to status " + HearingStatus.EXCEPTION.name(),
             logsList.get(2).getFormattedMessage()
         );
 
