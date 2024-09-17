@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.
 import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.JURISDICTION;
 import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.ROLE_TYPE;
 import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.USER_ID;
+import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ALREADY_SET;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND;
@@ -82,7 +83,9 @@ class PartiesNotifiedControllerIT extends BaseTest {
         void setUp() {
             stubRoleAssignments();
         }
-      
+
+        private final String serviceJwtXuiWeb = generateDummyS2SToken("ccd_definition");
+
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn200_WhenPartiesNotifiedIsSuccess() throws Exception {
@@ -91,6 +94,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             partiesNotified.setServiceData(jsonNode);
             final String dateTime = "2020-08-10T11:20:00";
             mockMvc.perform(put(url + "/2000000000" + "?version=1&received=" + dateTime)
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(200))
@@ -105,6 +109,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
 
             final String dateTime = "2020-11-30T10:15:21";
             mockMvc.perform(put(url + "/1000000000" + "?version=2&received=" + dateTime)
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(400))
@@ -120,6 +125,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
 
             final String dateTime = "2020-11-30T10:15:21";
             mockMvc.perform(put(url + "/2000000001" + "?version=2&received=" + dateTime)
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(404))
@@ -136,6 +142,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
 
             final String dateTime = "2020-11-30T10:15:21";
             mockMvc.perform(put(url + "/2000000000" + "?version=25&received=" + dateTime)
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(404))
@@ -152,6 +159,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
 
             final String dateTime = "2021-08-10T11:20:00";
             mockMvc.perform(put(url + "/2000000010" + "?version=1&received=" + dateTime)
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(400))
