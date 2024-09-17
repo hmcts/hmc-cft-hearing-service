@@ -15,6 +15,6 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: servicebus.enabled
   - name: hmc
-    version: 0.0.3
+    version: 0.0.4
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: hmc.enabled
