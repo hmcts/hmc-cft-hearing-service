@@ -41,18 +41,7 @@ java:
           alias: IDAM_KEY_CFT_HEARING_SERVICE
 
 servicebus:
-  enabled: true
-  teamName: CCD
-  resourceGroup: hmc-aso-preview-rg
-  sbNamespace: hmc-sb-preview
-  setup:
-    topics:
-      - name: hmc-to-cft
-    subscriptions:
-      - name: hmc-subs-to-cft
-    queues:
-      - name: hmc-from-hmi
-      - name: hmc-to-hmi
+  enabled: false
 
 hmc:
   enabled: true
@@ -64,7 +53,7 @@ hmc:
     outboundAdapter:
       enabled: true
     servicebus:
-      enabled: false
+      enabled: true
 
   hmc-hmi-outbound-adapter:
     java:
