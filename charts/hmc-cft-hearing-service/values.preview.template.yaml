@@ -49,7 +49,7 @@ hmc:
     hearingService:
       enabled: false
     inboundAdapter:
-      enabled: false
+      enabled: true
     outboundAdapter:
       enabled: true
     servicebus:
