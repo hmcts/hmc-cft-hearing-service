@@ -40,20 +40,6 @@ java:
         - name: hmc-cft-hearing-service-s2s-secret
           alias: IDAM_KEY_CFT_HEARING_SERVICE
 
-servicebus:
-  enabled: true
-  teamName: CCD
-  resourceGroup: hmc-aso-preview-rg
-  sbNamespace: hmc-sb-preview
-  setup:
-    topics:
-      - name: hmc-to-cft
-    subscriptions:
-      - name: hmc-subs-to-cft
-    queues:
-      - name: hmc-from-hmi
-      - name: hmc-to-hmi
-
 hmc:
   enabled: true
   hmc:
@@ -65,7 +51,7 @@ hmc:
       enabled: true
     servicebus:
       enabled: false
-      
+
   hmc-hmi-outbound-adapter:
     java:
       secrets:
@@ -77,11 +63,11 @@ hmc:
           key: connectionString
       environment:
         HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
-        
+
   hmc-hmi-inbound-adapter:
     java:
       secrets:
         HMC_SERVICE_BUS_CONNECTION_STRING:
           secretRef: hmc-sb-preview
           key: connectionString
-  
+
