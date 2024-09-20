@@ -78,7 +78,7 @@ env.HMC_SERVICE_BUS_SUBSCRIPTION = "hmc-subs-to-cft"
 env.HMC_SERVICE_BUS_QUEUE = "hmc-from-hmi"
 env.HMC_OUTBOUND_SERVICE_BUS_QUEUE = "hmc-to-hmi"
 
-env.HMC_INBOUND_ADAPTER_URL = "https://inbound-adapter-hmc-cft-hearing-service-${env.BRANCH_NAME}.service.core-compute-preview.internal".toLowerCase()
+env.HMC_INBOUND_ADAPTER_URL = "https://hmc-cft-hearing-service-${env.BRANCH_NAME}-hmc-hmi-inbound-adapter.service.core-compute-preview.internal".toLowerCase()
 echo 'url for inbound adapter = ${env.HMC_INBOUND_ADAPTER_URL}'
 
 //----------------
