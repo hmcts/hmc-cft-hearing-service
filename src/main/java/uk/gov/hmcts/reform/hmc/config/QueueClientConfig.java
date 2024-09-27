@@ -24,9 +24,6 @@ public class QueueClientConfig {
         log.info("Creating & returning new service bus processor client.");
         return new ServiceBusClientBuilder()
             .connectionString(applicationParams.getInternalInboundConnectionString())
-            .configuration(new com.azure.core.util.ConfigurationBuilder()
-                               .putProperty("com.azure.messaging.eventhubs.v2", "true")
-                               .build())
             .processor()
             .queueName(applicationParams.getInternalInboundQueueName())
             .receiveMode(ServiceBusReceiveMode.PEEK_LOCK)
