@@ -74,8 +74,8 @@ public final class Constants {
     public static final String EXCEPTION_STATUS = "Exception";
     public static final String CANCELLED = "CANCELLED";
     public static final String SERVICE_CODE_ABA1 = "ABA1";
-    public static final String EXCEPTION_MESSAGE = "Hearing id: {} with Case reference: {} and Service Code: {}"
-        + " updated to status {}";
+    public static final String EXCEPTION_MESSAGE = "Hearing id: {} with Case reference: {} , Service Code: {}"
+        + " and Error Description: {} updated to status {}";
     public static final String AMQP_CACHE = "com.azure.core.amqp.cache";
     public static final String AMQP_CACHE_VALUE = "true";
 }
