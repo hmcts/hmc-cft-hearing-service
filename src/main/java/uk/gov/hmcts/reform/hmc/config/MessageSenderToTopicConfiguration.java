@@ -35,7 +35,7 @@ public class MessageSenderToTopicConfiguration {
             final ServiceBusSenderClient senderClient = new ServiceBusClientBuilder()
                 .connectionString(applicationParams.getExternalConnectionString())
                 .configuration(new ConfigurationBuilder()
-                                   .putProperty(AMQP_CACHE, AMQP_CACHE_VALUE)
+                                   .putProperty("com.azure.core.amqp.cache", "true")
                                    .build())
                 .sender()
                 .topicName(applicationParams.getExternalTopicName())
