@@ -34,7 +34,7 @@ public class MessageSenderToQueueConfiguration {
             final ServiceBusSenderClient senderClient = new ServiceBusClientBuilder()
                 .connectionString(applicationParams.getInternalOutboundConnectionString())
                 .configuration(new ConfigurationBuilder()
-                                   .putProperty("com.azure.core.amqp.cache", "true")
+                                   .putProperty(AMQP_CACHE, AMQP_CACHE_VALUE)
                                    .build())
                 .sender()
                 .queueName(applicationParams.getInternalOutboundQueueName())

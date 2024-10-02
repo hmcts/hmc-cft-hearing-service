@@ -29,7 +29,7 @@ public class QueueClientConfig {
         return new ServiceBusClientBuilder()
             .connectionString(applicationParams.getInternalInboundConnectionString())
             .configuration(new ConfigurationBuilder()
-                               .putProperty("com.azure.core.amqp.cache", "true")
+                               .putProperty(AMQP_CACHE, AMQP_CACHE_VALUE)
                                .build())
             .processor()
             .queueName(applicationParams.getInternalInboundQueueName())
