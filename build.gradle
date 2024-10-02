@@ -426,6 +426,7 @@ dependencies {
 
   implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.17.4'
   implementation group: 'com.azure', name: 'azure-core', version: '1.52.0'
+  implementation group: 'com.azure', name: 'azure-core-amqp', version: '2.9.9'
 
   // CVE-2022-45143
   implementation "org.apache.tomcat.embed:tomcat-embed-core:${versions.tomcatEmbedded}"
