@@ -88,6 +88,7 @@ azure:
 
 jms:
   servicebus:
+    idle-timeout: ${SERVICE_BUS_IDLE_TIMEOUT:30000}
     internal:
       queues:
         inbound:

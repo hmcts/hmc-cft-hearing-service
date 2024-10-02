@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.config;
 
+import com.azure.core.util.ConfigurationBuilder;
 import com.azure.messaging.servicebus.ServiceBusClientBuilder;
 import com.azure.messaging.servicebus.ServiceBusMessage;
 import com.azure.messaging.servicebus.ServiceBusSenderClient;
@@ -8,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AMQP_CACHE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AMQP_CACHE_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR_PROCESSING_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
@@ -30,6 +33,9 @@ public class MessageSenderToQueueConfiguration {
         try {
             final ServiceBusSenderClient senderClient = new ServiceBusClientBuilder()
                 .connectionString(applicationParams.getInternalOutboundConnectionString())
+                .configuration(new ConfigurationBuilder()
+                                   .putProperty(AMQP_CACHE, AMQP_CACHE_VALUE)
+                                   .build())
                 .sender()
                 .queueName(applicationParams.getInternalOutboundQueueName())
                 .buildClient();
