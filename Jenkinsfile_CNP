@@ -42,7 +42,10 @@ def secrets = [
     secret('hmc-outbound-queue-connection-string', 'HMC_OUTBOUND_QUEUE_CONNECTION_STRING'),
     secret('hmc-fta-password', 'HMC_FTA_PASSWORD'),
     secret('hmc-hearing-service-users-pwd', 'HMC_HEARING_SERVICE_USERS_PWD'),
-
+    secret('fh-get-token-url', 'FH_GET_TOKEN_URL'),
+    secret('ClientId', 'CLIENT_ID'),
+    secret('ClientSecret', 'CLIENT_SECRET'),
+    secret('Scope', 'SCOPE'),
   ],
   's2s-${env}': [
     secret('microservicekey-ccd-data', 'BEFTA_S2S_CLIENT_SECRET_OF_CCD_DATA'),
