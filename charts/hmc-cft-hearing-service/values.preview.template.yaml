@@ -66,6 +66,10 @@ hmc:
           key: connectionString
       environment:
         HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
+        HMI_SOURCE_SYSTEM: CFT
+        HMI_DESTINATION_SYSTEM: SNL
+        GRANT_TYPE: client_credentials
+        FH_BASE_URL: https://login.microsoftonline.com
 
   hmc-hmi-inbound-adapter:
     java:
