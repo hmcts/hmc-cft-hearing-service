@@ -129,6 +129,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final EntitiesMapper entitiesMapper;
     private final HmiHearingResponseMapper hmiHearingResponseMapper;
     private final HearingStatusAuditService hearingStatusAuditService;
+    private final PendingRequestService pendingRequestService;
 
 
     @Autowired
@@ -154,7 +155,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HmiCaseDetailsMapper hmiCaseDetailsMapper,
                                         EntitiesMapper entitiesMapper,
                                         HmiHearingResponseMapper hmiHearingResponseMapper,
-                                        HearingStatusAuditService hearingStatusAuditService) {
+                                        HearingStatusAuditService hearingStatusAuditService,
+                                        PendingRequestService pendingRequestService) {
         this.dataStoreRepository = dataStoreRepository;
         this.roleAssignmentService = roleAssignmentService;
         this.securityUtils = securityUtils;
@@ -178,6 +180,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.entitiesMapper = entitiesMapper;
         this.hmiHearingResponseMapper = hmiHearingResponseMapper;
         this.hearingStatusAuditService = hearingStatusAuditService;
+        this.pendingRequestService = pendingRequestService;
     }
 
     @Override
@@ -651,12 +654,18 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private void sendRequestToQueue(HmiSubmitHearingRequest hmiSubmitHearingRequest, Long hearingId,
                                     String messageType, String deploymentId) {
         var jsonNode = objectMapperService.convertObjectToJsonNode(hmiSubmitHearingRequest);
-        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType, deploymentId);
+        //messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType,
+        // deploymentId);
+        pendingRequestService.addToPendingRequests(jsonNode, hearingId, messageType, deploymentId);
+
     }
 
     private void sendRequestToQueue(Long hearingId, String messageType, String deploymentId) {
         HmiDeleteHearingRequest hmiDeleteHearingRequest = hmiDeleteHearingRequestMapper.mapRequest();
         var jsonNode = objectMapperService.convertObjectToJsonNode(hmiDeleteHearingRequest);
-        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType, deploymentId);
+        //messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType,
+        // deploymentId);
+        pendingRequestService.addToPendingRequests(jsonNode, hearingId, messageType, deploymentId);
+
     }
 }
