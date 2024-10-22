@@ -19,20 +19,25 @@ public interface CaseHearingRequestRepository extends CrudRepository<CaseHearing
     @Query("SELECT caseHearingID from CaseHearingRequestEntity where hearing.id = :hearingId")
     Long getCaseHearingId(Long hearingId);
 
-    @Query("from CaseHearingRequestEntity chr WHERE chr.caseReference = :caseRef "
-        + "and chr.versionNumber = (select max(chr2.versionNumber) from CaseHearingRequestEntity chr2 "
-        + "where chr2.hearing.id = chr.hearing.id) "
-        + "order by chr.hearing.id desc")
+    @Query("from CaseHearingRequestEntity chr "
+            + "join (select chr2.hearing.id, max(chr2.versionNumber) as maxVersion from CaseHearingRequestEntity chr2 "
+            + "where chr2.caseReference = :caseRef group by chr2.hearing.id) sub "
+            + "on chr.hearing.id = sub.hearing.id and chr.versionNumber = sub.maxVersion "
+            + "order by chr.hearing.id desc")
     List<CaseHearingRequestEntity> getHearingDetails(String caseRef);
 
-    @Query("from CaseHearingRequestEntity chr WHERE chr.caseReference = :caseRef and chr.hearing.status = :status "
-        + "and chr.versionNumber = (select max(chr2.versionNumber) from CaseHearingRequestEntity chr2 "
-        + "where chr2.hearing.id = chr.hearing.id) "
-        + "order by chr.hearing.id desc")
+    @Query("from CaseHearingRequestEntity chr "
+            + "join (select chr2.hearing.id, max(chr2.versionNumber) as maxVersion from CaseHearingRequestEntity chr2 "
+            + "where chr2.caseReference = :caseRef group by chr2.hearing.id) sub "
+            + "on chr.hearing.id = sub.hearing.id and chr.versionNumber = sub.maxVersion "
+            + "where chr.hearing.status = :status "
+            + "order by chr.hearing.id desc")
     List<CaseHearingRequestEntity> getHearingDetailsWithStatus(String caseRef, String status);
 
-    @Query("from CaseHearingRequestEntity chr where hearing.id = :hearingId and chr.versionNumber = "
-        + "(SELECT max(versionNumber) from CaseHearingRequestEntity where hearing.id = :hearingId)")
+    @Query("from CaseHearingRequestEntity chr "
+            + "join (select max(chr2.versionNumber) as maxVersion from CaseHearingRequestEntity chr2 "
+            + "where chr2.hearing.id = :hearingId) sub "
+            + "on chr.versionNumber = sub.maxVersion and chr.hearing.id = :hearingId")
     CaseHearingRequestEntity getLatestCaseHearingRequest(Long hearingId);
 
     @Query("select count(hmctsServiceCode) from CaseHearingRequestEntity where hmctsServiceCode = :hmctsServiceCode")
