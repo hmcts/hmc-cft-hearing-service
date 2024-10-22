@@ -5,8 +5,8 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -26,17 +26,16 @@ public class UnNotifiedHearingsRepositoryImpl implements UnNotifiedHearingsRepos
                                                               LocalDateTime hearingStartDateFrom,
                                                               List<String> hearingStatus) {
         StringBuilder hqlQuery = getQueryForUnNotifiedHearings(hearingStatus);
-        if (null != hearingStatus && hearingStatus.stream().anyMatch(e -> e.equalsIgnoreCase(CANCELLED))) {
-            hqlQuery.append("OR hdd.startDateTime IS NULL");
+        if (hearingStatus != null && hearingStatus.contains(CANCELLED)) {
+            hqlQuery.append(" OR hdd.startDateTime IS NULL");
         }
 
-        Query query = em.createQuery(hqlQuery.toString());
-        List hearings = query
-            .setParameter("hmctsServiceCode", hmctsServiceCode)
-            .setParameter("hearingStartDateFrom", hearingStartDateFrom)
-            .setMaxResults(UN_NOTIFIED_HEARINGS_LIMIT)
-            .getResultList();
-        return getHearings(hearings);
+        Query query = em.createQuery(hqlQuery.toString())
+                .setParameter("hmctsServiceCode", hmctsServiceCode)
+                .setParameter("hearingStartDateFrom", hearingStartDateFrom)
+                .setMaxResults(UN_NOTIFIED_HEARINGS_LIMIT);
+
+        return getHearings(query.getResultList());
     }
 
     @Override
@@ -44,50 +43,49 @@ public class UnNotifiedHearingsRepositoryImpl implements UnNotifiedHearingsRepos
                                                            LocalDateTime hearingStartDateTo,
                                                            List<String> hearingStatus) {
         StringBuilder hqlQuery = getQueryForUnNotifiedHearings(hearingStatus);
-        hqlQuery.append("AND MAX(hdd.endDateTime) <= :hearingStartDateTo ");
-        if (null != hearingStatus && hearingStatus.stream().anyMatch(e -> e.equalsIgnoreCase(CANCELLED))) {
-            hqlQuery.append("OR hdd.startDateTime IS NULL");
+        hqlQuery.append(" AND MAX(hdd.endDateTime) <= :hearingStartDateTo");
+        if (hearingStatus != null && hearingStatus.contains(CANCELLED)) {
+            hqlQuery.append(" OR hdd.startDateTime IS NULL");
         }
-        Query query = em.createQuery(hqlQuery.toString());
-        List hearings = query
-            .setParameter("hmctsServiceCode", hmctsServiceCode)
-            .setParameter("hearingStartDateFrom", hearingStartDateFrom)
-            .setParameter("hearingStartDateTo", hearingStartDateTo)
-            .setMaxResults(UN_NOTIFIED_HEARINGS_LIMIT)
-            .getResultList();
-        return getHearings(hearings);
+
+        Query query = em.createQuery(hqlQuery.toString())
+                .setParameter("hmctsServiceCode", hmctsServiceCode)
+                .setParameter("hearingStartDateFrom", hearingStartDateFrom)
+                .setParameter("hearingStartDateTo", hearingStartDateTo)
+                .setMaxResults(UN_NOTIFIED_HEARINGS_LIMIT);
+
+        return getHearings(query.getResultList());
     }
 
     private StringBuilder getQueryForUnNotifiedHearings(List<String> hearingStatus) {
-        StringBuilder hqlQuery = new StringBuilder("select distinct hr.hearing.id FROM HearingResponseEntity hr "
-                                                     + "JOIN CaseHearingRequestEntity csr "
-                                                     + "ON hr.hearing.id = csr.hearing.id "
-                                                     + "join MaxHearingRequestVersionView mrv "
-                                                     + "ON csr.hearing.id = mrv.hearingId "
-                                                     + "JOIN HearingDayDetailsEntity hdd ON "
-                                                     + "hr.hearingResponseId = hdd.hearingResponse.hearingResponseId "
-                                                     + "JOIN HearingEntity he ON hr.hearing.id = he.id "
-                                                     + "where csr.hmctsServiceCode = :hmctsServiceCode "
-                                                     + "and (hr.requestVersion = mrv.maxHearingRequestVersion");
-        hqlQuery.append(") and hr.partiesNotifiedDateTime IS NULL ");
-        if (null != hearingStatus && hearingStatus.stream().anyMatch(e -> e.equalsIgnoreCase(CANCELLED))) {
-            hqlQuery.append("AND (hdd.startDateTime >= :hearingStartDateFrom OR hdd.startDateTime IS NULL)");
+        StringBuilder hqlQuery = new StringBuilder("SELECT DISTINCT hr.hearing.id FROM HearingResponseEntity hr "
+                + "JOIN CaseHearingRequestEntity csr ON hr.hearing.id = csr.hearing.id "
+                + "JOIN MaxHearingRequestVersionView mrv ON csr.hearing.id = mrv.hearingId "
+                + "JOIN HearingDayDetailsEntity hdd ON hr.hearingResponseId = hdd.hearingResponse.hearingResponseId "
+                + "JOIN HearingEntity he ON hr.hearing.id = he.id "
+                + "WHERE csr.hmctsServiceCode = :hmctsServiceCode "
+                + "AND hr.requestVersion = mrv.maxHearingRequestVersion "
+                + "AND hr.partiesNotifiedDateTime IS NULL ");
+
+        if (hearingStatus != null && !hearingStatus.isEmpty()) {
+            String statusConditions = hearingStatus.stream()
+                    .map(status -> String.format("'%s'", status.toUpperCase()))
+                    .collect(Collectors.joining(", ", "AND he.status IN (", ")"));
+            hqlQuery.append(statusConditions);
         }
-        if (null != hearingStatus && hearingStatus.size() == 1 && hearingStatus.get(0).equalsIgnoreCase(CANCELLED)) {
-            hqlQuery.append(" AND he.status = 'CANCELLED'");
-        }
-        hqlQuery.append(" GROUP BY hr.hearing.id, hdd.startDateTime ");
-        hqlQuery.append("HAVING MIN(hdd.startDateTime) >= :hearingStartDateFrom ");
+
+        hqlQuery.append(" AND (hdd.startDateTime >= :hearingStartDateFrom OR hdd.startDateTime IS NULL) ")
+                .append("GROUP BY hr.hearing.id ")
+                .append("HAVING MIN(hdd.startDateTime) >= :hearingStartDateFrom");
+
         return hqlQuery;
     }
 
-    private List<Long> getHearings(List hearings) {
+    private List<Long> getHearings(List<?> hearings) {
         List<Long> hearingsLong = new ArrayList<>();
-        Iterator it = hearings.iterator();
-        while (it.hasNext()) {
-            hearingsLong.add((Long) it.next());
+        for (Object hearing : hearings) {
+            hearingsLong.add((Long) hearing);
         }
         return hearingsLong;
     }
-
 }
