@@ -3,7 +3,7 @@ plugins {
   id 'idea'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-  id 'org.springframework.boot' version '2.5.15'
+  id 'org.springframework.boot' version '2.7.18'
   id 'com.github.ben-manes.versions' version '0.39.0'
   id 'org.sonarqube' version '3.3'
   id 'uk.gov.hmcts.java' version '0.12.55'
@@ -247,7 +247,7 @@ def versions = [
   azureInsightsVersion: '2.4.1',
   restAssured     : '4.2.1',
   springBoot      : springBoot.class.package.implementationVersion,
-  springCloud     : '2020.0.6',
+  springCloud     : '2021.0.8',
   springfoxSwagger: '3.0.0',
   testcontainers  : '1.15.3',
   netty           : '4.1.106.Final',
