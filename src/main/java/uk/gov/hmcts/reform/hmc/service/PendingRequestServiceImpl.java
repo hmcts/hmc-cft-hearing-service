@@ -50,6 +50,9 @@ public class PendingRequestServiceImpl implements PendingRequestService {
         pendingRequest.setLastTriedDateTime(currentTimestamp);
         pendingRequest.setSubmittedDateTime(currentTimestamp);
         pendingRequest.setRetryCount(0);
+        if (null == deploymentId) {
+            deploymentId = "";
+        }
         pendingRequest.setDeploymentId(deploymentId);
 
         return pendingRequest;
