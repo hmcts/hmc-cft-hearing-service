@@ -1,23 +1,20 @@
 {
-  "_guid_": "S-005.2",
+  "_guid_": "S-005.3",
   "_extends_" : "F-005_TestBase",
   "specs": [
     "has the 200 OK code",
     "an active profile in CCD",
     "has 200 status code",
-    "contains only the hearing with HEARING_REQUESTED status"
+    "contains both hearings",
+    "contains the hearing with LISTED status"
   ],
   "request": {
     "pathVariables": {
       "caseref": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}"
-    },
-    "queryParams": {
-      "status": "HEARING_REQUESTED"
     }
   },
   "expectedResponse": {
-    "responseCode": 200,
-    "responseMessage": "OK",
+    "_extends_": "Common_200_Response",
     "headers": {
       "Content-Length": "[[ANYTHING_PRESENT]]",
       "Content-Type": "text/plain; charset=utf-8",
@@ -29,12 +26,12 @@
       "caseHearings" : [ {
         "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
         "hearingType" : "Some hearing type",
-        "hmcStatus" : "HEARING_REQUESTED",
-        "lastResponseReceivedDateTime" : null,
-        "requestVersion" : null,
-        "hearingListingStatus" : null,
-        "listAssistCaseStatus" : null,
-        "hearingDaySchedule" : null,
+        "hmcStatus" : "LISTED",
+        "lastResponseReceivedDateTime" : "[[ANYTHING_PRESENT]]",
+        "requestVersion" : "[[ANYTHING_PRESENT]]",
+        "hearingListingStatus" : "[[ANYTHING_PRESENT]]",
+        "listAssistCaseStatus" : "[[ANYTHING_PRESENT]]",
+        "hearingDaySchedule" : "[[ANYTHING_PRESENT]]",
         "hearingGroupRequestId" : null,
         "hearingIsLinkedFlag" : false,
         "hearingChannels" : [ "INTER" ],
