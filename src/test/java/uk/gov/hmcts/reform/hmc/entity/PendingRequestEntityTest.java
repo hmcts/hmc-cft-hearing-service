@@ -5,7 +5,7 @@ import uk.gov.hmcts.reform.hmc.data.PendingRequestEntity;
 
 import java.sql.Timestamp;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 
 class PendingRequestEntityTest {
@@ -37,17 +37,17 @@ class PendingRequestEntityTest {
         pendingRequest.setMessageType(messageType);
         pendingRequest.setDeploymentId(deploymentId);
 
-        assertEquals(id, pendingRequest.getId());
-        assertEquals(hearingId, pendingRequest.getHearingId());
-        assertEquals(versionNumber, pendingRequest.getVersionNumber());
-        assertEquals(submittedDateTime, pendingRequest.getSubmittedDateTime());
-        assertEquals(retryCount, pendingRequest.getRetryCount());
-        assertEquals(lastTriedDateTime, pendingRequest.getLastTriedDateTime());
-        assertEquals(status, pendingRequest.getStatus());
-        assertEquals(incidentFlag, pendingRequest.getIncidentFlag());
-        assertEquals(message, pendingRequest.getMessage());
-        assertEquals(messageType, pendingRequest.getMessageType());
-        assertEquals(deploymentId, pendingRequest.getDeploymentId());
+        assertThat(id).isEqualTo(pendingRequest.getId());
+        assertThat(hearingId).isEqualTo(pendingRequest.getHearingId());
+        assertThat(versionNumber).isEqualTo(pendingRequest.getVersionNumber());
+        assertThat(submittedDateTime).isEqualTo(pendingRequest.getSubmittedDateTime());
+        assertThat(retryCount).isEqualTo(pendingRequest.getRetryCount());
+        assertThat(lastTriedDateTime).isEqualTo(pendingRequest.getLastTriedDateTime());
+        assertThat(status).isEqualTo(pendingRequest.getStatus());
+        assertThat(incidentFlag).isEqualTo(pendingRequest.getIncidentFlag());
+        assertThat(message).isEqualTo(pendingRequest.getMessage());
+        assertThat(messageType).isEqualTo(pendingRequest.getMessageType());
+        assertThat(deploymentId).isEqualTo(pendingRequest.getDeploymentId());
 
         final String expectedString =
             "id:<" + id + ">,hearingId:<" + hearingId + ">,versionNumber:<" + versionNumber
@@ -55,6 +55,6 @@ class PendingRequestEntityTest {
                 + submittedDateTime + ">,retryCount:<" + retryCount + ">,"
             + "lastTriedDateTime:<" + lastTriedDateTime + ">,status:<" + status + ">,incidentFlag:<" + incidentFlag
                 + ">,message:<" + message + ">,deploymentId:<" + deploymentId + ">";
-        assertEquals(expectedString, pendingRequest.toString());
+        assertThat(expectedString).isEqualTo(pendingRequest.toString());
     }
 }
