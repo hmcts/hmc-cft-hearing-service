@@ -1,24 +1,33 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.core.IsNull;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.TestFixtures;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
+import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import wiremock.com.jayway.jsonpath.DocumentContext;
 import wiremock.com.jayway.jsonpath.JsonPath;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 import javax.persistence.EntityManager;
 
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -28,6 +37,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.getJsonString;
+import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.USER_ID;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_MAX_LENGTH;
@@ -43,6 +54,9 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.actualHearingDay;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingActualsOutcome;
 
@@ -547,6 +561,69 @@ class HearingActualsManagementControllerIT extends BaseTest {
         }
     }
 
+    @Nested
+    @DisplayName("PutHearingActualsAlternativeEnvUrls")
+    class PutHearingActualsAlternativeUrls {
+
+        static WireMockServer amServer;
+        static WireMockServer dataStoreServer;
+
+        @BeforeAll
+        static void startServers() {
+            int amPort = 23456;
+            int dataStorePort = 34567;
+            amServer = startExtraWireMock(
+                amPort, "/am/role-assignments/actors/.*", getJsonString(stubRoleAssignments()));
+            dataStoreServer = startExtraWireMock(dataStorePort, "/cases/.*", CCD_RESPONSE);
+            amServer.start();
+            dataStoreServer.start();
+        }
+
+        @AfterAll
+        static void stopServers() {
+            amServer.stop();
+            dataStoreServer.stop();
+        }
+
+        @BeforeEach
+        void setUp() {
+            ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+            amServer.resetRequests();
+            dataStoreServer.resetRequests();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS1})
+        @Disabled
+        void shouldCallProvidedCcdAndAmUrl_WhenHeadersProvided() throws Exception {
+            mockMvc.perform(
+                get(URL + "/2000000000")
+                    .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                    .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
+                    .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200));
+
+            amServer.verify(1, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
+            dataStoreServer.verify(1, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
+
+            mockMvc.perform(
+                put(URL + "/2000000000") // LISTED
+                    .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                    .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
+                    .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(TestFixtures.fromFileAsString(
+                        "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
+                .andExpect(status().is(200))
+                .andReturn();
+
+            // 2 requests because of added one each in the GET part
+            amServer.verify(2, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
+            dataStoreServer.verify(2, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
+        }
+    }
+
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
     void shouldReturn200WhenHearingStartTimeIsNotPresentEndTimeIsPresentAndNotRequiredIsTrue() throws Exception {
@@ -905,4 +982,15 @@ class HearingActualsManagementControllerIT extends BaseTest {
     }
 
     private final String serviceJwtXuiWeb = generateDummyS2SToken("ccd_definition");
+
+
+    private static RoleAssignmentResponse stubRoleAssignments() {
+        RoleAssignmentResponse response = new RoleAssignmentResponse();
+        response.setRoleAssignments(List.of(
+            stubGenericRoleAssignment(HEARING_MANAGER),
+            stubGenericRoleAssignment(HEARING_VIEWER),
+            stubGenericRoleAssignment(LISTED_HEARING_VIEWER)
+        ));
+        return response;
+    }
 }

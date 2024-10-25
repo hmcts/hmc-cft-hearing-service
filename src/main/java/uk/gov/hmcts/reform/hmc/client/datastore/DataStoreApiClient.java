@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @FeignClient(
-    name = "data-store-api",
+    name = "${ccd.data-store.client-name:data-store-api}",
     url = "${ccd.data-store.host}",
     configuration = DataStoreApiClientConfig.class
 )
