@@ -19,14 +19,14 @@ public class PendingRequestServiceImpl implements PendingRequestService {
         this.pendingRequestRepository = pendingRequestRepository;
     }
 
-    public void addToPendingRequests(JsonNode message, Long hearingId, String messageType, String deploymentId) {
-        log.debug("addToPendingRequests(message, applicationProperties)");
-        PendingRequestEntity pendingRequest = createPendingRequestEntity(message, hearingId, messageType, deploymentId);
+    public void generatePendingRequest(JsonNode message, Long hearingId, String messageType, String deploymentId) {
+        log.debug("generatePendingRequest(message, applicationProperties)");
+        PendingRequestEntity pendingRequest = newPendingRequestEntity(message, hearingId, messageType, deploymentId);
         try {
             log.debug("saving pendingRequest: {}", pendingRequest);
             pendingRequestRepository.save(pendingRequest);
         } catch (Exception e) {
-            log.error("Failed to add message to pending requests", e);
+            log.error("Failed to generate pending request", e);
         }
     }
 
@@ -35,8 +35,8 @@ public class PendingRequestServiceImpl implements PendingRequestService {
         return pendingRequestRepository.findById(id).orElse(null);
     }
 
-    private PendingRequestEntity createPendingRequestEntity(JsonNode message, Long hearingId, String messageType,
-                                                            String deploymentId) {
+    private PendingRequestEntity newPendingRequestEntity(JsonNode message, Long hearingId, String messageType,
+                                                         String deploymentId) {
         PendingRequestEntity pendingRequest = new PendingRequestEntity();
         pendingRequest.setId(0L);
         pendingRequest.setHearingId(hearingId);

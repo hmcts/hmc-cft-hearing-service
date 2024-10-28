@@ -7,6 +7,6 @@ public interface PendingRequestService {
 
     PendingRequestEntity findById(Long id);
 
-    void addToPendingRequests(JsonNode message, Long hearingId, String messageType, String deploymentId);
+    void generatePendingRequest(JsonNode message, Long hearingId, String messageType, String deploymentId);
 
 }

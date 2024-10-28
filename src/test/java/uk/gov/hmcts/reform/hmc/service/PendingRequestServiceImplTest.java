@@ -35,7 +35,7 @@ class PendingRequestServiceImplTest {
     }
 
     @Test
-    void shouldAddToPendingRequestsSuccessfully() {
+    void shouldGeneratePendingRequestSuccessfully() {
         JsonNode message;
         try {
             message = new ObjectMapper().readTree("{\"message\": \"Test message\"}");
@@ -50,7 +50,7 @@ class PendingRequestServiceImplTest {
         pendingRequest.setId(1L);
         when(pendingRequestRepository.save(any(PendingRequestEntity.class))).thenReturn(pendingRequest);
 
-        pendingRequestService.addToPendingRequests(message, hearingId, message_type, deploymentId);
+        pendingRequestService.generatePendingRequest(message, hearingId, message_type, deploymentId);
 
         verify(pendingRequestRepository, times(1)).save(any(PendingRequestEntity.class));
     }
