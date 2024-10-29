@@ -28,6 +28,9 @@ java:
     IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
     S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
+    LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CONFIG: DEBUG
+    LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
+    LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_REPOSITORY: DEBUG
   postgresql:
     enabled: true
   secrets:
@@ -49,7 +52,7 @@ java:
           alias: app-insights-connection-string
         - name: hmc-cft-hearing-service-s2s-secret
           alias: IDAM_KEY_CFT_HEARING_SERVICE
-       
+
 servicebus:
   enabled: false
 
@@ -80,6 +83,9 @@ hmc:
         HMI_DESTINATION_SYSTEM: SNL
         GRANT_TYPE: client_credentials
         FH_BASE_URL: https://login.microsoftonline.com
+        LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CONFIG: DEBUG
+        LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
+        LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_REPOSITORY: DEBUG
 
   hmc-hmi-inbound-adapter:
     java:
@@ -88,6 +94,8 @@ hmc:
         CFT_HEARING_SERVICE_URL: http://${SERVICE_NAME}-java
         IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
         S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+        LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CONFIG: DEBUG
+        LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
       secrets:
         HMC_SERVICE_BUS_CONNECTION_STRING:
           secretRef: hmc-sb-preview
