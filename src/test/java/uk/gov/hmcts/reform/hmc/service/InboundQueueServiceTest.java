@@ -224,14 +224,14 @@ class InboundQueueServiceTest {
             ResourceNotFoundException exception =
                 new ResourceNotFoundException("Cannot find latest case hearing request for hearing 2000000000");
 
-            HearingEntity hearingEntity = generateHearingEntity(2000000000L);
+            HearingEntity hearingEntity = generateHearingEntity(2000000000L, null, "");
             when(hearingRepository.findById(2000000000L))
                 .thenReturn(java.util.Optional.of(hearingEntity));
 
             ListAppender<ILoggingEvent> listAppender = setupLogger();
             inboundQueueService.catchExceptionAndUpdateHearing(applicationProperties, exception);
             assertDynatraceLogMessage(listAppender, "2000000000", "1111222233334444",
-                                      "TEST");
+                                      "TEST", "Cannot find latest case hearing request for hearing 2000000000");
 
             verify(hearingRepository, times(1)).findById(2000000000L);
             verify(hearingRepository, times(1)).save(any());
@@ -270,8 +270,8 @@ class InboundQueueServiceTest {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "2000000000");
             applicationProperties.put(MESSAGE_TYPE, MessageType.ERROR);
-            HearingEntity hearingEntity = generateHearingEntity(2000000000L);
-            hearingEntity.setErrorCode(500);
+            HearingEntity hearingEntity = generateHearingEntity(2000000000L,500,
+                                                                "Unable to create case");
             JsonNode data = OBJECT_MAPPER.convertValue(
                 generateErrorDetails("Unable to create case", 2000),
                 JsonNode.class);
@@ -288,7 +288,7 @@ class InboundQueueServiceTest {
             ListAppender<ILoggingEvent> listAppender = setupLogger();
             inboundQueueService.processMessage(data, messageContext);
             assertDynatraceLogMessage(listAppender, "2000000000", "1111222233334444",
-                                      "TEST");
+                                      "TEST", "Unable to create case");
         }
 
         @Test
@@ -296,7 +296,9 @@ class InboundQueueServiceTest {
             Map<String, Object> applicationProperties = new HashMap<>();
             applicationProperties.put(HEARING_ID, "2000000000");
             applicationProperties.put(MESSAGE_TYPE, MessageType.LA_SYNC_HEARING_RESPONSE);
-
+            HearingEntity hearingEntity = generateHearingEntity(2000000000L,400,
+                                                                "Unable to create case");
+            hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
             JsonNode syncJsonNode = OBJECT_MAPPER.readTree("""
                                    {
                                      "listAssistHttpStatus": 200,
@@ -304,9 +306,6 @@ class InboundQueueServiceTest {
                                      "listAssistErrorDescription": "unable to create case"
                                    }
                                    """);
-            HearingEntity hearingEntity = generateHearingEntity(2000000000L);
-            hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
-            hearingEntity.setErrorCode(400);
             when(objectMapperService.convertObjectToJsonNode(any())).thenReturn(syncJsonNode);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L))
@@ -322,7 +321,7 @@ class InboundQueueServiceTest {
             ListAppender<ILoggingEvent> listAppender = setupLogger();
             inboundQueueService.processMessage(syncJsonNode, messageContext);
             assertDynatraceLogMessage(listAppender, "2000000000", "1111222233334444",
-                                      "TEST");
+                                      "TEST", "Unable to create case");
         }
 
         @Test
@@ -361,7 +360,7 @@ class InboundQueueServiceTest {
             applicationProperties.put(HEARING_ID, "2000000000");
             applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
 
-            HearingEntity hearingEntity = generateHearingEntity(2000000000L);
+            HearingEntity hearingEntity = generateHearingEntity(2000000000L,null, "");
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L))
                 .thenReturn(java.util.Optional.of(hearingEntity));
@@ -477,7 +476,7 @@ class InboundQueueServiceTest {
                              }
                            }
                            """);
-            HearingEntity hearingEntity = generateHearingEntity(2000000000L);
+            HearingEntity hearingEntity = generateHearingEntity(2000000000L,null, "");
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L))
                 .thenReturn(java.util.Optional.of(hearingEntity));
@@ -706,7 +705,8 @@ class InboundQueueServiceTest {
             ErrorDetails errorDetails = new ErrorDetails();
             errorDetails.setErrorCode(2000);
             errorDetails.setErrorDescription("Unable to create case");
-            HearingEntity hearingEntity = generateHearingEntity(2000000000L);
+            HearingEntity hearingEntity = generateHearingEntity(2000000000L,2000,
+                                                                "Unable to create case");
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L))
                 .thenReturn(java.util.Optional.of(hearingEntity));
@@ -778,7 +778,8 @@ class InboundQueueServiceTest {
         Map<String, Object> applicationProperties = new HashMap<>();
         applicationProperties.put(HEARING_ID, "2000000000");
         applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
-        HearingEntity hearingEntity = generateHearingEntity(2000000000L);
+        HearingEntity hearingEntity = generateHearingEntity(2000000000L,1000,
+                                                            "status code error");
         hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         given(messageContext.getMessage()).willReturn(message);
@@ -881,7 +882,8 @@ class InboundQueueServiceTest {
         Map<String, Object> applicationProperties = new HashMap<>();
         applicationProperties.put(HEARING_ID, "2000000000");
         applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
-        HearingEntity hearingEntity = generateHearingEntity(2000000000L);
+        HearingEntity hearingEntity = generateHearingEntity(2000000000L,400,
+                                                            "Violations are Hearing status");
         hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         given(messageContext.getMessage()).willReturn(message);
@@ -987,9 +989,11 @@ class InboundQueueServiceTest {
         assertEquals(errorMessage, logsList.get(finalErrorIndex).getFormattedMessage());
     }
 
-    private HearingEntity generateHearingEntity(Long hearingId) {
+    private HearingEntity generateHearingEntity(Long hearingId, Integer errorCode, String errorDescription) {
         HearingEntity entity = new HearingEntity();
         entity.setId(hearingId);
+        entity.setErrorCode(errorCode);
+        entity.setErrorDescription(errorDescription);
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingResponseEntity.setRequestVersion(1);
         entity.setHearingResponses(List.of(hearingResponseEntity));
@@ -1021,12 +1025,13 @@ class InboundQueueServiceTest {
     }
 
     private void assertDynatraceLogMessage(ListAppender<ILoggingEvent> listAppender, String hearingID,  String caseRef,
-                                           String serviceCode) {
+                                           String serviceCode, String errorDescription) {
         List<ILoggingEvent> logsList = listAppender.list;
         int finalErrorIndex = logsList.size() - 1;
         assertEquals(Level.ERROR, logsList.get(finalErrorIndex).getLevel());
         assertEquals("Hearing id: " + hearingID + " with Case reference: "
-                         + caseRef + " and Service Code: " + serviceCode + " updated to status "
+                         + caseRef + " , Service Code: " + serviceCode + " and Error Description: "
+                         + errorDescription + " updated to status "
                          + HearingStatus.EXCEPTION.name(), logsList.get(finalErrorIndex).getFormattedMessage());
     }
 }
