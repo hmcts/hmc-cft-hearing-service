@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.controllers;
 
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -46,14 +45,12 @@ public class PartiesNotifiedController {
 
     @PutMapping(path = "/partiesNotified/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Success"),
-        @ApiResponse(responseCode = "400", description = "Bad Request"),
-        @ApiResponse(responseCode = "404", description = "One or more of the following reasons:"
-                + "\n1) " + ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND
-                + "\n2) " + ValidationError.PARTIES_NOTIFIED_NO_SUCH_RESPONSE),
-        @ApiResponse(responseCode = "500", description = ValidationError.INTERNAL_SERVER_ERROR)
-    })
+    @ApiResponse(responseCode = "200", description = "Success")
+    @ApiResponse(responseCode = "400", description = "Bad Request")
+    @ApiResponse(responseCode = "404", description = "One or more of the following reasons:"
+        + "\n1) " + ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND
+        + "\n2) " + ValidationError.PARTIES_NOTIFIED_NO_SUCH_RESPONSE)
+    @ApiResponse(responseCode = "500", description = ValidationError.INTERNAL_SERVER_ERROR)
 
     public void putPartiesNotified(@RequestBody @Valid PartiesNotified partiesNotified,
         @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
@@ -67,13 +64,11 @@ public class PartiesNotifiedController {
 
     @GetMapping(path = "/partiesNotified/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Hearing id is valid"),
-        @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
-                + "\n1) " + ValidationError.INVALID_HEARING_ID_DETAILS
-                + "\n2) " + ValidationError.PARTIES_NOTIFIED_ALREADY_SET),
-        @ApiResponse(responseCode = "404", description = ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND)
-    })
+    @ApiResponse(responseCode = "200", description = "Hearing id is valid")
+    @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
+        + "\n1) " + ValidationError.INVALID_HEARING_ID_DETAILS
+        + "\n2) " + ValidationError.PARTIES_NOTIFIED_ALREADY_SET)
+    @ApiResponse(responseCode = "404", description = ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND)
 
     public PartiesNotifiedResponses getPartiesNotified(@PathVariable("id") Long hearingId) {
         accessControlService.verifyAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));

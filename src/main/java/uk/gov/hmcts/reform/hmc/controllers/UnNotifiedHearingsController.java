@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -34,12 +33,10 @@ public class UnNotifiedHearingsController {
 
     @GetMapping(path = "/unNotifiedHearings/{hmctsServiceCode}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Success"),
-        @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HMCTS_SERVICE_CODE),
-        @ApiResponse(responseCode = "401", description = "Unauthorised"),
-        @ApiResponse(responseCode = "403", description = "Forbidden")
-    })
+    @ApiResponse(responseCode = "200", description = "Success")
+    @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HMCTS_SERVICE_CODE)
+    @ApiResponse(responseCode = "401", description = "Unauthorised")
+    @ApiResponse(responseCode = "403", description = "Forbidden")
 
     public UnNotifiedHearingsResponse getUnNotifiedHearings(
         @PathVariable("hmctsServiceCode") @Valid @NotEmpty(message = HMCTS_SERVICE_CODE_EMPTY) String hmctsServiceCode,

@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.controllers;
 
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -34,11 +33,9 @@ public class HearingActualsController {
 
     @GetMapping(path = "/hearingActuals/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiResponses({
-        @ApiResponse(responseCode = "204", description = "Hearing id is valid"),
-        @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ID_NOT_FOUND),
-        @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HEARING_ID_DETAILS)
-    })
+    @ApiResponse(responseCode = "204", description = "Hearing id is valid")
+    @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ID_NOT_FOUND)
+    @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HEARING_ID_DETAILS)
 
     public ResponseEntity<HearingActualResponse> getHearingActuals(@PathVariable("id") Long hearingId) {
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.hmc.controllers;
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.LuhnCheck;
 import org.springframework.http.HttpStatus;
@@ -73,11 +72,9 @@ public class HearingManagementController {
 
     @GetMapping(path = "/hearing/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Hearing id is valid"),
-        @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ID_NOT_FOUND),
-        @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HEARING_ID_DETAILS)
-    })
+    @ApiResponse(responseCode = "204", description = "Hearing id is valid")
+    @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ID_NOT_FOUND)
+    @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HEARING_ID_DETAILS)
 
     public ResponseEntity<GetHearingResponse> getHearing(@PathVariable("id") Long hearingId,
             @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {
@@ -97,13 +94,11 @@ public class HearingManagementController {
 
     @PostMapping(path = "/hearing", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Hearing successfully created"),
-        @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
-            + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
-            + "\n2) " + ValidationError.HEARING_WINDOW_DETAILS_ARE_INVALID
-            + "\n3) " + ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS)
-    })
+    @ApiResponse(responseCode = "201", description = "Hearing successfully created")
+    @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
+        + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
+        + "\n2) " + ValidationError.HEARING_WINDOW_DETAILS_ARE_INVALID
+        + "\n3) " + ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS)
 
     public HearingResponse saveHearing(
             @RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false) String deploymentId,
@@ -117,12 +112,10 @@ public class HearingManagementController {
 
     @DeleteMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Hearing cancellation processed"),
-        @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HEARING_REQUEST_DETAILS),
-        @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ID_NOT_FOUND),
-        @ApiResponse(responseCode = "500", description = ValidationError.INTERNAL_SERVER_ERROR)
-    })
+    @ApiResponse(responseCode = "200", description = "Hearing cancellation processed")
+    @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HEARING_REQUEST_DETAILS)
+    @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ID_NOT_FOUND)
+    @ApiResponse(responseCode = "500", description = ValidationError.INTERNAL_SERVER_ERROR)
 
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
@@ -143,14 +136,12 @@ public class HearingManagementController {
     @GetMapping(value = { "/hearings/{ccdCaseRef}" }, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get hearings")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Success (with content)"),
-        @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
-            + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
-            + "\n2) " + ValidationError.CASE_REF_EMPTY
-            + "\n3) " + ValidationError.CASE_REF_INVALID_LENGTH
-            + "\n4) " + ValidationError.CASE_REF_INVALID)
-    })
+    @ApiResponse(responseCode = "200", description = "Success (with content)")
+    @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
+        + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS
+        + "\n2) " + ValidationError.CASE_REF_EMPTY
+        + "\n3) " + ValidationError.CASE_REF_INVALID_LENGTH
+        + "\n4) " + ValidationError.CASE_REF_INVALID)
 
     public GetHearingsResponse getHearings(
         @PathVariable("ccdCaseRef") @Valid 
@@ -163,12 +154,10 @@ public class HearingManagementController {
 
     @PutMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Hearing successfully updated"),
-        @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HEARING_REQUEST_DETAILS),
-        @ApiResponse(responseCode = "404", description = ValidationError.CASE_NOT_FOUND),
-        @ApiResponse(responseCode = "500", description = ValidationError.INTERNAL_SERVER_ERROR)
-    })
+    @ApiResponse(responseCode = "201", description = "Hearing successfully updated")
+    @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HEARING_REQUEST_DETAILS)
+    @ApiResponse(responseCode = "404", description = ValidationError.CASE_NOT_FOUND)
+    @ApiResponse(responseCode = "500", description = ValidationError.INTERNAL_SERVER_ERROR)
 
     public HearingResponse updateHearing(
         @RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false) String deploymentId,
@@ -183,16 +172,14 @@ public class HearingManagementController {
 
     @PostMapping(path = "/hearingActualsCompletion/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Success (with no content)"),
-        @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ACTUALS_ID_NOT_FOUND),
-        @ApiResponse(responseCode = "400", description = "One or more of the following reasons:\n" 
+    @ApiResponse(responseCode = "200", description = "Success (with no content)")
+    @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ACTUALS_ID_NOT_FOUND)
+    @ApiResponse(responseCode = "400", description = "One or more of the following reasons:\n" 
             + "1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS + "\n"
             + "2) " + ValidationError.HEARING_ACTUALS_INVALID_STATUS + "\n" 
             + "3) " + ValidationError.HEARING_ACTUALS_UN_EXPECTED + "\n" 
-            + "4) " + ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME),
-        @ApiResponse(responseCode = "500", description = ValidationError.INTERNAL_SERVER_ERROR)
-    })
+            + "4) " + ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME)
+    @ApiResponse(responseCode = "500", description = ValidationError.INTERNAL_SERVER_ERROR)
 
     public ResponseEntity hearingCompletion(@PathVariable("id") Long hearingId,
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken) {
@@ -211,11 +198,9 @@ public class HearingManagementController {
     @GetMapping(value = { "/hearings" }, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get hearings for list of cases")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Success (with content)"),
-        @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
-                    + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS)
-    })
+    @ApiResponse(responseCode = "200", description = "Success (with content)")
+    @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
+            + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS)
 
     public List<GetHearingsResponse> getHearingsForListOfCases(@RequestParam List<String> ccdCaseRefs,
             @RequestParam(required = false) String status) {
