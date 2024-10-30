@@ -285,11 +285,7 @@ dependencyManagement {
     dependencySet(group: 'com.google.guava', version: '33.0.0-jre') {
       entry 'guava'
     }
-    // Remove once BEFTA rest-assured is updated
-    dependencySet(group: 'io.rest-assured', version: '4.3.3') {
-      entry 'json-path'
-      entry 'xml-path'
-    }
+
     dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.85') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
@@ -368,7 +364,6 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.8.0'
   implementation group: 'com.fasterxml.woodstox', name: 'woodstox-core', version: '5.4.0'
-  
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
@@ -397,7 +392,7 @@ dependencies {
   testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.19.12') {
     exclude group: 'com.github.hmcts.befta-fw', module: 'befta-fw'
   }
-  testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '8.8.5'
+  testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '9.1.0'
 
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
