@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,8 +36,8 @@ public class LinkHearingGroupController {
     private final SecurityUtils securityUtils;
 
     public LinkHearingGroupController(LinkedHearingGroupService linkedHearingGroupService,
-                                      AccessControlService accessControlService,
-                                      SecurityUtils securityUtils) {
+            AccessControlService accessControlService,
+            SecurityUtils securityUtils) {
         this.linkedHearingGroupService = linkedHearingGroupService;
         this.accessControlService = accessControlService;
         this.securityUtils = securityUtils;
@@ -45,64 +45,63 @@ public class LinkHearingGroupController {
 
     @PostMapping(path = "/linkedHearingGroup", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiResponses(value = {
-        @ApiResponse(code = 201, message = "Success"),
-        @ApiResponse(code = 400,
-            message = "One or more of the following reasons:"
-                + "\n1) " + ValidationError.HEARINGS_IN_GROUP_SIZE
-                + "\n2) " + ValidationError.HEARING_REQUEST_CANNOT_BE_LINKED
-                + "\n3) " + ValidationError.HEARING_REQUEST_ALREADY_LINKED
-                + "\n4) " + ValidationError.INVALID_STATE_FOR_HEARING_REQUEST
-                + "\n5) " + ValidationError.HEARING_ORDER_NOT_UNIQUE)
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Success"),
+        @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
+            + "\n1) " + ValidationError.HEARINGS_IN_GROUP_SIZE
+            + "\n2) " + ValidationError.HEARING_REQUEST_CANNOT_BE_LINKED
+            + "\n3) " + ValidationError.HEARING_REQUEST_ALREADY_LINKED
+            + "\n4) " + ValidationError.INVALID_STATE_FOR_HEARING_REQUEST
+            + "\n5) " + ValidationError.HEARING_ORDER_NOT_UNIQUE)
     })
+
     public HearingLinkGroupResponse validateLinkHearing(
-        @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken, @RequestBody @Valid
-                                                            HearingLinkGroupRequest hearingLinkGroupRequest) {
+            @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
+            @RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
         verifyAccess(hearingLinkGroupRequest);
         return linkedHearingGroupService.linkHearing(hearingLinkGroupRequest, getServiceName(clientS2SToken));
     }
 
     @PutMapping(path = "/linkedHearingGroup", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success"),
-        @ApiResponse(code = 400,
-            message = "One or more of the following reasons:"
-                + "\n1) " + ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS
-                + "\n2) " + ValidationError.HEARINGS_IN_GROUP_SIZE
-                + "\n3) " + ValidationError.HEARING_REQUEST_CANNOT_BE_LINKED
-                + "\n4) " + ValidationError.HEARING_REQUEST_ALREADY_LINKED
-                + "\n5) " + ValidationError.INVALID_STATE_FOR_HEARING_REQUEST
-                + "\n6) " + ValidationError.INVALID_STATE_FOR_LINKED_GROUP
-                + "\n7) " + ValidationError.INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Success"),
+        @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
+            + "\n1) " + ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS
+            + "\n2) " + ValidationError.HEARINGS_IN_GROUP_SIZE
+            + "\n3) " + ValidationError.HEARING_REQUEST_CANNOT_BE_LINKED
+            + "\n4) " + ValidationError.HEARING_REQUEST_ALREADY_LINKED
+            + "\n5) " + ValidationError.INVALID_STATE_FOR_HEARING_REQUEST
+            + "\n6) " + ValidationError.INVALID_STATE_FOR_LINKED_GROUP
+            + "\n7) " + ValidationError.INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST)
     })
     public void updateHearing(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
-                              @RequestParam("id") String requestId,
-                              @RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
+            @RequestParam("id") String requestId,
+            @RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
         verifyAccess(hearingLinkGroupRequest);
         linkedHearingGroupService.updateLinkHearing(requestId, hearingLinkGroupRequest, getServiceName(clientS2SToken));
     }
 
     @DeleteMapping(path = "/linkedHearingGroup/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Hearing group deletion processed"),
-        @ApiResponse(code = 400, message = ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS),
-        @ApiResponse(code = 404, message = ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS),
-        @ApiResponse(code = 500, message = ValidationError.INTERNAL_SERVER_ERROR)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Hearing group deletion processed"),
+        @ApiResponse(responseCode = "400", description = ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS),
+        @ApiResponse(responseCode = "404", description = ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS),
+        @ApiResponse(responseCode = "500", description = ValidationError.INTERNAL_SERVER_ERROR)
     })
+
     public void deleteHearingGroup(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
-                                   @PathVariable("id") String requestId) {
+            @PathVariable("id") String requestId) {
         linkedHearingGroupService.deleteLinkedHearingGroup(requestId, getServiceName(clientS2SToken));
     }
 
     private void verifyAccess(HearingLinkGroupRequest request) {
         request.getHearingsInGroup().stream()
-            .map(hearingGroup -> hearingGroup.getHearingId())
-            .forEach(hearingId -> accessControlService.verifyAccess(
-                Long.valueOf(hearingId),
-                Lists.newArrayList(HEARING_MANAGER)
-            ));
+                .map(hearingGroup -> hearingGroup.getHearingId())
+                .forEach(hearingId -> accessControlService.verifyAccess(
+                        Long.valueOf(hearingId),
+                        Lists.newArrayList(HEARING_MANAGER)));
     }
 
     private String getServiceName(String clientS2SToken) {
