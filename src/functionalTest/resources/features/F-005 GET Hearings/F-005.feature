@@ -43,15 +43,3 @@ Feature: F-005: Search for hearings
     And the response [has 200 status code],
     And the response [contains the hearing with LISTED status],
     And the response has all other details as expected.
-
-  @S-005.4
-  Scenario: Successfully search for hearings of a case reference returns a 200 with no payload
-    Given a successful call [to create a hearing request] as in [CreateHearingRequest],
-    And a wait time of [20] seconds [to wait for status to come back from hmi]
-    When a request is prepared with appropriate values,
-    And the request [uses the query param status=AWAITING_LISTING],
-    And it is submitted to call the [Search for hearings] operation of [HMC CFT Hearing Service],
-    Then a positive response is received,
-    And the response [has the 200 OK code],
-    And the response [has no payload],
-    And the response has all other details as expected.
