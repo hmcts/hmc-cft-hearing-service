@@ -117,7 +117,6 @@ task functional(type: Test) {
       main = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
       classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
       args = [
-        '--strict',
         '--threads', '10',
         '--plugin', "json:${rootDir}/target/cucumber.json",
         '--plugin', "junit:${buildDir}/test-results/functional/cucumber.xml",
@@ -167,7 +166,6 @@ task smoke(type: Test) {
       main = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
       classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
       args = [
-        '--strict',
         '--threads', '10',
         '--plugin', "json:${rootDir}/target/cucumber.json",
         '--plugin', "junit:${buildDir}/test-results/functional/cucumber.xml",
