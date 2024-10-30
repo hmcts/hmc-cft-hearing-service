@@ -1,1 +1,1 @@
-CREATE INDEX IF NOT EXISTS idx_actual_hearing_day_hearing_date ON public.actual_hearing_day (actual_hearing_id, hearing_date);
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_actual_hearing_day_hearing_date ON public.actual_hearing_day (actual_hearing_id, hearing_date);
