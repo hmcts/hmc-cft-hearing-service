@@ -254,8 +254,6 @@ def versions = [
   fasterXmlJackson : '2.16.1',
   snakeyaml       : '2.2'
 ]
-ext['springCloudVersion'] = '2021.0.8'
-//ext['jackson.version'] = '2.10.5'
 
 // before committing a change, make sure task still works
 dependencyUpdates {
@@ -276,7 +274,7 @@ dependencyCheck {
 
 dependencyManagement {
   imports {
-    mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    mavenBom "org.springframework.cloud:spring-cloud-dependencies:${versions.springCloud}"
   }
   dependencies {
     // CVE-2018-10237 - Unbounded memory allocation
