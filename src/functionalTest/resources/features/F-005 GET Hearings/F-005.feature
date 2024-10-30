@@ -18,7 +18,7 @@ Feature: F-005: Search for hearings
     And the response [contains the hearing with LISTED status],
     And the response has all other details as expected.
 
-  @S-005.2 @Ignore
+  @S-005.2
   Scenario: Successfully search for a hearing using the HEARING_REQUESTED parameter, hearing with CANCELLATION_REQUESTED status is excluded
      Given a successful call [to create a hearing request] as in [CreateHearingRequest],
      And another successful call [to create a second hearing request] as in [CreateSecondHearingRequest],

@@ -27,7 +27,7 @@
     "body" : {
       "caseRef": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}",
       "caseHearings": [],
-      "hmctsServiceCode" : null
+      "hmctsServiceCode" : "TEST"
     }
 
   }
