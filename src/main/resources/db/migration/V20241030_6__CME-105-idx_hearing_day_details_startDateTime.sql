@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_hearing_day_details_startDateTime ON public.hearing_day_details (start_date_time) CONCURRENTLY;

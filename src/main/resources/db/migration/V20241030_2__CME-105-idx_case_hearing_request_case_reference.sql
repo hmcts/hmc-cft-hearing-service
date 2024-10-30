@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_case_hearing_request_case_reference ON public.case_hearing_request (case_reference) CONCURRENTLY;
