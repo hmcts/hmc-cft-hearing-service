@@ -1,1 +1,0 @@
-CREATE INDEX CONCURRENTLY IF NOT EXISTS  idx_hearing_status ON public.hearing (status);

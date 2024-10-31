@@ -1,1 +1,0 @@
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_linked_group_details_request_id ON public.linked_group_details (request_id);

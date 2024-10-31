@@ -1,1 +1,0 @@
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_case_hearing_request_created_date_time ON public.case_hearing_request (created_date_time);
