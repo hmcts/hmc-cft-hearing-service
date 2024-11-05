@@ -86,7 +86,10 @@ hmc:
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CONFIG: DEBUG
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_REPOSITORY: DEBUG
-
+        
+  servicebus:
+    sbNamespace: hmc-sb-preview
+    
   hmc-hmi-inbound-adapter:
     java:
       ingressHost: hmc-hmi-inbound-adapter-${SERVICE_FQDN}
@@ -98,6 +101,6 @@ hmc:
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
       secrets:
         HMC_SERVICE_BUS_CONNECTION_STRING:
-          secretRef: hmc-servicebus-preview
+          secretRef: hmc-sb-preview
           key: connectionString
 
