@@ -98,6 +98,6 @@ hmc:
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
       secrets:
         HMC_SERVICE_BUS_CONNECTION_STRING:
-          secretRef: hmc-sb-preview
+          secretRef: hmc-servicebus-preview
           key: connectionString
 
