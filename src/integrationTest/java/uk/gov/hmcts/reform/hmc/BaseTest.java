@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.hmc.wiremock.extensions.DynamicOAuthJwkSetResponseTra
 
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import javax.inject.Inject;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
@@ -84,6 +85,8 @@ public class BaseTest {
                                            + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
                                            + "\t\"case_type\": \"CaseType1\"\n"
                                            + "}")));
+        
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 
     @Configuration
