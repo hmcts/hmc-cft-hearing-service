@@ -12,8 +12,6 @@ class MessageSenderToTopicConfigurationIT extends BaseTest  {
         value = "isSlowTestsEnabled",
         disabledReason = "takes ages to finish")
     void shouldSuccessfullyProcessRequest() {
-        MessageSenderToTopicConfiguration messageSenderToTopicConfiguration =
-            new MessageSenderToTopicConfiguration(applicationParams);
         messageSenderToTopicConfiguration.sendMessage("Test Message",
                                                       "Test service code","hearingID",
                                                       null);
@@ -24,8 +22,6 @@ class MessageSenderToTopicConfigurationIT extends BaseTest  {
         value = "isSlowTestsEnabled",
         disabledReason = "takes ages to finish")
     void shouldSuccessfullyProcessRequestWhenDeploymentIdIsPresent() {
-        MessageSenderToTopicConfiguration messageSenderToTopicConfiguration =
-            new MessageSenderToTopicConfiguration(applicationParams);
         ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
         messageSenderToTopicConfiguration.sendMessage("Test Message",
                                                       "Test service code","hearingID",

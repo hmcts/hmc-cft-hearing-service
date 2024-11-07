@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.hmc.config.DataStoreUrlManager;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.config.RoleAssignmentUrlManager;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
@@ -33,6 +35,7 @@ import uk.gov.hmcts.reform.hmc.wiremock.extensions.DynamicOAuthJwkSetResponseTra
 
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import javax.inject.Inject;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
@@ -67,16 +70,18 @@ public class BaseTest {
     protected SecurityUtils securityUtils;
     @Inject
     protected ApplicationParams applicationParams;
+
     @Inject
     protected RoleAssignmentUrlManager roleAssignmentUrlManager;
     @Inject
     protected DataStoreUrlManager dataStoreUrlManager;
 
-    @Value("${slow-tests-enabled:true}")
-    private boolean slowTestsEnabled;
-
     @Value("${wiremock.server.port}")
     protected Integer wiremockPort;
+
+    @MockBean
+    protected MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
+
     @Mock
     protected Authentication authentication;
 
@@ -99,10 +104,13 @@ public class BaseTest {
         ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", false);
 
         stubRoleAssignments();
+
         stubFor(WireMock
             .get(urlMatching("/cases/.*"))
             .willReturn(okJson(CCD_RESPONSE))
         );
+
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 
     @Configuration
@@ -145,9 +153,5 @@ public class BaseTest {
             .setIssuedAt(new Date())
             .signWith(SignatureAlgorithm.HS256, TextCodec.BASE64.encode("AA"))
             .compact();
-    }
-
-    protected boolean isSlowTestsEnabled() {
-        return slowTestsEnabled;
     }
 }
