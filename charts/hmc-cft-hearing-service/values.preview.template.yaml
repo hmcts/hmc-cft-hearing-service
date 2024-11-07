@@ -86,6 +86,8 @@ hmc:
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CONFIG: DEBUG
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_REPOSITORY: DEBUG
+        HMC_SERVICE_BUS_OUTBOUND_QUEUE: hmc-cft-hearing-service-pr-271-servicebus-hmc-to-hmi
+        HMC_SERVICE_BUS_INBOUND_QUEUE: hmc-cft-hearing-service-pr-271-servicebus-hmc-from-hmi
 
   servicebus:
     sbNamespace: hmc-servicebus-preview
@@ -99,6 +101,7 @@ hmc:
         S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CONFIG: DEBUG
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
+        HMC_SERVICE_BUS_QUEUE: hmc-cft-hearing-service-pr-271-servicebus-hmc-from-hmi
       secrets:
         HMC_SERVICE_BUS_CONNECTION_STRING:
           secretRef: hmc-sb-preview
