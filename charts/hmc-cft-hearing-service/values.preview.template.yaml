@@ -7,10 +7,10 @@ java:
   devmemoryLimits: 4096Mi
   devcpuLimits: 4000m
   environment:
-    HMC_SERVICE_BUS_TOPIC: hmc-to-cft
-    HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft
-    HMC_SERVICE_BUS_QUEUE: hmc-from-hmi
-    HMC_OUTBOUND_SERVICE_BUS_QUEUE: hmc-to-hmi
+    HMC_SERVICE_BUS_TOPIC: hmc-cft-hearing-service-pr-271-servicebus-hmc-to-cft
+    HMC_SERVICE_BUS_SUBSCRIPTION: hmc-cft-hearing-service-pr-271-servicebus-hmc-subs-to-cft
+    HMC_SERVICE_BUS_QUEUE: hmc-cft-hearing-service-pr-271-servicebus-hmc-from-hmi
+    HMC_OUTBOUND_SERVICE_BUS_QUEUE: hmc-cft-hearing-service-pr-271-servicebus-hmc-to-hmi
     CFT_HEARING_SERVICE_DB_HOST: "{{ .Release.Name }}-postgresql"
     CFT_HEARING_SERVICE_DB_NAME: "{{ .Values.postgresql.auth.database}}"
     CFT_HEARING_SERVICE_DB_USERNAME: "{{ .Values.postgresql.auth.username}}"
@@ -86,10 +86,10 @@ hmc:
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CONFIG: DEBUG
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_REPOSITORY: DEBUG
-        
+
   servicebus:
     sbNamespace: hmc-sb-preview
-    
+
   hmc-hmi-inbound-adapter:
     java:
       ingressHost: hmc-hmi-inbound-adapter-${SERVICE_FQDN}
