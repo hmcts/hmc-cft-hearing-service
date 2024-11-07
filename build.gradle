@@ -248,7 +248,7 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   springCloud     : '2020.0.6',
   springfoxSwagger: '3.0.0',
-  testcontainers  : '1.15.3',
+  testcontainers  : '1.20.3',
   netty           : '4.1.106.Final',
   serviceAuthVersion: '4.1.2',
   tomcatEmbedded  : '9.0.85',
@@ -488,7 +488,7 @@ dependencies {
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact
   contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-  integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
+  integrationTestImplementation group: 'org.wiremock', name: 'wiremock', version: '3.9.2'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
