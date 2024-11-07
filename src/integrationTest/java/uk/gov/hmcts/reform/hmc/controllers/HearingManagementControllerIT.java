@@ -5,7 +5,6 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import lombok.val;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -735,9 +734,6 @@ class HearingManagementControllerIT extends BaseTest {
 
 
     @Test
-    @EnabledIf(
-        value = "isSlowTestsEnabled",
-        disabledReason = "fails if long running test shouldUpdateHearingCompletion() is disabled")
     void shouldReturn200_WhenGetHearingsForValidCaseRefLuhn() throws Exception {
         mockMvc.perform(get("/hearings/9372710950276233")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -1427,9 +1423,6 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
-    @EnabledIf(
-        value = "isSlowTestsEnabled",
-        disabledReason = "fails if some other tests are not executed prior")
     void shouldReturn201WhenUpdateHearingRequestIsValidWith2PartyDetailsAndOrgDetailWhereOrgIdIsNull()
         throws Exception {
         UpdateHearingRequest hearingRequest =
@@ -1750,9 +1743,6 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
-    @EnabledIf(
-        value = "isSlowTestsEnabled",
-        disabledReason = "takes ages to finish")
     void shouldReturn404WhenHearingStatusListedAndMinStartDateIsBeforeTodayHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000010")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
@@ -1781,9 +1771,6 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
-    @EnabledIf(
-        value = "isSlowTestsEnabled",
-        disabledReason = "takes ages to finish")
     void shouldReturn200WhenActualHearingDayMissingForResultTypeAdjourned() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000013")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
@@ -1794,9 +1781,6 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
-    @EnabledIf(
-        value = "isSlowTestsEnabled",
-        disabledReason = "takes ages to finish")
     void shouldReturn200WhenActualHearingDayMissingForResultTypeCompleted() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000015")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
@@ -1807,9 +1791,6 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
-    @EnabledIf(
-        value = "isSlowTestsEnabled",
-        disabledReason = "takes ages to finish")
     void shouldReturn200WhenActualHearingDayExistsForCanceledResultTypeResponseHearingCompletion() throws Exception {
         mockMvc.perform(post(hearingCompletion + "/2000000014")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
@@ -1820,9 +1801,6 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
-    @EnabledIf(
-        value = "isSlowTestsEnabled",
-        disabledReason = "takes ages to finish")
     void shouldUpdateHearingCompletion() throws Exception {
         stubRoleAssignments();
         mockMvc.perform(post(hearingCompletion + "/2000000000")

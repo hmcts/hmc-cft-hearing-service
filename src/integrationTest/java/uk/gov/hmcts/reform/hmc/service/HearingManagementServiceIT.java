@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -436,9 +435,6 @@ class HearingManagementServiceIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
-    @EnabledIf(
-        value = "isSlowTestsEnabled",
-        disabledReason = "takes ages to finish")
     void testUpdateHearingCompletion_WithValidData() {
         ResponseEntity responseEntity = hearingManagementService.hearingCompletion(2000000000L, HMC);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());

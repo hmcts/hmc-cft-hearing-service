@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
 import org.mockito.Mock;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,9 +178,6 @@ class MessageProcessorIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    @EnabledIf(
-        value = "isSlowTestsEnabled",
-        disabledReason = "takes ages to finish")
     void shouldInitiateRequest() {
         initiateRequest(jsonNode);
     }
@@ -215,9 +211,6 @@ class MessageProcessorIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    @EnabledIf(
-        value = "isSlowTestsEnabled",
-        disabledReason = "takes ages to finish")
     void shouldThrowErrorForExceptionFlow() throws JsonProcessingException {
         Map<String, Object> applicationProperties = new HashMap<>();
         applicationProperties.put(HEARING_ID, "2000000000");
@@ -489,9 +482,6 @@ class MessageProcessorIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    @EnabledIf(
-        value = "isSlowTestsEnabled",
-        disabledReason = "takes ages to finish")
     void shouldInitiateRequest_shouldStoreSingleHearingSessionForDay() throws JsonProcessingException {
 
         JsonNode hearingSessionsJsonNode = OBJECT_MAPPER.readTree(String.format(HEARING, 1,
@@ -513,9 +503,6 @@ class MessageProcessorIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    @EnabledIf(
-        value = "isSlowTestsEnabled",
-        disabledReason = "takes ages to finish")
     void shouldInitiateRequest_shouldStoreSingleHearingSessionPerDay() throws JsonProcessingException {
         JsonNode hearingSessionsJsonNode = OBJECT_MAPPER.readTree(String.format(HEARING, 1,
                 createHearingSessions(
@@ -537,9 +524,6 @@ class MessageProcessorIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    @EnabledIf(
-        value = "isSlowTestsEnabled",
-        disabledReason = "takes ages to finish")
     void shouldInitiateRequest_shouldStoreSingleHearingSessionForSameDateAndDifferentDates() throws Exception {
 
         JsonNode hearingSessionsJsonNode = OBJECT_MAPPER.readTree(String.format(HEARING, 1,
