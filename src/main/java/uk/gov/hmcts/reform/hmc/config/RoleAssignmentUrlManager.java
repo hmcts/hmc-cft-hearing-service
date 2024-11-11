@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -15,11 +16,13 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Setter
 @Component
 @ConfigurationProperties(prefix = "role.assignment.api")
+@RequestScope
 public class RoleAssignmentUrlManager implements UrlManager {
 
     /**
      * Header name that should be used to get the URL of the role assignment API.
      */
+    @Getter
     private String urlHeaderName;
 
     /**
@@ -27,20 +30,13 @@ public class RoleAssignmentUrlManager implements UrlManager {
      * This should not be modified at runtime. Changing at runtime would change
      * URL for all incoming requests that do not pass the URL via header.
      */
+    @Getter
     private String host;
 
     /**
      * Actual host of the role assignment API that should be used for the current request.
      */
     private String actualHost;
-
-    public String getUrlHeaderName() {
-        return urlHeaderName;
-    }
-
-    public String getHost() {
-        return host;
-    }
 
     @Override
     public String getActualHost() {

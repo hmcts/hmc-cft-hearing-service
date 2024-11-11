@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -15,6 +16,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Setter
 @Component
 @ConfigurationProperties(prefix = "ccd.data-store")
+@RequestScope
 public class DataStoreUrlManager implements UrlManager {
 
     private String clientName;

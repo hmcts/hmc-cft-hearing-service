@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
+import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +22,8 @@ public class HeaderProcessor implements HandlerInterceptor {
     private final UrlManager roleAssignmentUrlManager;
     private final UrlManager dataStoreUrlManager;
 
+    private final OverrideAuditService overrideAuditService;
+
     /**
      * Check if role assignment and/or ccd data store url headers are present in the request.
      * If any of the headers are present, set the actual host to the value of the header.
@@ -35,6 +38,7 @@ public class HeaderProcessor implements HandlerInterceptor {
         HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         if (params.isHmctsDeploymentIdEnabled()) {
+            overrideAuditService.logOverrideAudit(request);
             processHeader(request, roleAssignmentUrlManager);
             processHeader(request, dataStoreUrlManager);
         } else {
@@ -46,7 +50,6 @@ public class HeaderProcessor implements HandlerInterceptor {
     }
 
     private void processHeader(HttpServletRequest request, UrlManager urlManager) {
-        log.info("Processing url header - {}", urlManager.getUrlHeaderName());
         String url = request.getHeader(urlManager.getUrlHeaderName());
         if (isNotBlank(url)) {
             urlManager.setActualHost(url);

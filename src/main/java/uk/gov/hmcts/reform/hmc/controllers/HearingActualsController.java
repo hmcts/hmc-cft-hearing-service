@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -15,22 +15,19 @@ import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingActualsService;
 
+import java.util.List;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 
 @RestController
 @Validated
+@RequiredArgsConstructor
 public class HearingActualsController {
 
     private final HearingActualsService hearingActualsService;
     private final AccessControlService accessControlService;
-
-    public HearingActualsController(HearingActualsService hearingActualsService,
-                                    AccessControlService accessControlService) {
-        this.hearingActualsService = hearingActualsService;
-        this.accessControlService = accessControlService;
-    }
 
     @GetMapping(path = "/hearingActuals/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -40,9 +37,9 @@ public class HearingActualsController {
         @ApiResponse(code = 400, message = ValidationError.INVALID_HEARING_ID_DETAILS)
     })
     public ResponseEntity<HearingActualResponse> getHearingActuals(@PathVariable("id") Long hearingId) {
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(
-            HEARING_VIEWER,
-            LISTED_HEARING_VIEWER));
+        accessControlService.verifyHearingCaseAccess(
+            hearingId, List.of(HEARING_VIEWER, LISTED_HEARING_VIEWER));
+
         return hearingActualsService.getHearingActuals(hearingId);
     }
 }
