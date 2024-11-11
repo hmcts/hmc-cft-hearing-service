@@ -13,8 +13,6 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.time.Clock;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +32,6 @@ public class OverrideAuditService {
 
     private final HearingStatusAuditRepository hearingStatusAuditRepository;
     private final LinkedHearingStatusAuditRepository linkedHearingStatusAuditRepository;
-    private final Clock utcClock;
     private final UrlManager roleAssignmentUrlManager;
     private final UrlManager dataStoreUrlManager;
 
@@ -68,17 +65,18 @@ public class OverrideAuditService {
         }
 
         if (path.startsWith("/linkedHearingGroup")) {
-            saveLinkedHearingStatusAudit(root);
+            String groupId = getAttributeId(request, "id");
+            saveLinkedHearingStatusAudit(groupId, root);
         } else {
-            String hearingId = getHearingId(request);
+            String hearingId = getAttributeId(request, "id");
             saveHearingStatusAudit(hearingId, root);
         }
     }
 
-    private void saveLinkedHearingStatusAudit(ObjectNode root) {
+    private void saveLinkedHearingStatusAudit(String groupId, ObjectNode root) {
         LinkedHearingStatusAuditEntity auditEntity = new LinkedHearingStatusAuditEntity();
         auditEntity.setHmctsServiceId("n/a");
-        auditEntity.setLinkedGroupId("n/a");
+        auditEntity.setLinkedGroupId(groupId);
         auditEntity.setLinkedGroupVersion("n/a");
         auditEntity.setLinkedHearingEvent("n/a");
         auditEntity.setOtherInfo(root);
@@ -92,7 +90,6 @@ public class OverrideAuditService {
         auditEntity.setStatus(OVERRIDE_URL);
         auditEntity.setHearingEvent(OVERRIDE_URL_EVENT);
         auditEntity.setRequestVersion("n/a");
-        auditEntity.setResponseDateTime(now());
         auditEntity.setOtherInfo(root);
         hearingStatusAuditRepository.save(auditEntity);
     }
@@ -138,15 +135,11 @@ public class OverrideAuditService {
         return null;
     }
 
-    private String getHearingId(HttpServletRequest request) {
+    private String getAttributeId(HttpServletRequest request, String attribute) {
         Map<String, Object> attributes = cast(request.getAttribute(PARAM_ATTRIBUTE));
-        if (attributes.containsKey("id")) {
-            return attributes.get("id").toString();
+        if (attributes.containsKey(attribute)) {
+            return attributes.get(attribute).toString();
         }
         return "n/a";
-    }
-
-    private LocalDateTime now() {
-        return LocalDateTime.now(utcClock);
     }
 }

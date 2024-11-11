@@ -8,7 +8,6 @@ import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -594,7 +593,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS1})
-        @Disabled
         void shouldCallProvidedCcdAndAmUrl_WhenHeadersProvided() throws Exception {
             mockMvc.perform(
                 get(URL + "/2000000000")
@@ -618,7 +616,6 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(status().is(200))
                 .andReturn();
 
-            // 2 requests because of added one each in the GET part
             amServer.verify(2, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
             dataStoreServer.verify(2, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
         }
