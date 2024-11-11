@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingActualsServiceImpl;
+import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -50,6 +51,9 @@ class HearingActualsControllerTest {
 
     @MockBean
     private ApplicationParams applicationParams;
+
+    @MockBean
+    private OverrideAuditService overrideAuditService;
 
     @MockBean
     private UrlManager urlManager;

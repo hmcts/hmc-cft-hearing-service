@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
+import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,6 +25,9 @@ class HeaderProcessorTest {
     private UrlManager dataStoreUrlManager;
 
     @Mock
+    private OverrideAuditService overrideAuditService;
+
+    @Mock
     private UrlManager roleAssignmentUrlManager;
 
     HeaderProcessor headerProcessor;
@@ -31,7 +35,8 @@ class HeaderProcessorTest {
     @BeforeEach
     void setUp() {
         openMocks(this);
-        headerProcessor = new HeaderProcessor(params, roleAssignmentUrlManager, dataStoreUrlManager);
+        headerProcessor = new HeaderProcessor(
+            params, roleAssignmentUrlManager, dataStoreUrlManager, overrideAuditService);
     }
 
     @Test

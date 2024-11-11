@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
 import uk.gov.hmcts.reform.hmc.service.common.DefaultObjectMapperService;
+import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -71,6 +72,9 @@ class LinkHearingGroupControllerTest {
 
     @MockBean
     private UrlManager urlManager;
+
+    @MockBean
+    private OverrideAuditService overrideAuditService;
 
     @MockBean
     SecurityUtils securityUtils;

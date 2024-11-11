@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.PartiesNotifiedService;
+import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -70,6 +71,9 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
 
     @MockBean
     private ApplicationParams applicationParams;
+
+    @MockBean
+    private OverrideAuditService overrideAuditService;
 
     @MockBean
     private UrlManager urlManager;

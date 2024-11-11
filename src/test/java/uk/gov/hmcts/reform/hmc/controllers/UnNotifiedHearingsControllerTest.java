@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.UnNotifiedHearingService;
+import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,6 +48,9 @@ class UnNotifiedHearingsControllerTest {
 
     @MockBean
     private ApplicationParams applicationParams;
+
+    @MockBean
+    private OverrideAuditService overrideAuditService;
 
     @MockBean
     private UrlManager urlManager;

@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
+import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.util.List;
@@ -78,6 +79,9 @@ class HearingManagementControllerTest {
 
     @MockBean
     private UrlManager urlManager;
+
+    @MockBean
+    private OverrideAuditService overrideAuditService;
 
     @Mock
     HearingStatusAuditService hearingStatusAuditService;
