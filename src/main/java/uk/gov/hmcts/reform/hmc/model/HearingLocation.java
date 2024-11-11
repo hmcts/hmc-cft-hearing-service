@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.hmc.model;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 public class HearingLocation {
 
     @EnumPattern(enumClass = LocationType.class, fieldName = "locationType")
-    @ApiModelProperty(allowableValues = "court, cluster, region")
+    @Schema(allowableValues = "court, cluster, region")
     private String locationType;
 
     @NotEmpty(message = ValidationError.LOCATION_ID_EMPTY)

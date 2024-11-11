@@ -117,7 +117,6 @@ task functional(type: Test) {
       main = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
       classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
       args = [
-        '--strict',
         '--threads', '10',
         '--plugin', "json:${rootDir}/target/cucumber.json",
         '--plugin', "junit:${buildDir}/test-results/functional/cucumber.xml",
@@ -167,7 +166,6 @@ task smoke(type: Test) {
       main = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
       classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
       args = [
-        '--strict',
         '--threads', '10',
         '--plugin', "json:${rootDir}/target/cucumber.json",
         '--plugin', "junit:${buildDir}/test-results/functional/cucumber.xml",
@@ -246,7 +244,7 @@ ext {
   reformLogging         = '6.1.4'
   azureInsightsVersion  = '2.4.1'
   restAssured           = '4.2.1'
-  testcontainers        = '1.15.3'
+  testcontainers        = '1.16.3'
   netty                 = '4.1.106.Final'
   serviceAuthVersion    = '4.1.2'
   tomcatEmbedded        = '10.1.31'
@@ -269,10 +267,6 @@ dependencyUpdates {
 apply from: './gradle/suppress.gradle'
 dependencyCheck {
   suppressionFile = 'config/owasp/suppressions.xml'
-}
-
-project.ext {
-  
 }
 
 def static getCheckedOutGitCommitHash() {
@@ -319,6 +313,11 @@ repositories {
   }
 }
 
+dependencyManagement {
+  imports {
+    mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+  }
+}
 
 ext.libraries = [
   junit5: [
@@ -351,8 +350,7 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-rsa'
   implementation group: 'org.springframework.security', name: 'spring-security-web'
 
-
-  implementation group: 'io.springfox', name: 'springfox-boot-starter', version: springfoxSwagger
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.8.0'
 
   // HMCTS libraries
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: serviceAuthVersion
@@ -410,7 +408,7 @@ dependencies {
   testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
   testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.9'
   testImplementation group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.19.12'
-  testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '8.8.5'
+  testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '9.1.0'
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.5'
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombok
   testAnnotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstruct

@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.hmc.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -31,7 +31,7 @@ public class HearingDetails {
     private Boolean autoListFlag;
 
     @ListingReasonCodeEnumPattern(enumClass = ListingReasonCode.class, fieldName = "listingAutoChangeReasonCode")
-    @ApiModelProperty(allowableValues = "no-mapping-available, user-added-comments")
+    @Schema(allowableValues = "no-mapping-available, user-added-comments")
     @Size(max = 70, message = ValidationError.LISTING_REASON_CODE_MAX_LENGTH)
     private String listingAutoChangeReasonCode;
 
@@ -45,8 +45,8 @@ public class HearingDetails {
     @Min(value = 0, message = ValidationError.DURATION_MIN_VALUE)
     private Integer duration;
 
-    private List<@Size(max = 70, message = ValidationError.NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG) String>
-        nonStandardHearingDurationReasons;
+    private List<@Size(max = 70, message = ValidationError.NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG) 
+        String> nonStandardHearingDurationReasons;
 
     @NotEmpty(message = ValidationError.HEARING_PRIORITY_TYPE)
     @Size(max = 60, message = ValidationError.HEARING_PRIORITY_TYPE_MAX_LENGTH)
@@ -85,7 +85,7 @@ public class HearingDetails {
 
     @Valid
     @NotNull(message = ValidationError.HEARING_CHANNEL_EMPTY)
-    private List<@Size(max = 70, message = ValidationError.CHANNEL_TYPE_MAX_LENGTH)String> hearingChannels;
+    private List<@Size(max = 70, message = ValidationError.CHANNEL_TYPE_MAX_LENGTH) String> hearingChannels;
 
     @JsonIgnore
     public boolean isMultiDayHearing() {

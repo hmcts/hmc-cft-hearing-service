@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.hmc.model;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -20,6 +20,6 @@ public class PanelPreference {
     private String memberType;
 
     @EnumPattern(enumClass = RequirementType.class, fieldName = "requirementType")
-    @ApiModelProperty(allowableValues = "MUSTINC, OPTINC, EXCLUDE")
+    @Schema(allowableValues = "MUSTINC, OPTINC, EXCLUDE")
     private String requirementType;
 }
