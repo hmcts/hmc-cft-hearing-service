@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.config;
 
+import com.azure.core.http.ContentType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +34,6 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PUT;
 import static wiremock.com.google.common.collect.Lists.newArrayList;
-import static wiremock.org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 @TestPropertySource(properties = {"http.client.connection.timeout=1500",
     "http.client.max.total=1",
@@ -47,7 +47,7 @@ public class RestTemplateConfigurationTest extends BaseTest {
 
     private static final String RESPONSE_BODY = "{ \"test\": \"name\"}";
     private static final String URL = "/ng/itb";
-    private static final String MIME_TYPE = APPLICATION_JSON.getMimeType();
+    private static final String MIME_TYPE = ContentType.APPLICATION_JSON;
 
     @Test
     public void restTemplateShouldBeUsable() throws Exception {

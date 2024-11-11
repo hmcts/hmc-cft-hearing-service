@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.model;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -7,7 +8,6 @@ import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor

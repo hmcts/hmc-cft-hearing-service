@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
 import com.microsoft.applicationinsights.core.dependencies.google.common.base.Enums;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;

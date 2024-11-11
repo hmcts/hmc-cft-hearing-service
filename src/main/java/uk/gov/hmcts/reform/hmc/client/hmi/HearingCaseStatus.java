@@ -1,11 +1,10 @@
 package uk.gov.hmcts.reform.hmc.client.hmi;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.validator.HearingCodeEnumPattern;
-
-import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor

@@ -1,10 +1,9 @@
 package uk.gov.hmcts.reform.hmc.client.hmi;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.Valid;
 
 @Data
 @NoArgsConstructor
