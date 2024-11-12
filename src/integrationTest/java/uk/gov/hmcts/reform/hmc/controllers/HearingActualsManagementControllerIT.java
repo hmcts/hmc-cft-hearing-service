@@ -568,7 +568,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         static WireMockServer dataStoreServer;
 
         @BeforeAll
-        static void startServers() {
+        static void startServers() throws InterruptedException {
             int amPort = 23456;
             int dataStorePort = 34567;
             amServer = startExtraWireMock(
@@ -576,6 +576,8 @@ class HearingActualsManagementControllerIT extends BaseTest {
             dataStoreServer = startExtraWireMock(dataStorePort, "/cases/.*", CCD_RESPONSE);
             amServer.start();
             dataStoreServer.start();
+            // Wait for servers to start
+            Thread.sleep(3000);
         }
 
         @AfterAll
