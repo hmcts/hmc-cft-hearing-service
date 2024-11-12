@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +31,7 @@ import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OverrideAuditService {
 
     private static final String BEARER_PREFIX = "Bearer ";
@@ -37,12 +42,10 @@ public class OverrideAuditService {
     private final LinkedHearingStatusAuditRepository linkedHearingStatusAuditRepository;
     private final UrlManager roleAssignmentUrlManager;
     private final UrlManager dataStoreUrlManager;
-    private SecurityUtils securityUtils;
 
-    @Autowired
-    public void setSecurityUtils(@Lazy SecurityUtils securityUtils) {
-        this.securityUtils = securityUtils;
-    }
+    // To overcome circular dependency issue
+    @Lazy @Autowired @Setter
+    private SecurityUtils securityUtils;
 
     public void logOverrideAudit(HttpServletRequest request) {
         String roleAssignmentUrl = request.getHeader(roleAssignmentUrlManager.getUrlHeaderName());
@@ -72,6 +75,9 @@ public class OverrideAuditService {
         if (isRequestWithBody(request)) {
             root.put("requestBody", getRequestBody(request));
         }
+
+        root.put("requestTimestamp", LocalDateTime.now(ZoneId.of("UTC")).toString());
+        root.put("user-id", securityUtils.getUserId());
 
         if (path.startsWith("/linkedHearingGroup")) {
             String groupId = getAttributeId(request, "id");
@@ -139,14 +145,20 @@ public class OverrideAuditService {
         // that the S2S token has already been verified elsewhere
 
         if (s2sToken != null && s2sToken.startsWith(BEARER_PREFIX)) {
-            return JWT.decode(s2sToken.substring(BEARER_PREFIX.length())).getSubject();
+            try {
+                return JWT.decode(s2sToken.substring(BEARER_PREFIX.length())).getSubject();
+            } catch (Exception e) {
+                log.warn("Error decoding S2S token", e);
+                return "n/a";
+            }
         }
-        return null;
+        log.warn("Missing S2S token");
+        return "n/a";
     }
 
     private String getAttributeId(HttpServletRequest request, String attribute) {
         Map<String, Object> attributes = cast(request.getAttribute(PARAM_ATTRIBUTE));
-        if (attributes.containsKey(attribute)) {
+        if (attributes != null && attributes.containsKey(attribute)) {
             return attributes.get(attribute).toString();
         }
         return "n/a";
