@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -34,31 +33,24 @@ public class UnNotifiedHearingsController {
 
     @GetMapping(path = "/unNotifiedHearings/{hmctsServiceCode}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success"),
-        @ApiResponse(code = 400, message = ValidationError.INVALID_HMCTS_SERVICE_CODE),
-        @ApiResponse(code = 401, message = "Unauthorised"),
-        @ApiResponse(code = 403, message = "Forbidden")
-    })
-    public UnNotifiedHearingsResponse getUnNotifiedHearings(@PathVariable("hmctsServiceCode")
-                                                            @Valid
-                                                            @NotEmpty(message = HMCTS_SERVICE_CODE_EMPTY)
-                                                                String hmctsServiceCode,
-                                                            @RequestParam(name = "hearing_start_date_from")
-                                                            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                                LocalDateTime hearingStartDateFrom,
-                                                            @RequestParam(name = "hearing_start_date_to",
-                                                                required = false)
-                                                            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                                LocalDateTime hearingStartDateTo,
-                                                            @RequestParam(required = false)
-                                                                    List<String> hearingStatus) {
+    @ApiResponse(responseCode = "200", description = "Success")
+    @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HMCTS_SERVICE_CODE)
+    @ApiResponse(responseCode = "401", description = "Unauthorised")
+    @ApiResponse(responseCode = "403", description = "Forbidden")
+
+    public UnNotifiedHearingsResponse getUnNotifiedHearings(
+        @PathVariable("hmctsServiceCode") @Valid @NotEmpty(message = HMCTS_SERVICE_CODE_EMPTY) String hmctsServiceCode,
+        @RequestParam(name = "hearing_start_date_from") 
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") 
+            LocalDateTime hearingStartDateFrom,
+        @RequestParam(name = "hearing_start_date_to", required = false) 
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") 
+            LocalDateTime hearingStartDateTo,
+        @RequestParam(required = false) List<String> hearingStatus) {
         return unNotifiedHearingService.getUnNotifiedHearings(
-            hmctsServiceCode,
-            hearingStartDateFrom,
-            hearingStartDateTo,
-            hearingStatus
-        );
+                hmctsServiceCode,
+                hearingStartDateFrom,
+                hearingStartDateTo,
+                hearingStatus);
     }
 }
-
