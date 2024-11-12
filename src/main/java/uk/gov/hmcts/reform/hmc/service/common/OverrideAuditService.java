@@ -4,10 +4,13 @@ import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingStatusAuditEntity;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 
@@ -34,6 +37,12 @@ public class OverrideAuditService {
     private final LinkedHearingStatusAuditRepository linkedHearingStatusAuditRepository;
     private final UrlManager roleAssignmentUrlManager;
     private final UrlManager dataStoreUrlManager;
+    private SecurityUtils securityUtils;
+
+    @Autowired
+    public void setSecurityUtils(@Lazy SecurityUtils securityUtils) {
+        this.securityUtils = securityUtils;
+    }
 
     public void logOverrideAudit(HttpServletRequest request) {
         String roleAssignmentUrl = request.getHeader(roleAssignmentUrlManager.getUrlHeaderName());
