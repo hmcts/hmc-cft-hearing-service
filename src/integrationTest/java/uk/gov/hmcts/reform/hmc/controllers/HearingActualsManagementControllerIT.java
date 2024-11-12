@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +20,6 @@ import wiremock.com.jayway.jsonpath.JsonPath;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import javax.persistence.EntityManager;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
