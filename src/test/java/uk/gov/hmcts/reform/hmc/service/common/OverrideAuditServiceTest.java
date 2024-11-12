@@ -33,6 +33,7 @@ import static org.mockito.MockitoAnnotations.openMocks;
 @ExtendWith(MockitoExtension.class)
 class OverrideAuditServiceTest {
 
+    @SuppressWarnings({"checkstyle:linelength"})
     private static final String DUMMY =
         "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJteVNlcnZpY2VOYW1lIiwiZXhwIjoxNzE5OTI5MTQ1fQ.lVzHP-gt82qsFNc0VAQQdqahyDfD5cGWl6dtrmlrFfPw4D7imFe8Y_Qq-z_e9trpqRvBsOXTzSRUhzG7qY8oHg";
 
@@ -77,7 +78,9 @@ class OverrideAuditServiceTest {
         // given
         commonSetup();
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setAttribute("org.springframework.web.servlet.HandlerMapping.uriTemplateVariables", Map.of("id", "1234"));
+        request.setAttribute(
+            "org.springframework.web.servlet.HandlerMapping.uriTemplateVariables",
+            Map.of("id", "1234"));
         request.addHeader("Role-Assignment-Url", "http://role-assignment.example.org");
         request.addHeader("Data-Store-Url", "http://data-store.example.org");
 
@@ -136,7 +139,9 @@ class OverrideAuditServiceTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         commonSetup();
         request.setRequestURI("/linkedHearingGroup/1234");
-        request.setAttribute("org.springframework.web.servlet.HandlerMapping.uriTemplateVariables", Map.of("id", "1234"));
+        request.setAttribute(
+            "org.springframework.web.servlet.HandlerMapping.uriTemplateVariables",
+            Map.of("id", "1234"));
         request.addHeader("Role-Assignment-Url", "http://role-assignment.example.org");
         request.addHeader("Data-Store-Url", "http://data-store.example.org");
 
@@ -144,13 +149,16 @@ class OverrideAuditServiceTest {
         overrideAuditService.logOverrideAudit(request);
 
         // then
-        verify(linkedHearingStatusAuditRepository, times(1)).save(any(LinkedHearingStatusAuditEntity.class));
+        verify(linkedHearingStatusAuditRepository, times(1))
+            .save(any(LinkedHearingStatusAuditEntity.class));
     }
 
     @Test
     void logOverrideAuditShouldNotSaveIfAlternativeUrlsNotGiven() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setAttribute("org.springframework.web.servlet.HandlerMapping.uriTemplateVariables", Map.of("id", "1234"));
+        request.setAttribute(
+            "org.springframework.web.servlet.HandlerMapping.uriTemplateVariables",
+            Map.of("id", "1234"));
         overrideAuditService.logOverrideAudit(request);
         verify(hearingStatusAuditRepository, never()).save(any());
         verify(linkedHearingStatusAuditRepository, never()).save(any());
@@ -161,7 +169,9 @@ class OverrideAuditServiceTest {
         when(roleAssignmentUrlManager.getHost()).thenReturn("http://role-assignment.internal");
         when(dataStoreUrlManager.getHost()).thenReturn("http://data-store.internal");
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setAttribute("org.springframework.web.servlet.HandlerMapping.uriTemplateVariables", Map.of("id", "1234"));
+        request.setAttribute(
+            "org.springframework.web.servlet.HandlerMapping.uriTemplateVariables",
+            Map.of("id", "1234"));
         request.addHeader("Role-Assignment-Url", "http://role-assignment.internal");
         request.addHeader("Data-Store-Url", "http://data-store.internal");
 
