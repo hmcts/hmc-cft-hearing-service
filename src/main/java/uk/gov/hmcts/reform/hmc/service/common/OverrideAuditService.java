@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingStatusAuditEntity;
@@ -17,9 +16,12 @@ import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.data.util.CastUtils.cast;
@@ -71,7 +73,7 @@ public class OverrideAuditService {
         root.put("hmctsServiceName", getServiceNameFromS2SToken(s2sToken));
 
         if (isRequestWithBody(request)) {
-            root.put("requestBody", getRequestBody(new ContentCachingRequestWrapper(request)));
+            root.put("requestBody", getRequestBody(request));
         }
 
         root.put("requestTimestamp", LocalDateTime.now(ZoneId.of("UTC")).toString());
@@ -107,8 +109,12 @@ public class OverrideAuditService {
         hearingStatusAuditRepository.save(auditEntity);
     }
 
-    private String getRequestBody(ContentCachingRequestWrapper request) {
-        return new String(request.getContentAsByteArray());
+    private String getRequestBody(HttpServletRequest request) {
+        try (BufferedReader reader = request.getReader()) {
+            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        } catch (IOException ioe) {
+            return "{\"requestBody\": \"Error reading request body\"}";
+        }
     }
 
     private boolean isRequestWithBody(HttpServletRequest request) {

@@ -16,10 +16,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.TestFixtures;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
+import uk.gov.hmcts.reform.hmc.interceptors.ContentBodyCachingFilter;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import wiremock.com.jayway.jsonpath.DocumentContext;
 import wiremock.com.jayway.jsonpath.JsonPath;
@@ -65,6 +68,11 @@ class HearingActualsManagementControllerIT extends BaseTest {
     private ObjectMapper objectMapper;
 
     @Autowired
+    private WebApplicationContext context;
+
+    @Autowired
+    ContentBodyCachingFilter contentBodyCachingFilter;
+
     private MockMvc mockMvc;
 
     @Autowired
@@ -74,6 +82,13 @@ class HearingActualsManagementControllerIT extends BaseTest {
     private static final String INSERT_HEARING_ACTUALS = "classpath:sql/put-hearing-actuals.sql";
     private static final String INSERT_HEARING_ACTUALS1 = "classpath:sql/get-HearingsActual_request.sql";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(context)
+            .addFilter(contentBodyCachingFilter)
+            .build();
+    }
 
     @Nested
     @DisplayName("PutHearingActuals")
