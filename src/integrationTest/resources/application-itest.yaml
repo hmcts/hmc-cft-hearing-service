@@ -18,7 +18,7 @@ jms:
 spring:
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    url: jdbc:tc:postgresql:11:///databasename?stringtype=unspecified
+    url: jdbc:tc:postgresql:15:///databasename?stringtype=unspecified
   security:
     oauth2:
       client:
@@ -49,3 +49,7 @@ fh:
 
 hmcts-deployment-id:
   enabled: ${HMCTS_DEPLOYMENT_ID:false}
+
+wiremock:
+  server:
+    httpsPort: -1

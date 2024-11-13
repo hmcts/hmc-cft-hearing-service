@@ -246,7 +246,7 @@ def versions = [
   restAssured     : '4.2.1',
   springBoot      : springBoot.class.package.implementationVersion,
   springCloud     : '2021.0.8',
-  testcontainers  : '1.16.3',
+  testcontainers  : '1.20.3',
   netty           : '4.1.106.Final',
   serviceAuthVersion: '4.1.2',
   tomcatEmbedded  : '9.0.85',
