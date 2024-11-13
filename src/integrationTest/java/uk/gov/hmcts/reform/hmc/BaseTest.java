@@ -22,9 +22,13 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
+<<<<<<< HEAD
 import uk.gov.hmcts.reform.hmc.config.DataStoreUrlManager;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.config.RoleAssignmentUrlManager;
+=======
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
+>>>>>>> master
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
@@ -70,6 +74,8 @@ public class BaseTest {
     protected SecurityUtils securityUtils;
     @Inject
     protected ApplicationParams applicationParams;
+    @MockBean
+    protected MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
 
     @Inject
     protected RoleAssignmentUrlManager roleAssignmentUrlManager;
