@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.service.common;
 
-import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingStatusAuditEntity;
@@ -16,12 +16,10 @@ import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.data.util.CastUtils.cast;
@@ -69,8 +67,7 @@ public class OverrideAuditService {
             root.put("data-store-url", dataStoreUrl);
         }
 
-        String s2sToken = request.getHeader(SERVICE_AUTHORIZATION);
-        root.put("hmctsServiceName", getServiceNameFromS2SToken(s2sToken));
+        root.put("hmctsServiceName", getServiceName(request.getHeader(SERVICE_AUTHORIZATION)));
 
         if (isRequestWithBody(request)) {
             root.put("requestBody", getRequestBody(request));
@@ -110,11 +107,8 @@ public class OverrideAuditService {
     }
 
     private String getRequestBody(HttpServletRequest request) {
-        try (BufferedReader reader = request.getReader()) {
-            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
-        } catch (IOException ioe) {
-            return "{\"requestBody\": \"Error reading request body\"}";
-        }
+        ContentCachingRequestWrapper wrapped = (ContentCachingRequestWrapper) request;
+        return new String(wrapped.getContentAsByteArray(), StandardCharsets.UTF_8);
     }
 
     private boolean isRequestWithBody(HttpServletRequest request) {
@@ -140,13 +134,10 @@ public class OverrideAuditService {
             || !dataStoreUrlManager.getHost().equals(dataStoreUrl);
     }
 
-    private String getServiceNameFromS2SToken(String s2sToken) {
-        // NB: this grabs the servce name straight from the token under the assumption
-        // that the S2S token has already been verified elsewhere
-
-        if (s2sToken != null && s2sToken.startsWith(BEARER_PREFIX)) {
+    private String getServiceName(String s2sToken) {
+        if (s2sToken != null) {
             try {
-                return JWT.decode(s2sToken.substring(BEARER_PREFIX.length())).getSubject();
+                return securityUtils.getServiceNameFromS2SToken(s2sToken);
             } catch (Exception e) {
                 log.warn("Error decoding S2S token", e);
                 return "n/a";
@@ -157,9 +148,13 @@ public class OverrideAuditService {
     }
 
     private String getAttributeId(HttpServletRequest request, String attribute) {
-        Map<String, Object> attributes = cast(request.getAttribute(PARAM_ATTRIBUTE));
-        if (attributes != null && attributes.containsKey(attribute)) {
-            return attributes.get(attribute).toString();
+        try {
+            Map<String, Object> attributes = cast(request.getAttribute(PARAM_ATTRIBUTE));
+            if (attributes != null && attributes.containsKey(attribute)) {
+                return attributes.get(attribute).toString();
+            }
+        } catch (ClassCastException e) {
+            log.warn("Error casting request attribute", e);
         }
         return "n/a";
     }

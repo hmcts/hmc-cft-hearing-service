@@ -592,6 +592,8 @@ class HearingActualsManagementControllerIT extends BaseTest {
             amServer.start();
             dataStoreServer.start();
             // Wait for servers to start
+            // There might be a better way to do, e.g. using multi-domain mocking on the same
+            // WireMockServer instance (https://wiremock.org/docs/multi-domain-mocking/)
             Thread.sleep(3000);
         }
 

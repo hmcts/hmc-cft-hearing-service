@@ -9,6 +9,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingStatusAuditEntity;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -99,15 +101,18 @@ class OverrideAuditServiceTest {
     }
 
     @Test
-    void logOverrideAuditShouldSaveBody() {
+    void logOverrideAuditShouldSaveBody() throws IOException {
         commonSetup();
+
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Data-Store-Url", "http://data-store.example.org");
         request.setRequestURI("/hearing");
         request.setMethod("POST");
         request.setContent("{\"body\":\"value\"}".getBytes(StandardCharsets.UTF_8));
+        ContentCachingRequestWrapper wrapped = new ContentCachingRequestWrapper(request);
+        wrapped.getInputStream().readAllBytes();
 
-        overrideAuditService.logOverrideAudit(request);
+        overrideAuditService.logOverrideAudit(wrapped);
 
         verify(hearingStatusAuditRepository, times(1)).save(hearingStatusCaptor.capture());
         HearingStatusAuditEntity entity = hearingStatusCaptor.getValue();
@@ -121,6 +126,7 @@ class OverrideAuditServiceTest {
     @Test
     void logOverrideAuditShouldGetServiceName() {
         commonSetup();
+        when(securityUtils.getServiceNameFromS2SToken("Bearer " + DUMMY)).thenReturn("myServiceName");
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Data-Store-Url", "http://data-store.example.org");
         request.addHeader("ServiceAuthorization", "Bearer " + DUMMY);
