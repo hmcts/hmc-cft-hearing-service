@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.data.util.CastUtils.cast;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.FH;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.OVERRIDE_URL;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.OVERRIDE_URL_EVENT;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
@@ -32,7 +33,6 @@ import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 @Slf4j
 public class OverrideAuditService {
 
-    private static final String BEARER_PREFIX = "Bearer ";
     private static final String PARAM_ATTRIBUTE =
         "org.springframework.web.servlet.HandlerMapping.uriTemplateVariables";
 
@@ -67,8 +67,6 @@ public class OverrideAuditService {
             root.put("data-store-url", dataStoreUrl);
         }
 
-        root.put("hmctsServiceName", getServiceName(request.getHeader(SERVICE_AUTHORIZATION)));
-
         if (isRequestWithBody(request)) {
             root.put("requestBody", getRequestBody(request));
         }
@@ -76,32 +74,37 @@ public class OverrideAuditService {
         root.put("requestTimestamp", LocalDateTime.now(ZoneId.of("UTC")).toString());
         root.put("user-id", securityUtils.getUserId());
 
+        String serviceName = getServiceName(request.getHeader(SERVICE_AUTHORIZATION));
         if (path.startsWith("/linkedHearingGroup")) {
             String groupId = getAttributeId(request, "id");
-            saveLinkedHearingStatusAudit(groupId, root);
+            saveLinkedHearingStatusAudit(groupId, serviceName, root);
         } else {
             String hearingId = getAttributeId(request, "id");
-            saveHearingStatusAudit(hearingId, root);
+            saveHearingStatusAudit(hearingId, serviceName, root);
         }
     }
 
-    private void saveLinkedHearingStatusAudit(String groupId, ObjectNode root) {
+    private void saveLinkedHearingStatusAudit(String groupId, String serviceName, ObjectNode root) {
         LinkedHearingStatusAuditEntity auditEntity = new LinkedHearingStatusAuditEntity();
         auditEntity.setHmctsServiceId("n/a");
         auditEntity.setLinkedGroupId(groupId);
         auditEntity.setLinkedGroupVersion("n/a");
         auditEntity.setLinkedHearingEvent("n/a");
+        auditEntity.setSource(serviceName);
+        auditEntity.setTarget(FH);
         auditEntity.setOtherInfo(root);
         linkedHearingStatusAuditRepository.save(auditEntity);
     }
 
-    private void saveHearingStatusAudit(String hearingId, ObjectNode root) {
+    private void saveHearingStatusAudit(String hearingId, String serviceName, ObjectNode root) {
         HearingStatusAuditEntity auditEntity = new HearingStatusAuditEntity();
         auditEntity.setHearingId(hearingId);
         auditEntity.setHmctsServiceId("n/a");
         auditEntity.setStatus(OVERRIDE_URL);
         auditEntity.setHearingEvent(OVERRIDE_URL_EVENT);
         auditEntity.setRequestVersion("n/a");
+        auditEntity.setSource(serviceName);
+        auditEntity.setTarget(FH);
         auditEntity.setOtherInfo(root);
         hearingStatusAuditRepository.save(auditEntity);
     }

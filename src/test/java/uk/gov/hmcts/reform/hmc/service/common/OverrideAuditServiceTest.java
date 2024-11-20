@@ -135,8 +135,7 @@ class OverrideAuditServiceTest {
 
         verify(hearingStatusAuditRepository, times(1)).save(hearingStatusCaptor.capture());
         HearingStatusAuditEntity entity = hearingStatusCaptor.getValue();
-        JsonNode otherInfo = entity.getOtherInfo();
-        assertThat(otherInfo.get("hmctsServiceName").asText()).isEqualTo("myServiceName");
+        assertThat(entity.getSource()).isEqualTo("myServiceName");
     }
 
     @Test
