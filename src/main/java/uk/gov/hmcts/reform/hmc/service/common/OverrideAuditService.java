@@ -89,7 +89,7 @@ public class OverrideAuditService {
         auditEntity.setHmctsServiceId("n/a");
         auditEntity.setLinkedGroupId(groupId);
         auditEntity.setLinkedGroupVersion("n/a");
-        auditEntity.setLinkedHearingEvent("n/a");
+        auditEntity.setLinkedHearingEvent(OVERRIDE_URL_EVENT);
         auditEntity.setSource(serviceName);
         auditEntity.setTarget(FH);
         auditEntity.setOtherInfo(root);
