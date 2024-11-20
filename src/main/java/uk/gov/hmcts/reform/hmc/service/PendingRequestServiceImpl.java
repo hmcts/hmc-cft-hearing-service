@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.PendingRequestEntity;
 import uk.gov.hmcts.reform.hmc.repository.PendingRequestRepository;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -46,7 +45,7 @@ public class PendingRequestServiceImpl implements PendingRequestService {
         pendingRequest.setIncidentFlag(false);
         pendingRequest.setVersionNumber(1);
 
-        Timestamp currentTimestamp = Timestamp.valueOf(LocalDateTime.now());
+        LocalDateTime currentTimestamp = LocalDateTime.now();
         pendingRequest.setLastTriedDateTime(currentTimestamp);
         pendingRequest.setSubmittedDateTime(currentTimestamp);
         pendingRequest.setRetryCount(0);

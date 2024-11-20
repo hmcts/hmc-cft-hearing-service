@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.hmc.entity;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.hmc.data.PendingRequestEntity;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
@@ -15,9 +15,9 @@ class PendingRequestEntityTest {
         final long id = 1L;
         final long hearingId = 12345L;
         final int versionNumber = 1;
-        final Timestamp submittedDateTime = Timestamp.valueOf("2023-10-01 10:00:00");
+        final LocalDateTime submittedDateTime = LocalDateTime.of(2023,10,1,10,1,2);
         final int retryCount = 3;
-        final Timestamp lastTriedDateTime = Timestamp.valueOf("2023-10-02 09:00:00");
+        final LocalDateTime lastTriedDateTime = LocalDateTime.of(2023,10,2,9,2,3);
         final String status = "PENDING";
         final boolean incidentFlag = true;
         final String message = "Test Message";

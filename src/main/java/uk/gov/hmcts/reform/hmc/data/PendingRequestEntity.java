@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -38,13 +38,13 @@ public class PendingRequestEntity implements Serializable {
     private String messageType;
 
     @Column(name = "submitted_date_time", nullable = false)
-    private Timestamp submittedDateTime;
+    private LocalDateTime submittedDateTime;
 
     @Column(name = "retry_count", nullable = false)
     private Integer retryCount;
 
     @Column(name = "last_tried_date_time", nullable = false)
-    private Timestamp lastTriedDateTime;
+    private LocalDateTime lastTriedDateTime;
 
     @Column(name = "status", nullable = false, length = 20)
     private String status;
@@ -59,18 +59,16 @@ public class PendingRequestEntity implements Serializable {
     private String deploymentId;
 
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("id:<").append(id).append(">,")
-            .append("hearingId:<").append(hearingId).append(">,")
-            .append("versionNumber:<").append(versionNumber).append(">,")
-            .append("messageType:<").append(messageType).append(">,")
-            .append("submittedDateTime:<").append(submittedDateTime).append(">,")
-            .append("retryCount:<").append(retryCount).append(">,")
-            .append("lastTriedDateTime:<").append(lastTriedDateTime).append(">,")
-            .append("status:<").append(status).append(">,")
-            .append("incidentFlag:<").append(incidentFlag).append(">,")
-            .append("message:<").append(message).append(">,")
-            .append("deploymentId:<").append(deploymentId).append(">");
-        return sb.toString();
+        return "id:<" + id + ">,"
+            + "hearingId:<" + hearingId + ">,"
+            + "versionNumber:<" + versionNumber + ">,"
+            + "messageType:<" + messageType + ">,"
+            + "submittedDateTime:<" + submittedDateTime + ">,"
+            + "retryCount:<" + retryCount + ">,"
+            + "lastTriedDateTime:<" + lastTriedDateTime + ">,"
+            + "status:<" + status + ">,"
+            + "incidentFlag:<" + incidentFlag + ">,"
+            + "message:<" + message + ">,"
+            + "deploymentId:<" + deploymentId + ">";
     }
 }
