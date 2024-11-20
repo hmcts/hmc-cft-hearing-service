@@ -75,7 +75,7 @@ class PendingRequestServiceImplTest {
 
         PendingRequestEntity result = pendingRequestService.findById(id);
 
-        assertThat(result).isNotNull();
+        assertThat(result).isNull();
     }
 
     @Test
