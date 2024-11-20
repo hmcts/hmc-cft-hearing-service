@@ -126,7 +126,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         /// WHEN
         Mockito.doThrow(new InvalidRoleAssignmentException(testExceptionMessage))
             .when(accessControlService)
-            .verifyCaseAccess(anyString(), anyList());
+            .verifyCaseAccess(anyString(), anyList(), null);
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
@@ -160,7 +160,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new CaseCouldNotBeFoundException(testExceptionMessage))
-            .when(accessControlService).verifyCaseAccess(anyString(), anyList());
+            .when(accessControlService).verifyCaseAccess(anyString(), anyList(), null);
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
@@ -177,7 +177,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         Request request = Request.create(Request.HttpMethod.GET, "url",
                                          new HashMap<>(), null, new RequestTemplate());
         Mockito.doThrow(new FeignException.NotFound(testExceptionMessage, request, null,null))
-            .when(accessControlService).verifyCaseAccess(anyString(), anyList());
+            .when(accessControlService).verifyCaseAccess(anyString(), anyList(), null);
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
@@ -195,7 +195,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new ResourceNotFoundException(testExceptionMessage))
-            .when(accessControlService).verifyCaseAccess(anyString(), anyList());
+            .when(accessControlService).verifyCaseAccess(anyString(), anyList(), null);
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
@@ -212,7 +212,7 @@ public class RestExceptionHandlerTest extends BaseTest {
 
         /// WHEN
         Mockito.doThrow(new ServiceException(testExceptionMessage))
-            .when(accessControlService).verifyCaseAccess(anyString(), anyList());
+            .when(accessControlService).verifyCaseAccess(anyString(), anyList(), null);
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)

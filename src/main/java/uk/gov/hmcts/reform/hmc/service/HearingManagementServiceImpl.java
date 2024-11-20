@@ -8,12 +8,15 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
@@ -62,6 +65,9 @@ import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -353,6 +359,22 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     public void sendResponse(String json, String hmctsServiceId, String deploymentId) {
         sendRspToTopic(json, hmctsServiceId, deploymentId);
+    }
+
+    @Override
+    public List<DataStoreCaseDetails> getCaseSearchResults(List<String> ccdCaseRefs, String status,
+                                                           String caseTypeId) {
+        String jsonString = new String();
+        ClassPathResource resource = new ClassPathResource("list_of_cases.json");
+        try {
+            jsonString = new String(Files.readAllBytes(Paths.get(resource.getURI())));
+            System.out.println(jsonString);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        CaseSearchResult caseSearchResult =  dataStoreRepository.findAllCasesByCaseIdUsingExternalApi(caseTypeId,
+                                                                                                      jsonString);
+        return caseSearchResult.getCases();
     }
 
     private void auditChangeInRequestVersion(HearingEntity hearingEntity, int existingRequestVersion,
