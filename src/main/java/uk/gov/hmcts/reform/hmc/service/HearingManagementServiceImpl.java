@@ -71,8 +71,10 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.transaction.Transactional;
@@ -88,8 +90,11 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.NO_DEFINED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_ACTUALS_COMPLETION;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.QUERY;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.REFERENCE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_VERSION_UPDATE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.TERMS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UPDATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_ID_NOT_FOUND;
@@ -364,17 +369,22 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     public List<DataStoreCaseDetails> getCaseSearchResults(List<String> ccdCaseRefs, String status,
                                                            String caseTypeId) {
-        String jsonString = new String();
-        ClassPathResource resource = new ClassPathResource("list_of_cases.json");
-        try {
-            jsonString = new String(Files.readAllBytes(Paths.get(resource.getURI())));
-            System.out.println(jsonString);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String elasticSearchQuery = createSearchJsonObject(ccdCaseRefs);
         CaseSearchResult caseSearchResult =  dataStoreRepository.findAllCasesByCaseIdUsingExternalApi(caseTypeId,
-                                                                                                      jsonString);
+                                                                                 elasticSearchQuery);
         return caseSearchResult.getCases();
+    }
+
+    private String createSearchJsonObject(List<String> ccdCaseRefs) {
+        Map<String, Object> termsMap = new HashMap<>();
+        termsMap.put(REFERENCE, ccdCaseRefs);
+
+        Map<String, Object> queryMap = new HashMap<>();
+        queryMap.put(TERMS, termsMap);
+
+        Map<String, Object> finalMap = new HashMap<>();
+        finalMap.put(QUERY, queryMap);
+        return objectMapperService.convertObjectToJsonString(finalMap);
     }
 
     private void auditChangeInRequestVersion(HearingEntity hearingEntity, int existingRequestVersion,
