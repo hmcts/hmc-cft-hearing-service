@@ -856,7 +856,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     void shouldReturn200_WhenGetHearingsForListOfCasesForInvalidCaseRef() throws Exception {
-        mockMvc.perform(get("/hearings?ccdCaseRefs=123456")
+        mockMvc.perform(get("/hearings?ccdCaseRefs=123456&caseTypeId=CaseType1")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
@@ -865,7 +865,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForOneCaseRef() throws Exception {
-        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9372710950276239")
+        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9372710950276239&caseTypeId=CaseType1")
                              .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("status", "HEARING_REQUESTED"))
             .andExpect(status().is(200))
@@ -878,7 +878,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_Listed() throws Exception {
-        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759")
+        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759&caseTypeId=CaseType1")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("status", "LISTED"))
             .andExpect(status().is(200))
@@ -890,7 +890,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_NotListed() throws Exception {
-        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759")
+        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759&caseTypeId=CaseType1")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("status", "HEARING_REQUESTED"))
             .andExpect(status().is(200))
@@ -902,11 +902,11 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_NoStatus() throws Exception {
-        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759")
+        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759&caseTypeId=CaseType1")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.*", hasSize(2)))
-            .andExpect(jsonPath("$[0].caseRef").value("9372710950276233"))
+            .andExpect(jsonPath("$[0].caseRef").value("9372710950276233&caseTypeId=CaseType1"))
             .andReturn();
     }
 
