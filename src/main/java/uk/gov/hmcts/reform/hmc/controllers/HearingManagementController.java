@@ -214,14 +214,10 @@ public class HearingManagementController {
         }
         List<DataStoreCaseDetails> cases = hearingManagementService.getCaseSearchResults(ccdCaseRefs, status,
                                                                                           caseTypeId);
-        if (cases.isEmpty()) {
-            throw new BadRequestException(ValidationError.CASE_NOT_FOUND);
-        } else {
-            for (DataStoreCaseDetails caseDetails : cases) {
-                GetHearingsResponse hearingsResponse = getHearingsResponse(caseDetails.getId(), status, caseDetails);
-                if (hearingsResponse.getCaseHearings().size() != 0) {
-                    hearingsResponseList.add(hearingsResponse);
-                }
+        for (DataStoreCaseDetails caseDetails : cases) {
+            GetHearingsResponse hearingsResponse = getHearingsResponse(caseDetails.getId(), status, caseDetails);
+            if (hearingsResponse.getCaseHearings().size() != 0) {
+                hearingsResponseList.add(hearingsResponse);
             }
         }
         return hearingsResponseList.isEmpty() ? null : hearingsResponseList;
