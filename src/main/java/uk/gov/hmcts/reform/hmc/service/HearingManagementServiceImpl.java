@@ -16,6 +16,9 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.ElasticSearch;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.Query;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.Terms;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
@@ -67,10 +70,8 @@ import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.transaction.Transactional;
@@ -86,11 +87,8 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.NO_DEFINED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_ACTUALS_COMPLETION;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.QUERY;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.REFERENCE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_VERSION_UPDATE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.TERMS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UPDATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_ID_NOT_FOUND;
@@ -365,22 +363,17 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     public List<DataStoreCaseDetails> getCaseSearchResults(List<String> ccdCaseRefs, String status,
                                                            String caseTypeId) {
-        String elasticSearchQuery = createSearchJsonObject(ccdCaseRefs);
+        String elasticSearchQuery = createSearchQuery(ccdCaseRefs);
         CaseSearchResult caseSearchResult =  dataStoreRepository.findAllCasesByCaseIdUsingExternalApi(caseTypeId,
                                                                                  elasticSearchQuery);
         return caseSearchResult.getCases();
     }
 
-    private String createSearchJsonObject(List<String> ccdCaseRefs) {
-        Map<String, Object> termsMap = new HashMap<>();
-        termsMap.put(REFERENCE, ccdCaseRefs);
-
-        Map<String, Object> queryMap = new HashMap<>();
-        queryMap.put(TERMS, termsMap);
-
-        Map<String, Object> finalMap = new HashMap<>();
-        finalMap.put(QUERY, queryMap);
-        return objectMapperService.convertObjectToJsonString(finalMap);
+    private String createSearchQuery(List<String> ccdCaseRefs) {
+        Terms terms = new Terms(ccdCaseRefs);
+        Query query = new Query(terms);
+        ElasticSearch searchObject = new ElasticSearch(query);
+        return objectMapperService.convertObjectToJsonNode(searchObject).toString();
     }
 
     private void auditChangeInRequestVersion(HearingEntity hearingEntity, int existingRequestVersion,

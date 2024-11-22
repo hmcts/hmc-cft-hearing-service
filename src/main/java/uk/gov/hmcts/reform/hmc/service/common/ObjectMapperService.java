@@ -6,6 +6,4 @@ public interface ObjectMapperService {
 
     JsonNode convertObjectToJsonNode(Object object);
 
-    String convertObjectToJsonString(Object object);
-
 }
