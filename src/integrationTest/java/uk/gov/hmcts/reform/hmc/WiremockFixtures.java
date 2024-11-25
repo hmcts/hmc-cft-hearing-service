@@ -57,7 +57,7 @@ public class WiremockFixtures {
     public static String TEST_BODY = "This is a test message";
     public static final String CASE_TYPE = "CaseType1";
     public static final String JURISDICTION = "Jurisdiction";
-    public static final String FILE_PATH="data-store-ES-Payload/";
+    public static final String FILE_PATH = "data-store-ES-Payload/";
 
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
         .modules(new Jdk8Module(), new JavaTimeModule())
