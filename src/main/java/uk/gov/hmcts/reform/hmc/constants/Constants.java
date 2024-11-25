@@ -78,7 +78,4 @@ public final class Constants {
         + " and Error Description: {} updated to status {}";
     public static final String AMQP_CACHE = "com.azure.core.amqp.cache";
     public static final String AMQP_CACHE_VALUE = "true";
-    public static final String REFERENCE = "reference";
-    public static final String TERMS = "terms";
-    public static final String QUERY = "query";
 }

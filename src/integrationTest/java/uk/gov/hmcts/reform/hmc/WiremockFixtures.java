@@ -14,11 +14,15 @@ import com.github.tomakehurst.wiremock.http.ResponseDefinition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.AuthenticationResponse;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingManagementInterfaceResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -51,6 +55,8 @@ public class WiremockFixtures {
     private static final String DESTINATION_SYSTEM = "DESTINATION_SYSTEM";
 
     public static String TEST_BODY = "This is a test message";
+    public static final String CASE_TYPE = "CaseType1";
+    public static final String JURISDICTION = "Jurisdiction";
 
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
         .modules(new Jdk8Module(), new JavaTimeModule())
@@ -278,6 +284,36 @@ public class WiremockFixtures {
                                     .withBody(getJsonString("No case found"))
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)));
 
+    }
+
+    public static void stubReturn200AllCasesFromDataStore(List<String> caseRefs) {
+        String jsonSearchRequest = TestFixtures.fromFileAsString("data-store-ES-Payload/case-ref-query.json");
+        stubFor(WireMock.post(urlEqualTo("/searchCases" + "?ctid=" + CASE_TYPE))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withRequestBody(
+                        equalToJson(
+                            jsonSearchRequest))
+                    .willReturn(aResponse()
+                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(getCaseSearchResult(caseRefs)))
+                                    .withStatus(HTTP_OK)));
+    }
+
+    private static CaseSearchResult getCaseSearchResult(List<String> caseRefs) {
+        List<DataStoreCaseDetails> caseDetailsList = new ArrayList<>();
+        for (String caseRef : caseRefs) {
+            DataStoreCaseDetails dataStoreCaseDetails = DataStoreCaseDetails.builder()
+                .id(caseRef)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .build();
+            caseDetailsList.add(dataStoreCaseDetails);
+        }
+        CaseSearchResult caseSearchResult = CaseSearchResult.builder()
+            .cases(caseDetailsList)
+            .build();
+        return caseSearchResult;
     }
 
     @SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "squid:S112"})

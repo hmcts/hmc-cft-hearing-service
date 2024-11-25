@@ -68,6 +68,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200AllCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200CaseDetailsByCaseId;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignments;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidateHearingObject;
@@ -875,20 +876,24 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForOneCaseRef() throws Exception {
+        List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
+        stubReturn200AllCasesFromDataStore(caseRefs);
         mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9372710950276239")
                              .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("caseTypeId", CASE_TYPE)
                             .param("status", "HEARING_REQUESTED"))
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.*", hasSize(2)))
+            .andExpect(jsonPath("$.*", hasSize(1)))
             .andExpect(jsonPath("$[0].caseRef").value("9372710950276233"))
-            .andExpect(jsonPath("$[1].caseRef").value("9372710950276239"))
             .andReturn();
     }
+
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_Listed() throws Exception {
+        List<String> caseRefs = Arrays.asList("9856815055686759");
+        stubReturn200AllCasesFromDataStore(caseRefs);
         mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("caseTypeId", CASE_TYPE)
