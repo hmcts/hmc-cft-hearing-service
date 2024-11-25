@@ -57,6 +57,7 @@ public class WiremockFixtures {
     public static String TEST_BODY = "This is a test message";
     public static final String CASE_TYPE = "CaseType1";
     public static final String JURISDICTION = "Jurisdiction";
+    public static final String FILE_PATH="data-store-ES-Payload/";
 
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
         .modules(new Jdk8Module(), new JavaTimeModule())
@@ -286,8 +287,8 @@ public class WiremockFixtures {
 
     }
 
-    public static void stubReturn200AllCasesFromDataStore(List<String> caseRefs) {
-        String jsonSearchRequest = TestFixtures.fromFileAsString("data-store-ES-Payload/case-ref-query.json");
+    public static void stubReturn200AllCasesFromDataStore(List<String> caseRefs, String fileName) {
+        String jsonSearchRequest = TestFixtures.fromFileAsString(FILE_PATH + fileName);
         stubFor(WireMock.post(urlEqualTo("/searchCases" + "?ctid=" + CASE_TYPE))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
