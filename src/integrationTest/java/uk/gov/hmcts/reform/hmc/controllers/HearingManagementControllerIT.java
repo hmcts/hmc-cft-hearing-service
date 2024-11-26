@@ -68,8 +68,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200AllCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200CaseDetailsByCaseId;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignments;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidateHearingObject;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404FromDataStore;
@@ -858,7 +858,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn400_WhenGetHearingsForListOfCases_NoCaseType() throws Exception {
         List<String> caseRefs = Arrays.asList("123456");
-        stubReturn200AllCasesFromDataStore(caseRefs);
+        stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefs);
         mockMvc.perform(get("/hearings?ccdCaseRefs=" + caseRefs)
                             .param("caseTypeId", "")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -869,7 +869,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn200_WhenGetHearingsForListOfCasesForInvalidCaseRef() throws Exception {
         List<String> caseRefs = Arrays.asList("123456");
-        stubReturn200AllCasesFromDataStore(caseRefs);
+        stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefs);
         mockMvc.perform(get("/hearings?ccdCaseRefs=" + caseRefs)
                             .param("caseTypeId", CASE_TYPE)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -881,7 +881,8 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForOneCaseRef() throws Exception {
         List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
-        stubReturn200AllCasesFromDataStore(caseRefs);
+        List<String> caseRefsFromES = Arrays.asList("9372710950276233");
+        stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefsFromES);
         mockMvc.perform(get("/hearings?ccdCaseRefs=" + caseRefs)
                              .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("caseTypeId", CASE_TYPE)
@@ -897,7 +898,8 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_Listed() throws Exception {
         List<String> caseRefs = Arrays.asList("9372710950276233,9856815055686759");
-        stubReturn200AllCasesFromDataStore(caseRefs);
+        List<String> caseRefsFromES = Arrays.asList("9856815055686759");
+        stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefsFromES);
         mockMvc.perform(get("/hearings?ccdCaseRefs=" + caseRefs)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("caseTypeId", CASE_TYPE)
@@ -912,7 +914,8 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_NotListed() throws Exception {
         List<String> caseRefs = Arrays.asList("9372710950276233,9856815055686759");
-        stubReturn200AllCasesFromDataStore(caseRefs);
+        List<String> caseRefsFromES = Arrays.asList("9372710950276233");
+        stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefsFromES);
         mockMvc.perform(get("/hearings?ccdCaseRefs=" + caseRefs)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("caseTypeId", CASE_TYPE)
@@ -927,7 +930,8 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_NoStatus() throws Exception {
         List<String> caseRefs = Arrays.asList("9372710950276233,9856815055686759");
-        stubReturn200AllCasesFromDataStore(caseRefs);
+        List<String> caseRefsFromES = Arrays.asList("9372710950276233");
+        stubReturn200ForAllCasesFromDataStore(caseRefs,caseRefsFromES);
         mockMvc.perform(get("/hearings?ccdCaseRefs=" + caseRefs)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("caseTypeId", CASE_TYPE))
