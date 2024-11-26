@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.hmc.client.futurehearing.AuthenticationResponse;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingManagementInterfaceResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -287,14 +288,12 @@ public class WiremockFixtures {
 
     }
 
-    public static void stubReturn200AllCasesFromDataStore(List<String> caseRefs, String fileName) {
-        String jsonSearchRequest = TestFixtures.fromFileAsString(FILE_PATH + fileName);
+    public static void stubReturn200AllCasesFromDataStore(List<String> caseRefs) {
         stubFor(WireMock.post(urlEqualTo("/searchCases" + "?ctid=" + CASE_TYPE))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .withRequestBody(
-                        equalToJson(
-                            jsonSearchRequest))
+                        equalToJson(TestingUtil.createSearchQuery(caseRefs)))
                     .willReturn(aResponse()
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(getCaseSearchResult(caseRefs)))
