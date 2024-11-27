@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.matching.ContentPattern;
 import com.google.common.collect.Lists;
 import org.apache.http.HttpStatus;
 import org.slf4j.helpers.MessageFormatter;

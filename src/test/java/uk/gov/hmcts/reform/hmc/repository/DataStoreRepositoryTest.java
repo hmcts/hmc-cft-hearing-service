@@ -127,13 +127,14 @@ class DataStoreRepositoryTest {
     void shouldThrow404ForFindAllCaseByCaseIdsUsingExternalApi() {
         given(securityUtils.getUserBearerToken()).willReturn(USER_TOKEN);
         given(dataStoreApi.getCaseDetailsForAllCaseRefsByCaseIdViaExternalApi(USER_TOKEN, CASE_TYPE_ID,
-         "searchRequest")).willThrow(new FeignException.NotFound("404",
-                                            Request.create(Request.HttpMethod.POST, "someUrl", Map.of(),
-                                                           null, Charset.defaultCharset(),
-                                                                null), null,null
-        ));
-        assertThatThrownBy(() -> repository.findAllCasesByCaseIdUsingExternalApi(CASE_TYPE_ID,
-                                                                                 "searchRequest"))
+                                                                              "searchRequest"
+        )).willThrow(new FeignException.NotFound("404",
+                                                 Request.create(Request.HttpMethod.POST, "someUrl", Map.of(),
+                                                                null, Charset.defaultCharset(),
+                                                                null
+                                                 ), null, null));
+        assertThatThrownBy(() -> repository.findAllCasesByCaseIdUsingExternalApi(
+            CASE_TYPE_ID, "searchRequest"))
             .isInstanceOf(CaseCouldNotBeFoundException.class)
             .hasMessageContaining(CASE_NOT_FOUND);
     }
@@ -143,9 +144,10 @@ class DataStoreRepositoryTest {
     void shouldReturnNoCaseFindAllCaseByCaseIdsUsingExternalApi() {
         given(securityUtils.getUserBearerToken()).willReturn(USER_TOKEN);
         given(dataStoreApi.getCaseDetailsForAllCaseRefsByCaseIdViaExternalApi(USER_TOKEN, CASE_TYPE_ID,
-                                         "searchRequest")).willReturn(null);
-        CaseSearchResult result = repository.findAllCasesByCaseIdUsingExternalApi(CASE_TYPE_ID ,
-                                                                                      "searchRequest");
+                                                                              "searchRequest"
+        )).willReturn(null);
+        CaseSearchResult result = repository.findAllCasesByCaseIdUsingExternalApi(CASE_TYPE_ID,
+                                                                                  "searchRequest");
         assertThat(result).isNull();
         verify(dataStoreApi).getCaseDetailsForAllCaseRefsByCaseIdViaExternalApi(eq(USER_TOKEN), eq(CASE_TYPE_ID),
                                                                                 eq("searchRequest"));
