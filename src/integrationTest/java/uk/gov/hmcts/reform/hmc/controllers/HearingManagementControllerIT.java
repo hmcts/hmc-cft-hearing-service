@@ -883,6 +883,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn200_WhenGetHearingsForListOfCasesForOneCaseRef() throws Exception {
         List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
         List<String> caseRefsFromES = Arrays.asList("9372710950276233");
+        stubRoleAssignments();
         stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefsFromES);
         mockMvc.perform(get("/hearings")
                             .param("ccdCaseRefs", "9372710950276233", "9856815055686759")
@@ -901,6 +902,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_Listed() throws Exception {
         List<String> caseRefs = Arrays.asList("9372710950276233","9856815055686759");
         List<String> caseRefsFromES = Arrays.asList("9856815055686759");
+        stubRoleAssignments();
         stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefsFromES);
         mockMvc.perform(get("/hearings")
                             .param("ccdCaseRefs", "9372710950276233", "9856815055686759")
@@ -936,6 +938,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_NoStatus() throws Exception {
         List<String> caseRefs = Arrays.asList("9372710950276233","9856815055686759");
         List<String> caseRefsFromES = Arrays.asList("9372710950276233");
+        stubRoleAssignments();
         stubReturn200ForAllCasesFromDataStore(caseRefs,caseRefsFromES);
         mockMvc.perform(get("/hearings")
                             .param("ccdCaseRefs", "9372710950276233", "9856815055686759")
