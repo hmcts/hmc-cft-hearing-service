@@ -881,18 +881,19 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForOneCaseRef() throws Exception {
-        List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
-        List<String> caseRefsFromES = Arrays.asList("9372710950276233");
+        List<String> caseRefs = Arrays.asList("9372710950276233", "9372710950276239");
+        List<String> caseRefsFromES = Arrays.asList("9372710950276233","9372710950276239");
         stubRoleAssignments();
         stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefsFromES);
         mockMvc.perform(get("/hearings")
-                            .param("ccdCaseRefs", "9372710950276233", "9856815055686759")
+                            .param("ccdCaseRefs", "9372710950276233", "9372710950276239")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("caseTypeId", CASE_TYPE)
                             .param("status", "HEARING_REQUESTED"))
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.*", hasSize(1)))
+            .andExpect(jsonPath("$.*", hasSize(2)))
             .andExpect(jsonPath("$[0].caseRef").value("9372710950276233"))
+            .andExpect(jsonPath("$[1].caseRef").value("9372710950276239"))
             .andReturn();
     }
 
