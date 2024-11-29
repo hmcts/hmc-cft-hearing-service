@@ -1,4 +1,4 @@
-FROM postgres:11.8
+FROM postgres:15
 USER postgres
 
 ENV TZ="UTC"
