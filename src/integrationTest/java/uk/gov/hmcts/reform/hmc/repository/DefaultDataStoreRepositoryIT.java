@@ -42,8 +42,7 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
         @Test
         void shouldSuccessfullyGetValidCasesFromDataStore() {
             List<String> requestCaseRefs = Arrays.asList("9372710950276243", "9856815055686759");
-            List<String> caseRefsFromES = Arrays.asList("9856815055686759");
-            stubReturn200ForAllCasesFromDataStore(requestCaseRefs, caseRefsFromES);
+            stubReturn200ForAllCasesFromDataStore(requestCaseRefs, Arrays.asList(requestCaseRefs.get(1)));
             CaseSearchResult result = defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(CASE_TYPE,
                                                          TestingUtil.createSearchQuery(requestCaseRefs));
             assertEquals(1, result.getCases().size());
@@ -53,7 +52,7 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
         @Test
         void test404GetAllCasesFromDataStore() {
             List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
-            stubReturn404AllForCasesFromDataStore(caseRefs);
+            stubReturn404AllForCasesFromDataStore(caseRefs, CASE_TYPE);
             Exception exception = assertThrows(CaseCouldNotBeFoundException.class, () ->
                 defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(CASE_TYPE,
                                        TestingUtil.createSearchQuery(caseRefs)));

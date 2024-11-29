@@ -72,6 +72,7 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200CaseDetailsB
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignments;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidateHearingObject;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404AllForCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404FromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyValidateHearingObject;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
@@ -857,9 +858,10 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     void shouldReturn400_WhenGetHearingsForListOfCases_NoCaseType() throws Exception {
-        List<String> caseRefs = Arrays.asList("123456");
-        stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefs);
-        mockMvc.perform(get("/hearings?ccdCaseRefs=" + caseRefs)
+        List<String> caseRefs = Arrays.asList("9372710950276233");
+        stubReturn404AllForCasesFromDataStore(caseRefs, "");
+        mockMvc.perform(get("/hearings" )
+                            .param("ccdCaseRefs", "9372710950276233")
                             .param("caseTypeId", "")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
@@ -867,11 +869,11 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForInvalidCaseRef() throws Exception {
         List<String> caseRefs = Arrays.asList("123456");
-        stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefs);
-        mockMvc.perform(get("/hearings?ccdCaseRefs=" + caseRefs)
+        stubReturn200ForAllCasesFromDataStore(caseRefs, new ArrayList<>());
+        mockMvc.perform(get("/hearings")
+                            .param("ccdCaseRefs", "123456")
                             .param("caseTypeId", CASE_TYPE)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))

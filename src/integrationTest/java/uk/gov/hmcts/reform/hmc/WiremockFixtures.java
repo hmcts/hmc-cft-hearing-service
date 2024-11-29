@@ -299,8 +299,8 @@ public class WiremockFixtures {
                                     .withStatus(HTTP_OK)));
     }
 
-    public static void stubReturn404AllForCasesFromDataStore(List<String> caseRefs) {
-        stubFor(WireMock.post(urlEqualTo("/searchCases" + "?ctid=" + CASE_TYPE))
+    public static void stubReturn404AllForCasesFromDataStore(List<String> caseRefs, String caseType) {
+        stubFor(WireMock.post(urlEqualTo("/searchCases" + "?ctid=" + caseType))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .withRequestBody(

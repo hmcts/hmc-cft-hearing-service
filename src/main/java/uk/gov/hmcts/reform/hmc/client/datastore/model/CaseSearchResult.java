@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CaseSearchResult {
 
-    private Long total;
     private List<DataStoreCaseDetails> cases;
 
 }
