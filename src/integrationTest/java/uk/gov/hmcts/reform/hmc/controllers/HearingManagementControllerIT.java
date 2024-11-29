@@ -860,7 +860,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn400_WhenGetHearingsForListOfCases_NoCaseType() throws Exception {
         List<String> caseRefs = Arrays.asList("9372710950276233");
         stubReturn404AllForCasesFromDataStore(caseRefs, "");
-        mockMvc.perform(get("/hearings" )
+        mockMvc.perform(get("/hearings")
                             .param("ccdCaseRefs", "9372710950276233")
                             .param("caseTypeId", "")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
