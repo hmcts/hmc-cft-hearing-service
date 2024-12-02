@@ -72,7 +72,7 @@ public class OverrideAuditService {
         }
 
         root.put("requestTimestamp", LocalDateTime.now(ZoneId.of("UTC")).toString());
-        root.put("user-id", securityUtils.getUserId());
+        putUserId(root);
 
         String serviceName = getServiceName(request.getHeader(SERVICE_AUTHORIZATION));
         if (path.startsWith("/linkedHearingGroup")) {
@@ -81,6 +81,14 @@ public class OverrideAuditService {
         } else {
             String hearingId = getAttributeId(request, "id");
             saveHearingStatusAudit(hearingId, serviceName, root);
+        }
+    }
+    private void putUserId(ObjectNode root) {
+        try {
+            root.put("userId", securityUtils.getUserId());
+        } catch (Exception e) {
+            log.warn("Error getting user id", e);
+            root.put("userId", "n/a");
         }
     }
 
