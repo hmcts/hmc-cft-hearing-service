@@ -83,12 +83,13 @@ public class OverrideAuditService {
             saveHearingStatusAudit(hearingId, serviceName, root);
         }
     }
+
     private void putUserId(ObjectNode root) {
         try {
-            root.put("userId", securityUtils.getUserId());
+            root.put("user-id", securityUtils.getUserId());
         } catch (Exception e) {
             log.warn("Error getting user id", e);
-            root.put("userId", "n/a");
+            root.put("user-id", "n/a");
         }
     }
 
