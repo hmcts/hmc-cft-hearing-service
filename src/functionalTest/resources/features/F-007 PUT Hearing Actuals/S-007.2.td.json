@@ -1,0 +1,24 @@
+{
+    "_guid_": "S-007.2",
+    "_extends_" : "PutHearingActualsRequestBase",
+  
+    "specs": [
+      "an active profile in CCD",
+      "has 404 status code"
+    ],
+  
+    "request": {
+      "pathVariables": {
+        "id": "2100000400"
+      }
+    },
+  
+    "expectedResponse": {
+      "responseCode": 404,
+      "responseMessage": "Not Found",
+      "body" : {
+        "status" : "NOT_FOUND",
+        "errors" : [ "001 No such id: 2100000400" ]
+      }
+    }
+  }
