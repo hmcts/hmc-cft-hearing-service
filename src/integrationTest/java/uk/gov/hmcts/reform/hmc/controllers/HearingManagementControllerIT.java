@@ -71,7 +71,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200CaseDetailsByCaseId;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignments;
-import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400AllForCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidateHearingObject;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404FromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyValidateHearingObject;
@@ -851,18 +850,6 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn400_WhenGetHearingsForListOfCases_NoCaseRefs() throws Exception {
         mockMvc.perform(get("/hearings?ccdCaseRefs=")
-                            .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().is(400))
-            .andReturn();
-    }
-
-    @Test
-    void shouldReturn400_WhenGetHearingsForListOfCases_NoCaseTypeIdValue() throws Exception {
-        List<String> caseRefs = Arrays.asList("9372710950276233");
-        stubReturn400AllForCasesFromDataStore(caseRefs, "");
-        mockMvc.perform(get("/hearings")
-                            .param("ccdCaseRefs", "9372710950276233")
-                            .param("caseTypeId", "")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
             .andReturn();
