@@ -63,6 +63,7 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
             assertEquals(CASE_TYPE_NOT_FOUND, exception.getMessage());
         }
 
+        @Test
         void test404GetAllCasesFromDataStore() {
             List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
             stubReturn404AllForCasesFromDataStore(caseRefs, "invalidCaseType");

@@ -307,7 +307,7 @@ public class WiremockFixtures {
                         equalToJson(TestingUtil.createSearchQuery(caseRefs)))
                     .willReturn(aResponse()
                                     .withStatus(HTTP_BAD_REQUEST)
-                                    .withBody(getJsonString("No case found"))
+                                    .withBody(getJsonString("Case type could not be found"))
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)));
 
     }
