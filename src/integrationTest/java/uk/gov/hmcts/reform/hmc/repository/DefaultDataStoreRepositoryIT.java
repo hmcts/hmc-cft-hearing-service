@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.CaseCouldNotBeFoundException;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400AllForCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_NOT_FOUND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_TYPE_NOT_FOUND;
 
 public class DefaultDataStoreRepositoryIT extends BaseTest {
 
@@ -50,13 +52,14 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
         }
 
         @Test
-        void test404GetAllCasesFromDataStore() {
+        void test400GetAllCasesFromDataStore() {
             List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
-            stubReturn400AllForCasesFromDataStore(caseRefs, CASE_TYPE);
-            Exception exception = assertThrows(CaseCouldNotBeFoundException.class, () ->
-                defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(CASE_TYPE,
+            stubReturn400AllForCasesFromDataStore(caseRefs, "");
+            Exception exception = assertThrows(
+                BadRequestException.class, () ->
+                defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi("",
                                        TestingUtil.createSearchQuery(caseRefs)));
-            assertEquals(CASE_NOT_FOUND, exception.getMessage());
+            assertEquals(CASE_TYPE_NOT_FOUND, exception.getMessage());
         }
 
     }
