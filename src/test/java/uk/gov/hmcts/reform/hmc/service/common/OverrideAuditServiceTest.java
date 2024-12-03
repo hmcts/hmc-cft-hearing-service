@@ -9,7 +9,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingStatusAuditEntity;
@@ -109,10 +108,8 @@ class OverrideAuditServiceTest {
         request.setRequestURI("/hearing");
         request.setMethod("POST");
         request.setContent("{\"body\":\"value\"}".getBytes(StandardCharsets.UTF_8));
-        ContentCachingRequestWrapper wrapped = new ContentCachingRequestWrapper(request);
-        wrapped.getInputStream().readAllBytes();
 
-        overrideAuditService.logOverrideAudit(wrapped);
+        overrideAuditService.logOverrideAudit(request);
 
         verify(hearingStatusAuditRepository, times(1)).save(hearingStatusCaptor.capture());
         HearingStatusAuditEntity entity = hearingStatusCaptor.getValue();

@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingStatusAuditEntity;
@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -119,8 +121,14 @@ public class OverrideAuditService {
     }
 
     private String getRequestBody(HttpServletRequest request) {
-        ContentCachingRequestWrapper wrapped = (ContentCachingRequestWrapper) request;
-        return new String(wrapped.getContentAsByteArray(), StandardCharsets.UTF_8);
+        try {
+            InputStream is = request.getInputStream();
+            byte[] body = IOUtils.toByteArray(is);
+            return new String(body, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            log.warn("Error reading request body", e);
+        }
+        return "Failed to read request body";
     }
 
     private boolean isRequestWithBody(HttpServletRequest request) {
