@@ -8,9 +8,11 @@ import uk.gov.hmcts.reform.hmc.client.datastore.DataStoreApiClient;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.CaseCouldNotBeFoundException;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_NOT_FOUND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_TYPE_NOT_FOUND;
 
 @Repository("defaultDataStoreRepository")
 public class DefaultDataStoreRepository implements DataStoreRepository {
@@ -43,6 +45,9 @@ public class DefaultDataStoreRepository implements DataStoreRepository {
             return dataStoreApi.getCaseDetailsForAllCaseRefsByCaseIdViaExternalApi(
                 securityUtils.getUserBearerToken(), caseTypeId, jsonSearchRequest);
         } catch (FeignException e) {
+            if (HttpStatus.BAD_REQUEST.value() == e.status()) {
+                throw new BadRequestException(CASE_TYPE_NOT_FOUND);
+            }
             if (HttpStatus.NOT_FOUND.value() == e.status()) {
                 throw new CaseCouldNotBeFoundException(CASE_NOT_FOUND);
             }
