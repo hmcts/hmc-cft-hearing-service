@@ -55,12 +55,13 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
         @Test
         void test400GetAllCasesFromDataStore() {
             List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
-            stubReturn400AllForCasesFromDataStore(caseRefs, "");
+            stubReturn404AllForCasesFromDataStore(caseRefs, "");
             Exception exception = assertThrows(
-                BadRequestException.class, () ->
-                defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi("",
-                                       TestingUtil.createSearchQuery(caseRefs)));
-            assertEquals(CASE_TYPE_NOT_FOUND, exception.getMessage());
+                CaseCouldNotBeFoundException.class, () ->
+                    defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(
+                        "",
+                        TestingUtil.createSearchQuery(caseRefs)));
+            assertEquals(CASE_NOT_FOUND, exception.getMessage());
         }
 
         @Test
