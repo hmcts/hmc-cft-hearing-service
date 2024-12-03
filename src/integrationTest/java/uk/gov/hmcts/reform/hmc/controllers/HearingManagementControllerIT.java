@@ -71,8 +71,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200CaseDetailsByCaseId;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignments;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400AllForCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidateHearingObject;
-import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404AllForCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404FromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyValidateHearingObject;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
@@ -859,7 +859,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn400_WhenGetHearingsForListOfCases_NoCaseType() throws Exception {
         List<String> caseRefs = Arrays.asList("9372710950276233");
-        stubReturn404AllForCasesFromDataStore(caseRefs, "");
+        stubReturn400AllForCasesFromDataStore(caseRefs, "");
         mockMvc.perform(get("/hearings")
                             .param("ccdCaseRefs", "9372710950276233")
                             .param("caseTypeId", "")
