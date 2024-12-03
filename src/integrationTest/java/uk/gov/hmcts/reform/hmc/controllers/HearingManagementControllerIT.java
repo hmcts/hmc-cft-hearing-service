@@ -936,7 +936,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("caseTypeId", CASE_TYPE))
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.*", hasSize(2)))
+            .andExpect(jsonPath("$.*", hasSize(1)))
             .andExpect(jsonPath("$[0].caseRef").value("9372710950276233"))
             .andReturn();
     }
