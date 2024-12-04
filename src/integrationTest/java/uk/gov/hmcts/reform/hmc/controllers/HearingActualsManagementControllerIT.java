@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.TestFixtures;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
-import uk.gov.hmcts.reform.hmc.interceptors.ContentBodyCachingFilter;
+import uk.gov.hmcts.reform.hmc.interceptors.RequestBodyCachingFilter;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import wiremock.com.jayway.jsonpath.DocumentContext;
 import wiremock.com.jayway.jsonpath.JsonPath;
@@ -71,7 +71,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
     private WebApplicationContext context;
 
     @Autowired
-    ContentBodyCachingFilter contentBodyCachingFilter;
+    RequestBodyCachingFilter requestBodyCachingFilter;
 
     private MockMvc mockMvc;
 
@@ -86,7 +86,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context)
-            .addFilter(contentBodyCachingFilter)
+            .addFilter(requestBodyCachingFilter)
             .build();
     }
 

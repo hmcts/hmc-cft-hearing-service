@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 @Component
-public class ContentBodyCachingFilter extends OncePerRequestFilter {
+public class RequestBodyCachingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
