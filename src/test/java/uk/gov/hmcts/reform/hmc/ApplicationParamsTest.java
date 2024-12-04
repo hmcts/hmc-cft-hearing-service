@@ -1,15 +1,29 @@
 package uk.gov.hmcts.reform.hmc;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.hmc.config.RoleAssignmentUrlManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class ApplicationParamsTest {
 
     private static final String VALUE = "test-value";
     private static final int INT_VALUE = 1;
+
+    @Mock
+    private RoleAssignmentUrlManager roleAssignmentUrlManager;
+
+    @InjectMocks
     private final ApplicationParams applicationParams = new ApplicationParams();
+
+
 
     @Test
     void shouldGetExponentialMultiplier() {
@@ -46,21 +60,18 @@ class ApplicationParamsTest {
         final var roleAssignmentServiceHost = "test-value";
         final var baseUrl = roleAssignmentServiceHost + "/am/role-assignments";
 
-        ReflectionTestUtils.setField(applicationParams, "roleAssignmentServiceHost", roleAssignmentServiceHost);
+        when(roleAssignmentUrlManager.getActualHost()).thenReturn(roleAssignmentServiceHost);
 
         assertEquals(baseUrl, applicationParams.roleAssignmentBaseUrl());
-
     }
 
     @Test
     void shouldGetAmGetRoleAssignmentsUrl() {
         final var roleAssignmentServiceHost = "test-value";
         final var baseUrl = roleAssignmentServiceHost + "/am/role-assignments/actors/{uid}";
-
-        ReflectionTestUtils.setField(applicationParams, "roleAssignmentServiceHost", roleAssignmentServiceHost);
+        when(roleAssignmentUrlManager.getActualHost()).thenReturn(roleAssignmentServiceHost);
 
         assertEquals(baseUrl, applicationParams.amGetRoleAssignmentsUrl());
-
     }
 
     @Test

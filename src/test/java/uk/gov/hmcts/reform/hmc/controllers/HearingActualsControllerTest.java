@@ -15,11 +15,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
+import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingActualsServiceImpl;
+import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -46,6 +49,15 @@ class HearingActualsControllerTest {
     @MockBean
     private AccessControlService accessControlService;
 
+    @MockBean
+    private ApplicationParams applicationParams;
+
+    @MockBean
+    private OverrideAuditService overrideAuditService;
+
+    @MockBean
+    private UrlManager urlManager;
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -56,8 +68,9 @@ class HearingActualsControllerTest {
     class GetHearingActuals {
         @Test
         void shouldReturn200_whenRequestIdIsValid() {
-            HearingActualsController controller = new HearingActualsController(hearingActualsService,
-                                                                               accessControlService);
+            HearingActualsController controller = new HearingActualsController(
+                hearingActualsService, accessControlService);
+
             controller.getHearingActuals(1234L);
             verify(hearingActualsService, times(1)).getHearingActuals(any());
         }
