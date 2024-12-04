@@ -287,8 +287,9 @@ public class WiremockFixtures {
 
     }
 
-    public static void stubReturn200ForAllCasesFromDataStore(List<String> caseRefs, List<String> caseRefsFromES) {
-        stubFor(WireMock.post(urlEqualTo("/searchCases" + "?ctid=" + CASE_TYPE))
+    public static void stubReturn200ForAllCasesFromDataStore(List<String> caseRefs, List<String> caseRefsFromES,
+                                                             String caseType) {
+        stubFor(WireMock.post(urlEqualTo("/searchCases" + "?ctid=" + caseType))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .withRequestBody(
