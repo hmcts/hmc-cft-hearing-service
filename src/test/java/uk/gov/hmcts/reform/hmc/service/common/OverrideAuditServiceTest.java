@@ -99,8 +99,33 @@ class OverrideAuditServiceTest {
     }
 
     @Test
+    void logOverrideAuditShouldSaveAuditEntryIfAlternativeUrlIsEmpty() {
+        // given
+        when(roleAssignmentUrlManager.getHost()).thenReturn("http://role-assignment.internal");
+        when(securityUtils.getUserId()).thenReturn("user1234");
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setAttribute(
+            "org.springframework.web.servlet.HandlerMapping.uriTemplateVariables",
+            Map.of("id", "1234"));
+        request.addHeader("Role-Assignment-Url", "");
+
+        // when
+        overrideAuditService.logOverrideAudit(request);
+
+        // then
+        verify(hearingStatusAuditRepository, times(1)).save(hearingStatusCaptor.capture());
+        HearingStatusAuditEntity entity = hearingStatusCaptor.getValue();
+        assertThat(entity.getHearingId()).isEqualTo("1234");
+        JsonNode otherInfo = entity.getOtherInfo();
+        assertThat(otherInfo.get("role-assignment-url").asText()).isEqualTo("");
+        assertThat(toLocalDateTime(otherInfo.get("requestTimestamp"))).isCloseToUtcNow(within(1, ChronoUnit.SECONDS));
+        assertThat(otherInfo.get("user-id").asText()).isEqualTo("user1234");
+    }
+
+    @Test
     void logOverrideAuditShouldSaveBody() {
-        commonSetup();
+        when(dataStoreUrlManager.getHost()).thenReturn("http://data-store.internal");
+        when(securityUtils.getUserId()).thenReturn("user1234");
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Data-Store-Url", "http://data-store.example.org");
@@ -121,7 +146,7 @@ class OverrideAuditServiceTest {
 
     @Test
     void logOverrideAuditShouldGetServiceName() {
-        commonSetup();
+        when(dataStoreUrlManager.getHost()).thenReturn("http://data-store.internal");
         when(securityUtils.getServiceNameFromS2SToken("Bearer " + DUMMY)).thenReturn("myServiceName");
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Data-Store-Url", "http://data-store.example.org");
@@ -166,7 +191,22 @@ class OverrideAuditServiceTest {
     }
 
     @Test
-    void logOverrideAuditShouldNotSaveIfAlternativeUrlsMatchDefault() {
+    void logOverrideAuditShouldNotSaveIfOneAlternativeUrlMatchDefault() {
+        when(roleAssignmentUrlManager.getHost()).thenReturn("http://role-assignment.internal");
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setAttribute(
+            "org.springframework.web.servlet.HandlerMapping.uriTemplateVariables",
+            Map.of("id", "1234"));
+        request.addHeader("Role-Assignment-Url", "http://role-assignment.internal");
+
+        overrideAuditService.logOverrideAudit(request);
+        verify(hearingStatusAuditRepository, never()).save(any());
+        verify(linkedHearingStatusAuditRepository, never()).save(any());
+    }
+
+
+    @Test
+    void logOverrideAuditShouldNotSaveIfBothAlternativeUrlsMatchDefault() {
         when(roleAssignmentUrlManager.getHost()).thenReturn("http://role-assignment.internal");
         when(dataStoreUrlManager.getHost()).thenReturn("http://data-store.internal");
         MockHttpServletRequest request = new MockHttpServletRequest();

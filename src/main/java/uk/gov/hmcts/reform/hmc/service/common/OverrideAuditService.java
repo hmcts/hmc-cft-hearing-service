@@ -137,21 +137,21 @@ public class OverrideAuditService {
 
     /**
      * Assumption that log is required only if one or both custom urls are provided and
-     * they are different from the default ones.
+     * they are different from the default ones. If header given as an empty string, the
+     * app will consider it as a default value, however log entry will be created.
      * @param roleAssignmentUrl - custom role assignment url
      * @param dataStoreUrl - custom data store url
      * @return whether log is required
      */
     private boolean isLogRequired(String roleAssignmentUrl, String dataStoreUrl) {
+        boolean raUrlDefault = roleAssignmentUrl == null
+            || roleAssignmentUrlManager.getHost().equals(roleAssignmentUrl);
 
-        // No custom urls provided
-        if (roleAssignmentUrl == null && dataStoreUrl == null) {
-            return false;
-        }
+        boolean dataStoreUrlDefault = dataStoreUrl == null
+            || dataStoreUrlManager.getHost().equals(dataStoreUrl);
 
         // Check if any of the urls are different from the default ones
-        return !roleAssignmentUrlManager.getHost().equals(roleAssignmentUrl)
-            || !dataStoreUrlManager.getHost().equals(dataStoreUrl);
+        return !raUrlDefault || !dataStoreUrlDefault;
     }
 
     private String getServiceName(String s2sToken) {
