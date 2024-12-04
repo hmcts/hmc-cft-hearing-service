@@ -12,10 +12,12 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStore;
-import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404AllForCasesFromDataStore;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn4xxAllForCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_NOT_FOUND;
 
 public class DefaultDataStoreRepositoryIT extends BaseTest {
@@ -24,6 +26,8 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
     private DefaultDataStoreRepository defaultDataStoreRepository;
 
     public static final String CASE_TYPE = "CaseType1";
+    public static final String UNAUTHORIZED_CASE_TYPE = "\"*(&\"";
+    public static final String INVALID_CASE_TYPE = "invalidCaseType";
 
     @Nested
     @DisplayName("Find All Cases By Case Id Using External Api")
@@ -50,13 +54,13 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
         }
 
         @Test
-        void test400GetAllCasesFromDataStore() {
+        void test403GetAllCasesFromDataStore() {
             List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
-            stubReturn404AllForCasesFromDataStore(caseRefs, "");
+            stubReturn4xxAllForCasesFromDataStore(caseRefs, UNAUTHORIZED_CASE_TYPE, HTTP_UNAUTHORIZED);
             Exception exception = assertThrows(
                 CaseCouldNotBeFoundException.class, () ->
                     defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(
-                        "",
+                        UNAUTHORIZED_CASE_TYPE,
                         TestingUtil.createSearchQuery(caseRefs)));
             assertEquals(CASE_NOT_FOUND, exception.getMessage());
         }
@@ -64,11 +68,11 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
         @Test
         void test404GetAllCasesFromDataStore() {
             List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
-            stubReturn404AllForCasesFromDataStore(caseRefs, "invalidCaseType");
+            stubReturn4xxAllForCasesFromDataStore(caseRefs, INVALID_CASE_TYPE, HTTP_NOT_FOUND);
             Exception exception = assertThrows(
                 CaseCouldNotBeFoundException.class, () ->
                     defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(
-                        "invalidCaseType",
+                        INVALID_CASE_TYPE,
                         TestingUtil.createSearchQuery(caseRefs)));
             assertEquals(CASE_NOT_FOUND, exception.getMessage());
         }
