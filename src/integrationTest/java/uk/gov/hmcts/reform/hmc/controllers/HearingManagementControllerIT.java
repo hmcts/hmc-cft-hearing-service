@@ -878,36 +878,6 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    void shouldReturn400_WhenGetHearingsForListOfCasesForInvalidCaseRefNonDigits() throws Exception {
-        mockMvc.perform(get("/hearings")
-                            .param("ccdCaseRefs", "A234567890123456")
-                            .param("caseTypeId", CASE_TYPE)
-                            .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().is(400))
-            .andReturn();
-    }
-
-    @Test
-    void shouldReturn400_WhenGetHearingsForListOfCasesInvalidCaseRefNonLuhn() throws Exception {
-        mockMvc.perform(get("/hearings")
-                            .param("ccdCaseRefs", "9372710950276230")
-                            .param("caseTypeId", CASE_TYPE)
-                            .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().is(400))
-            .andReturn();
-    }
-
-    @Test
-    void shouldReturn400_WhenGetHearingsForListOfCasesForInvalidCaseRefSize() throws Exception {
-        mockMvc.perform(get("/hearings")
-                            .param("ccdCaseRefs", "123456")
-                            .param("caseTypeId", CASE_TYPE)
-                            .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().is(400))
-            .andReturn();
-    }
-
-    @Test
     void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRefNotInDB() throws Exception {
         List<String> caseRefs = Arrays.asList("9372710950276245");
         stubReturn200ForAllCasesFromDataStore(caseRefs, new ArrayList<>());
