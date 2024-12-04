@@ -299,32 +299,18 @@ public class WiremockFixtures {
                                     .withStatus(HTTP_OK)));
     }
 
-    public static void stubReturn400AllForCasesFromDataStore(List<String> caseRefs, String caseType) {
+    public static void stubReturn4xxAllForCasesFromDataStore(List<String> caseRefs, String caseType, int httpStatus) {
         stubFor(WireMock.post(urlEqualTo("/searchCases" + "?ctid=" + caseType))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .withRequestBody(
                         equalToJson(TestingUtil.createSearchQuery(caseRefs)))
                     .willReturn(aResponse()
-                                    .withStatus(HTTP_BAD_REQUEST)
-                                    .withBody(getJsonString("Case type could not be found"))
-                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)));
-
-    }
-
-    public static void stubReturn404AllForCasesFromDataStore(List<String> caseRefs, String caseType) {
-        stubFor(WireMock.post(urlEqualTo("/searchCases" + "?ctid=" + caseType))
-                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
-                    .withRequestBody(
-                        equalToJson(TestingUtil.createSearchQuery(caseRefs)))
-                    .willReturn(aResponse()
-                                    .withStatus(HTTP_NOT_FOUND)
+                                    .withStatus(httpStatus)
                                     .withBody(getJsonString("No case found"))
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)));
 
     }
-
 
     private static CaseSearchResult getCaseSearchResult(List<String> caseRefs) {
         List<DataStoreCaseDetails> caseDetailsList = new ArrayList<>();
