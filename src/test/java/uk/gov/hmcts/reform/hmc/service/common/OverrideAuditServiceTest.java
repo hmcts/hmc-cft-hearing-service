@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -100,7 +99,7 @@ class OverrideAuditServiceTest {
     }
 
     @Test
-    void logOverrideAuditShouldSaveBody() throws IOException {
+    void logOverrideAuditShouldSaveBody() {
         commonSetup();
 
         MockHttpServletRequest request = new MockHttpServletRequest();
