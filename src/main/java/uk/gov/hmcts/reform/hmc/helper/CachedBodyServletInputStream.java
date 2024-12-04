@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 
+@Slf4j
 public class CachedBodyServletInputStream extends ServletInputStream {
 
     private InputStream cachedBodyInputStream;
@@ -19,8 +22,7 @@ public class CachedBodyServletInputStream extends ServletInputStream {
         try {
             return cachedBodyInputStream.available() == 0;
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("isFinished threw an error", e);
         }
         return false;
     }
