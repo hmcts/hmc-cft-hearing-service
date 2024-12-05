@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.FutureHearingServerException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteMethodThrowingError;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyDeleteLinkedHearingGroups;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubUpdateMethodThrowingError;
 import static uk.gov.hmcts.reform.hmc.client.futurehearing.FutureHearingErrorDecoder.INVALID_REQUEST;
 import static uk.gov.hmcts.reform.hmc.client.futurehearing.FutureHearingErrorDecoder.SERVER_ERROR;
 
@@ -64,6 +65,28 @@ public class FutureHearingRepositoryIT extends BaseTest {
         void shouldThrow500AuthenticationException() {
             stubDeleteMethodThrowingError(500, HMI_REQUEST_URL + "/" + REQUEST_ID);
             assertThatThrownBy(() -> defaultFutureHearingRepository.deleteLinkedHearingGroup(REQUEST_ID))
+                .isInstanceOf(FutureHearingServerException.class)
+                .hasMessageContaining(SERVER_ERROR);
+        }
+    }
+
+    @Nested
+    @DisplayName("Update Linked Hearing Group")
+    class UpdateLinkedHearingGroup {
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+        void shouldThrow400AuthenticationExceptionForPut() {
+            stubUpdateMethodThrowingError(400, HMI_REQUEST_URL + "/" + REQUEST_ID);
+            assertThatThrownBy(() -> defaultFutureHearingRepository.updateLinkedHearingGroup(REQUEST_ID, data))
+                .isInstanceOf(BadFutureHearingRequestException.class)
+                .hasMessageContaining(INVALID_REQUEST);
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+        void shouldThrow500AuthenticationExceptionForPut() {
+            stubUpdateMethodThrowingError(500, HMI_REQUEST_URL + "/" + REQUEST_ID);
+            assertThatThrownBy(() -> defaultFutureHearingRepository.updateLinkedHearingGroup(REQUEST_ID, data))
                 .isInstanceOf(FutureHearingServerException.class)
                 .hasMessageContaining(SERVER_ERROR);
         }
