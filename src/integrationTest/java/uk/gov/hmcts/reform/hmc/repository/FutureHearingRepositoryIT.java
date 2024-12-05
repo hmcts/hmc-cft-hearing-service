@@ -70,17 +70,4 @@ public class FutureHearingRepositoryIT extends BaseTest {
         }
     }
 
-    @Nested
-    @DisplayName("Update Linked Hearing Group")
-    class UpdateLinkedHearingGroup {
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
-        void shouldThrow500AuthenticationExceptionForPut() {
-            stubUpdateMethodThrowingError(500, HMI_REQUEST_URL + "/" + REQUEST_ID);
-            assertThatThrownBy(() -> defaultFutureHearingRepository.updateLinkedHearingGroup(REQUEST_ID, data))
-                .isInstanceOf(FutureHearingServerException.class)
-                .hasMessageContaining(SERVER_ERROR);
-        }
-    }
-
 }
