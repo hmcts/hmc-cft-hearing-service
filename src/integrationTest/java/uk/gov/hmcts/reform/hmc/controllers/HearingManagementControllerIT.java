@@ -850,6 +850,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn400_WhenGetHearingsForListOfCases_NoCaseRefs() throws Exception {
         mockMvc.perform(get("/hearings?ccdCaseRefs=")
+                            .param("caseTypeId", CASE_TYPE)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
             .andReturn();
@@ -927,6 +928,28 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
+    void shouldReturn400_WhenGetHearingsForListOfCases_CaseTypeIsEmpty() throws Exception {
+        mockMvc.perform(get("/hearings")
+                            .param("ccdCaseRefs", "9372710950276233")
+                            .param("caseTypeId", "")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andReturn();
+    }
+
+    @Test
+    void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRefNotInDB() throws Exception {
+        List<String> caseRefs = Arrays.asList("9372710950276245");
+        stubReturn200ForAllCasesFromDataStore(caseRefs, new ArrayList<>());
+        mockMvc.perform(get("/hearings")
+                            .param("ccdCaseRefs", "9372710950276245")
+                            .param("caseTypeId", CASE_TYPE)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(200))
+            .andReturn();
+    }
+
+    @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_NoStatus() throws Exception {
         List<String> caseRefs = Arrays.asList("9372710950276233","9856815055686759");
@@ -940,6 +963,8 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(jsonPath("$[0].caseRef").value("9372710950276233"))
             .andReturn();
     }
+
+
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
