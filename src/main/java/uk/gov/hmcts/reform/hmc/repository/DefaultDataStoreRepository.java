@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.reform.hmc.client.datastore.DataStoreApiClient;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.CaseCouldNotBeFoundException;
@@ -29,6 +30,20 @@ public class DefaultDataStoreRepository implements DataStoreRepository {
             return dataStoreApi.getCaseDetailsByCaseIdViaExternalApi(securityUtils.getUserBearerToken(), caseId);
         } catch (FeignException e) {
             if (HttpStatus.NOT_FOUND.value() == e.status()) {
+                throw new CaseCouldNotBeFoundException(CASE_NOT_FOUND);
+            }
+            throw e;
+        }
+    }
+
+    @Override
+    public CaseSearchResult findAllCasesByCaseIdUsingExternalApi(String caseTypeId,
+                                                                 String jsonSearchRequest) {
+        try {
+            return dataStoreApi.getCaseDetailsForAllCaseRefsByCaseIdViaExternalApi(
+                securityUtils.getUserBearerToken(), caseTypeId, jsonSearchRequest);
+        } catch (FeignException e) {
+            if (HttpStatus.UNAUTHORIZED.value() == e.status() || HttpStatus.NOT_FOUND.value() == e.status()) {
                 throw new CaseCouldNotBeFoundException(CASE_NOT_FOUND);
             }
             throw e;

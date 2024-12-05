@@ -14,6 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.ElasticSearch;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.Query;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.Terms;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
@@ -353,6 +358,22 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     public void sendResponse(String json, String hmctsServiceId, String deploymentId) {
         sendRspToTopic(json, hmctsServiceId, deploymentId);
+    }
+
+    @Override
+    public List<DataStoreCaseDetails> getCaseSearchResults(List<String> ccdCaseRefs, String status,
+                                                           String caseTypeId) {
+        String elasticSearchQuery = createSearchQuery(ccdCaseRefs);
+        CaseSearchResult caseSearchResult =  dataStoreRepository.findAllCasesByCaseIdUsingExternalApi(caseTypeId,
+                                                                                 elasticSearchQuery);
+        return caseSearchResult.getCases();
+    }
+
+    private String createSearchQuery(List<String> ccdCaseRefs) {
+        Terms terms = new Terms(ccdCaseRefs);
+        Query query = new Query(terms);
+        ElasticSearch searchObject = new ElasticSearch(query);
+        return objectMapperService.convertObjectToJsonNode(searchObject).toString();
     }
 
     private void auditChangeInRequestVersion(HearingEntity hearingEntity, int existingRequestVersion,

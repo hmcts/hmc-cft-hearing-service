@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.http.HttpStatus;
 import org.slf4j.helpers.MessageFormatter;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.ElasticSearch;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.Query;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.Terms;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
@@ -76,6 +79,7 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
+import uk.gov.hmcts.reform.hmc.service.common.DefaultObjectMapperService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -100,6 +104,8 @@ public class TestingUtil {
     public static final String INVALID_CASE_REFERENCE = "1111222233334445";
     public static final List<String> CANCELLATION_REASON_CODES = List.of("test 1", "test 2");
     public static Long ID = 2000000000L;
+
+    private static DefaultObjectMapperService objectMapperService = new DefaultObjectMapperService(new ObjectMapper());
 
     private TestingUtil() {
     }
@@ -1470,6 +1476,12 @@ public class TestingUtil {
         JsonNode linkedGroupHearings = OBJECT_MAPPER.convertValue("2000000000", JsonNode.class);
         linkedHearingStatusAuditEntity.setLinkedGroupHearings(linkedGroupHearings);
         return linkedHearingStatusAuditEntity;
+    }
+
+    public static String createSearchQuery(List<String> ccdCaseRefs) {
+        Terms terms = new Terms(ccdCaseRefs);
+        Query query = new Query(terms);
+        return objectMapperService.convertObjectToJsonNode(new ElasticSearch(query)).toString();
     }
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
