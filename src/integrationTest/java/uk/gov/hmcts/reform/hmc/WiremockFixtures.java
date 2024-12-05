@@ -312,14 +312,14 @@ public class WiremockFixtures {
 
     }
 
-    public static void stubReturn404AllForCasesFromDataStore(List<String> caseRefs, String caseType) {
+    public static void stubReturn4xxAllForCasesFromDataStore(List<String> caseRefs, String caseType, int httpStatus) {
         stubFor(WireMock.post(urlEqualTo("/searchCases" + "?ctid=" + caseType))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .withRequestBody(
                         equalToJson(TestingUtil.createSearchQuery(caseRefs)))
                     .willReturn(aResponse()
-                                    .withStatus(HTTP_NOT_FOUND)
+                                    .withStatus(httpStatus)
                                     .withBody(getJsonString("No case found"))
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)));
 

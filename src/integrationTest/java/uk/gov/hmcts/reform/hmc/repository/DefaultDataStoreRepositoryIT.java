@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStore;
-import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404AllForCasesFromDataStore;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn4xxAllForCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_NOT_FOUND;
 
 public class DefaultDataStoreRepositoryIT extends BaseTest {
@@ -50,9 +50,9 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
         }
 
         @Test
-        void test400GetAllCasesFromDataStore() {
+        void test401GetAllCasesFromDataStore() {
             List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
-            stubReturn404AllForCasesFromDataStore(caseRefs, "");
+            stubReturn4xxAllForCasesFromDataStore(caseRefs, "", 401);
             Exception exception = assertThrows(
                 CaseCouldNotBeFoundException.class, () ->
                     defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(
@@ -64,7 +64,7 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
         @Test
         void test404GetAllCasesFromDataStore() {
             List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
-            stubReturn404AllForCasesFromDataStore(caseRefs, "invalidCaseType");
+            stubReturn4xxAllForCasesFromDataStore(caseRefs, "invalidCaseType", 404);
             Exception exception = assertThrows(
                 CaseCouldNotBeFoundException.class, () ->
                     defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(
