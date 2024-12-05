@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -45,7 +46,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID_MAX_SIZE;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
@@ -205,13 +205,10 @@ public class HearingManagementController {
     @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
             + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS)
 
-    public List<GetHearingsResponse> getHearingsForListOfCases(@RequestParam List<String> ccdCaseRefs,
+    public List<GetHearingsResponse> getHearingsForListOfCases(@RequestParam @NotEmpty List<String> ccdCaseRefs,
                                                                @RequestParam(required = false) String status,
-                                                               @RequestParam String caseTypeId) {
+                                                               @RequestParam @NotBlank String caseTypeId) {
         List<GetHearingsResponse> hearingsResponseList = new ArrayList<>();
-        if (ccdCaseRefs.isEmpty()) {
-            throw new BadRequestException(CASE_REF_EMPTY);
-        }
         List<DataStoreCaseDetails> cases = hearingManagementService.getCaseSearchResults(ccdCaseRefs, status,
                                                                                           caseTypeId);
         for (DataStoreCaseDetails caseDetails : cases) {
