@@ -299,19 +299,18 @@ public class WiremockFixtures {
                                     .withStatus(HTTP_OK)));
     }
 
-    public static void stubShouldFailForAllCasesFromDataStore(List<String> caseRefs, String caseType, int httpStatus) {
+    public static void stubReturn400AllForCasesFromDataStore(List<String> caseRefs, String caseType) {
         stubFor(WireMock.post(urlEqualTo("/searchCases" + "?ctid=" + caseType))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
                     .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
                     .withRequestBody(
                         equalToJson(TestingUtil.createSearchQuery(caseRefs)))
                     .willReturn(aResponse()
-                                    .withStatus(httpStatus)
-                                    .withBody(getJsonString("No case found"))
+                                    .withStatus(HTTP_BAD_REQUEST)
+                                    .withBody(getJsonString("Case type could not be found"))
                                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)));
 
     }
-
 
     private static CaseSearchResult getCaseSearchResult(List<String> caseRefs) {
         List<DataStoreCaseDetails> caseDetailsList = new ArrayList<>();
