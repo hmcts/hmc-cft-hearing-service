@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.CaseCouldNotBeFoundException;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -15,8 +16,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStore;
-import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubShouldFailForAllCasesFromDataStore;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400AllForCasesFromDataStore;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404AllForCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_NOT_FOUND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_TYPE_NOT_FOUND;
 
 public class DefaultDataStoreRepositoryIT extends BaseTest {
 
@@ -50,9 +53,9 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
         }
 
         @Test
-        void test401GetAllCasesFromDataStore() {
+        void test400GetAllCasesFromDataStore() {
             List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
-            stubShouldFailForAllCasesFromDataStore(caseRefs, "", 401);
+            stubReturn404AllForCasesFromDataStore(caseRefs, "");
             Exception exception = assertThrows(
                 CaseCouldNotBeFoundException.class, () ->
                     defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(
@@ -64,7 +67,7 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
         @Test
         void test404GetAllCasesFromDataStore() {
             List<String> caseRefs = Arrays.asList("9372710950276233", "9856815055686759");
-            stubShouldFailForAllCasesFromDataStore(caseRefs, "invalidCaseType", 404);
+            stubReturn404AllForCasesFromDataStore(caseRefs, "invalidCaseType");
             Exception exception = assertThrows(
                 CaseCouldNotBeFoundException.class, () ->
                     defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(
