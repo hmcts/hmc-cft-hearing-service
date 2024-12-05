@@ -77,7 +77,8 @@ public class FutureHearingRepositoryIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
         void shouldThrow400AuthenticationExceptionForPut() {
             stubUpdateMethodThrowingError(400, HMI_REQUEST_URL + "/" + REQUEST_ID);
-            assertThatThrownBy(() -> defaultFutureHearingRepository.updateLinkedHearingGroup(REQUEST_ID, data))
+            assertThatThrownBy(() -> defaultFutureHearingRepository
+                .updateLinkedHearingGroup(REQUEST_ID, data))
                 .isInstanceOf(BadFutureHearingRequestException.class)
                 .hasMessageContaining(INVALID_REQUEST);
         }
