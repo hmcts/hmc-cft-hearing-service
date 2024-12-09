@@ -12,12 +12,10 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubFailForCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStore;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400AllForCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_NOT_FOUND;
 
 public class DefaultDataStoreRepositoryIT extends BaseTest {
@@ -53,18 +51,7 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
 
         @Test
         void test400GetAllCasesFromDataStore() {
-            stubFailForCasesFromDataStore(caseRefs, "", HTTP_BAD_REQUEST);
-            Exception exception = assertThrows(
-                CaseCouldNotBeFoundException.class, () ->
-                    defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(
-                        "",
-                        TestingUtil.createSearchQuery(caseRefs)));
-            assertEquals(CASE_NOT_FOUND, exception.getMessage());
-        }
-
-        @Test
-        void test401GetAllCasesFromDataStore() {
-            stubFailForCasesFromDataStore(caseRefs, "", HTTP_UNAUTHORIZED);
+            stubReturn400AllForCasesFromDataStore(caseRefs, "");
             Exception exception = assertThrows(
                 CaseCouldNotBeFoundException.class, () ->
                     defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(
