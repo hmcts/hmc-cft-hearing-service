@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
@@ -223,8 +222,8 @@ class AccessControlServiceTest {
     @Test
     void shouldReturnEmptyListForVerifyUserRoleAccessIsAccessControlEnabledIsFalse() {
         when(applicationParams.isAccessControlEnabled()).thenReturn(false);
-        List<RoleAssignment> roles = accessControlService.verifyUserRoleAccess
-            (Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER));
+        List<RoleAssignment> roles = accessControlService.verifyUserRoleAccess(
+            Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER));
         assertTrue(roles.isEmpty());
     }
 
