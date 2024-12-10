@@ -12,7 +12,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import uk.gov.hmcts.reform.hmc.security.idam.IdamRepository;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -48,7 +47,7 @@ class JwtGrantedAuthoritiesConverterTest {
     @DisplayName("No Claims should return empty authorities")
     void shouldReturnEmptyAuthoritiesWhenClaimNotAvailable() {
         Jwt jwt = mock(Jwt.class);
-        when(jwt.containsClaim(anyString())).thenReturn(false);
+        when(jwt.hasClaim(anyString())).thenReturn(false);
         Collection<GrantedAuthority> authorities = converter.convert(jwt);
         assertNotNull(authorities);
         assertEquals(0, authorities.size());
@@ -58,7 +57,7 @@ class JwtGrantedAuthoritiesConverterTest {
     @DisplayName("Should return empty authorities when token value is not matching with expected")
     void shouldReturnEmptyAuthoritiesWhenClaimValueNotEquals() {
         Jwt jwt = mock(Jwt.class);
-        when(jwt.containsClaim(anyString())).thenReturn(true);
+        when(jwt.hasClaim(anyString())).thenReturn(true);
         when(jwt.getClaim(anyString())).thenReturn("Test");
         Collection<GrantedAuthority> authorities = converter.convert(jwt);
         assertNotNull(authorities);
@@ -67,15 +66,13 @@ class JwtGrantedAuthoritiesConverterTest {
 
     @Test
     @DisplayName("Should return empty authorities when token value is not matching with expected")
-    @SuppressWarnings("unchecked")
     void shouldReturnEmptyAuthoritiesWhenIdamReturnsNoUsers() {
         Jwt jwt = mock(Jwt.class);
-        when(jwt.containsClaim(anyString())).thenReturn(true);
+        when(jwt.hasClaim(anyString())).thenReturn(true);
         when(jwt.getClaim(anyString())).thenReturn("access_token");
         when(jwt.getTokenValue()).thenReturn("access_token");
         UserInfo userInfo = mock(UserInfo.class);
-        List roles = new ArrayList();
-        when(userInfo.getRoles()).thenReturn(roles);
+        when(userInfo.getRoles()).thenReturn(List.of());
         when(idamRepository.getUserInfo(anyString())).thenReturn(userInfo);
         Collection<GrantedAuthority> authorities = converter.convert(jwt);
         assertNotNull(authorities);
@@ -84,16 +81,13 @@ class JwtGrantedAuthoritiesConverterTest {
 
     @Test
     @DisplayName("Should return empty authorities when token value is not matching with expected")
-    @SuppressWarnings("unchecked")
     void shouldReturnAuthoritiesWhenIdamReturnsUserRoles() {
         Jwt jwt = mock(Jwt.class);
-        when(jwt.containsClaim(anyString())).thenReturn(true);
+        when(jwt.hasClaim(anyString())).thenReturn(true);
         when(jwt.getClaim(anyString())).thenReturn("access_token");
         when(jwt.getTokenValue()).thenReturn("access_token");
         UserInfo userInfo = mock(UserInfo.class);
-        List roles = new ArrayList();
-        roles.add("citizen");
-        when(userInfo.getRoles()).thenReturn(roles);
+        when(userInfo.getRoles()).thenReturn(List.of("citizen"));
         when(idamRepository.getUserInfo(anyString())).thenReturn(userInfo);
         Collection<GrantedAuthority> authorities = converter.convert(jwt);
         assertNotNull(authorities);

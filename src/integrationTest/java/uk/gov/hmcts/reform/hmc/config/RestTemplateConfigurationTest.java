@@ -24,6 +24,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.put;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 import static org.apache.http.protocol.HTTP.CONTENT_TYPE;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -33,7 +34,6 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PUT;
 import static wiremock.com.google.common.collect.Lists.newArrayList;
-import static wiremock.org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 @TestPropertySource(properties = {"http.client.connection.timeout=1500",
     "http.client.max.total=1",
