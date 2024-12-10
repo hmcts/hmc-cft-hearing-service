@@ -25,7 +25,7 @@
         }
       ],
       "caseDetails": {
-        "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
+        "caseRef": "${[scenarioContext][customValues][GenerateCaseId]}"
       }
     }
   },
