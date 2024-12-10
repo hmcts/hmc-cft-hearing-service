@@ -9,7 +9,7 @@
       },
       "caseDetails" : {
         "hmctsServiceCode" : "TEST",
-        "caseRef": "1512672408575038",
+        "caseRef": "${[scenarioContext][customValues][GenerateCaseId]}",
         "externalCaseReference" : "EXT/REF123",
         "caseDeepLink" : "https://www.google.com",
         "hmctsInternalCaseName" : "Internal case name",
