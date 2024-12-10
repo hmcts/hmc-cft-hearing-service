@@ -10,10 +10,7 @@
   ],
   "request": {
     "body": {
-      "_extends_": "createHearingRequestFullData",
-      "caseDetails": {
-        "caseRef": "1512672408575038"
-      }
+      "_extends_": "createHearingRequestFullData"
     }
   },
   "expectedResponse": {
