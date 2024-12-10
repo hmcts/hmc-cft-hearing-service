@@ -12,7 +12,8 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400AllForCasesFromDataStore;
@@ -35,9 +36,9 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
             stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefs);
             CaseSearchResult result = defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(CASE_TYPE,
                                                                       TestingUtil.createSearchQuery(caseRefs));
-            assertEquals(2, result.getCases().size());
-            assertEquals("9372710950276233", result.getCases().get(0).getId());
-            assertEquals("9856815055686759", result.getCases().get(1).getId());
+            assertThat(result.getCases().size(), is(2));
+            assertThat(result.getCases().get(0).getId(), is("9372710950276233"));
+            assertThat(result.getCases().get(1).getId(), is("9856815055686759"));
         }
 
         @Test
@@ -45,8 +46,8 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
             stubReturn200ForAllCasesFromDataStore(caseRefs, Arrays.asList(caseRefs.get(1)));
             CaseSearchResult result = defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(CASE_TYPE,
                                                          TestingUtil.createSearchQuery(caseRefs));
-            assertEquals(1, result.getCases().size());
-            assertEquals("9856815055686759", result.getCases().get(0).getId());
+            assertThat(result.getCases().size(), is(1));
+            assertThat(result.getCases().get(0).getId(), is("9856815055686759"));
         }
 
         @Test
@@ -57,7 +58,7 @@ public class DefaultDataStoreRepositoryIT extends BaseTest {
                     defaultDataStoreRepository.findAllCasesByCaseIdUsingExternalApi(
                         "",
                         TestingUtil.createSearchQuery(caseRefs)));
-            assertEquals(CASE_NOT_FOUND, exception.getMessage());
+            assertThat(exception.getMessage(), is(CASE_NOT_FOUND));
         }
 
     }
