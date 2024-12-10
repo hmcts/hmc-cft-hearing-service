@@ -65,12 +65,13 @@ class BeanValidatorTest {
         hearingDetails.setNumberOfPhysicalAttendees(-1);
         hearingDetails.setLeadJudgeContractType("Lead judge contractLead judge contractLead judge contractLead judge "
                                                     + "contractLead judge contractLead judge contract");
+        hearingDetails.setIsAPanelFlag(null);
         Set<ConstraintViolation<HearingDetails>> violations = validator.validate(hearingDetails);
         hearingDetails.setPanelRequirements(TestingUtil.panelRequirements());
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
-        assertEquals(10, violations.size());
+        assertEquals(11, violations.size());
         assertTrue(validationErrors.contains(ValidationError.AUTO_LIST_FLAG_NULL_EMPTY));
         assertTrue(validationErrors.contains(ValidationError.HEARING_TYPE_MAX_LENGTH));
         assertTrue(validationErrors.contains(ValidationError.DURATION_MIN_VALUE));
@@ -79,6 +80,7 @@ class BeanValidatorTest {
         assertTrue(validationErrors.contains(ValidationError.LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH));
         assertTrue(validationErrors.contains(ValidationError.HEARING_LOCATION_EMPTY));
         assertTrue(validationErrors.contains(ValidationError.HEARING_CHANNEL_EMPTY));
+        assertTrue(validationErrors.contains(ValidationError.IS_A_PANEL_FLAG_NULL_EMPTY));
     }
 
     @Test

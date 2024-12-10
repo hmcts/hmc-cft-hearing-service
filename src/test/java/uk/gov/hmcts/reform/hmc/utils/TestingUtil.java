@@ -129,6 +129,7 @@ public class TestingUtil {
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
         hearingDetails.setFacilitiesRequired(List.of("facility1", "facility2"));
+        hearingDetails.setIsAPanelFlag(Boolean.FALSE.toString());
         return hearingDetails;
     }
 
@@ -912,12 +913,11 @@ public class TestingUtil {
 
     public static ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity(
         ActualHearingPartyEntity actualHearingPartyEntity) {
-        ActualPartyRelationshipDetailEntity entity = ActualPartyRelationshipDetailEntity
+        return ActualPartyRelationshipDetailEntity
             .builder()
             .actualPartyRelationshipId(1L)
             .targetActualParty(actualHearingPartyEntity)
             .sourceActualParty(actualHearingPartyEntity).build();
-        return entity;
     }
 
     public static ActualHearingDayEntity actualHearingDayEntity(PartyType partyType) {
@@ -1186,9 +1186,7 @@ public class TestingUtil {
         } else {
             partyDetails2.setOrganisationDetails(organisationDetails());
         }
-
-        List<PartyDetails> partyDetails = List.of(partyDetails1, partyDetails2);
-        return partyDetails;
+        return List.of(partyDetails1, partyDetails2);
     }
 
     private static List<UnavailabilityRanges> unAvailabilityRanges() {
@@ -1211,8 +1209,7 @@ public class TestingUtil {
         UnavailabilityDow detail2 = new UnavailabilityDow();
         detail2.setDowUnavailabilityType("All Day");
         detail2.setDow("Thursday");
-        List<UnavailabilityDow> unavailabilityDows = Lists.newArrayList(detail1, detail2);
-        return unavailabilityDows;
+        return Lists.newArrayList(detail1, detail2);
     }
 
     public static HearingDetails hearingDetailsWithAllFields() {
@@ -1267,8 +1264,7 @@ public class TestingUtil {
         panelPreferenceTwo.setRequirementType("OPTINC");
         panelPreferenceTwo.setMemberType("Member type 2");
         panelPreferenceTwo.setMemberID("MID999");
-        List<PanelPreference> panelPreferences = List.of(panelPreference, panelPreferenceTwo);
-        return panelPreferences;
+        return List.of(panelPreference, panelPreferenceTwo);
     }
 
     public static IndividualDetails allIndividualDetails() {

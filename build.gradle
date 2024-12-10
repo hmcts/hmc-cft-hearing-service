@@ -297,7 +297,8 @@ dependencyManagement {
 }
 
 project.ext {
-  pactVersion = getCheckedOutGitCommitHash()
+//  pactVersion = getCheckedOutGitCommitHash()
+  pactVersion = 1
 }
 
 def static getCheckedOutGitCommitHash() {
@@ -375,6 +376,7 @@ dependencies {
     exclude group: 'javax.el', module: 'el-api'
   }
   implementation group: 'org.glassfish', name: 'jakarta.el', version: '4.0.2'
+
   implementation group: 'javax.el', name: 'javax.el-api', version: '3.0.1-b06'
 
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceAuthVersion
