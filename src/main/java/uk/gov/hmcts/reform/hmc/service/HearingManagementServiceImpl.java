@@ -106,9 +106,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_ORGANIS
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
 
-    private final DataStoreRepository dataStoreRepository;
-    private final RoleAssignmentService roleAssignmentService;
-    private final SecurityUtils securityUtils;
     private final HearingMapper hearingMapper;
     private final GetHearingsResponseMapper getHearingsResponseMapper;
     private final GetHearingResponseMapper getHearingResponseMapper;
@@ -118,7 +115,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final ObjectMapperService objectMapperService;
     private final HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
     private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
-    private final ApplicationParams applicationParams;
     private final HearingIdValidator hearingIdValidator;
     private final HearingActualsValidator hearingActualsValidator;
     private final LinkedHearingValidator linkedHearingValidator;
@@ -155,9 +151,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         EntitiesMapper entitiesMapper,
                                         HmiHearingResponseMapper hmiHearingResponseMapper,
                                         HearingStatusAuditService hearingStatusAuditService) {
-        this.dataStoreRepository = dataStoreRepository;
-        this.roleAssignmentService = roleAssignmentService;
-        this.securityUtils = securityUtils;
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.hmiSubmitHearingRequestMapper = hmiSubmitHearingRequestMapper;
@@ -167,7 +160,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
         this.messageSenderToQueueConfiguration = messageSenderToQueueConfiguration;
-        this.applicationParams = applicationParams;
         this.hearingRepository = hearingRepository;
         this.hearingIdValidator = hearingIdValidator;
         this.linkedHearingValidator = linkedHearingValidator;

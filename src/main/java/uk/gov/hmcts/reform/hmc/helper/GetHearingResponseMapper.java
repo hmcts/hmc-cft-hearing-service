@@ -40,7 +40,6 @@ import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.EMAIL_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_DOW_TYPE;
@@ -198,7 +197,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
                 relatedParty.setRelationshipType(partyRelationshipDetailsEntity.getRelationshipType());
                 return relatedParty;
             })
-            .collect(Collectors.toList());
+            .toList();
 
         individualDetails.setRelatedParties(relatedParties);
         return individualDetails;
@@ -264,6 +263,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         hearingDetails.setPanelRequirements(setPanelRequirements(hearingEntity));
         hearingDetails.setHearingIsLinkedFlag(hearingEntity.getIsLinkedFlag());
         hearingDetails.setHearingChannels(setHearingChannel(caseHearingRequestEntity));
+        hearingDetails.setIsAPanelFlag(caseHearingRequestEntity.getIsAPanelFlagString());
         return hearingDetails;
     }
 

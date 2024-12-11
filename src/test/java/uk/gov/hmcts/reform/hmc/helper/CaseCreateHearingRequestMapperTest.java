@@ -143,6 +143,7 @@ class CaseCreateHearingRequestMapperTest {
         expectedEntity.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
         expectedEntity.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
         expectedEntity.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));
+        expectedEntity.setIsAPanelFlag(false);
     }
 
     private HearingRequest buildCreateHearingRequest() {
