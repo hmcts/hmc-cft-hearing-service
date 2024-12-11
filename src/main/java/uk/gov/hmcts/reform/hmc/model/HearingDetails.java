@@ -99,11 +99,4 @@ public class HearingDetails {
     @NotNullNorEmpty(message = ValidationError.IS_A_PANEL_FLAG_NULL_EMPTY)
     private Object isAPanelFlag = false;
 
-    public Boolean getIsAPanelFlagBoolean() {
-        if (isAPanelFlag.equals(Boolean.TRUE) || isAPanelFlag.equals("true")) {
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
-    }
-
 }

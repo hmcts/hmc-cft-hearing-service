@@ -69,7 +69,7 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setRequester(hearingDetails.getHearingRequester());
         caseHearingRequestEntity.setHearingRequestReceivedDateTime(currentTime());
         caseHearingRequestEntity.setHearing(hearingEntity);
-        caseHearingRequestEntity.setIsAPanelFlag(hearingDetails.getIsAPanelFlagBoolean());
+        caseHearingRequestEntity.setIsAPanelFlag(getIsAPanelFlagBoolean(hearingDetails.getIsAPanelFlag()));
         if (hearingDetails.getHearingWindow() != null) {
             caseHearingRequestEntity.setFirstDateTimeOfHearingMustBe(hearingDetails.getHearingWindow()
                                                                          .getFirstDateTimeMustBe());
@@ -133,6 +133,13 @@ public class CaseHearingRequestMapper {
             cancellationReasonsEntity.setCancellationReasonType(cancellationReasonCode);
             return cancellationReasonsEntity;
         }).toList();
+    }
+
+    private Boolean getIsAPanelFlagBoolean(Object isAPanelFlag) {
+        if (isAPanelFlag.equals(Boolean.TRUE) || isAPanelFlag.equals("true")) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     private LocalDateTime currentTime() {
