@@ -69,7 +69,7 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setRequester(hearingDetails.getHearingRequester());
         caseHearingRequestEntity.setHearingRequestReceivedDateTime(currentTime());
         caseHearingRequestEntity.setHearing(hearingEntity);
-        caseHearingRequestEntity.setIsAPanelFlag(Boolean.valueOf(hearingDetails.getIsAPanelFlag()));
+        caseHearingRequestEntity.setIsAPanelFlag(hearingDetails.getIsAPanelFlagBoolean());
         if (hearingDetails.getHearingWindow() != null) {
             caseHearingRequestEntity.setFirstDateTimeOfHearingMustBe(hearingDetails.getHearingWindow()
                                                                          .getFirstDateTimeMustBe());

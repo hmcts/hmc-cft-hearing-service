@@ -97,6 +97,13 @@ public class HearingDetails {
     @JsonProperty("isAPanelFlag")
     @ValidBoolean(message = ValidationError.IS_A_PANEL_FLAG_INVALID_TYPE)
     @NotNullNorEmpty(message = ValidationError.IS_A_PANEL_FLAG_NULL_EMPTY)
-    private String isAPanelFlag = "false";
+    private Object isAPanelFlag = false;
+
+    public Boolean getIsAPanelFlagBoolean() {
+        if (isAPanelFlag.equals(Boolean.TRUE) || isAPanelFlag.equals("true")) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
 
 }

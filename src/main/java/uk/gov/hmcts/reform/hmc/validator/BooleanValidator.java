@@ -3,12 +3,12 @@ package uk.gov.hmcts.reform.hmc.validator;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class BooleanValidator implements ConstraintValidator<ValidBoolean, String> {
+public class BooleanValidator implements ConstraintValidator<ValidBoolean, Object> {
     @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (null == value || value.trim().isEmpty()) {
+    public boolean isValid(Object value, ConstraintValidatorContext context) {
+        if (null == value || value.toString().trim().isEmpty()) {
             return true; // Skip if null or empty; handled by NotNullNorEmpty
         }
-        return "true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value);
+        return "true".equalsIgnoreCase(value.toString()) || "false".equalsIgnoreCase(value.toString());
     }
 }

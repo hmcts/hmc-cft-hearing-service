@@ -217,18 +217,6 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         this.isAPanelFlag = original.isAPanelFlag;
     }
 
-    public String getBooleanStringValue(Boolean flagBoolean) {
-        if (null != flagBoolean) {
-            return flagBoolean.toString();
-        } else {
-            return null;
-        }
-    }
-
-    public String getIsAPanelFlagString() {
-        return getBooleanStringValue(isAPanelFlag);
-    }
-
     @Override
     public Object clone() throws CloneNotSupportedException {
         CaseHearingRequestEntity cloned = (CaseHearingRequestEntity)super.clone();

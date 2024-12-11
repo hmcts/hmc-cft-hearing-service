@@ -129,7 +129,7 @@ public class TestingUtil {
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
         hearingDetails.setFacilitiesRequired(List.of("facility1", "facility2"));
-        hearingDetails.setIsAPanelFlag(Boolean.FALSE.toString());
+        hearingDetails.setIsAPanelFlag(Boolean.FALSE);
         return hearingDetails;
     }
 
@@ -1198,8 +1198,7 @@ public class TestingUtil {
         detail2.setUnavailableFromDate(LocalDate.parse("2030-10-20"));
         detail2.setUnavailableToDate(LocalDate.parse("2030-10-22"));
         detail2.setUnavailabilityType("All Day");
-        List<UnavailabilityRanges> unavailabilityRanges = List.of(detail1, detail2);
-        return unavailabilityRanges;
+        return List.of(detail1, detail2);
     }
 
     private static List<UnavailabilityDow> unavailabilityDowDetails() {

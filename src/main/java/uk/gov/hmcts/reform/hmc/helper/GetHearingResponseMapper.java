@@ -263,7 +263,7 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         hearingDetails.setPanelRequirements(setPanelRequirements(hearingEntity));
         hearingDetails.setHearingIsLinkedFlag(hearingEntity.getIsLinkedFlag());
         hearingDetails.setHearingChannels(setHearingChannel(caseHearingRequestEntity));
-        hearingDetails.setIsAPanelFlag(caseHearingRequestEntity.getIsAPanelFlagString());
+        hearingDetails.setIsAPanelFlag(caseHearingRequestEntity.getIsAPanelFlag());
         return hearingDetails;
     }
 
