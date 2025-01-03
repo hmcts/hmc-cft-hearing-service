@@ -49,3 +49,7 @@ fh:
 
 hmcts-deployment-id:
   enabled: ${HMCTS_DEPLOYMENT_ID:false}
+
+wiremock:
+  server:
+    httpsPort: -1

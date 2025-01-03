@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.hmc.wiremock.extensions.DynamicOAuthJwkSetResponseTra
 
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -55,6 +58,8 @@ public class BaseTest {
     protected SecurityUtils securityUtils;
     @Inject
     protected ApplicationParams applicationParams;
+    @MockBean
+    protected MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
 
     @Value("${wiremock.server.port}")
     protected Integer wiremockPort;
@@ -78,6 +83,8 @@ public class BaseTest {
                                            + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
                                            + "\t\"case_type\": \"CaseType1\"\n"
                                            + "}")));
+        
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 
     @Configuration
