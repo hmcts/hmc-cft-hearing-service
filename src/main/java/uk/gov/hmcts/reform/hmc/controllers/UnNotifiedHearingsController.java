@@ -40,11 +40,11 @@ public class UnNotifiedHearingsController {
 
     public UnNotifiedHearingsResponse getUnNotifiedHearings(
         @PathVariable("hmctsServiceCode") @Valid @NotEmpty(message = HMCTS_SERVICE_CODE_EMPTY) String hmctsServiceCode,
-        @RequestParam(name = "hearing_start_date_from")
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @RequestParam(name = "hearing_start_date_from") 
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") 
             LocalDateTime hearingStartDateFrom,
-        @RequestParam(name = "hearing_start_date_to", required = false)
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @RequestParam(name = "hearing_start_date_to", required = false) 
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") 
             LocalDateTime hearingStartDateTo,
         @RequestParam(required = false) List<String> hearingStatus) {
         return unNotifiedHearingService.getUnNotifiedHearings(

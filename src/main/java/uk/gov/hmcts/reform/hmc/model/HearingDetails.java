@@ -45,7 +45,7 @@ public class HearingDetails {
     @Min(value = 0, message = ValidationError.DURATION_MIN_VALUE)
     private Integer duration;
 
-    private List<@Size(max = 70, message = ValidationError.NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG)
+    private List<@Size(max = 70, message = ValidationError.NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG) 
         String> nonStandardHearingDurationReasons;
 
     @NotEmpty(message = ValidationError.HEARING_PRIORITY_TYPE)
