@@ -35,8 +35,7 @@ public class UnavailabilityEntity extends BaseEntity  implements Serializable {
     private static final long serialVersionUID = 5423332025288476165L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "unavailability_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 

@@ -33,8 +33,7 @@ public class RequiredLocationsEntity extends BaseEntity implements Serializable 
     private static final long serialVersionUID = 1119281173095751231L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "required_locations_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 

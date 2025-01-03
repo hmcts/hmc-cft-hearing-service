@@ -30,8 +30,7 @@ public class PanelSpecialismsEntity extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 379012243334340561L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "panel_specialisms_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 

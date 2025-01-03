@@ -30,8 +30,7 @@ public class ReasonableAdjustmentsEntity extends BaseEntity implements Serializa
     private static final long serialVersionUID = 6304356931641668467L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "reasonable_adjustments_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 

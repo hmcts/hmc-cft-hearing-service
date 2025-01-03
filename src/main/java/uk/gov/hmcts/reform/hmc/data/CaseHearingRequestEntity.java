@@ -42,8 +42,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     private static final long serialVersionUID = -3590902739857407292L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "case_hearing_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "case_hearing_id")
     private Long caseHearingID;
 

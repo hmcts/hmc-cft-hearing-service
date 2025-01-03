@@ -23,8 +23,7 @@ public class LinkedHearingStatusAuditEntity extends AuditBaseEntity implements S
     private static final long serialVersionUID = 8647223748985181708L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "linked_hearing_status_audit_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 

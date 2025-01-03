@@ -30,8 +30,7 @@ public class ContactDetailsEntity extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -4144280388835257685L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "contact_details_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 

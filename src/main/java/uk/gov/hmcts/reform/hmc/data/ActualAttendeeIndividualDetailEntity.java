@@ -23,8 +23,7 @@ public class ActualAttendeeIndividualDetailEntity extends BaseEntity implements 
     private static final long serialVersionUID = 6287971344884542654L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "actual_attendee_individual_detail_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "actual_attendee_individual_detail_id")
     private Long actualAttendeeIndividualDetailId;
 

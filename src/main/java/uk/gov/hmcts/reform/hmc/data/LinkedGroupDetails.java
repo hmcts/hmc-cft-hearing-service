@@ -28,8 +28,7 @@ public class LinkedGroupDetails extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 9069607205338784728L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "linked_group_details_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "linked_group_id")
     private Long linkedGroupId;
 

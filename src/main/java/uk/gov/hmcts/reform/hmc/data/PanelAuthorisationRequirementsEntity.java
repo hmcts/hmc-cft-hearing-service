@@ -30,8 +30,7 @@ public class PanelAuthorisationRequirementsEntity extends BaseEntity implements 
     private static final long serialVersionUID = 7526815208919075769L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "panel_authorisation_requirements_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 

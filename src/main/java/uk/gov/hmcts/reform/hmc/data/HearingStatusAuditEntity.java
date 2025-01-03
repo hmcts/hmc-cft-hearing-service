@@ -19,8 +19,7 @@ import java.time.LocalDateTime;
 public class HearingStatusAuditEntity extends AuditBaseEntity implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "hearing_status_audit_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
