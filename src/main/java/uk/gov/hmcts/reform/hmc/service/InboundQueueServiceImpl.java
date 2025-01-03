@@ -32,6 +32,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.EXCEPTION_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.FH;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_ACK;
@@ -105,7 +106,9 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                 hearingEntity.setStatus(EXCEPTION.name());
                 hearingEntity.setErrorDescription(exception.getMessage());
                 hearingRepository.save(hearingEntity);
-                logErrorStatusToException(hearingId);
+                logErrorStatusToException(hearingId, hearingEntity.getLatestCaseReferenceNumber(),
+                                          hearingEntity.getLatestCaseHearingRequest().getHmctsServiceCode(),
+                                          hearingEntity.getErrorDescription());
 
                 JsonNode errorDescription = objectMapper.convertValue(exception.getMessage(), JsonNode.class);
                 hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
@@ -163,7 +166,9 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                              getDeploymentIdForHearing(hearingResult.get()));
             if (hmcHearingResponse.getHearingUpdate().getHmcStatus().equals(HearingStatus.EXCEPTION.name())) {
                 log.info("Hearing id: {} has response of type : {}", hearingId, MessageType.ERROR);
-                logErrorStatusToException(hearingId);
+                logErrorStatusToException(hearingId, hearingToSave.getLatestCaseReferenceNumber(),
+                                          hearingToSave.getLatestCaseHearingRequest().getHmctsServiceCode(),
+                                          hearingToSave.getErrorDescription());
             }
             hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingToSave,
                                                              LA_RESPONSE, LA_FAILURE_STATUS,
@@ -218,7 +223,9 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             if (hearingEntity.getStatus().equals(HearingStatus.EXCEPTION.name())) {
                 errorDescription = objectMapper.convertValue(syncResponse, JsonNode.class);
                 log.info("Hearing id: {} has response of type : {}", hearingId, MessageType.LA_SYNC_HEARING_RESPONSE);
-                logErrorStatusToException(hearingId);
+                logErrorStatusToException(hearingId, hearingEntity.getLatestCaseReferenceNumber(),
+                                          hearingEntity.getLatestCaseHearingRequest().getHmctsServiceCode(),
+                                          hearingEntity.getErrorDescription());
             }
             hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                              LA_ACK, syncResponse.getListAssistHttpStatus()
@@ -237,8 +244,9 @@ public class InboundQueueServiceImpl implements InboundQueueService {
         return applicationParams.isHmctsDeploymentIdEnabled() ? hearingEntity.getDeploymentId() : null;
     }
 
-    private void logErrorStatusToException(Long hearingId) {
-        log.error("Hearing id: {} updated to status {}", hearingId, EXCEPTION.name());
+    private void logErrorStatusToException(Long hearingId, String caseRef, String serviceCode,
+                                           String errorDescription) {
+        log.error(EXCEPTION_MESSAGE, hearingId, caseRef, serviceCode, errorDescription, EXCEPTION.name());
     }
 
 }

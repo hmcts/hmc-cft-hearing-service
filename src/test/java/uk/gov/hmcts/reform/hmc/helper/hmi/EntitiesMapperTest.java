@@ -201,4 +201,47 @@ class EntitiesMapperTest {
         entitiesMapper.getEntities(Collections.singletonList(partyDetails));
         verify(entitySubTypeMapper, never()).getPersonEntitySubType(any());
     }
+
+    @Test
+    void shouldMapUnavailableDaysAndDatesForOrgDetails() {
+        OrganisationDetails organisationDetails = new OrganisationDetails();
+        UnavailabilityDow unavailabilityDow = new UnavailabilityDow();
+        UnavailabilityRanges unavailabilityRanges = new UnavailabilityRanges();
+
+        PartyDetails partyDetails = new PartyDetails();
+        partyDetails.setOrganisationDetails(organisationDetails);
+        partyDetails.setUnavailabilityDow(Collections.singletonList(unavailabilityDow));
+        partyDetails.setUnavailabilityRanges(Collections.singletonList(unavailabilityRanges));
+        partyDetails.setPartyID(PARTY_ID_TWO);
+        partyDetails.setPartyType(PARTY_TYPE_TWO);
+        partyDetails.setPartyRole(PARTY_ROLE_TWO);
+
+        EntitySubType entitySubTypeOrg = EntitySubType.builder().entityClassCode(ORGANISATION_CLASS_CODE).build();
+        EntityUnavailableDate entityUnavailableDate = EntityUnavailableDate.builder().build();
+        EntityUnavailableDay entityUnavailableDay = EntityUnavailableDay.builder().build();
+
+        when(entitySubTypeMapper.getOrgEntitySubType(any())).thenReturn(entitySubTypeOrg);
+        when(unavailableDatesMapper.getUnavailableDates(any())).thenReturn(Collections
+                                                                .singletonList(entityUnavailableDate));
+        when(unavailableDaysMapper.getUnavailableDays(any())).thenReturn(Collections
+                                                                .singletonList(entityUnavailableDay));
+
+        List<PartyDetails> partyDetailsList = Collections.singletonList(partyDetails);
+        EntitiesMapperObject actualEntitiesMapperObject = entitiesMapper.getEntities(partyDetailsList);
+
+        verify(unavailableDaysMapper).getUnavailableDays(Collections.singletonList(unavailabilityDow));
+        verify(unavailableDatesMapper).getUnavailableDates(Collections.singletonList(unavailabilityRanges));
+
+        List<Entity> entities = actualEntitiesMapperObject.getEntities();
+        assertEquals(1, entities.size());
+        Entity entity = entities.get(0);
+
+        assertEquals(PARTY_ID_TWO, entity.getEntityId());
+        assertEquals(PARTY_TYPE_TWO, entity.getEntityTypeCode());
+        assertEquals(PARTY_ROLE_TWO, entity.getEntityRoleCode());
+        assertEquals(entitySubTypeOrg, entity.getEntitySubType());
+        assertEquals(entityUnavailableDay, entity.getEntityUnavailableDays().get(0));
+        assertEquals(entityUnavailableDate, entity.getEntityUnavailableDates().get(0));
+    }
+
 }
