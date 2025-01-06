@@ -127,7 +127,7 @@ public class HearingManagementController {
 
     /**
      * get Case either by caseRefId OR CaseRefId/caseStatus.
-     *
+     * 
      * @param ccdCaseRef case Ref
      * @param status     optional Status
      * @return Hearing
@@ -144,9 +144,9 @@ public class HearingManagementController {
         + "\n4) " + ValidationError.CASE_REF_INVALID)
 
     public GetHearingsResponse getHearings(
-        @PathVariable("ccdCaseRef") @Valid
-        @NotEmpty(message = ValidationError.CASE_REF_EMPTY)
-        @Size(min = 16, max = 16, message = ValidationError.CASE_REF_INVALID_LENGTH)
+        @PathVariable("ccdCaseRef") @Valid 
+        @NotEmpty(message = ValidationError.CASE_REF_EMPTY) 
+        @Size(min = 16, max = 16, message = ValidationError.CASE_REF_INVALID_LENGTH) 
         @LuhnCheck(message = ValidationError.CASE_REF_INVALID, ignoreNonDigitCharacters = false) String ccdCaseRef,
         @RequestParam(required = false) String status) {
         return getHearingsResponse(ccdCaseRef, status);
@@ -174,10 +174,10 @@ public class HearingManagementController {
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(responseCode = "200", description = "Success (with no content)")
     @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ACTUALS_ID_NOT_FOUND)
-    @ApiResponse(responseCode = "400", description = "One or more of the following reasons:\n"
+    @ApiResponse(responseCode = "400", description = "One or more of the following reasons:\n" 
             + "1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS + "\n"
-            + "2) " + ValidationError.HEARING_ACTUALS_INVALID_STATUS + "\n"
-            + "3) " + ValidationError.HEARING_ACTUALS_UN_EXPECTED + "\n"
+            + "2) " + ValidationError.HEARING_ACTUALS_INVALID_STATUS + "\n" 
+            + "3) " + ValidationError.HEARING_ACTUALS_UN_EXPECTED + "\n" 
             + "4) " + ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME)
     @ApiResponse(responseCode = "500", description = ValidationError.INTERNAL_SERVER_ERROR)
 
@@ -189,7 +189,7 @@ public class HearingManagementController {
 
     /**
      * get list of cases either by caseRefId OR CaseRefId/caseStatus.
-     *
+     * 
      * @param ccdCaseRefs list of case Ref
      * @param status      optional Status
      * @return Hearing

@@ -39,8 +39,8 @@ public class HearingActualsController {
 
     public ResponseEntity<HearingActualResponse> getHearingActuals(@PathVariable("id") Long hearingId) {
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(
-            HEARING_VIEWER,
-            LISTED_HEARING_VIEWER));
+                HEARING_VIEWER,
+                LISTED_HEARING_VIEWER));
         return hearingActualsService.getHearingActuals(hearingId);
     }
 }
