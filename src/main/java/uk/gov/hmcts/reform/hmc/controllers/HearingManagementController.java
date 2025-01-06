@@ -210,7 +210,7 @@ public class HearingManagementController {
         }
         for (String ccdCaseRef : ccdCaseRefs) {
             GetHearingsResponse hearingsResponse = getHearingsResponse(ccdCaseRef, status);
-            if (hearingsResponse.getCaseHearings().size() != 0) {
+            if (!hearingsResponse.getCaseHearings().isEmpty()) {
                 hearingsResponseList.add(hearingsResponse);
             }
         }

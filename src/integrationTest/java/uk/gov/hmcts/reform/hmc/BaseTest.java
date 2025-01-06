@@ -81,11 +81,14 @@ public class BaseTest {
 
         stubRoleAssignments();
         stubFor(WireMock.get(urlMatching("/cases/.*"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
-        
+                    .willReturn(okJson("""
+                                      {
+                                        "jurisdiction": "Jurisdiction1",
+                                        "case_type": "CaseType1"
+                                      }
+                                      """
+                                )));
+
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 
