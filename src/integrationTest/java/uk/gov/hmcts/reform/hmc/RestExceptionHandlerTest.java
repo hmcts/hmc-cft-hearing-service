@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.CaseCouldNotBeFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.HearingServiceWaitException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.ServiceException;
@@ -30,7 +31,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
-import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementServiceImpl;
 
@@ -44,6 +44,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,9 +56,9 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMEN
 @ImportAutoConfiguration(TestIdamConfiguration.class)
 public class RestExceptionHandlerTest extends BaseTest {
 
-    public static String ERROR_PATH_ERROR = "$.errors";
-    public static String ERROR_PATH_STATUS = "$.status";
-    public static String testExceptionMessage = "test message";
+    public static final String ERROR_PATH_ERROR = "$.errors";
+    public static final String ERROR_PATH_STATUS = "$.status";
+    private static final String TEST_EXCEPTION_MESSAGE = "test message";
     HearingRequest validRequest;
 
     @MockBean
@@ -114,7 +115,6 @@ public class RestExceptionHandlerTest extends BaseTest {
         List<CaseCategory> caseCategories = new ArrayList<>();
         caseCategories.add(category);
         caseDetails.setCaseCategories(caseCategories);
-        RequestDetails requestDetails = new RequestDetails();
         validRequest.setHearingDetails(hearingDetails);
         validRequest.setCaseDetails(caseDetails);
     }
@@ -124,7 +124,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleInvalidRoleAssignmentException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new InvalidRoleAssignmentException(testExceptionMessage))
+        Mockito.doThrow(new InvalidRoleAssignmentException(TEST_EXCEPTION_MESSAGE))
             .when(accessControlService)
             .verifyCaseAccess(anyString(), anyList());
 
@@ -134,7 +134,7 @@ public class RestExceptionHandlerTest extends BaseTest {
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
         // THEN
-        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(), testExceptionMessage, "FORBIDDEN");
+        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(), TEST_EXCEPTION_MESSAGE, "FORBIDDEN");
     }
 
     @DisplayName("should return correct response when BadRequestException is thrown")
@@ -142,7 +142,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleBadRequestException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
+        Mockito.doThrow(new BadRequestException(TEST_EXCEPTION_MESSAGE)).when(service)
             .saveHearingRequest(any(HearingRequest.class),any(), any());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
@@ -151,7 +151,7 @@ public class RestExceptionHandlerTest extends BaseTest {
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
         // THEN
-        assertHttpErrorResponse(result, HttpStatus.BAD_REQUEST.value(), testExceptionMessage, "BAD_REQUEST");
+        assertHttpErrorResponse(result, HttpStatus.BAD_REQUEST.value(), TEST_EXCEPTION_MESSAGE, "BAD_REQUEST");
     }
 
     @DisplayName("should return correct response when CaseCouldNotBeFoundException is thrown")
@@ -159,7 +159,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleCaseCouldNotBeFoundException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new CaseCouldNotBeFoundException(testExceptionMessage))
+        Mockito.doThrow(new CaseCouldNotBeFoundException(TEST_EXCEPTION_MESSAGE))
             .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
@@ -168,7 +168,7 @@ public class RestExceptionHandlerTest extends BaseTest {
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
         // THEN
-        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(), testExceptionMessage, "FORBIDDEN");
+        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(), TEST_EXCEPTION_MESSAGE, "FORBIDDEN");
     }
 
     @DisplayName("should return correct response when FeignException is thrown")
@@ -176,7 +176,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleFeignException() throws Exception {
         Request request = Request.create(Request.HttpMethod.GET, "url",
                                          new HashMap<>(), null, new RequestTemplate());
-        Mockito.doThrow(new FeignException.NotFound(testExceptionMessage, request, null,null))
+        Mockito.doThrow(new FeignException.NotFound(TEST_EXCEPTION_MESSAGE, request, null, null))
             .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
@@ -185,7 +185,7 @@ public class RestExceptionHandlerTest extends BaseTest {
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
         // THEN
-        assertHttpErrorResponse(result, HttpStatus.INTERNAL_SERVER_ERROR.value(), testExceptionMessage,
+        assertHttpErrorResponse(result, HttpStatus.INTERNAL_SERVER_ERROR.value(), TEST_EXCEPTION_MESSAGE,
                                 "INTERNAL_SERVER_ERROR");
     }
 
@@ -194,7 +194,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleResourceNotFoundException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new ResourceNotFoundException(testExceptionMessage))
+        Mockito.doThrow(new ResourceNotFoundException(TEST_EXCEPTION_MESSAGE))
             .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
@@ -203,7 +203,7 @@ public class RestExceptionHandlerTest extends BaseTest {
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
         // THEN
-        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(), testExceptionMessage, "FORBIDDEN");
+        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(), TEST_EXCEPTION_MESSAGE, "FORBIDDEN");
     }
 
     @DisplayName("should return correct response when ServiceException is thrown")
@@ -211,7 +211,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleServiceException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new ServiceException(testExceptionMessage))
+        Mockito.doThrow(new ServiceException(TEST_EXCEPTION_MESSAGE))
             .when(accessControlService).verifyCaseAccess(anyString(), anyList());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
@@ -220,7 +220,7 @@ public class RestExceptionHandlerTest extends BaseTest {
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
         // THEN
-        assertHttpErrorResponse(result, HttpStatus.INTERNAL_SERVER_ERROR.value(), testExceptionMessage,
+        assertHttpErrorResponse(result, HttpStatus.INTERNAL_SERVER_ERROR.value(), TEST_EXCEPTION_MESSAGE,
                                 "INTERNAL_SERVER_ERROR");
     }
 
@@ -230,7 +230,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
 
         /// WHEN
-        Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
+        Mockito.doThrow(new BadRequestException(TEST_EXCEPTION_MESSAGE)).when(service)
             .saveHearingRequest(any(HearingRequest.class),any(), any());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
@@ -242,6 +242,39 @@ public class RestExceptionHandlerTest extends BaseTest {
         // THEN
         assertHttpErrorResponse(result, HttpStatus.BAD_REQUEST.value(),
                                 HMCTS_DEPLOYMENT_ID_MAX_LENGTH, "BAD_REQUEST");
+    }
+
+    @DisplayName("should return correct response when HearingServiceWaitException is thrown")
+    @Test
+    void shouldHandleHearingServiceWaitException() throws Exception {
+
+        when(service.saveHearingRequest(any(HearingRequest.class),any(), any()))
+                 .thenThrow(new HearingServiceWaitException(TEST_EXCEPTION_MESSAGE));
+
+        ResultActions result = this.mockMvc.perform(post("/hearing")
+                                                        .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
+                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                        .content(objectMapper.writeValueAsString(validRequest)));
+
+        assertHttpErrorResponse(result, HttpStatus.BAD_REQUEST.value(), TEST_EXCEPTION_MESSAGE, "BAD_REQUEST");
+    }
+
+    @DisplayName("should return correct response when HearingServiceWaitException is thrown with null message")
+    @Test
+    void shouldHandleHearingServiceWaitExceptionWithNullMessage() throws Exception {
+
+        when(service.saveHearingRequest(any(HearingRequest.class),any(), any()))
+            .thenThrow(new HearingServiceWaitException(null));
+
+        ResultActions result = this.mockMvc.perform(post("/hearing")
+                                                        .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
+                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                        .content(objectMapper.writeValueAsString(validRequest)));
+
+        result
+            .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(jsonPath(ERROR_PATH_STATUS).value("BAD_REQUEST"))
+            .andExpect(jsonPath(ERROR_PATH_ERROR).isEmpty());
     }
 
     private void assertHttpErrorResponse(ResultActions result, int expectedStatusCode, String expectedMessage,
