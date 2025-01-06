@@ -259,7 +259,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertEquals(Collections.emptyList(),
                      entityManager.createNativeQuery("select * from linked_hearing_details_audit where "
                                                          + "hearing_id=2100000005",
-                                                     LinkedGroupDetailsAudit.class).getResultList());
+                                                     LinkedHearingDetailsAudit.class).getResultList());
     }
 
     private void validateLinkedGroupAuditDetailsAfterDelete() {
