@@ -1,15 +1,30 @@
 {
-  "_guid_": "GetHearingResponseBase",
-
+  "_guid_": "S-003.4",
+  "_extends_" : "GetHearingRequestPositiveGeneric",
+  "s2sClientId": "xui_webapp",
+  "specs": [
+    "has the 200 OK code",
+    "an active profile in CCD",
+    "uses the query param status=LISTED"
+  ],
+  "request": {
+    "queryParams": {
+      "status": "LISTED"
+    },
+    "pathVariables": {
+      "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    }
+  },
   "expectedResponse": {
     "_extends_": "Common_200_Response",
     "body": {
       "requestDetails": {
-        "hearingRequestID" : "[[ANYTHING_PRESENT]]"
+        "hearingRequestID" : "[[ANYTHING_PRESENT]]",
+        "status": "LISTED"
       },
       "caseDetails" : {
         "hmctsServiceCode" : "TEST",
-        "caseRef": "${[scenarioContext][customValues][GenerateCaseId]}",
+        "caseRef": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}",
         "externalCaseReference" : "EXT/REF123",
         "caseDeepLink" : "https://www.google.com",
         "hmctsInternalCaseName" : "Internal case name",
@@ -32,8 +47,7 @@
         "hearingType" : "Some hearing type",
         "hearingWindow" : {
           "dateRangeStart" : "2022-05-10",
-          "dateRangeEnd" : "2023-05-10",
-          "firstDateTimeMustBe" : null
+          "dateRangeEnd" : "2023-05-10"
         },
         "duration" : 60,
         "nonStandardHearingDurationReasons" : [ "First reason", "Second reason" ],
@@ -96,7 +110,23 @@
           "DOW" : "Monday",
           "DOWUnavailabilityType" : "AM"
         } ]
-      } ]
+      } ],
+      "hearingResponse" :  {
+        "hearingDaySchedule" : [ {
+          "hearingStartDateTime" : "[[ANYTHING_PRESENT]]",
+          "hearingEndDateTime" : "[[ANYTHING_PRESENT]]",
+          "hearingVenueId" : "372653",
+          "hearingRoomId" : "Cardiff SSCS - Hearing Room 01",
+          "hearingJudgeId" : null,
+          "panelMemberIds" : null,
+          "attendees" : [ ],
+          "listAssistSessionID" : null
+        } ],
+        "laCaseStatus" : "LISTED",
+        "listingStatus" : "FIXED",
+        "receivedDateTime" : "[[ANYTHING_PRESENT]]",
+        "requestVersion" : "[[ANYTHING_PRESENT]]"
+      }
     }
   }
 }
