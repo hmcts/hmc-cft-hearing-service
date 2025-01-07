@@ -232,6 +232,9 @@ class HearingManagementServiceTest {
     @Mock
     HearingStatusAuditService hearingStatusAuditService;
 
+    @Mock
+    PendingRequestService pendingRequestService;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -248,9 +251,6 @@ class HearingManagementServiceTest {
                                                             applicationParams);
         hearingManagementService =
             new HearingManagementServiceImpl(
-                roleAssignmentService,
-                securityUtils,
-                dataStoreRepository,
                 hearingRepository,
                 hearingMapper,
                 caseHearingRequestRepository,
@@ -260,8 +260,6 @@ class HearingManagementServiceTest {
                 messageSenderToTopicConfiguration,
                 objectMapperService,
                 hmiDeleteHearingRequestMapper,
-                messageSenderToQueueConfiguration,
-                applicationParams,
                 hearingIdValidator,
                 linkedHearingValidator,
                 partyRelationshipDetailsMapper,
@@ -270,7 +268,8 @@ class HearingManagementServiceTest {
                 hmiCaseDetailsMapper,
                 entitiesMapper,
                 hmiHearingResponseMapper,
-                hearingStatusAuditService);
+                hearingStatusAuditService,
+                pendingRequestService);
 
         hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any(),any());
@@ -1078,9 +1077,6 @@ class HearingManagementServiceTest {
                     applicationParams);
             hearingManagementService =
                     new HearingManagementServiceImpl(
-                            roleAssignmentService,
-                            securityUtils,
-                            dataStoreRepository,
                             hearingRepository,
                             hearingMapper,
                             caseHearingRequestRepository,
@@ -1090,8 +1086,6 @@ class HearingManagementServiceTest {
                             messageSenderToTopicConfiguration,
                             objectMapperService,
                             hmiDeleteHearingRequestMapper,
-                            messageSenderToQueueConfiguration,
-                            applicationParams,
                             hearingIdValidator,
                             linkedHearingValidator,
                             partyRelationshipDetailsMapper,
@@ -1100,7 +1094,8 @@ class HearingManagementServiceTest {
                             hmiCaseDetailsMapper,
                             entitiesMapper,
                             hmiHearingResponseMapper,
-                            hearingStatusAuditService);
+                            hearingStatusAuditService,
+                            pendingRequestService);
 
         }
 
@@ -1581,7 +1576,7 @@ class HearingManagementServiceTest {
         @Test
         void shouldThrowExceptionWhenHearingIdNotFound() {
             final long hearingId = 2000000000L;
-            UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+            TestingUtil.updateHearingRequest();
             when(hearingRepository.existsById(hearingId)).thenReturn(false);
             Exception exception = assertThrows(HearingNotFoundException.class,
                                                () -> hearingManagementService.hearingCompletion(hearingId,
@@ -1821,10 +1816,9 @@ class HearingManagementServiceTest {
             .listing(listing)
             .entities(Collections.singletonList(entity))
             .build();
-        HmiSubmitHearingRequest hmiSubmitHearingRequest = HmiSubmitHearingRequest.builder()
+        return HmiSubmitHearingRequest.builder()
             .hearingRequest(hmiHearingRequest)
             .build();
-        return hmiSubmitHearingRequest;
     }
 
     private HmiDeleteHearingRequest getHmiDeleteHearingRequest() {
