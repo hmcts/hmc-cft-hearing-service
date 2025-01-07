@@ -58,7 +58,7 @@ module "postgresql_v15" {
   pgsql_storage_mb            = var.pgsql_storage_mb
   action_group_name           = join("-", [local.db_name, var.action_group_name])
   email_address_key           = var.email_address_key
-  email_address_key_vault_id  = data.azurerm_key_vault.wa_key_vault.id
+  email_address_key_vault_id  = data.azurerm_key_vault.hmc_shared_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER-V15" {
