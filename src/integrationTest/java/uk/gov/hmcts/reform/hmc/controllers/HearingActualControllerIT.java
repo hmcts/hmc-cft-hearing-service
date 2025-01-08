@@ -8,9 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -40,14 +39,12 @@ import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_V
 
 class HearingActualControllerIT extends BaseTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(HearingActualControllerIT.class);
-
     public static final String ROLE_TYPE = "ORGANISATION";
 
     @Autowired
     private MockMvc mockMvc;
 
-    private static final String url = "/hearingActuals";
+    private static final String URL = "/hearingActuals";
 
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-HearingsActual_request.sql";
@@ -67,24 +64,24 @@ class HearingActualControllerIT extends BaseTest {
         void shouldReturn200_WhenHearingExists() throws Exception {
             mockMvc.perform(get(url + "/2000000000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().is(200))
+                .andExpect(status().is(HttpStatus.OK.value()))
                 .andReturn();
         }
 
         @Test
         void shouldReturn404_WhenHearingDoesNotExist() throws Exception {
-            mockMvc.perform(get(url + "/2000000001")
+            mockMvc.perform(get(URL + "/2000000001")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().is(404))
+                .andExpect(status().is(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.errors", hasItem("No hearing found for reference: 2000000001")))
                 .andReturn();
         }
 
         @Test
         void shouldReturn400_WhenHearingIdIsMalformed() throws Exception {
-            mockMvc.perform(get(url + "/1000000000")
+            mockMvc.perform(get(URL + "/1000000000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().is(400))
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("$.errors", hasItem(ValidationError.INVALID_HEARING_ID_DETAILS)))
                 .andReturn();
         }
