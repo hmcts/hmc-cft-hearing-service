@@ -8,6 +8,7 @@ import lombok.Setter;
 import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Data
@@ -22,4 +23,11 @@ public class GetHearingResponse {
     private CaseDetails caseDetails;
     private List<PartyDetails> partyDetails;
     private HearingResponse hearingResponse;
+
+    public List<PartyDetails> getPartyDetails() {
+        if (partyDetails != null) {
+            partyDetails.sort(Comparator.comparing(PartyDetails::getPartyID));
+        }
+        return partyDetails;
+    }
 }
