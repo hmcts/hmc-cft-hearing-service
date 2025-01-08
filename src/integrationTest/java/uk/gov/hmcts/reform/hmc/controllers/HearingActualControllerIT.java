@@ -62,7 +62,7 @@ class HearingActualControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn200_WhenHearingExists() throws Exception {
-            mockMvc.perform(get(url + "/2000000000")
+            mockMvc.perform(get(URL + "/2000000000")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(HttpStatus.OK.value()))
                 .andReturn();
@@ -120,7 +120,7 @@ class HearingActualControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldCallProvidedCcdAndAmUrl_WhenHeadersProvided() throws Exception {
-            mockMvc.perform(get(url + "/2000000000")
+            mockMvc.perform(get(URL + "/2000000000")
                                 .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
                                 .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -133,7 +133,7 @@ class HearingActualControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldCallProvidedCcdUrl_WhenCcdHeaderProvided() throws Exception {
-            mockMvc.perform(get(url + "/2000000000")
+            mockMvc.perform(get(URL + "/2000000000")
                                 .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
@@ -144,7 +144,7 @@ class HearingActualControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldCallProvidedAmUrl_WhenAmHeaderProvided() throws Exception {
-            mockMvc.perform(get(url + "/2000000000")
+            mockMvc.perform(get(URL + "/2000000000")
                                 .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
