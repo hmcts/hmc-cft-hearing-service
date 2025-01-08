@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -55,5 +57,14 @@ public class CaseHearing {
 
     @NotNull
     private List<@Size(max = 70, message = ValidationError.CHANNEL_TYPE_MAX_LENGTH)String> hearingChannels;
+
+    public List<HearingDaySchedule> getHearingDaySchedule() {
+        if (hearingDaySchedule != null) {
+            List<HearingDaySchedule> mutableSchedule = new ArrayList<>(hearingDaySchedule);
+            mutableSchedule.sort(Comparator.comparing(HearingDaySchedule::getHearingStartDateTime));
+            return mutableSchedule;
+        }
+        return hearingDaySchedule;
+    }
 
 }
