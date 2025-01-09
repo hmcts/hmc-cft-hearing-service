@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -58,15 +59,10 @@ public class SecurityConfiguration {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
     }
 
-    
-
     @Bean
-    protected SecurityFilterChain allowedList(HttpSecurity http) throws Exception {
-        return http
-            .authorizeHttpRequests(h -> h.requestMatchers(AUTH_ALLOWED_LIST).permitAll())
-            .sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
-            .build();
-    }
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers(AUTH_ALLOWED_LIST);
+    }    
 
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
