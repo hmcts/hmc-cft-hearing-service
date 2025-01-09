@@ -99,7 +99,7 @@ public class TestingUtil {
     public static final String CASE_REFERENCE = "1111222233334444";
     public static final String INVALID_CASE_REFERENCE = "1111222233334445";
     public static final List<String> CANCELLATION_REASON_CODES = List.of("test 1", "test 2");
-    public static Long ID = 2000000000L;
+    public static final Long ID = 2000000000L;
 
     private TestingUtil() {
     }
@@ -912,12 +912,11 @@ public class TestingUtil {
 
     public static ActualPartyRelationshipDetailEntity actualPartyRelationshipDetailEntity(
         ActualHearingPartyEntity actualHearingPartyEntity) {
-        ActualPartyRelationshipDetailEntity entity = ActualPartyRelationshipDetailEntity
+        return ActualPartyRelationshipDetailEntity
             .builder()
             .actualPartyRelationshipId(1L)
             .targetActualParty(actualHearingPartyEntity)
             .sourceActualParty(actualHearingPartyEntity).build();
-        return entity;
     }
 
     public static ActualHearingDayEntity actualHearingDayEntity(PartyType partyType) {
@@ -1033,7 +1032,6 @@ public class TestingUtil {
         return entity;
     }
 
-
     public static HearingPartyEntity hearingPartyEntityForClone() {
         HearingPartyEntity entity = new HearingPartyEntity();
         entity.setPartyReference("reference");
@@ -1083,7 +1081,6 @@ public class TestingUtil {
 
     public static PartyRelationshipDetailsEntity partyRelationshipDetailsEntity(String targetTechPartyId,
                                                                                  String relationshipType) {
-
         HearingPartyEntity targetHearingPartyEntity = new HearingPartyEntity();
         targetHearingPartyEntity.setPartyReference(targetTechPartyId);
 
@@ -1187,8 +1184,7 @@ public class TestingUtil {
             partyDetails2.setOrganisationDetails(organisationDetails());
         }
 
-        List<PartyDetails> partyDetails = List.of(partyDetails1, partyDetails2);
-        return partyDetails;
+        return List.of(partyDetails1, partyDetails2);
     }
 
     private static List<UnavailabilityRanges> unAvailabilityRanges() {
@@ -1200,8 +1196,7 @@ public class TestingUtil {
         detail2.setUnavailableFromDate(LocalDate.parse("2030-10-20"));
         detail2.setUnavailableToDate(LocalDate.parse("2030-10-22"));
         detail2.setUnavailabilityType("All Day");
-        List<UnavailabilityRanges> unavailabilityRanges = List.of(detail1, detail2);
-        return unavailabilityRanges;
+        return List.of(detail1, detail2);
     }
 
     private static List<UnavailabilityDow> unavailabilityDowDetails() {
@@ -1211,8 +1206,7 @@ public class TestingUtil {
         UnavailabilityDow detail2 = new UnavailabilityDow();
         detail2.setDowUnavailabilityType("All Day");
         detail2.setDow("Thursday");
-        List<UnavailabilityDow> unavailabilityDows = Lists.newArrayList(detail1, detail2);
-        return unavailabilityDows;
+        return Lists.newArrayList(detail1, detail2);
     }
 
     public static HearingDetails hearingDetailsWithAllFields() {
@@ -1267,8 +1261,7 @@ public class TestingUtil {
         panelPreferenceTwo.setRequirementType("OPTINC");
         panelPreferenceTwo.setMemberType("Member type 2");
         panelPreferenceTwo.setMemberID("MID999");
-        List<PanelPreference> panelPreferences = List.of(panelPreference, panelPreferenceTwo);
-        return panelPreferences;
+        return List.of(panelPreference, panelPreferenceTwo);
     }
 
     public static IndividualDetails allIndividualDetails() {
@@ -1475,4 +1468,3 @@ public class TestingUtil {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
 
 }
-

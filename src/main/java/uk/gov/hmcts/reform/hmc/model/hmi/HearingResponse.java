@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -44,4 +45,10 @@ public class HearingResponse {
 
     private List<HearingDaySchedule> hearingDaySchedule;
 
+    public List<HearingDaySchedule> getHearingDaySchedule() {
+        if (hearingDaySchedule != null) {
+            hearingDaySchedule.sort(Comparator.comparing(HearingDaySchedule::getHearingStartDateTime));
+        }
+        return hearingDaySchedule;
+    }
 }
