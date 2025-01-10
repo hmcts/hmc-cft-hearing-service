@@ -94,7 +94,7 @@ variable "primary_server_id" {
 variable "action_group_name" {
   description = "The name of the Action Group to create."
   type        = string
-  default     = "wa-support"
+  default     = "hmc-support"
 }
 
 variable "email_address_key" {
