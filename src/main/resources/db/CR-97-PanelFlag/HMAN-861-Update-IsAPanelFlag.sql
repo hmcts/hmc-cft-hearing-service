@@ -34,7 +34,7 @@ BEGIN
         join hearing_day_panel hdp on hdp.hearing_day_id = hdd.hearing_day_id
         WHERE chr.hmcts_service_code not in ('AAA6','AAA7' ,'ABA5')
         group by hdp.hearing_day_id,h.hearing_id,chr.hmcts_service_code,h.status,h.updated_date_time,chr.hearing_request_version
-        HAVING COUNT(hdp.hearing_day_id) = 1;
+        HAVING COUNT(hdp.hearing_day_id) = 1
     LOOP
         UPDATE case_hearing_request
         SET is_a_panel_flag = false
@@ -60,7 +60,7 @@ BEGIN
         join hearing_day_panel hdp on hdp.hearing_day_id = hdd.hearing_day_id
         WHERE chr.hmcts_service_code not in ('AAA6','AAA7' ,'ABA5')
         group by hdp.hearing_day_id,h.hearing_id,chr.hmcts_service_code,h.status,h.updated_date_time,chr.hearing_request_version
-        HAVING COUNT(hdp.hearing_day_id) > 1;
+        HAVING COUNT(hdp.hearing_day_id) > 1
     LOOP
         UPDATE case_hearing_request
         SET is_a_panel_flag = true
@@ -85,7 +85,7 @@ BEGIN
         WHERE chr.hmcts_service_code not in ('AAA6','AAA7' ,'ABA5')
         and hr.hearing_response_id in(
         select hdd.hearing_response_id from hearing_day_details hdd where hdd.hearing_day_id not in(
-        select hdp.hearing_day_id from hearing_day_panel hdp));
+        select hdp.hearing_day_id from hearing_day_panel hdp))
     LOOP
         UPDATE case_hearing_request
         SET is_a_panel_flag = false
