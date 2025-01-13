@@ -43,7 +43,7 @@ class UnNotifiedHearingServiceIT extends BaseTest {
         LocalDateTime startFrom = convertDateTime(dateStr);
         UnNotifiedHearingsResponse response = unNotifiedHearingService
             .getUnNotifiedHearings("ACA2", startFrom, null,hearingStatusListed);
-        final List<String> expectedHearingIds = Arrays.asList("2100000000", "2100000001");
+        final List<String> expectedHearingIds = Arrays.asList("2100000001", "2100000000");
         assertNotNull(response.getHearingIds());
         assertEquals(2, response.getHearingIds().size());
         assertEquals(2, response.getTotalFound());
