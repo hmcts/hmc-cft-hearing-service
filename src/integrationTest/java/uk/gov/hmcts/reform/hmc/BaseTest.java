@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -21,7 +22,9 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.hmc.config.DataStoreUrlManager;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
+import uk.gov.hmcts.reform.hmc.config.RoleAssignmentUrlManager;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
@@ -53,6 +56,13 @@ import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HE
 @ActiveProfiles("itest")
 public class BaseTest {
 
+    protected static final String CCD_RESPONSE = """
+        {
+           "jurisdiction": "Jurisdiction1",
+           "case_type": "CaseType1"
+        }
+        """;
+
     @Inject
     @Qualifier(DefaultRoleAssignmentRepository.QUALIFIER)
     protected RoleAssignmentRepository roleAssignmentRepository;
@@ -63,29 +73,42 @@ public class BaseTest {
     @MockBean
     protected MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
 
+    @Inject
+    protected RoleAssignmentUrlManager roleAssignmentUrlManager;
+    @Inject
+    protected DataStoreUrlManager dataStoreUrlManager;
+
     @Value("${wiremock.server.port}")
     protected Integer wiremockPort;
+
     @Mock
     protected Authentication authentication;
 
+    protected static WireMockServer startExtraWireMock(int port, String pathRegex, String response) {
+        WireMockServer server = new WireMockServer(port);
+        server.stubFor(WireMock
+               .get(urlMatching(pathRegex))
+               .willReturn(okJson(response)));
+        server.start();
+        return server;
+    }
+
     @BeforeEach
     void init() {
-        final String hostUrl = "http://localhost:" + wiremockPort;
         ReflectionTestUtils.setField(roleAssignmentRepository, "securityUtils", securityUtils);
 
         Jwt jwt = dummyJwt();
         when(authentication.getPrincipal()).thenReturn(jwt);
         SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
-        ReflectionTestUtils.setField(applicationParams, "roleAssignmentServiceHost", hostUrl);
         ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", false);
 
         stubRoleAssignments();
-        stubFor(WireMock.get(urlMatching("/cases/.*"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
-        
+
+        stubFor(WireMock
+            .get(urlMatching("/cases/.*"))
+            .willReturn(okJson(CCD_RESPONSE))
+        );
+
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 
@@ -115,7 +138,7 @@ public class BaseTest {
         stubReturn200RoleAssignments(".*", response);
     }
 
-    private RoleAssignmentResource stubGenericRoleAssignment(String roleName) {
+    protected static RoleAssignmentResource stubGenericRoleAssignment(String roleName) {
         RoleAssignmentResource resource = new RoleAssignmentResource();
         resource.setRoleName(roleName);
         resource.setRoleType("ORGANISATION");
