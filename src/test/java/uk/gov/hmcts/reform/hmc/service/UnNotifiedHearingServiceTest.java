@@ -87,7 +87,7 @@ public class UnNotifiedHearingServiceTest {
             LocalDateTime dateTime = LocalDateTime.now();
             given(caseHearingRequestRepository.getHmctsServiceCodeCount("TEST")).willReturn(1L);
             List<Long> hearingIds = Arrays.asList(2000000207L, 2000000206L, 2000000205L);
-            List<Long> expectedHearingIds = Arrays.asList(2000000205L,2000000206L, 2000000207L);
+            List<Long> expectedHearingIds = Arrays.asList(2000000207L,2000000206L, 2000000205L);
             given(unNotifiedHearingsRepository.getUnNotifiedHearingsWithStartDateTo("TEST", dateTime,
                                                                                    dateTime, hearingStatus
             )).willReturn(hearingIds);
