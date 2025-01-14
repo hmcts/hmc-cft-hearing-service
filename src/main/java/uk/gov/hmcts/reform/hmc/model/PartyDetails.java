@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Data
@@ -20,6 +21,7 @@ public class PartyDetails {
 
     @NotEmpty(message = ValidationError.PARTY_DETAILS_NULL_EMPTY)
     @Size(max = 40, message = ValidationError.PARTY_DETAILS_MAX_LENGTH)
+    @Pattern(regexp = "^[!-~]+", message = ValidationError.PARTY_DETAILS_NULL_EMPTY)
     private String partyID;
 
     @NotEmpty(message = ValidationError.PARTY_TYPE_EMPTY)

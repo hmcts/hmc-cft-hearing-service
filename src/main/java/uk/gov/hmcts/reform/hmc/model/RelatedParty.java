@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Data
@@ -13,6 +14,7 @@ public class RelatedParty {
 
     @NotEmpty(message = ValidationError.RELATED_PARTY_EMPTY)
     @Size(max = 15, message = ValidationError.RELATED_PARTY_MAX_LENGTH)
+    @Pattern(regexp = "^[!-~]+", message = ValidationError.RELATED_PARTY_EMPTY)
     private String relatedPartyID;
 
     @NotEmpty(message = ValidationError.RELATIONSHIP_TYPE_EMPTY)
