@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Comparator;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -21,12 +20,5 @@ public class GetHearingsResponse {
     @Valid
     @NotNull
     private List<CaseHearing> caseHearings;
-
-    public List<CaseHearing> getCaseHearings() {
-        if (caseHearings != null) {
-            caseHearings.sort(Comparator.comparing(CaseHearing::getHearingId).reversed());
-        }
-        return caseHearings;
-    }
 
 }

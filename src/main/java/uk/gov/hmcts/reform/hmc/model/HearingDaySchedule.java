@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -42,12 +41,5 @@ public class HearingDaySchedule {
     @Valid
     @NotNull
     private List<Attendee> attendees;
-
-    public List<Attendee> getAttendees() {
-        if (attendees != null) {
-            attendees.sort(Comparator.comparing(Attendee::getPartyId));
-        }
-        return attendees;
-    }
 
 }
