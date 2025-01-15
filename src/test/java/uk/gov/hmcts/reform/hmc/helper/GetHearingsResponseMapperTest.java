@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -149,15 +150,24 @@ class GetHearingsResponseMapperTest {
 
         List<CaseHearing> sortedCaseHearings = response.getCaseHearings();
 
+        List<Long> hearingIds = new ArrayList<>();
+        List<String> partyIds;
+        List<LocalDateTime> startDateTimes;
+
         for (int i = 0; i < sortedCaseHearings.size() - 1; i++) {
+            hearingIds.add(sortedCaseHearings.get(i).getHearingId());
             logger.info("hearing Ids {}:{} - {}:{})", i, (i + 1),
                         sortedCaseHearings.get(i).getHearingId(), sortedCaseHearings.get(i + 1).getHearingId());
             assertThat(sortedCaseHearings.get(i).getHearingId())
                 .isGreaterThanOrEqualTo(sortedCaseHearings.get(i + 1).getHearingId());
 
+            partyIds = new ArrayList<>();
+            startDateTimes = new ArrayList<>();
+
             List<HearingDaySchedule> schedules = sortedCaseHearings.get(i).getHearingDaySchedule();
-            if (null != schedules && schedules.size() > 0) {
+            if (null != schedules && !schedules.isEmpty()) {
                 for (int j = 0; j < schedules.size() - 1; j++) {
+                    startDateTimes.add(schedules.get(j).getHearingStartDateTime());
                     logger.info(
                         "schedules {}:{} - {}:{})", j, j + 1,
                         schedules.get(j).getHearingStartDateTime(), schedules.get(j + 1).getHearingStartDateTime()
@@ -169,8 +179,9 @@ class GetHearingsResponseMapperTest {
 
             if (null != schedules) {
                 List<Attendee> attendees = schedules.get(i).getAttendees();
-                if (null != attendees && attendees.size() > 0) {
+                if (null != attendees && !attendees.isEmpty()) {
                     for (int k = 0; k < attendees.size() - 1; k++) {
+                        partyIds.add(attendees.get(k).getPartyId());
                         logger.info(
                             "attendees {}:{} - {}:{})", k, k + 1,
                             attendees.get(k).getPartyId(), attendees.get(k + 1).getPartyId()
@@ -180,7 +191,42 @@ class GetHearingsResponseMapperTest {
                     }
                 }
             }
+
+            assertThat(isAscendingOrder(partyIds)).isTrue();
+            assertThat(isAscendingLocalDateTimeOrder(startDateTimes)).isTrue();
         }
+
+        assertThat(isDescendingOrder(hearingIds)).isTrue();
+    }
+
+    private static <T extends Comparable<T>> boolean isAscendingOrder(List<T> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            logger.info("list {}:{} - {}:{})", i, (i + 1), list.get(i), list.get(i + 1));
+            if (list.get(i).compareTo(list.get(i + 1)) > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isAscendingLocalDateTimeOrder(List<LocalDateTime> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            logger.info("list {}:{} - {}:{})", i, (i + 1), list.get(i), list.get(i + 1));
+            if (list.get(i).isAfter(list.get(i + 1))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static <T extends Comparable<T>> boolean isDescendingOrder(List<T> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            logger.info("list {}:{} - {}:{})", i, (i + 1), list.get(i), list.get(i + 1));
+            if (list.get(i).compareTo(list.get(i + 1)) < 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
