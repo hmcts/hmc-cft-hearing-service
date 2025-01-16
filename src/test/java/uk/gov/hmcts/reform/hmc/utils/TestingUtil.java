@@ -1054,7 +1054,7 @@ public class TestingUtil {
         List<HearingDayDetailsEntity> entities = new ArrayList<>();
         LocalDateTime startDateTime = LocalDateTime.now().plusDays(30);
         for (int i = 0; i < 20; i++) {
-            entities.add(createHearingDayDetailsEntity(i, startDateTime.minusHours(i * 3)));
+            entities.add(createHearingDayDetailsEntity(i, startDateTime.minusMinutes(i * 3)));
         }
         return entities;
     }
@@ -1065,24 +1065,45 @@ public class TestingUtil {
         entity.setEndDateTime(startDateTime.plusHours(2));
         entity.setVenueId("venue" + id);
         entity.setRoomId("room" + id);
-        entity.setHearingAttendeeDetails(createHearingAttendeeDetailsEntityList());
+        entity.setHearingAttendeeDetails(createHearingAttendeeDetailsEntityList(entity));
+        entity.setHearingDayPanel(createHearingDayPanelEntityList(entity));
         return entity;
     }
 
-    public static List<HearingAttendeeDetailsEntity> createHearingAttendeeDetailsEntityList() {
+    public static List<HearingAttendeeDetailsEntity> createHearingAttendeeDetailsEntityList(
+        HearingDayDetailsEntity hearingDayDetailsEntity) {
         List<HearingAttendeeDetailsEntity> entities = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            entities.add(createHearingAttendeeDetailsEntity(i));
+            entities.add(createHearingAttendeeDetailsEntity(i, hearingDayDetailsEntity));
         }
         return entities;
     }
 
-    public static HearingAttendeeDetailsEntity createHearingAttendeeDetailsEntity(int id) {
+    public static HearingAttendeeDetailsEntity createHearingAttendeeDetailsEntity(
+        int id, HearingDayDetailsEntity hearingDayDetailsEntity) {
         HearingAttendeeDetailsEntity entity = new HearingAttendeeDetailsEntity();
         entity.setId((long) id);
         entity.setPartyId("partyid" + id);
         entity.setPartySubChannelType("subchanneltype" + id);
         entity.setCreatedDateTime(LocalDateTime.now());
+        entity.setHearingDayDetails(hearingDayDetailsEntity);
+        return entity;
+    }
+
+    public static List<HearingDayPanelEntity> createHearingDayPanelEntityList(HearingDayDetailsEntity hearingDayDetailsEntity) {
+        List<HearingDayPanelEntity> entities = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            entities.add(createHearingDayPanelEntity(i, hearingDayDetailsEntity));
+        }
+        return entities;
+    }
+
+    public static HearingDayPanelEntity createHearingDayPanelEntity(int id, HearingDayDetailsEntity hearingDayDetailsEntity) {
+        HearingDayPanelEntity entity = new HearingDayPanelEntity();
+        entity.setId((long) id);
+        entity.setHearingDayDetails(hearingDayDetailsEntity);
+        entity.setPanelUserId("paneluser" + id);
+        entity.setIsPresiding(false);
         return entity;
     }
 

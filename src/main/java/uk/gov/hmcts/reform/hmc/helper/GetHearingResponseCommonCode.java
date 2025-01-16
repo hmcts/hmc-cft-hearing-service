@@ -29,14 +29,24 @@ public class GetHearingResponseCommonCode {
     protected void setAttendeeDetails(List<HearingAttendeeDetailsEntity> attendeeDetailsEntities,
                                     HearingDaySchedule hearingDaySchedule) {
         List<Attendee> attendeeList = new ArrayList<>();
-        for (HearingAttendeeDetailsEntity attendeeDetailEntity : attendeeDetailsEntities) {
-            Attendee attendee = new Attendee();
-            attendee.setPartyId(attendeeDetailEntity.getPartyId());
-            attendee.setHearingSubChannel(attendeeDetailEntity.getPartySubChannelType());
-            attendeeList.add(attendee);
+        if (null != attendeeDetailsEntities) {
+            for (HearingAttendeeDetailsEntity attendeeDetailEntity : attendeeDetailsEntities) {
+                Attendee attendee = new Attendee();
+                attendee.setPartyId(attendeeDetailEntity.getPartyId());
+                attendee.setHearingSubChannel(attendeeDetailEntity.getPartySubChannelType());
+                attendeeList.add(attendee);
+            }
         }
         attendeeList.sort(Comparator.comparing(Attendee::getPartyId));
         hearingDaySchedule.setAttendees(attendeeList);
+    }
+
+    protected void setHearingDayPanels(HearingDayDetailsEntity hearingDayDetails) {
+        List<HearingDayPanelEntity> mutableHearingDayPanelEntities =
+            null == hearingDayDetails.getHearingDayPanel()
+                ? new ArrayList<>() : new ArrayList<>(hearingDayDetails.getHearingDayPanel());
+        mutableHearingDayPanelEntities.sort(Comparator.comparing(HearingDayPanelEntity::getPanelUserId));
+        hearingDayDetails.setHearingDayPanel(mutableHearingDayPanelEntities);
     }
 
     protected void setHearingJudgeAndPanelMemberIds(List<HearingDayPanelEntity> hearingDayPanelEntities,

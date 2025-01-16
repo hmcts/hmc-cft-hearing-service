@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -30,10 +32,12 @@ import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -41,6 +45,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class GetHearingResponseMapperTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(GetHearingResponseMapperTest.class);
 
     @InjectMocks
     private GetHearingResponseMapper getHearingResponseMapper;
@@ -349,6 +355,53 @@ class GetHearingResponseMapperTest {
         assertTrue(response.getPartyDetails().get(0).getUnavailabilityRanges().isEmpty());
     }
 
+    @Test
+    void listsAreSortedCorrectly() {
+        HearingEntity hearingEntity = TestingUtil.hearingEntity();
+
+        GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
+
+        List<HearingDaySchedule> schedules = response.getHearingResponse().getHearingDaySchedule();
+        List<LocalDateTime> startDateTimes = new ArrayList<>();
+
+        if (null != schedules && !schedules.isEmpty()) {
+            for (HearingDaySchedule schedule : schedules) {
+                startDateTimes.add(schedule.getHearingStartDateTime());
+
+                List<Attendee> attendees = schedule.getAttendees();
+                List<String> partyIds = new ArrayList<>();
+
+                if (null != attendees && !attendees.isEmpty()) {
+                    for (Attendee attendee : attendees) {
+                        partyIds.add(attendee.getPartyId());
+                    }
+                }
+                assertThat(isAscendingOrder("partyId", partyIds)).isTrue();
+            }
+        }
+
+        assertThat(isAscendingLocalDateTimeOrder("startDateTime", startDateTimes)).isTrue();
+    }
+
+    private static <T extends Comparable<T>> boolean isAscendingOrder(String listName, List<T> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            logger.debug("{} {}:{} - {}:{})", listName, i, (i + 1), list.get(i), list.get(i + 1));
+            if (list.get(i).compareTo(list.get(i + 1)) > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isAscendingLocalDateTimeOrder(String listName, List<LocalDateTime> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            logger.debug("{} {}:{} - {}:{})", listName, i, (i + 1), list.get(i), list.get(i + 1));
+            if (list.get(i).isAfter(list.get(i + 1))) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     private void assertRequestDetails(RequestDetails requestDetails) {
         assertAll(

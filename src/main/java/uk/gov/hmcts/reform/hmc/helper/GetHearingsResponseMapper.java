@@ -59,6 +59,7 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
                     setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel(), hearingDaySchedule);
                 }
                 setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
+                setHearingDayPanels(detailEntity);
                 hearingDaySchedule.setHearingVenueId(detailEntity.getVenueId());
                 scheduleList.add(hearingDaySchedule);
             }
