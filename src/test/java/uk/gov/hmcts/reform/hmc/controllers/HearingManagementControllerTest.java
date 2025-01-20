@@ -406,8 +406,9 @@ class HearingManagementControllerTest {
                 accessControlService,
                 applicationParams, securityUtils
             );
-            List<GetHearingsResponse> hearingsResponseList = controller.getHearingsForListOfCases(ccdCaseRefs, null);
-            verify(hearingManagementService, times(2)).getHearings(any(), any());
+            List<GetHearingsResponse> hearingsResponseList = controller.getHearingsForListOfCases(ccdCaseRefs,
+                                                                                 null, "AAT_PRIVATE");
+            verify(hearingManagementService, times(1)).getHearings(any(), any());
             assertThat(hearingsResponseList.getFirst().getCaseRef()).isEqualTo(ccdCaseRefs.get(1));
             assertThat(hearingsResponseList.getFirst().getCaseHearings().getFirst().getHearingIsLinkedFlag()).isTrue();
         }
