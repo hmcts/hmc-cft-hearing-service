@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
@@ -271,7 +272,8 @@ class HearingManagementControllerTest {
             List<String> rolesRequired = Lists.newArrayList(HEARING_VIEWER, LISTED_HEARING_VIEWER);
             List<String> filteredRoleAssignments = Lists.newArrayList(LISTED_HEARING_VIEWER);
 
-            doReturn(filteredRoleAssignments).when(accessControlService).verifyCaseAccess(validCaseRef, rolesRequired);
+            doReturn(filteredRoleAssignments).when(accessControlService).verifyCaseAccess(validCaseRef, rolesRequired,
+                                                                                          null);
             HearingManagementController controller = new HearingManagementController(hearingManagementService,
                                                                                      accessControlService,
                                                                                      applicationParams, securityUtils);
@@ -363,16 +365,23 @@ class HearingManagementControllerTest {
         @Test
         void shouldReturnHearingResponseForListed() {
             List<String> ccdCaseRefs  = List.of("9372710950276233");
+            DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+                .id("9372710950276233")
+                .jurisdiction("CMC")
+                .build();
+            List<DataStoreCaseDetails> cases = List.of(caseDetails);
             doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(ccdCaseRefs.getFirst(),
                                                                       HearingStatus.LISTED.name()))
                 .when(hearingManagementService)
                 .getHearings(any(), any());
+            doReturn(cases).when(hearingManagementService).getCaseSearchResults(any(), any(), any());
             HearingManagementController controller = new HearingManagementController(
                 hearingManagementService,
                 accessControlService,
                 applicationParams, securityUtils
             );
-            List<GetHearingsResponse> hearingsResponseList = controller.getHearingsForListOfCases(ccdCaseRefs, null);
+            List<GetHearingsResponse> hearingsResponseList = controller.getHearingsForListOfCases(ccdCaseRefs,
+                                                               null,"AAT_PRIVATE");
             verify(hearingManagementService, times(1)).getHearings(any(), any());
             assertThat(hearingsResponseList.getFirst().getCaseRef()).isEqualTo(ccdCaseRefs.getFirst());
             assertThat(hearingsResponseList.getFirst().getCaseHearings().getFirst().getHearingIsLinkedFlag()).isTrue();
@@ -381,8 +390,14 @@ class HearingManagementControllerTest {
         @Test
         void shouldReturnHearingResponseForListOfCases() {
             List<String> ccdCaseRefs  = List.of("9372710950276233", "9856815055686759");
-            for (String ccdCaseRef : ccdCaseRefs) {
-                doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(ccdCaseRef, null))
+            DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
+                .id("9856815055686759")
+                .jurisdiction("CMC")
+                .build();
+            List<DataStoreCaseDetails> cases = List.of(caseDetails);
+            doReturn(cases).when(hearingManagementService).getCaseSearchResults(any(), any(), any());
+            for (DataStoreCaseDetails dataStoreCaseDetails : cases) {
+                doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(dataStoreCaseDetails.getId(), null))
                     .when(hearingManagementService)
                     .getHearings(any(), any());
             }
@@ -391,8 +406,9 @@ class HearingManagementControllerTest {
                 accessControlService,
                 applicationParams, securityUtils
             );
-            List<GetHearingsResponse> hearingsResponseList = controller.getHearingsForListOfCases(ccdCaseRefs, null);
-            verify(hearingManagementService, times(2)).getHearings(any(), any());
+            List<GetHearingsResponse> hearingsResponseList = controller.getHearingsForListOfCases(ccdCaseRefs,
+                                                                                 null, "AAT_PRIVATE");
+            verify(hearingManagementService, times(1)).getHearings(any(), any());
             assertThat(hearingsResponseList.getFirst().getCaseRef()).isEqualTo(ccdCaseRefs.get(1));
             assertThat(hearingsResponseList.getFirst().getCaseHearings().getFirst().getHearingIsLinkedFlag()).isTrue();
         }
