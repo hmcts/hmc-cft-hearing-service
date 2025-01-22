@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -230,6 +231,14 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         return getLinkedHearingGroupDetails(requestId);
     }
 
+    @Override
+    public void sortHearingsInGroup(List<LinkedHearingDetails> hearingsInGroup) {
+        hearingsInGroup.sort(Comparator.comparing(LinkedHearingDetails::getHearingOrder,
+                                                  Comparator.nullsFirst(Long::compareTo))
+                                 .thenComparing(Comparator.comparing(LinkedHearingDetails::getHearingId,
+                                                   Comparator.nullsLast(Long::compareTo)).reversed()));
+    }
+
     private PreviousLinkedGroupDetails mapPreviousLinkGroupDetails(LinkedGroupDetails oldLinkedGroupDetails) {
         PreviousLinkedGroupDetails linkedGroupDetails = new PreviousLinkedGroupDetails();
         linkedGroupDetails.setLinkedGroupId(oldLinkedGroupDetails.getLinkedGroupId());
@@ -289,7 +298,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             response.setHmctsInternalCaseName(hearing.getLatestCaseHearingRequest().getHmctsInternalCaseName());
             hearingsInGroup.add(response);
         });
-
+        sortHearingsInGroup(hearingsInGroup);
         return hearingsInGroup;
     }
 

@@ -46,10 +46,12 @@ import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -627,6 +629,73 @@ class LinkedHearingGroupServiceTest {
             for (LinkedHearingDetails linkedHearingDetails : response.getHearingsInGroup()) {
                 assertHearingsInGroup(linkedHearingDetails);
             }
+        }
+
+        @Test
+        void sortHearingsInGroup_SortsByHearingOrderAndHearingId() {
+            List<LinkedHearingDetails> hearingsInGroup = new ArrayList<>();
+            hearingsInGroup.add(createLinkedHearingDetails(2000000006L, 3L, "CaseRef3", "CaseName6"));
+            hearingsInGroup.add(createLinkedHearingDetails(2000000005L, 3L, "CaseRef3", "CaseName5"));
+            hearingsInGroup.add(createLinkedHearingDetails(2000000001L, 1L, "CaseRef1", "CaseName1"));
+            hearingsInGroup.add(createLinkedHearingDetails(2000000002L, 1L, "CaseRef1", "CaseName2"));
+            hearingsInGroup.add(createLinkedHearingDetails(2000000004L, 2L, "CaseRef2", "CaseName4"));
+            hearingsInGroup.add(createLinkedHearingDetails(2000000003L, 2L, "CaseRef2", "CaseName3"));
+
+            service.sortHearingsInGroup(hearingsInGroup);
+
+            assertThat(hearingsInGroup.get(0).getHearingOrder()).isEqualTo(1L);
+            assertThat(hearingsInGroup.get(1).getHearingOrder()).isEqualTo(1L);
+            assertThat(hearingsInGroup.get(2).getHearingOrder()).isEqualTo(2L);
+            assertThat(hearingsInGroup.get(3).getHearingOrder()).isEqualTo(2L);
+            assertThat(hearingsInGroup.get(4).getHearingOrder()).isEqualTo(3L);
+            assertThat(hearingsInGroup.get(5).getHearingOrder()).isEqualTo(3L);
+            assertThat(hearingsInGroup.get(0).getHearingId()).isEqualTo(2000000002L);
+            assertThat(hearingsInGroup.get(1).getHearingId()).isEqualTo(2000000001L);
+            assertThat(hearingsInGroup.get(2).getHearingId()).isEqualTo(2000000004L);
+            assertThat(hearingsInGroup.get(3).getHearingId()).isEqualTo(2000000003L);
+            assertThat(hearingsInGroup.get(4).getHearingId()).isEqualTo(2000000006L);
+            assertThat(hearingsInGroup.get(5).getHearingId()).isEqualTo(2000000005L);
+        }
+
+        @Test
+        void sortHearingsInGroup_EmptyList() {
+            List<LinkedHearingDetails> hearingsInGroup = new ArrayList<>();
+
+            service.sortHearingsInGroup(hearingsInGroup);
+
+            assertThat(hearingsInGroup).isEmpty();
+        }
+
+        @Test
+        void sortHearingsInGroup_SingleElement() {
+            List<LinkedHearingDetails> hearingsInGroup = new ArrayList<>();
+            hearingsInGroup.add(createLinkedHearingDetails(1L, 1L, "CaseRef1", "CaseName1"));
+
+            service.sortHearingsInGroup(hearingsInGroup);
+
+            assertThat(hearingsInGroup.get(0).getHearingId()).isEqualTo(1L);
+        }
+
+        @Test
+        void sortHearingsInGroup_NullHearingOrder() {
+            List<LinkedHearingDetails> hearingsInGroup = new ArrayList<>();
+            hearingsInGroup.add(createLinkedHearingDetails(2000000001L, null, "CaseRef1", "CaseName1"));
+            hearingsInGroup.add(createLinkedHearingDetails(2000000002L, 1L, "CaseRef2", "CaseName2"));
+
+            service.sortHearingsInGroup(hearingsInGroup);
+
+            assertThat(hearingsInGroup.get(0).getHearingId()).isEqualTo(2000000001L);
+            assertThat(hearingsInGroup.get(1).getHearingId()).isEqualTo(2000000002L);
+        }
+
+        private LinkedHearingDetails createLinkedHearingDetails(Long hearingId, Long linkedOrderId, String caseRef,
+                                                                String hmctsInternalCaseName) {
+            LinkedHearingDetails lkh = new LinkedHearingDetails();
+            lkh.setHearingId(hearingId);
+            lkh.setHearingOrder(linkedOrderId);
+            lkh.setCaseRef(caseRef);
+            lkh.setHmctsInternalCaseName(hmctsInternalCaseName);
+            return lkh;
         }
 
         private void assertGroupDetails(GroupDetails returnedGroupDetails) {
