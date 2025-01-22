@@ -175,7 +175,7 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
         @Test
         void shouldFindPartiesNotifiedForValidHearingId() {
             final Long hearingId = 2000000001L;
-            List<HearingResponseEntity> partiesNotifiedAnswer = generateEntities(hearingId);
+            List<HearingResponseEntity> partiesNotifiedAnswer = generateEntitiesForPartiesNotified(hearingId);
 
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingResponseRepository.getPartiesNotified(any())).thenReturn(partiesNotifiedAnswer);
@@ -184,6 +184,16 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
                 partiesNotifiedService.getPartiesNotified(hearingId);
             assertFalse(partiesNotifiedResponses.getResponses().isEmpty());
             assertEquals(3, partiesNotifiedResponses.getResponses().size());
+            assertEquals(2, partiesNotifiedResponses.getResponses().get(0).getRequestVersion());
+            assertEquals(1, partiesNotifiedResponses.getResponses().get(1).getRequestVersion());
+            assertEquals(1, partiesNotifiedResponses.getResponses().get(2).getRequestVersion());
+            assertEquals(LocalDateTime.now().minusDays(2), partiesNotifiedResponses.getResponses()
+                .get(0).getPartiesNotifiedDateTime());
+            assertEquals(LocalDateTime.now().minusDays(1), partiesNotifiedResponses.getResponses()
+                .get(1).getPartiesNotifiedDateTime());
+            assertEquals(LocalDateTime.now().minusDays(1), partiesNotifiedResponses.getResponses()
+                .get(2).getPartiesNotifiedDateTime());
+
         }
 
         @Test
