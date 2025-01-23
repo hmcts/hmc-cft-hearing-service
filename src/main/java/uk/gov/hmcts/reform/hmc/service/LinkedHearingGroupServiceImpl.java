@@ -234,7 +234,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     @Override
     public void sortHearingsInGroup(List<LinkedHearingDetails> hearingsInGroup) {
         hearingsInGroup.sort(Comparator.comparing(LinkedHearingDetails::getHearingOrder,
-                                                  Comparator.nullsFirst(Long::compareTo))
+                                                  Comparator.nullsLast(Long::compareTo))
                                  .thenComparing(Comparator.comparing(LinkedHearingDetails::getHearingId,
                                                    Comparator.nullsLast(Long::compareTo)).reversed()));
     }

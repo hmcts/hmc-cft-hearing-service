@@ -779,11 +779,11 @@ class LinkHearingGroupControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.groupDetails.groupLinkType").value("Ordered"))
                 .andExpect(jsonPath("$.groupDetails.groupComments").value("commented"))
                 .andExpect(jsonPath("$.hearingsInGroup",hasSize(3)))
-                .andExpect(jsonPath("$.hearingsInGroup[0].hearingId").value("2000000009"))
-                .andExpect(jsonPath("$.hearingsInGroup[1].hearingId").value("2000000007"))
-                .andExpect(jsonPath("$.hearingsInGroup[1].hearingOrder").value("1"))
-                .andExpect(jsonPath("$.hearingsInGroup[2].hearingId").value("2000000008"))
-                .andExpect(jsonPath("$.hearingsInGroup[2].hearingOrder").value("2"))
+                .andExpect(jsonPath("$.hearingsInGroup[0].hearingId").value("2000000007"))
+                .andExpect(jsonPath("$.hearingsInGroup[0].hearingOrder").value("1"))
+                .andExpect(jsonPath("$.hearingsInGroup[1].hearingId").value("2000000008"))
+                .andExpect(jsonPath("$.hearingsInGroup[1].hearingOrder").value("2"))
+                .andExpect(jsonPath("$.hearingsInGroup[2].hearingId").value("2000000009"))
                 .andReturn();
         }
     }

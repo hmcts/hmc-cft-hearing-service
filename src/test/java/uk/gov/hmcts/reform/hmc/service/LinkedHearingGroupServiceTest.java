@@ -684,8 +684,8 @@ class LinkedHearingGroupServiceTest {
 
             service.sortHearingsInGroup(hearingsInGroup);
 
-            assertThat(hearingsInGroup.get(0).getHearingId()).isEqualTo(2000000001L);
-            assertThat(hearingsInGroup.get(1).getHearingId()).isEqualTo(2000000002L);
+            assertThat(hearingsInGroup.get(0).getHearingId()).isEqualTo(2000000002L);
+            assertThat(hearingsInGroup.get(1).getHearingId()).isEqualTo(2000000001L);
         }
 
         private LinkedHearingDetails createLinkedHearingDetails(Long hearingId, Long linkedOrderId, String caseRef,
