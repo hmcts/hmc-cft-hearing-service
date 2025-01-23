@@ -188,11 +188,11 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             assertEquals(1, partiesNotifiedResponses.getResponses().get(1).getRequestVersion());
             assertEquals(1, partiesNotifiedResponses.getResponses().get(2).getRequestVersion());
             assertEquals(LocalDateTime.now().minusDays(2), partiesNotifiedResponses.getResponses()
-                .get(0).getPartiesNotifiedDateTime());
+                .get(0).partiesNotified());
             assertEquals(LocalDateTime.now().minusDays(1), partiesNotifiedResponses.getResponses()
-                .get(1).getPartiesNotifiedDateTime());
+                .get(1).partiesNotified());
             assertEquals(LocalDateTime.now().minusDays(1), partiesNotifiedResponses.getResponses()
-                .get(2).getPartiesNotifiedDateTime());
+                .get(2).partiesNotified());
 
         }
 
