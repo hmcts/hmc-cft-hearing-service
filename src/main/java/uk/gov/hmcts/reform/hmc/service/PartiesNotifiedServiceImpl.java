@@ -96,7 +96,7 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
         PartiesNotifiedResponses responses = new PartiesNotifiedResponses();
         partiesNotified.sort(Comparator
                                  .comparing(PartiesNotifiedResponse::getRequestVersion).reversed()
-                                 .thenComparing(PartiesNotifiedResponse::getResponseReceivedDateTime).reversed());
+                                 .thenComparing(Comparator.comparing(PartiesNotifiedResponse::getResponseReceivedDateTime).reversed()));
         responses.setResponses(partiesNotified);
         responses.setHearingID(hearingId.toString());
         return responses;

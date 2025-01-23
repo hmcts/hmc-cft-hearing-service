@@ -68,7 +68,7 @@ public class PartiesNotifiedCommonGeneration {
                                            LocalDateTime.now().minusDays(2),2);
         entity2.setPartiesNotifiedDateTime(LocalDateTime.now().minusDays(4));
         HearingResponseEntity entity3 = generateResponseEntityForPartiesNotified(1L,
-                                        LocalDateTime.now().minusDays(1),1);
+                                        LocalDateTime.now().minusDays(3),1);
         entity3.setPartiesNotifiedDateTime(LocalDateTime.now().minusDays(4));
         HearingEntity hearingEntity = generateHearingEntity(hearingId);
         entity1.setHearing(hearingEntity);
