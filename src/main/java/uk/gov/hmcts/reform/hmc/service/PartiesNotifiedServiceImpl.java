@@ -94,13 +94,17 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
             partiesNotified.add(response);
         });
         PartiesNotifiedResponses responses = new PartiesNotifiedResponses();
+        sortPartiesNotifiedResponse(partiesNotified);
+        responses.setResponses(partiesNotified);
+        responses.setHearingID(hearingId.toString());
+        return responses;
+    }
+
+    private static void sortPartiesNotifiedResponse(List<PartiesNotifiedResponse> partiesNotified) {
         partiesNotified.sort(Comparator
                                  .comparing(PartiesNotifiedResponse::getRequestVersion).reversed()
                                  .thenComparing(Comparator.comparing(
                                      PartiesNotifiedResponse::getResponseReceivedDateTime).reversed()));
-        responses.setResponses(partiesNotified);
-        responses.setHearingID(hearingId.toString());
-        return responses;
     }
 
 }
