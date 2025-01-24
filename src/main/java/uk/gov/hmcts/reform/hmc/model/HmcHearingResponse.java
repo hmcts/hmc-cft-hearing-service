@@ -16,11 +16,11 @@ public class HmcHearingResponse {
     private String hmctsServiceCode;
 
     @NotEmpty(message = ValidationError.CASE_REF_EMPTY)
-    @Pattern(regexp = "^[!-~]+", message = ValidationError.CASE_REF_INVALID)
+    @Pattern(regexp = "^.+$", message = ValidationError.CASE_REF_INVALID)
     private String caseRef;
 
     @NotEmpty(message = ValidationError.HEARING_ID_NOT_FOUND)
-    @Pattern(regexp = "^\\d{16}$", message = ValidationError.HEARING_ID_NOT_FOUND)
+    @Pattern(regexp = "^.+$", message = ValidationError.HEARING_ID_NOT_FOUND)
     private String hearingID;
 
     @Valid

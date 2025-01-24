@@ -183,7 +183,7 @@ class BeanValidatorTest {
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
         assertFalse(violations.isEmpty());
-        assertEquals(12, violations.size());
+        assertEquals(15, violations.size());
         assertTrue(validationErrors.contains(ValidationError.HMCTS_SERVICE_CODE_EMPTY_INVALID));
         assertTrue(validationErrors.contains(ValidationError.CASE_REF_EMPTY));
         assertTrue(validationErrors.contains(ValidationError.EXTERNAL_CASE_REFERENCE_MAX_LENGTH));
@@ -464,7 +464,7 @@ class BeanValidatorTest {
             validationErrors.add(e.getMessage());
             logger.info(e.getMessage());
         });
-        assertEquals(1, violations.size());
+        assertEquals(2, violations.size());
         assertTrue(validationErrors.contains(PARTY_DETAILS_NULL_EMPTY));
     }
 
