@@ -91,4 +91,32 @@ variable "primary_server_id" {
   default     = "not_applicable" // Dummy Value for none replica environments
 }
 
+variable "action_group_name" {
+  description = "The name of the Action Group to create."
+  type        = string
+  default     = "hmc-support"
+}
 
+variable "email_address_key" {
+  description = "Email address key in azure Key Vault."
+  type        = string
+  default     = "db-alert-monitoring-email-address"
+}
+
+variable "cpu_threshold" {
+  default     = 5
+  type        = number
+  description = "Average CPU utilisation threshold"
+}
+
+variable "memory_threshold" {
+  default     = 5
+  type        = number
+  description = "Average memory utilisation threshold"
+}
+
+variable "storage_threshold" {
+  default     = 0.5
+  type        = number
+  description = "Average storage utilisation threshold"
+}
