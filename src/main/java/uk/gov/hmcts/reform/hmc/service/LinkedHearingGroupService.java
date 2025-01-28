@@ -3,9 +3,6 @@ package uk.gov.hmcts.reform.hmc.service;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GetLinkedHearingGroupResponse;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupResponse;
-import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkedHearingDetails;
-
-import java.util.List;
 
 public interface LinkedHearingGroupService {
 
@@ -16,6 +13,4 @@ public interface LinkedHearingGroupService {
     void updateLinkHearing(String requestId, HearingLinkGroupRequest hearingLinkGroupRequest, String clientS2SToken);
 
     GetLinkedHearingGroupResponse getLinkedHearingGroupResponse(String requestId);
-
-    void sortHearingsInGroup(List<LinkedHearingDetails> hearingsInGroup);
 }

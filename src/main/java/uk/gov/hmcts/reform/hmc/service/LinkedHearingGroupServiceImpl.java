@@ -231,14 +231,6 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
         return getLinkedHearingGroupDetails(requestId);
     }
 
-    @Override
-    public void sortHearingsInGroup(List<LinkedHearingDetails> hearingsInGroup) {
-        hearingsInGroup.sort(Comparator.comparing(LinkedHearingDetails::getHearingOrder,
-                                                  Comparator.nullsLast(Long::compareTo))
-                                 .thenComparing(Comparator.comparing(LinkedHearingDetails::getHearingId,
-                                                   Comparator.nullsLast(Long::compareTo)).reversed()));
-    }
-
     private PreviousLinkedGroupDetails mapPreviousLinkGroupDetails(LinkedGroupDetails oldLinkedGroupDetails) {
         PreviousLinkedGroupDetails linkedGroupDetails = new PreviousLinkedGroupDetails();
         linkedGroupDetails.setLinkedGroupId(oldLinkedGroupDetails.getLinkedGroupId());
@@ -298,12 +290,15 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
             response.setHmctsInternalCaseName(hearing.getLatestCaseHearingRequest().getHmctsInternalCaseName());
             hearingsInGroup.add(response);
         });
-        sortHearingsInGroup(hearingsInGroup);
+        hearingsInGroup.sort(Comparator.comparing(LinkedHearingDetails::getHearingOrder,
+                                                  Comparator.nullsLast(Long::compareTo))
+                                     .thenComparing(Comparator.comparing(LinkedHearingDetails::getHearingId,
+                                                  Comparator.nullsLast(Long::compareTo)).reversed()));
         return hearingsInGroup;
     }
 
     private void verifyAccess(List<HearingEntity> linkedGroupHearings, List<String> requiredRoles) {
-        linkedGroupHearings.stream()
+        linkedGroupHearings
             .forEach(hearingEntity -> accessControlService
                 .verifyAccess(hearingEntity.getId(), requiredRoles));
     }
