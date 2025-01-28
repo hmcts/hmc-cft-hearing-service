@@ -41,9 +41,9 @@ class HearingResponseRepositoryIT extends BaseTest {
             hearingStatusListed
         );
         assertNotNull(hearingIds.size());
-        assertEquals(2, hearingIds.size());
+        assertThat(2).isEqualTo(hearingIds.size());
         assertTrue(expected.containsAll(hearingIds));
-        assertEquals(expected, hearingIds);
+        assertThat(hearingIds).containsExactlyInAnyOrderElementsOf(expected);
     }
 
     @Test
