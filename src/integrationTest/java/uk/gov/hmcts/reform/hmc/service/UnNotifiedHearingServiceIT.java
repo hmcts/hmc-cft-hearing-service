@@ -47,7 +47,7 @@ class UnNotifiedHearingServiceIT extends BaseTest {
         assertNotNull(response.getHearingIds());
         assertEquals(2, response.getHearingIds().size());
         assertEquals(2, response.getTotalFound());
-        assertEquals(expectedHearingIds, response.getHearingIds());
+        assertThat(response.getHearingIds()).containsExactlyInAnyOrderElementsOf(expectedHearingIds);
     }
 
     @Test

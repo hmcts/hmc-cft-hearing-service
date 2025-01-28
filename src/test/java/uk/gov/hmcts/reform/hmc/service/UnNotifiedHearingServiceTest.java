@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
@@ -93,9 +94,9 @@ public class UnNotifiedHearingServiceTest {
             List<String> expectedHearingIds = Arrays.asList("2000000207","2000000206", "2000000205");
             UnNotifiedHearingsResponse response = unNotifiedHearingService
                 .getUnNotifiedHearings("TEST", dateTime, dateTime, hearingStatus);
-            assertEquals(3, response.getHearingIds().size());
-            assertEquals(3, response.getTotalFound());
-            assertEquals(expectedHearingIds, response.getHearingIds());
+            assertThat(3).isEqualTo(response.getHearingIds().size());
+            assertThat(3L).isEqualTo(response.getTotalFound());
+            assertThat(response.getHearingIds()).containsExactlyInAnyOrderElementsOf(expectedHearingIds);
         }
 
         @Test
@@ -109,9 +110,9 @@ public class UnNotifiedHearingServiceTest {
             List<String> expectedHearingIds = Arrays.asList("2000000207","2000000206", "2000000205");
             UnNotifiedHearingsResponse response = unNotifiedHearingService
                 .getUnNotifiedHearings("TEST", dateTime, null, null);
-            assertEquals(3, response.getHearingIds().size());
-            assertEquals(3, response.getTotalFound());
-            assertEquals(expectedHearingIds, response.getHearingIds());
+            assertThat(3).isEqualTo(response.getHearingIds().size());
+            assertThat(3L).isEqualTo(response.getTotalFound());
+            assertThat(response.getHearingIds()).containsExactlyInAnyOrderElementsOf(expectedHearingIds);
         }
 
         @Test

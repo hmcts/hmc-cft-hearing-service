@@ -63,7 +63,6 @@ class HearingResponseRepositoryIT extends BaseTest {
         assertNotNull(expected.size());
         assertEquals(2, expected.size());
         assertEquals(expectedHearingIds, expected);
-        assertEquals(expectedHearingIds, expected);
     }
 
     @Test

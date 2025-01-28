@@ -32,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -183,18 +184,17 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             PartiesNotifiedResponses partiesNotifiedResponses =
                 partiesNotifiedService.getPartiesNotified(hearingId);
             assertFalse(partiesNotifiedResponses.getResponses().isEmpty());
-            assertEquals(3, partiesNotifiedResponses.getResponses().size());
-            assertEquals(2, partiesNotifiedResponses.getResponses().get(0).getRequestVersion());
-            assertEquals(1, partiesNotifiedResponses.getResponses().get(1).getRequestVersion());
-            assertEquals(1, partiesNotifiedResponses.getResponses().get(2).getRequestVersion());
+            assertThat(3).isEqualTo(partiesNotifiedResponses.getResponses().size());
+            assertThat(2).isEqualTo(partiesNotifiedResponses.getResponses().get(0).getRequestVersion());
+            assertThat(1).isEqualTo(partiesNotifiedResponses.getResponses().get(1).getRequestVersion());
+            assertThat(1).isEqualTo(partiesNotifiedResponses.getResponses().get(2).getRequestVersion());
             LocalDateTime now = LocalDateTime.now();
-            assertEquals(now.minusDays(2).toLocalDate(), partiesNotifiedResponses.getResponses()
-                .get(0).getResponseReceivedDateTime().toLocalDate());
-            assertEquals(now.minusDays(1).toLocalDate(), partiesNotifiedResponses.getResponses()
-                .get(1).getResponseReceivedDateTime().toLocalDate());
-            assertEquals(now.minusDays(3).toLocalDate(), partiesNotifiedResponses.getResponses()
-                .get(2).getResponseReceivedDateTime().toLocalDate());
-
+            assertThat(now.minusDays(2).toLocalDate()).isEqualTo(partiesNotifiedResponses.getResponses()
+                                                  .get(0).getResponseReceivedDateTime().toLocalDate());
+            assertThat(now.minusDays(1).toLocalDate()).isEqualTo(partiesNotifiedResponses.getResponses()
+                                                  .get(1).getResponseReceivedDateTime().toLocalDate());
+            assertThat(now.minusDays(3).toLocalDate()).isEqualTo(partiesNotifiedResponses.getResponses()
+                                                    .get(2).getResponseReceivedDateTime().toLocalDate());
         }
 
         @Test
