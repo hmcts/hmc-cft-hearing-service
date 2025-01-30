@@ -59,6 +59,9 @@ module "postgresql_v15" {
   action_group_name           = join("-", [local.db_name, var.action_group_name])
   email_address_key           = var.email_address_key
   email_address_key_vault_id  = data.azurerm_key_vault.hmc_shared_key_vault.id
+  cpu_threshold               = var.cpu_threshold
+  memory_threshold            = var.memory_threshold
+  storage_threshold           = var.storage_threshold
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER-V15" {
