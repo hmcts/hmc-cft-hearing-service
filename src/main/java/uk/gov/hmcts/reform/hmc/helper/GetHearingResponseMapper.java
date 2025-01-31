@@ -442,11 +442,13 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
                         setHearingJudgeAndPanelMemberIds(detailEntity.getHearingDayPanel(), hearingDaySchedule);
                     }
                     setAttendeeDetails(detailEntity.getHearingAttendeeDetails(), hearingDaySchedule);
-                    setHearingDayPanels(detailEntity);
                     scheduleList.add(hearingDaySchedule);
                 }
             }
-            scheduleList.sort(Comparator.comparing(HearingDaySchedule::getHearingStartDateTime));
+            scheduleList.sort(Comparator.comparing(HearingDaySchedule::getHearingStartDateTime,
+                                                   Comparator.nullsLast(Comparator.naturalOrder()))
+                                  .thenComparing(Comparator.comparing(HearingDaySchedule::getHearingJudgeId,
+                                                                     Comparator.nullsLast(Comparator.naturalOrder()))));
             caseHearing.setHearingDaySchedule(scheduleList);
         }
     }

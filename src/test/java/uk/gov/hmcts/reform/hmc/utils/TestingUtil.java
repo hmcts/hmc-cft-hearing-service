@@ -344,6 +344,26 @@ public class TestingUtil {
         return hearingEntity;
     }
 
+    public static HearingEntity createHearingEntity() {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(1L);
+        hearingEntity.setStatus(POST_HEARING_STATUS);
+        hearingEntity.setLinkedOrder(1L);
+        CaseHearingRequestEntity caseHearingRequestEntity = createCaseHearingRequestEntity(hearingEntity.getId());
+        caseHearingRequestEntity.setHearingParties(List.of(hearingPartyEntityOrg(), hearingPartyEntityInd()));
+        hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
+        hearingEntity.setHearingResponses(createHearingResponseEntities());
+        return hearingEntity;
+    }
+
+    public static HearingEntity createHearingEntity(Long hearingId) {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(hearingId);
+        hearingEntity.setHearingResponses(createHearingResponseEntities());
+        hearingEntity.setStatus(HearingStatus.HEARING_REQUESTED.name());
+        return hearingEntity;
+    }
+
     public static HearingEntity hearingEntityWithLinkDetails() {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(1L);
@@ -1028,18 +1048,11 @@ public class TestingUtil {
         hearingEntity.setHearingResponses(createHearingResponseEntities());
         entity1.setCaseHearingID(hearingId);
         entity1.setHearing(hearingEntity);
+        entity1.setVersionNumber(1);
         entity1.setHmctsServiceCode("TEST");
         entity1.setCaseReference("12345");
         entity1.setHearingType("Some hearing type");
         return entity1;
-    }
-
-    private static HearingEntity createHearingEntity(Long hearingId) {
-        HearingEntity hearingEntity = new HearingEntity();
-        hearingEntity.setId(hearingId);
-        hearingEntity.setHearingResponses(createHearingResponseEntities());
-        hearingEntity.setStatus(HearingStatus.HEARING_REQUESTED.name());
-        return hearingEntity;
     }
 
     public static List<HearingResponseEntity>  createHearingResponseEntities() {
@@ -1090,7 +1103,8 @@ public class TestingUtil {
         return entity;
     }
 
-    public static List<HearingDayPanelEntity> createHearingDayPanelEntityList(HearingDayDetailsEntity hearingDayDetailsEntity) {
+    public static List<HearingDayPanelEntity> createHearingDayPanelEntityList(
+        HearingDayDetailsEntity hearingDayDetailsEntity) {
         List<HearingDayPanelEntity> entities = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             entities.add(createHearingDayPanelEntity(i, hearingDayDetailsEntity));
@@ -1098,12 +1112,23 @@ public class TestingUtil {
         return entities;
     }
 
-    public static HearingDayPanelEntity createHearingDayPanelEntity(int id, HearingDayDetailsEntity hearingDayDetailsEntity) {
+    public static HearingDayPanelEntity createHearingDayPanelEntity(int id,
+                                                                    HearingDayDetailsEntity hearingDayDetailsEntity) {
         HearingDayPanelEntity entity = new HearingDayPanelEntity();
         entity.setId((long) id);
         entity.setHearingDayDetails(hearingDayDetailsEntity);
         entity.setPanelUserId("paneluser" + id);
         entity.setIsPresiding(false);
+        return entity;
+    }
+
+    public static HearingDayPanelEntity createHearingDayPanelEntity(int id, String panelUserId, boolean isPresiding,
+                                                                    HearingDayDetailsEntity hearingDayDetailsEntity) {
+        HearingDayPanelEntity entity = new HearingDayPanelEntity();
+        entity.setId((long) id);
+        entity.setHearingDayDetails(hearingDayDetailsEntity);
+        entity.setPanelUserId(panelUserId);
+        entity.setIsPresiding(isPresiding);
         return entity;
     }
 

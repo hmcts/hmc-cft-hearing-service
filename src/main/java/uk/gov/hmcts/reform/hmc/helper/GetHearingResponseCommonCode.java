@@ -41,17 +41,11 @@ public class GetHearingResponseCommonCode {
         hearingDaySchedule.setAttendees(attendeeList);
     }
 
-    protected void setHearingDayPanels(HearingDayDetailsEntity hearingDayDetails) {
-        List<HearingDayPanelEntity> mutableHearingDayPanelEntities =
-            null == hearingDayDetails.getHearingDayPanel()
-                ? new ArrayList<>() : new ArrayList<>(hearingDayDetails.getHearingDayPanel());
-        mutableHearingDayPanelEntities.sort(Comparator.comparing(HearingDayPanelEntity::getPanelUserId));
-        hearingDayDetails.setHearingDayPanel(mutableHearingDayPanelEntities);
-    }
-
     protected void setHearingJudgeAndPanelMemberIds(List<HearingDayPanelEntity> hearingDayPanelEntities,
                                                   HearingDaySchedule hearingDaySchedule) {
         List<String> panelMemberIds = new ArrayList<>();
+        hearingDayPanelEntities.sort(Comparator.comparing(HearingDayPanelEntity::getPanelUserId,
+                                     Comparator.nullsLast(String::compareTo)));
         for (HearingDayPanelEntity hearingDayPanelEntity :  hearingDayPanelEntities) {
             if (null == hearingDayPanelEntity.getIsPresiding() || !hearingDayPanelEntity.getIsPresiding()) {
                 panelMemberIds.add(hearingDayPanelEntity.getPanelUserId());
@@ -59,6 +53,7 @@ public class GetHearingResponseCommonCode {
                 hearingDaySchedule.setHearingJudgeId(hearingDayPanelEntity.getPanelUserId());
             }
         }
+        panelMemberIds.sort(Comparator.nullsLast(String::compareTo));
         hearingDaySchedule.setPanelMemberIds(panelMemberIds);
     }
 
