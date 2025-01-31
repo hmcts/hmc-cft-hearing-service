@@ -107,6 +107,8 @@ public class TestingUtil {
     public static final List<String> CANCELLATION_REASON_CODES = List.of("test 1", "test 2");
     public static final Long ID = 2000000000L;
 
+    private static DefaultObjectMapperService objectMapperService = new DefaultObjectMapperService(new ObjectMapper());
+
     private TestingUtil() {
     }
 
