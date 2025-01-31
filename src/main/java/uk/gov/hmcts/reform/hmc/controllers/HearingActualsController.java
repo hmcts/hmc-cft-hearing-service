@@ -33,10 +33,9 @@ public class HearingActualsController {
 
     @GetMapping(path = "/hearingActuals/{id}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiResponse(responseCode = "204", description = "Hearing id is valid")
-    @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ID_NOT_FOUND)
+    @ApiResponse(responseCode = "200", description = "Hearing id is valid")
     @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HEARING_ID_DETAILS)
-
+    @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ID_NOT_FOUND)
     public ResponseEntity<HearingActualResponse> getHearingActuals(@PathVariable("id") Long hearingId) {
         accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(
                 HEARING_VIEWER,
