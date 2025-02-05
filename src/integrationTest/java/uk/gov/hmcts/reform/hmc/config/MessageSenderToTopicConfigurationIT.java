@@ -8,8 +8,6 @@ class MessageSenderToTopicConfigurationIT extends BaseTest  {
 
     @Test
     void shouldSuccessfullyProcessRequest() {
-        MessageSenderToTopicConfiguration messageSenderToTopicConfiguration =
-            new MessageSenderToTopicConfiguration(applicationParams);
         messageSenderToTopicConfiguration.sendMessage("Test Message",
                                                       "Test service code","hearingID",
                                                       null);
@@ -17,8 +15,6 @@ class MessageSenderToTopicConfigurationIT extends BaseTest  {
 
     @Test
     void shouldSuccessfullyProcessRequestWhenDeploymentIdIsPresent() {
-        MessageSenderToTopicConfiguration messageSenderToTopicConfiguration =
-            new MessageSenderToTopicConfiguration(applicationParams);
         ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
         messageSenderToTopicConfiguration.sendMessage("Test Message",
                                                       "Test service code","hearingID",

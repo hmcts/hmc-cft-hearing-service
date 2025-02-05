@@ -14,11 +14,16 @@ import com.github.tomakehurst.wiremock.http.ResponseDefinition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.AuthenticationResponse;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingManagementInterfaceResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -51,6 +56,8 @@ public class WiremockFixtures {
     private static final String DESTINATION_SYSTEM = "DESTINATION_SYSTEM";
 
     public static String TEST_BODY = "This is a test message";
+    public static final String CASE_TYPE = "CaseType1";
+    public static final String JURISDICTION = "Jurisdiction1";
 
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
         .modules(new Jdk8Module(), new JavaTimeModule())
@@ -280,10 +287,51 @@ public class WiremockFixtures {
 
     }
 
+    public static void stubReturn200ForAllCasesFromDataStore(List<String> caseRefs, List<String> caseRefsFromES) {
+        stubFor(WireMock.post(urlEqualTo("/searchCases" + "?ctid=" + CASE_TYPE))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withRequestBody(
+                        equalToJson(TestingUtil.createSearchQuery(caseRefs)))
+                    .willReturn(aResponse()
+                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(getCaseSearchResult(caseRefsFromES)))
+                                    .withStatus(HTTP_OK)));
+    }
+
+    public static void stubReturn400AllForCasesFromDataStore(List<String> caseRefs, String caseType) {
+        stubFor(WireMock.post(urlEqualTo("/searchCases" + "?ctid=" + caseType))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withRequestBody(
+                        equalToJson(TestingUtil.createSearchQuery(caseRefs)))
+                    .willReturn(aResponse()
+                                    .withStatus(HTTP_BAD_REQUEST)
+                                    .withBody(getJsonString("Case type could not be found"))
+                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)));
+
+    }
+
+    private static CaseSearchResult getCaseSearchResult(List<String> caseRefs) {
+        List<DataStoreCaseDetails> caseDetailsList = new ArrayList<>();
+        for (String caseRef : caseRefs) {
+            DataStoreCaseDetails dataStoreCaseDetails = DataStoreCaseDetails.builder()
+                .id(caseRef)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .build();
+            caseDetailsList.add(dataStoreCaseDetails);
+        }
+        CaseSearchResult caseSearchResult = CaseSearchResult.builder()
+            .cases(caseDetailsList)
+            .build();
+        return caseSearchResult;
+    }
+
     @SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "squid:S112"})
     // Required as wiremock's Json.getObjectMapper().registerModule(..); not working
     // see https://github.com/tomakehurst/wiremock/issues/1127
-    private static String getJsonString(Object object) {
+    public static String getJsonString(Object object) {
         try {
             return OBJECT_MAPPER.writeValueAsString(object);
         } catch (JsonProcessingException e) {
