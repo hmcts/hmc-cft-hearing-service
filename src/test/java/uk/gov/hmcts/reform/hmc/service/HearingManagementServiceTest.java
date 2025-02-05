@@ -249,27 +249,7 @@ class HearingManagementServiceTest {
                                                             caseHearingRequestRepository,
                                                             hearingRepository,
                                                             applicationParams);
-        hearingManagementService =
-            new HearingManagementServiceImpl(
-                hearingRepository,
-                hearingMapper,
-                caseHearingRequestRepository,
-                hmiSubmitHearingRequestMapper,
-                getHearingsResponseMapper,
-                getHearingResponseMapper,
-                messageSenderToTopicConfiguration,
-                objectMapperService,
-                hmiDeleteHearingRequestMapper,
-                hearingIdValidator,
-                linkedHearingValidator,
-                partyRelationshipDetailsMapper,
-                hearingActualsValidator,
-                listingMapper,
-                hmiCaseDetailsMapper,
-                entitiesMapper,
-                hmiHearingResponseMapper,
-                hearingStatusAuditService,
-                pendingRequestService);
+        hearingManagementService = createHearingManagementService();
 
         hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any(),any());
@@ -1075,28 +1055,7 @@ class HearingManagementServiceTest {
                     caseHearingRequestRepository,
                     hearingRepository,
                     applicationParams);
-            hearingManagementService =
-                    new HearingManagementServiceImpl(
-                            hearingRepository,
-                            hearingMapper,
-                            caseHearingRequestRepository,
-                            hmiSubmitHearingRequestMapper,
-                            getHearingsResponseMapper,
-                            getHearingResponseMapper,
-                            messageSenderToTopicConfiguration,
-                            objectMapperService,
-                            hmiDeleteHearingRequestMapper,
-                            hearingIdValidator,
-                            linkedHearingValidator,
-                            partyRelationshipDetailsMapper,
-                            hearingActualsValidator,
-                            listingMapper,
-                            hmiCaseDetailsMapper,
-                            entitiesMapper,
-                            hmiHearingResponseMapper,
-                            hearingStatusAuditService,
-                            pendingRequestService);
-
+            hearingManagementService = createHearingManagementService();
         }
 
         @Test
@@ -1887,5 +1846,30 @@ class HearingManagementServiceTest {
         HearingDetails hearingDetails = TestingUtil.hearingDetailsWithAllFields();
         hearingDetails.setDuration(365);
         return hearingDetails;
+    }
+
+    private HearingManagementServiceImpl createHearingManagementService() {
+        return
+            new HearingManagementServiceImpl(
+                dataStoreRepository,
+                hearingRepository,
+                hearingMapper,
+                caseHearingRequestRepository,
+                hmiSubmitHearingRequestMapper,
+                getHearingsResponseMapper,
+                getHearingResponseMapper,
+                messageSenderToTopicConfiguration,
+                objectMapperService,
+                hmiDeleteHearingRequestMapper,
+                hearingIdValidator,
+                linkedHearingValidator,
+                partyRelationshipDetailsMapper,
+                hearingActualsValidator,
+                listingMapper,
+                hmiCaseDetailsMapper,
+                entitiesMapper,
+                hmiHearingResponseMapper,
+                hearingStatusAuditService,
+                pendingRequestService);
     }
 }

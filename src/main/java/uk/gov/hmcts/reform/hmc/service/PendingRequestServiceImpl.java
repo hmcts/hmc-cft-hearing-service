@@ -46,7 +46,6 @@ public class PendingRequestServiceImpl implements PendingRequestService {
         pendingRequest.setVersionNumber(1);
 
         LocalDateTime currentTimestamp = LocalDateTime.now();
-        pendingRequest.setLastTriedDateTime(currentTimestamp);
         pendingRequest.setSubmittedDateTime(currentTimestamp);
         pendingRequest.setRetryCount(0);
         if (null == deploymentId) {
