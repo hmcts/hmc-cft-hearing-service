@@ -88,8 +88,13 @@ idea {
   }
 }
 
+tasks.test {
+  jvmArgs "-Xshare:off'";
+}
+
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
+  options.fork = true
 }
 
 tasks.withType(Test) {
@@ -98,6 +103,10 @@ tasks.withType(Test) {
   testLogging {
     exceptionFormat = 'full'
   }
+}
+
+tasks.withType(Test).configureEach {
+  forkEvery = 100
 }
 
 test {
