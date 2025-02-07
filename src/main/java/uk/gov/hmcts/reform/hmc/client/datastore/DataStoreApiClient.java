@@ -13,7 +13,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @FeignClient(
-    name = "data-store-api",
+    name = "${ccd.data-store.client-name:data-store-api}",
     url = "${ccd.data-store.host}",
     configuration = DataStoreApiClientConfig.class
 )
