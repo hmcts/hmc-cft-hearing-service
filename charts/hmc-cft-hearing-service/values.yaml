@@ -64,6 +64,7 @@ java:
     HMI_DESTINATION_SYSTEM: SNL
     GRANT_TYPE: client_credentials
     FH_BASE_URL: https://login.microsoftonline.com
+    HMC_ACCESS_CONTROL_ENABLED: false
 
 servicebus:
   enabled: false
