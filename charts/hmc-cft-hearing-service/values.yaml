@@ -41,7 +41,7 @@ java:
         - name: fh-get-token-url
           alias: FH_GET_TOKEN_URL
   environment:
-    CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES: xui_webapp,hmc_hmi_inbound_adapter,sscs,fis_hmc_api
+    CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES: xui_webapp,hmc_hmi_inbound_adapter,sscs,fis_hmc_api,pcs_api
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified&sslmode=require&gssEncMode=disable"
     HMC_SERVICE_BUS_TOPIC: hmc-to-cft-{{ .Values.global.environment }}
     HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft-{{ .Values.global.environment }}
