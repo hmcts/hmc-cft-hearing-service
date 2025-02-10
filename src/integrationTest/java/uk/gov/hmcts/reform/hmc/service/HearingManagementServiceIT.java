@@ -474,11 +474,11 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("venue2-1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getHearingVenueId());
         assertEquals("venue1-2", response.getCaseHearings().get(2)
-            .getHearingDaySchedule().get(1).getHearingVenueId());
+            .getHearingDaySchedule().get(0).getHearingVenueId());
         assertEquals("room3-1", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getHearingRoomId());
         assertEquals("room1-1", response.getCaseHearings().get(2)
-            .getHearingDaySchedule().get(0).getHearingRoomId());
+            .getHearingDaySchedule().get(1).getHearingRoomId());
         assertTrue(response.getCaseHearings().get(0).getHearingIsLinkedFlag());
         assertFalse(response.getCaseHearings().get(1).getHearingIsLinkedFlag());
         assertTrue(response.getCaseHearings().get(2).getHearingIsLinkedFlag());
@@ -493,32 +493,32 @@ class HearingManagementServiceIT extends BaseTest {
             .getHearingDaySchedule().get(0).getPanelMemberIds().get(0));
         assertNull(response.getCaseHearings().get(1).getHearingDaySchedule().get(0).getHearingJudgeId());
         assertEquals("panel1-1", response.getCaseHearings().get(2)
-            .getHearingDaySchedule().get(0).getHearingJudgeId());
+            .getHearingDaySchedule().get(1).getHearingJudgeId());
         assertEquals("panel1-2",
                      response.getCaseHearings().get(2).getHearingDaySchedule().get(0).getPanelMemberIds().get(0));
         assertEquals("panel1-2", response.getCaseHearings().get(2)
             .getHearingDaySchedule().get(1).getPanelMemberIds().get(0));
-        assertNull(response.getCaseHearings().get(2).getHearingDaySchedule().get(1).getHearingJudgeId());
+        assertNull(response.getCaseHearings().get(2).getHearingDaySchedule().get(0).getHearingJudgeId());
         assertEquals("panel1-1", response.getCaseHearings().get(2)
-            .getHearingDaySchedule().get(0).getHearingJudgeId());
+            .getHearingDaySchedule().get(1).getHearingJudgeId());
         assertEquals(1, response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getAttendees().size());
         assertEquals(1, response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getAttendees().size());
         assertEquals(2, response.getCaseHearings().get(2)
-            .getHearingDaySchedule().get(0).getAttendees().size());
+            .getHearingDaySchedule().get(1).getAttendees().size());
         assertEquals("party2-1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getAttendees().get(0).getPartyId());
         assertEquals("party3-1", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getAttendees().get(0).getPartyId());
         assertEquals("party1-2", response.getCaseHearings().get(2)
-            .getHearingDaySchedule().get(0).getAttendees().get(1).getPartyId());
+            .getHearingDaySchedule().get(1).getAttendees().get(1).getPartyId());
         assertEquals("subChannel2-1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getAttendees().get(0).getHearingSubChannel());
         assertEquals("subChannel3-1", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getAttendees().get(0).getHearingSubChannel());
         assertEquals("subChannel1-1", response.getCaseHearings().get(2)
-            .getHearingDaySchedule().get(0).getAttendees().get(0).getHearingSubChannel());
+            .getHearingDaySchedule().get(1).getAttendees().get(0).getHearingSubChannel());
     }
 
     @Test
@@ -549,28 +549,27 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals(ListAssistCaseStatus.LISTED.name(),
                 response.getCaseHearings().get(0).getListAssistCaseStatus());
         assertEquals(2, response.getCaseHearings().get(1).getHearingDaySchedule().size());
-        assertEquals("venue1-1", response.getCaseHearings().get(1)
+        assertEquals("venue1-2", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(0).getHearingVenueId());
         assertEquals("venue3-1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getHearingVenueId());
-        assertEquals("venue1-2", response.getCaseHearings().get(1)
+        assertEquals("venue1-1", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(1).getHearingVenueId());
-        assertEquals("room1-1", response.getCaseHearings().get(1)
-            .getHearingDaySchedule().get(0).getHearingRoomId());
+        assertEquals("room1-2",
+                     response.getCaseHearings().get(1).getHearingDaySchedule().get(0).getHearingRoomId());
         assertEquals("panel3-1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getPanelMemberIds().get(0));
         assertNull(response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getHearingJudgeId());
         assertEquals("panel1-2",
                      response.getCaseHearings().get(1).getHearingDaySchedule().get(0).getPanelMemberIds().get(0));
-        assertEquals("panel1-1", response.getCaseHearings().get(1)
-            .getHearingDaySchedule().get(0).getHearingJudgeId());
-        assertNull(response.getCaseHearings().get(1).getHearingDaySchedule().get(1).getHearingJudgeId());
+        assertEquals("panel1-1", response.getCaseHearings().get(1).getHearingDaySchedule().get(1).getHearingJudgeId());
+        assertNull(response.getCaseHearings().get(1).getHearingDaySchedule().get(0).getHearingJudgeId());
         assertEquals("panel1-2", response.getCaseHearings().get(1)
             .getHearingDaySchedule().get(1).getPanelMemberIds().get(0));
         assertEquals(1, response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getAttendees().size());
         assertEquals(2, response.getCaseHearings().get(1)
-            .getHearingDaySchedule().get(0).getAttendees().size());
+            .getHearingDaySchedule().get(1).getAttendees().size());
         assertFalse(response.getCaseHearings().get(0).getHearingIsLinkedFlag());
         assertTrue(response.getCaseHearings().get(1).getHearingIsLinkedFlag());
     }
@@ -579,11 +578,11 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("party3-1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getAttendees().get(0).getPartyId());
         assertEquals("party1-1", response.getCaseHearings().get(1)
-            .getHearingDaySchedule().get(0).getAttendees().get(0).getPartyId());
+            .getHearingDaySchedule().get(1).getAttendees().get(0).getPartyId());
         assertEquals("subChannel3-1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getAttendees().get(0).getHearingSubChannel());
         assertEquals("subChannel1-2", response.getCaseHearings().get(1)
-            .getHearingDaySchedule().get(0).getAttendees().get(1).getHearingSubChannel());
+            .getHearingDaySchedule().get(1).getAttendees().get(1).getHearingSubChannel());
     }
 
     @Test

@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.http.HttpStatus;
 import org.slf4j.helpers.MessageFormatter;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.ElasticSearch;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.Query;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.Terms;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
@@ -37,6 +40,7 @@ import uk.gov.hmcts.reform.hmc.data.ReasonableAdjustmentsEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredFacilitiesEntity;
 import uk.gov.hmcts.reform.hmc.data.RequiredLocationsEntity;
 import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
@@ -76,6 +80,7 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
+import uk.gov.hmcts.reform.hmc.service.common.DefaultObjectMapperService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -85,6 +90,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
@@ -99,7 +105,9 @@ public class TestingUtil {
     public static final String CASE_REFERENCE = "1111222233334444";
     public static final String INVALID_CASE_REFERENCE = "1111222233334445";
     public static final List<String> CANCELLATION_REASON_CODES = List.of("test 1", "test 2");
-    public static Long ID = 2000000000L;
+    public static final Long ID = 2000000000L;
+
+    private static DefaultObjectMapperService objectMapperService = new DefaultObjectMapperService(new ObjectMapper());
 
     private TestingUtil() {
     }
@@ -611,7 +619,7 @@ public class TestingUtil {
         hearingEntity.setId(ID);
         hearingEntity.setIsLinkedFlag(Boolean.TRUE);
         entity.setCaseHearingID(ID);
-        hearingEntity.setStatus("HEARING_REQUESTED");
+        hearingEntity.setStatus(HearingStatus.HEARING_REQUESTED.name());
         entity.setVersionNumber(1);
         hearingEntity.setIsLinkedFlag(true);
         hearingEntity.setLinkedGroupDetails(getLinkedGroupDetails());
@@ -620,7 +628,7 @@ public class TestingUtil {
         entity.setCaseReference("12345");
         entity.setHearingType("Some hearing type");
         entity.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
-        entity.getHearing().getHearingResponses().get(0)
+        entity.getHearing().getHearingResponses().getFirst()
             .setHearingDayDetails(List.of(hearingDayDetailsEntities()));
         entity.setHearingChannels(hearingChannelsEntity());
         return entity;
@@ -673,7 +681,7 @@ public class TestingUtil {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(ID);
         entity1.setCaseHearingID(ID);
-        hearingEntity.setStatus("HEARING_REQUESTED");
+        hearingEntity.setStatus(HearingStatus.HEARING_REQUESTED.name());
         entity1.setHearing(hearingEntity);
         entity1.setHmctsServiceCode("TEST");
         entity1.setCaseReference("12345");
@@ -802,9 +810,9 @@ public class TestingUtil {
     public static HearingEntity getCaseHearingsEntity(PartyType partyType) {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(ID);
-        hearingEntity.setStatus("HEARING_REQUESTED");
+        hearingEntity.setStatus(HearingStatus.HEARING_REQUESTED.name());
         hearingEntity.setHearingResponses(List.of(hearingResponseEntity()));
-        if (partyType.getLabel() == PartyType.IND.getLabel()) {
+        if (partyType.getLabel().equals(PartyType.IND.getLabel())) {
             hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntityWithPartyOrg()));
         } else {
             hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntityWithPartyInd()));
@@ -816,7 +824,7 @@ public class TestingUtil {
     public static HearingEntity getCaseHearingsEntity() {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(ID);
-        hearingEntity.setStatus("HEARING_REQUESTED");
+        hearingEntity.setStatus(HearingStatus.HEARING_REQUESTED.name());
         hearingEntity.setHearingResponses(List.of(hearingResponseEntity()));
         hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntityWithPartyOrg()));
 
@@ -859,7 +867,7 @@ public class TestingUtil {
         caseHearingRequestEntity.setInterpreterBookingRequiredFlag(true);
         caseHearingRequestEntity.setOwningLocationId("locationId");
         caseHearingRequestEntity.setCaseRestrictedFlag(true);
-        caseHearingRequestEntity.setCaseSlaStartDate(LocalDate.of(2000, 01, 01));
+        caseHearingRequestEntity.setCaseSlaStartDate(LocalDate.of(2000, 1, 1));
         caseHearingRequestEntity.setHearingParties(List.of(
             hearingPartyEntitySetReference("reference2"),
             hearingPartyEntitySetReference("reference"),
@@ -874,7 +882,7 @@ public class TestingUtil {
     public static HearingEntity getHearingsEntityForHearingActualsIndividual() {
         HearingEntity hearingEntity = new HearingEntity();
         hearingEntity.setId(ID);
-        hearingEntity.setStatus("HEARING_REQUESTED");
+        hearingEntity.setStatus(HearingStatus.HEARING_REQUESTED.name());
         hearingEntity.setHearingResponses(List.of(hearingResponseEntity()));
         hearingEntity.getCaseHearingRequests().add(caseHearingRequestEntityWithPartyInd());
 
@@ -892,7 +900,7 @@ public class TestingUtil {
         caseHearingRequestEntity.setInterpreterBookingRequiredFlag(true);
         caseHearingRequestEntity.setOwningLocationId("locationId");
         caseHearingRequestEntity.setCaseRestrictedFlag(true);
-        caseHearingRequestEntity.setCaseSlaStartDate(LocalDate.of(2000, 01, 01));
+        caseHearingRequestEntity.setCaseSlaStartDate(LocalDate.of(2000, 1, 1));
         caseHearingRequestEntity.setHearingParties(List.of(hearingPartyEntityInd()));
         caseHearingRequestEntity.setCaseCategories(caseCategoriesEntities());
 
@@ -905,7 +913,7 @@ public class TestingUtil {
         entity.setActualHearingType("hearingType");
         entity.setHearingResultType(HearingResultType.ADJOURNED);
         entity.setHearingResultReasonType("resultReason");
-        entity.setHearingResultDate(LocalDate.of(2000, 01, 01));
+        entity.setHearingResultDate(LocalDate.of(2000, 1, 1));
         entity.setActualHearingDay(List.of(actualHearingDayEntity(partyType)));
         entity.setActualHearingIsFinalFlag(true);
         return entity;
@@ -922,7 +930,7 @@ public class TestingUtil {
 
     public static ActualHearingDayEntity actualHearingDayEntity(PartyType partyType) {
         ActualHearingDayEntity entity = new ActualHearingDayEntity();
-        entity.setHearingDate(LocalDate.of(2000, 01, 01));
+        entity.setHearingDate(LocalDate.of(2000, 1, 1));
         entity.setStartDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         entity.setEndDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
         entity.setActualHearingDayPauses(List.of(actualHearingDayPausesEntity()));
@@ -1013,12 +1021,75 @@ public class TestingUtil {
         return entity;
     }
 
-    public static HearingDayDetailsEntity hearingDayDetailsEntity(LocalDateTime startDateTime) {
+    public static List<CaseHearingRequestEntity> createMultipleCaseHearingRequestEntities() {
+        List<CaseHearingRequestEntity> entities = new ArrayList<>();
+        IntStream.range(0, 10).forEach(
+            id -> entities.add(createCaseHearingRequestEntity(ID + id)));
+
+        return entities;
+    }
+
+    private static CaseHearingRequestEntity createCaseHearingRequestEntity(Long hearingId) {
+        CaseHearingRequestEntity entity1 = new CaseHearingRequestEntity();
+        HearingEntity hearingEntity = createHearingEntity(hearingId);
+        hearingEntity.setHearingResponses(createHearingResponseEntities());
+        entity1.setCaseHearingID(hearingId);
+        entity1.setHearing(hearingEntity);
+        entity1.setHmctsServiceCode("TEST");
+        entity1.setCaseReference("12345");
+        entity1.setHearingType("Some hearing type");
+        return entity1;
+    }
+
+    private static HearingEntity createHearingEntity(Long hearingId) {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(hearingId);
+        hearingEntity.setHearingResponses(createHearingResponseEntities());
+        hearingEntity.setStatus(HearingStatus.HEARING_REQUESTED.name());
+        return hearingEntity;
+    }
+
+    public static List<HearingResponseEntity>  createHearingResponseEntities() {
+        List<HearingResponseEntity> entities = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            entities.add(hearingResponseEntity(1, 1, LocalDateTime.now(), createHearingDayDetailsEntityList()));
+        }
+        return entities;
+    }
+
+    public static List<HearingDayDetailsEntity> createHearingDayDetailsEntityList() {
+        List<HearingDayDetailsEntity> entities = new ArrayList<>();
+        LocalDateTime startDateTime = LocalDateTime.now().plusDays(30);
+        for (int i = 0; i < 20; i++) {
+            entities.add(createHearingDayDetailsEntity(i, startDateTime.minusHours(i * 3)));
+        }
+        return entities;
+    }
+
+    public static HearingDayDetailsEntity createHearingDayDetailsEntity(int id, LocalDateTime startDateTime) {
         HearingDayDetailsEntity entity = new HearingDayDetailsEntity();
         entity.setStartDateTime(startDateTime);
-        entity.setEndDateTime(LocalDateTime.parse("2021-08-10T12:20:00"));
-        entity.setVenueId("venue1");
-        entity.setRoomId("room1");
+        entity.setEndDateTime(startDateTime.plusHours(2));
+        entity.setVenueId("venue" + id);
+        entity.setRoomId("room" + id);
+        entity.setHearingAttendeeDetails(createHearingAttendeeDetailsEntityList());
+        return entity;
+    }
+
+    public static List<HearingAttendeeDetailsEntity> createHearingAttendeeDetailsEntityList() {
+        List<HearingAttendeeDetailsEntity> entities = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            entities.add(createHearingAttendeeDetailsEntity(i));
+        }
+        return entities;
+    }
+
+    public static HearingAttendeeDetailsEntity createHearingAttendeeDetailsEntity(int id) {
+        HearingAttendeeDetailsEntity entity = new HearingAttendeeDetailsEntity();
+        entity.setId((long) id);
+        entity.setPartyId("partyid" + id);
+        entity.setPartySubChannelType("subchanneltype" + id);
+        entity.setCreatedDateTime(LocalDateTime.now());
         return entity;
     }
 
@@ -1032,7 +1103,6 @@ public class TestingUtil {
 
         return entity;
     }
-
 
     public static HearingPartyEntity hearingPartyEntityForClone() {
         HearingPartyEntity entity = new HearingPartyEntity();
@@ -1083,7 +1153,6 @@ public class TestingUtil {
 
     public static PartyRelationshipDetailsEntity partyRelationshipDetailsEntity(String targetTechPartyId,
                                                                                  String relationshipType) {
-
         HearingPartyEntity targetHearingPartyEntity = new HearingPartyEntity();
         targetHearingPartyEntity.setPartyReference(targetTechPartyId);
 
@@ -1467,7 +1536,12 @@ public class TestingUtil {
         return linkedHearingStatusAuditEntity;
     }
 
+    public static String createSearchQuery(List<String> ccdCaseRefs) {
+        Terms terms = new Terms(ccdCaseRefs);
+        Query query = new Query(terms);
+        return objectMapperService.convertObjectToJsonNode(new ElasticSearch(query)).toString();
+    }
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
 
 }
-
