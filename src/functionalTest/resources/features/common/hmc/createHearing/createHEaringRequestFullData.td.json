@@ -11,6 +11,7 @@
     ],
     "autolistFlag" : true,
     "hearingType" : "Some hearing type",
+    "isAPanelFlag" : false,
     "hearingWindow": {
       "dateRangeStart": "2022-05-10",
       "dateRangeEnd": "2023-05-10"
