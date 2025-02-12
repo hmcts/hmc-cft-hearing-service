@@ -163,7 +163,6 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
                     plannedHearingDays.add(plannedHearingDay);
                 }
             }
-
         }
         plannedHearingDays.sort(Comparator.comparing(PlannedHearingDays::getPlannedStartTime,
                                                      Comparator.nullsLast(Comparator.naturalOrder())));
@@ -188,7 +187,6 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             boolean caseHearingIdMatches = hearingPartyEntity != null
                 && hearingEntity.getLatestCaseHearingRequest().getCaseHearingID()
                     .equals(hearingPartyEntity.getCaseHearing().getCaseHearingID());
-
 
             Party partyDetails = new Party();
             partyDetails.setPartyID(hearingAttendeeDetails.getPartyId());

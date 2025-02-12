@@ -136,12 +136,6 @@ class GetHearingActualsResponseMapperTest {
         assertEquals("AWAITING_ACTUALS", response.getHmcStatus());
     }
 
-    private HearingActualResponse getHearingActualResponse(String status) {
-        GetHearingActualsResponseMapper getHearingsResponseMapper = new GetHearingActualsResponseMapper();
-        return getHearingsResponseMapper.toHearingActualResponse(
-            TestingUtil.getHearingsEntityForHearingActuals(status));
-    }
-
     @Test
     void toHearingsResponseWhenDataIsPresentForIndividualDetails() {
         GetHearingActualsResponseMapper getHearingsResponseMapper = new GetHearingActualsResponseMapper();
@@ -218,6 +212,12 @@ class GetHearingActualsResponseMapperTest {
 
         List<ActualHearingDays> actualHearingDays = response.getHearingActuals().getActualHearingDays();
         assertThat(actualHearingDays).size().isEqualTo(1);
+    }
+
+    private HearingActualResponse getHearingActualResponse(String status) {
+        GetHearingActualsResponseMapper getHearingsResponseMapper = new GetHearingActualsResponseMapper();
+        return getHearingsResponseMapper.toHearingActualResponse(
+            TestingUtil.getHearingsEntityForHearingActuals(status));
     }
 
     private void assertCommonFields(HearingActualResponse response) {
@@ -389,6 +389,9 @@ class GetHearingActualsResponseMapperTest {
         for (int i = 0; i < parties.size() - 1; i++) {
             Party current = parties.get(i);
             Party next = parties.get(i + 1);
+            logger.debug("current:{}/{}/{} vs next:{}/{}/{}",
+                         current.getPartyRole(), current.getPartyChannelSubType(), current.getPartyID(),
+                         next.getPartyRole(), next.getPartyChannelSubType(), next.getPartyID());
 
             int roleComparison = Objects.compare(current.getPartyRole(), next.getPartyRole(),
                                                  Comparator.nullsLast(String::compareTo));
@@ -399,11 +402,9 @@ class GetHearingActualsResponseMapperTest {
                                                         Comparator.nullsLast(String::compareTo));
                 if (channelComparison > 0) {
                     return false;
-                } else if (channelComparison == 0) {
-                    if (current.getPartyID().compareTo(next.getPartyID()) > 0) {
-                        answer = false;
-                        break;
-                    }
+                } else if (channelComparison == 0 && current.getPartyID().compareTo(next.getPartyID()) > 0) {
+                    answer = false;
+                    break;
                 }
             }
         }
