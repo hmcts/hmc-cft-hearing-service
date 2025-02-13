@@ -56,13 +56,12 @@ class BeanValidatorTest {
     @Test
     void shouldHaveHearingDetailsViolations() {
         HearingDetails hearingDetails = generateHearingDetails();
-        hearingDetails.setIsAPanelFlag(null);
 
         Set<ConstraintViolation<HearingDetails>> violations = validator.validate(hearingDetails);
         List<String> validationErrors = violations.stream()
             .map(ConstraintViolation::getMessage)
             .toList();
-        assertThat(violations).isNotEmpty().hasSize(10);
+        assertThat(violations).isNotEmpty().hasSize(9);
         assertThat(validationErrors).contains(ValidationError.AUTO_LIST_FLAG_NULL_EMPTY)
         .contains(ValidationError.HEARING_TYPE_MAX_LENGTH)
         .contains(ValidationError.DURATION_MIN_VALUE)
@@ -70,14 +69,13 @@ class BeanValidatorTest {
         .contains(ValidationError.NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE)
         .contains(ValidationError.LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH)
         .contains(ValidationError.HEARING_LOCATION_EMPTY)
-        .contains(ValidationError.HEARING_CHANNEL_EMPTY)
-        .contains(ValidationError.IS_A_PANEL_FLAG_NULL_EMPTY);
+        .contains(ValidationError.HEARING_CHANNEL_EMPTY);
     }
 
     @ParameterizedTest
     @CsvSource({
-        "null, 10, true, false",
-        "'', 10, true, false",
+        "null, 9, true, false",
+        "'', 9, true, false",
         "'TTT', 10, false, true",
         "'true', 9, false, false",
         "'false', 9, false, false",
@@ -93,8 +91,6 @@ class BeanValidatorTest {
             .toList();
         assertThat(violations).isNotEmpty().hasSize(expectedViolationCount);
 
-        assertThat(validationErrors.contains(ValidationError.IS_A_PANEL_FLAG_NULL_EMPTY))
-            .isEqualTo(containsNullEmptyError);
         assertThat(validationErrors.contains(ValidationError.IS_A_PANEL_FLAG_INVALID_TYPE))
             .isEqualTo(containsTypeError);
     }

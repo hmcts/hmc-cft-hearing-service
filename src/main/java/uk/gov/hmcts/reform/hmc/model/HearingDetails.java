@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.validator.ListingReasonCodeEnumPattern;
-import uk.gov.hmcts.reform.hmc.validator.NotNullNorEmpty;
 import uk.gov.hmcts.reform.hmc.validator.ValidBoolean;
 
 import java.util.List;
@@ -96,7 +95,6 @@ public class HearingDetails {
 
     @JsonProperty("isAPanelFlag")
     @ValidBoolean(message = ValidationError.IS_A_PANEL_FLAG_INVALID_TYPE)
-    @NotNullNorEmpty(message = ValidationError.IS_A_PANEL_FLAG_NULL_EMPTY)
-    private Object isAPanelFlag = false;
+    private Object isAPanelFlag = null;
 
 }
