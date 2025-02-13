@@ -95,6 +95,6 @@ public class HearingDetails {
 
     @JsonProperty("isAPanelFlag")
     @ValidBoolean(message = ValidationError.IS_A_PANEL_FLAG_INVALID_TYPE)
-    private Object isAPanelFlag = false;
+    private Object isAPanelFlag = null;
 
 }

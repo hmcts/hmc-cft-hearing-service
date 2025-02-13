@@ -136,6 +136,9 @@ public class CaseHearingRequestMapper {
     }
 
     private Boolean getIsAPanelFlagBoolean(Object isAPanelFlag) {
+        if (null == isAPanelFlag) {
+            return null;
+        }
         if (isAPanelFlag.equals(Boolean.TRUE) || isAPanelFlag.equals("true")) {
             return Boolean.TRUE;
         }
