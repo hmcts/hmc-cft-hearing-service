@@ -60,6 +60,38 @@ public class PartiesNotifiedCommonGeneration {
         return entities;
     }
 
+    protected List<HearingResponseEntity> generateEntitiesForPartiesNotified(Long hearingId) {
+        HearingResponseEntity entity1 = generateResponseEntityForPartiesNotified(1L,
+                                            LocalDateTime.now().minusDays(1),1);
+        entity1.setPartiesNotifiedDateTime(LocalDateTime.now().minusDays(6));
+        HearingResponseEntity entity2 = generateResponseEntityForPartiesNotified(1L,
+                                           LocalDateTime.now().minusDays(2),2);
+        entity2.setPartiesNotifiedDateTime(LocalDateTime.now().minusDays(4));
+        HearingResponseEntity entity3 = generateResponseEntityForPartiesNotified(1L,
+                                        LocalDateTime.now().minusDays(3),1);
+        entity3.setPartiesNotifiedDateTime(LocalDateTime.now().minusDays(4));
+        HearingEntity hearingEntity = generateHearingEntity(hearingId);
+        entity1.setHearing(hearingEntity);
+        entity2.setHearing(hearingEntity);
+        entity3.setHearing(hearingEntity);
+
+        List<HearingResponseEntity> entities = new ArrayList<>();
+        entities.add(entity1);
+        entities.add(entity2);
+        entities.add(entity3);
+        return entities;
+    }
+
+    private HearingResponseEntity generateResponseEntityForPartiesNotified(long hearingResponseId,
+                                                      LocalDateTime dateTime, int requestVersion) {
+        HearingResponseEntity entity = new HearingResponseEntity();
+        entity.setHearingResponseId(hearingResponseId);
+        entity.setRequestTimeStamp(dateTime);
+        entity.setRequestVersion(requestVersion);
+        logger.debug("hearingResponseEntityForPartiesNotified: {}", entity);
+        return entity;
+    }
+
     protected HearingResponseEntity generateResponseEntity(Long hearingResponseId) {
         HearingResponseEntity entity = new HearingResponseEntity();
         entity.setHearingResponseId(hearingResponseId);
