@@ -55,6 +55,9 @@ sourceSets {
       srcDir file('src/functionalTest/java')
     }
     resources.srcDir file('src/functionalTest/resources')
+    resources {
+            srcDir 'src/functionalTest/resources'
+        }
   }
 
   contractTest {
@@ -482,7 +485,7 @@ dependencies {
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
-  functionalTestImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '8.7.11'
+  functionalTestImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '9.0.3-HMAN-490.1'
   functionalTestImplementation libraries.junit5
 
   runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.5.5'
