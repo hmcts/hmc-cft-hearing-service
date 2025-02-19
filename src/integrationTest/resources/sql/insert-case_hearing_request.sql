@@ -1,4 +1,4 @@
-INSERT INTO hearing ( hearing_id, status) VALUES ('2000000000', 'HEARING_REQUESTED');
+INSERT INTO hearing ( hearing_id, status, created_date_time, updated_date_time) VALUES ('2000000000', 'HEARING_REQUESTED', '2021-08-10 11:20:00','2021-08-12 13:30:00');
 INSERT INTO hearing ( hearing_id, status) VALUES ('2000000011', 'HEARING_AMENDED');
 INSERT INTO hearing ( hearing_id, status) VALUES ('2000000012', 'UPDATE_REQUESTED');
 INSERT INTO hearing ( hearing_id, status) VALUES ('2000000013', 'AWAITING_LISTING');

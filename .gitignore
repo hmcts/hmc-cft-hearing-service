@@ -5,6 +5,7 @@
 bin/main/application.yaml
 .demo-env
 target/
+/bin/
 /BEFTA Report for Smoke Tests/
 /BEFTA Report for Functional Tests/
 applicationinsights-agent-*.jar
@@ -20,6 +21,7 @@ applicationinsights-agent-*.jar
 
 ### IntelliJ IDEA ###
 .idea
+.vscode
 /out
 *.iws
 *.iml

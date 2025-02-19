@@ -24,12 +24,15 @@ import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
+import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
+import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -63,6 +66,11 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
 
     private HearingIdValidator hearingIdValidator;
 
+    @Mock
+    private HearingStatusAuditService hearingStatusAuditService;
+
+    private static final String CLIENT_S2S_TOKEN = "s2s_token";
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -70,7 +78,8 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
                 actualHearingRepository, actualHearingDayRepository);
         partiesNotifiedService =
             new PartiesNotifiedServiceImpl(hearingResponseRepository,
-                                           hearingIdValidator);
+                                           hearingIdValidator,
+                                           hearingStatusAuditService);
     }
 
     @Nested
@@ -93,7 +102,7 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
                 ));
 
             partiesNotifiedService.getPartiesNotified(hearingId, requestVersion,
-                    receivedDateTime, partiesNotified);
+                    receivedDateTime, partiesNotified, CLIENT_S2S_TOKEN);
             verify(hearingRepository, times(1)).existsById(hearingId);
             verify(hearingResponseRepository, times(1))
                 .getHearingResponse(hearingId, requestVersion, receivedDateTime);
@@ -109,7 +118,7 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             LocalDateTime dateTime = LocalDateTime.now();
             Exception exception = assertThrows(BadRequestException.class, () ->
                 partiesNotifiedService.getPartiesNotified(1000000000L, 1,
-                        dateTime, partiesNotified));
+                        dateTime, partiesNotified, CLIENT_S2S_TOKEN));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
         }
 
@@ -123,7 +132,7 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             LocalDateTime dateTime = LocalDateTime.now();
             Exception exception = assertThrows(PartiesNotifiedNotFoundException.class, () ->
                 partiesNotifiedService.getPartiesNotified(2000000000L, 1,
-                        dateTime, partiesNotified));
+                        dateTime, partiesNotified, CLIENT_S2S_TOKEN));
             assertEquals(PARTIES_NOTIFIED_NO_SUCH_RESPONSE, exception.getMessage());
         }
 
@@ -136,7 +145,7 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             LocalDateTime dateTime = LocalDateTime.now();
             Exception exception = assertThrows(HearingNotFoundException.class, () ->
                 partiesNotifiedService.getPartiesNotified(2000000000L, 1,
-                        dateTime, partiesNotified));
+                        dateTime, partiesNotified, CLIENT_S2S_TOKEN));
             assertEquals("001 No such id: 2000000000", exception.getMessage());
         }
 
@@ -155,7 +164,7 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             LocalDateTime dateTime = LocalDateTime.now();
             Exception exception = assertThrows(PartiesNotifiedBadRequestException.class, () ->
                 partiesNotifiedService.getPartiesNotified(2000000000L, 1,
-                        dateTime, partiesNotified));
+                        dateTime, partiesNotified, CLIENT_S2S_TOKEN));
             assertEquals("003 Already set", exception.getMessage());
         }
 
@@ -167,7 +176,7 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
         @Test
         void shouldFindPartiesNotifiedForValidHearingId() {
             final Long hearingId = 2000000001L;
-            List<HearingResponseEntity> partiesNotifiedAnswer = generateEntities(hearingId);
+            List<HearingResponseEntity> partiesNotifiedAnswer = generateEntitiesForPartiesNotified(hearingId);
 
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             when(hearingResponseRepository.getPartiesNotified(any())).thenReturn(partiesNotifiedAnswer);
@@ -175,7 +184,17 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             PartiesNotifiedResponses partiesNotifiedResponses =
                 partiesNotifiedService.getPartiesNotified(hearingId);
             assertFalse(partiesNotifiedResponses.getResponses().isEmpty());
-            assertEquals(3, partiesNotifiedResponses.getResponses().size());
+            assertThat(3).isEqualTo(partiesNotifiedResponses.getResponses().size());
+            assertThat(2).isEqualTo(partiesNotifiedResponses.getResponses().get(0).getRequestVersion());
+            assertThat(1).isEqualTo(partiesNotifiedResponses.getResponses().get(1).getRequestVersion());
+            assertThat(1).isEqualTo(partiesNotifiedResponses.getResponses().get(2).getRequestVersion());
+            LocalDateTime now = LocalDateTime.now();
+            assertThat(now.minusDays(2).toLocalDate()).isEqualTo(partiesNotifiedResponses.getResponses()
+                                                  .get(0).getResponseReceivedDateTime().toLocalDate());
+            assertThat(now.minusDays(1).toLocalDate()).isEqualTo(partiesNotifiedResponses.getResponses()
+                                                  .get(1).getResponseReceivedDateTime().toLocalDate());
+            assertThat(now.minusDays(3).toLocalDate()).isEqualTo(partiesNotifiedResponses.getResponses()
+                                                    .get(2).getResponseReceivedDateTime().toLocalDate());
         }
 
         @Test
@@ -228,6 +247,7 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
         hearingResponseEntity.setRequestTimeStamp(receivedDateTime);
         hearingResponseEntity.setPartiesNotifiedDateTime(partiesNotifiedDateTime);
         hearingResponseEntity.setHearingResponseId(hearingId);
+        hearingResponseEntity.setHearing(TestingUtil.hearingEntity());
         return hearingResponseEntity;
     }
 

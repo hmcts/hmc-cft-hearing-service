@@ -18,8 +18,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
+import uk.gov.hmcts.reform.hmc.config.UrlManager;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
@@ -27,10 +30,13 @@ import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
 import uk.gov.hmcts.reform.hmc.service.common.DefaultObjectMapperService;
+import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
@@ -61,10 +67,26 @@ class LinkHearingGroupControllerTest {
     @MockBean
     private AccessControlService accessControlService;
 
+    @MockBean
+    private ApplicationParams applicationParams;
+
+    @MockBean
+    private UrlManager urlManager;
+
+    @MockBean
+    private OverrideAuditService overrideAuditService;
+
+    @MockBean
+    SecurityUtils securityUtils;
+
+    private static final String CLIENT_S2S_TOKEN = "xui_webapp";
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         objectMapperService = new DefaultObjectMapperService(objectMapper);
+        doReturn("xui_webapp").when(securityUtils)
+            .getServiceNameFromS2SToken(any());
     }
 
     @Nested
@@ -86,11 +108,12 @@ class LinkHearingGroupControllerTest {
             );
 
             LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService,
-                                                                                   accessControlService);
+                                                                                   accessControlService, securityUtils);
             var jsonNode = objectMapperService.convertObjectToJsonNode(hearingLinkGroupRequest);
             logger.info("jsonNode: {}", jsonNode);
-            controller.validateLinkHearing(hearingLinkGroupRequest);
-            verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest);
+            controller.validateLinkHearing(CLIENT_S2S_TOKEN, hearingLinkGroupRequest);
+            verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest,
+                                                                    CLIENT_S2S_TOKEN);
         }
 
         @Test
@@ -107,9 +130,10 @@ class LinkHearingGroupControllerTest {
             );
 
             LinkHearingGroupController controller = new LinkHearingGroupController(linkedHearingGroupService,
-                                                                                   accessControlService);
-            controller.validateLinkHearing(hearingLinkGroupRequest);
-            verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest);
+                                                                                   accessControlService, securityUtils);
+            controller.validateLinkHearing(CLIENT_S2S_TOKEN, hearingLinkGroupRequest);
+            verify(linkedHearingGroupService, times(1)).linkHearing(hearingLinkGroupRequest,
+                                                                    CLIENT_S2S_TOKEN);
         }
     }
 

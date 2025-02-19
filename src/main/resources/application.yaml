@@ -59,7 +59,6 @@ spring:
           enabled: false
 
 
-
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
 #    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}${DB_OPTIONS:}
@@ -88,6 +87,7 @@ azure:
 
 jms:
   servicebus:
+    idle-timeout: ${SERVICE_BUS_IDLE_TIMEOUT:30000}
     internal:
       queues:
         inbound:
@@ -115,6 +115,7 @@ room-attributes:
 role:
   assignment:
     api:
+      url-header-name: ${ROLE_ASSIGNMENT_URL_HEADER_NAME:Role-Assignment-Url}
       host: ${ROLE_ASSIGNMENT_URL:http://localhost:4096}
 
 idam:
@@ -153,6 +154,8 @@ http:
       timeout: ${HTTP_CLIENT_READ_TIMEOUT:60000}
 ccd:
   data-store:
+    client-name: data-store-api
+    url-header-name: ${CCD_DATA_STORE_URL_HEADER_NAME:Data-Store-Url}
     host: ${CCD_DATA_STORE_API_BASE_URL:http://localhost:4452}
 
 fh:

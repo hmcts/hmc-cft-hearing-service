@@ -11,9 +11,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.convertDateTime;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -32,17 +32,18 @@ class HearingResponseRepositoryIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void testGetUnNotifiedHearingsWithOutStartDateTo() {
-        final List<Long> expectedHearingIds = Arrays.asList(2100000001L, 2100000000L);
+        final List<Long> expected = Arrays.asList(2100000000L, 2100000001L);
         String dateStr = "2019-12-10 11:00:00";
         LocalDateTime startFrom = convertDateTime(dateStr);
-        List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
+        List<Long> hearingIds = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
             "ACA2",
             startFrom,
             hearingStatusListed
         );
-        assertNotNull(expected.size());
-        assertEquals(2, expected.size());
-        assertTrue(expectedHearingIds.containsAll(expected));
+        assertNotNull(hearingIds.size());
+        assertThat(2).isEqualTo(hearingIds.size());
+        assertTrue(expected.containsAll(hearingIds));
+        assertThat(hearingIds).containsExactlyInAnyOrderElementsOf(expected);
     }
 
     @Test
@@ -153,7 +154,7 @@ class HearingResponseRepositoryIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UN_NOTIFIED_HEARINGS_DATA_SCRIPT})
     void testGetUnNotifiedHearingsWithOutStartDateToForCancelled() {
         final List<Long> expectedHearingIds = Arrays.asList(2100000005L);
-        String dateStr = "2024-12-10 11:00:00";
+        String dateStr = "2021-08-10 08:00:00";
         LocalDateTime startFrom = convertDateTime(dateStr);
         List<Long> expected = unNotifiedHearingsRepository.getUnNotifiedHearingsWithOutStartDateTo(
             "AAA2",
