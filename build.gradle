@@ -9,7 +9,7 @@ plugins {
   id 'uk.gov.hmcts.java' version '0.12.63'
   id 'com.github.spacialcircumstances.gradle-cucumber-reporting' version '0.1.25'
   id 'au.com.dius.pact' version '4.2.21'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1453'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1568'
 }
 
 ext['diuspactproviderVersion'] = '4.2.21'
@@ -55,9 +55,6 @@ sourceSets {
       srcDir file('src/functionalTest/java')
     }
     resources.srcDir file('src/functionalTest/resources')
-    resources {
-            srcDir 'src/functionalTest/resources'
-        }
   }
 
   contractTest {
@@ -485,7 +482,7 @@ dependencies {
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
-  functionalTestImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '9.0.3-HMAN-490.1'
+  functionalTestImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '9.2.0'
   functionalTestImplementation libraries.junit5
 
   runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.5.5'
