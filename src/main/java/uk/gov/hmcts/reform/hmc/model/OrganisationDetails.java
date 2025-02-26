@@ -14,7 +14,7 @@ public class OrganisationDetails {
 
     @NotEmpty(message = ValidationError.NAME_NULL_EMPTY)
     @Size(max = 2000, message = ValidationError.NAME_MAX_LENGTH)
-    @Pattern(regexp = "^.+$", message = ValidationError.NAME_NULL_EMPTY)
+    @Pattern(regexp = "^.+$", message = ValidationError.REGEX_ERROR)
     private String name;
 
     @NotEmpty(message = ValidationError.ORGANISATION_TYPE_NULL_EMPTY)

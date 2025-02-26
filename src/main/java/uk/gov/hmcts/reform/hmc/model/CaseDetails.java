@@ -27,7 +27,6 @@ public class CaseDetails {
 
     @NotEmpty(message = ValidationError.CASE_REF_EMPTY)
     @LuhnCheck(message = ValidationError.INVALID_CASE_REFERENCE, ignoreNonDigitCharacters = false)
-    @Pattern(regexp = "^.+$", message = ValidationError.CASE_REF_INVALID)
     private String caseRef;
 
     @Size(max = 70, message = ValidationError.EXTERNAL_CASE_REFERENCE_MAX_LENGTH)
@@ -40,12 +39,12 @@ public class CaseDetails {
 
     @NotEmpty(message = ValidationError.HMCTS_INTERNAL_CASE_NAME_EMPTY)
     @Size(max = 1024, message = ValidationError.HMCTS_INTERNAL_CASE_NAME_MAX_LENGTH)
-    @Pattern(regexp = "^.+$", message = ValidationError.HMCTS_INTERNAL_CASE_NAME_EMPTY)
+    @Pattern(regexp = "^.+$", message = ValidationError.REGEX_ERROR)
     private String hmctsInternalCaseName;
 
     @NotEmpty(message = ValidationError.PUBLIC_CASE_NAME_EMPTY)
     @Size(max = 1024, message = ValidationError.PUBLIC_CASE_NAME_MAX_LENGTH)
-    @Pattern(regexp = "^.+$", message = ValidationError.PUBLIC_CASE_NAME_EMPTY)
+    @Pattern(regexp = "^.+$", message = ValidationError.REGEX_ERROR)
     private String publicCaseName;
 
     private Boolean caseAdditionalSecurityFlag = false;

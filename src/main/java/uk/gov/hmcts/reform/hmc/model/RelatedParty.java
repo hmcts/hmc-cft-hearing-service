@@ -14,7 +14,6 @@ public class RelatedParty {
 
     @NotEmpty(message = ValidationError.RELATED_PARTY_EMPTY)
     @Size(max = 15, message = ValidationError.RELATED_PARTY_MAX_LENGTH)
-    @Pattern(regexp = "^.+$", message = ValidationError.RELATED_PARTY_EMPTY)
     private String relatedPartyID;
 
     @NotEmpty(message = ValidationError.RELATIONSHIP_TYPE_EMPTY)
