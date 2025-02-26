@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
@@ -93,9 +94,17 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
             partiesNotified.add(response);
         });
         PartiesNotifiedResponses responses = new PartiesNotifiedResponses();
+        sortPartiesNotifiedResponse(partiesNotified);
         responses.setResponses(partiesNotified);
         responses.setHearingID(hearingId.toString());
         return responses;
+    }
+
+    private static void sortPartiesNotifiedResponse(List<PartiesNotifiedResponse> partiesNotified) {
+        partiesNotified.sort(Comparator
+                                 .comparing(PartiesNotifiedResponse::getRequestVersion).reversed()
+                                 .thenComparing(Comparator.comparing(
+                                     PartiesNotifiedResponse::getResponseReceivedDateTime).reversed()));
     }
 
 }
