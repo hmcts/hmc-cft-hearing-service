@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.UnNotifiedHearingsRepository;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,6 +57,7 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
 
     private List<String> getHearingIdInStrings(List<Long> hearingIdsLong) {
         return hearingIdsLong.stream().map(Object::toString)
+            .sorted(Collections.reverseOrder())
             .collect(Collectors.toList());
     }
 

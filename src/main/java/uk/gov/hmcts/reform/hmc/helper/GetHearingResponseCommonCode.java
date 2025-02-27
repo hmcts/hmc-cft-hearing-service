@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class GetHearingResponseCommonCode {
@@ -34,6 +35,7 @@ public class GetHearingResponseCommonCode {
             attendee.setHearingSubChannel(attendeeDetailEntity.getPartySubChannelType());
             attendeeList.add(attendee);
         }
+        attendeeList.sort(Comparator.comparing(Attendee::getPartyId));
         hearingDaySchedule.setAttendees(attendeeList);
     }
 

@@ -126,7 +126,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         /// WHEN
         Mockito.doThrow(new InvalidRoleAssignmentException(TEST_EXCEPTION_MESSAGE))
             .when(accessControlService)
-            .verifyCaseAccess(anyString(), anyList());
+            .verifyCaseAccess(anyString(), anyList(), isNull());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
                                                          .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
