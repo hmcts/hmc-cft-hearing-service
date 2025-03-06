@@ -43,7 +43,7 @@ configurations.configureEach {
   }
 
   tasks.withType(Copy).configureEach {
-    duplicatesStrategy 'exclude'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
   }
 }
 
@@ -125,6 +125,7 @@ task functional(type: Test) {
         '--plugin', "json:${rootDir}/target/cucumber.json",
         '--plugin', "junit:${buildDir}/test-results/functional/cucumber.xml",
         '--tags', 'not @Ignore',
+        // '--tags', '@F-003',
         '--glue', 'uk.gov.hmcts.befta.player', 'src/functionalTest/resources/features'
       ]
       // '--add-opens=...' added to suppress 'WARNING: An illegal reflective access operation has occurred' in uk.gov.hmcts.befta.util.CucumberStepAnnotationUtils
@@ -201,7 +202,7 @@ cucumberReports {
   reports = files("${rootDir}/target/cucumber.json")
 }
 
-task customCleanBeftaReports(type:Delete) {
+tasks.register('customCleanBeftaReports', Delete) {
   delete "${rootDir}/BEFTA Report for Smoke Tests/"
   delete "${rootDir}/BEFTA Report for Functional Tests/"
   delete "${rootDir}/target/cucumber"
@@ -209,22 +210,28 @@ task customCleanBeftaReports(type:Delete) {
 }
 tasks.clean.dependsOn(tasks.customCleanBeftaReports)
 
+jacoco {
+  toolVersion = "0.8.12"
+}
+
 jacocoTestReport {
   executionData(test, integration)
   reports {
-    xml.required = true
-    csv.required = false
-    xml.outputLocation = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    xml.required.set(true)
+    csv.required.set(false)
+    xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
   }
 }
 
-project.tasks['sonarqube'].dependsOn jacocoTestReport
+tasks.named('sonarqube') {
+  dependsOn jacocoTestReport
+}
 
 sonarqube {
   properties {
     property "sonar.projectName", "Reform :: hmc-cft-hearing-service"
     property "sonar.projectKey", "uk.gov.hmcts.reform:hmc-cft-hearing-service"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.outputLocation}"
+    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.outputLocation.get().asFile.path}"
     property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/hmc/Application.java," +
       "**/config/SecurityConfiguration.java," +
       "src/main/java/uk/gov/hmcts/reform/hmc/config/MessageReaderFromQueueConfiguration.java," +
@@ -303,12 +310,14 @@ def static getCheckedOutGitCommitHash() {
   'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
-task contract(type: Test, description: 'Runs contract tests.', group: 'Verification') {
+tasks.register('contract', Test) {
+  description = 'Runs contract tests.'
+  group = 'Verification'
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
 }
 
-task runAndPublishConsumerPactTests(type: Test) {
+tasks.register('runAndPublishConsumerPactTests', Test) {
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
   include "uk/gov/hmcts/reform/hmc/consumer/**"
@@ -316,7 +325,7 @@ task runAndPublishConsumerPactTests(type: Test) {
 
 runAndPublishConsumerPactTests.finalizedBy pactPublish
 
-task runProviderPactVerification(type:Test) {
+tasks.register('runProviderPactVerification', Test) {
   logger.lifecycle("Runs provider pact Tests")
   useJUnitPlatform()
   testClassesDirs = sourceSets.contractTest.output.classesDirs
@@ -342,7 +351,6 @@ repositories {
     url "https://jitpack.io"
   }
 }
-
 
 ext.libraries = [
   junit5: [
@@ -551,7 +559,8 @@ task loadEnvSecrets() {
   }
 }
 
-task reloadEnvSecrets(dependsOn: [loadEnvSecrets]) {
+tasks.register('reloadEnvSecrets') {
+  dependsOn(loadEnvSecrets)
   doFirst {
     if (project.file('./.demo-env').exists()) {
       project.file('./.demo-env').delete()
