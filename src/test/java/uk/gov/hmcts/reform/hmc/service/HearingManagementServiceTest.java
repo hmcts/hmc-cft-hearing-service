@@ -248,8 +248,6 @@ class HearingManagementServiceTest {
                                                             applicationParams);
         hearingManagementService =
             new HearingManagementServiceImpl(
-                roleAssignmentService,
-                securityUtils,
                 dataStoreRepository,
                 hearingRepository,
                 hearingMapper,
@@ -261,7 +259,6 @@ class HearingManagementServiceTest {
                 objectMapperService,
                 hmiDeleteHearingRequestMapper,
                 messageSenderToQueueConfiguration,
-                applicationParams,
                 hearingIdValidator,
                 linkedHearingValidator,
                 partyRelationshipDetailsMapper,
@@ -1078,8 +1075,6 @@ class HearingManagementServiceTest {
                     applicationParams);
             hearingManagementService =
                     new HearingManagementServiceImpl(
-                            roleAssignmentService,
-                            securityUtils,
                             dataStoreRepository,
                             hearingRepository,
                             hearingMapper,
@@ -1091,7 +1086,6 @@ class HearingManagementServiceTest {
                             objectMapperService,
                             hmiDeleteHearingRequestMapper,
                             messageSenderToQueueConfiguration,
-                            applicationParams,
                             hearingIdValidator,
                             linkedHearingValidator,
                             partyRelationshipDetailsMapper,

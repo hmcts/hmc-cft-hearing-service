@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
-import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementServiceImpl;
 
@@ -91,6 +90,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         panelRequirements.setRoleType(Collections.singletonList("RoleType1"));
         panelRequirements.setAuthorisationTypes(Collections.singletonList("AuthorisationType1"));
         panelRequirements.setAuthorisationSubType(Collections.singletonList("AuthorisationSubType2"));
+        hearingDetails.setIsAPanelFlag(Boolean.FALSE.toString());
         hearingDetails.setPanelRequirements(panelRequirements);
         HearingLocation location1 = new HearingLocation();
         location1.setLocationType("court");
@@ -115,7 +115,6 @@ public class RestExceptionHandlerTest extends BaseTest {
         List<CaseCategory> caseCategories = new ArrayList<>();
         caseCategories.add(category);
         caseDetails.setCaseCategories(caseCategories);
-        RequestDetails requestDetails = new RequestDetails();
         validRequest.setHearingDetails(hearingDetails);
         validRequest.setCaseDetails(caseDetails);
     }
