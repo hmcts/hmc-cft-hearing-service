@@ -1159,8 +1159,7 @@ public class TestingUtil {
     public static List<HearingResponseEntity>  createHearingResponseEntities() {
         List<HearingResponseEntity> entities = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            //entities.add(hearingResponseEntity(1, 1, LocalDateTime.now(), createHearingDayDetailsEntityList()));
-            entities.add(hearingResponseEntity());
+            entities.add(hearingResponseEntity(1, 1, LocalDateTime.now(), createHearingDayDetailsEntityList()));
         }
         return entities;
     }
