@@ -1095,40 +1095,18 @@ public class TestingUtil {
         return entity;
     }
 
-    public static HearingDayDetailsEntity createHearingDayDetailsEntity() {
-        HearingDayDetailsEntity entity = new HearingDayDetailsEntity();
-        entity.setStartDateTime(LocalDateTime.now());
-        entity.setEndDateTime(LocalDateTime.now().plusHours(2));
-        entity.setRoomId("roomId");
-        entity.setVenueId("venueId");
-
-        HearingAttendeeDetailsEntity attendee1 = createHearingAttendeeDetailsEntity(1L,
-                        "partySubChannelC", "reference", entity);
-        HearingAttendeeDetailsEntity attendee2 = createHearingAttendeeDetailsEntity(2L,
-                        "partySubChannelA", "party2", entity);
-        HearingAttendeeDetailsEntity attendee3 = createHearingAttendeeDetailsEntity(3L,
-                        "partySubChannelB", "reference", entity);
-        HearingAttendeeDetailsEntity attendee4 = createHearingAttendeeDetailsEntity(4L,
-                        "partySubChannelA", "party4", entity);
-        HearingAttendeeDetailsEntity attendee5 = createHearingAttendeeDetailsEntity(5L,
-                        "partySubChannelB", "party5", entity);
-        HearingAttendeeDetailsEntity attendee6 = createHearingAttendeeDetailsEntity(6L,
-                        "partySubChannelC", "party6", entity);
-        entity.setHearingAttendeeDetails(List.of(attendee1, attendee2, attendee3, attendee4,attendee5, attendee6));
-
+    public static HearingResponseEntity hearingResponseEntity(int requestVersion, int responseId,
+                                                LocalDateTime requestTimestamp,
+                                                              List<HearingDayDetailsEntity> hearingDayDetailsList) {
+        HearingResponseEntity entity = new HearingResponseEntity();
+        entity.setRequestVersion(requestVersion);
+        entity.setRequestTimeStamp(requestTimestamp);
+        entity.setHearingResponseId((long) responseId);
+        entity.setListingStatus("Fixed");
+        entity.setListingCaseStatus(ListAssistCaseStatus.CASE_CREATED.name());
+        entity.setCancellationReasonType("Cancelled Reason 1");
+        entity.setHearingDayDetails(hearingDayDetailsList);
         return entity;
-    }
-
-    public static HearingAttendeeDetailsEntity createHearingAttendeeDetailsEntity(Long id,
-                                                                                  String partySubChannelType,
-                                                                                  String partyId,
-                                                                     HearingDayDetailsEntity hearingDayDetailsEntity) {
-        HearingAttendeeDetailsEntity attendee = new HearingAttendeeDetailsEntity();
-        attendee.setId(id);
-        attendee.setHearingDayDetails(hearingDayDetailsEntity);
-        attendee.setPartySubChannelType(partySubChannelType);
-        attendee.setPartyId(partyId);
-        return attendee;
     }
 
     public static HearingDayDetailsEntity hearingDayDetailsEntity() {
@@ -1195,6 +1173,30 @@ public class TestingUtil {
         return entities;
     }
 
+    public static HearingDayDetailsEntity createHearingDayDetailsEntity() {
+        HearingDayDetailsEntity entity = new HearingDayDetailsEntity();
+        entity.setStartDateTime(LocalDateTime.now());
+        entity.setEndDateTime(LocalDateTime.now().plusHours(2));
+        entity.setRoomId("roomId");
+        entity.setVenueId("venueId");
+
+        HearingAttendeeDetailsEntity attendee1 = createHearingAttendeeDetailsEntity(1L,
+                                             "partySubChannelC", "reference", entity);
+        HearingAttendeeDetailsEntity attendee2 = createHearingAttendeeDetailsEntity(2L,
+                                                "partySubChannelA", "party2", entity);
+        HearingAttendeeDetailsEntity attendee3 = createHearingAttendeeDetailsEntity(3L,
+                                             "partySubChannelB", "reference", entity);
+        HearingAttendeeDetailsEntity attendee4 = createHearingAttendeeDetailsEntity(4L,
+                                                "partySubChannelA", "party4", entity);
+        HearingAttendeeDetailsEntity attendee5 = createHearingAttendeeDetailsEntity(5L,
+                                                "partySubChannelB", "party5", entity);
+        HearingAttendeeDetailsEntity attendee6 = createHearingAttendeeDetailsEntity(6L,
+                                                "partySubChannelC", "party6", entity);
+        entity.setHearingAttendeeDetails(List.of(attendee1, attendee2, attendee3, attendee4,attendee5, attendee6));
+
+        return entity;
+    }
+
     public static HearingDayDetailsEntity createHearingDayDetailsEntity(int id, LocalDateTime startDateTime) {
         HearingDayDetailsEntity entity = new HearingDayDetailsEntity();
         entity.setStartDateTime(startDateTime);
@@ -1206,13 +1208,16 @@ public class TestingUtil {
         return entity;
     }
 
-    public static List<HearingAttendeeDetailsEntity> createHearingAttendeeDetailsEntityList(
-        HearingDayDetailsEntity hearingDayDetailsEntity) {
-        List<HearingAttendeeDetailsEntity> entities = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            entities.add(createHearingAttendeeDetailsEntity(i, hearingDayDetailsEntity));
-        }
-        return entities;
+    public static HearingAttendeeDetailsEntity createHearingAttendeeDetailsEntity(Long id,
+                                                                                  String partySubChannelType,
+                                                                                  String partyId,
+                                                                     HearingDayDetailsEntity hearingDayDetailsEntity) {
+        HearingAttendeeDetailsEntity attendee = new HearingAttendeeDetailsEntity();
+        attendee.setId(id);
+        attendee.setHearingDayDetails(hearingDayDetailsEntity);
+        attendee.setPartySubChannelType(partySubChannelType);
+        attendee.setPartyId(partyId);
+        return attendee;
     }
 
     public static HearingAttendeeDetailsEntity createHearingAttendeeDetailsEntity(
@@ -1224,6 +1229,15 @@ public class TestingUtil {
         entity.setCreatedDateTime(LocalDateTime.now());
         entity.setHearingDayDetails(hearingDayDetailsEntity);
         return entity;
+    }
+
+    public static List<HearingAttendeeDetailsEntity> createHearingAttendeeDetailsEntityList(
+        HearingDayDetailsEntity hearingDayDetailsEntity) {
+        List<HearingAttendeeDetailsEntity> entities = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            entities.add(createHearingAttendeeDetailsEntity(i, hearingDayDetailsEntity));
+        }
+        return entities;
     }
 
     public static List<HearingDayPanelEntity> createHearingDayPanelEntityList(
