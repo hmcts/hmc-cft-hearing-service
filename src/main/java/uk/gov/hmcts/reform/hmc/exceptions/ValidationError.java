@@ -9,7 +9,7 @@ public final class ValidationError {
     public static final String AUTO_LIST_FLAG_NULL_EMPTY = "Auto list flag can not be null or empty";
     public static final String MUST_BE_FALSE_IF_YOU_SUPPLY_A_CHANGE_REASONCODE =
         "001 autoListFlag must be FALSE if you supply a change reasoncode";
-    public static final String REGEX_ERROR = "Must contain at least one UTF-8 character";
+    public static final String REGEX_ERROR = "Must contain at least one Valid character";
     public static final String HEARING_TYPE_NULL_EMPTY = "Hearing type can not be null or empty";
     public static final String HEARING_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;
     public static final String DURATION_EMPTY = "Duration can not be empty";
