@@ -192,6 +192,7 @@ class BeanValidatorTest {
         assertTrue(validationErrors.contains(ValidationError.PUBLIC_CASE_NAME_EMPTY));
         assertTrue(validationErrors.contains(ValidationError.CASE_MANAGEMENT_LOCATION_CODE_EMPTY));
         assertTrue(validationErrors.contains(ValidationError.CASE_RESTRICTED_FLAG_NULL_EMPTY));
+        assertTrue(validationErrors.contains(ValidationError.REGEX_ERROR));
 
     }
 
