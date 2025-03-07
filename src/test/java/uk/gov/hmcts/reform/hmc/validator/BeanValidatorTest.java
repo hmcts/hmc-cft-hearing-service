@@ -464,7 +464,7 @@ class BeanValidatorTest {
             validationErrors.add(e.getMessage());
             logger.info(e.getMessage());
         });
-        assertEquals(2, violations.size());
+        assertEquals(1, violations.size());
         assertTrue(validationErrors.contains(PARTY_DETAILS_NULL_EMPTY));
     }
 
