@@ -2,6 +2,22 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.LazyCollection;
@@ -12,21 +28,6 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
-import javax.persistence.Table;
 
 @Table(name = "hearing_response")
 @EqualsAndHashCode(callSuper = true)
@@ -40,8 +41,10 @@ public class HearingResponseEntity extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -3354306831150920356L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "hearing_response_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+        generator = "hearing_response_id_seq_generator")
+    @SequenceGenerator(name = "hearing_response_id_seq_generator", 
+        sequenceName = "hearing_response_id_seq", allocationSize = 1)
     @Column(name = "hearing_response_id")
     private Long hearingResponseId;
 
