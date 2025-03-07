@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,7 +22,10 @@ import java.time.LocalDateTime;
 public class ActualHearingDayPausesEntity extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+        generator = "pauses_id_seq_generator")
+    @SequenceGenerator(name = "pauses_id_seq_generator", 
+        sequenceName = "pauses_id_seq", allocationSize = 1)
     @Column(name = "pauses_id")
     private Long pausesId;
 

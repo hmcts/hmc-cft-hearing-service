@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,7 +34,10 @@ public class PanelUserRequirementsEntity extends BaseEntity implements Serializa
     private static final long serialVersionUID = -4730336666389556107L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+        generator = "panel_user_requirements_id_seq_generator")
+    @SequenceGenerator(name = "panel_user_requirements_id_seq_generator", 
+        sequenceName = "panel_user_requirements_id_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,7 +30,10 @@ public class HearingChannelsEntity extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -6716655160254569132L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+        generator = "hearing_channels_id_seq_generator")
+    @SequenceGenerator(name = "hearing_channels_id_seq_generator", 
+        sequenceName = "hearing_channels_id_seq", allocationSize = 1)
     @Column(name = "hearing_channels_id")
     private Long hearingChannelsId;
 

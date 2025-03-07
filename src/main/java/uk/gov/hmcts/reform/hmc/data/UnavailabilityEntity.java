@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -35,7 +36,10 @@ public class UnavailabilityEntity extends BaseEntity  implements Serializable {
     private static final long serialVersionUID = 5423332025288476165L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+        generator = "unavailability_id_seq_generator")
+    @SequenceGenerator(name = "unavailability_id_seq_generator", 
+        sequenceName = "unavailability_id_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

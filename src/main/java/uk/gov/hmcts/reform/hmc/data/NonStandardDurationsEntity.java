@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,7 +33,10 @@ public class NonStandardDurationsEntity extends BaseEntity implements Serializab
     private static final long serialVersionUID = 2548536101352732983L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+        generator = "non_standard_durations_id_seq_generator")
+    @SequenceGenerator(name = "non_standard_durations_id_seq_generator", 
+        sequenceName = "non_standard_durations_id_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

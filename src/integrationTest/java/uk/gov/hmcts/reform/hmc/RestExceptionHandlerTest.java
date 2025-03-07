@@ -12,9 +12,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -60,10 +60,10 @@ public class RestExceptionHandlerTest extends BaseTest {
     public static String testExceptionMessage = "test message";
     HearingRequest validRequest;
 
-    @MockBean
+    @MockitoBean
     protected HearingManagementServiceImpl service;
 
-    @MockBean
+    @MockitoBean
     protected AccessControlService accessControlService;
 
     @Autowired

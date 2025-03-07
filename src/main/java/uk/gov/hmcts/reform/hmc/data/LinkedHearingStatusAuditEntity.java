@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,7 +24,10 @@ public class LinkedHearingStatusAuditEntity extends AuditBaseEntity implements S
     private static final long serialVersionUID = 8647223748985181708L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+        generator = "linked_hearing_status_audit_id_seq_generator")
+    @SequenceGenerator(name = "linked_hearing_status_audit_id_seq_generator", 
+        sequenceName = "linked_hearing_status_audit_id_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

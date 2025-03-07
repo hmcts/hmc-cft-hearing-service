@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,7 +31,10 @@ public class ActualHearingDayEntity extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 7977056936948346510L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+        generator = "actual_hearing_day_id_seq_generator")
+    @SequenceGenerator(name = "actual_hearing_day_id_seq_generator", 
+        sequenceName = "actual_hearing_day_id_seq", allocationSize = 1)
     @Column(name = "actual_hearing_day_id")
     private Long actualHearingDayId;
 

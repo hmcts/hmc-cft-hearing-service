@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,7 +29,10 @@ public class CancellationReasonsEntity extends BaseEntity implements Serializabl
     private static final long serialVersionUID = -2368217815246644116L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+        generator = "cancellation_reasons_id_seq_generator")
+    @SequenceGenerator(name = "cancellation_reasons_id_seq_generator", 
+        sequenceName = "cancellation_reasons_id_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 
