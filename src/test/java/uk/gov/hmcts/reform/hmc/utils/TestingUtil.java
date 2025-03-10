@@ -1441,7 +1441,7 @@ public class TestingUtil {
     }
 
 
-    private static List<PartyDetails> partyDetailsWith2Parties(boolean isCftOrganisationIdNull) {
+    public static List<PartyDetails> partyDetailsWith2Parties(boolean isCftOrganisationIdNull) {
         PartyDetails partyDetails1 = new PartyDetails();
         partyDetails1.setPartyID("P1");
         partyDetails1.setPartyType(PartyType.IND.getLabel());
