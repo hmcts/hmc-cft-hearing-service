@@ -16,6 +16,7 @@ public class HmcHearingResponse {
     private String hmctsServiceCode;
 
     @NotEmpty(message = ValidationError.CASE_REF_EMPTY)
+    @Pattern(regexp = "^\\d{16}$", message = ValidationError.CASE_REF_INVALID)
     private String caseRef;
 
     private String hearingID;

@@ -9,7 +9,6 @@ public final class ValidationError {
     public static final String AUTO_LIST_FLAG_NULL_EMPTY = "Auto list flag can not be null or empty";
     public static final String MUST_BE_FALSE_IF_YOU_SUPPLY_A_CHANGE_REASONCODE =
         "001 autoListFlag must be FALSE if you supply a change reasoncode";
-    public static final String REGEX_ERROR = "Must contain at least one Valid character";
     public static final String HEARING_TYPE_NULL_EMPTY = "Hearing type can not be null or empty";
     public static final String HEARING_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;
     public static final String DURATION_EMPTY = "Duration can not be empty";
@@ -277,4 +276,9 @@ public final class ValidationError {
     public static final String HMCTS_DEPLOYMENT_ID_MAX_LENGTH = "HMCTS deployment id must not be more than 40 "
         + CHARACTERS_LONG;
     public static final String HEARING_STATUS_EXCEPTION = "Hearing status can not be Exception";
+    public static final String INVALID_HMCTS_INTERNAL_CASE_NAME = "Hmcts internal case name is invalid";
+    public static final String INVALID_PUBLIC_CASE_NAME = "Public case name is invalid";
+    public static final String INVALID_FIRST_NAME = "First name is invalid";
+    public static final String INVALID_LAST_NAME = "Last name is invalid";
+    public static final String INVALID_ORGANISATION_NAME = "Organisation name is invalid";
 }
