@@ -9,7 +9,7 @@
     "body": {
       "requestDetails": {
         "timestamp": "[[ANYTHING_PRESENT]]",
-        "status": "HEARING_REQUESTED",
+        "status": "AWAITING_LISTING",
         "versionNumber": 1
       },
       "caseDetails": "[[ANYTHING_PRESENT]]",
