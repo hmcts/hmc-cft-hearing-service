@@ -281,4 +281,5 @@ public final class ValidationError {
     public static final String INVALID_FIRST_NAME = "First name is invalid";
     public static final String INVALID_LAST_NAME = "Last name is invalid";
     public static final String INVALID_ORGANISATION_NAME = "Organisation name is invalid";
+
 }
