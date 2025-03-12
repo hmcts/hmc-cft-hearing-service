@@ -81,7 +81,7 @@ class GetHearingActualsResponseMapperTest {
         assertEquals("reference",
                      response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(0)
                          .getOrganisationDetails().getCftOrganisationID());
-        assertEquals(PartyType.ORG,
+        assertEquals(PartyType.ORG.label,
                      response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(0).getPartyType());
 
     }
