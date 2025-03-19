@@ -22,12 +22,12 @@ public class IndividualDetails {
 
     @NotNull(message = ValidationError.FIRST_NAME_EMPTY)
     @Size(max = 100, message = ValidationError.FIRST_NAME_MAX_LENGTH)
-    @Pattern(regexp = "^[\\p{L}\\p{N}\\p{P}\\p{Zs}]*$", message = ValidationError.INVALID_FIRST_NAME)
+    @Pattern(regexp = "^[\\p{L}\\p{N}\\p{P}\\p{Zs}\\p{S}]*$", message = ValidationError.INVALID_FIRST_NAME)
     private String firstName;
 
     @NotNull(message = ValidationError.LAST_NAME_EMPTY)
     @Size(max = 730, message = ValidationError.LAST_NAME_MAX_LENGTH)
-    @Pattern(regexp = "^[\\p{L}\\p{N}\\p{P}\\p{Zs}]*$", message = ValidationError.INVALID_LAST_NAME)
+    @Pattern(regexp = "^[\\p{L}\\p{N}\\p{P}\\p{Zs}\\p{S}]*$", message = ValidationError.INVALID_LAST_NAME)
     private String lastName;
 
     @Size(max = 70, message = ValidationError.PREFERRED_HEARING_CHANNEL_MAX_LENGTH)
