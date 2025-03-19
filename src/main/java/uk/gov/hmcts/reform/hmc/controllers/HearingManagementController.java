@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -37,6 +38,7 @@ import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -44,7 +46,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID_MAX_SIZE;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
@@ -105,7 +106,8 @@ public class HearingManagementController {
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
             @RequestBody @Valid HearingRequest createHearingRequest) {
         verifyDeploymentIdEnabled(deploymentId);
-        accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER),
+                                              null);
         return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId,
                 getServiceName(clientS2SToken));
     }
@@ -127,7 +129,7 @@ public class HearingManagementController {
 
     /**
      * get Case either by caseRefId OR CaseRefId/caseStatus.
-     * 
+     *
      * @param ccdCaseRef case Ref
      * @param status     optional Status
      * @return Hearing
@@ -144,12 +146,12 @@ public class HearingManagementController {
         + "\n4) " + ValidationError.CASE_REF_INVALID)
 
     public GetHearingsResponse getHearings(
-        @PathVariable("ccdCaseRef") @Valid 
-        @NotEmpty(message = ValidationError.CASE_REF_EMPTY) 
-        @Size(min = 16, max = 16, message = ValidationError.CASE_REF_INVALID_LENGTH) 
+        @PathVariable("ccdCaseRef") @Valid
+        @NotEmpty(message = ValidationError.CASE_REF_EMPTY)
+        @Size(min = 16, max = 16, message = ValidationError.CASE_REF_INVALID_LENGTH)
         @LuhnCheck(message = ValidationError.CASE_REF_INVALID, ignoreNonDigitCharacters = false) String ccdCaseRef,
         @RequestParam(required = false) String status) {
-        return getHearingsResponse(ccdCaseRef, status);
+        return getHearingsResponse(ccdCaseRef, status, null);
     }
 
     @PutMapping(path = "/hearing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -174,10 +176,10 @@ public class HearingManagementController {
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(responseCode = "200", description = "Success (with no content)")
     @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ACTUALS_ID_NOT_FOUND)
-    @ApiResponse(responseCode = "400", description = "One or more of the following reasons:\n" 
+    @ApiResponse(responseCode = "400", description = "One or more of the following reasons:\n"
             + "1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS + "\n"
-            + "2) " + ValidationError.HEARING_ACTUALS_INVALID_STATUS + "\n" 
-            + "3) " + ValidationError.HEARING_ACTUALS_UN_EXPECTED + "\n" 
+            + "2) " + ValidationError.HEARING_ACTUALS_INVALID_STATUS + "\n"
+            + "3) " + ValidationError.HEARING_ACTUALS_UN_EXPECTED + "\n"
             + "4) " + ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME)
     @ApiResponse(responseCode = "500", description = ValidationError.INTERNAL_SERVER_ERROR)
 
@@ -189,9 +191,10 @@ public class HearingManagementController {
 
     /**
      * get list of cases either by caseRefId OR CaseRefId/caseStatus.
-     * 
+     *
      * @param ccdCaseRefs list of case Ref
      * @param status      optional Status
+     * @param caseTypeId type of case
      * @return Hearing
      */
     @Transactional
@@ -202,26 +205,26 @@ public class HearingManagementController {
     @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
             + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS)
 
-    public List<GetHearingsResponse> getHearingsForListOfCases(@RequestParam List<String> ccdCaseRefs,
-            @RequestParam(required = false) String status) {
+    public List<GetHearingsResponse> getHearingsForListOfCases(@RequestParam @NotEmpty List<String> ccdCaseRefs,
+                                                               @RequestParam(required = false) String status,
+                                                               @RequestParam @NotBlank String caseTypeId) {
         List<GetHearingsResponse> hearingsResponseList = new ArrayList<>();
-        if (ccdCaseRefs.isEmpty()) {
-            throw new BadRequestException(CASE_REF_EMPTY);
-        }
-        for (String ccdCaseRef : ccdCaseRefs) {
-            GetHearingsResponse hearingsResponse = getHearingsResponse(ccdCaseRef, status);
+        List<DataStoreCaseDetails> cases = hearingManagementService.getCaseSearchResults(ccdCaseRefs, status,
+                                                                                          caseTypeId);
+        for (DataStoreCaseDetails caseDetails : cases) {
+            GetHearingsResponse hearingsResponse = getHearingsResponse(caseDetails.getId(), status, caseDetails);
             if (hearingsResponse.getCaseHearings().size() != 0) {
                 hearingsResponseList.add(hearingsResponse);
             }
         }
         return hearingsResponseList.isEmpty() ? null : hearingsResponseList;
-
     }
 
-    private GetHearingsResponse getHearingsResponse(String ccdCaseRef, String status) {
+    private GetHearingsResponse getHearingsResponse(String ccdCaseRef, String status,
+            DataStoreCaseDetails caseDetails) {
         List<String> filteredRoleAssignments = accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
                 HEARING_VIEWER,
-                LISTED_HEARING_VIEWER));
+                LISTED_HEARING_VIEWER), caseDetails);
 
         if (hasOnlyListedHearingViewerRoles(filteredRoleAssignments)) {
             if ((status == null || HearingStatus.LISTED.name().equals(status))) {
