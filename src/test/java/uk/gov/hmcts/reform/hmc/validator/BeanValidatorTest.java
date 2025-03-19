@@ -49,7 +49,7 @@ class BeanValidatorTest {
 
     private static ValidatorFactory validatorFactory;
     private static Validator validator;
-    String invalidUtf8 = "\uDC00";
+    String invalidUtf8 = "Text\uFFFF";
 
     @BeforeEach
     void createValidator() {
@@ -196,6 +196,17 @@ class BeanValidatorTest {
         assertTrue(validationErrors.contains(ValidationError.CASE_MANAGEMENT_LOCATION_CODE_EMPTY));
         assertTrue(validationErrors.contains(ValidationError.CASE_RESTRICTED_FLAG_NULL_EMPTY));
 
+    }
+
+    @Test
+    void shouldHave_CaseDetails_ValidRegExViolations() {
+        CaseDetails caseDetails = TestingUtil.caseDetails();
+        caseDetails.setHmctsInternalCaseName("Valid Text 123!@#");
+        caseDetails.setPublicCaseName("Valid Text 123!@#");
+        Set<ConstraintViolation<CaseDetails>> violations = validator.validate(caseDetails);
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
+        assertTrue(violations.isEmpty());
     }
 
     @Test
