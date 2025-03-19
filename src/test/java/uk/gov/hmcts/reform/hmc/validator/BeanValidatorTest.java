@@ -49,8 +49,7 @@ class BeanValidatorTest {
 
     private static ValidatorFactory validatorFactory;
     private static Validator validator;
-    byte[] invalidBytes = {(byte) 0xC3, (byte) 0x28};
-    String invalidUtf8 = new String(invalidBytes, StandardCharsets.UTF_8);
+    String invalidUtf8 = "\uDC00";
 
     @BeforeEach
     void createValidator() {
