@@ -14,7 +14,7 @@ public class OrganisationDetails {
 
     @NotEmpty(message = ValidationError.NAME_NULL_EMPTY)
     @Size(max = 2000, message = ValidationError.NAME_MAX_LENGTH)
-    @Pattern(regexp = "^[\\p{L}\\p{N}\\p{P}\\p{Zs}\\p{Sc}\\p{Sk}\\p{Sm}\\p{Zs}]*$",
+    @Pattern(regexp = "^[\\p{Ll}\\p{Lm}\\p{Lt}\\p{Lu}\\p{N}\\p{P}\\p{Zs}\\p{Sc}\\p{Sk}\\p{Sm}\\p{Zs}]*$",
         message = ValidationError.INVALID_ORGANISATION_NAME)
     private String name;
 
