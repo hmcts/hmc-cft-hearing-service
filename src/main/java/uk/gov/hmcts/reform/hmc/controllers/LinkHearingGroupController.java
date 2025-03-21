@@ -71,9 +71,9 @@ public class LinkHearingGroupController {
         + "\n6) " + ValidationError.INVALID_STATE_FOR_LINKED_GROUP
         + "\n7) " + ValidationError.INVALID_STATE_FOR_UNLINKING_HEARING_REQUEST)
 
-    public void updateHearing(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
-            @RequestParam("id") String requestId,
-            @RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
+    public void updateLinkedHearingGroup(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
+                                         @RequestParam("id") String requestId,
+                                         @RequestBody @Valid HearingLinkGroupRequest hearingLinkGroupRequest) {
         verifyAccess(hearingLinkGroupRequest);
         linkedHearingGroupService.updateLinkHearing(requestId, hearingLinkGroupRequest, getServiceName(clientS2SToken));
     }
