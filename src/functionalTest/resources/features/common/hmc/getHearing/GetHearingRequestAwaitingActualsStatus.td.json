@@ -1,0 +1,29 @@
+{
+  "_guid_": "GetHearingRequestAwaitingActualsStatus",
+  "_extends_" : "GetHearingRequestBase",
+  "specs": [
+    "to check the hearing status is AWAITING_ACTUALS"
+  ],
+  "request": {
+    "pathVariables": {
+      "hearingID": "${[scenarioContext][siblingContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    }
+  },
+  "expectedResponse": {
+    "responseCode": 200,
+    "responseMessage": "OK",
+
+    "body": {
+      "requestDetails": {
+        "timestamp": "[[ANYTHING_PRESENT]]",
+        "status": "AWAITING_ACTUALS",
+        "versionNumber": "[[ANYTHING_PRESENT]]",
+        "hearingRequestID" : "[[ANYTHING_PRESENT]]"
+      },
+      "caseDetails": "[[ANYTHING_PRESENT]]",
+      "hearingDetails" : "[[ANYTHING_PRESENT]]",
+      "partyDetails" : "[[ANYTHING_PRESENT]]",
+      "hearingResponse": "[[ANYTHING_PRESENT]]"
+    }
+  }
+}

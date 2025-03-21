@@ -209,11 +209,12 @@ public class HearingManagementController {
                                                                @RequestParam(required = false) String status,
                                                                @RequestParam @NotBlank String caseTypeId) {
         List<GetHearingsResponse> hearingsResponseList = new ArrayList<>();
-        List<DataStoreCaseDetails> cases = hearingManagementService.getCaseSearchResults(ccdCaseRefs, status,
-                                                                                          caseTypeId);
-        for (DataStoreCaseDetails caseDetails : cases) {
-            GetHearingsResponse hearingsResponse = getHearingsResponse(caseDetails.getId(), status, caseDetails);
-            if (hearingsResponse.getCaseHearings().size() != 0) {
+        if (ccdCaseRefs.isEmpty()) {
+            throw new BadRequestException(CASE_REF_EMPTY);
+        }
+        for (String ccdCaseRef : ccdCaseRefs) {
+            GetHearingsResponse hearingsResponse = getHearingsResponse(ccdCaseRef, status);
+            if (!hearingsResponse.getCaseHearings().isEmpty()) {
                 hearingsResponseList.add(hearingsResponse);
             }
         }
