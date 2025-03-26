@@ -232,6 +232,9 @@ class HearingManagementServiceTest {
     @Mock
     HearingStatusAuditService hearingStatusAuditService;
 
+    @Mock
+    PendingRequestService pendingRequestService;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -246,31 +249,7 @@ class HearingManagementServiceTest {
                                                             caseHearingRequestRepository,
                                                             hearingRepository,
                                                             applicationParams);
-        hearingManagementService =
-            new HearingManagementServiceImpl(
-                roleAssignmentService,
-                securityUtils,
-                dataStoreRepository,
-                hearingRepository,
-                hearingMapper,
-                caseHearingRequestRepository,
-                hmiSubmitHearingRequestMapper,
-                getHearingsResponseMapper,
-                getHearingResponseMapper,
-                messageSenderToTopicConfiguration,
-                objectMapperService,
-                hmiDeleteHearingRequestMapper,
-                messageSenderToQueueConfiguration,
-                applicationParams,
-                hearingIdValidator,
-                linkedHearingValidator,
-                partyRelationshipDetailsMapper,
-                hearingActualsValidator,
-                listingMapper,
-                hmiCaseDetailsMapper,
-                entitiesMapper,
-                hmiHearingResponseMapper,
-                hearingStatusAuditService);
+        hearingManagementService = createHearingManagementService();
 
         hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any(),any());
@@ -1076,32 +1055,7 @@ class HearingManagementServiceTest {
                     caseHearingRequestRepository,
                     hearingRepository,
                     applicationParams);
-            hearingManagementService =
-                    new HearingManagementServiceImpl(
-                            roleAssignmentService,
-                            securityUtils,
-                            dataStoreRepository,
-                            hearingRepository,
-                            hearingMapper,
-                            caseHearingRequestRepository,
-                            hmiSubmitHearingRequestMapper,
-                            getHearingsResponseMapper,
-                            getHearingResponseMapper,
-                            messageSenderToTopicConfiguration,
-                            objectMapperService,
-                            hmiDeleteHearingRequestMapper,
-                            messageSenderToQueueConfiguration,
-                            applicationParams,
-                            hearingIdValidator,
-                            linkedHearingValidator,
-                            partyRelationshipDetailsMapper,
-                            hearingActualsValidator,
-                            listingMapper,
-                            hmiCaseDetailsMapper,
-                            entitiesMapper,
-                            hmiHearingResponseMapper,
-                            hearingStatusAuditService);
-
+            hearingManagementService = createHearingManagementService();
         }
 
         @Test
@@ -1581,7 +1535,7 @@ class HearingManagementServiceTest {
         @Test
         void shouldThrowExceptionWhenHearingIdNotFound() {
             final long hearingId = 2000000000L;
-            UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
+            TestingUtil.updateHearingRequest();
             when(hearingRepository.existsById(hearingId)).thenReturn(false);
             Exception exception = assertThrows(HearingNotFoundException.class,
                                                () -> hearingManagementService.hearingCompletion(hearingId,
@@ -1821,10 +1775,9 @@ class HearingManagementServiceTest {
             .listing(listing)
             .entities(Collections.singletonList(entity))
             .build();
-        HmiSubmitHearingRequest hmiSubmitHearingRequest = HmiSubmitHearingRequest.builder()
+        return HmiSubmitHearingRequest.builder()
             .hearingRequest(hmiHearingRequest)
             .build();
-        return hmiSubmitHearingRequest;
     }
 
     private HmiDeleteHearingRequest getHmiDeleteHearingRequest() {
@@ -1893,5 +1846,30 @@ class HearingManagementServiceTest {
         HearingDetails hearingDetails = TestingUtil.hearingDetailsWithAllFields();
         hearingDetails.setDuration(365);
         return hearingDetails;
+    }
+
+    private HearingManagementServiceImpl createHearingManagementService() {
+        return
+            new HearingManagementServiceImpl(
+                dataStoreRepository,
+                hearingRepository,
+                hearingMapper,
+                caseHearingRequestRepository,
+                hmiSubmitHearingRequestMapper,
+                getHearingsResponseMapper,
+                getHearingResponseMapper,
+                messageSenderToTopicConfiguration,
+                objectMapperService,
+                hmiDeleteHearingRequestMapper,
+                hearingIdValidator,
+                linkedHearingValidator,
+                partyRelationshipDetailsMapper,
+                hearingActualsValidator,
+                listingMapper,
+                hmiCaseDetailsMapper,
+                entitiesMapper,
+                hmiHearingResponseMapper,
+                hearingStatusAuditService,
+                pendingRequestService);
     }
 }
