@@ -99,11 +99,6 @@ env.OAUTH2_REDIRECT_URI = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect
 env.OAUTH2_ACCESS_TOKEN_TYPE = "OIDC"
 env.OAUTH2_SCOPE_VARIABLES = "profile openid roles manage-user create-user search-user"
 
-//env.OAUTH2_CLIENT_ID = "ccd_data_store_api"
-//env.OAUTH2_REDIRECT_URI = "http://ccd-data-store-api/oauth2redirect"
-//env.OAUTH2_SCOPE_VARIABLES = "profile openid roles manage-user"
-//env.OAUTH2_ACCESS_TOKEN_TYPE = "OIDC"
-
 env.DM_STORE_BASE_URL = "http://dm-store-aat.service.core-compute-aat.internal"
 env.RD_PROFESSIONAL_API_BASE_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
 env.CCD_API_GATEWAY_S2S_ID = "ccd_gw"
@@ -123,13 +118,13 @@ env.ROLE_ASSIGNMENT_HOST="http://am-role-assignment-service-aat.service.core-com
 env.ROLE_ASSIGNMENT_USER_EMAIL="ccd.ac.solicitor1@gmail.com"
 env.ROLE_ASSIGNMENT_USER_PASSWORD="Pa55word11"
 env.ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER="hmc.superuser@gmail.com"
-env.ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER_PWD="PesZvqrb78"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER_PWD="[[CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
 env.ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER="hmc.listed-hearing-viewer@gmail.com"
-env.ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER_PWD="PesZvqrb78"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER_PWD="[[CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
 env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER="hmc.hearing-viewer@gmail.com"
-env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER_PWD="PesZvqrb78"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER_PWD="[[CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
 env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER="hmc.hearing-manager@gmail.com"
-env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER_PWD="PesZvqrb78"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER_PWD="[[CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
 
 // temporary workaround for platform changes: turn BEFTA header checks to warning mode
 env.BEFTA_RESPONSE_HEADER_CHECK_POLICY="JUST_WARN"
