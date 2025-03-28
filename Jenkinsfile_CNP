@@ -125,8 +125,9 @@ env.BEFTA_OAUTH2_SCOPE_VARIABLES_OF_XUIWEBAPP = "profile openid roles manage-use
 // Env variables needed to add Role Assignments.
 env.ROLE_ASSIGNMENT_API_GATEWAY_S2S_CLIENT_ID = "hmc_cft_hearing_service"
 env.ROLE_ASSIGNMENT_HOST="http://am-role-assignment-service-aat.service.core-compute-aat.internal"
-env.ROLE_ASSIGNMENT_USER_EMAIL="ccd.ac.solicitor1@gmail.co"
+env.ROLE_ASSIGNMENT_USER_EMAIL="ccd.ac.solicitor1@gmail.com"
 env.ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER="ccd.ac.superuser@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER_PWD="[[HMC_FTA_PASSWOR]]"
 env.ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER="ccd.ac.staff1@gmail.com"
 env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER="ccd.ac.staff2@gmail.com"
 env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER="ccd.ac.solicitor1@gmail.com"
