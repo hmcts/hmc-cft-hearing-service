@@ -4,11 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
-import uk.gov.hmcts.reform.hmc.config.MessageReaderFromQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ActorIdType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.Classification;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.GrantType;
@@ -36,12 +32,6 @@ import static org.springframework.http.HttpHeaders.IF_NONE_MATCH;
 @DisplayName("DefaultRoleAssignmentRepository")
 class DefaultRoleAssignmentRepositoryIT extends BaseTest {
 
-    @MockBean
-    private MessageReaderFromQueueConfiguration messageReaderFromQueueConfiguration;
-
-    @Autowired
-    private ApplicationParams applicationParams;
-
     private static final String ID = "4d96923f-891a-4cb1-863e-9bec44d1689d";
     private static final String ID1 = "4d96923f-891a-4cb1-863e-9bec44d1612d";
     private static final String ACTOR_ID_TYPE = ActorIdType.IDAM.name();
@@ -66,12 +56,6 @@ class DefaultRoleAssignmentRepositoryIT extends BaseTest {
     private static final String AUTHORISATIONS_AUTH_1 = "auth1";
     private static final String AUTHORISATIONS_AUTH_2 = "auth2";
     private static final String POST_CODE = "EC12 3LN";
-    @SuppressWarnings("checkstyle:LineLength") // don't want to break error messages and add unwanted +
-    private static final String HTTP_400_ERROR_MESSAGE = "Client error when getting Role Assignments from Role "
-        + "Assignment Service because of ";
-    @SuppressWarnings("checkstyle:LineLength") // don't want to break error messages and add unwanted +
-    private static final String HTTP_500_ERROR_MESSAGE = "Problem getting Role Assignments from Role Assignment Service"
-        + " because of ";
 
     @Nested
     @DisplayName("getRoleAssignments()")

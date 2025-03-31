@@ -13,12 +13,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
+import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.UnNotifiedHearingService;
+import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -31,7 +35,7 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
         {SecurityConfiguration.class, JwtGrantedAuthoritiesConverter.class}))
 @AutoConfigureMockMvc(addFilters = false)
 @ImportAutoConfiguration(TestIdamConfiguration.class)
-public class UnNotifiedHearingsControllerTest {
+class UnNotifiedHearingsControllerTest {
 
     @Autowired
     protected MockMvc mockMvc;
@@ -42,6 +46,17 @@ public class UnNotifiedHearingsControllerTest {
     @MockBean
     private UnNotifiedHearingService unNotifiedHearingService;
 
+    @MockBean
+    private ApplicationParams applicationParams;
+
+    @MockBean
+    private OverrideAuditService overrideAuditService;
+
+    @MockBean
+    private UrlManager urlManager;
+
+    List<String> hearingStatus  = List.of("LISTED");
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -50,15 +65,15 @@ public class UnNotifiedHearingsControllerTest {
     @Test
     void shouldReturn200_whenRequestIdIsValid() {
         UnNotifiedHearingsController controller = new UnNotifiedHearingsController(unNotifiedHearingService);
-        controller.getUnNotifiedHearings("ABA1", LocalDateTime.now(), LocalDateTime.now());
-        verify(unNotifiedHearingService, times(1)).getUnNotifiedHearings(any(), any(),any());
+        controller.getUnNotifiedHearings("TEST", LocalDateTime.now(), LocalDateTime.now(), hearingStatus);
+        verify(unNotifiedHearingService, times(1)).getUnNotifiedHearings(any(), any(),any(), any());
     }
 
     @Test
     void shouldReturn200_whenHearingStartDateToNotPresent() {
         UnNotifiedHearingsController controller = new UnNotifiedHearingsController(unNotifiedHearingService);
-        controller.getUnNotifiedHearings("ABA1", LocalDateTime.now(), null);
-        verify(unNotifiedHearingService, times(1)).getUnNotifiedHearings(any(), any(),any());
+        controller.getUnNotifiedHearings("TEST", LocalDateTime.now(), null, hearingStatus);
+        verify(unNotifiedHearingService, times(1)).getUnNotifiedHearings(any(), any(),any(), any());
     }
 
 }

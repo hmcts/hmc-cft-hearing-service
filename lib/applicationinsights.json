@@ -1,0 +1,33 @@
+{
+  "connectionString": "${file:/mnt/secrets/hmc/app-insights-connection-string}",
+  "role": {
+    "name": "hmc-cft-hearing-service"
+  }, 
+  "preview": {
+    "instrumentation": {
+      "springIntegration": {
+        "enabled": true
+      }
+    },
+    "captureControllerSpans": true,
+    "captureLoggingLevelAsCustomDimension": true,
+    "captureLogbackMarker":  true,
+    "captureLog4jMarker":  true,
+    "captureLogbackCodeAttributes": true,
+    "sampling": {
+      "overrides": [
+        {
+          "telemetryType": "request",
+          "attributes": [
+            {
+              "key": "http.url",
+              "value": "https?://[^/]+/health.*",
+              "matchType": "regexp"
+            }
+          ],
+          "percentage": 1
+        }
+      ]
+    }
+  }
+}

@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 
 import java.io.Serializable;
@@ -31,6 +33,7 @@ import javax.persistence.Table;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AWAITING_ACTUALS;
 
 @Table(name = "hearing")
 @EqualsAndHashCode(callSuper = true)
@@ -78,6 +81,13 @@ public class HearingEntity extends BaseEntity implements Serializable {
     @Column(name = "is_linked_flag")
     private Boolean isLinkedFlag;
 
+    @Column(name = "deployment_id")
+    private String deploymentId;
+
+    @Column(name = "last_good_status")
+    private String lastGoodStatus;
+
+
     @PreUpdate
     public void preUpdate() {
         updatedDateTime = LocalDateTime.now();
@@ -107,6 +117,21 @@ public class HearingEntity extends BaseEntity implements Serializable {
     }
 
     /**
+     * Gets the most recent hearing response associated with the latest request while updating Hearing request.
+     */
+    public Optional<HearingResponseEntity> getHearingResponseForLatestRequestForUpdate() {
+        Optional<HearingResponseEntity> hearingResponse = getLatestHearingResponse();
+        if (hearingResponse.isPresent()) {
+            Integer latestRequestVersion = getLatestHearingResponse().get().getRequestVersion();
+            return getHearingResponses().stream()
+                .filter(hearingResponseEntity -> hearingResponseEntity.getRequestVersion().equals(latestRequestVersion))
+                .max(Comparator.comparing(HearingResponseEntity::getRequestTimeStamp));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
      * Gets the most recent hearing response associated with the latest request.
      */
     public Optional<HearingResponseEntity> getHearingResponseForLatestRequest() {
@@ -132,27 +157,24 @@ public class HearingEntity extends BaseEntity implements Serializable {
 
     public String getDerivedHearingStatus() {
         String hearingStatus = "";
-        switch (this.status) {
-            case "LISTED":
-            case "UPDATE_REQUESTED":
-            case "UPDATE_SUBMITTED":
-                hearingStatus = this.status;
-                Optional<HearingResponseEntity> hearingResponse = getLatestHearingResponse();
-                if (hearingResponse.isPresent()) {
-                    HearingResponseEntity latestHearingResponse = hearingResponse.get();
-                    Optional<HearingDayDetailsEntity> hearingDayDetails =
-                        latestHearingResponse.getEarliestHearingDayDetails();
-                    if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
-                        HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
-                        if (hearingDayDetailsEntity.getStartDateTime() != null
-                            && !LocalDate.now().isBefore(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
-                            return "AWAITING_ACTUALS";
-                        }
+        if (this.status.equals(HearingStatus.LISTED.name()) || this.status.equals(HearingStatus.UPDATE_REQUESTED.name())
+            || this.status.equals(HearingStatus.UPDATE_SUBMITTED.name())) {
+            hearingStatus = this.status;
+            Optional<HearingResponseEntity> hearingResponse = getLatestHearingResponse();
+            if (hearingResponse.isPresent()) {
+                HearingResponseEntity latestHearingResponse = hearingResponse.get();
+                Optional<HearingDayDetailsEntity> hearingDayDetails =
+                    latestHearingResponse.getEarliestHearingDayDetails();
+                if (latestHearingResponse.hasHearingDayDetails() && hearingDayDetails.isPresent()) {
+                    HearingDayDetailsEntity hearingDayDetailsEntity = hearingDayDetails.get();
+                    if (hearingDayDetailsEntity.getStartDateTime() != null
+                        && !LocalDate.now().isBefore(hearingDayDetailsEntity.getStartDateTime().toLocalDate())) {
+                        return AWAITING_ACTUALS;
                     }
                 }
-                break;
-            default:
-                hearingStatus = this.status;
+            }
+        } else {
+            hearingStatus = this.status;
         }
         return hearingStatus;
     }
@@ -163,5 +185,26 @@ public class HearingEntity extends BaseEntity implements Serializable {
 
     public boolean hasHearingResponses() {
         return getHearingResponses() != null && !getHearingResponses().isEmpty();
+    }
+
+    public HearingEntity updateLastGoodStatus() {
+        HearingStatus currentStatus = this.getStatus() != null
+            ? HearingStatus.valueOf(this.getStatus()) : null;
+        HearingStatus lastGoodStatusLocal = this.getLastGoodStatus() != null
+            ? HearingStatus.valueOf(this.getLastGoodStatus()) : null;
+
+        if (lastGoodStatusLocal != null && lastGoodStatusLocal != currentStatus) {
+            if (HearingStatus.isFinalStatus(lastGoodStatusLocal)) {
+                throw new BadRequestException("Status is already in a Final State: " + currentStatus);
+            } else if (HearingStatus.shouldUpdateLastGoodStatus(lastGoodStatusLocal, currentStatus)) {
+                this.setLastGoodStatus(String.valueOf(currentStatus));
+                return this;
+            }
+        } else if (lastGoodStatusLocal == null
+            && HearingStatus.shouldUpdateLastGoodStatus(null, currentStatus)) {
+            this.setLastGoodStatus(String.valueOf(currentStatus));
+            return this;
+        }
+        return this;
     }
 }

@@ -18,7 +18,7 @@ jms:
 spring:
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    url: jdbc:tc:postgresql:11:///databasename?stringtype=unspecified
+    url: jdbc:tc:postgresql:15:///databasename?stringtype=unspecified
   security:
     oauth2:
       client:
@@ -27,7 +27,15 @@ spring:
             issuer-uri: http://localhost:${wiremock.server.port:5000}/o
 ccd:
   data-store:
+    url-header-name: ${CCD_DATA_STORE_URL_HEADER_NAME:Data-Store-Url}
     host: http://localhost:${wiremock.server.port:4452}
+
+role:
+  assignment:
+    api:
+      url-header-name: ${ROLE_ASSIGNMENT_URL_HEADER_NAME:Role-Assignment-Url}
+      host: http://localhost:${wiremock.server.port:4096}
+
 idam:
   api:
     url: http://localhost:${wiremock.server.port:5000}
@@ -46,3 +54,10 @@ fh:
     host: http://localhost:${wiremock.server.port:5124}
     source-system: SOURCE_SYSTEM
     destination-system: DESTINATION_SYSTEM
+
+hmcts-deployment-id:
+  enabled: ${HMCTS_DEPLOYMENT_ID:false}
+
+wiremock:
+  server:
+    httpsPort: -1

@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
@@ -13,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AWAITING_ACTUALS;
 
 class HearingEntityTest {
 
@@ -144,6 +147,33 @@ class HearingEntityTest {
         }
 
         @Test
+        void shouldGetLatestHearingResponseForLatestRequestForUpdateWhenResponsesExist() {
+            HearingEntity hearing = new HearingEntity();
+            CaseHearingRequestEntity caseHearingRequest1 = caseHearingRequest(1);
+            CaseHearingRequestEntity caseHearingRequest2 = caseHearingRequest(2);
+            hearing.setCaseHearingRequests(List.of(caseHearingRequest1, caseHearingRequest2));
+            HearingResponseEntity hearingResponse1 = hearingResponse(1, 2000);
+            HearingResponseEntity hearingResponse2 = hearingResponse(2, 2002);
+            HearingResponseEntity hearingResponse3 = hearingResponse(3, 2004);
+            hearing.setHearingResponses(List.of(hearingResponse1, hearingResponse2, hearingResponse3));
+
+            Optional<HearingResponseEntity> latestResponse = hearing.getHearingResponseForLatestRequestForUpdate();
+
+            assertTrue(latestResponse.isPresent());
+            assertEquals(hearingResponse3, latestResponse.get());
+        }
+
+        @Test
+        void shouldGetLatestHearingResponseForLatestRequestForUpdateWhenNoResponsesExist() {
+            HearingEntity hearing = new HearingEntity();
+            CaseHearingRequestEntity caseHearingRequest1 = caseHearingRequest(1);
+            CaseHearingRequestEntity caseHearingRequest2 = caseHearingRequest(2);
+            hearing.setCaseHearingRequests(List.of(caseHearingRequest1, caseHearingRequest2));
+            Optional<HearingResponseEntity> latestResponse = hearing.getHearingResponseForLatestRequestForUpdate();
+            assertTrue(latestResponse.isEmpty());
+        }
+
+        @Test
         void shouldReturnEmptyOptionalWhenNoHearingResponsesExistForLatestRequestVersion() {
             HearingEntity hearing = new HearingEntity();
             CaseHearingRequestEntity caseHearingRequest1 = caseHearingRequest(1);
@@ -196,38 +226,21 @@ class HearingEntityTest {
             LocalDateTime endDateTime = LocalDateTime.of(2023, 5, 30, 11, 11);
             HearingResponseEntity hearingResponse = hearingResponseWithDayDetails(startDateTime, endDateTime);
             hearing.setHearingResponses(List.of(hearingResponse));
-            hearing.setStatus("LISTED");
+            hearing.setStatus(HearingStatus.LISTED.name());
 
             String latestResponse = hearing.getDerivedHearingStatus();
 
-            assertEquals("AWAITING_ACTUALS", latestResponse);
+            assertEquals(AWAITING_ACTUALS, latestResponse);
         }
 
         @Test
         void shouldGetDerivedHearingResponseWithStatusNotUpdated() {
             HearingEntity hearing = new HearingEntity();
-            hearing.setStatus("HEARING_REQUESTED");
+            hearing.setStatus(HearingStatus.HEARING_REQUESTED.name());
 
             String latestResponse = hearing.getDerivedHearingStatus();
 
-            assertEquals("HEARING_REQUESTED", latestResponse);
-        }
-
-        @Test
-        void shouldGetDefaultDerivedHearingResponseWithNotUpdated() {
-            LocalDateTime startDateTime = LocalDateTime.now().plusDays(1);
-            LocalDateTime endDateTime = LocalDateTime.now().plusMonths(6);
-
-            HearingResponseEntity hearingResponse =
-                hearingResponseWithDayDetails(startDateTime, endDateTime);
-
-            HearingEntity hearing = new HearingEntity();
-            hearing.setHearingResponses(List.of(hearingResponse));
-            hearing.setStatus("LISTED");
-
-            String latestResponse = hearing.getDerivedHearingStatus();
-
-            assertEquals("LISTED", latestResponse);
+            assertEquals(HearingStatus.HEARING_REQUESTED.name(), latestResponse);
         }
 
         @Test
@@ -239,10 +252,10 @@ class HearingEntityTest {
                 hearingResponseWithDayDetails(startDateTime, endDateTime);
             HearingEntity hearing = new HearingEntity();
             hearing.setHearingResponses(List.of(hearingResponse));
-            hearing.setStatus("LISTED");
+            hearing.setStatus(HearingStatus.LISTED.name());
 
             String latestResponse = hearing.getDerivedHearingStatus();
-            assertEquals("LISTED", latestResponse);
+            assertEquals(HearingStatus.LISTED.name(), latestResponse);
         }
 
         @Test
@@ -252,11 +265,11 @@ class HearingEntityTest {
             LocalDateTime endDateTime = LocalDateTime.now().plusDays(2);
             HearingResponseEntity hearingResponse = hearingResponseWithDayDetails(startDateTime, endDateTime);
             hearing.setHearingResponses(List.of(hearingResponse));
-            hearing.setStatus("LISTED");
+            hearing.setStatus(HearingStatus.LISTED.name());
 
             String latestResponse = hearing.getDerivedHearingStatus();
 
-            assertEquals("AWAITING_ACTUALS", latestResponse);
+            assertEquals(AWAITING_ACTUALS, latestResponse);
         }
 
         @Test
@@ -266,11 +279,11 @@ class HearingEntityTest {
             LocalDateTime endDateTime = LocalDateTime.now().plusDays(1);
             HearingResponseEntity hearingResponse = hearingResponseWithDayDetails(startDateTime, endDateTime);
             hearing.setHearingResponses(List.of(hearingResponse));
-            hearing.setStatus("LISTED");
+            hearing.setStatus(HearingStatus.LISTED.name());
 
             String latestResponse = hearing.getDerivedHearingStatus();
 
-            assertEquals("AWAITING_ACTUALS", latestResponse);
+            assertEquals(AWAITING_ACTUALS, latestResponse);
         }
 
         @Test
@@ -280,7 +293,7 @@ class HearingEntityTest {
             LocalDateTime endDateTime = LocalDateTime.now().plusDays(3);
             HearingResponseEntity hearingResponse = hearingResponseWithDayDetails(startDateTime, endDateTime);
             hearing.setHearingResponses(List.of(hearingResponse));
-            hearing.setStatus("LISTED");
+            hearing.setStatus(HearingStatus.LISTED.name());
 
             String latestResponse = hearing.getDerivedHearingStatus();
 
@@ -314,5 +327,50 @@ class HearingEntityTest {
         hearingResponse.setHearingDayDetails(List.of(hearingDayDetailsEntity));
 
         return hearingResponse;
+    }
+
+    @Nested
+    class UpdateLastGoodStatus {
+        @Test
+        void updateNullLastGoodStatusWithGoodStatus() {
+            HearingEntity hearingEntity = new HearingEntity();
+            hearingEntity.setStatus(HearingStatus.AWAITING_LISTING.name());
+            HearingEntity updatedEntity = hearingEntity.updateLastGoodStatus();
+            assertEquals(HearingStatus.AWAITING_LISTING.name(), updatedEntity.getLastGoodStatus());
+        }
+
+        @Test
+        void updateNullLastGoodStatusWithFinalStatus() {
+            HearingEntity hearingEntity = new HearingEntity();
+            hearingEntity.setStatus(HearingStatus.CANCELLED.name());
+            HearingEntity updatedEntity = hearingEntity.updateLastGoodStatus();
+            assertEquals(HearingStatus.CANCELLED.name(), updatedEntity.getLastGoodStatus());
+        }
+
+        @Test
+        void updateLastGoodStatusWithSameStatus() {
+            HearingEntity hearingEntity = new HearingEntity();
+            hearingEntity.setStatus(HearingStatus.AWAITING_LISTING.name());
+            hearingEntity.setLastGoodStatus(HearingStatus.AWAITING_LISTING.name());
+            HearingEntity updatedEntity = hearingEntity.updateLastGoodStatus();
+            assertEquals(HearingStatus.AWAITING_LISTING.name(), updatedEntity.getLastGoodStatus());
+        }
+
+        @Test
+        void updateLastGoodStatusWithFinalStatus() {
+            HearingEntity hearingEntity = new HearingEntity();
+            hearingEntity.setStatus(HearingStatus.COMPLETED.name());
+            hearingEntity.setLastGoodStatus(HearingStatus.CANCELLED.name());
+            assertThrows(BadRequestException.class, hearingEntity::updateLastGoodStatus);
+        }
+
+        @Test
+        void updateLastGoodStatusWithShouldUpdate() {
+            HearingEntity hearingEntity = new HearingEntity();
+            hearingEntity.setStatus(HearingStatus.LISTED.name());
+            hearingEntity.setLastGoodStatus(HearingStatus.AWAITING_LISTING.name());
+            HearingEntity updatedEntity = hearingEntity.updateLastGoodStatus();
+            assertEquals(HearingStatus.LISTED.name(), updatedEntity.getLastGoodStatus());
+        }
     }
 }

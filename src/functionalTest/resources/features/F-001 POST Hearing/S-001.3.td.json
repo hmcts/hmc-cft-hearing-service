@@ -18,7 +18,7 @@
           "partyRole": "DEF",
           "individualDetails": null,
           "organisationDetails": {
-            "name": "<name>",
+            "name": "name",
             "organisationType": "<organisationType>",
             "cftOrganisationID": "<cftOrganisationID>"
           }
@@ -33,7 +33,7 @@
     "_extends_": "Common_201_Response",
     "headers": {
       "Content-Length": "[[ANYTHING_PRESENT]]",
-      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Content-Type": "text/plain; charset=utf-8",
       "Date": "[[ANYTHING_PRESENT]]",
       "Request-Context": "[[ANY_NULLABLE]]"
     },

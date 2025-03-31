@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import ch.qos.logback.classic.Logger;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -62,6 +63,7 @@ import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_R
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.LISTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SUBMITTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus.CASE_CLOSED;
 
 class HmiHearingResponseMapperTest {
 
@@ -306,6 +308,11 @@ class HmiHearingResponseMapperTest {
         final HearingResponse hearingResponse = generateHmiMultiSessionMultiDayHearing(
             "random", HearingCode.EXCEPTION, 1, "Draft", startTimes.size());
 
+        final ImmutablePair<LocalDateTime, LocalDateTime> hearingTimes = new ImmutablePair<>(
+                hearingResponse.getHearing().getHearingStartTime(),
+                hearingResponse.getHearing().getHearingEndTime());
+
+        List<ImmutablePair<LocalDateTime, LocalDateTime>> hearingSessionStartAndEndTimes = new ArrayList<>();
         final List<HearingSession> existingSessions = hearingResponse.getHearing().getHearingSessions();
 
         for (int i = 0; i < existingSessions.size(); i++) {
@@ -314,9 +321,15 @@ class HmiHearingResponseMapperTest {
             hearingSession.setHearingEndTime(endTimes.get(i));
         }
 
+        for (int i = 0; i < expectedSessions.size(); i++) {
+            ImmutablePair<LocalDateTime, LocalDateTime> pair = new ImmutablePair<>(
+                expectedSessions.get(i).getHearingStartTime(), expectedSessions.get(i).getHearingEndTime());
+            hearingSessionStartAndEndTimes.add(pair);
+        }
+        hearingSessionStartAndEndTimes.add(hearingTimes);
+
         HearingEntity response = hmiHearingResponseMapper
-            .mapHmiHearingToEntity(hearingResponse, generateHearingEntity("AWAITING_LISTING", 1)
-            );
+            .mapHmiHearingToEntity(hearingResponse, generateHearingEntity("AWAITING_LISTING", 1));
         assertAll(
             () -> assertThat(response.getHearingResponses().size(), is(2)),
             () -> assertThat(
@@ -337,7 +350,7 @@ class HmiHearingResponseMapperTest {
             () -> assertThat(response.getHearingResponses().get(1).getListingCaseStatus(), is(EXCEPTION.name())),
             () -> assertThat(
                 response.getHearingResponses().get(1).getHearingDayDetails().size(),
-                is(expectedSessions.size())
+                is(hearingSessionStartAndEndTimes.size())
             ),
             () -> assertHearingDayDetails(response.getHearingResponses().get(1), expectedSessions)
         );
@@ -407,32 +420,31 @@ class HmiHearingResponseMapperTest {
 
     private static void assertHearingDayDetails(HearingResponseEntity hearingResponseEntity,
                                                 List<HearingSession> hearingSessions) {
-
-        hearingResponseEntity
-            .getHearingDayDetails()
+        hearingSessions.stream().forEach(hearingSession -> {
+            assertThat(
+                hearingResponseEntity
+                    .getHearingDayDetails().stream()
+                    .anyMatch(hearingDayDetailsEntity ->
+                                  hearingDayDetailsEntity.getStartDateTime()
+                                      .equals(hearingSession.getHearingStartTime())
+                                      && hearingDayDetailsEntity.getEndDateTime()
+                                      .equals(hearingSession
+                                                  .getHearingEndTime())
+                    ),
+                is(true)
+            );
+        });
+        hearingResponseEntity.getHearingDayDetails().stream()
             .forEach(hearingDayDetailsEntity -> {
-                assertThat(
-                    hearingSessions.stream()
-                        .anyMatch(hearingSession ->
-                                      hearingSession
-                                          .getHearingStartTime()
-                                          .equals(hearingDayDetailsEntity.getStartDateTime())
-                                          && hearingSession
-                                          .getHearingEndTime()
-                                          .equals(hearingDayDetailsEntity.getEndDateTime())),
-                    is(true)
-                );
-
                 assertThat(hearingDayDetailsEntity.getRoomId(), is("multiDayRoomName"));
                 assertThat(hearingDayDetailsEntity.getVenueId(), is(nullValue()));
                 assertThat(hearingDayDetailsEntity
-                               .getHearingAttendeeDetails().get(0).getPartyId(), is("entityId"));
+                                        .getHearingAttendeeDetails().get(0).getPartyId(), is("entityId"));
                 assertThat(hearingDayDetailsEntity.getHearingAttendeeDetails().get(0).getPartySubChannelType(),
-                           is("codeSubChannel"));
+                             is("codeSubChannel"));
                 assertThat(hearingDayDetailsEntity.getHearingDayPanel().get(0).getPanelUserId(), is("JohCode"));
                 assertThat(hearingDayDetailsEntity.getHearingDayPanel().get(0).getIsPresiding(), is(true));
-            }
-            );
+            });
     }
 
     @Test
@@ -728,6 +740,24 @@ class HmiHearingResponseMapperTest {
                 generateHearingEntity("CANCELLATION_SUBMITTED", 1)
             );
             assertEquals(response.getStatus(), CANCELLED.name());
+        }
+
+        @Test
+        void shouldStoreCorrectRequestVersionWhenAboutToCancel() {
+            HearingResponse hearingResponse = generateHmiHearing("random", HearingCode.CLOSED, 1,
+                                                                 "Draft");
+
+            uk.gov.hmcts.reform.hmc.client.hmi.HearingCaseStatus hearingCaseStatus =
+                new uk.gov.hmcts.reform.hmc.client.hmi.HearingCaseStatus();
+            hearingCaseStatus.setCode("8");
+            hearingCaseStatus.setDescription(CASE_CLOSED.label);
+            hearingResponse.getHearing().setHearingCaseStatus(hearingCaseStatus);
+
+            HearingEntity hearingEntity = generateHearingEntity("CANCELLATION_SUBMITTED", 11);
+            HearingEntity response = hmiHearingResponseMapper.mapHmiHearingToEntity(hearingResponse, hearingEntity);
+
+            assertEquals(response.getStatus(), CANCELLED.name());
+            assertEquals(11, response.getLatestRequestVersion());
         }
 
         @Test

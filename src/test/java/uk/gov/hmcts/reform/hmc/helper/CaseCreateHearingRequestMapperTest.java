@@ -130,7 +130,7 @@ class CaseCreateHearingRequestMapperTest {
         expectedEntity.setRequiredDurationInMinutes(360);
         expectedEntity.setHearingPriorityType("Priority type");
         expectedEntity.setPrivateHearingRequiredFlag(true);
-        expectedEntity.setHmctsServiceCode("ABA1");
+        expectedEntity.setHmctsServiceCode("TEST");
         expectedEntity.setCaseReference("1111222233334444");
         expectedEntity.setHearingRequestReceivedDateTime(LocalDateTime.now(CLOCK));
         expectedEntity.setCaseUrlContextPath("https://www.google.com");
