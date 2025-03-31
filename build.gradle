@@ -121,7 +121,6 @@ task functional(type: Test) {
       main = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
       classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
       args = [
-        '--threads', '10',
         '--strict',
         '--threads', '2',
         '--plugin', "json:${rootDir}/target/cucumber.json",
