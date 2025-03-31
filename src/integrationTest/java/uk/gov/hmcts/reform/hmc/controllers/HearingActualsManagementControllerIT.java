@@ -1,24 +1,35 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.core.IsNull;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.TestFixtures;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
+import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
+import uk.gov.hmcts.reform.hmc.interceptors.RequestBodyCachingFilter;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import wiremock.com.jayway.jsonpath.DocumentContext;
 import wiremock.com.jayway.jsonpath.JsonPath;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 import javax.persistence.EntityManager;
 
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -28,6 +39,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.getJsonString;
+import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.USER_ID;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_HEARING_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_INDIVIDUAL_FIRST_NAME_MAX_LENGTH;
@@ -43,6 +56,9 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
+import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.actualHearingDay;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingActualsOutcome;
 
@@ -52,6 +68,11 @@ class HearingActualsManagementControllerIT extends BaseTest {
     private ObjectMapper objectMapper;
 
     @Autowired
+    private WebApplicationContext context;
+
+    @Autowired
+    RequestBodyCachingFilter requestBodyCachingFilter;
+
     private MockMvc mockMvc;
 
     @Autowired
@@ -61,6 +82,13 @@ class HearingActualsManagementControllerIT extends BaseTest {
     private static final String INSERT_HEARING_ACTUALS = "classpath:sql/put-hearing-actuals.sql";
     private static final String INSERT_HEARING_ACTUALS1 = "classpath:sql/get-HearingsActual_request.sql";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(context)
+            .addFilter(requestBodyCachingFilter)
+            .build();
+    }
 
     @Nested
     @DisplayName("PutHearingActuals")
@@ -377,33 +405,34 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].pauseDateTimes[0].pauseEndTime")
                                .value("2022-01-28T12:30:00"))
 
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualPartyId")
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[2].actualPartyId")
                                .value("P1"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyRole")
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[2].partyRole")
                                .value("DEF"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyChannelSubType")
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[2].partyChannelSubType")
                                .value("INTER"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].didNotAttendFlag")
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[2].didNotAttendFlag")
                                .value("false"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[2].representedParty")
                                .value(IsNull.nullValue()))
                 .andExpect(jsonPath(
-                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].individualDetails.lastName")
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[2].individualDetails.lastName")
                                .value("Smith"))
                 .andExpect(jsonPath(
-                    "$.hearingActuals.actualHearingDays[0].actualDayParties[0].individualDetails.firstName")
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[2].individualDetails.firstName")
                                .value("Jane"))
                 .andExpect(jsonPath(
-                "$.hearingActuals.actualHearingDays[0].actualDayParties[0].representedParty")
+                "$.hearingActuals.actualHearingDays[0].actualDayParties[2].representedParty")
                           .value(IsNull.nullValue()))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].actualPartyId")
+
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].actualPartyId")
                           .value("P2"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].partyRole")
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyRole")
                                .value("APP"))
-                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[1].partyChannelSubType")
+                .andExpect(jsonPath("$.hearingActuals.actualHearingDays[0].actualDayParties[0].partyChannelSubType")
                                .value("INTER"))
                 .andExpect(jsonPath(
-                    "$.hearingActuals.actualHearingDays[0].actualDayParties[2].representedParty")
+                    "$.hearingActuals.actualHearingDays[0].actualDayParties[1].representedParty")
                                .value("P1"))
                 .andExpect(jsonPath(
                 "$.hearingActuals.actualHearingDays[0].actualDayParties[3].representedParty")
@@ -544,6 +573,71 @@ class HearingActualsManagementControllerIT extends BaseTest {
 
             // Multiple requests should replace actual_hearing records and delete orphans, always resulting in 1
             assertEquals(1, numberOfActualHearingRecords.size());
+        }
+    }
+
+    @Nested
+    @DisplayName("PutHearingActualsAlternativeEnvUrls")
+    class PutHearingActualsAlternativeUrls {
+
+        static WireMockServer amServer;
+        static WireMockServer dataStoreServer;
+
+        @BeforeAll
+        static void startServers() throws InterruptedException {
+            int amPort = 23456;
+            int dataStorePort = 34567;
+            amServer = startExtraWireMock(
+                amPort, "/am/role-assignments/actors/.*", getJsonString(stubRoleAssignments()));
+            dataStoreServer = startExtraWireMock(dataStorePort, "/cases/.*", CCD_RESPONSE);
+            amServer.start();
+            dataStoreServer.start();
+            // Wait for servers to start
+            // There might be a better way to do, e.g. using multi-domain mocking on the same
+            // WireMockServer instance (https://wiremock.org/docs/multi-domain-mocking/)
+            Thread.sleep(3000);
+        }
+
+        @AfterAll
+        static void stopServers() {
+            amServer.stop();
+            dataStoreServer.stop();
+        }
+
+        @BeforeEach
+        void setUp() {
+            ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+            amServer.resetRequests();
+            dataStoreServer.resetRequests();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS1})
+        void shouldCallProvidedCcdAndAmUrl_WhenHeadersProvided() throws Exception {
+            mockMvc.perform(
+                get(URL + "/2000000000")
+                    .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                    .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
+                    .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200));
+
+            amServer.verify(1, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
+            dataStoreServer.verify(1, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
+
+            mockMvc.perform(
+                put(URL + "/2000000000") // LISTED
+                    .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                    .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
+                    .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(TestFixtures.fromFileAsString(
+                        "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
+                .andExpect(status().is(200))
+                .andReturn();
+
+            amServer.verify(2, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
+            dataStoreServer.verify(2, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
         }
     }
 
@@ -905,4 +999,15 @@ class HearingActualsManagementControllerIT extends BaseTest {
     }
 
     private final String serviceJwtXuiWeb = generateDummyS2SToken("ccd_definition");
+
+
+    private static RoleAssignmentResponse stubRoleAssignments() {
+        RoleAssignmentResponse response = new RoleAssignmentResponse();
+        response.setRoleAssignments(List.of(
+            stubGenericRoleAssignment(HEARING_MANAGER),
+            stubGenericRoleAssignment(HEARING_VIEWER),
+            stubGenericRoleAssignment(LISTED_HEARING_VIEWER)
+        ));
+        return response;
+    }
 }

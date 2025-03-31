@@ -18,7 +18,7 @@
           "partyRole": "DEF",
           "individualDetails": null,
           "organisationDetails": {
-            "name": "<name>",
+            "name": "name",
             "organisationType": "<organisationType>",
             "cftOrganisationID": "<cftOrganisationID>"
           }

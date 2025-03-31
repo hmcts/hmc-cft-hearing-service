@@ -1,12 +1,15 @@
 package uk.gov.hmcts.reform.hmc.service;
 
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+
+import java.util.List;
 
 public interface HearingManagementService {
 
@@ -28,5 +31,7 @@ public interface HearingManagementService {
     ResponseEntity hearingCompletion(Long hearingId, String clientS2SToken);
 
     String getStatus(Long hearingId);
+
+    List<DataStoreCaseDetails> getCaseSearchResults(List<String> ccdCaseRefs, String status, String caseTypeId);
 
 }
