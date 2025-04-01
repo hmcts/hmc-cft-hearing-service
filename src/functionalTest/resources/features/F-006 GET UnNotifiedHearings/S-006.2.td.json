@@ -17,7 +17,7 @@
   },
   "request": {
     "pathVariables": {
-      "hmctsServiceCode": "BBA3"
+      "hmctsServiceCode": "TEST"
     },
     "queryParams": {
       "hearing_start_date_from": "2022-01-20 09:00:00",

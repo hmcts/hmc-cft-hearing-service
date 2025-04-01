@@ -8,7 +8,7 @@
   ],
   "request": {
     "pathVariables": {
-      "hmctsServiceCode": "1234"
+      "hmctsServiceCode": "TEST"
     },
     "queryParams": {
       "hearing_start_date_from": "2022-05-20 09:00:00",
