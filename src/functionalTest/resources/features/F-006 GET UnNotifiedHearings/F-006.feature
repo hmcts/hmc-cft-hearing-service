@@ -1,11 +1,9 @@
 @F-006
-Feature: F-006: Search unnotified Hearings
+Feature: F-006: Search unNotified Hearings
 
   Background:
     Given an appropriate test context as detailed in the test data source
     Given a user with [an active profile in CCD]
-    And a case that has just been created as in [CreateCase],
-
 
   @S-006.1
 # AC01: Validation error  - Return 400 error message
