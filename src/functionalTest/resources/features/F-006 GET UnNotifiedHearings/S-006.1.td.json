@@ -4,11 +4,6 @@
   "specs": [
     "has the 400 code"
   ],
-  "users": {
-    "invokingUser": {
-      "username": "HmcSuperuser"
-    }
-  },
   "request": {
     "pathVariables": {
       "hmctsServiceCode": "TEST"
