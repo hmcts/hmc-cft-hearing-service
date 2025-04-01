@@ -1,7 +1,7 @@
 {
   "_guid_": "S-006.2",
   "productName": "HMC CFT Hearing Service",
-  "operationName": "Search unnotified Hearings",
+  "operationName": "Search unNotified Hearings",
   "method": "GET",
   "uri": "/unNotifiedHearings/{hmctsServiceCode}",
   "s2sClientId": "xui_webapp",
@@ -12,8 +12,7 @@
   ],
   "users": {
     "invokingUser": {
-      "username": "master.caseworker@gmail.com",
-      "password": "[[$CCD_CASEWORKER_AUTOTEST_PASSWORD]]"
+      "username": "HmcSuperuser"
     }
   },
   "request": {

@@ -1,7 +1,7 @@
 {
   "_guid_": "F-006_TestBase",
   "productName": "HMC CFT Hearing Service",
-  "operationName": "Search unnotified Hearings",
+  "operationName": "Search unNotified Hearings",
   "method": "GET",
   "uri": "/unNotifiedHearings/{hmctsServiceCode}",
   "s2sClientId": "xui_webapp",

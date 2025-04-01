@@ -11,7 +11,7 @@ Feature: F-006: Search unNotified Hearings
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     And another successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
-    And it is submitted to call the [Search unnotified Hearings] operation of [HMC CFT Hearing Service],
+    And it is submitted to call the [Search unNotified Hearings] operation of [HMC CFT Hearing Service],
     Then a negative response is received,
     And the response [has the 400 code],
 
@@ -22,7 +22,7 @@ Feature: F-006: Search unNotified Hearings
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     And another successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
-    And it is submitted to call the [Search unnotified Hearings] operation of [HMC CFT Hearing Service],
+    And it is submitted to call the [Search unNotified Hearings] operation of [HMC CFT Hearing Service],
     Then a negative response is received,
     And the response [has the 403 code],
 
@@ -33,7 +33,7 @@ Feature: F-006: Search unNotified Hearings
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     And another successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
-    And it is submitted to call the [Search unnotified Hearings] operation of [HMC CFT Hearing Service],
+    And it is submitted to call the [Search unNotified Hearings] operation of [HMC CFT Hearing Service],
     Then a negative response is received,
     And the response [has the 400 code],
 
@@ -46,7 +46,7 @@ Feature: F-006: Search unNotified Hearings
     And a wait time of [10] seconds [to allow for outbound service to process all messages]
     And another successful call [listing a hearing] as in [ListHearingRequest],
     When a request is prepared with appropriate values,
-    And it is submitted to call the [Search unnotified Hearings] operation of [HMC CFT Hearing Service],
+    And it is submitted to call the [Search unNotified Hearings] operation of [HMC CFT Hearing Service],
     Then a positive response is received,
     And the response [has 200 status code],
 
@@ -57,7 +57,7 @@ Feature: F-006: Search unNotified Hearings
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     And another successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
-    And it is submitted to call the [Search unnotified Hearings] operation of [HMC CFT Hearing Service],
+    And it is submitted to call the [Search unNotified Hearings] operation of [HMC CFT Hearing Service],
     Then a positive response is received,
     And the response [has 200 status code],
 
@@ -68,7 +68,7 @@ Feature: F-006: Search unNotified Hearings
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     And another successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
-    And it is submitted to call the [Search unnotified Hearings] operation of [HMC CFT Hearing Service],
+    And it is submitted to call the [Search unNotified Hearings] operation of [HMC CFT Hearing Service],
     Then a positive response is received,
     And the response [has 200 status code],
 
@@ -79,6 +79,6 @@ Feature: F-006: Search unNotified Hearings
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     And another successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
-    And it is submitted to call the [Search unnotified Hearings] operation of [HMC CFT Hearing Service],
+    And it is submitted to call the [Search unNotified Hearings] operation of [HMC CFT Hearing Service],
     Then a positive response is received,
     And the response [has 200 status code],
