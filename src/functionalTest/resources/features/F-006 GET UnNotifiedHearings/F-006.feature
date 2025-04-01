@@ -44,7 +44,7 @@ Feature: F-006: Search unNotified Hearings
   Scenario: Successfully search for hearings of a case reference that has 1 hearing requests
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     And a wait time of [10] seconds [to allow for outbound service to process all messages]
-    And another successful call [listing a hearing] as in [ListHearingRequest],
+    And a successful call [to list the hearing] as in [ListHearingRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [Search unNotified Hearings] operation of [HMC CFT Hearing Service],
     Then a positive response is received,
