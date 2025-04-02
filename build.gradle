@@ -56,7 +56,7 @@ sourceSets {
     }
     resources.srcDir file('src/functionalTest/resources')
   }
-
+    
   contractTest {
     java {
       srcDir('src/contractTest/java')
