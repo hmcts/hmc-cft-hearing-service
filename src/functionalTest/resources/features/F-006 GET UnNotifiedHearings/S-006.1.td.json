@@ -1,9 +1,18 @@
 {
   "_guid_": "S-006.1",
-  "_extends_" : "F-006_TestBase",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "Search unNotified Hearings",
+  "method": "GET",
+  "uri": "/unNotifiedHearings/{hmctsServiceCode}",
+  "s2sClientId": "xui_webapp",
   "specs": [
     "has the 400 code"
   ],
+  "users": {
+    "invokingUser": {
+      "username": "HmcSuperuser"
+    }
+  },
   "request": {
     "pathVariables": {
       "hmctsServiceCode": "TEST"
