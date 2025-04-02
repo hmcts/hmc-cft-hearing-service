@@ -40,16 +40,16 @@ def secrets = [
     secret('ccd-caseworker-autotest-password', 'CCD_CASEWORKER_AUTOTEST_PASSWORD'),
     secret('role-assignment-api-gateway-s2s-client-id', 'ROLE_ASSIGNMENT_API_GATEWAY_S2S_CLIENT_ID'),
     secret('role-assignment-api-gateway-s2s-client-key', 'ROLE_ASSIGNMENT_API_GATEWAY_S2S_CLIENT_KEY'),
-    secret('role-assignment-user-email', 'ROLE_ASSIGNMENT_USER_EMAIL'),
+    //secret('role-assignment-user-email', 'ROLE_ASSIGNMENT_USER_EMAIL'),
     secret('role-assignment-user-password', 'ROLE_ASSIGNMENT_USER_PASSWORD'),
-    secret('role-assignment-super-user', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER'),
-    secret('role-assignment-super-user-pwd', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER_PWD'),
-    secret('role-assignment-solicitor-user', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER'),
-    secret('role-assignment-solicitor-user-pwd', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER_PWD'),
-    secret('role-assignment-staff1-user', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER'),
-    secret('role-assignment-staff1-user-pwd', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER_PWD'),
-    secret('role-assignment-staff2-user', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER'),
-    secret('role-assignment-staff2-user-pwd', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER_PWD')
+    //secret('role-assignment-super-user', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER'),
+    secret('ccd-caseworker-autotest-password', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER_PWD'),
+    //secret('role-assignment-solicitor-user', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER'),
+    secret('ccd-caseworker-autotest-password', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER_PWD'),
+    //secret('role-assignment-staff1-user', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER'),
+    secret('ccd-caseworker-autotest-password', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER_PWD'),
+    //secret('role-assignment-staff2-user', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER'),
+    secret('ccd-caseworker-autotest-password', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER_PWD')
   ],
   'hmc-${env}': [
     secret('hmc-servicebus-connection-string', 'HMC_SERVICE_BUS_CONNECTION_STRING'),
@@ -127,11 +127,11 @@ env.BEFTA_OAUTH2_SCOPE_VARIABLES_OF_XUIWEBAPP = "profile openid roles manage-use
 // Env variables needed to add Role Assignments.
 //env.ROLE_ASSIGNMENT_API_GATEWAY_S2S_CLIENT_ID = "ccd_gw"
 env.ROLE_ASSIGNMENT_HOST="http://am-role-assignment-service-aat.service.core-compute-aat.internal"
-//env.ROLE_ASSIGNMENT_USER_EMAIL="ccd.ac.solicitor1@gmail.com"
-//env.ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER="ccd.ac.superuser@gmail.co"
-//env.ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER="ccd.ac.staff1@gmail.com"
-//env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER="ccd.ac.staff2@gmail.com"
-//env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER="ccd.ac.solicitor1@gmail.com"
+env.ROLE_ASSIGNMENT_USER_EMAIL="ccd.ac.solicitor1@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER="ccd.ac.superuser@gmail.co"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER="befta.caseworker.1@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER="befta.caseworker.2@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER="befta.caseworker.3@gmail.com"
 
 // temporary workaround for platform changes: turn BEFTA header checks to warning mode
 env.BEFTA_RESPONSE_HEADER_CHECK_POLICY="JUST_WARN"
