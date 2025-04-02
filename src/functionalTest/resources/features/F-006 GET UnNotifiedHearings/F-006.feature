@@ -69,7 +69,7 @@ Feature: F-006: Search unNotified Hearings
   @S-006.6
 # AC06: Return empty result set if there is an outstanding request version after the most recent response from LA
   Scenario: Successfully search for hearings of a case reference that has 2 hearing requests
-    Given a user with [an active profile in CCD]Given a user with [an active profile in CCD]
+    Given a user with [an active profile in CCD]
     And a successful call [to create a hearing request] as in [CreateHearingRequest],
     And another successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
