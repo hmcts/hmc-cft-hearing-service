@@ -13,7 +13,7 @@ Feature: F-006: Search unNotified Hearings
     When a request is prepared with appropriate values,
     And it is submitted to call the [Search unNotified Hearings] operation of [HMC CFT Hearing Service],
     Then a negative response is received,
-    And the response [has the 400 code],
+    And the response [has the 400 code]
 
 
   @S-006.2

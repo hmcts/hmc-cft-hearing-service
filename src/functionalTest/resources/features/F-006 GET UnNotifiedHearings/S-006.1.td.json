@@ -6,6 +6,7 @@
   "uri": "/unNotifiedHearings/{hmctsServiceCode}",
   "s2sClientId": "xui_webapp",
   "specs": [
+    "an active profile in CCD",
     "has the 400 code"
   ],
   "users": {
