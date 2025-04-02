@@ -1,14 +1,8 @@
 {
   "_guid_": "S-006.2",
-  "productName": "HMC CFT Hearing Service",
-  "operationName": "Search unNotified Hearings",
-  "method": "GET",
-  "uri": "/unNotifiedHearings/{hmctsServiceCode}",
-  "s2sClientId": "xui_webapp",
+  "_extends_" : "F-006_TestBase",
   "specs": [
-    "an active profile in CCD",
     "has the 403 code"
-
   ],
   "users": {
     "invokingUser": {
