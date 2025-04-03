@@ -1,0 +1,20 @@
+{
+  "_guid_": "S-006.1",
+  "_extends_" : "F-006_TestBase",
+  "specs": [
+    "has the 400 code"
+  ],
+  "request": {
+    "pathVariables": {
+      "hmctsServiceCode": "TEST"
+    },
+    "queryParams": {
+      "hearing_start_date_from": "xxxx-01-20 09:00:00",
+      "hearing_start_date_to": "xxxx-01-20 10:00:00"
+    }
+  },
+  "expectedResponse": {
+    "responseCode" : 400,
+    "responseMessage" : "Bad Request"
+  }
+}
