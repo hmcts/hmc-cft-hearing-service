@@ -16,7 +16,8 @@ Feature: F-006: Search unNotified Hearings
     And the response [has the 400 code]
 
 
-  @S-006.2
+  @S-006.2 @Ignore
+# This scenario is ignored because Role Assignment is not implemented yet
 # AC02: User does not have rights Role Assignment - Return 403 error message
   Scenario: Successfully search for hearings of a case reference that has 2 hearing requests
     Given a user with [an active profile in CCD]
