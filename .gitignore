@@ -10,6 +10,7 @@ target/
 /BEFTA Report for Functional Tests/
 applicationinsights-agent-*.jar
 *.log
+/bin/
 
 ### STS ###
 .apt_generated
