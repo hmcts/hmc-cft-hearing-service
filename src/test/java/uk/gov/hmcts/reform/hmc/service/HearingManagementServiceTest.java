@@ -689,7 +689,7 @@ class HearingManagementServiceTest {
                 .caseTypeId(CASE_TYPE)
                 .build();
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(HEARING_MANAGER));
+            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(HEARING_MANAGER), null);
         }
 
         @Test
@@ -702,7 +702,7 @@ class HearingManagementServiceTest {
                 .caseTypeId("different casetypeid")
                 .build();
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME));
+            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME), null);
         }
 
         @Test
@@ -718,7 +718,7 @@ class HearingManagementServiceTest {
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
             List<String> requiredRoles = Lists.newArrayList(HEARING_VIEWER);
             Exception exception = assertThrows(InvalidRoleAssignmentException.class, () ->
-                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles));
+                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles, null));
             assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
         }
 
@@ -731,7 +731,7 @@ class HearingManagementServiceTest {
                 .caseTypeId(CASE_TYPE)
                 .build();
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME));
+            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME), null);
         }
 
         @Test
@@ -745,7 +745,7 @@ class HearingManagementServiceTest {
                 .caseTypeId(CASE_TYPE)
                 .build();
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME));
+            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME), null);
         }
 
         @Test
@@ -759,7 +759,7 @@ class HearingManagementServiceTest {
                 .caseTypeId(CASE_TYPE)
                 .build();
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME));
+            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME), null);
         }
 
         @Test
@@ -773,7 +773,7 @@ class HearingManagementServiceTest {
                 .caseTypeId(CASE_TYPE)
                 .build();
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME));
+            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME), null);
         }
 
         @Test
@@ -786,7 +786,7 @@ class HearingManagementServiceTest {
                 .caseTypeId(CASE_TYPE)
                 .build();
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME));
+            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME), null);
         }
 
         @Test
@@ -799,7 +799,7 @@ class HearingManagementServiceTest {
                 .caseTypeId(CASE_TYPE)
                 .build();
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME));
+            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME), null);
         }
 
         @Test
@@ -812,7 +812,7 @@ class HearingManagementServiceTest {
                 .caseTypeId(CASE_TYPE)
                 .build();
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME));
+            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME), null);
         }
 
         @Test
@@ -825,7 +825,7 @@ class HearingManagementServiceTest {
                 .caseTypeId(CASE_TYPE)
                 .build();
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
-            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME));
+            accessControlService.verifyCaseAccess(CASE_REFERENCE, Lists.newArrayList(ROLE_NAME), null);
         }
 
         @Test
@@ -837,7 +837,7 @@ class HearingManagementServiceTest {
             doReturn(roleAssignments).when(roleAssignmentService).getRoleAssignments(USER_ID);
             List<String> requiredRoles = Lists.newArrayList();
             Exception exception = assertThrows(ResourceNotFoundException.class, () ->
-                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles));
+                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles, null));
             assertEquals(String.format(ROLE_ASSIGNMENTS_NOT_FOUND, USER_ID), exception.getMessage());
         }
 
@@ -856,7 +856,7 @@ class HearingManagementServiceTest {
             doReturn(USER_ID).when(securityUtils).getUserId();
             List<String> requiredRoles = Lists.newArrayList();
             Exception exception = assertThrows(InvalidRoleAssignmentException.class, () ->
-                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles));
+                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles,null));
             assertEquals(ROLE_ASSIGNMENT_INVALID_ROLE, exception.getMessage());
         }
 
@@ -873,7 +873,7 @@ class HearingManagementServiceTest {
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
             List<String> requiredRoles = Lists.newArrayList(ROLE_NAME);
             Exception exception = assertThrows(InvalidRoleAssignmentException.class, () ->
-                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles));
+                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles,null));
             assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
         }
 
@@ -890,7 +890,7 @@ class HearingManagementServiceTest {
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
             List<String> requiredRoles = Lists.newArrayList(ROLE_NAME);
             Exception exception = assertThrows(InvalidRoleAssignmentException.class, () ->
-                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles));
+                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles, null));
             assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
         }
 
@@ -907,7 +907,7 @@ class HearingManagementServiceTest {
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
             List<String> requiredRoles = Lists.newArrayList(ROLE_NAME);
             Exception exception = assertThrows(InvalidRoleAssignmentException.class, () ->
-                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles));
+                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles, null));
             assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
         }
 
@@ -924,7 +924,7 @@ class HearingManagementServiceTest {
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(CASE_REFERENCE);
             List<String> requiredRoles = Lists.newArrayList(ROLE_NAME);
             Exception exception = assertThrows(InvalidRoleAssignmentException.class, () ->
-                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles));
+                accessControlService.verifyCaseAccess(CASE_REFERENCE, requiredRoles, null));
             assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
         }
 
@@ -941,7 +941,7 @@ class HearingManagementServiceTest {
             doReturn(caseDetails).when(dataStoreRepository).findCaseByCaseIdUsingExternalApi(INVALID_CASE_REFERENCE);
             List<String> requiredRoles = Lists.newArrayList(ROLE_NAME);
             Exception exception = assertThrows(InvalidRoleAssignmentException.class, () ->
-                accessControlService.verifyCaseAccess(INVALID_CASE_REFERENCE, requiredRoles));
+                accessControlService.verifyCaseAccess(INVALID_CASE_REFERENCE, requiredRoles, null));
             assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
         }
     }

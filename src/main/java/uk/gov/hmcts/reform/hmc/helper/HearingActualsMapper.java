@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPauseDayTime;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -102,6 +103,10 @@ public class HearingActualsMapper {
                 dayEntity
             ))
             .collect(Collectors.toList());
+        actualHearingPartyEntities.sort(Comparator.comparing(ActualHearingPartyEntity::getActualPartyRoleType,
+                                                           Comparator.nullsLast(String::compareTo))
+                                            .thenComparing(ActualHearingPartyEntity::getActualPartyId,
+                                                           Comparator.nullsLast(Long::compareTo)));
         createActualPartyRelationshipDetailEntity(actualHearingPartyEntities, actualDayParties);
         return actualHearingPartyEntities;
     }
