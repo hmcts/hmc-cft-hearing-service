@@ -38,18 +38,13 @@ def secrets = [
     secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
     secret('definition-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
     secret('ccd-caseworker-autotest-password', 'CCD_CASEWORKER_AUTOTEST_PASSWORD'),
+    secret('ccd-caseworker-autotest-password', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER_PWD'),
+    secret('ccd-caseworker-autotest-password', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER_PWD'),
+    secret('ccd-caseworker-autotest-password', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER_PWD'),
+    secret('ccd-caseworker-autotest-password', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER_PWD'),
     secret('role-assignment-api-gateway-s2s-client-id', 'ROLE_ASSIGNMENT_API_GATEWAY_S2S_CLIENT_ID'),
     secret('role-assignment-api-gateway-s2s-client-key', 'ROLE_ASSIGNMENT_API_GATEWAY_S2S_CLIENT_KEY'),
-    //secret('role-assignment-user-email', 'ROLE_ASSIGNMENT_USER_EMAIL'),
-    secret('role-assignment-user-password', 'ROLE_ASSIGNMENT_USER_PASSWORD'),
-    //secret('role-assignment-super-user', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER'),
-    secret('ccd-caseworker-autotest-password', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER_PWD'),
-    //secret('role-assignment-solicitor-user', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER'),
-    secret('ccd-caseworker-autotest-password', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER_PWD'),
-    //secret('role-assignment-staff1-user', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER'),
-    secret('ccd-caseworker-autotest-password', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER_PWD'),
-    //secret('role-assignment-staff2-user', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER'),
-    secret('ccd-caseworker-autotest-password', 'ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER_PWD')
+    secret('role-assignment-user-password', 'ROLE_ASSIGNMENT_USER_PASSWORD')
   ],
   'hmc-${env}': [
     secret('hmc-servicebus-connection-string', 'HMC_SERVICE_BUS_CONNECTION_STRING'),
@@ -77,6 +72,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
   ]
 }
 // env variables needed for BEFTA.
+env.HMI_BASE_URL = "http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi"
 env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
 env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
 env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
@@ -96,12 +92,12 @@ env.HMC_OUTBOUND_SERVICE_BUS_QUEUE = "hmc-to-hmi"
 // vars needed for functional tests
 // Assume a feature build branched off 'develop', with dependencies develop-to-develop.
 env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-api-${definitionStoreDevelopPr}.preview.platform.hmcts.net".toLowerCase()
-env.CCD_DATA_STORE_API_BASE_URL = "https://ccd-data-store-api-${dataStoreApiDevelopPr}.preview.platform.hmcts.net".toLowerCase()
+env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-test-stubs-service-aat.service.core-compute-aat.internal"
 env.MCA_API_BASE_URL = "https://aac-manage-case-assignment-${env.BRANCH_NAME}.preview.platform.hmcts.net".toLowerCase()
 
 // Other env variables needed for BEFTA.
 env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
+env.IDAM_API_URL_BASE = "http://ccd-test-stubs-service-aat.service.core-compute-aat.internal"
 env.BEFTA_S2S_CLIENT_ID = "xui_webapp"
 env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID = "ccd_gateway"
 env.CCD_API_GATEWAY_OAUTH2_REDIRECT_URL = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
@@ -126,12 +122,12 @@ env.BEFTA_OAUTH2_SCOPE_VARIABLES_OF_XUIWEBAPP = "profile openid roles manage-use
 
 // Env variables needed to add Role Assignments.
 //env.ROLE_ASSIGNMENT_API_GATEWAY_S2S_CLIENT_ID = "ccd_gw"
-env.ROLE_ASSIGNMENT_HOST="http://am-role-assignment-service-aat.service.core-compute-aat.internal"
+env.ROLE_ASSIGNMENT_HOST="http://ccd-test-stubs-service-aat.service.core-compute-aat.internal"
 env.ROLE_ASSIGNMENT_USER_EMAIL="ccd.ac.solicitor1@gmail.com"
-env.ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER="ccd.ac.superuser@gmail.co"
-env.ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER="befta.caseworker.1@gmail.com"
-env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER="befta.caseworker.2@gmail.com"
-env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER="befta.caseworker.3@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_SUPERUSER="hmc.superuser999@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_LISTED_HEARING_VIEWER="hmc.listed-hearing-viewer999@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_VIEWER="hmc.hearing-viewer999@gmail.com"
+env.ROLE_ASSIGNMENT_CASEWORKER_HMC_HEARING_MANAGER="hmc.hearing-manager999@gmail.com"
 
 // temporary workaround for platform changes: turn BEFTA header checks to warning mode
 env.BEFTA_RESPONSE_HEADER_CHECK_POLICY="JUST_WARN"
