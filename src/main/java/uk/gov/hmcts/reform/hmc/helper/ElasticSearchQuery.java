@@ -2,26 +2,29 @@ package uk.gov.hmcts.reform.hmc.helper;
 
 import lombok.Builder;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Builder
 public class ElasticSearchQuery {
 
-    private static final String QUERY = """
-        {
-            "query": {
-                "terms": {
-                    "reference": [
-                        "1733244309444665",
-                        "1733225862820847",
-                        "1733233844992551"
-                    ]
-                }
-            },
-            "_source": ["id", "jurisdiction", "case_type_id", "reference"]
-        }
-        """;
+    private List<String> caseRefs;
 
     public String getQuery() {
-        return QUERY;
-    }
+        String joinedRefs = caseRefs.stream()
+            .map(ref -> "\"" + ref + "\"")
+            .collect(Collectors.joining(", "));
 
+        return """
+            {
+                "query": {
+                    "terms": {
+                        "reference": [%s]
+                    }
+                },
+                "_source": ["id", "jurisdiction", "case_type_id", "reference"]
+            }
+            """.formatted(joinedRefs);
+    }
 }
+

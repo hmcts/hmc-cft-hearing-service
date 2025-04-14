@@ -369,6 +369,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     private String createSearchQuery(List<String> ccdCaseRefs) {
         ElasticSearchQuery elasticSearchQuery = ElasticSearchQuery.builder()
+            .caseRefs(ccdCaseRefs)
             .build();
         log.info("ElasticSearchQuery for ccdCaseRefs {}", ccdCaseRefs);
         return elasticSearchQuery.getQuery();
