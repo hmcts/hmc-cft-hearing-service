@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.ElasticSearch;
@@ -26,7 +25,6 @@ import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
-import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
@@ -112,8 +110,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_ORGANIS
 public class HearingManagementServiceImpl implements HearingManagementService {
 
     private final DataStoreRepository dataStoreRepository;
-    private final RoleAssignmentService roleAssignmentService;
-    private final SecurityUtils securityUtils;
     private final HearingMapper hearingMapper;
     private final GetHearingsResponseMapper getHearingsResponseMapper;
     private final GetHearingResponseMapper getHearingResponseMapper;
@@ -123,7 +119,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final ObjectMapperService objectMapperService;
     private final HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
     private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
-    private final ApplicationParams applicationParams;
     private final HearingIdValidator hearingIdValidator;
     private final HearingActualsValidator hearingActualsValidator;
     private final LinkedHearingValidator linkedHearingValidator;
@@ -137,8 +132,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
 
     @Autowired
-    public HearingManagementServiceImpl(RoleAssignmentService roleAssignmentService, SecurityUtils securityUtils,
-                                        @Qualifier("defaultDataStoreRepository")
+    public HearingManagementServiceImpl(@Qualifier("defaultDataStoreRepository")
                                             DataStoreRepository dataStoreRepository,
                                         HearingRepository hearingRepository,
                                         HearingMapper hearingMapper,
@@ -150,7 +144,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         ObjectMapperService objectMapperService,
                                         HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper,
                                         MessageSenderToQueueConfiguration messageSenderToQueueConfiguration,
-                                        ApplicationParams applicationParams,
                                         HearingIdValidator hearingIdValidator,
                                         LinkedHearingValidator linkedHearingValidator,
                                         PartyRelationshipDetailsMapper partyRelationshipDetailsMapper,
@@ -161,8 +154,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HmiHearingResponseMapper hmiHearingResponseMapper,
                                         HearingStatusAuditService hearingStatusAuditService) {
         this.dataStoreRepository = dataStoreRepository;
-        this.roleAssignmentService = roleAssignmentService;
-        this.securityUtils = securityUtils;
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.hmiSubmitHearingRequestMapper = hmiSubmitHearingRequestMapper;
@@ -172,7 +163,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
         this.messageSenderToQueueConfiguration = messageSenderToQueueConfiguration;
-        this.applicationParams = applicationParams;
         this.hearingRepository = hearingRepository;
         this.hearingIdValidator = hearingIdValidator;
         this.linkedHearingValidator = linkedHearingValidator;
