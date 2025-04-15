@@ -90,6 +90,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
@@ -1742,10 +1743,22 @@ public class TestingUtil {
     }
 
     public static String createSearchQuery(List<String> ccdCaseRefs) {
-        Terms terms = new Terms(ccdCaseRefs);
-        Query query = new Query(terms);
-        return objectMapperService.convertObjectToJsonNode(new ElasticSearch(query)).toString();
-    }
+            String joinedRefs = ccdCaseRefs.stream()
+                .map(ref -> "\"" + ref + "\"")
+                .collect(Collectors.joining(", "));
+
+            return """
+            {
+                "query": {
+                    "terms": {
+                        "reference": [%s]
+                    }
+                },
+                "_source": ["id", "jurisdiction", "case_type_id", "reference"]
+            }
+            """.formatted(joinedRefs);
+        }
+
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
 
