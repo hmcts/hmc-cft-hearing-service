@@ -121,6 +121,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(HearingServiceWaitException.class)
+    protected ResponseEntity<Object> handleHearingServiceWaitException(Exception ex) {
+        log.debug("HearingServiceWaitException :{} ", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     private ResponseEntity<Object> toResponseEntity(HttpStatus status, String... errors) {
         List<String> errorList = Arrays.stream(errors).filter(Objects::nonNull).collect(Collectors.toList());
         var apiError = new ApiError(status, errorList);
