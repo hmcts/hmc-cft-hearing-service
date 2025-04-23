@@ -124,6 +124,5 @@ module "postgresql_v15_replica" {
   create_mode         = "Replica"
   source_server_id    = var.primary_server_id
   high_availability   = false
-  depends_on = [module.postgresql_v15]
 
 }
