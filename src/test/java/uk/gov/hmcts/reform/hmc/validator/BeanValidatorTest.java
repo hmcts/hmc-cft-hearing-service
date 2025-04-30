@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
+import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyDetails;
 import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
@@ -47,6 +48,7 @@ class BeanValidatorTest {
 
     private static ValidatorFactory validatorFactory;
     private static Validator validator;
+    String invalidUtf8 = "Text\uFFFF";
 
     @BeforeEach
     void createValidator() {
@@ -193,6 +195,57 @@ class BeanValidatorTest {
         assertTrue(validationErrors.contains(ValidationError.CASE_MANAGEMENT_LOCATION_CODE_EMPTY));
         assertTrue(validationErrors.contains(ValidationError.CASE_RESTRICTED_FLAG_NULL_EMPTY));
 
+    }
+
+    @Test
+    void shouldHave_CaseDetails_ValidRegExViolations() {
+        CaseDetails caseDetails = TestingUtil.caseDetails();
+        caseDetails.setHmctsInternalCaseName("Valid Text 123!@#");
+        caseDetails.setPublicCaseName("Valid Text 123!@#");
+        Set<ConstraintViolation<CaseDetails>> violations = validator.validate(caseDetails);
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    void shouldHave_CaseDetails_RegExViolations() {
+        CaseDetails caseDetails = TestingUtil.caseDetails();
+        caseDetails.setHmctsInternalCaseName(invalidUtf8);
+        caseDetails.setPublicCaseName(invalidUtf8);
+        Set<ConstraintViolation<CaseDetails>> violations = validator.validate(caseDetails);
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
+        assertFalse(violations.isEmpty());
+        assertEquals(2, violations.size());
+        assertTrue(validationErrors.contains(ValidationError.INVALID_HMCTS_INTERNAL_CASE_NAME));
+        assertTrue(validationErrors.contains(ValidationError.INVALID_PUBLIC_CASE_NAME));
+    }
+
+    @Test
+    void shouldHave_PartyDetails_RegExViolations() {
+        List<PartyDetails> partyDetailsList = TestingUtil.partyDetailsWith2Parties(true);
+        partyDetailsList.get(0).getIndividualDetails().setFirstName(invalidUtf8);
+        partyDetailsList.get(0).getIndividualDetails().setLastName(invalidUtf8);
+        Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetailsList.get(0));
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
+        assertFalse(violations.isEmpty());
+        assertEquals(2, violations.size());
+        assertTrue(validationErrors.contains(ValidationError.INVALID_FIRST_NAME));
+        assertTrue(validationErrors.contains(ValidationError.INVALID_LAST_NAME));
+    }
+
+    @Test
+    void shouldHave_OrgDetails_RegExViolations() {
+        OrganisationDetails organisationDetails = TestingUtil.organisationDetails();
+        organisationDetails.setName(invalidUtf8);
+        Set<ConstraintViolation<OrganisationDetails>> violations = validator.validate(organisationDetails);
+        List<String> validationErrors = new ArrayList<>();
+        violations.forEach(e -> validationErrors.add(e.getMessage()));
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+        assertTrue(validationErrors.contains(ValidationError.INVALID_ORGANISATION_NAME));
     }
 
     @Test
