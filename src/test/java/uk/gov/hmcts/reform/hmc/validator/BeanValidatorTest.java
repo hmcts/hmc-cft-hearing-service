@@ -32,6 +32,9 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_TYPE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_VALUE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_LOCATION_EMPTY;
