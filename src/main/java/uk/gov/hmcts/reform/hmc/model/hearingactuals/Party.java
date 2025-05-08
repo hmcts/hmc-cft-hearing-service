@@ -16,4 +16,6 @@ public class Party {
     private OrganisationDetails organisationDetails;
 
     private String partyChannelSubType;
+
+    private String partyType;
 }
