@@ -277,4 +277,10 @@ public final class ValidationError {
         + CHARACTERS_LONG;
     public static final String HEARING_STATUS_EXCEPTION = "Hearing status can not be Exception";
     public static final String IS_A_PANEL_FLAG_INVALID_TYPE = "Unsupported type or value for is a panel flag";
+    public static final String INVALID_HMCTS_INTERNAL_CASE_NAME = "Hmcts internal case name is invalid";
+    public static final String INVALID_PUBLIC_CASE_NAME = "Public case name is invalid";
+    public static final String INVALID_FIRST_NAME = "First name is invalid";
+    public static final String INVALID_LAST_NAME = "Last name is invalid";
+    public static final String INVALID_ORGANISATION_NAME = "Organisation name is invalid";
+
 }

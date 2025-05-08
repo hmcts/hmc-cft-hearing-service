@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.hmc.model.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,12 +91,14 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
         for (HearingPartyEntity hearingPartyEntity : caseHearingRequestEntity.getHearingParties()) {
             PartyDetails partyDetails = new PartyDetails();
             partyDetails.setPartyID(hearingPartyEntity.getPartyReference());
-            partyDetails.setPartyType(hearingPartyEntity.getPartyType().getLabel());
             partyDetails.setPartyRole(hearingPartyEntity.getPartyRoleType());
-            if (PartyType.IND.getLabel().equals(hearingPartyEntity.getPartyType().getLabel())) {
-                partyDetails.setIndividualDetails(setIndividualDetails(hearingPartyEntity));
-            } else {
-                partyDetails.setOrganisationDetails(setOrganisationDetails(hearingPartyEntity));
+            if (null !=  hearingPartyEntity.getPartyType()) {
+                partyDetails.setPartyType(hearingPartyEntity.getPartyType().getLabel());
+                if (PartyType.IND.getLabel().equals(hearingPartyEntity.getPartyType().getLabel())) {
+                    partyDetails.setIndividualDetails(setIndividualDetails(hearingPartyEntity));
+                } else {
+                    partyDetails.setOrganisationDetails(setOrganisationDetails(hearingPartyEntity));
+                }
             }
             setUnavailability(hearingPartyEntity, partyDetails);
             partyDetailsList.add(partyDetails);
@@ -407,10 +410,11 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
 
     private List<String> setHearingChannel(CaseHearingRequestEntity caseHearingRequestEntity) {
         List<String> hearingChannels = new ArrayList<>();
-        for (HearingChannelsEntity hearingChannelsEntity : caseHearingRequestEntity.getHearingChannels()) {
-            hearingChannels.add(hearingChannelsEntity.getHearingChannelType());
+        if (null != caseHearingRequestEntity.getHearingChannels()) {
+            for (HearingChannelsEntity hearingChannelsEntity : caseHearingRequestEntity.getHearingChannels()) {
+                hearingChannels.add(hearingChannelsEntity.getHearingChannelType());
+            }
         }
-
         return hearingChannels;
     }
 
@@ -441,6 +445,10 @@ public class GetHearingResponseMapper extends GetHearingResponseCommonCode {
                     scheduleList.add(hearingDaySchedule);
                 }
             }
+            scheduleList.sort(Comparator.comparing(HearingDaySchedule::getHearingStartDateTime,
+                                                   Comparator.nullsLast(Comparator.naturalOrder()))
+                                  .thenComparing(Comparator.comparing(HearingDaySchedule::getHearingJudgeId,
+                                                                     Comparator.nullsLast(Comparator.naturalOrder()))));
             caseHearing.setHearingDaySchedule(scheduleList);
         }
     }

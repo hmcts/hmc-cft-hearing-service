@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.ElasticSearch;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.Query;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.Terms;
-import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
@@ -118,7 +117,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
     private final ObjectMapperService objectMapperService;
     private final HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
-    private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
     private final HearingIdValidator hearingIdValidator;
     private final HearingActualsValidator hearingActualsValidator;
     private final LinkedHearingValidator linkedHearingValidator;
@@ -129,11 +127,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final EntitiesMapper entitiesMapper;
     private final HmiHearingResponseMapper hmiHearingResponseMapper;
     private final HearingStatusAuditService hearingStatusAuditService;
+    private final PendingRequestService pendingRequestService;
 
 
     @Autowired
     public HearingManagementServiceImpl(@Qualifier("defaultDataStoreRepository")
-                                            DataStoreRepository dataStoreRepository,
+                                        DataStoreRepository dataStoreRepository,
                                         HearingRepository hearingRepository,
                                         HearingMapper hearingMapper,
                                         CaseHearingRequestRepository caseHearingRequestRepository,
@@ -143,7 +142,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         MessageSenderToTopicConfiguration messageSenderToTopicConfiguration,
                                         ObjectMapperService objectMapperService,
                                         HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper,
-                                        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration,
                                         HearingIdValidator hearingIdValidator,
                                         LinkedHearingValidator linkedHearingValidator,
                                         PartyRelationshipDetailsMapper partyRelationshipDetailsMapper,
@@ -152,7 +150,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HmiCaseDetailsMapper hmiCaseDetailsMapper,
                                         EntitiesMapper entitiesMapper,
                                         HmiHearingResponseMapper hmiHearingResponseMapper,
-                                        HearingStatusAuditService hearingStatusAuditService) {
+                                        HearingStatusAuditService hearingStatusAuditService,
+                                        PendingRequestService pendingRequestService) {
         this.dataStoreRepository = dataStoreRepository;
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
@@ -162,7 +161,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.getHearingResponseMapper = getHearingResponseMapper;
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
-        this.messageSenderToQueueConfiguration = messageSenderToQueueConfiguration;
         this.hearingRepository = hearingRepository;
         this.hearingIdValidator = hearingIdValidator;
         this.linkedHearingValidator = linkedHearingValidator;
@@ -173,6 +171,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.entitiesMapper = entitiesMapper;
         this.hmiHearingResponseMapper = hmiHearingResponseMapper;
         this.hearingStatusAuditService = hearingStatusAuditService;
+        this.pendingRequestService = pendingRequestService;
     }
 
     @Override
@@ -294,7 +293,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                          DELETE_HEARING_REQUEST, String.valueOf(HttpStatus.OK.value()),
                                                          clientS2SToken, HMC, null);
-        sendRequestToQueue(hearingId, DELETE_HEARING,existingHearing.getDeploymentId());
+        generatePendingRequest(hearingId, DELETE_HEARING, existingHearing.getDeploymentId());
         return saveHearingResponseDetails;
     }
 
@@ -403,7 +402,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                           HmiCaseDetails hmiCaseDetails,Listing listing, String deploymentId) {
         HmiSubmitHearingRequest hmiSubmitHearingRequest = hmiSubmitHearingRequestMapper
             .mapRequest(hearingRequest, hmiCaseDetails, listing);
-        sendRequestToQueue(hmiSubmitHearingRequest, hearingId, messageType,deploymentId);
+        generatePendingRequest(hmiSubmitHearingRequest, hearingId, messageType, deploymentId);
     }
 
     private void validateHearingStatusForUpdate(Long hearingId) {
@@ -659,15 +658,17 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         messageSenderToTopicConfiguration.sendMessage(jsonNode.toString(), hmctsServiceId, NO_DEFINED, deploymentId);
     }
 
-    private void sendRequestToQueue(HmiSubmitHearingRequest hmiSubmitHearingRequest, Long hearingId,
-                                    String messageType, String deploymentId) {
+    private void generatePendingRequest(HmiSubmitHearingRequest hmiSubmitHearingRequest, Long hearingId,
+                                        String messageType, String deploymentId) {
         var jsonNode = objectMapperService.convertObjectToJsonNode(hmiSubmitHearingRequest);
-        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType, deploymentId);
+        pendingRequestService.generatePendingRequest(jsonNode, hearingId, messageType, deploymentId);
+
     }
 
-    private void sendRequestToQueue(Long hearingId, String messageType, String deploymentId) {
+    private void generatePendingRequest(Long hearingId, String messageType, String deploymentId) {
         HmiDeleteHearingRequest hmiDeleteHearingRequest = hmiDeleteHearingRequestMapper.mapRequest();
         var jsonNode = objectMapperService.convertObjectToJsonNode(hmiDeleteHearingRequest);
-        messageSenderToQueueConfiguration.sendMessageToQueue(jsonNode.toString(), hearingId, messageType, deploymentId);
+        pendingRequestService.generatePendingRequest(jsonNode, hearingId, messageType, deploymentId);
+
     }
 }

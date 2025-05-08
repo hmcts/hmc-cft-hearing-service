@@ -545,7 +545,7 @@ task loadEnvSecrets() {
           commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'hmc-demo', '-o', 'tsv', '--query', 'value', '--name', 'hmc-local-env-config'
           standardOutput = os
         }
-        project.file('./.demo-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
+        project.file('./.demo-env').write(new String(os.toString().replace('\n', '').decodeBase64(), StandardCharsets.UTF_8))
       }
     }
   }
@@ -573,7 +573,7 @@ bootWithCCD {
 
   authMode = uk.gov.hmcts.rse.AuthMode.Local
 
-  environment("RSE_LIB_ADDITIONAL_DATABASES", "hmc");
+  environment("RSE_LIB_ADDITIONAL_DATABASES", "hmc")
   environment("CFT_HEARING_SERVICE_DB_USERNAME", "postgres")
   environment("CFT_HEARING_SERVICE_DB_PASSWORD", "postgres")
   environment("CFT_HEARING_SERVICE_DB_PORT", "6432")
