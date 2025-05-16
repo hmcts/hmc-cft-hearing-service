@@ -29,4 +29,12 @@ public class HearingActualsOutcome implements Serializable {
     @PastOrPresent
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate hearingResultDate;
+
+    public boolean isEmpty() {
+        return (hearingType == null || hearingType.isEmpty())
+            && hearingFinalFlag == null
+            && hearingResult == null
+            && (hearingResultReasonType == null || hearingResultReasonType.isEmpty())
+            && hearingResultDate == null;
+    }
 }
