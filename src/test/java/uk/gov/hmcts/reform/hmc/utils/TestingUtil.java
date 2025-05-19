@@ -1621,10 +1621,42 @@ public class TestingUtil {
 
     public static HearingActualsOutcome hearingActualsOutcome(String hearingResult,
                                                               String hearingResultReasonType) {
-        HearingActualsOutcome hearingActualsOutcome = hearingActualsOutcome();
+        HearingActualsOutcome hearingActualsOutcome = new HearingActualsOutcome();
         hearingActualsOutcome.setHearingResult(hearingResult);
         hearingActualsOutcome.setHearingResultReasonType(hearingResultReasonType);
         return hearingActualsOutcome;
+    }
+
+    public static HearingActual hearingActualOutcomeAndActualHearingDaysNull(Boolean flag) {
+        HearingActualsOutcome hearingActualsOutcome = new HearingActualsOutcome();
+
+        ActualHearingDay actualHearingDay = new ActualHearingDay();
+        actualHearingDay.setHearingDate(LocalDate.now().plusDays(2));
+        actualHearingDay.setNotRequired(flag);
+
+        HearingActual hearingActual = new HearingActual();
+
+        hearingActual.setHearingOutcome(hearingActualsOutcome);
+        hearingActual.setActualHearingDays(List.of(actualHearingDay));
+
+        return hearingActual;
+    }
+
+    public static HearingActual oneActualHearingDayIsNotNull(Boolean flag1, Boolean flag2) {
+        ActualHearingDay actualHearingDay1 = new ActualHearingDay();
+        actualHearingDay1.setHearingDate(LocalDate.now().plusDays(2));
+        actualHearingDay1.setNotRequired(flag1);
+
+        ActualHearingDay actualHearingDay2 = new ActualHearingDay();
+        actualHearingDay2.setHearingDate(LocalDate.now().plusDays(2));
+        actualHearingDay2.setNotRequired(flag2);
+
+        HearingActual hearingActual = new HearingActual();
+        HearingActualsOutcome hearingActualsOutcome = new HearingActualsOutcome();
+        hearingActual.setHearingOutcome(hearingActualsOutcome);
+        hearingActual.setActualHearingDays(List.of(actualHearingDay1, actualHearingDay2));
+
+        return hearingActual;
     }
 
     public static ActualHearingDay actualHearingDay(LocalDate hearingDate) {
