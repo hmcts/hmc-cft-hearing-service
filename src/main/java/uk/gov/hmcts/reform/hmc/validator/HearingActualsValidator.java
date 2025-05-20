@@ -93,13 +93,10 @@ public class HearingActualsValidator {
                     if (!isOutcomeEmpty || !isHearingDayEmpty) {
                         throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
                     }
-                } else if (Boolean.FALSE.equals(hearingDay.getNotRequired())) {
-                    if (isOutcomeEmpty && isHearingDayEmpty) {
-                        throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
-                    }
                 } else {
                     throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
                 }
+
             }
         });
     }
