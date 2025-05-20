@@ -137,6 +137,7 @@ public class TestingUtil {
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
         hearingDetails.setFacilitiesRequired(List.of("facility1", "facility2"));
+        hearingDetails.setIsAPanelFlag(Boolean.FALSE);
         return hearingDetails;
     }
 
@@ -1459,7 +1460,6 @@ public class TestingUtil {
         } else {
             partyDetails2.setOrganisationDetails(organisationDetails());
         }
-
         return List.of(partyDetails1, partyDetails2);
     }
 
