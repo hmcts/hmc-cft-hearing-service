@@ -1610,12 +1610,12 @@ public class TestingUtil {
     }
 
     public static HearingActual hearingActualWithOutcomeEmpty() {
-        HearingActual request = new HearingActual();
         List<ActualHearingDay> actualHearingDays = new ArrayList<>();
         ActualHearingDay actualHearingDay = new ActualHearingDay();
         actualHearingDay.setHearingDate(LocalDate.now().plusDays(2));
         actualHearingDay.setNotRequired(true);
         actualHearingDays.add(actualHearingDay);
+        HearingActual request = new HearingActual();
         request.setActualHearingDays(List.of(actualHearingDay));
         return request;
     }
