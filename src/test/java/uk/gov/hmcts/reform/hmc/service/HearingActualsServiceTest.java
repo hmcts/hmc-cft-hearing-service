@@ -247,10 +247,10 @@ class HearingActualsServiceTest {
 
             HearingActual actual = TestingUtil.hearingActualWithHearingDateInFuture();
             actual.getActualHearingDays().get(1).setNotRequired(false);
-
+            HearingActual actuals = TestingUtil.hearingActualWithHearingDateInFuture();
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN,
-                                                           TestingUtil.hearingActualWithHearingDateInFuture());
+                                                           actuals);
             });
             assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
         }
