@@ -231,6 +231,19 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andReturn();
         }
 
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn200_WhenHearingActualIsNullAndInFutureAndNotRequiredIsTrue()
+            throws Exception {
+            mockMvc.perform(put(URL + "/2000001000")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(
+                                    TestingUtil.hearingActualWithOutcomeEmpty())))
+                .andExpect(status().is(200))
+                .andReturn();
+        }
+
         // https://tools.hmcts.net/jira/browse/HMAN-80 AC-07
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})

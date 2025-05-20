@@ -1609,6 +1609,17 @@ public class TestingUtil {
         return request;
     }
 
+    public static HearingActual hearingActualWithOutcomeEmpty() {
+        HearingActual request = new HearingActual();
+        List<ActualHearingDay> actualHearingDays = new ArrayList<>();
+        ActualHearingDay actualHearingDay = new ActualHearingDay();
+        actualHearingDay.setHearingDate(LocalDate.now().plusDays(2));
+        actualHearingDay.setNotRequired(true);
+        actualHearingDays.add(actualHearingDay);
+        request.setActualHearingDays(List.of(actualHearingDay));
+        return request;
+    }
+
     public static HearingActualsOutcome hearingActualsOutcome() {
         HearingActualsOutcome hearingActualsOutcome = new HearingActualsOutcome();
         hearingActualsOutcome.setHearingType("Witness Statement");
