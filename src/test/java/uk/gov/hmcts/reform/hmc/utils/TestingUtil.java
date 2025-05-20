@@ -1621,7 +1621,7 @@ public class TestingUtil {
 
     public static HearingActualsOutcome hearingActualsOutcome(String hearingResult,
                                                               String hearingResultReasonType) {
-        HearingActualsOutcome hearingActualsOutcome = new HearingActualsOutcome();
+        HearingActualsOutcome hearingActualsOutcome = hearingActualsOutcome();
         hearingActualsOutcome.setHearingResult(hearingResult);
         hearingActualsOutcome.setHearingResultReasonType(hearingResultReasonType);
         return hearingActualsOutcome;
