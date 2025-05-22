@@ -28,7 +28,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Table(name = "case_hearing_request")
 @EqualsAndHashCode(callSuper = true)
@@ -131,6 +130,9 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     @Column(name = "hearing_request_received_date_time", nullable = false)
     private LocalDateTime hearingRequestReceivedDateTime;
 
+    @Column(name = "is_a_panel_flag")
+    private Boolean isAPanelFlag;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
@@ -215,6 +217,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
         this.cancellationReasons = original.cancellationReasons;
         this.hearingChannels = original.hearingChannels;
         this.amendReasonCodes = original.amendReasonCodes;
+        this.isAPanelFlag = original.isAPanelFlag;
     }
 
     @Override
@@ -335,7 +338,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
 
         final List<HearingPartyEntity> matchingHearingPartyEntities = hearingPartyEntities.stream()
             .filter(hearingPartyEntity -> relatedPartyId.equals(hearingPartyEntity.getPartyReference()))
-            .collect(Collectors.toList());
+            .toList();
 
         if (matchingHearingPartyEntities.size() != 1) {
             throw new BadRequestException(

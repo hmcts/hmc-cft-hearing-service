@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
-import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementServiceImpl;
 
@@ -56,9 +55,9 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMEN
 @ImportAutoConfiguration(TestIdamConfiguration.class)
 public class RestExceptionHandlerTest extends BaseTest {
 
-    public static String ERROR_PATH_ERROR = "$.errors";
-    public static String ERROR_PATH_STATUS = "$.status";
-    public static String testExceptionMessage = "test message";
+    public static final String ERROR_PATH_ERROR = "$.errors";
+    public static final String ERROR_PATH_STATUS = "$.status";
+    public static final String TEST_EXCEPTION_MESSAGE = "test message";
     HearingRequest validRequest;
 
     @MockitoBean
@@ -115,7 +114,6 @@ public class RestExceptionHandlerTest extends BaseTest {
         List<CaseCategory> caseCategories = new ArrayList<>();
         caseCategories.add(category);
         caseDetails.setCaseCategories(caseCategories);
-        RequestDetails requestDetails = new RequestDetails();
         validRequest.setHearingDetails(hearingDetails);
         validRequest.setCaseDetails(caseDetails);
     }
@@ -125,7 +123,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleInvalidRoleAssignmentException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new InvalidRoleAssignmentException(testExceptionMessage))
+        Mockito.doThrow(new InvalidRoleAssignmentException(TEST_EXCEPTION_MESSAGE))
             .when(accessControlService)
             .verifyCaseAccess(anyString(), anyList(), isNull());
 
@@ -135,7 +133,7 @@ public class RestExceptionHandlerTest extends BaseTest {
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
         // THEN
-        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(), testExceptionMessage, "FORBIDDEN");
+        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(), TEST_EXCEPTION_MESSAGE, "FORBIDDEN");
     }
 
     @DisplayName("should return correct response when BadRequestException is thrown")
@@ -143,7 +141,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleBadRequestException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
+        Mockito.doThrow(new BadRequestException(TEST_EXCEPTION_MESSAGE)).when(service)
             .saveHearingRequest(any(HearingRequest.class),any(), any());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
@@ -152,7 +150,7 @@ public class RestExceptionHandlerTest extends BaseTest {
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
         // THEN
-        assertHttpErrorResponse(result, HttpStatus.BAD_REQUEST.value(), testExceptionMessage, "BAD_REQUEST");
+        assertHttpErrorResponse(result, HttpStatus.BAD_REQUEST.value(), TEST_EXCEPTION_MESSAGE, "BAD_REQUEST");
     }
 
     @DisplayName("should return correct response when CaseCouldNotBeFoundException is thrown")
@@ -160,7 +158,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleCaseCouldNotBeFoundException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new CaseCouldNotBeFoundException(testExceptionMessage))
+        Mockito.doThrow(new CaseCouldNotBeFoundException(TEST_EXCEPTION_MESSAGE))
             .when(accessControlService).verifyCaseAccess(anyString(), anyList(),  isNull());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
@@ -169,7 +167,7 @@ public class RestExceptionHandlerTest extends BaseTest {
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
         // THEN
-        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(), testExceptionMessage, "FORBIDDEN");
+        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(), TEST_EXCEPTION_MESSAGE, "FORBIDDEN");
     }
 
     @DisplayName("should return correct response when FeignException is thrown")
@@ -177,7 +175,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleFeignException() throws Exception {
         Request request = Request.create(Request.HttpMethod.GET, "url",
                                          new HashMap<>(), null, new RequestTemplate());
-        Mockito.doThrow(new FeignException.NotFound(testExceptionMessage, request, null,null))
+        Mockito.doThrow(new FeignException.NotFound(TEST_EXCEPTION_MESSAGE, request, null, null))
             .when(accessControlService).verifyCaseAccess(anyString(), anyList(), isNull());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
@@ -186,7 +184,7 @@ public class RestExceptionHandlerTest extends BaseTest {
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
         // THEN
-        assertHttpErrorResponse(result, HttpStatus.INTERNAL_SERVER_ERROR.value(), testExceptionMessage,
+        assertHttpErrorResponse(result, HttpStatus.INTERNAL_SERVER_ERROR.value(), TEST_EXCEPTION_MESSAGE,
                                 "INTERNAL_SERVER_ERROR");
     }
 
@@ -195,7 +193,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleResourceNotFoundException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new ResourceNotFoundException(testExceptionMessage))
+        Mockito.doThrow(new ResourceNotFoundException(TEST_EXCEPTION_MESSAGE))
             .when(accessControlService).verifyCaseAccess(anyString(), anyList(), isNull());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
@@ -204,7 +202,7 @@ public class RestExceptionHandlerTest extends BaseTest {
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
         // THEN
-        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(), testExceptionMessage, "FORBIDDEN");
+        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(), TEST_EXCEPTION_MESSAGE, "FORBIDDEN");
     }
 
     @DisplayName("should return correct response when ServiceException is thrown")
@@ -212,7 +210,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     void shouldHandleServiceException() throws Exception {
 
         /// WHEN
-        Mockito.doThrow(new ServiceException(testExceptionMessage))
+        Mockito.doThrow(new ServiceException(TEST_EXCEPTION_MESSAGE))
             .when(accessControlService).verifyCaseAccess(anyString(), anyList(), isNull());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")
@@ -221,7 +219,7 @@ public class RestExceptionHandlerTest extends BaseTest {
                                                          .content(objectMapper.writeValueAsString(validRequest)));
 
         // THEN
-        assertHttpErrorResponse(result, HttpStatus.INTERNAL_SERVER_ERROR.value(), testExceptionMessage,
+        assertHttpErrorResponse(result, HttpStatus.INTERNAL_SERVER_ERROR.value(), TEST_EXCEPTION_MESSAGE,
                                 "INTERNAL_SERVER_ERROR");
     }
 
@@ -231,7 +229,7 @@ public class RestExceptionHandlerTest extends BaseTest {
         ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
 
         /// WHEN
-        Mockito.doThrow(new BadRequestException(testExceptionMessage)).when(service)
+        Mockito.doThrow(new BadRequestException(TEST_EXCEPTION_MESSAGE)).when(service)
             .saveHearingRequest(any(HearingRequest.class),any(), any());
 
         ResultActions result =  this.mockMvc.perform(post("/hearing")

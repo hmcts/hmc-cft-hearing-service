@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.validator.ListingReasonCodeEnumPattern;
+import uk.gov.hmcts.reform.hmc.validator.ValidBoolean;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class HearingDetails {
     @Min(value = 0, message = ValidationError.DURATION_MIN_VALUE)
     private Integer duration;
 
-    private List<@Size(max = 70, message = ValidationError.NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG) 
+    private List<@Size(max = 70, message = ValidationError.NON_STANDARD_HEARING_DURATION_REASONS_MAX_LENGTH_MSG)
         String> nonStandardHearingDurationReasons;
 
     @NotEmpty(message = ValidationError.HEARING_PRIORITY_TYPE)
@@ -91,5 +92,9 @@ public class HearingDetails {
     public boolean isMultiDayHearing() {
         return getDuration() != null ? getDuration() > DURATION_OF_DAY : false;
     }
+
+    @JsonProperty("isAPanelFlag")
+    @ValidBoolean(message = ValidationError.IS_A_PANEL_FLAG_INVALID_TYPE)
+    private Object isAPanelFlag = null;
 
 }

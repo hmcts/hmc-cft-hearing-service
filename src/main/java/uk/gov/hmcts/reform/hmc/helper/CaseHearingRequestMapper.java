@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -70,6 +69,7 @@ public class CaseHearingRequestMapper {
         caseHearingRequestEntity.setRequester(hearingDetails.getHearingRequester());
         caseHearingRequestEntity.setHearingRequestReceivedDateTime(currentTime());
         caseHearingRequestEntity.setHearing(hearingEntity);
+        caseHearingRequestEntity.setIsAPanelFlag(getIsAPanelFlagBoolean(hearingDetails.getIsAPanelFlag()));
         if (hearingDetails.getHearingWindow() != null) {
             caseHearingRequestEntity.setFirstDateTimeOfHearingMustBe(hearingDetails.getHearingWindow()
                                                                          .getFirstDateTimeMustBe());
@@ -132,7 +132,17 @@ public class CaseHearingRequestMapper {
             cancellationReasonsEntity.setCaseHearing(caseHearingRequestEntity);
             cancellationReasonsEntity.setCancellationReasonType(cancellationReasonCode);
             return cancellationReasonsEntity;
-        }).collect(Collectors.toList());
+        }).toList();
+    }
+
+    private Boolean getIsAPanelFlagBoolean(Object isAPanelFlag) {
+        if (null == isAPanelFlag) {
+            return null;
+        }
+        if (isAPanelFlag.equals(Boolean.TRUE) || isAPanelFlag.equals("true")) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     private LocalDateTime currentTime() {

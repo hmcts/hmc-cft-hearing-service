@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.model;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,8 @@ public class OrganisationDetails {
 
     @NotEmpty(message = ValidationError.NAME_NULL_EMPTY)
     @Size(max = 2000, message = ValidationError.NAME_MAX_LENGTH)
+    @Pattern(regexp = "^[\\p{Ll}\\p{Lm}\\p{Lt}\\p{Lu}\\p{N}\\p{P}\\p{Zs}\\p{Sc}\\p{Sk}\\p{Sm}\\p{Zs}]*$",
+        message = ValidationError.INVALID_ORGANISATION_NAME)
     private String name;
 
     @NotEmpty(message = ValidationError.ORGANISATION_TYPE_NULL_EMPTY)
