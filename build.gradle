@@ -339,7 +339,7 @@ repositories {
   mavenLocal()
   mavenCentral()
   maven {
-    url "https://jitpack.io"
+    url = 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'
   }
 }
 
@@ -489,7 +489,7 @@ dependencies {
 
   cftlibImplementation group: 'org.springframework.boot', name: 'spring-boot-devtools'
 
-  testImplementation 'com.github.hmcts:fortify-client:1.3.0:all'
+  testImplementation 'com.github.hmcts:fortify-client:1.4.9:all'
 
 }
 
