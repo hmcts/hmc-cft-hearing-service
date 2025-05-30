@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.hmc.model.hmi;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
@@ -11,8 +13,6 @@ import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
