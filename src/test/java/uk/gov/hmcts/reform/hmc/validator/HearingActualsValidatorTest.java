@@ -13,9 +13,11 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,6 +33,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_FINAL_FLAG_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
 
 class HearingActualsValidatorTest {
 
@@ -203,6 +206,23 @@ class HearingActualsValidatorTest {
             hearingActualsValidator.validateHearingResultDate(null);
         });
         assertTrue(exception.getMessage().contains(HA_OUTCOME_REQUEST_DATE_NOT_EMPTY));
+    }
+
+    @Test
+    void validateHearingActualDaysNotInTheFuture() {
+        HearingActual actual = TestingUtil.hearingActualWithOutcomeEmpty();
+        assertDoesNotThrow(() -> {
+            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
+        });
+    }
+
+    @Test
+    void shouldThrowErrorWhenNotRequiredTrueAndHearingActualNotNull() {
+        HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.FALSE);
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
+        });
+        assertTrue(exception.getMessage().contains(HEARING_ACTUALS_INVALID_STATUS));
     }
 
     protected void generateHearingResponseEntity(Integer requestVersion, HearingEntity hearingEntity,
