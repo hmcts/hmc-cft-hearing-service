@@ -34,4 +34,11 @@ public class ActualHearingDay implements Serializable {
 
     private Boolean notRequired;
 
+    public boolean isEmpty() {
+        return hearingStartTime == null
+            && hearingEndTime == null
+            && (pauseDateTimes == null || pauseDateTimes.isEmpty())
+            && (actualDayParties == null || actualDayParties.isEmpty());
+    }
+
 }
