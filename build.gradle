@@ -383,7 +383,7 @@ dependencies {
   implementation 'net.minidev:json-smart:2.4.11'
   implementation group: 'com.auth0', name: 'java-jwt', version: '4.4.0'
 
-  testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '97merge') {
+  testImplementation (group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.27.1-prerelease-CME-537') {
     exclude group: 'com.github.hmcts.befta-fw', module: 'befta-fw'
   }
   testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '9.2.4'
