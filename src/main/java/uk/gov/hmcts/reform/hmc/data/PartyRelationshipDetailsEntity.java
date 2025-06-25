@@ -1,5 +1,16 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,16 +18,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 @Table(name = "party_relationship_details")
 @EqualsAndHashCode(callSuper = true)
@@ -30,8 +31,10 @@ public class PartyRelationshipDetailsEntity extends BaseEntity implements Serial
     private static final long serialVersionUID = -4983833617462382058L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-            generator = "party_relationship_details_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+        generator = "party_relationship_details_id_seq_generator")
+    @SequenceGenerator(name = "party_relationship_details_id_seq_generator", 
+        sequenceName = "party_relationship_details_id_seq", allocationSize = 1)
     @Column(name = "party_relationship_details_id")
     private Long partyRelationshipDetailsId;
 

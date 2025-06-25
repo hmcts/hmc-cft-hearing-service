@@ -1,20 +1,21 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
-import javax.persistence.Table;
 
 @Table(name = "hearing_attendee_details")
 @EqualsAndHashCode(callSuper = true)
@@ -28,8 +29,10 @@ public class HearingAttendeeDetailsEntity extends BaseEntity implements Serializ
     private static final long serialVersionUID = -2090910835541795958L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "hearing_day_panel_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+        generator = "hearing_attendee_details_id_seq_generator")
+    @SequenceGenerator(name = "hearing_attendee_details_id_seq_generator", 
+        sequenceName = "hearing_attendee_details_id_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 
