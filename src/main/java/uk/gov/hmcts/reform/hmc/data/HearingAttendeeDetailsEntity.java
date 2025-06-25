@@ -30,9 +30,9 @@ public class HearingAttendeeDetailsEntity extends BaseEntity implements Serializ
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, 
-        generator = "hearing_day_panel_id_seq_generator")
-    @SequenceGenerator(name = "hearing_day_panel_id_seq_generator", 
-        sequenceName = "hearing_day_panel_id_seq", allocationSize = 1)
+        generator = "hearing_attendee_details_id_seq_generator")
+    @SequenceGenerator(name = "hearing_attendee_details_id_seq_generator", 
+        sequenceName = "hearing_attendee_details_id_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 
