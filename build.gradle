@@ -248,7 +248,7 @@ def versions = [
   testcontainers  : '1.20.3',
   netty           : '4.1.106.Final',
   serviceAuthVersion: '4.1.2',
-  tomcatEmbedded  : '9.0.104',
+  tomcatEmbedded  : '9.0.106',
   fasterXmlJackson : '2.16.2',
   snakeyaml       : '2.2'
 ]
