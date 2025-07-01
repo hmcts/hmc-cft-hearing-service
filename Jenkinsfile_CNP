@@ -131,6 +131,11 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/checkstyle/*.html'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/pmd/*.html'
 
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Unit Tests/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Integration Tests/**/*'
+    //copyIgnore('./build/reports/tests/test', './Unit Tests/')
+    //copyIgnore('./build/reports/tests/integration', './Integration Tests/')
+
       publishHTML target: [
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
