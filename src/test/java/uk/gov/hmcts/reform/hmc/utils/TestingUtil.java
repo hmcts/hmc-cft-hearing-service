@@ -1746,7 +1746,7 @@ public class TestingUtil {
         Query query = new Query(terms);
         ElasticSearch elasticSearch = new ElasticSearch();
         elasticSearch.setQuery(query);
-        elasticSearch.setSize(10);
+        elasticSearch.setSize(ccdCaseRefs.size());
         return objectMapperService.convertObjectToJsonNode(elasticSearch).toString();
     }
 
