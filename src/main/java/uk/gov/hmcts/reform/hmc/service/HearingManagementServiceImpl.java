@@ -78,6 +78,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING_REQUEST;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ELASTIC_SEARCH_QUERY_PAGINATION_SIZE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_REQUEST_VERSION;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_STATUS;
@@ -353,6 +354,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     public List<DataStoreCaseDetails> getCaseSearchResults(List<String> ccdCaseRefs, String status,
                                                            String caseTypeId) {
         String elasticSearchQuery = createSearchQuery(ccdCaseRefs);
+        log.info("Searching for cases with ccdCaseRefs: {}, status: {}, caseTypeId: {}",
+                 elasticSearchQuery, status, caseTypeId);
         CaseSearchResult caseSearchResult =  dataStoreRepository.findAllCasesByCaseIdUsingExternalApi(caseTypeId,
                                                                                  elasticSearchQuery);
         return caseSearchResult.getCases();
@@ -361,7 +364,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private String createSearchQuery(List<String> ccdCaseRefs) {
         Terms terms = new Terms(ccdCaseRefs);
         Query query = new Query(terms);
-        ElasticSearch searchObject = new ElasticSearch(query);
+        ElasticSearch searchObject = ElasticSearch.builder()
+            .query(query)
+            .size(ELASTIC_SEARCH_QUERY_PAGINATION_SIZE)
+            .build();
         return objectMapperService.convertObjectToJsonNode(searchObject).toString();
     }
 

@@ -1744,7 +1744,10 @@ public class TestingUtil {
     public static String createSearchQuery(List<String> ccdCaseRefs) {
         Terms terms = new Terms(ccdCaseRefs);
         Query query = new Query(terms);
-        return objectMapperService.convertObjectToJsonNode(new ElasticSearch(query)).toString();
+        ElasticSearch elasticSearch = new ElasticSearch();
+        elasticSearch.setQuery(query);
+        elasticSearch.setSize(10);
+        return objectMapperService.convertObjectToJsonNode(elasticSearch).toString();
     }
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
