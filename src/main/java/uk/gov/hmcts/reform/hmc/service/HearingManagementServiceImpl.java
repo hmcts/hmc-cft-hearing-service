@@ -78,7 +78,6 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING_REQUEST;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.ELASTIC_SEARCH_QUERY_PAGINATION_SIZE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_REQUEST_VERSION;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_STATUS;
