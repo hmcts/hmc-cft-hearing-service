@@ -366,7 +366,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         Query query = new Query(terms);
         ElasticSearch searchObject = ElasticSearch.builder()
             .query(query)
-            .size(ELASTIC_SEARCH_QUERY_PAGINATION_SIZE)
+            .size(ccdCaseRefs.size())
             .build();
         return objectMapperService.convertObjectToJsonNode(searchObject).toString();
     }
