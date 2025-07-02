@@ -78,6 +78,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING_REQUEST;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ELASTIC_QUERY_DEFAULT_SIZE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_REQUEST_VERSION;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_STATUS;
@@ -363,10 +364,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private String createSearchQuery(List<String> ccdCaseRefs) {
         Terms terms = new Terms(ccdCaseRefs);
         Query query = new Query(terms);
-        ElasticSearch searchObject = ElasticSearch.builder()
-            .query(query)
-            .size(ccdCaseRefs.size())
-            .build();
+        ElasticSearch.ElasticSearchBuilder builder = ElasticSearch.builder()
+            .query(query);
+        if (ccdCaseRefs.size() > ELASTIC_QUERY_DEFAULT_SIZE) {
+            builder.size(ccdCaseRefs.size());
+        }
+        ElasticSearch searchObject = builder.build();
         return objectMapperService.convertObjectToJsonNode(searchObject).toString();
     }
 
