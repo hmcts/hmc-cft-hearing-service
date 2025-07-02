@@ -364,12 +364,12 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private String createSearchQuery(List<String> ccdCaseRefs) {
         Terms terms = new Terms(ccdCaseRefs);
         Query query = new Query(terms);
-        ElasticSearch.ElasticSearchBuilder builder = ElasticSearch.builder()
-            .query(query);
+        ElasticSearch searchObject = ElasticSearch.builder()
+            .query(query)
+            .build();
         if (ccdCaseRefs.size() > ELASTIC_QUERY_DEFAULT_SIZE) {
-            builder.size(ccdCaseRefs.size());
+            searchObject.setSize(ccdCaseRefs.size());
         }
-        ElasticSearch searchObject = builder.build();
         return objectMapperService.convertObjectToJsonNode(searchObject).toString();
     }
 
