@@ -94,6 +94,7 @@ import java.util.stream.IntStream;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ELASTIC_QUERY_DEFAULT_SIZE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
@@ -1744,7 +1745,13 @@ public class TestingUtil {
     public static String createSearchQuery(List<String> ccdCaseRefs) {
         Terms terms = new Terms(ccdCaseRefs);
         Query query = new Query(terms);
-        return objectMapperService.convertObjectToJsonNode(new ElasticSearch(query)).toString();
+        ElasticSearch searchObject = ElasticSearch.builder()
+            .query(query)
+            .build();
+        if (ccdCaseRefs.size() > ELASTIC_QUERY_DEFAULT_SIZE) {
+            searchObject.setSize(ccdCaseRefs.size());
+        }
+        return objectMapperService.convertObjectToJsonNode(searchObject).toString();
     }
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
