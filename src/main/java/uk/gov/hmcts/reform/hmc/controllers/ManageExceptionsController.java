@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionsResponse;
 import uk.gov.hmcts.reform.hmc.model.SupportRequests;
@@ -27,27 +28,32 @@ public class ManageExceptionsController {
 
     private final ManageExceptionsService manageExceptionsService;
     private final AccessControlService accessControlService;
+    private final SecurityUtils securityUtils;
 
     public ManageExceptionsController(ManageExceptionsService manageExceptionsService,
-                                      AccessControlService accessControlService) {
+                                      AccessControlService accessControlService,
+                                      SecurityUtils securityUtils) {
         this.manageExceptionsService = manageExceptionsService;
         this.accessControlService = accessControlService;
+        this.securityUtils = securityUtils;
     }
 
     @PostMapping(path = "/manageExceptions", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(responseCode = "200", description = "Hearing successfully transitioned")
     @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
-        + "\n1) " + ValidationError.INVALID_HEARINGS_COUNT
+        + "\n1) " + ValidationError.INVALID_HEARING_ID_LIMIT
         + "\n2) " + ValidationError.DUPLICATE_HEARING_IDS
         + "\n3) " + ValidationError.CASE_REFERENCE_INVALID
         + "\n3) " + ValidationError.INVALID_HEARING_STATE)
     @ApiResponse(responseCode = "401", description = ValidationError.INVALID_MANAGE_EXCEPTION_ROLE)
+    @ApiResponse(responseCode = "403", description = "Forbidden")
 
     public ManageExceptionsResponse manageExceptions(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
                                                      @RequestBody @Valid SupportRequests supportRequests) {
         accessControlService.verifyUserRoleAccess(Lists.newArrayList(SUPPORT_USER_ROLE));
-        return manageExceptionsService.manageExceptions(supportRequests, clientS2SToken);
+        return manageExceptionsService.manageExceptions(supportRequests,
+                                                        securityUtils.getServiceNameFromS2SToken(clientS2SToken));
 
     }
 

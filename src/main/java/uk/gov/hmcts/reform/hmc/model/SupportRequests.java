@@ -14,6 +14,6 @@ public class SupportRequests {
 
     @Valid
     @NotNull(message = ValidationError.INVALID_SUPPORT_REQUEST_DETAILS)
-    private List<SupportRequest> supportRequests;
+    private List<SupportRequest> supportRequest;
 
 }

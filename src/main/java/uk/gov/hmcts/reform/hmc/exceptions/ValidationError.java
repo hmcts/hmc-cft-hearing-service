@@ -282,7 +282,7 @@ public final class ValidationError {
     public static final String INVALID_FIRST_NAME = "First name is invalid";
     public static final String INVALID_LAST_NAME = "Last name is invalid";
     public static final String INVALID_ORGANISATION_NAME = "Organisation name is invalid";
-    public static final String INVALID_HEARINGS_COUNT = "No more than 100 hearings in the request";
+    public static final String INVALID_HEARING_ID_LIMIT = "No more than 100 hearings in the request";
     public static final String DUPLICATE_HEARING_IDS = "Each hearing can only be defined once";
     public static final String CASE_REFERENCE_INVALID = "Invalid case reference";
     public static final String INVALID_HEARING_STATE  = "Invalid hearing state for the request";
@@ -290,6 +290,6 @@ public final class ValidationError {
     public static final String MANAGE_EXCEPTION_NOTES_LENGTH = "Notes must not be more than 5000 " + CHARACTERS_LONG;
     public static final String MANAGE_EXCEPTION_ACTION_EMPTY = "Action must be present";
     public static final String INVALID_SUPPORT_REQUEST_DETAILS = "Support request Details are required";
-
+    public static final String INVALID_SERVICE_TOKEN  = "Invalid service token provided";
 
 }
