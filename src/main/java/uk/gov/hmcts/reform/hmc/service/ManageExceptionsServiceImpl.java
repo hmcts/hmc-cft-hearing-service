@@ -2,11 +2,13 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingValidationException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.model.SupportRequest;
+import uk.gov.hmcts.reform.hmc.repository.ManageExceptionRepository;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,11 +21,19 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_SERVICE
 @Slf4j
 public class ManageExceptionsServiceImpl implements ManageExceptionsService {
 
+    private final ManageExceptionRepository manageExceptionRepository;
+
+    public ManageExceptionsServiceImpl(ManageExceptionRepository manageExceptionRepository) {
+        this.manageExceptionRepository = manageExceptionRepository;
+    }
+
     @Override
-    public ManageExceptionResponse manageExceptions(ManageExceptionRequest supportRequests, String clientS2SToken) {
+    public ManageExceptionResponse manageExceptions(ManageExceptionRequest manageExceptionRequest,
+                                                    String clientS2SToken) {
         validateServiceToken(clientS2SToken);
-        validateHearingIdLimit(supportRequests);
-        validateUniqueHearingIds(supportRequests);
+        validateHearingIdLimit(manageExceptionRequest);
+        validateUniqueHearingIds(manageExceptionRequest);
+        getHearingDetails(manageExceptionRequest);
         return null;
     }
 
@@ -35,16 +45,16 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         }
     }
 
-    private void validateHearingIdLimit(ManageExceptionRequest supportRequests) {
-        if (supportRequests.getSupportRequest().size() > 100) {
-            log.error("No. of hearings found in the request : {}", supportRequests.getSupportRequest().size());
+    private void validateHearingIdLimit(ManageExceptionRequest manageExceptionRequest) {
+        if (manageExceptionRequest.getSupportRequest().size() > 100) {
+            log.error("No. of hearings found in the request : {}", manageExceptionRequest.getSupportRequest().size());
             throw new HearingValidationException(INVALID_HEARING_ID_LIMIT);
         }
     }
 
-    private void validateUniqueHearingIds(ManageExceptionRequest supportRequests) {
+    private void validateUniqueHearingIds(ManageExceptionRequest manageExceptionRequest) {
         Set<String> uniqueHearingIds = new HashSet<>();
-        for (SupportRequest request : supportRequests.getSupportRequest()) {
+        for (SupportRequest request : manageExceptionRequest.getSupportRequest()) {
             String hearingId = request.getHearingId();
             if (!uniqueHearingIds.add(hearingId)) {
                 log.error("Duplicate hearing ID found: {}", hearingId);
@@ -52,4 +62,13 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
             }
         }
     }
+
+    private void getHearingDetails(ManageExceptionRequest manageExceptionRequest) {
+        for (SupportRequest request : manageExceptionRequest.getSupportRequest()) {
+            HearingEntity hearingEntity = manageExceptionRepository
+                .findByHearingId(Long.valueOf(request.getHearingId()));
+
+        }
+    }
+
 }
