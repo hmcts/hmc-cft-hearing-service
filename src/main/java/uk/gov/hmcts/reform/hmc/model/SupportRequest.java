@@ -10,11 +10,10 @@ import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
-public class SupportRequest implements Serializable {
+public class SupportRequest {
 
     @NotBlank(message = ValidationError.HEARING_ID_EMPTY)
     @Size(max = 30, message = ValidationError.HEARING_ID_LENGTH)
@@ -25,16 +24,16 @@ public class SupportRequest implements Serializable {
     private String caseRef;
 
     @NotEmpty(message = ValidationError.MANAGE_EXCEPTION_ACTION_EMPTY)
-    @EnumPattern(enumClass = PartyType.class, fieldName = "partyType")
-    @Schema(allowableValues = "IND, ORG")
+    @EnumPattern(enumClass = Action.class, fieldName = "action")
+    @Schema(allowableValues = "rollback, final_state_transition")
     private String action;
 
     @Size(max = 5000, message = ValidationError.MANAGE_EXCEPTION_NOTES_LENGTH)
     private String notes;
 
     @NotEmpty(message = ValidationError.PARTY_TYPE_EMPTY)
-    @EnumPattern(enumClass = PartyType.class, fieldName = "partyType")
-    @Schema(allowableValues = "IND, ORG")
+    @EnumPattern(enumClass = State.class, fieldName = "state")
+    @Schema(allowableValues = "CANCELLED, COMPLETED, ADJOURNED")
     private String state;
 
 }

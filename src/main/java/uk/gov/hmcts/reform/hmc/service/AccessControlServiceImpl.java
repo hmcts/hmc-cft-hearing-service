@@ -41,7 +41,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     public static final String HEARING_MANAGER = "hearing-manager";
     public static final String HEARING_VIEWER = "hearing-viewer";
     public static final String LISTED_HEARING_VIEWER = "listed-hearing-viewer";
-    public static final String SUPPORT_USER_ROLE= "hmc_tech_admin";
+    public static final String SUPPORT_USER_ROLE = "hmc_tech_admin";
 
     private static final List<String> HMC_ROLE_NAMES = Lists.newArrayList(
         HEARING_MANAGER,
