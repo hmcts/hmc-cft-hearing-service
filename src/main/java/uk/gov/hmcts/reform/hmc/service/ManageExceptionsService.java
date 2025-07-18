@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import uk.gov.hmcts.reform.hmc.model.ManageExceptionsResponse;
-import uk.gov.hmcts.reform.hmc.model.SupportRequests;
+import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
+import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 
 public interface ManageExceptionsService {
 
-    ManageExceptionsResponse manageExceptions(SupportRequests supportRequests, String clientS2SToken);
+    ManageExceptionResponse manageExceptions(ManageExceptionRequest supportRequests, String clientS2SToken);
 }

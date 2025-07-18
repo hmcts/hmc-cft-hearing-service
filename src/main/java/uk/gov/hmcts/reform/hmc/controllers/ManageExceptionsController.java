@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
-import uk.gov.hmcts.reform.hmc.model.ManageExceptionsResponse;
-import uk.gov.hmcts.reform.hmc.model.SupportRequests;
+import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
+import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.ManageExceptionsService;
 
@@ -49,10 +49,10 @@ public class ManageExceptionsController {
     @ApiResponse(responseCode = "401", description = ValidationError.INVALID_MANAGE_EXCEPTION_ROLE)
     @ApiResponse(responseCode = "403", description = "Forbidden")
 
-    public ManageExceptionsResponse manageExceptions(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
-                                                     @RequestBody @Valid SupportRequests supportRequests) {
+    public ManageExceptionResponse manageExceptions(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
+                                                    @RequestBody @Valid ManageExceptionRequest supportRequest) {
         accessControlService.verifyUserRoleAccess(Lists.newArrayList(SUPPORT_USER_ROLE));
-        return manageExceptionsService.manageExceptions(supportRequests,
+        return manageExceptionsService.manageExceptions(supportRequest,
                                                         securityUtils.getServiceNameFromS2SToken(clientS2SToken));
 
     }
