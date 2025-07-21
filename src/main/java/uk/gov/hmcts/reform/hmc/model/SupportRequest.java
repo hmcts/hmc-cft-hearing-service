@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.LuhnCheck;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestAction;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 
@@ -24,7 +25,7 @@ public class SupportRequest {
     private String caseRef;
 
     @NotEmpty(message = ValidationError.MANAGE_EXCEPTION_ACTION_EMPTY)
-    @EnumPattern(enumClass = Action.class, fieldName = "action")
+    @EnumPattern(enumClass = ManageRequestAction.class, fieldName = "action")
     @Schema(allowableValues = "rollback, final_state_transition")
     private String action;
 

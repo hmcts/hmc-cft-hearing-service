@@ -80,4 +80,6 @@ public final class Constants {
         + " and Error Description: {} updated to status {}";
     public static final String AMQP_CACHE = "com.azure.core.amqp.cache";
     public static final String AMQP_CACHE_VALUE = "true";
+    public static final String MANAGE_EXCEPTION_SUCCESS_MESSAGE = "successfully transitioned hearing :{},"
+        + " from state : {} to state: {}";
 }

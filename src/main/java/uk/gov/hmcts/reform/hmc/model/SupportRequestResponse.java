@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 
@@ -19,7 +20,7 @@ public class SupportRequestResponse {
     private String hearingId;
 
     @NotEmpty(message = ValidationError.STATUS_EMPTY)
-    @EnumPattern(enumClass = Status.class, fieldName = "status")
+    @EnumPattern(enumClass = ManageRequestStatus.class, fieldName = "status")
     @Schema(allowableValues = "successful, failure")
     private String status;
 
