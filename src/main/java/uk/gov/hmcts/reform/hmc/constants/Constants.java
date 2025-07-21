@@ -82,4 +82,6 @@ public final class Constants {
     public static final String AMQP_CACHE_VALUE = "true";
     public static final String MANAGE_EXCEPTION_SUCCESS_MESSAGE = "successfully transitioned hearing :{},"
         + " from state : {} to state: {}";
+    public static final String MANAGE_EXCEPTION_AUDIT_EVENT = "tech_support";
+    public static final String TECH_ADMIN_ROLE = "hmc_tech_admin";
 }

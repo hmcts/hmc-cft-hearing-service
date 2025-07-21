@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
+import uk.gov.hmcts.reform.hmc.exceptions.InvalidManageHearingServiceException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
@@ -19,8 +19,9 @@ import uk.gov.hmcts.reform.hmc.service.ManageExceptionsService;
 import javax.validation.Valid;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.TECH_ADMIN_ROLE;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.SUPPORT_USER_ROLE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_HEARING_SERVICE_EXCEPTION;
 
 @RestController
 @Validated
@@ -51,10 +52,11 @@ public class ManageExceptionsController {
 
     public ManageExceptionResponse manageExceptions(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
                                                     @RequestBody @Valid ManageExceptionRequest supportRequest) {
-        accessControlService.verifyUserRoleAccess(Lists.newArrayList(SUPPORT_USER_ROLE));
-        return manageExceptionsService.manageExceptions(supportRequest,
-                                                        securityUtils.getServiceNameFromS2SToken(clientS2SToken));
-
+        String serviceName = securityUtils.getServiceNameFromS2SToken(clientS2SToken);
+        if (!TECH_ADMIN_ROLE.equals(serviceName)) {
+            throw new InvalidManageHearingServiceException(INVALID_MANAGE_HEARING_SERVICE_EXCEPTION);
+        }
+        return manageExceptionsService.manageExceptions(supportRequest, serviceName);
     }
 
 }

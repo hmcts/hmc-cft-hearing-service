@@ -296,5 +296,6 @@ public final class ValidationError {
     public static final String HEARING_ID_CASEREF_MISMATCH = "Hearing id and Case Reference do not match";
     public static final String HEARING_ID_INCORRECT_STATE = "Hearing  is in incorrect state";
     public static final String INVALID_LAST_GOOD_STATE = "hearing has no last good state defined";
+    public static final String INVALID_MANAGE_HEARING_SERVICE_EXCEPTION = "Invalid Manage Hearing Service invoked";
 
 }

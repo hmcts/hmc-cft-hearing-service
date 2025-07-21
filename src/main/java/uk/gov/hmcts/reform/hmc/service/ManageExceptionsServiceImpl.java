@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -12,13 +14,17 @@ import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.model.SupportRequest;
 import uk.gov.hmcts.reform.hmc.model.SupportRequestResponse;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.ManageExceptionRepository;
+import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_AUDIT_EVENT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DUPLICATE_HEARING_IDS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_CASEREF_MISMATCH;
@@ -32,9 +38,18 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_SERVICE
 public class ManageExceptionsServiceImpl implements ManageExceptionsService {
 
     private final ManageExceptionRepository manageExceptionRepository;
+    private final HearingStatusAuditService hearingStatusAuditService;
+    private final HearingRepository hearingRepository;
+    private final ObjectMapper objectMapper;
 
-    public ManageExceptionsServiceImpl(ManageExceptionRepository manageExceptionRepository) {
+    public ManageExceptionsServiceImpl(ManageExceptionRepository manageExceptionRepository,
+                                       HearingStatusAuditService hearingStatusAuditService,
+                                       HearingRepository hearingRepository,
+                                       ObjectMapper objectMapper) {
         this.manageExceptionRepository = manageExceptionRepository;
+        this.hearingStatusAuditService = hearingStatusAuditService;
+        this.hearingRepository = hearingRepository;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -43,8 +58,9 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         validateServiceToken(clientS2SToken);
         validateHearingIdLimit(manageExceptionRequest);
         validateUniqueHearingIds(manageExceptionRequest);
-        getHearingDetails(manageExceptionRequest);
-        return null;
+        ManageExceptionResponse manageExceptionResponse = processManageExceptionDetails(manageExceptionRequest,
+                                                                                        clientS2SToken);
+        return manageExceptionResponse;
     }
 
     private void validateServiceToken(String clientS2SToken) {
@@ -73,50 +89,75 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         }
     }
 
-    private void getHearingDetails(ManageExceptionRequest manageExceptionRequest) {
+    private ManageExceptionResponse processManageExceptionDetails(ManageExceptionRequest manageExceptionRequest,
+                                                                  String clientS2SToken) {
         ManageExceptionResponse manageExceptionResponse = new ManageExceptionResponse();
         List<SupportRequestResponse> supportRequestResponseList = new ArrayList<>();
 
         for (SupportRequest request : manageExceptionRequest.getSupportRequest()) {
-            SupportRequestResponse response = processHearingRequest(request);
+            SupportRequestResponse response = processHearingRequest(request, clientS2SToken);
             if (response != null) {
                 supportRequestResponseList.add(response);
             }
         }
         manageExceptionResponse.setSupportRequestResponse(supportRequestResponseList);
+        return manageExceptionResponse;
     }
 
-    private SupportRequestResponse processHearingRequest(SupportRequest request) {
+    private SupportRequestResponse processHearingRequest(SupportRequest request, String clientS2SToken) {
         HearingEntity hearingEntity = manageExceptionRepository.findByHearingId(Long.valueOf(request.getHearingId()));
 
         if (hearingEntity == null) {
-            return createFailureResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
-                                         INVALID_LAST_GOOD_STATE);
+            log.info("Hearing ID: {} not found in the database", request.getHearingId());
+            return createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
+                                  INVALID_LAST_GOOD_STATE);
         }
 
         if (!request.getCaseRef().equals(hearingEntity.getLatestCaseReferenceNumber())) {
-            return createFailureResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
-                                         HEARING_ID_CASEREF_MISMATCH);
+            log.info("Hearing ID: {} and case reference : {} do not match",
+                     request.getHearingId(), request.getCaseRef());
+            return createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
+                                  HEARING_ID_CASEREF_MISMATCH);
         }
 
-        if (HearingStatus.EXCEPTION.equals(hearingEntity.getStatus())) {
-            return createFailureResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
-                                         HEARING_ID_INCORRECT_STATE);
+        if (! HearingStatus.EXCEPTION.equals(hearingEntity.getStatus())) {
+            log.info("Hearing ID: {} is in incorrect state: {}", request.getHearingId(), hearingEntity.getStatus());
+            return createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
+                                  HEARING_ID_INCORRECT_STATE);
         }
 
         if (ManageRequestAction.ROLL_BACK.equals(request.getAction()) && hearingEntity.getLastGoodStatus() == null) {
-            return createFailureResponse(request.getHearingId(),ManageRequestStatus.FAILURE.label,
-                                         INVALID_LAST_GOOD_STATE);
+            log.info("Hearing ID: {} has no last good state to roll back to", request.getHearingId());
+            return createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
+                                  INVALID_LAST_GOOD_STATE);
         }
+
+        saveHearingEntity(hearingEntity, request.getState());
+        saveAuditEntity(request, hearingEntity, clientS2SToken);
         String successMessage = String.format("%s, %s, %s, %s",
                                               MANAGE_EXCEPTION_SUCCESS_MESSAGE,
                                               hearingEntity.getId(),
                                               hearingEntity.getStatus(),
                                               request.getState());
-        return createFailureResponse(request.getHearingId(),ManageRequestStatus.SUCCESSFUL.label, successMessage);
+        return createResponse(request.getHearingId(), ManageRequestStatus.SUCCESSFUL.label, successMessage);
     }
 
-    private SupportRequestResponse createFailureResponse(String hearingId, String status, String message) {
+    private void saveAuditEntity(SupportRequest request, HearingEntity hearingEntity, String clientS2SToken) {
+        JsonNode otherInfo = objectMapper.convertValue(request.getNotes(), JsonNode.class);
+        // set ResponseDateTime to null or localdateTime.now() if needed
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity, MANAGE_EXCEPTION_AUDIT_EVENT,
+                                                                        null, clientS2SToken, HMC,
+                                                                        null, otherInfo);
+    }
+
+    private void saveHearingEntity(HearingEntity hearingEntity, String newStatus) {
+        hearingEntity.setStatus(newStatus);
+        // to set error details to null
+        hearingRepository.save(hearingEntity);
+        log.info("Hearing ID: {} updated to status: {}", hearingEntity.getId(), newStatus);
+    }
+
+    private SupportRequestResponse createResponse(String hearingId, String status, String message) {
         SupportRequestResponse response = new SupportRequestResponse();
         response.setHearingId(hearingId);
         response.setStatus(status);
