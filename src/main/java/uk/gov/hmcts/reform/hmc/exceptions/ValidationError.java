@@ -290,12 +290,12 @@ public final class ValidationError {
     public static final String MANAGE_EXCEPTION_NOTES_LENGTH = "Notes must not be more than 5000 " + CHARACTERS_LONG;
     public static final String MANAGE_EXCEPTION_ACTION_EMPTY = "Action must be present";
     public static final String INVALID_SUPPORT_REQUEST_DETAILS = "Support request Details are required";
-    public static final String INVALID_SERVICE_TOKEN  = "Invalid service token provided";
     public static final String STATUS_EMPTY = "Status must be present";
     public static final String MESSAGE_LENGTH = "Message must not be more than 2000 " + CHARACTERS_LONG;
     public static final String HEARING_ID_CASEREF_MISMATCH = "Hearing id and Case Reference do not match";
     public static final String HEARING_ID_INCORRECT_STATE = "Hearing  is in incorrect state";
     public static final String INVALID_LAST_GOOD_STATE = "hearing has no last good state defined";
     public static final String INVALID_MANAGE_HEARING_SERVICE_EXCEPTION = "Invalid Manage Hearing Service invoked";
+    public static final String INVALID_HEARING_ID = "Invalid hearing id";
 
 }
