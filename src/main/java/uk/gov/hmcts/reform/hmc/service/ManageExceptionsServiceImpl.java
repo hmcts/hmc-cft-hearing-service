@@ -59,13 +59,9 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         validateHearingIdLimit(manageExceptionRequest);
         validateUniqueHearingIds(manageExceptionRequest);
         List<Long> hearingIds = extractHearingIds(manageExceptionRequest.getSupportRequest());
-        List<HearingEntity> hearingEntities = getHearings(hearingIds);
+        List<HearingEntity> hearingEntities =  hearingRepository.getHearings(hearingIds);
 
-        return processManageExceptionDetails(
-            hearingEntities,
-            manageExceptionRequest,
-            clientS2SToken
-        );
+        return processManageExceptionDetails(hearingEntities, manageExceptionRequest, clientS2SToken);
 
     }
 
@@ -88,7 +84,6 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
                 supportRequestResponseList.add(response);
                 saveHearingEntity(entity, request.getState());
                 saveAuditEntity(request, entity, clientS2SToken);
-
             } else {
                 response = createResponse(hearingId, ManageRequestStatus.FAILURE.label, INVALID_HEARING_ID);
                 supportRequestResponseList.add(response);
@@ -150,10 +145,6 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         return supportRequest.stream()
             .map(request -> Long.valueOf(request.getHearingId()))
             .collect(Collectors.toList());
-    }
-
-    private List<HearingEntity> getHearings(List<Long> hearingIds) {
-        return hearingRepository.getHearings(hearingIds);
     }
 
     private SupportRequestResponse createResponse(String hearingId, String status, String message) {
