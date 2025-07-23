@@ -14,6 +14,6 @@ public class ManageExceptionRequest {
 
     @Valid
     @NotNull(message = ValidationError.INVALID_SUPPORT_REQUEST_DETAILS)
-    private List<SupportRequest> supportRequest;
+    private List<SupportRequest> supportRequests;
 
 }

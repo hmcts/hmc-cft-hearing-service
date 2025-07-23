@@ -32,7 +32,6 @@ public class SupportRequest {
     @Size(max = 5000, message = ValidationError.MANAGE_EXCEPTION_NOTES_LENGTH)
     private String notes;
 
-    @NotEmpty(message = ValidationError.PARTY_TYPE_EMPTY)
     @EnumPattern(enumClass = State.class, fieldName = "state")
     @Schema(allowableValues = "CANCELLED, COMPLETED, ADJOURNED")
     private String state;

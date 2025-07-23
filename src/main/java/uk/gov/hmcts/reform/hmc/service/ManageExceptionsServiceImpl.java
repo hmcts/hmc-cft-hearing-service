@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.model.SupportRequest;
 import uk.gov.hmcts.reform.hmc.model.SupportRequestResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.repository.ManageExceptionRepository;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 
 import java.util.ArrayList;
@@ -38,16 +37,13 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LAST_GO
 @Slf4j
 public class ManageExceptionsServiceImpl implements ManageExceptionsService {
 
-    private final ManageExceptionRepository manageExceptionRepository;
     private final HearingStatusAuditService hearingStatusAuditService;
     private final HearingRepository hearingRepository;
     private final ObjectMapper objectMapper;
 
-    public ManageExceptionsServiceImpl(ManageExceptionRepository manageExceptionRepository,
-                                       HearingStatusAuditService hearingStatusAuditService,
+    public ManageExceptionsServiceImpl(HearingStatusAuditService hearingStatusAuditService,
                                        HearingRepository hearingRepository,
                                        ObjectMapper objectMapper) {
-        this.manageExceptionRepository = manageExceptionRepository;
         this.hearingStatusAuditService = hearingStatusAuditService;
         this.hearingRepository = hearingRepository;
         this.objectMapper = objectMapper;
@@ -58,7 +54,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
                                                     String clientS2SToken) {
         validateHearingIdLimit(manageExceptionRequest);
         validateUniqueHearingIds(manageExceptionRequest);
-        List<Long> hearingIds = extractHearingIds(manageExceptionRequest.getSupportRequest());
+        List<Long> hearingIds = extractHearingIds(manageExceptionRequest.getSupportRequests());
         List<HearingEntity> hearingEntities =  hearingRepository.getHearings(hearingIds);
 
         return processManageExceptionDetails(hearingEntities, manageExceptionRequest, clientS2SToken);
@@ -70,7 +66,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
                                                                   String clientS2SToken) {
         ManageExceptionResponse manageExceptionResponse = new ManageExceptionResponse();
         List<SupportRequestResponse> supportRequestResponseList = new ArrayList<>();
-        for (SupportRequest request : manageExceptionRequest.getSupportRequest()) {
+        for (SupportRequest request : manageExceptionRequest.getSupportRequests()) {
             String hearingId = request.getHearingId();
 
             Optional<HearingEntity> matchingHearingEntity = hearingEntities.stream()
@@ -106,7 +102,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
                      request.getHearingId(), hearingEntity.getStatus());
             return createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
                                       HEARING_ID_INCORRECT_STATE);
-        } else if (ManageRequestAction.ROLL_BACK.equals(request.getAction())
+        } else if (ManageRequestAction.ROLLBACK.equals(request.getAction())
             && hearingEntity.getLastGoodStatus() == null) {
             log.info("Hearing ID: {} does not have a last good state to roll back to", request.getHearingId());
             return createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
@@ -124,15 +120,15 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
     }
 
     private void validateHearingIdLimit(ManageExceptionRequest manageExceptionRequest) {
-        if (manageExceptionRequest.getSupportRequest().size() > 100) {
-            log.error("No. of hearings found in the request : {}", manageExceptionRequest.getSupportRequest().size());
+        if (manageExceptionRequest.getSupportRequests().size() > 100) {
+            log.error("No. of hearings found in the request : {}", manageExceptionRequest.getSupportRequests().size());
             throw new HearingValidationException(INVALID_HEARING_ID_LIMIT);
         }
     }
 
     private void validateUniqueHearingIds(ManageExceptionRequest manageExceptionRequest) {
         Set<String> uniqueHearingIds = new HashSet<>();
-        for (SupportRequest request : manageExceptionRequest.getSupportRequest()) {
+        for (SupportRequest request : manageExceptionRequest.getSupportRequests()) {
             String hearingId = request.getHearingId();
             if (!uniqueHearingIds.add(hearingId)) {
                 log.error("Duplicate hearing ID found: {}", hearingId);
