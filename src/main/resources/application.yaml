@@ -178,5 +178,5 @@ LOGGING:
       gov:
         hmcts:
           reform:
-            hmc:
-              config: INFO
+            hmc: INFO
+
