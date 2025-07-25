@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 public class ListingReasonCodeEnumPatternValidator implements ConstraintValidator<ListingReasonCodeEnumPattern,String> {
     private List<String> acceptedValues;
