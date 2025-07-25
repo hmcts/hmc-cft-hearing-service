@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.LuhnCheck;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestAction;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
@@ -32,7 +33,7 @@ public class SupportRequest {
     @Size(max = 5000, message = ValidationError.MANAGE_EXCEPTION_NOTES_LENGTH)
     private String notes;
 
-    @EnumPattern(enumClass = State.class, fieldName = "state")
+    @EnumPattern(enumClass = HearingStatus.class, fieldName = "state")
     @Schema(allowableValues = "CANCELLED, COMPLETED, ADJOURNED")
     private String state;
 

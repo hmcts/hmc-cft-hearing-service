@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.hmc.model.SupportRequestResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,10 +29,11 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_AUDIT
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DUPLICATE_HEARING_IDS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_CASEREF_MISMATCH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_INCORRECT_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_FINAL_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_LIMIT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LAST_GOOD_STATE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.VALID_HEARING_DETAILS;
 
 @Service
 @Slf4j
@@ -50,6 +52,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
     }
 
     @Override
+    @Transactional
     public ManageExceptionResponse manageExceptions(ManageExceptionRequest manageExceptionRequest,
                                                     String clientS2SToken) {
         validateHearingIdLimit(manageExceptionRequest);
@@ -97,16 +100,10 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
                      request.getHearingId(), request.getCaseRef());
             return createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
                                       HEARING_ID_CASEREF_MISMATCH);
-        } else if (!HearingStatus.EXCEPTION.equals(hearingEntity.getStatus())) {
-            log.info("Hearing ID: {} is not in EXCEPTION state, current state: {}",
-                     request.getHearingId(), hearingEntity.getStatus());
-            return createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
-                                      HEARING_ID_INCORRECT_STATE);
-        } else if (ManageRequestAction.ROLLBACK.equals(request.getAction())
-            && hearingEntity.getLastGoodStatus() == null) {
-            log.info("Hearing ID: {} does not have a last good state to roll back to", request.getHearingId());
-            return createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
-                                      INVALID_LAST_GOOD_STATE);
+        } else if (ManageRequestAction.FINAL_STATE_TRANSITION.equals(request.getAction())) {
+            return validateFinalTransitionAction(hearingEntity, request);
+        } else if (ManageRequestAction.ROLLBACK.equals(request.getAction())) {
+            return validateRollBackAction(hearingEntity, request);
         } else {
             log.info("hearing ID: {} has valid details", request.getHearingId());
             String successMessage = String.format("%s, %s, %s, %s",
@@ -116,7 +113,36 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
                                                   request.getState());
             return createResponse(request.getHearingId(), ManageRequestStatus.SUCCESSFUL.label, successMessage);
         }
+    }
 
+    private SupportRequestResponse validateRollBackAction(HearingEntity hearingEntity, SupportRequest request) {
+        if (hearingEntity.getLastGoodStatus() == null) {
+            log.info("Hearing ID: {} does not have a last good state to roll back to", request.getHearingId());
+            return createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label, INVALID_LAST_GOOD_STATE);
+        } else {
+            log.info("Hearing ID: {} has a last good state : {} to roll back to", request.getHearingId(),
+                     hearingEntity.getLastGoodStatus());
+            return createResponse(request.getHearingId(), ManageRequestStatus.SUCCESSFUL.label, VALID_HEARING_DETAILS);
+        }
+    }
+
+    private SupportRequestResponse validateFinalTransitionAction(HearingEntity hearingEntity, SupportRequest request) {
+        if (!HearingStatus.isFinalStatus(HearingStatus.valueOf(request.getState()))) {
+            log.info("Hearing ID: {} has Action : {} and invalid state transition request : {}",
+                     request.getHearingId(), request.getAction(), request.getState());
+            return createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
+                                  INVALID_HEARING_ID_FINAL_STATE);
+        }
+        if (hearingEntity.getStatus() == HearingStatus.EXCEPTION.name()) {
+            log.info("Hearing ID: {} is in a EXCEPTION state, request state : {}, current state: {}",
+                request.getHearingId(), request.getState(), hearingEntity.getStatus());
+            return createResponse(request.getHearingId(), ManageRequestStatus.SUCCESSFUL.label, VALID_HEARING_DETAILS);
+        }
+        log.info(
+            "Hearing ID: {} is not in EXCEPTION state has Action : {}, request state : {}, current state: {}",
+            request.getHearingId(), request.getAction(), request.getState(), hearingEntity.getStatus());
+        return createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
+                              INVALID_HEARING_ID_FINAL_STATE);
     }
 
     private void validateHearingIdLimit(ManageExceptionRequest manageExceptionRequest) {
