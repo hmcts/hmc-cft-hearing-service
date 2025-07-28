@@ -43,6 +43,8 @@ import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestAction;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayParties;
@@ -67,6 +69,8 @@ import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.LocationType;
+import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
+import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
@@ -76,6 +80,8 @@ import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.RequirementType;
 import uk.gov.hmcts.reform.hmc.model.RoomAttribute;
+import uk.gov.hmcts.reform.hmc.model.SupportRequest;
+import uk.gov.hmcts.reform.hmc.model.SupportRequestResponse;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
@@ -93,6 +99,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.ELASTIC_QUERY_DEFAULT_SIZE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
@@ -1752,6 +1759,44 @@ public class TestingUtil {
             searchObject.setSize(ccdCaseRefs.size());
         }
         return objectMapperService.convertObjectToJsonNode(searchObject).toString();
+    }
+
+    public static ManageExceptionRequest getManageExceptionRequest() {
+        SupportRequest request = new SupportRequest();
+        request.setCaseRef("Test");
+        request.setHearingId("2000000000");
+        request.setAction(ManageRequestAction.FINAL_STATE_TRANSITION.label);
+        request.setState(CANCELLED);
+        request.setNotes("Inc1234");
+        List<SupportRequest> supportRequestList = new ArrayList<>();
+        supportRequestList.add(request);
+        ManageExceptionRequest manageExceptionRequest = new ManageExceptionRequest();
+        manageExceptionRequest.setSupportRequests(supportRequestList);
+        return manageExceptionRequest;
+    }
+
+    public static ManageExceptionResponse getManageExceptionResponse() {
+        SupportRequestResponse response = new SupportRequestResponse();
+        response.setHearingId("2000000000");
+        response.setStatus(ManageRequestStatus.SUCCESSFUL.label);
+        response.setMessage("Request processed successfully");
+        List<SupportRequestResponse> supportRequestResponseList = new ArrayList<>();
+        supportRequestResponseList.add(response);
+        ManageExceptionResponse manageExceptionResponse = new ManageExceptionResponse();
+        manageExceptionResponse.setSupportRequestResponse(supportRequestResponseList);
+        return manageExceptionResponse;
+    }
+
+    public static ManageExceptionRequest invalidManageExceptionRequest() {
+        SupportRequest request = new SupportRequest();
+        request.setAction(ManageRequestAction.FINAL_STATE_TRANSITION.label);
+        request.setState(CANCELLED);
+        request.setNotes("Inc1234");
+        List<SupportRequest> supportRequestList = new ArrayList<>();
+        supportRequestList.add(request);
+        ManageExceptionRequest manageExceptionRequest = new ManageExceptionRequest();
+        manageExceptionRequest.setSupportRequests(supportRequestList);
+        return manageExceptionRequest;
     }
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
