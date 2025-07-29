@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -18,7 +19,6 @@ import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.EntityManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -259,7 +259,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertEquals(Collections.emptyList(),
                      entityManager.createNativeQuery("select * from linked_hearing_details_audit where "
                                                          + "hearing_id=2100000005",
-                                                     LinkedGroupDetailsAudit.class).getResultList());
+                                                     LinkedHearingDetailsAudit.class).getResultList());
     }
 
     private void validateLinkedGroupAuditDetailsAfterDelete() {
