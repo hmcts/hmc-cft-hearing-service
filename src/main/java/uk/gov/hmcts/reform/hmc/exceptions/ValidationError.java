@@ -296,5 +296,4 @@ public final class ValidationError {
     public static final String INVALID_HEARING_ID_FINAL_STATE = "Hearing  has invalid final state";
     public static final String INVALID_LAST_GOOD_STATE = "hearing has no last good state defined";
     public static final String INVALID_HEARING_ID = "Invalid hearing id";
-    public static final String VALID_HEARING_DETAILS = "Valid hearing details";
 }

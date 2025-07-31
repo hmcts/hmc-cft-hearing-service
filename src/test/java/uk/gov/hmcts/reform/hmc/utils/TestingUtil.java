@@ -1799,6 +1799,32 @@ public class TestingUtil {
         return manageExceptionRequest;
     }
 
+    public static HearingEntity getHearingEntity(Long id,String status, String caseRef) {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(id);
+        hearingEntity.setStatus(status);
+        CaseHearingRequestEntity caseHearingRequestEntity = getCaseHearingRequest(id,caseRef);
+        hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
+        return hearingEntity;
+    }
+
+    public static CaseHearingRequestEntity getCaseHearingRequest(Long id, String caseRef) {
+        CaseHearingRequestEntity entity = new CaseHearingRequestEntity();
+        entity.setVersionNumber(1);
+        entity.setCaseHearingID(id);
+        entity.setHearing(getCaseHearingsEntity());
+        entity.setHmctsServiceCode("TEST");
+        entity.setCaseReference(caseRef);
+        entity.setHearingType("Some hearing type");
+        entity.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel());
+        entity.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
+        entity.getHearing().getHearingResponses().get(0)
+            .setHearingDayDetails(List.of(hearingDayDetailsEntities()));
+        entity.setHearingParties(List.of(hearingPartyEntityInd()));
+        entity.setHearingChannels(hearingChannelsEntity());
+        return entity;
+    }
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
 
 }
