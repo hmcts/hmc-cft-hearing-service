@@ -59,8 +59,10 @@ class ManageExceptionsServiceTest {
 
     private static final String CLIENT_S2S_TOKEN = "hmc_tech_admin";
 
+    private ManageExceptionRequest finalStateRequest;
+
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
         manageExceptionsService = new ManageExceptionsServiceImpl(
             hearingStatusAuditService, hearingRepository,
@@ -68,12 +70,12 @@ class ManageExceptionsServiceTest {
         );
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(
             any(), any(), any(), any(),
-            any(), any(), any()
-        );
+            any(), any(), any());
+        finalStateRequest = convertJsonToRequest("manage-exceptions/valid-final_state_transition_request.json");
     }
 
     @Nested
-    @DisplayName("manageExceptions")
+    @DisplayName("manageExceptions-Final State Transition")
     class ManageExceptions {
         @Test
         void shouldThrowExceptionWhenHearingIdLimitExceeds() {
@@ -121,7 +123,7 @@ class ManageExceptionsServiceTest {
         }
 
         @Test
-        void validateAllHearingsSuccessfully() throws IOException {
+        void validateAllHearingsSuccessfully()  {
             HearingEntity entity1 = TestingUtil.getHearingEntity(
                 2000000000L, EXCEPTION.name(),
                 "1742223756874235");
@@ -131,13 +133,13 @@ class ManageExceptionsServiceTest {
             HearingEntity entity3 = TestingUtil.getHearingEntity(
                 2000000002L, EXCEPTION.name(),
                 "1742223756874237");
-            ManageExceptionRequest request = convertJsonToRequest(
-                "manage-exceptions/valid-final_state_transition_request.json");
+
             List<HearingEntity> hearingEntities = List.of(entity1, entity2, entity3);
             List<Long> hearingIds = Arrays.asList(2000000000L, 2000000001L, 2000000002L);
             when(hearingRepository.getHearings(hearingIds))
                 .thenReturn(hearingEntities);
-            ManageExceptionResponse response = manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN);
+            ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateRequest,
+                    CLIENT_S2S_TOKEN);
             assertEquals(3, response.getSupportRequestResponse().size());
             assertEquals("2000000000", response.getSupportRequestResponse().get(0).getHearingId());
             assertEquals("2000000001", response.getSupportRequestResponse().get(1).getHearingId());
@@ -153,9 +155,7 @@ class ManageExceptionsServiceTest {
         }
 
         @Test
-        void oneHearingDoesNotExistInDB() throws IOException {
-            ManageExceptionRequest request = convertJsonToRequest(
-                "manage-exceptions/valid-final_state_transition_request.json");
+        void oneHearingDoesNotExistInDB() {
             HearingEntity entity1 = TestingUtil.getHearingEntity(
                 2000000000L, EXCEPTION.name(), "1742223756874235");
             HearingEntity entity2 = TestingUtil.getHearingEntity(
@@ -167,7 +167,8 @@ class ManageExceptionsServiceTest {
             List<Long> hearingIds = Arrays.asList(2000000000L, 2000000001L, 2000000002L);
             when(hearingRepository.getHearings(hearingIds))
                 .thenReturn(hearingEntities);
-            ManageExceptionResponse response = manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN);
+            ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateRequest,
+                    CLIENT_S2S_TOKEN);
             assertEquals(3, response.getSupportRequestResponse().size());
             assertEquals("2000000000", response.getSupportRequestResponse().get(0).getHearingId());
             assertEquals("2000000001", response.getSupportRequestResponse().get(1).getHearingId());
@@ -186,20 +187,19 @@ class ManageExceptionsServiceTest {
         }
 
         @Test
-        void validateCaseReferenceForHearingId() throws IOException {
+        void validateCaseReferenceForHearingId() {
             HearingEntity entity1 = TestingUtil.getHearingEntity(
                 2000000000L, EXCEPTION.name(), "1742223756874235");
             HearingEntity entity2 = TestingUtil.getHearingEntity(
                 2000000001L, EXCEPTION.name(), "1742223756874236");
             HearingEntity entity3 = TestingUtil.getHearingEntity(
                 2000000002L, EXCEPTION.name(), "1742223756874238");
-            ManageExceptionRequest request = convertJsonToRequest(
-                "manage-exceptions/valid-final_state_transition_request.json");
             List<HearingEntity> hearingEntities = List.of(entity1, entity2, entity3);
             List<Long> hearingIds = Arrays.asList(2000000000L, 2000000001L, 2000000002L);
             when(hearingRepository.getHearings(hearingIds))
                 .thenReturn(hearingEntities);
-            ManageExceptionResponse response = manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN);
+            ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateRequest,
+                    CLIENT_S2S_TOKEN);
             assertEquals(3, response.getSupportRequestResponse().size());
             assertEquals("2000000000", response.getSupportRequestResponse().get(0).getHearingId());
             assertEquals("2000000001", response.getSupportRequestResponse().get(1).getHearingId());
@@ -215,20 +215,20 @@ class ManageExceptionsServiceTest {
         }
 
         @Test
-        void validateHearingStatusInExceptionState() throws IOException {
+        void validateHearingStatusInExceptionState() {
             HearingEntity entity1 = TestingUtil.getHearingEntity(
                 2000000000L, EXCEPTION.name(), "1742223756874235");
             HearingEntity entity2 = TestingUtil.getHearingEntity(
                 2000000001L, EXCEPTION.name(), "1742223756874236");
             HearingEntity entity3 = TestingUtil.getHearingEntity(
                 2000000002L, HEARING_REQUESTED.name(), "1742223756874237");
-            ManageExceptionRequest request = convertJsonToRequest(
-                "manage-exceptions/valid-final_state_transition_request.json");
+
             List<HearingEntity> hearingEntities = List.of(entity1, entity2, entity3);
             List<Long> hearingIds = Arrays.asList(2000000000L, 2000000001L, 2000000002L);
             when(hearingRepository.getHearings(hearingIds))
                 .thenReturn(hearingEntities);
-            ManageExceptionResponse response = manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN);
+            ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateRequest,
+                    CLIENT_S2S_TOKEN);
             assertEquals(3, response.getSupportRequestResponse().size());
             assertEquals("2000000000", response.getSupportRequestResponse().get(0).getHearingId());
             assertEquals("2000000001", response.getSupportRequestResponse().get(1).getHearingId());
@@ -243,11 +243,11 @@ class ManageExceptionsServiceTest {
                 .saveAuditTriageDetailsWithUpdatedDate(any(), any(), any(), any(), any(), any(), any());
             verify(hearingRepository, times(3)).save(any(HearingEntity.class));
         }
+    }
 
-        private static ManageExceptionRequest convertJsonToRequest(String filePath) throws IOException {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Resource resource = new ClassPathResource(filePath);
-            return objectMapper.readValue(resource.getInputStream(), ManageExceptionRequest.class);
-        }
+    private static ManageExceptionRequest convertJsonToRequest(String filePath) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Resource resource = new ClassPathResource(filePath);
+        return objectMapper.readValue(resource.getInputStream(), ManageExceptionRequest.class);
     }
 }

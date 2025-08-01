@@ -46,7 +46,8 @@ public class ManageExceptionsController {
     public ManageExceptionResponse manageExceptions(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
                                                     @RequestBody @Valid ManageExceptionRequest supportRequest) {
         String serviceName = securityUtils.getServiceNameFromS2SToken(clientS2SToken);
-        /*if (!TECH_ADMIN_ROLE.equals(serviceName)) {
+        // TODO: Uncomment the following lines when the TECH_ADMIN_ROLE is defined
+        /* if (!TECH_ADMIN_ROLE.equals(serviceName)) {
             throw new InvalidManageHearingServiceException(INVALID_MANAGE_HEARING_SERVICE_EXCEPTION);
         }*/
         return manageExceptionsService.manageExceptions(supportRequest, serviceName);

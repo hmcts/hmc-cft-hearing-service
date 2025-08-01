@@ -18,10 +18,11 @@ public enum ManageRequestAction {
     }
 
     public static ManageRequestAction getByLabel(String label) {
-        ManageRequestAction action = Arrays.stream(ManageRequestAction.values())
-            .filter(eachAction -> eachAction.toString().toLowerCase(Locale.ROOT)
-                .equals(label.toLowerCase(Locale.ROOT))).findAny().orElse(null);
-        return action;
+        return Arrays.stream(ManageRequestAction.values())
+            .filter(eachAction -> eachAction.getLabel().toLowerCase(Locale.ROOT)
+                .equals(label.toLowerCase(Locale.ROOT)))
+            .findAny()
+            .orElse(null);
     }
 }
 
