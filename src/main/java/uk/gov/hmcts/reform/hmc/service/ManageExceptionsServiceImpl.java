@@ -17,11 +17,11 @@ import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
@@ -108,19 +108,17 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         if (isProcessingComplete(response)) {
             return response;
         }
-        response = hearingIsValid(entity, request, response);
+        response = hearingIsValid(entity, request);
         return response;
     }
 
-    private SupportRequestResponse hearingIsValid(HearingEntity hearingEntity, SupportRequest request,
-                                                  SupportRequestResponse response) {
+    private SupportRequestResponse hearingIsValid(HearingEntity hearingEntity, SupportRequest request) {
         log.info("hearing ID: {} has valid details", request.getHearingId());
         String successMessage = String.format(MANAGE_EXCEPTION_SUCCESS_MESSAGE,
                                               hearingEntity.getId(),
                                               hearingEntity.getStatus(),
                                               request.getState());
-        response =  createResponse(request.getHearingId(), ManageRequestStatus.SUCCESSFUL.label, successMessage);
-        return response;
+        return  createResponse(request.getHearingId(), ManageRequestStatus.SUCCESSFUL.label, successMessage);
     }
 
     private boolean isProcessingComplete(SupportRequestResponse response) {
@@ -141,7 +139,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
 
     private SupportRequestResponse validateRollBackAction(HearingEntity hearingEntity, SupportRequest request,
                                                           SupportRequestResponse response) {
-        if (ManageRequestAction.ROLLBACK.equals(request.getAction())) {
+        if (ManageRequestAction.ROLLBACK.name().equals(request.getAction())) {
             if (hearingEntity.getLastGoodStatus() == null) {
                 log.info("Hearing ID: {} does not have a last good state to roll back to", request.getHearingId());
                 response =  createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
@@ -149,7 +147,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
             } else {
                 log.info("Hearing ID: {} has a last good state : {} to roll back to", request.getHearingId(),
                     hearingEntity.getLastGoodStatus());
-                response = hearingIsValid(hearingEntity, request, response);
+                response = hearingIsValid(hearingEntity, request);
             }
         }
         return response;
@@ -166,11 +164,11 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
                 response = createResponse(
                     request.getHearingId(), ManageRequestStatus.FAILURE.label, INVALID_HEARING_ID_FINAL_STATE);
             }
-            if (hearingEntity.getStatus() == HearingStatus.EXCEPTION.name()) {
+            if (HearingStatus.EXCEPTION.name().equals(hearingEntity.getStatus())) {
                 log.info(
                     "Hearing ID: {} is in a EXCEPTION state, request state : {}, current state: {}",
                     request.getHearingId(), request.getState(), hearingEntity.getStatus());
-                response = hearingIsValid(hearingEntity, request, response);
+                response = hearingIsValid(hearingEntity, request);
             }
         }
         return response;
@@ -195,9 +193,10 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
     }
 
     private List<Long> extractHearingIds(List<SupportRequest> supportRequest) {
-        return supportRequest.stream()
-            .map(request -> Long.valueOf(request.getHearingId()))
-            .collect(Collectors.toList());
+        return Collections.unmodifiableList(
+            supportRequest.stream()
+                .map(request -> Long.valueOf(request.getHearingId()))
+                .toList());
     }
 
     private SupportRequestResponse createResponse(String hearingId, String status, String message) {

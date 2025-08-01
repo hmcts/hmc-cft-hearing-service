@@ -74,7 +74,7 @@ class ManageExceptionsControllerTest {
     private static final String CLIENT_S2S_TOKEN = "hmc_tech_admin";
 
     @BeforeEach
-    public void setUp() {
+     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         doReturn(CLIENT_S2S_TOKEN).when(securityUtils)
             .getServiceNameFromS2SToken(any());

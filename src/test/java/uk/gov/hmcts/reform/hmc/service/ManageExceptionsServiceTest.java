@@ -43,7 +43,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_LIMIT;
 
 @ExtendWith(MockitoExtension.class)
-public class ManageExceptionsServiceTest {
+class ManageExceptionsServiceTest {
 
     @InjectMocks
     private ManageExceptionsServiceImpl manageExceptionsService;
@@ -60,7 +60,7 @@ public class ManageExceptionsServiceTest {
     private static final String CLIENT_S2S_TOKEN = "hmc_tech_admin";
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         manageExceptionsService = new ManageExceptionsServiceImpl(
             hearingStatusAuditService, hearingRepository,
