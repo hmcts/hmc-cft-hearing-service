@@ -454,7 +454,7 @@ dependencies {
   implementation group: 'io.netty', name: 'netty-transport-classes-epoll', version: versions.netty
   implementation group: 'io.netty', name: 'netty-transport-classes-kqueue', version: versions.netty
 
-  implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
+  implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.6.0'
   implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
