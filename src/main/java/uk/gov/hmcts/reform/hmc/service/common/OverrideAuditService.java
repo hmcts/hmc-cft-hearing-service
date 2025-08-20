@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
 
-import static org.springframework.data.util.CastUtils.cast;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.FH;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.OVERRIDE_URL;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.OVERRIDE_URL_EVENT;
@@ -169,7 +168,7 @@ public class OverrideAuditService {
 
     private String getAttributeId(HttpServletRequest request, String attribute) {
         try {
-            Map<String, Object> attributes = cast(request.getAttribute(PARAM_ATTRIBUTE));
+            Map<String, Object> attributes =  ((Map<String, Object>) request.getAttribute(PARAM_ATTRIBUTE));
             if (attributes != null && attributes.containsKey(attribute)) {
                 return attributes.get(attribute).toString();
             }
