@@ -1,0 +1,22 @@
+{
+  "supportRequests": [
+    {
+      "hearingId": "2000000000",
+      "caseRef": "1742223756874235",
+      "action": "rollback",
+      "notes": "INC-XXXX"
+    },
+    {
+      "hearingId": "2000000001",
+      "caseRef": "1742223756874236",
+      "action": "rollback",
+      "notes": "CANCELLED"
+    },
+    {
+      "hearingId": "2000000002",
+      "caseRef": "1742223756874237",
+      "action": "rollback",
+      "state": "INC-XXXX",
+    }
+  ]
+}
