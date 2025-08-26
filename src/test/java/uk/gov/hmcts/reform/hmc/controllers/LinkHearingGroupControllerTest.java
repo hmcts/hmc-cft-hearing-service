@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -61,22 +61,22 @@ class LinkHearingGroupControllerTest {
     @Autowired
     WebApplicationContext webApplicationContext;
 
-    @MockBean
+    @MockitoBean
     private LinkedHearingGroupService linkedHearingGroupService;
 
-    @MockBean
+    @MockitoBean
     private AccessControlService accessControlService;
 
-    @MockBean
+    @MockitoBean
     private ApplicationParams applicationParams;
 
-    @MockBean
+    @MockitoBean
     private UrlManager urlManager;
 
-    @MockBean
+    @MockitoBean
     private OverrideAuditService overrideAuditService;
 
-    @MockBean
+    @MockitoBean
     SecurityUtils securityUtils;
 
     private static final String CLIENT_S2S_TOKEN = "xui_webapp";
