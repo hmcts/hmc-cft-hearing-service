@@ -279,8 +279,21 @@ tasks.register("printSuppressionFile") {
 dependencyManagement {
   imports {
     mavenBom "org.springframework.cloud:spring-cloud-dependencies:${versions.springCloud}"
+    mavenBom "org.springframework.boot:spring-boot-dependencies:2.7.18"
   }
   dependencies {
+    // ✅ Add Spring Framework override here (5.3.39)
+    dependencySet(group: 'org.springframework', version: '5.3.39') {
+      entry 'spring-aop'
+      entry 'spring-beans'
+      entry 'spring-context'
+      entry 'spring-core'
+      entry 'spring-expression'
+      entry 'spring-jcl'
+      entry 'spring-web'
+      entry 'spring-webmvc'
+    }
+    
     // CVE-2018-10237 - Unbounded memory allocation
     dependencySet(group: 'com.google.guava', version: '33.0.0-jre') {
       entry 'guava'
