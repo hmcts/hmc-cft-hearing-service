@@ -3,7 +3,6 @@
     <notes>Temporary Suppression
         CVE-2024-38820 refer [https://tools.hmcts.net/jira/browse/CCD-6278]
         CVE-2024-22259 refer [https://tools.hmcts.net/jira/browse/CCD-6489]
-        CVE-2024-38808 refer [https://tools.hmcts.net/jira/browse/CCD-6507]
         CVE-2025-48976 refer [https://tools.hmcts.net/jira/browse/CCD-6601]
         CVE-2024-47554 refer [https://tools.hmcts.net/jira/browse/CCD-6621]
         CVE-2025-52434 refer [https://tools.hmcts.net/jira/browse/CCD-6640]
@@ -13,7 +12,6 @@
     </notes>
     <cve>CVE-2024-38820</cve>
     <cve>CVE-2024-22259</cve>
-    <cve>CVE-2024-38808</cve>
     <cve>CVE-2024-9329</cve>
     <cve>CVE-2024-43591</cve>
     <cve>CVE-2023-36052</cve>
