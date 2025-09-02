@@ -9,6 +9,7 @@
         CVE-2025-52434 refer [https://tools.hmcts.net/jira/browse/CCD-6640]
         CVE-2025-52520 refer [https://tools.hmcts.net/jira/browse/CCD-6640]
         CVE-2025-53506 refer [https://tools.hmcts.net/jira/browse/CCD-6640]
+        CVE-2025-48989 refer [https://tools.hmcts.net/jira/browse/CCD-6675]
     </notes>
     <cve>CVE-2024-38820</cve>
     <cve>CVE-2024-22259</cve>
@@ -21,5 +22,6 @@
     <cve>CVE-2025-52434</cve>
     <cve>CVE-2025-52520</cve>
     <cve>CVE-2025-53506</cve>
+    <cve>CVE-2025-48989</cve>
   </suppress>
 </suppressions>
