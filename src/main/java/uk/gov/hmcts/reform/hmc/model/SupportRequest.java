@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.hmc.validator.EnumPattern;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -30,11 +31,12 @@ public class SupportRequest {
     @Schema(allowableValues = "rollback, final_state_transition")
     private String action;
 
-    @Size(max = 5000, message = ValidationError.MANAGE_EXCEPTION_NOTES_LENGTH)
-    private String notes;
-
     @EnumPattern(enumClass = HearingStatus.class, fieldName = "state")
     @Schema(allowableValues = "CANCELLED, COMPLETED, ADJOURNED")
     private String state;
+
+    @NotNull(message = ValidationError.INVALID_SUPPORT_REQUEST_NOTES)
+    @Size(max = 5000, message = ValidationError.MANAGE_EXCEPTION_NOTES_LENGTH)
+    private String notes;
 
 }

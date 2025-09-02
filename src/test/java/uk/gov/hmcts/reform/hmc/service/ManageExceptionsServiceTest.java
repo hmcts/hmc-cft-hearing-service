@@ -37,10 +37,11 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCE
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DUPLICATE_HEARING_IDS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_CASEREF_MISMATCH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_CASE_REF_MISMATCH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_FINAL_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_LIMIT;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_STATE;
 
 @ExtendWith(MockitoExtension.class)
 class ManageExceptionsServiceTest {
@@ -206,7 +207,7 @@ class ManageExceptionsServiceTest {
             assertEquals(ManageRequestStatus.SUCCESSFUL.label, response.getSupportRequestResponse().get(0).getStatus());
             assertEquals(ManageRequestStatus.SUCCESSFUL.label, response.getSupportRequestResponse().get(1).getStatus());
             assertEquals(MANAGE_EXCEPTION_SUCCESS_MESSAGE, response.getSupportRequestResponse().get(0).getMessage());
-            assertEquals(HEARING_ID_CASEREF_MISMATCH, response.getSupportRequestResponse().get(2).getMessage());
+            assertEquals(HEARING_ID_CASE_REF_MISMATCH, response.getSupportRequestResponse().get(2).getMessage());
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             // To verify that the audit service is called 4 times
             verify(hearingStatusAuditService, times(4))
@@ -236,7 +237,7 @@ class ManageExceptionsServiceTest {
             assertEquals(ManageRequestStatus.SUCCESSFUL.label, response.getSupportRequestResponse().get(1).getStatus());
             assertEquals(MANAGE_EXCEPTION_SUCCESS_MESSAGE, response.getSupportRequestResponse().get(0).getMessage());
             assertEquals(ManageRequestStatus.FAILURE.label, response.getSupportRequestResponse().get(2).getStatus());
-            assertEquals(INVALID_HEARING_ID_FINAL_STATE, response.getSupportRequestResponse().get(2).getMessage());
+            assertEquals(INVALID_HEARING_STATE, response.getSupportRequestResponse().get(2).getMessage());
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             // To verify that the audit service is called 4 times
             verify(hearingStatusAuditService, times(4))
