@@ -39,7 +39,6 @@ import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_R
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DUPLICATE_HEARING_IDS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_CASE_REF_MISMATCH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_FINAL_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_LIMIT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_STATE;
 
