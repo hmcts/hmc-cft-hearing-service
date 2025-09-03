@@ -80,18 +80,20 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
             if (matchingHearingEntity.isPresent()) {
                 HearingEntity entity = matchingHearingEntity.get();
                 response = validateAndProcess(entity, request, response);
-                supportRequestResponseList.add(response);
-                if (ManageRequestStatus.SUCCESSFUL.label.equals(response.getStatus())) {
-                    saveHearingEntity(entity, request.getState());
+                if (!ManageRequestStatus.FAILURE.label.equals(response.getStatus())) {
+                    String oldStatus = entity.getStatus();
+                    String newStatus = request.getAction().equals(ManageRequestAction.ROLLBACK.label)
+                            ? entity.getLastGoodStatus() : request.getState();
+                    saveHearingEntity(entity, newStatus);
                     saveAuditEntity(request, entity, clientS2SToken);
+                    response = hearingIsValid(entity, oldStatus, newStatus);
                 }
             } else {
                 response = createResponse(hearingId, ManageRequestStatus.FAILURE.label, INVALID_HEARING_ID);
-                supportRequestResponseList.add(response);
             }
+            supportRequestResponseList.add(response);
         }
         manageExceptionResponse.setSupportRequestResponse(supportRequestResponseList);
-
         return manageExceptionResponse;
     }
 
@@ -116,7 +118,6 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         if (isProcessingComplete(response)) {
             return response;
         }
-        response = hearingIsValid(entity, request);
         return response;
     }
 
@@ -131,14 +132,12 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         return response;
     }
 
-
-    private SupportRequestResponse hearingIsValid(HearingEntity hearingEntity, SupportRequest request) {
-        log.info("hearing ID: {} has valid details", request.getHearingId());
+    private SupportRequestResponse hearingIsValid(HearingEntity hearingEntity, String oldStatus, String newStatus) {
+        log.info("hearing ID: {} has valid details", hearingEntity.getId());
         String successMessage = String.format(MANAGE_EXCEPTION_SUCCESS_MESSAGE,
-                                              hearingEntity.getId(),
-                                              hearingEntity.getStatus(),
-                                              request.getState());
-        return  createResponse(request.getHearingId(), ManageRequestStatus.SUCCESSFUL.label, successMessage);
+                hearingEntity.getId(), oldStatus, newStatus);
+        return createResponse(String.valueOf(hearingEntity.getId()),
+                ManageRequestStatus.SUCCESSFUL.label, successMessage);
     }
 
     private boolean isProcessingComplete(SupportRequestResponse response) {
