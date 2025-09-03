@@ -81,8 +81,10 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
                 HearingEntity entity = matchingHearingEntity.get();
                 response = validateAndProcess(entity, request, response);
                 supportRequestResponseList.add(response);
-                saveHearingEntity(entity, request.getState());
-                saveAuditEntity(request, entity, clientS2SToken);
+                if (ManageRequestStatus.SUCCESSFUL.label.equals(response.getStatus())) {
+                    saveHearingEntity(entity, request.getState());
+                    saveAuditEntity(request, entity, clientS2SToken);
+                }
             } else {
                 response = createResponse(hearingId, ManageRequestStatus.FAILURE.label, INVALID_HEARING_ID);
                 supportRequestResponseList.add(response);
@@ -157,7 +159,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
 
     private SupportRequestResponse validateRollBackAction(HearingEntity hearingEntity, SupportRequest request,
                                                           SupportRequestResponse response) {
-        if (ManageRequestAction.ROLLBACK.name().equals(request.getAction())
+        if (ManageRequestAction.ROLLBACK.label.equals(request.getAction())
             && hearingEntity.getLastGoodStatus() == null) {
             log.info("Hearing ID: {} does not have a last good state to roll back to", request.getHearingId());
             response = createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
@@ -215,15 +217,15 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
 
     private void saveAuditEntity(SupportRequest request, HearingEntity hearingEntity, String clientS2SToken) {
         JsonNode otherInfo = objectMapper.convertValue(request.getNotes(), JsonNode.class);
-        // set ResponseDateTime to null or localdateTime.now() if needed
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity, MANAGE_EXCEPTION_AUDIT_EVENT,
+        hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(hearingEntity, MANAGE_EXCEPTION_AUDIT_EVENT,
                                                                         null, clientS2SToken, HMC,
                                                                         null, otherInfo);
     }
 
     private void saveHearingEntity(HearingEntity hearingEntity, String newStatus) {
         hearingEntity.setStatus(newStatus);
-        // to set error details to null
+        hearingEntity.setErrorCode(null);
+        hearingEntity.setErrorDescription(null);
         hearingRepository.save(hearingEntity);
         log.info("Hearing ID: {} updated to status: {}", hearingEntity.getId(), newStatus);
     }

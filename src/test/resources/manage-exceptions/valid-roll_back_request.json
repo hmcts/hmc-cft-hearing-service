@@ -16,7 +16,7 @@
       "hearingId": "2000000002",
       "caseRef": "1742223756874237",
       "action": "rollback",
-      "state": "INC-XXXX"
+      "notes": "INC-XXXX"
     }
   ]
 }

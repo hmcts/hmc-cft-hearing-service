@@ -33,14 +33,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.client.hmi.HearingCode.LISTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DUPLICATE_HEARING_IDS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_CASE_REF_MISMATCH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_FINAL_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_LIMIT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_STATE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LAST_GOOD_STATE;
 
 @ExtendWith(MockitoExtension.class)
 class ManageExceptionsServiceTest {
@@ -61,6 +65,9 @@ class ManageExceptionsServiceTest {
 
     private ManageExceptionRequest finalStateRequest;
 
+    private static final String SUCCESS_STATUS = ManageRequestStatus.SUCCESSFUL.label;
+    private static final String FAILURE_STATUS = ManageRequestStatus.FAILURE.label;
+
     @BeforeEach
     void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
@@ -68,9 +75,6 @@ class ManageExceptionsServiceTest {
             hearingStatusAuditService, hearingRepository,
             objectMapper
         );
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(
-            any(), any(), any(), any(),
-            any(), any(), any());
         finalStateRequest = convertJsonToRequest("manage-exceptions/valid-final_state_transition_request.json");
     }
 
@@ -92,6 +96,9 @@ class ManageExceptionsServiceTest {
                 () -> manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN)
             );
             assertEquals(INVALID_HEARING_ID_LIMIT, exception.getMessage());
+            verify(hearingStatusAuditService, times(0))
+                .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+            verify(hearingRepository, times(0)).save(any(HearingEntity.class));
 
         }
 
@@ -110,6 +117,9 @@ class ManageExceptionsServiceTest {
             request.setSupportRequests(supportRequests);
             manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN);
             verify(hearingRepository, times(1)).getHearings(hearingIds);
+            verify(hearingStatusAuditService, times(0))
+                .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+            verify(hearingRepository, times(0)).save(any(HearingEntity.class));
         }
 
         @Test
@@ -123,126 +133,198 @@ class ManageExceptionsServiceTest {
         }
 
         @Test
-        void validateAllHearingsSuccessfully()  {
-            HearingEntity entity1 = TestingUtil.getHearingEntity(
-                2000000000L, EXCEPTION.name(),
-                "1742223756874235");
-            HearingEntity entity2 = TestingUtil.getHearingEntity(
-                2000000001L, EXCEPTION.name(),
-                "1742223756874236");
-            HearingEntity entity3 = TestingUtil.getHearingEntity(
-                2000000002L, EXCEPTION.name(),
-                "1742223756874237");
-
-            List<HearingEntity> hearingEntities = List.of(entity1, entity2, entity3);
-            List<Long> hearingIds = Arrays.asList(2000000000L, 2000000001L, 2000000002L);
-            when(hearingRepository.getHearings(hearingIds))
-                .thenReturn(hearingEntities);
+        void validateAllHearingsSuccessfully() {
+            List<HearingEntity> hearingEntities = createHearingEntities();
+            List<Long> hearingIds = createHearingIds();
+            when(hearingRepository.getHearings(hearingIds)).thenReturn(hearingEntities);
             ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateRequest,
                     CLIENT_S2S_TOKEN);
+
             assertEquals(3, response.getSupportRequestResponse().size());
-            assertEquals("2000000000", response.getSupportRequestResponse().get(0).getHearingId());
-            assertEquals("2000000001", response.getSupportRequestResponse().get(1).getHearingId());
-            assertEquals(ManageRequestStatus.SUCCESSFUL.label, response.getSupportRequestResponse().get(0).getStatus());
-            assertEquals(ManageRequestStatus.SUCCESSFUL.label, response.getSupportRequestResponse().get(1).getStatus());
-            assertEquals(MANAGE_EXCEPTION_SUCCESS_MESSAGE, response.getSupportRequestResponse().get(0).getMessage());
-            assertEquals(MANAGE_EXCEPTION_SUCCESS_MESSAGE, response.getSupportRequestResponse().get(2).getMessage());
+            assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
+                    MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+            assertSupportRequestResponse(response, 1, "2000000001", SUCCESS_STATUS,
+                    MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+            assertSupportRequestResponse(response, 2, "2000000002", SUCCESS_STATUS,
+                    MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+
             verify(hearingRepository, times(1)).getHearings(hearingIds);
-            // To verify that the audit service is called 4 times
-            verify(hearingStatusAuditService, times(4))
-                .saveAuditTriageDetailsWithUpdatedDate(any(), any(), any(), any(), any(), any(), any());
+            verify(hearingStatusAuditService, times(3))
+                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
             verify(hearingRepository, times(3)).save(any(HearingEntity.class));
         }
 
         @Test
-        void oneHearingDoesNotExistInDB() {
-            HearingEntity entity1 = TestingUtil.getHearingEntity(
-                2000000000L, EXCEPTION.name(), "1742223756874235");
-            HearingEntity entity2 = TestingUtil.getHearingEntity(
-                2000000001L, EXCEPTION.name(), "1742223756874236");
-            HearingEntity entity3 = TestingUtil.getHearingEntity(
-                2000000002L, EXCEPTION.name(), "1742223756874237");
-            entity3.setId(2000000003L);
-            List<HearingEntity> hearingEntities = List.of(entity1, entity2, entity3);
-            List<Long> hearingIds = Arrays.asList(2000000000L, 2000000001L, 2000000002L);
+        void hearingDoesNotExistInDB() {
+            List<HearingEntity> hearingEntities = createHearingEntities();
+            hearingEntities.get(2).setId(2000000003L);
+            List<Long> hearingIds = createHearingIds();
             when(hearingRepository.getHearings(hearingIds))
                 .thenReturn(hearingEntities);
             ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateRequest,
                     CLIENT_S2S_TOKEN);
             assertEquals(3, response.getSupportRequestResponse().size());
-            assertEquals("2000000000", response.getSupportRequestResponse().get(0).getHearingId());
-            assertEquals("2000000001", response.getSupportRequestResponse().get(1).getHearingId());
-            assertEquals("2000000002", response.getSupportRequestResponse().get(2).getHearingId());
-            assertEquals(ManageRequestStatus.SUCCESSFUL.label, response.getSupportRequestResponse().get(0).getStatus());
-            assertEquals(ManageRequestStatus.SUCCESSFUL.label, response.getSupportRequestResponse().get(1).getStatus());
-            assertEquals(ManageRequestStatus.FAILURE.label, response.getSupportRequestResponse().get(2).getStatus());
-            assertEquals(MANAGE_EXCEPTION_SUCCESS_MESSAGE, response.getSupportRequestResponse().get(0).getMessage());
-            assertEquals(MANAGE_EXCEPTION_SUCCESS_MESSAGE, response.getSupportRequestResponse().get(1).getMessage());
-            assertEquals(INVALID_HEARING_ID, response.getSupportRequestResponse().get(2).getMessage());
-            // To verify that the audit service is called 4 times
+            assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
+                    MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+            assertSupportRequestResponse(response, 1, "2000000001", SUCCESS_STATUS,
+                    MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+            assertSupportRequestResponse(response, 2, "2000000002", FAILURE_STATUS,
+                    INVALID_HEARING_ID);
+
             verify(hearingRepository, times(1)).getHearings(hearingIds);
-            verify(hearingStatusAuditService, times(3))
-                .saveAuditTriageDetailsWithUpdatedDate(any(), any(), any(), any(), any(), any(), any());
+            verify(hearingStatusAuditService, times(2))
+                .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
             verify(hearingRepository, times(2)).save(any(HearingEntity.class));
         }
 
         @Test
         void validateCaseReferenceForHearingId() {
-            HearingEntity entity1 = TestingUtil.getHearingEntity(
-                2000000000L, EXCEPTION.name(), "1742223756874235");
-            HearingEntity entity2 = TestingUtil.getHearingEntity(
-                2000000001L, EXCEPTION.name(), "1742223756874236");
-            HearingEntity entity3 = TestingUtil.getHearingEntity(
-                2000000002L, EXCEPTION.name(), "1742223756874238");
-            List<HearingEntity> hearingEntities = List.of(entity1, entity2, entity3);
-            List<Long> hearingIds = Arrays.asList(2000000000L, 2000000001L, 2000000002L);
+            List<HearingEntity> hearingEntities = createHearingEntities();
+            hearingEntities.get(2).getLatestCaseHearingRequest().setCaseReference("1742223756874238");
+            List<Long> hearingIds = createHearingIds();
             when(hearingRepository.getHearings(hearingIds))
                 .thenReturn(hearingEntities);
             ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateRequest,
                     CLIENT_S2S_TOKEN);
             assertEquals(3, response.getSupportRequestResponse().size());
-            assertEquals("2000000000", response.getSupportRequestResponse().get(0).getHearingId());
-            assertEquals("2000000001", response.getSupportRequestResponse().get(1).getHearingId());
-            assertEquals(ManageRequestStatus.SUCCESSFUL.label, response.getSupportRequestResponse().get(0).getStatus());
-            assertEquals(ManageRequestStatus.SUCCESSFUL.label, response.getSupportRequestResponse().get(1).getStatus());
-            assertEquals(MANAGE_EXCEPTION_SUCCESS_MESSAGE, response.getSupportRequestResponse().get(0).getMessage());
-            assertEquals(HEARING_ID_CASE_REF_MISMATCH, response.getSupportRequestResponse().get(2).getMessage());
+            assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
+                    MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+            assertSupportRequestResponse(response, 1, "2000000001", SUCCESS_STATUS,
+                    MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+            assertSupportRequestResponse(response, 2, "2000000002", FAILURE_STATUS,
+                    HEARING_ID_CASE_REF_MISMATCH);
+
             verify(hearingRepository, times(1)).getHearings(hearingIds);
-            // To verify that the audit service is called 4 times
-            verify(hearingStatusAuditService, times(4))
-                .saveAuditTriageDetailsWithUpdatedDate(any(), any(), any(), any(), any(), any(), any());
-            verify(hearingRepository, times(3)).save(any(HearingEntity.class));
+            verify(hearingStatusAuditService, times(2))
+                .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+            verify(hearingRepository, times(2)).save(any(HearingEntity.class));
         }
 
         @Test
-        void validateHearingStatusInExceptionState() {
-            HearingEntity entity1 = TestingUtil.getHearingEntity(
-                2000000000L, EXCEPTION.name(), "1742223756874235");
-            HearingEntity entity2 = TestingUtil.getHearingEntity(
-                2000000001L, EXCEPTION.name(), "1742223756874236");
-            HearingEntity entity3 = TestingUtil.getHearingEntity(
-                2000000002L, HEARING_REQUESTED.name(), "1742223756874237");
-
-            List<HearingEntity> hearingEntities = List.of(entity1, entity2, entity3);
-            List<Long> hearingIds = Arrays.asList(2000000000L, 2000000001L, 2000000002L);
+        void hearingStatusNotInExceptionState_final_state_transition() {
+            List<HearingEntity> hearingEntities = createHearingEntities();
+            hearingEntities.get(2).setStatus(HEARING_REQUESTED.name());
+            List<Long> hearingIds = createHearingIds();
             when(hearingRepository.getHearings(hearingIds))
                 .thenReturn(hearingEntities);
             ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateRequest,
                     CLIENT_S2S_TOKEN);
+
             assertEquals(3, response.getSupportRequestResponse().size());
-            assertEquals("2000000000", response.getSupportRequestResponse().get(0).getHearingId());
-            assertEquals("2000000001", response.getSupportRequestResponse().get(1).getHearingId());
-            assertEquals(ManageRequestStatus.SUCCESSFUL.label, response.getSupportRequestResponse().get(0).getStatus());
-            assertEquals(ManageRequestStatus.SUCCESSFUL.label, response.getSupportRequestResponse().get(1).getStatus());
-            assertEquals(MANAGE_EXCEPTION_SUCCESS_MESSAGE, response.getSupportRequestResponse().get(0).getMessage());
-            assertEquals(ManageRequestStatus.FAILURE.label, response.getSupportRequestResponse().get(2).getStatus());
-            assertEquals(INVALID_HEARING_STATE, response.getSupportRequestResponse().get(2).getMessage());
+            assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
+                    MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+            assertSupportRequestResponse(response, 1, "2000000001", SUCCESS_STATUS,
+                    MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+            assertSupportRequestResponse(response, 2, "2000000002", FAILURE_STATUS,
+                    INVALID_HEARING_STATE);
+
             verify(hearingRepository, times(1)).getHearings(hearingIds);
-            // To verify that the audit service is called 4 times
-            verify(hearingStatusAuditService, times(4))
-                .saveAuditTriageDetailsWithUpdatedDate(any(), any(), any(), any(), any(), any(), any());
-            verify(hearingRepository, times(3)).save(any(HearingEntity.class));
+            verify(hearingStatusAuditService, times(2))
+                .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+            verify(hearingRepository, times(2)).save(any(HearingEntity.class));
         }
+    }
+
+    @Test
+    void invalidFinalStateTransitionRequest() throws IOException {
+        List<Long> hearingIds = createHearingIds();
+        when(hearingRepository.getHearings(hearingIds)).thenReturn(createHearingEntities());
+        ManageExceptionRequest request = convertJsonToRequest(
+                "manage-exceptions/inValid-final_state_transition_request.json");
+        ManageExceptionResponse response = manageExceptionsService.manageExceptions(request,
+            CLIENT_S2S_TOKEN);
+
+        assertEquals(3, response.getSupportRequestResponse().size());
+        assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
+                MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+        assertSupportRequestResponse(response, 1, "2000000001", FAILURE_STATUS,
+                INVALID_HEARING_ID_FINAL_STATE);
+        assertSupportRequestResponse(response, 2, "2000000002", SUCCESS_STATUS,
+                MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+
+        verify(hearingRepository, times(1)).getHearings(hearingIds);
+        verify(hearingStatusAuditService, times(2))
+            .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+        verify(hearingRepository, times(2)).save(any(HearingEntity.class));
+    }
+
+    @Test
+    void validRollBackRequest() throws IOException {
+        List<Long> hearingIds = createHearingIds();
+        List<HearingEntity> entities = createHearingEntities();
+        entities.get(0).setLastGoodStatus(HEARING_REQUESTED.name());
+        entities.get(1).setLastGoodStatus(ADJOURNED.name());
+        entities.get(2).setLastGoodStatus(LISTED.name());
+        when(hearingRepository.getHearings(hearingIds)).thenReturn(entities);
+        ManageExceptionRequest request = convertJsonToRequest("manage-exceptions/valid-roll_back_request.json");
+        ManageExceptionResponse response = manageExceptionsService.manageExceptions(request,
+                CLIENT_S2S_TOKEN);
+
+        assertEquals(3, response.getSupportRequestResponse().size());
+        assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
+                MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+        assertSupportRequestResponse(response, 1, "2000000001", SUCCESS_STATUS,
+                MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+        assertSupportRequestResponse(response, 2, "2000000002", SUCCESS_STATUS,
+                MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+
+        verify(hearingRepository, times(1)).getHearings(hearingIds);
+        verify(hearingStatusAuditService, times(3))
+                .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+        verify(hearingRepository, times(3)).save(any(HearingEntity.class));
+    }
+
+    @Test
+    void noLastGoodStatusForRollBackRequest() throws IOException {
+        List<Long> hearingIds = createHearingIds();
+        List<HearingEntity> entities = createHearingEntities();
+        entities.get(0).setLastGoodStatus(HEARING_REQUESTED.name());
+        entities.get(1).setLastGoodStatus(ADJOURNED.name());
+        when(hearingRepository.getHearings(hearingIds)).thenReturn(entities);
+        ManageExceptionRequest request = convertJsonToRequest("manage-exceptions/valid-roll_back_request.json");
+        ManageExceptionResponse response = manageExceptionsService.manageExceptions(request,
+                CLIENT_S2S_TOKEN);
+
+        assertEquals(3, response.getSupportRequestResponse().size());
+        assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
+                MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+        assertSupportRequestResponse(response, 1, "2000000001", SUCCESS_STATUS,
+                MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+        assertSupportRequestResponse(response, 2, "2000000002", FAILURE_STATUS,
+                INVALID_LAST_GOOD_STATE);
+
+        verify(hearingRepository, times(1)).getHearings(hearingIds);
+        verify(hearingStatusAuditService, times(2))
+                .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+        verify(hearingRepository, times(2)).save(any(HearingEntity.class));
+    }
+
+    @Test
+    void hearingStatusNotInExceptionState_roll_back_request() throws IOException {
+        List<HearingEntity> hearingEntities = createHearingEntities();
+        hearingEntities.get(0).setLastGoodStatus(HEARING_REQUESTED.name());
+        hearingEntities.get(1).setLastGoodStatus(ADJOURNED.name());
+        hearingEntities.get(2).setLastGoodStatus(LISTED.name());
+        hearingEntities.get(2).setStatus(HEARING_REQUESTED.name());
+        List<Long> hearingIds = createHearingIds();
+        when(hearingRepository.getHearings(hearingIds))
+                .thenReturn(hearingEntities);
+        ManageExceptionRequest request = convertJsonToRequest("manage-exceptions/valid-roll_back_request.json");
+        ManageExceptionResponse response = manageExceptionsService.manageExceptions(request,
+                CLIENT_S2S_TOKEN);
+
+        assertEquals(3, response.getSupportRequestResponse().size());
+        assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
+                MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+        assertSupportRequestResponse(response, 1, "2000000001", SUCCESS_STATUS,
+                MANAGE_EXCEPTION_SUCCESS_MESSAGE);
+        assertSupportRequestResponse(response, 2, "2000000002", FAILURE_STATUS,
+                INVALID_HEARING_STATE);
+
+        verify(hearingRepository, times(1)).getHearings(hearingIds);
+        verify(hearingStatusAuditService, times(2))
+                .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+        verify(hearingRepository, times(2)).save(any(HearingEntity.class));
     }
 
     private static ManageExceptionRequest convertJsonToRequest(String filePath) throws IOException {
@@ -250,4 +332,24 @@ class ManageExceptionsServiceTest {
         Resource resource = new ClassPathResource(filePath);
         return objectMapper.readValue(resource.getInputStream(), ManageExceptionRequest.class);
     }
+
+    private List<HearingEntity> createHearingEntities() {
+        return List.of(
+            TestingUtil.getHearingEntity(2000000000L, EXCEPTION.name(), "1742223756874235"),
+            TestingUtil.getHearingEntity(2000000001L, EXCEPTION.name(), "1742223756874236"),
+            TestingUtil.getHearingEntity(2000000002L, EXCEPTION.name(), "1742223756874237")
+        );
+    }
+
+    private List<Long> createHearingIds() {
+        return Arrays.asList(2000000000L, 2000000001L, 2000000002L);
+    }
+
+    private void assertSupportRequestResponse(ManageExceptionResponse response, int index,
+                                              String hearingId, String status, String message) {
+        assertEquals(hearingId, response.getSupportRequestResponse().get(index).getHearingId());
+        assertEquals(status, response.getSupportRequestResponse().get(index).getStatus());
+        assertEquals(message, response.getSupportRequestResponse().get(index).getMessage());
+    }
+
 }

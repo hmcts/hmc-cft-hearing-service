@@ -66,10 +66,25 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
         saveHearingStatusAudit(hearingStatusAuditEntity);
     }
 
+    @Override
+    public void saveAuditTriageDetailsForSupportTools(HearingEntity hearingEntity, String hearingEvent,
+                                                      String httpStatus, String source, String target,
+                                                      JsonNode errorDetails, JsonNode otherInfo) {
+        HearingStatusAuditEntity hearingStatusAuditEntity = generateHearingStatusAuditEntity(
+            hearingEntity,
+            hearingEvent, httpStatus,
+            source, target,
+            errorDetails, otherInfo
+        );
+        hearingStatusAuditEntity.setStatusUpdateDateTime(LocalDateTime.now());
+        hearingStatusAuditEntity.setResponseDateTime(null);
+        saveHearingStatusAudit(hearingStatusAuditEntity);
+    }
+
     private HearingStatusAuditEntity mapHearingStatusAuditDetailsWithCreatedDate(HearingEntity hearingEntity,
-                                                                  String hearingEvent, String httpStatus,
-                                                                  String source, String target,
-                                                                  JsonNode errorDetails) {
+                                                                                 String hearingEvent, String httpStatus,
+                                                                                 String source, String target,
+                                                                                 JsonNode errorDetails) {
         return mapHearingStatusAuditDetailsWithCreatedDate(hearingEntity, hearingEvent, httpStatus, source,
                                             target, errorDetails, null);
     }

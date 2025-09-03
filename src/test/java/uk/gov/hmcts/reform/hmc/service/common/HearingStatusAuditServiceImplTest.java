@@ -23,8 +23,10 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_FAILURE_STATUS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_AUDIT_EVENT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_VERSION_UPDATE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.SUCCESS_STATUS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.TECH_ADMIN_ROLE;
 
 class HearingStatusAuditServiceImplTest {
 
@@ -83,6 +85,23 @@ class HearingStatusAuditServiceImplTest {
             hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(hearingEntity,
                                                               CREATE_HEARING_REQUEST, REQUEST_VERSION_UPDATE,
                                                               HMC, HMI,null,otherInfo);
+            verify(hearingStatusAuditRepository, times(1)).save(any());
+        }
+
+        @Test
+        void shouldSaveAuditTriageDetailsForSupportTools() throws JsonProcessingException  {
+            given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
+                TestingUtil.hearingStatusAuditEntity());
+            HearingEntity hearingEntity = TestingUtil.hearingEntity();
+            hearingEntity.setCreatedDateTime(LocalDateTime.now());
+            hearingEntity.setUpdatedDateTime(LocalDateTime.now());
+            final JsonNode otherInfo = new ObjectMapper().readTree("{\"INCNUMBER\":"
+                                                                       + " \"219876 : Final Transition\"}");
+            hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(hearingEntity,
+                                                                            MANAGE_EXCEPTION_AUDIT_EVENT,
+                                                                            "COMPLETED",
+                                                                            TECH_ADMIN_ROLE, HMC,null,
+                                                                            otherInfo);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
 
