@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestAction;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingValidationException;
+import uk.gov.hmcts.reform.hmc.exceptions.InvalidManageHearingServiceException;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.model.SupportRequest;
@@ -25,8 +27,10 @@ import java.util.Set;
 import javax.transaction.Transactional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.IDAM_TECH_ADMIN_ROLE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_AUDIT_EVENT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.TECH_ADMIN_UI_SERVICE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DUPLICATE_HEARING_IDS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_CASE_REF_MISMATCH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID;
@@ -34,6 +38,8 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_LIMIT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LAST_GOOD_STATE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_EXCEPTION_ROLE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_HEARING_SERVICE_EXCEPTION;
 
 @Service
 @Slf4j
@@ -42,26 +48,41 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
     private final HearingStatusAuditService hearingStatusAuditService;
     private final HearingRepository hearingRepository;
     private final ObjectMapper objectMapper;
+    private final SecurityUtils securityUtils;
 
     public ManageExceptionsServiceImpl(HearingStatusAuditService hearingStatusAuditService,
                                        HearingRepository hearingRepository,
-                                       ObjectMapper objectMapper) {
+                                       ObjectMapper objectMapper,
+                                       SecurityUtils securityUtils) {
         this.hearingStatusAuditService = hearingStatusAuditService;
         this.hearingRepository = hearingRepository;
         this.objectMapper = objectMapper;
+        this.securityUtils = securityUtils;
     }
 
     @Override
     @Transactional
     public ManageExceptionResponse manageExceptions(ManageExceptionRequest manageExceptionRequest,
                                                     String clientS2SToken) {
+        validateServiceAndRole(clientS2SToken);
         validateHearingIdLimit(manageExceptionRequest);
         validateUniqueHearingIds(manageExceptionRequest);
         List<Long> hearingIds = extractHearingIds(manageExceptionRequest.getSupportRequests());
         List<HearingEntity> hearingEntities =  hearingRepository.getHearings(hearingIds);
-
         return processManageExceptionDetails(hearingEntities, manageExceptionRequest, clientS2SToken);
+    }
 
+    public void validateServiceAndRole(String clientS2SToken) {
+        String serviceName = securityUtils.getServiceNameFromS2SToken(clientS2SToken);
+        if (!TECH_ADMIN_UI_SERVICE.equals(serviceName)) {
+            throw new InvalidManageHearingServiceException(INVALID_MANAGE_HEARING_SERVICE_EXCEPTION);
+        }
+        // Check if the user has the required IDAM role
+        securityUtils.getUserInfo().getRoles().stream()
+                .filter(role -> role.equals(IDAM_TECH_ADMIN_ROLE))
+                .findFirst()
+                .orElseThrow(() -> new InvalidManageHearingServiceException(
+                        INVALID_MANAGE_EXCEPTION_ROLE));
     }
 
     private ManageExceptionResponse processManageExceptionDetails(List<HearingEntity> hearingEntities,

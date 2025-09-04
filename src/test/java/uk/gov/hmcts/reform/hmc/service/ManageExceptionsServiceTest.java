@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingValidationException;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
@@ -61,6 +62,9 @@ class ManageExceptionsServiceTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private SecurityUtils securityUtils;
+
     private static final String CLIENT_S2S_TOKEN = "hmc_tech_admin";
 
     private ManageExceptionRequest finalStateRequest;
@@ -74,8 +78,8 @@ class ManageExceptionsServiceTest {
         MockitoAnnotations.openMocks(this);
         manageExceptionsService = new ManageExceptionsServiceImpl(
                 hearingStatusAuditService, hearingRepository,
-                objectMapper
-        );
+                objectMapper, securityUtils);
+
         finalStateRequest = convertJsonToRequest("manage-exceptions/valid-final_state_transition_request.json");
         rollBackRequest = convertJsonToRequest("manage-exceptions/valid-roll_back_request.json");
     }

@@ -62,9 +62,6 @@ class ManageExceptionsControllerTest {
     @MockBean
     ManageExceptionsService manageExceptionsService;
 
-    @MockBean
-    SecurityUtils securityUtils;
-
     @Mock
     HearingStatusAuditService hearingStatusAuditService;
 
@@ -76,8 +73,6 @@ class ManageExceptionsControllerTest {
     @BeforeEach
      void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        doReturn(CLIENT_S2S_TOKEN).when(securityUtils)
-            .getServiceNameFromS2SToken(any());
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any(),any());
     }
 
@@ -94,9 +89,7 @@ class ManageExceptionsControllerTest {
             when(manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN))
                 .thenReturn(responseExpected);
 
-            ManageExceptionsController controller = new ManageExceptionsController(
-                manageExceptionsService,
-                securityUtils);
+            ManageExceptionsController controller = new ManageExceptionsController(manageExceptionsService);
 
             ManageExceptionResponse response = controller.manageExceptions(CLIENT_S2S_TOKEN, request);
 
@@ -108,10 +101,7 @@ class ManageExceptionsControllerTest {
         @Test
         void shouldReturn400_whenRequestIsInvalid() {
             ManageExceptionRequest request = TestingUtil.invalidManageExceptionRequest();
-            ManageExceptionsController controller = new ManageExceptionsController(
-                manageExceptionsService,
-                securityUtils
-            );
+            ManageExceptionsController controller = new ManageExceptionsController(manageExceptionsService);
             ManageExceptionResponse response = controller.manageExceptions(CLIENT_S2S_TOKEN, request);
             assertNull(response);
         }
