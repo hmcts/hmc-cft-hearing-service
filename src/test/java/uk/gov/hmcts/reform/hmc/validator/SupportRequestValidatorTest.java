@@ -17,6 +17,11 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_SUPPORT_REQUEST_NOTES;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MANAGE_EXCEPTION_ACTION_EMPTY;
 
 class SupportRequestValidatorTest {
 
@@ -32,6 +37,22 @@ class SupportRequestValidatorTest {
     }
 
     @Test
+    void inValidateWhenRequestIsNull() {
+        SupportRequest supportRequest = new SupportRequest();
+
+        Set<ConstraintViolation<SupportRequest>> violations = validator.validate(supportRequest);
+        List<String> validationErrors = violations.stream()
+            .map(ConstraintViolation::getMessage)
+            .toList();
+        assertThat(violations).isNotEmpty().hasSize(6);
+        assertThat(validationErrors).contains(CASE_REF_EMPTY)
+            .contains(MANAGE_EXCEPTION_ACTION_EMPTY)
+            .contains("Unsupported type for state")
+            .contains("Unsupported type for action")
+            .contains(INVALID_SUPPORT_REQUEST_NOTES);
+    }
+
+    @Test
     void shouldHaveSupportRequestViolations() {
         SupportRequest supportRequest = generateSupportRequestWithInvalidValues();
 
@@ -40,10 +61,10 @@ class SupportRequestValidatorTest {
             .map(ConstraintViolation::getMessage)
             .toList();
         assertThat(violations).isNotEmpty().hasSize(5);
-        assertThat(validationErrors).contains(ValidationError.HEARING_ID_LENGTH)
-            .contains(ValidationError.INVALID_CASE_REFERENCE)
+        assertThat(validationErrors).contains(HEARING_ID_LENGTH)
+            .contains(INVALID_CASE_REFERENCE)
             .contains("Unsupported type for state")
-            .contains(ValidationError.INVALID_SUPPORT_REQUEST_NOTES);
+            .contains(INVALID_SUPPORT_REQUEST_NOTES);
     }
 
     @Test
@@ -56,7 +77,7 @@ class SupportRequestValidatorTest {
             .toList();
         assertThat(violations).isNotEmpty().hasSize(2);
         assertThat(validationErrors).contains(ValidationError.HEARING_ID_EMPTY)
-            .contains(ValidationError.CASE_REF_EMPTY);
+            .contains(CASE_REF_EMPTY);
     }
 
     @Test

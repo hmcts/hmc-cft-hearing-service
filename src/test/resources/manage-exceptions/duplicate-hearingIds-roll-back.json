@@ -11,7 +11,8 @@
     {
       "hearingId": "2000000001",
       "caseRef": "1742223756874236",
-      "action": "rollback"
+      "action": "rollback",
+      "notes": "INC-XXX"
     },
     {
       "hearingId": "2000000000",

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
@@ -27,10 +28,8 @@ import java.util.Set;
 import javax.transaction.Transactional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.IDAM_TECH_ADMIN_ROLE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_AUDIT_EVENT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.TECH_ADMIN_UI_SERVICE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DUPLICATE_HEARING_IDS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_CASE_REF_MISMATCH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID;
@@ -49,15 +48,16 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
     private final HearingRepository hearingRepository;
     private final ObjectMapper objectMapper;
     private final SecurityUtils securityUtils;
+    private final ApplicationParams applicationParams;
 
     public ManageExceptionsServiceImpl(HearingStatusAuditService hearingStatusAuditService,
-                                       HearingRepository hearingRepository,
-                                       ObjectMapper objectMapper,
-                                       SecurityUtils securityUtils) {
+                                       HearingRepository hearingRepository, ObjectMapper objectMapper,
+                                       SecurityUtils securityUtils, ApplicationParams applicationParams) {
         this.hearingStatusAuditService = hearingStatusAuditService;
         this.hearingRepository = hearingRepository;
         this.objectMapper = objectMapper;
         this.securityUtils = securityUtils;
+        this.applicationParams = applicationParams;
     }
 
     @Override
@@ -74,15 +74,16 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
 
     public void validateServiceAndRole(String clientS2SToken) {
         String serviceName = securityUtils.getServiceNameFromS2SToken(clientS2SToken);
-        if (!TECH_ADMIN_UI_SERVICE.equals(serviceName)) {
+        List<String> supportRoles = applicationParams.getAuthorisedSupportToolRoles();
+
+        if (!applicationParams.getAuthorisedSupportToolServices().contains(serviceName)) {
             throw new InvalidManageHearingServiceException(INVALID_MANAGE_HEARING_SERVICE_EXCEPTION);
         }
         // Check if the user has the required IDAM role
-        securityUtils.getUserInfo().getRoles().stream()
-                .filter(role -> role.equals(IDAM_TECH_ADMIN_ROLE))
-                .findFirst()
-                .orElseThrow(() -> new InvalidManageHearingServiceException(
-                        INVALID_MANAGE_EXCEPTION_ROLE));
+        if (securityUtils.getUserInfo().getRoles().stream()
+                .noneMatch(supportRoles::contains)) {
+            throw new InvalidManageHearingServiceException(INVALID_MANAGE_EXCEPTION_ROLE);
+        }
     }
 
     private ManageExceptionResponse processManageExceptionDetails(List<HearingEntity> hearingEntities,

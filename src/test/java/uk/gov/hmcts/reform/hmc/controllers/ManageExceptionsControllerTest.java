@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
-import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
@@ -31,9 +30,7 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -101,10 +98,18 @@ class ManageExceptionsControllerTest {
         @Test
         void shouldReturn400_whenRequestIsInvalid() {
             ManageExceptionRequest request = TestingUtil.invalidManageExceptionRequest();
+
+            ManageExceptionResponse responseExpected = TestingUtil.invalidManageExceptionResponse();
+            when(manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN))
+                .thenReturn(responseExpected);
+
             ManageExceptionsController controller = new ManageExceptionsController(manageExceptionsService);
             ManageExceptionResponse response = controller.manageExceptions(CLIENT_S2S_TOKEN, request);
-            assertNull(response);
+            assertThat(response.getSupportRequestResponse().get(0).getStatus()).isEqualTo("failure");
+            assertFalse(response.getSupportRequestResponse().isEmpty());
+            verify(manageExceptionsService, times(1)).manageExceptions(any(), any());
         }
+
     }
 
 }

@@ -18,7 +18,8 @@
       "hearingId": "2000000002",
       "caseRef": "1742223756874237",
       "action": "final_state_transition",
-      "state": "ADJOURNED"
+      "state": "ADJOURNED",
+      "notes": "INC-XXX"
     }
   ]
 }

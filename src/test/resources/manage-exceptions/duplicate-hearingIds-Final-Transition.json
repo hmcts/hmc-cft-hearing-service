@@ -13,7 +13,8 @@
       "hearingId": "2000000001",
       "caseRef": "1742223756874236",
       "action": "final_state_transition",
-      "state": "COMPLETED"
+      "state": "COMPLETED",
+      "notes": "INC-XXX"
     },
     {
       "hearingId": "2000000000",

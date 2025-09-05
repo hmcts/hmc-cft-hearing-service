@@ -10,18 +10,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingValidationException;
+import uk.gov.hmcts.reform.hmc.exceptions.InvalidManageHearingServiceException;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.model.SupportRequest;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.security.idam.IdamRepository;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,11 +33,16 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.client.hmi.HearingCode.LISTED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.IDAM_TECH_ADMIN_ROLE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.TECH_ADMIN_UI_SERVICE;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_REQUESTED;
@@ -46,6 +53,9 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_LIMIT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LAST_GOOD_STATE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_EXCEPTION_ROLE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_HEARING_SERVICE_EXCEPTION;
+import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.convertJsonToRequest;
 
 @ExtendWith(MockitoExtension.class)
 class ManageExceptionsServiceTest {
@@ -60,12 +70,18 @@ class ManageExceptionsServiceTest {
     HearingStatusAuditService hearingStatusAuditService;
 
     @Mock
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     @Mock
-    private SecurityUtils securityUtils;
+    SecurityUtils securityUtils;
 
-    private static final String CLIENT_S2S_TOKEN = "hmc_tech_admin";
+    @Mock
+    ApplicationParams applicationParams;
+
+    @Mock
+    IdamRepository idamRepository;
+
+    private static final String CLIENT_S2S_TOKEN = "tech_admin_ui";
 
     private ManageExceptionRequest finalStateRequest;
     private ManageExceptionRequest rollBackRequest;
@@ -78,8 +94,9 @@ class ManageExceptionsServiceTest {
         MockitoAnnotations.openMocks(this);
         manageExceptionsService = new ManageExceptionsServiceImpl(
                 hearingStatusAuditService, hearingRepository,
-                objectMapper, securityUtils);
-
+                objectMapper, securityUtils, applicationParams);
+        doReturn(CLIENT_S2S_TOKEN).when(securityUtils).getServiceNameFromS2SToken(CLIENT_S2S_TOKEN);
+        validServiceAndUserRole();
         finalStateRequest = convertJsonToRequest("manage-exceptions/valid-final_state_transition_request.json");
         rollBackRequest = convertJsonToRequest("manage-exceptions/valid-roll_back_request.json");
     }
@@ -87,6 +104,41 @@ class ManageExceptionsServiceTest {
     @Nested
     @DisplayName("manageExceptions-rollback-Final State Transition")
     class ManageExceptionsRollBackAndFinalStateTransition {
+
+        @Test
+        void validInvokingServiceAndUserRole() {
+            List<HearingEntity> hearingEntities = createHearingEntities();
+            List<Long> hearingIds = createHearingIds();
+            when(hearingRepository.getHearings(hearingIds)).thenReturn(hearingEntities);
+            ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateRequest,
+                    CLIENT_S2S_TOKEN);
+            assertEquals(3, response.getSupportRequestResponse().size());
+            verify(securityUtils, times(1)).getUserInfo();
+            verify(hearingRepository, times(1)).getHearings(hearingIds);
+            verify(hearingStatusAuditService, times(3))
+                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+            verify(hearingRepository, times(3)).save(any(HearingEntity.class));
+        }
+
+        @Test
+        void inValidInvokingService() {
+            when(applicationParams.getAuthorisedSupportToolServices()).thenReturn(List.of("invalid_service"));
+            Exception exception = assertThrows(
+                    InvalidManageHearingServiceException.class, () ->
+                            manageExceptionsService.manageExceptions(finalStateRequest, CLIENT_S2S_TOKEN)
+            );
+            assertEquals(INVALID_MANAGE_HEARING_SERVICE_EXCEPTION, exception.getMessage());
+        }
+
+        @Test
+        void inValidInvokingUserRole() {
+            when(applicationParams.getAuthorisedSupportToolRoles()).thenReturn(List.of("invalid_role"));
+            Exception exception = assertThrows(
+                    InvalidManageHearingServiceException.class, () ->
+                            manageExceptionsService.manageExceptions(finalStateRequest, CLIENT_S2S_TOKEN)
+            );
+            assertEquals(INVALID_MANAGE_EXCEPTION_ROLE, exception.getMessage());
+        }
 
         @Test
         void validateUniqueHearingIds_shouldThrowExceptionOnDuplicateIds() throws IOException {
@@ -141,7 +193,6 @@ class ManageExceptionsServiceTest {
                     .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
             verify(hearingRepository, times(0)).save(any(HearingEntity.class));
         }
-
     }
 
     @Nested
@@ -154,8 +205,7 @@ class ManageExceptionsServiceTest {
                     "manage-exceptions/duplicate-hearingIds-Final-Transition.json");
             Exception exception = assertThrows(
                     HearingValidationException.class, () ->
-                            manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN)
-            );
+                            manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN));
             assertEquals(DUPLICATE_HEARING_IDS, exception.getMessage());
         }
 
@@ -451,12 +501,6 @@ class ManageExceptionsServiceTest {
         }
     }
 
-    private static ManageExceptionRequest convertJsonToRequest(String filePath) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Resource resource = new ClassPathResource(filePath);
-        return objectMapper.readValue(resource.getInputStream(), ManageExceptionRequest.class);
-    }
-
     private List<HearingEntity> createHearingEntities() {
         return List.of(
                 TestingUtil.getHearingEntity(2000000000L, EXCEPTION.name(), "1742223756874235"),
@@ -489,6 +533,14 @@ class ManageExceptionsServiceTest {
                 entity.getId(),
                 oldStatus,
                 newStatus);
+    }
+
+    private void validServiceAndUserRole() {
+        lenient().when(applicationParams.getAuthorisedSupportToolRoles()).thenReturn(List.of(IDAM_TECH_ADMIN_ROLE));
+        lenient().when(applicationParams.getAuthorisedSupportToolServices()).thenReturn(List.of(TECH_ADMIN_UI_SERVICE));
+        UserInfo userInfo = mock(UserInfo.class);
+        lenient().when(userInfo.getRoles()).thenReturn(List.of("hmc_tech_admin"));
+        lenient().doReturn(userInfo).when(securityUtils).getUserInfo();
     }
 
 }
