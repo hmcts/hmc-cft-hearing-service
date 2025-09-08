@@ -1803,6 +1803,18 @@ public class TestingUtil {
         return manageExceptionRequest;
     }
 
+    public static ManageExceptionRequest manageExceptionRequest_StateAndActionEmpty() {
+        SupportRequest request = new SupportRequest();
+        request.setHearingId("2000000000");
+        request.setCaseRef("9856815055686759");
+        request.setNotes("Inc1234");
+        List<SupportRequest> supportRequestList = new ArrayList<>();
+        supportRequestList.add(request);
+        ManageExceptionRequest manageExceptionRequest = new ManageExceptionRequest();
+        manageExceptionRequest.setSupportRequests(supportRequestList);
+        return manageExceptionRequest;
+    }
+
     public static ManageExceptionResponse invalidManageExceptionResponse() {
         SupportRequestResponse response = new SupportRequestResponse();
         response.setHearingId(null);

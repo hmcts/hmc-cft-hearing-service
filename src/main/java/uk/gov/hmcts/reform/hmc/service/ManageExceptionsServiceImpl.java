@@ -64,16 +64,17 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
     @Transactional
     public ManageExceptionResponse manageExceptions(ManageExceptionRequest manageExceptionRequest,
                                                     String clientS2SToken) {
-        validateServiceAndRole(clientS2SToken);
+        String serviceName = securityUtils.getServiceNameFromS2SToken(clientS2SToken);
+        validateServiceAndRole(serviceName);
         validateHearingIdLimit(manageExceptionRequest);
         validateUniqueHearingIds(manageExceptionRequest);
         List<Long> hearingIds = extractHearingIds(manageExceptionRequest.getSupportRequests());
         List<HearingEntity> hearingEntities =  hearingRepository.getHearings(hearingIds);
-        return processManageExceptionDetails(hearingEntities, manageExceptionRequest, clientS2SToken);
+        return processManageExceptionDetails(hearingEntities, manageExceptionRequest, serviceName);
     }
 
-    public void validateServiceAndRole(String clientS2SToken) {
-        String serviceName = securityUtils.getServiceNameFromS2SToken(clientS2SToken);
+    public void validateServiceAndRole(String serviceName) {
+
         List<String> supportRoles = applicationParams.getAuthorisedSupportToolRoles();
 
         if (!applicationParams.getAuthorisedSupportToolServices().contains(serviceName)) {
@@ -88,7 +89,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
 
     private ManageExceptionResponse processManageExceptionDetails(List<HearingEntity> hearingEntities,
                                                                   ManageExceptionRequest manageExceptionRequest,
-                                                                  String clientS2SToken) {
+                                                                  String serviceName) {
         ManageExceptionResponse manageExceptionResponse = new ManageExceptionResponse();
         List<SupportRequestResponse> supportRequestResponseList = new ArrayList<>();
         for (SupportRequest request : manageExceptionRequest.getSupportRequests()) {
@@ -107,7 +108,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
                     String newStatus = request.getAction().equals(ManageRequestAction.ROLLBACK.label)
                             ? entity.getLastGoodStatus() : request.getState();
                     saveHearingEntity(entity, newStatus);
-                    saveAuditEntity(request, entity, clientS2SToken);
+                    saveAuditEntity(request, entity, serviceName);
                     response = hearingIsValid(entity, oldStatus, newStatus);
                 }
             } else {
@@ -236,10 +237,10 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         return response;
     }
 
-    private void saveAuditEntity(SupportRequest request, HearingEntity hearingEntity, String clientS2SToken) {
+    private void saveAuditEntity(SupportRequest request, HearingEntity hearingEntity, String serviceName) {
         JsonNode otherInfo = objectMapper.convertValue(request.getNotes(), JsonNode.class);
         hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(hearingEntity, MANAGE_EXCEPTION_AUDIT_EVENT,
-                                                                        null, clientS2SToken, HMC,
+                                                                        null, serviceName, HMC,
                                                                         null, otherInfo);
     }
 
