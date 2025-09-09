@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.hmc.validator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestAction;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -25,8 +23,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_SUPPORT
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MANAGE_EXCEPTION_ACTION_EMPTY;
 
 class SupportRequestValidatorTest {
-
-    private static final Logger logger = LoggerFactory.getLogger(BeanValidatorTest.class);
 
     private static ValidatorFactory validatorFactory;
     private static Validator validator;

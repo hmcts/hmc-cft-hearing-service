@@ -429,7 +429,7 @@ class ManageExceptionsServiceTest {
         }
 
         @Test
-        void validRollBackRequest() throws IOException {
+        void validRollBackRequest() {
             List<Long> hearingIds = createHearingIds();
             List<HearingEntity> entities = createHearingEntitiesWithLastGoodStatus();
 
@@ -452,7 +452,7 @@ class ManageExceptionsServiceTest {
         }
 
         @Test
-        void noLastGoodStatusForRollBackRequest() throws IOException {
+        void noLastGoodStatusForRollBackRequest() {
             List<Long> hearingIds = createHearingIds();
             List<HearingEntity> entities = createHearingEntities();
             entities.get(0).setLastGoodStatus(HEARING_REQUESTED.name());
@@ -477,7 +477,7 @@ class ManageExceptionsServiceTest {
         }
 
         @Test
-        void hearingStatusNotInExceptionState_roll_back_request() throws IOException {
+        void hearingStatusNotInExceptionState_roll_back_request() {
             List<HearingEntity> entities = createHearingEntitiesWithLastGoodStatus();
             entities.get(2).setStatus(HEARING_REQUESTED.name());
             List<Long> hearingIds = createHearingIds();

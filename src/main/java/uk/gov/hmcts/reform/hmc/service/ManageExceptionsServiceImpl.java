@@ -133,7 +133,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
             return response;
         }
 
-        response = validateHearingStatusForFinalStateTransition(entity, request, response);
+        response = validateHearingStatusForFinalStateTransition(request, response);
         if (isProcessingComplete(response)) {
             return response;
         }
@@ -197,8 +197,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         return response;
     }
 
-    private SupportRequestResponse validateHearingStatusForFinalStateTransition(HearingEntity hearingEntity,
-                                                                                SupportRequest request,
+    private SupportRequestResponse validateHearingStatusForFinalStateTransition(SupportRequest request,
                                                                                 SupportRequestResponse response) {
         if (ManageRequestAction.FINAL_STATE_TRANSITION.label.equals(request.getAction())
             && !HearingStatus.isFinalStatus(HearingStatus.valueOf(request.getState()))) {

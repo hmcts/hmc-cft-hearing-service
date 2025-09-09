@@ -2,9 +2,6 @@ package uk.gov.hmcts.reform.hmc.domain.model.enums;
 
 import lombok.Getter;
 
-import java.util.Arrays;
-import java.util.Locale;
-
 @Getter
 public enum ManageRequestAction {
 
@@ -17,12 +14,5 @@ public enum ManageRequestAction {
         this.label = label;
     }
 
-    public static ManageRequestAction getByLabel(String label) {
-        return Arrays.stream(ManageRequestAction.values())
-            .filter(eachAction -> eachAction.getLabel().toLowerCase(Locale.ROOT)
-                .equals(label.toLowerCase(Locale.ROOT)))
-            .findAny()
-            .orElse(null);
-    }
 }
 
