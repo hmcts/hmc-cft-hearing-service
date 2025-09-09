@@ -294,8 +294,9 @@ public final class ValidationError {
     public static final String MESSAGE_LENGTH = "Message must not be more than 2000 " + CHARACTERS_LONG;
     public static final String HEARING_ID_CASE_REF_MISMATCH = "Hearing id and Case Reference do not match";
     public static final String INVALID_HEARING_ID_FINAL_STATE = "Hearing  has invalid final state";
-    public static final String INVALID_LAST_GOOD_STATE = "hearing has no last good state defined";
+    public static final String INVALID_LAST_GOOD_STATE = "Invalid last good state defined";
     public static final String INVALID_HEARING_ID = "Invalid hearing id";
     public static final String INVALID_SUPPORT_REQUEST_NOTES = "Notes are required";
     public static final String INVALID_MANAGE_HEARING_SERVICE_EXCEPTION = "Invalid manage hearing service invoked";
+    public static final String LAST_GOOD_STATE_EMPTY = "hearing has no last good state defined";
 }

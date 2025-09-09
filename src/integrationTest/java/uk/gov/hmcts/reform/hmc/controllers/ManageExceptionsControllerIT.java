@@ -122,8 +122,8 @@ class ManageExceptionsControllerIT extends BaseTest {
         assertThat(manageExceptionResponse.getSupportRequestResponse()).hasSize(3);
         assertThat(manageExceptionResponse.getSupportRequestResponse().get(2).getHearingId()).isEqualTo("2000000002");
         assertThat(manageExceptionResponse.getSupportRequestResponse().get(2).getStatus()).isEqualTo(SUCCESS_STATUS);
-        assertThat(manageExceptionResponse.getSupportRequestResponse().get(2).getMessage()).isEqualTo("successfully " +
-                               "transitioned hearing : 2000000002, from state : EXCEPTION to state: ADJOURNED");
+        assertThat(manageExceptionResponse.getSupportRequestResponse().get(2).getMessage()).isEqualTo("successfully "
+                                +  "transitioned hearing : 2000000002, from state : EXCEPTION to state: ADJOURNED");
     }
 
     private final String serviceJwtXuiWeb = generateDummyS2SToken("tech_admin_ui");

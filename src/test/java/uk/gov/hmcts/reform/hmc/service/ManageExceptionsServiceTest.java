@@ -44,6 +44,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.IDAM_TECH_ADMIN_ROLE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.TECH_ADMIN_UI_SERVICE;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.COMPLETED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DUPLICATE_HEARING_IDS;
@@ -55,6 +56,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LAST_GOOD_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_EXCEPTION_ROLE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_HEARING_SERVICE_EXCEPTION;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LAST_GOOD_STATE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.convertJsonToRequest;
 
 @ExtendWith(MockitoExtension.class)
@@ -326,14 +328,13 @@ class ManageExceptionsServiceTest {
                             finalStateRequest.getSupportRequests().get(0).getState()));
             assertSupportRequestResponse(response, 1, "2000000001", FAILURE_STATUS,
                     INVALID_HEARING_ID_FINAL_STATE);
-            assertSupportRequestResponse(response, 2, "2000000002", SUCCESS_STATUS,
-                    createExpectedMessage(hearingEntities.get(2), EXCEPTION.name(),
-                            finalStateRequest.getSupportRequests().get(2).getState()));
+            assertSupportRequestResponse(response, 2, "2000000002", FAILURE_STATUS,
+                                         HEARING_ID_CASE_REF_MISMATCH);
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
-            verify(hearingStatusAuditService, times(2))
+            verify(hearingStatusAuditService, times(1))
                     .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
-            verify(hearingRepository, times(2)).save(any(HearingEntity.class));
+            verify(hearingRepository, times(1)).save(any(HearingEntity.class));
         }
     }
 
@@ -461,19 +462,18 @@ class ManageExceptionsServiceTest {
                     CLIENT_S2S_TOKEN);
 
             assertEquals(3, response.getSupportRequestResponse().size());
-            assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
-                    createExpectedMessage(entities.get(0), EXCEPTION.name(),
-                            entities.get(0).getLastGoodStatus()));
+            assertSupportRequestResponse(response, 0, "2000000000", FAILURE_STATUS,
+                   INVALID_LAST_GOOD_STATE);
             assertSupportRequestResponse(response, 1, "2000000001", SUCCESS_STATUS,
                     createExpectedMessage(entities.get(1), EXCEPTION.name(),
                             entities.get(1).getLastGoodStatus()));
             assertSupportRequestResponse(response, 2, "2000000002", FAILURE_STATUS,
-                    INVALID_LAST_GOOD_STATE);
+                                         LAST_GOOD_STATE_EMPTY);
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
-            verify(hearingStatusAuditService, times(2))
+            verify(hearingStatusAuditService, times(1))
                     .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
-            verify(hearingRepository, times(2)).save(any(HearingEntity.class));
+            verify(hearingRepository, times(1)).save(any(HearingEntity.class));
         }
 
         @Test
@@ -503,9 +503,9 @@ class ManageExceptionsServiceTest {
 
     private List<HearingEntity> createHearingEntities() {
         return List.of(
-                TestingUtil.getHearingEntity(2000000000L, EXCEPTION.name(), "1742223756874235"),
-                TestingUtil.getHearingEntity(2000000001L, EXCEPTION.name(), "1742223756874236"),
-                TestingUtil.getHearingEntity(2000000002L, EXCEPTION.name(), "1742223756874237"));
+                TestingUtil.getHearingEntity(2000000000L, EXCEPTION.name(), "9856815055686759"),
+                TestingUtil.getHearingEntity(2000000001L, EXCEPTION.name(), "9856815055686759"),
+                TestingUtil.getHearingEntity(2000000002L, EXCEPTION.name(), "9372710950276233"));
     }
 
     private List<Long> createHearingIds() {
@@ -521,7 +521,7 @@ class ManageExceptionsServiceTest {
 
     private List<HearingEntity> createHearingEntitiesWithLastGoodStatus() {
         List<HearingEntity> entities = createHearingEntities();
-        entities.get(0).setLastGoodStatus(HEARING_REQUESTED.name());
+        entities.get(0).setLastGoodStatus(COMPLETED.name());
         entities.get(1).setLastGoodStatus(ADJOURNED.name());
         entities.get(2).setLastGoodStatus(LISTED.name());
         return entities;

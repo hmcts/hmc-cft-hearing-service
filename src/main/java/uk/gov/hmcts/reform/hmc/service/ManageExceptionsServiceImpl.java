@@ -39,6 +39,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LAST_GOOD_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_EXCEPTION_ROLE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_HEARING_SERVICE_EXCEPTION;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LAST_GOOD_STATE_EMPTY;
 
 @Service
 @Slf4j
@@ -181,11 +182,17 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
 
     private SupportRequestResponse validateRollBackAction(HearingEntity hearingEntity, SupportRequest request,
                                                           SupportRequestResponse response) {
-        if (ManageRequestAction.ROLLBACK.label.equals(request.getAction())
-            && hearingEntity.getLastGoodStatus() == null) {
-            log.info("Hearing ID: {} does not have a last good state to roll back to", request.getHearingId());
-            response = createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
-                                      INVALID_LAST_GOOD_STATE);
+        if (ManageRequestAction.ROLLBACK.label.equals(request.getAction())) {
+            if (hearingEntity.getLastGoodStatus() == null) {
+                log.info("Hearing ID: {} does not have a last good state to roll back to", request.getHearingId());
+                response = createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
+                                          LAST_GOOD_STATE_EMPTY);
+            } else if (!HearingStatus.isGoodStatus(HearingStatus.valueOf(hearingEntity.getLastGoodStatus()))) {
+                log.info("Hearing ID: {} has invalid last good state to roll back to : {}",
+                         request.getHearingId(), hearingEntity.getLastGoodStatus());
+                response = createResponse(request.getHearingId(), ManageRequestStatus.FAILURE.label,
+                                          INVALID_LAST_GOOD_STATE);
+            }
         }
         return response;
     }
