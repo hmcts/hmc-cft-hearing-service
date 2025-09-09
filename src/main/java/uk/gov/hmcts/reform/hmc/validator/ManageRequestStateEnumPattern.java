@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestState;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Constraint(validatedBy = ManageRequestStateEnumPatternValidator.class)
 public @interface ManageRequestStateEnumPattern {
-    Class<? extends Enum<?>> enumClass ();
+    Class<? extends Enum<ManageRequestState>> enumClass ();
     String fieldName ();
     String message () default "Unsupported type for {fieldName}";
     Class<?>[] groups () default {};
