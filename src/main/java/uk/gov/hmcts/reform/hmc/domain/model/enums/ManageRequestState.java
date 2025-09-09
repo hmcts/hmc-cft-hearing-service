@@ -18,11 +18,4 @@ public enum ManageRequestState {
         this.label = label;
     }
 
-    public static ManageRequestState getByLabel(String label) {
-        return Arrays.stream(ManageRequestState.values())
-            .filter(eachState -> eachState.getLabel().toLowerCase(Locale.ROOT)
-                .equals(label.toLowerCase(Locale.ROOT)))
-            .findAny()
-            .orElse(null);
-    }
 }
