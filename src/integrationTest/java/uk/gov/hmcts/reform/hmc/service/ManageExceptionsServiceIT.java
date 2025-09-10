@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
@@ -32,6 +35,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_LIMIT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LAST_GOOD_STATE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_EXCEPTION_ROLE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_HEARING_SERVICE_EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LAST_GOOD_STATE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.convertJsonToRequest;
@@ -58,6 +62,8 @@ public class ManageExceptionsServiceIT extends BaseTest {
     private static final String SUCCESS_STATUS = ManageRequestStatus.SUCCESSFUL.label;
     private static final String FAILURE_STATUS = ManageRequestStatus.FAILURE.label;
 
+    private static final String ACTOR_ID = "4d96923f-891a-4cb1-863e-9bec412gt567";
+
     public ManageExceptionsServiceIT() throws IOException {
     }
 
@@ -66,7 +72,6 @@ public class ManageExceptionsServiceIT extends BaseTest {
     class ManageExceptionsRollBackAndFinalStateTransition {
 
         @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS})
         void testManageExceptions_InvalidService_ThrowsException() {
             String invalidToken = generateDummyS2SToken("invalid_service");
             Exception exception = assertThrows(
@@ -97,7 +102,17 @@ public class ManageExceptionsServiceIT extends BaseTest {
             assertEquals(INVALID_HEARING_ID_LIMIT, exception.getMessage());
         }
 
-        // TO DO: Add test case to verify user role once roles are implemented
+        @Test
+        void testManageExceptions_InvalidUserRole() {
+            WireMock.stubFor(WireMock.get(urlMatching("/o/userinfo" + ACTOR_ID))
+                                 .willReturn(okJson(jsonBody(ACTOR_ID))));
+
+            Exception exception = assertThrows(
+                InvalidManageHearingServiceException.class,
+                () -> manageExceptionsService.manageExceptions(finalStateAndRollbackRequest, CLIENT_S2S_TOKEN)
+            );
+            assertEquals(INVALID_MANAGE_EXCEPTION_ROLE, exception.getMessage());
+        }
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS})
@@ -266,6 +281,21 @@ public class ManageExceptionsServiceIT extends BaseTest {
             hearingId,
             oldStatus,
             newStatus);
+    }
+
+    public static String jsonBody(String id) {
+        return "{\n"
+            + "  \"jsonBody\": [\n"
+            + "    {\n"
+            + "      \"sub\": \"" + id + "\",\n"
+            + "      \"uid\": \"" + id + "\",\n"
+            + "      \"name\": \"Test User \",\n"
+            + "      \"given_name\": \"Test \",\n"
+            + "      \"family_name\": \"User\",\n"
+            + "      \"roles\": [\"\"caseworker-test\"\"]\n"
+            + "    }\n"
+            + "  ]\n"
+            + "}";
     }
 
 }
