@@ -2,9 +2,6 @@ package uk.gov.hmcts.reform.hmc.domain.model.enums;
 
 import lombok.Getter;
 
-import java.util.Arrays;
-import java.util.Locale;
-
 @Getter
 public enum ManageRequestState {
 

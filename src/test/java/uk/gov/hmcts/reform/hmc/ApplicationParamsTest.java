@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.hmc.config.RoleAssignmentUrlManager;
 
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
