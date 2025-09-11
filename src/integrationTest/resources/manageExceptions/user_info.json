@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/o/userinfo"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "sub": "user@hmcts.net",
+      "uid": "4d96923f-891a-4cb1-863e-9bec412gt567",
+      "roles": [
+        "caseworker-test"
+      ],
+      "name": "Test User",
+      "given_name": "Test",
+      "family_name": "User"
+    }
+  }
+}
