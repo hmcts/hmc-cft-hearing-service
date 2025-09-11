@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.hmc.exceptions.InvalidManageHearingServiceException;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.model.SupportRequest;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,12 +104,6 @@ public class ManageExceptionsServiceIT extends BaseTest {
 
         @Test
         void testManageExceptions_InvalidUserRole() {
-           /* UserInfo userInfo = UserInfo.builder()
-                .uid(ACTOR_ID)
-                .sub("emailId@a.com")
-                .roles(List.of("caseworker-test"))
-                .build();*/
-
             WireMock.stubFor(WireMock.get(urlMatching("/o/userinfo"))
                                  .willReturn(okJson(jsonBody(ACTOR_ID))));
 
@@ -292,15 +285,12 @@ public class ManageExceptionsServiceIT extends BaseTest {
 
     public static String jsonBody(String id) {
         return "{\n"
-            + "  \"jsonBody\": \n"
-            + "    {\n"
             + "      \"sub\": \"" + id + "\",\n"
             + "      \"uid\": \"" + id + "\",\n"
             + "      \"name\": \"Test User\",\n"
             + "      \"given_name\": \"Test\",\n"
             + "      \"family_name\": \"User\",\n"
             + "      \"roles\": [\"caseworker-test\"]\n"
-            + "    }\n"
             + "}";
 
     }
