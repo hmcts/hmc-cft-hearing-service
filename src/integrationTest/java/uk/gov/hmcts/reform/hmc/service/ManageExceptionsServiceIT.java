@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
@@ -40,6 +41,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LAST_GOOD_STATE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.convertJsonToRequest;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ManageExceptionsServiceIT extends BaseTest {
 
     @Autowired
@@ -68,7 +70,7 @@ public class ManageExceptionsServiceIT extends BaseTest {
     }
 
     @Nested
-    @DisplayName("manageExceptions-rollback-Final State Transition")
+    @DisplayName("manageExceptions-rollback-Final-State-Transition")
     class ManageExceptionsRollBackAndFinalStateTransition {
 
         @Test
