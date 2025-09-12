@@ -65,6 +65,9 @@ public class ManageExceptionsServiceIT extends BaseTest {
     private static final String FAILURE_STATUS = ManageRequestStatus.FAILURE.label;
 
     private static final String ACTOR_ID = "4d96923f-891a-4cb1-863e-9bec412gt567";
+    private static final String hearingID1 = "2000000000";
+    private static final String hearingID2 = "2000000001";
+    private static final String hearingID3 = "2000000002";
 
     public ManageExceptionsServiceIT() throws IOException {
     }
@@ -136,13 +139,13 @@ public class ManageExceptionsServiceIT extends BaseTest {
             ManageExceptionResponse response = manageExceptionsService.manageExceptions(caseRefMismatchRequest,
                                                                                         CLIENT_S2S_TOKEN);
             assertEquals(3, response.getSupportRequestResponse().size());
-            assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
-                                         createExpectedMessage("2000000000", EXCEPTION.name(),
+            assertSupportRequestResponse(response, 0, hearingID1, SUCCESS_STATUS,
+                                         createExpectedMessage(hearingID1, EXCEPTION.name(),
                                                                CANCELLATION_SUBMITTED.toString()));
-            assertSupportRequestResponse(response, 1, "2000000001", SUCCESS_STATUS,
-                                         createExpectedMessage("2000000001", EXCEPTION.name(),
+            assertSupportRequestResponse(response, 1, hearingID2, SUCCESS_STATUS,
+                                         createExpectedMessage(hearingID2, EXCEPTION.name(),
                                                                COMPLETED.toString()));
-            assertSupportRequestResponse(response, 2, "2000000002", FAILURE_STATUS,
+            assertSupportRequestResponse(response, 2, hearingID3, FAILURE_STATUS,
                                          HEARING_ID_CASE_REF_MISMATCH);
         }
 
@@ -155,21 +158,21 @@ public class ManageExceptionsServiceIT extends BaseTest {
 
             assertEquals(3, response.getSupportRequestResponse().size());
             assertSupportRequestResponse(
-                response, 0, "2000000000", SUCCESS_STATUS,
+                response, 0, hearingID1, SUCCESS_STATUS,
                 createExpectedMessage(
                     response.getSupportRequestResponse().get(0).getHearingId(), EXCEPTION.name(),
                     CANCELLATION_SUBMITTED.toString()
                 )
             );
             assertSupportRequestResponse(
-                response, 1, "2000000001", SUCCESS_STATUS,
+                response, 1, hearingID2, SUCCESS_STATUS,
                 createExpectedMessage(
                     response.getSupportRequestResponse().get(1).getHearingId(), EXCEPTION.name(),
                     finalStateAndRollbackRequest.getSupportRequests().get(1).getState()
                 )
             );
             assertSupportRequestResponse(
-                response, 2, "2000000002", SUCCESS_STATUS,
+                response, 2, hearingID3, SUCCESS_STATUS,
                 createExpectedMessage(
                     response.getSupportRequestResponse().get(2).getHearingId(), EXCEPTION.name(),
                     finalStateAndRollbackRequest.getSupportRequests().get(2).getState()
@@ -184,11 +187,11 @@ public class ManageExceptionsServiceIT extends BaseTest {
             ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateAndRollbackRequest,
                                                                                         CLIENT_S2S_TOKEN);
             assertEquals(3, response.getSupportRequestResponse().size());
-            assertSupportRequestResponse(response, 0, "2000000000", FAILURE_STATUS,
+            assertSupportRequestResponse(response, 0, hearingID1, FAILURE_STATUS,
                                          LAST_GOOD_STATE_EMPTY);
-            assertSupportRequestResponse(response, 1, "2000000001", FAILURE_STATUS,
+            assertSupportRequestResponse(response, 1, hearingID2, FAILURE_STATUS,
                                          INVALID_HEARING_STATE);
-            assertSupportRequestResponse(response, 2, "2000000002", FAILURE_STATUS,
+            assertSupportRequestResponse(response, 2, hearingID3, FAILURE_STATUS,
                                          INVALID_HEARING_ID);
         }
     }
@@ -205,12 +208,12 @@ public class ManageExceptionsServiceIT extends BaseTest {
             ManageExceptionResponse response = manageExceptionsService.manageExceptions(invalidFinalState,
                                                                                         CLIENT_S2S_TOKEN);
             assertEquals(3, response.getSupportRequestResponse().size());
-            assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
-                                         createExpectedMessage("2000000000", EXCEPTION.name(),
+            assertSupportRequestResponse(response, 0, hearingID1, SUCCESS_STATUS,
+                                         createExpectedMessage(hearingID1, EXCEPTION.name(),
                                          finalStateRequest.getSupportRequests().get(0).getState()));
-            assertSupportRequestResponse(response, 1, "2000000001", FAILURE_STATUS,
+            assertSupportRequestResponse(response, 1, hearingID2, FAILURE_STATUS,
                                          INVALID_HEARING_ID_FINAL_STATE);
-            assertSupportRequestResponse(response, 2, "2000000002", FAILURE_STATUS,
+            assertSupportRequestResponse(response, 2, hearingID3, FAILURE_STATUS,
                                          HEARING_ID_CASE_REF_MISMATCH);
         }
 
@@ -220,14 +223,14 @@ public class ManageExceptionsServiceIT extends BaseTest {
             ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateRequest,
                                                                                         CLIENT_S2S_TOKEN);
             assertEquals(3, response.getSupportRequestResponse().size());
-            assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
-                                         createExpectedMessage("2000000000", EXCEPTION.name(),
+            assertSupportRequestResponse(response, 0, hearingID1, SUCCESS_STATUS,
+                                         createExpectedMessage(hearingID1, EXCEPTION.name(),
                                           finalStateRequest.getSupportRequests().get(0).getState()));
-            assertSupportRequestResponse(response, 1, "2000000001", SUCCESS_STATUS,
-                                         createExpectedMessage("2000000001", EXCEPTION.name(),
+            assertSupportRequestResponse(response, 1, hearingID2, SUCCESS_STATUS,
+                                         createExpectedMessage(hearingID2, EXCEPTION.name(),
                                                                COMPLETED.toString()));
-            assertSupportRequestResponse(response, 2, "2000000002", SUCCESS_STATUS,
-                                         createExpectedMessage("2000000002", EXCEPTION.name(),
+            assertSupportRequestResponse(response, 2, hearingID3, SUCCESS_STATUS,
+                                         createExpectedMessage(hearingID3, EXCEPTION.name(),
                                                                ADJOURNED.toString()));
         }
     }
@@ -244,11 +247,11 @@ public class ManageExceptionsServiceIT extends BaseTest {
             ManageExceptionResponse response = manageExceptionsService.manageExceptions(invalidRollback,
                                                                                         CLIENT_S2S_TOKEN);
             assertEquals(3, response.getSupportRequestResponse().size());
-            assertSupportRequestResponse(response, 0, "2000000000", FAILURE_STATUS,
+            assertSupportRequestResponse(response, 0, hearingID1, FAILURE_STATUS,
                                          LAST_GOOD_STATE_EMPTY);
-            assertSupportRequestResponse(response, 1, "2000000001", FAILURE_STATUS,
+            assertSupportRequestResponse(response, 1, hearingID2, FAILURE_STATUS,
                                          INVALID_HEARING_STATE);
-            assertSupportRequestResponse(response, 2, "2000000002", FAILURE_STATUS,
+            assertSupportRequestResponse(response, 2, hearingID3, FAILURE_STATUS,
                                          INVALID_LAST_GOOD_STATE);
         }
 
@@ -258,14 +261,14 @@ public class ManageExceptionsServiceIT extends BaseTest {
             ManageExceptionResponse response = manageExceptionsService.manageExceptions(rollBackRequest,
                                                                                         CLIENT_S2S_TOKEN);
             assertEquals(3, response.getSupportRequestResponse().size());
-            assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
-                                         createExpectedMessage("2000000000", EXCEPTION.name(),
+            assertSupportRequestResponse(response, 0, hearingID1, SUCCESS_STATUS,
+                                         createExpectedMessage(hearingID1, EXCEPTION.name(),
                                                                CANCELLATION_SUBMITTED.toString()));
-            assertSupportRequestResponse(response, 1, "2000000001", SUCCESS_STATUS,
-                                         createExpectedMessage("2000000001", EXCEPTION.name(),
+            assertSupportRequestResponse(response, 1, hearingID2, SUCCESS_STATUS,
+                                         createExpectedMessage(hearingID2, EXCEPTION.name(),
                                                                AWAITING_LISTING.toString()));
-            assertSupportRequestResponse(response, 2, "2000000002", SUCCESS_STATUS,
-                                         createExpectedMessage("2000000002", EXCEPTION.name(),
+            assertSupportRequestResponse(response, 2, hearingID3, SUCCESS_STATUS,
+                                         createExpectedMessage(hearingID3, EXCEPTION.name(),
                                                                CANCELLATION_SUBMITTED.toString()));
         }
     }

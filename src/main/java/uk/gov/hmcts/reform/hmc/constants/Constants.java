@@ -86,4 +86,6 @@ public final class Constants {
     public static final String MANAGE_EXCEPTION_AUDIT_EVENT = "tech_support";
     public static final String IDAM_TECH_ADMIN_ROLE = "hmc_tech_admin";
     public static final String TECH_ADMIN_UI_SERVICE = "tech_admin_ui";
+    public static final int MAX_HEARING_REQUESTS = 100;
+
 }
