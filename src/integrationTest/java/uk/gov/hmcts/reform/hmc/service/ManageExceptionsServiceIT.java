@@ -8,20 +8,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
+import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingValidationException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidManageHearingServiceException;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.model.SupportRequest;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED;
@@ -46,6 +50,9 @@ public class ManageExceptionsServiceIT extends BaseTest {
 
     @Autowired
     private ManageExceptionsService manageExceptionsService;
+
+    @Autowired
+    private HearingRepository hearingRepository;
 
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
     private static final String INSERT_HEARINGS = "classpath:sql/get-hearings-ManageSupportRequest.sql";
@@ -147,6 +154,7 @@ public class ManageExceptionsServiceIT extends BaseTest {
                                                                COMPLETED.toString()));
             assertSupportRequestResponse(response, 2, hearingID3, FAILURE_STATUS,
                                          HEARING_ID_CASE_REF_MISMATCH);
+            validateHearingEntityDetails(hearingID2, COMPLETED.toString());
         }
 
         @Test
@@ -164,6 +172,7 @@ public class ManageExceptionsServiceIT extends BaseTest {
                     CANCELLATION_SUBMITTED.toString()
                 )
             );
+            validateHearingEntityDetails(hearingID1, CANCELLATION_SUBMITTED.toString());
             assertSupportRequestResponse(
                 response, 1, hearingID2, SUCCESS_STATUS,
                 createExpectedMessage(
@@ -171,13 +180,16 @@ public class ManageExceptionsServiceIT extends BaseTest {
                     finalStateAndRollbackRequest.getSupportRequests().get(1).getState()
                 )
             );
+            validateHearingEntityDetails(hearingID2,
+                                         finalStateAndRollbackRequest.getSupportRequests().get(1).getState());
             assertSupportRequestResponse(
                 response, 2, hearingID3, SUCCESS_STATUS,
                 createExpectedMessage(
                     response.getSupportRequestResponse().get(2).getHearingId(), EXCEPTION.name(),
                     finalStateAndRollbackRequest.getSupportRequests().get(2).getState()
-                )
-            );
+                ));
+            validateHearingEntityDetails(hearingID3,
+                                         finalStateAndRollbackRequest.getSupportRequests().get(2).getState());
 
         }
 
@@ -195,6 +207,14 @@ public class ManageExceptionsServiceIT extends BaseTest {
                                          INVALID_HEARING_ID);
         }
     }
+
+    private void validateHearingEntityDetails(String hearingID2, String status) {
+        Optional<HearingEntity> hearingEntity = hearingRepository.findById(Long.valueOf(hearingID2));
+        assertEquals(status, hearingEntity.get().getStatus());
+        assertNull(hearingEntity.get().getErrorCode());
+        assertNull(hearingEntity.get().getErrorDescription());
+    }
+
 
     @Nested
     @DisplayName("manageExceptions-Final State Transition")
