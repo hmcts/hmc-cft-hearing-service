@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.RequirementType;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.hmc.model.CaseCategoryType.CASETYPE;
 import static uk.gov.hmcts.reform.hmc.model.DayOfWeekUnAvailableType.ALL;
@@ -48,6 +49,26 @@ class CaseHearingRequestEntityTest {
         assert1(cloned);
         assert2(cloned);
         assert3(cloned);
+    }
+
+    @Test
+    void shouldReturnTrueWhenIsAPanelFlagIsTrue() {
+        CaseHearingRequestEntity entity = new CaseHearingRequestEntity();
+        entity.setIsAPanelFlag(true);
+        assertThat(entity.getIsAPanelFlag()).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenIsAPanelFlagIsFalse() {
+        CaseHearingRequestEntity entity = new CaseHearingRequestEntity();
+        entity.setIsAPanelFlag(false);
+        assertThat(entity.getIsAPanelFlag()).isFalse();
+    }
+
+    @Test
+    void shouldReturnNullWhenIsAPanelFlagIsNotSet() {
+        CaseHearingRequestEntity entity = new CaseHearingRequestEntity();
+        assertThat(entity.getIsAPanelFlag()).isNull();
     }
 
     private void assert3(CaseHearingRequestEntity cloned) {
