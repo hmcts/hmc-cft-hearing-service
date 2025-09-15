@@ -41,6 +41,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
+import uk.gov.hmcts.reform.hmc.helper.ElasticSearchQuery;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayParties;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPartyDetail;
@@ -87,7 +88,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
@@ -1741,28 +1741,13 @@ public class TestingUtil {
     }
 
     public static String createSearchQuery(List<String> ccdCaseRefs) {
-        Terms terms = new Terms(ccdCaseRefs);
-        Query query = new Query(terms);
-        ElasticSearch searchObject = ElasticSearch.builder()
-            .query(query)
+        ElasticSearchQuery elasticSearchQuery = ElasticSearchQuery.builder()
+            .caseRefs(ccdCaseRefs)
             .build();
         if (ccdCaseRefs.size() > ELASTIC_QUERY_DEFAULT_SIZE) {
-            searchObject.setSize(ccdCaseRefs.size());
+            elasticSearchQuery.setSize(ccdCaseRefs.size());
         }
-        return objectMapperService.convertObjectToJsonNode(searchObject).toString();
-        String joinedRefs = ccdCaseRefs.stream()
-            .map(ref -> "\"" + ref + "\"")
-            .collect(Collectors.joining(", "));
-        return """
-            {
-                "query": {
-                    "terms": {
-                        "reference": [%s]
-                    }
-                },
-                "_source": ["id", "jurisdiction", "case_type_id", "reference"]
-            }
-            """.formatted(joinedRefs);
+        return objectMapperService.convertObjectToJsonNode(elasticSearchQuery).toString();
     }
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
