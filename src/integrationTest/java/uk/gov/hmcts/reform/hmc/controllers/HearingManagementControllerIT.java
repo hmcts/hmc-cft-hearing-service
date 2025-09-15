@@ -866,6 +866,24 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenGetHearingsForListOfCasesForMoreThanDefaultSizeCaseRef() throws Exception {
+        List<String> caseRefs = new ArrayList<>(Collections.nCopies(11,  "9372710950276239"));
+        String caseRefsParam = caseRefs.stream().collect(Collectors.joining(","));
+        stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefs);
+        mockMvc.perform(get("/hearings")
+                            .param("ccdCaseRefs", caseRefsParam)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("caseTypeId", CASE_TYPE)
+                            .param("status", "HEARING_REQUESTED"))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.*", hasSize(11)))
+            .andExpect(jsonPath("$[0].caseRef").value("9372710950276239"))
+            .andExpect(jsonPath("$[10].caseRef").value("9372710950276239"))
+            .andReturn();
+    }
+
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
