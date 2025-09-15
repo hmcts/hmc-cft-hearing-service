@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -39,7 +40,7 @@ class CaseCreateHearingRequestMapperTest {
         CaseHearingRequestEntity actualEntity = caseHearingRequestMapper.modelToEntity(
             createHearingRequest, hearingEntity, 1, true, true);
         expectedEntity.setHearing(hearingEntity);
-        assertEquals(expectedEntity, actualEntity);
+        assertThat(actualEntity).isEqualTo(expectedEntity);
     }
 
     @Test
@@ -59,7 +60,7 @@ class CaseCreateHearingRequestMapperTest {
             hearingEntity, 1,
             true, true);
         expectedEntity.setHearing(hearingEntity);
-        assertEquals(expectedEntity, actualEntity);
+        assertThat(actualEntity).isEqualTo(expectedEntity);
     }
 
     @Test
@@ -143,6 +144,7 @@ class CaseCreateHearingRequestMapperTest {
         expectedEntity.setHearingWindowStartDateRange(LocalDate.parse("2017-03-01"));
         expectedEntity.setHearingWindowEndDateRange(LocalDate.parse("2017-03-01"));
         expectedEntity.setCaseSlaStartDate(LocalDate.parse("2017-03-01"));
+        expectedEntity.setIsAPanelFlag(false);
     }
 
     private HearingRequest buildCreateHearingRequest() {
