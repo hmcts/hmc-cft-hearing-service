@@ -193,6 +193,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             partyDetails.setPartyChannelSubType(hearingAttendeeDetails.getPartySubChannelType());
             if (hearingPartyEntity != null && caseHearingIdMatches) {
                 partyDetails.setPartyRole(hearingPartyEntity.getPartyRoleType());
+                partyDetails.setPartyType(hearingPartyEntity.getPartyType().getLabel());
                 if (PartyType.IND.getLabel().equals(hearingPartyEntity.getPartyType().getLabel())) {
                     partyDetails.setIndividualDetails(setIndividualDetails(hearingPartyEntity));
                 } else {

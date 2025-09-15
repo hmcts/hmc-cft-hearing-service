@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
+import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.ActualDayParty;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.ActualHearingDays;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
@@ -80,6 +81,8 @@ class GetHearingActualsResponseMapperTest {
         assertEquals("reference",
                      response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(0)
                          .getOrganisationDetails().getCftOrganisationID());
+        assertEquals(PartyType.ORG.label,
+                     response.getHearingPlanned().getPlannedHearingDays().get(0).getParties().get(0).getPartyType());
 
     }
 

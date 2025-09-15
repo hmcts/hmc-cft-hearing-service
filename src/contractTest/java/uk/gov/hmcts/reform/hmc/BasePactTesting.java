@@ -100,8 +100,7 @@ public class BasePactTesting {
      * @return DeleteHearingRequest delete hearing request
      */
     protected DeleteHearingRequest generateInvalidDeleteHearingRequest() {
-        DeleteHearingRequest deleteHearingRequest = new DeleteHearingRequest();
-        return deleteHearingRequest;
+        return new DeleteHearingRequest();
     }
 
     /**
@@ -168,6 +167,7 @@ public class BasePactTesting {
         List<HearingLocation> hearingLocations = new ArrayList<>();
         hearingLocations.add(location1);
         hearingDetails.setHearingLocations(hearingLocations);
+        hearingDetails.setIsAPanelFlag(Boolean.FALSE.toString());
         hearingDetails.setPanelRequirements(panelRequirements1());
         return hearingDetails;
     }
