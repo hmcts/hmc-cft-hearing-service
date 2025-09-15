@@ -102,8 +102,3 @@ hmc:
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CONFIG: DEBUG
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
         HMC_SERVICE_BUS_QUEUE: ${SERVICE_NAME}-servicebus-hmc-from-hmi
-      secrets:
-        HMC_SERVICE_BUS_CONNECTION_STRING:
-          secretRef: hmc-sb-preview
-          key: connectionString
-
