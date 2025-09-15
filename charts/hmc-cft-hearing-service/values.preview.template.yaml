@@ -91,6 +91,7 @@ hmc:
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_REPOSITORY: DEBUG
         HMC_SERVICE_BUS_OUTBOUND_QUEUE: ${SERVICE_NAME}-servicebus-hmc-to-hmi
         HMC_SERVICE_BUS_INBOUND_QUEUE: ${SERVICE_NAME}-servicebus-hmc-from-hmi
+        HMC_SERVICE_BUS_TOPIC: ${SERVICE_NAME}-servicebus-hmc-to-cft
 
   servicebus:
     sbNamespace: hmc-servicebus-preview
