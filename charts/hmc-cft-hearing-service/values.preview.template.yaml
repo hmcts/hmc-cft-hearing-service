@@ -77,6 +77,9 @@ hmc:
         HMC_SERVICE_BUS_INBOUND_CONNECTION_STRING:
           secretRef: hmc-sb-preview
           key: connectionString
+        HMC_SERVICE_BUS_CONNECTION_STRING:
+          secretRef: hmc-sb-preview
+          key: connectionString
       environment:
         HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
         HMI_SOURCE_SYSTEM: CFT
@@ -102,3 +105,8 @@ hmc:
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CONFIG: DEBUG
         LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
         HMC_SERVICE_BUS_QUEUE: ${SERVICE_NAME}-servicebus-hmc-from-hmi
+      secrets:
+        HMC_SERVICE_BUS_CONNECTION_STRING:
+          secretRef: hmc-sb-preview
+          key: connectionString
+
