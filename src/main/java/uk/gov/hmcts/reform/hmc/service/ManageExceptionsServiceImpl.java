@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestAction;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
-import uk.gov.hmcts.reform.hmc.exceptions.HearingValidationException;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidManageHearingServiceException;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
@@ -185,7 +185,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
     private void validateHearingIdLimit(ManageExceptionRequest manageExceptionRequest) {
         if (manageExceptionRequest.getSupportRequests().size() > MAX_HEARING_REQUESTS) {
             log.error("No. of hearings found in the request : {}", manageExceptionRequest.getSupportRequests().size());
-            throw new HearingValidationException(INVALID_HEARING_ID_LIMIT);
+            throw new BadRequestException(INVALID_HEARING_ID_LIMIT);
         }
     }
 
@@ -195,7 +195,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
             String hearingId = request.getHearingId();
             if (!uniqueHearingIds.add(hearingId)) {
                 log.error("Duplicate hearing ID found: {}", hearingId);
-                throw new HearingValidationException(DUPLICATE_HEARING_IDS);
+                throw new BadRequestException(DUPLICATE_HEARING_IDS);
             }
         }
     }
@@ -208,7 +208,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
                 .toList();
         } catch (NumberFormatException e) {
             log.error("One or more hearingIds are not numeric");
-            throw new HearingValidationException(INVALID_HEARING_ID);
+            throw new BadRequestException(INVALID_HEARING_ID);
         }
     }
 

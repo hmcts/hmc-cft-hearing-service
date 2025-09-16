@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
-import uk.gov.hmcts.reform.hmc.exceptions.HearingValidationException;
+import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidManageHearingServiceException;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
@@ -146,7 +146,7 @@ class ManageExceptionsServiceTest {
         void validateUniqueHearingIds_shouldThrowExceptionOnDuplicateIds() throws IOException {
             ManageExceptionRequest request = convertJsonToRequest("manage-exceptions/duplicate-hearingIds.json");
             Exception exception = assertThrows(
-                    HearingValidationException.class, () ->
+                BadRequestException.class, () ->
                             manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN)
             );
             assertEquals(DUPLICATE_HEARING_IDS, exception.getMessage());
@@ -166,7 +166,7 @@ class ManageExceptionsServiceTest {
                     hearingIds.add(Long.valueOf(supportRequest.getHearingId())));
             request.setSupportRequests(supportRequests);
             Exception exception = assertThrows(
-                    HearingValidationException.class,
+                    BadRequestException.class,
                     () -> manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN)
             );
             assertEquals(INVALID_HEARING_ID_LIMIT, exception.getMessage());
@@ -206,7 +206,7 @@ class ManageExceptionsServiceTest {
             ManageExceptionRequest request = convertJsonToRequest(
                     "manage-exceptions/duplicate-hearingIds-Final-Transition.json");
             Exception exception = assertThrows(
-                    HearingValidationException.class, () ->
+                    BadRequestException.class, () ->
                             manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN));
             assertEquals(DUPLICATE_HEARING_IDS, exception.getMessage());
         }
@@ -346,7 +346,7 @@ class ManageExceptionsServiceTest {
             ManageExceptionRequest request = convertJsonToRequest(
                     "manage-exceptions/duplicate-hearingIds-roll-back.json");
             Exception exception = assertThrows(
-                    HearingValidationException.class, () ->
+                    BadRequestException.class, () ->
                             manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN)
             );
             assertEquals(DUPLICATE_HEARING_IDS, exception.getMessage());
