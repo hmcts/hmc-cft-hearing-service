@@ -299,4 +299,6 @@ public final class ValidationError {
     public static final String INVALID_SUPPORT_REQUEST_NOTES = "Notes are required";
     public static final String INVALID_MANAGE_HEARING_SERVICE_EXCEPTION = "Invalid manage hearing service invoked";
     public static final String LAST_GOOD_STATE_EMPTY = "hearing has no last good state defined";
+    public static final String INVALID_STATE = "State is valid only for action final state transition";
+    public static final String EMPTY_HEARING_STATE = "State is null or empty";
 }

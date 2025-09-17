@@ -56,6 +56,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LAST_GOOD_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_EXCEPTION_ROLE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_HEARING_SERVICE_EXCEPTION;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LAST_GOOD_STATE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.convertJsonToRequest;
 
@@ -473,6 +474,32 @@ class ManageExceptionsServiceTest {
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(1))
                     .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+            verify(hearingRepository, times(1)).save(any(HearingEntity.class));
+        }
+
+        @Test
+        void stateProvidedForRollBackRequest() throws IOException {
+            List<Long> hearingIds = createHearingIds();
+            List<HearingEntity> entities = createHearingEntities();
+            entities.get(0).setLastGoodStatus(COMPLETED.name());
+            entities.get(1).setLastGoodStatus(ADJOURNED.name());
+            when(hearingRepository.getHearings(hearingIds)).thenReturn(entities);
+            ManageExceptionRequest request = convertJsonToRequest(
+                "manage-exceptions/inValid-roll_back_request.json");
+            ManageExceptionResponse response = manageExceptionsService.manageExceptions(request,
+                                                                                        CLIENT_S2S_TOKEN);
+
+            assertEquals(3, response.getSupportRequestResponse().size());
+            assertSupportRequestResponse(response, 0, "2000000000", SUCCESS_STATUS,
+                                         createExpectedMessage(entities.get(0), EXCEPTION.name(),
+                                                               entities.get(0).getLastGoodStatus()));
+            assertSupportRequestResponse(response, 1, "2000000001", FAILURE_STATUS, INVALID_STATE);
+            assertSupportRequestResponse(response, 2, "2000000002", FAILURE_STATUS,
+                                         LAST_GOOD_STATE_EMPTY);
+
+            verify(hearingRepository, times(1)).getHearings(hearingIds);
+            verify(hearingStatusAuditService, times(1))
+                .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
         }
 

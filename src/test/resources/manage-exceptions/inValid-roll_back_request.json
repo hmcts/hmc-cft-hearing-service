@@ -10,7 +10,8 @@
       "hearingId": "2000000001",
       "caseRef": "9856815055686759",
       "action": "rollback",
-      "notes": "CANCELLED"
+      "notes": "CANCELLED",
+      "state" : "CANCELLED"
     },
     {
       "hearingId": "2000000002",

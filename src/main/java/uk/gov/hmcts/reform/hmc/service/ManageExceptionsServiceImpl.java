@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_AUDIT
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MAX_HEARING_REQUESTS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DUPLICATE_HEARING_IDS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.EMPTY_HEARING_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_CASE_REF_MISMATCH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_FINAL_STATE;
@@ -43,6 +44,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LAST_GOOD_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_EXCEPTION_ROLE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_HEARING_SERVICE_EXCEPTION;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_STATE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.LAST_GOOD_STATE_EMPTY;
 
 @Service
@@ -156,6 +158,12 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
 
     private Optional<String> validateFinalStateTransition(SupportRequest req) {
         ManageRequestAction action = actionFromLabel(req.getAction());
+        if (action == ManageRequestAction.FINAL_STATE_TRANSITION && req.getState() == null) {
+            log.info(
+                "Hearing ID: {} has Action : {} and state is empty or null : {}",
+                req.getHearingId(), req.getAction(), req.getState());
+            return Optional.of(EMPTY_HEARING_STATE);
+        }
         if (action == ManageRequestAction.FINAL_STATE_TRANSITION
             && !HearingStatus.isFinalStatus(HearingStatus.valueOf(req.getState()))) {
             log.info("Hearing ID: {} has Action : {} and invalid state transition request : {}",
@@ -169,6 +177,11 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         ManageRequestAction action = actionFromLabel(req.getAction());
         if (action != ManageRequestAction.ROLLBACK) {
             return Optional.empty();
+        }
+        if (req.getState() != null) {
+            log.info("Hearing ID: {} has Action : {} and invalid state transition request : {}",
+                     req.getHearingId(), req.getAction(), req.getState());
+            return Optional.of(INVALID_STATE);
         }
         if (entity.getLastGoodStatus() == null) {
             log.info("Hearing ID: {} does not have a last good state to roll back to", req.getHearingId());
