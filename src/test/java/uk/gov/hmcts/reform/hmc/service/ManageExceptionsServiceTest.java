@@ -49,7 +49,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.client.hmi.HearingCode.LISTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.IDAM_TECH_ADMIN_ROLE;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_AUDIT_EVENT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_COMMIT_FAIL;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_COMMIT_FAIL_EVENT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
