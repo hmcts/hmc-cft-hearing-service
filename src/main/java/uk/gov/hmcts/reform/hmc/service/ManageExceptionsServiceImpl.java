@@ -32,6 +32,8 @@ import javax.transaction.Transactional;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_AUDIT_EVENT;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_COMMIT_FAIL;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_COMMIT_FAIL_EVENT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MAX_HEARING_REQUESTS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DUPLICATE_HEARING_IDS;
@@ -68,7 +70,6 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
     }
 
     @Override
-    @Transactional
     public ManageExceptionResponse manageExceptions(ManageExceptionRequest manageExceptionRequest,
                                                     String clientS2SToken) {
         String serviceName = securityUtils.getServiceNameFromS2SToken(clientS2SToken);
@@ -91,13 +92,13 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         return response;
     }
 
+    @Transactional
     private SupportRequestResponse processSingle(HearingEntity entity,
                                                  SupportRequest request,
                                                  String serviceName) {
         if (entity == null) {
             return createResponse(request.getHearingId(),
-                                  ManageRequestStatus.FAILURE.label,
-                                  INVALID_HEARING_ID);
+                                  ManageRequestStatus.FAILURE.label, INVALID_HEARING_ID);
         }
 
         // Run validations; return first failure if any
@@ -112,10 +113,19 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
             ? entity.getLastGoodStatus()
             : request.getState();
 
-        saveHearingEntity(entity, newStatus);
-        saveAuditEntity(request, entity, serviceName);
-
-        return success(entity.getId(), oldStatus, newStatus);
+        try {
+            saveHearingEntity(entity, newStatus);
+            saveAuditEntity(request, entity, serviceName);
+            return success(entity.getId(), oldStatus, newStatus);
+        } catch (Exception e) {
+            log.error("DB commit failed for hearing ID {}: {}", entity.getId(), e.getMessage(), e);
+            // Audit the error
+            hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(
+                entity, MANAGE_EXCEPTION_COMMIT_FAIL_EVENT, null, serviceName, HMC, null,
+                objectMapper.convertValue("DB commit failed: " + e.getMessage(), JsonNode.class));
+            return createResponse(String.valueOf(entity.getId()), ManageRequestStatus.FAILURE.label,
+                                  MANAGE_EXCEPTION_COMMIT_FAIL);
+        }
     }
 
     private Optional<String> validate(HearingEntity entity, SupportRequest req) {
