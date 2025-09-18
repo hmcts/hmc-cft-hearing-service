@@ -232,7 +232,7 @@ class ManageExceptionsServiceTest {
                 new ManageExceptionsServiceImpl(hearingStatusAuditService, hearingRepository, objectMapper,
                                                 securityUtils, applicationParams);
             SupportRequestResponse resp =
-                (SupportRequestResponse) m.invoke(service, entity, req, "test");
+                (SupportRequestResponse) m.invoke(service, entity, req, TECH_ADMIN_UI_SERVICE);
 
             assertEquals(ManageRequestStatus.FAILURE.label, resp.getStatus());
             assertEquals(String.valueOf(entity.getId()), resp.getHearingId());
@@ -241,7 +241,7 @@ class ManageExceptionsServiceTest {
                 eq(entity),
                 eq(MANAGE_EXCEPTION_COMMIT_FAIL_EVENT),
                 isNull(),
-                eq("test"),
+                eq(TECH_ADMIN_UI_SERVICE),
                 eq(HMC),
                 isNull(),
                 any(JsonNode.class)
