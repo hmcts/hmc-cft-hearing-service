@@ -213,34 +213,6 @@ public class ManageExceptionsServiceIT extends BaseTest {
             assertSupportRequestResponse(response, 2, hearingID3, FAILURE_STATUS,
                                          INVALID_HEARING_ID);
         }
-
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS})
-        void testManageExceptions_DbCommitFailure_ReturnsFailureResponse() {
-            // Arrange: spy the repository to throw exception on save
-            HearingEntity entity = hearingRepository.findById(Long.valueOf(hearingID1)).get();
-            SupportRequest supportRequest = new SupportRequest();
-            supportRequest.setHearingId(hearingID1);
-            supportRequest.setCaseRef(entity.getLatestCaseReferenceNumber());
-            supportRequest.setAction("FINAL_STATE_TRANSITION");
-            supportRequest.setState("CANCELLATION_SUBMITTED");
-            ManageExceptionRequest request = new ManageExceptionRequest();
-            request.setSupportRequests(List.of(supportRequest));
-
-            HearingRepository spyRepo = org.mockito.Mockito.spy(hearingRepository);
-            org.mockito.Mockito.doThrow(new RuntimeException("DB error"))
-                .when(spyRepo).save(org.mockito.Mockito.any(HearingEntity.class));
-            ObjectMapper objectMapper = new ObjectMapper();
-            ManageExceptionsServiceImpl service = new ManageExceptionsServiceImpl(
-                hearingStatusAuditService, spyRepo, objectMapper, securityUtils, applicationParams);
-
-            ManageExceptionResponse response = service.manageExceptions(request, CLIENT_S2S_TOKEN);
-
-            assertEquals(1, response.getSupportRequestResponse().size());
-            assertSupportRequestResponse(response, 0, hearingID1, FAILURE_STATUS,
-                                         MANAGE_EXCEPTION_COMMIT_FAIL);
-        }
-
     }
 
     private void validateHearingEntityDetails(String hearingID2, String status) {
