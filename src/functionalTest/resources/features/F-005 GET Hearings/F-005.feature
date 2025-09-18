@@ -8,9 +8,9 @@ Feature: F-005: Search for hearings
   @S-005.1
   Scenario: Successfully search for hearings of a case reference using the status LISTED parameter
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
-    And a wait time of [10] seconds [to wait for status to come back from hmi]
+    And a wait time of [15] seconds [to wait for status to come back from hmi]
     And a successful call [to list the hearing] as in [ListHearingRequest],
-    And a wait time of [10] seconds [to wait for status to come back from hmi]
+    And a wait time of [15] seconds [to wait for status to come back from hmi]
     When a request is prepared with appropriate values,
     And it is submitted to call the [Search for hearings] operation of [HMC CFT Hearing Service],
     Then a positive response is received,
@@ -34,9 +34,9 @@ Feature: F-005: Search for hearings
   @S-005.3
   Scenario: Successfully search for LISTED hearings of a case reference
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
-    And a wait time of [10] seconds [to wait for status to come back from hmi]
+    And a wait time of [15] seconds [to wait for status to come back from hmi]
     And a successful call [to list the hearing] as in [ListHearingRequest],
-    And a wait time of [10] seconds [to wait for status to come back from hmi]
+    And a wait time of [15] seconds [to wait for status to come back from hmi]
     When a request is prepared with appropriate values,
     And it is submitted to call the [Search for hearings] operation of [HMC CFT Hearing Service],
     Then a positive response is received,
