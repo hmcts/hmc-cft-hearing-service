@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,12 +14,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidManageHearingServiceException;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.model.SupportRequest;
+import uk.gov.hmcts.reform.hmc.model.SupportRequestResponse;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.security.idam.IdamRepository;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
@@ -26,6 +29,7 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,20 +37,28 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.client.hmi.HearingCode.LISTED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.IDAM_TECH_ADMIN_ROLE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_AUDIT_EVENT;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_COMMIT_FAIL;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_COMMIT_FAIL_EVENT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.TECH_ADMIN_UI_SERVICE;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.COMPLETED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestAction.ROLLBACK;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DUPLICATE_HEARING_IDS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_CASE_REF_MISMATCH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID;
@@ -98,7 +110,7 @@ class ManageExceptionsServiceTest {
         manageExceptionsService = new ManageExceptionsServiceImpl(
                 hearingStatusAuditService, hearingRepository,
                 objectMapper, securityUtils, applicationParams);
-        doReturn(CLIENT_S2S_TOKEN).when(securityUtils).getServiceNameFromS2SToken(CLIENT_S2S_TOKEN);
+        lenient().doReturn(CLIENT_S2S_TOKEN).when(securityUtils).getServiceNameFromS2SToken(CLIENT_S2S_TOKEN);
         validServiceAndUserRole();
         finalStateRequest = convertJsonToRequest("manage-exceptions/valid-final_state_transition_request.json");
         rollBackRequest = convertJsonToRequest("manage-exceptions/valid-roll_back_request.json");
@@ -195,6 +207,46 @@ class ManageExceptionsServiceTest {
             verify(hearingStatusAuditService, times(0))
                     .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
             verify(hearingRepository, times(0)).save(any(HearingEntity.class));
+        }
+
+        @Test
+        void processSingle_returnsFailure_and_audits_when_commit_fails() throws Exception {
+            HearingEntity entity = TestingUtil.getHearingEntity(2000000000L, EXCEPTION.name(),
+                                                                "9856815055686759");
+            entity.setLastGoodStatus(HearingStatus.LISTED.name());
+            SupportRequest req = new SupportRequest();
+            req.setHearingId("2000000000");
+            req.setCaseRef("9856815055686759");
+            req.setAction(ROLLBACK.label);
+            req.setNotes("testing DB commit failure");
+
+            doThrow(new RuntimeException("Db commit fail"))
+                .when(hearingRepository).save(any(HearingEntity.class));
+            when(objectMapper.convertValue(anyString(), eq(JsonNode.class)))
+                .thenReturn(mock(JsonNode.class));
+
+            Method m = ManageExceptionsServiceImpl.class
+                .getDeclaredMethod("processSingle", HearingEntity.class, SupportRequest.class, String.class);
+            m.setAccessible(true);
+            ManageExceptionsServiceImpl service =
+                new ManageExceptionsServiceImpl(hearingStatusAuditService, hearingRepository, objectMapper,
+                                                securityUtils, applicationParams);
+            SupportRequestResponse resp =
+                (SupportRequestResponse) m.invoke(service, entity, req, "test");
+
+            assertEquals(ManageRequestStatus.FAILURE.label, resp.getStatus());
+            assertEquals(String.valueOf(entity.getId()), resp.getHearingId());
+            assertEquals(MANAGE_EXCEPTION_COMMIT_FAIL, resp.getMessage());
+            verify(hearingStatusAuditService).saveAuditTriageDetailsForSupportTools(
+                eq(entity),
+                eq(MANAGE_EXCEPTION_COMMIT_FAIL_EVENT),
+                isNull(),
+                eq("test"),
+                eq(HMC),
+                isNull(),
+                any(JsonNode.class)
+            );
+            verify(hearingRepository, times(1)).save(any(HearingEntity.class));
         }
     }
 
