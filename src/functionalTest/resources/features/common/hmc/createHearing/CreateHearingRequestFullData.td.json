@@ -9,7 +9,7 @@
     "hearingChannels": [
       "INTER"
     ],
-    "autolistFlag" : true,
+    "autolistFlag" : false,
     "hearingType" : "Some hearing type",
     "isAPanelFlag" : false,
     "hearingWindow": {
@@ -49,7 +49,7 @@
   },
   "caseDetails" : {
     "hmctsServiceCode" : "TEST",
-    "caseRef": "${[scenarioContext][siblingContexts][CreateCase][testData][actualResponse][body][id]}",
+    "caseRef": "${[scenarioContext][customValues][GenerateCaseId]}",
     "requestTimeStamp" : "2000-08-10T12:20:00.000Z",
     "externalCaseReference" : "EXT/REF123",
     "caseDeepLink" : "https://www.google.com",
