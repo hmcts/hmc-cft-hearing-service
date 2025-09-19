@@ -13,9 +13,9 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ManageRequestStateEnumPatternValidatorTest {
 
@@ -36,7 +36,7 @@ class ManageRequestStateEnumPatternValidatorTest {
         assertEquals(1, violations.size());
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertEquals("Unsupported type for state", validationErrors.get(0));
+        assertThat(validationErrors.get(0)).isEqualTo("Unsupported type for state");
     }
 
     @ParameterizedTest
@@ -44,7 +44,7 @@ class ManageRequestStateEnumPatternValidatorTest {
     void whenValidManageRequestStateValues(String stateValue) {
         final Set<ConstraintViolation<SupportRequest>> violations =
             createAndValidateSupportRequest(stateValue);
-        assertTrue(violations.isEmpty());
+        assertThat(violations).isEmpty();
     }
 
     private Set<ConstraintViolation<SupportRequest>> createAndValidateSupportRequest(String stateValue) {

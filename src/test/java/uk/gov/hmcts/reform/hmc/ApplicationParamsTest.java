@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.config.RoleAssignmentUrlManager;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -145,13 +146,13 @@ class ApplicationParamsTest {
     @Test
     void shouldGetAuthorisedSupportToolServices() {
         ReflectionTestUtils.setField(applicationParams, "authorisedSupportToolServices", List.of(VALUE));
-        assertEquals(List.of(VALUE), applicationParams.getAuthorisedSupportToolServices());
+        assertThat(applicationParams.getAuthorisedSupportToolServices()).isEqualTo(List.of(VALUE));
     }
 
     @Test
     void shouldGetAuthorisedSupportToolRoles() {
         ReflectionTestUtils.setField(applicationParams, "authorisedSupportToolRoles", List.of(VALUE));
-        assertEquals(List.of(VALUE), applicationParams.getAuthorisedSupportToolRoles());
+        assertThat(applicationParams.getAuthorisedSupportToolRoles()).isEqualTo(List.of(VALUE));
     }
 
 }
