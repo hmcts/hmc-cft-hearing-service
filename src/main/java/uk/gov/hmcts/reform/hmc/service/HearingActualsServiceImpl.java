@@ -95,7 +95,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     }
 
     private void validateRequestPayload(HearingActual request, HearingEntity hearing) {
-        hearingActualsValidator.validateHearingActualDaysNotInTheFuture(request.getActualHearingDays());
+        hearingActualsValidator.validateHearingActualDaysNotInTheFuture(request);
         hearingActualsValidator.validateDuplicateHearingActualDays(request.getActualHearingDays());
         hearingActualsValidator.validateHearingActualDaysNotBeforeFirstHearingDate(request.getActualHearingDays(),
                 hearing);
