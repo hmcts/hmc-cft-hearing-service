@@ -1,25 +1,25 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.hmc.model.LocationType;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
-import javax.persistence.Table;
 
 @Table(name = "required_locations")
 @EqualsAndHashCode(callSuper = true)
@@ -34,8 +34,10 @@ public class RequiredLocationsEntity extends BaseEntity implements Serializable 
     private static final long serialVersionUID = 1119281173095751231L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "required_locations_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+        generator = "required_locations_id_seq_generator")
+    @SequenceGenerator(name = "required_locations_id_seq_generator", 
+        sequenceName = "required_locations_id_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 
@@ -43,7 +45,6 @@ public class RequiredLocationsEntity extends BaseEntity implements Serializable 
     private String locationId;
 
     @Column(name = "location_level_type", columnDefinition = "locationType", nullable = false)
-    @Type(type = "uk.gov.hmcts.reform.hmc.model.PostgresEnumType")
     @Enumerated(EnumType.STRING)
     private LocationType locationLevelType;
 
