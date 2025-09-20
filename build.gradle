@@ -248,7 +248,7 @@ def versions = [
   testcontainers  : '1.20.3',
   netty           : '4.2.1.Final',
   serviceAuthVersion: '4.1.2',
-  tomcatEmbedded  : '9.0.106',
+  tomcatEmbedded  : '9.0.108',
   fasterXmlJackson : '2.16.2',
   snakeyaml       : '2.2'
 ]
@@ -286,7 +286,7 @@ dependencyManagement {
       entry 'guava'
     }
 
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.85') {
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.108') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
       entry 'tomcat-embed-websocket'
