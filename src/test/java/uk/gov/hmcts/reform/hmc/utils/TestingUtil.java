@@ -5,9 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.http.HttpStatus;
 import org.slf4j.helpers.MessageFormatter;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.ElasticSearch;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.Query;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.Terms;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
@@ -44,6 +41,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
+import uk.gov.hmcts.reform.hmc.helper.ElasticSearchQuery;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayParties;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPartyDetail;
@@ -1786,15 +1784,13 @@ public class TestingUtil {
     }
 
     public static String createSearchQuery(List<String> ccdCaseRefs) {
-        Terms terms = new Terms(ccdCaseRefs);
-        Query query = new Query(terms);
-        ElasticSearch searchObject = ElasticSearch.builder()
-            .query(query)
+        ElasticSearchQuery elasticSearchQuery = ElasticSearchQuery.builder()
+            .caseRefs(ccdCaseRefs)
             .build();
         if (ccdCaseRefs.size() > ELASTIC_QUERY_DEFAULT_SIZE) {
-            searchObject.setSize(ccdCaseRefs.size());
+            elasticSearchQuery.setSize(ccdCaseRefs.size());
         }
-        return objectMapperService.convertObjectToJsonNode(searchObject).toString();
+        return objectMapperService.convertObjectToJsonNode(elasticSearchQuery).toString();
     }
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
