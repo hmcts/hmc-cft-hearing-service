@@ -109,6 +109,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_ORGANIS
 @Slf4j
 public class HearingManagementServiceImpl implements HearingManagementService {
 
+    private final DataStoreRepository dataStoreRepository;
     private final HearingMapper hearingMapper;
     private final GetHearingsResponseMapper getHearingsResponseMapper;
     private final GetHearingResponseMapper getHearingResponseMapper;
@@ -117,7 +118,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
     private final ObjectMapperService objectMapperService;
     private final HmiDeleteHearingRequestMapper hmiDeleteHearingRequestMapper;
-    private final MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
     private final HearingIdValidator hearingIdValidator;
     private final HearingActualsValidator hearingActualsValidator;
     private final LinkedHearingValidator linkedHearingValidator;
@@ -153,6 +153,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         HmiHearingResponseMapper hmiHearingResponseMapper,
                                         HearingStatusAuditService hearingStatusAuditService,
                                         PendingRequestService pendingRequestService) {
+        this.dataStoreRepository = dataStoreRepository;
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.hmiSubmitHearingRequestMapper = hmiSubmitHearingRequestMapper;
@@ -161,7 +162,6 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.getHearingResponseMapper = getHearingResponseMapper;
         this.messageSenderToTopicConfiguration = messageSenderToTopicConfiguration;
         this.objectMapperService = objectMapperService;
-        this.messageSenderToQueueConfiguration = messageSenderToQueueConfiguration;
         this.hearingRepository = hearingRepository;
         this.hearingIdValidator = hearingIdValidator;
         this.linkedHearingValidator = linkedHearingValidator;
