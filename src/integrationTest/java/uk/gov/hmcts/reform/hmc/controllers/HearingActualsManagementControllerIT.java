@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.hmc.TestFixtures;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.interceptors.RequestBodyCachingFilter;
+import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import wiremock.com.jayway.jsonpath.DocumentContext;
 import wiremock.com.jayway.jsonpath.JsonPath;
@@ -56,6 +57,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
@@ -176,7 +178,39 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                     TestingUtil.hearingActualWithHearingDateInFuture())))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem(("003 invalid date"))))
+                .andExpect(jsonPath("$.errors", hasItem((HEARING_ACTUALS_INVALID_STATUS))))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn400_WhenSuppliedHearingActualPayloadHasNotRequiredTrueAndFutureDate() throws Exception {
+            HearingActual actual = TestingUtil.hearingActualWithHearingDateInFuture();
+            actual.getActualHearingDays().get(1).setNotRequired(Boolean.TRUE);
+            mockMvc.perform(put(URL + "/2000000100")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(
+                                    actual)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItem((HEARING_ACTUALS_INVALID_STATUS))))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn400_WhenSuppliedHearingActualPayloadHasNotRequiredFalseAndFutureDate() throws Exception {
+            HearingActual actual = TestingUtil.hearingActualWithHearingDateInFuture();
+            actual.getActualHearingDays().get(1).setNotRequired(Boolean.FALSE);
+            mockMvc.perform(put(URL + "/2000000100")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(
+                                    actual)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItem((HEARING_ACTUALS_INVALID_STATUS))))
                 .andReturn();
         }
 
@@ -194,6 +228,19 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors", hasItem(("003 invalid date"))))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn200_WhenHearingActualIsNullAndInFutureAndNotRequiredIsTrue()
+            throws Exception {
+            mockMvc.perform(put(URL + "/2000001000")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(
+                                    TestingUtil.hearingActualWithOutcomeEmpty())))
+                .andExpect(status().is(200))
                 .andReturn();
         }
 

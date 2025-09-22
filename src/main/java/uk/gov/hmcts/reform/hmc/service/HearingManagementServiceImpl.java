@@ -16,9 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.ElasticSearch;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.Query;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.Terms;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
@@ -31,6 +28,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.helper.ElasticSearchQuery;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
@@ -362,15 +360,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private String createSearchQuery(List<String> ccdCaseRefs) {
-        Terms terms = new Terms(ccdCaseRefs);
-        Query query = new Query(terms);
-        ElasticSearch searchObject = ElasticSearch.builder()
-            .query(query)
+        ElasticSearchQuery elasticSearchQuery = ElasticSearchQuery.builder()
+            .caseRefs(ccdCaseRefs)
             .build();
         if (ccdCaseRefs.size() > ELASTIC_QUERY_DEFAULT_SIZE) {
-            searchObject.setSize(ccdCaseRefs.size());
+            elasticSearchQuery.setSize(ccdCaseRefs.size());
         }
-        return objectMapperService.convertObjectToJsonNode(searchObject).toString();
+        return objectMapperService.convertObjectToJsonNode(elasticSearchQuery).toString();
     }
 
     private void auditChangeInRequestVersion(HearingEntity hearingEntity, int existingRequestVersion,
