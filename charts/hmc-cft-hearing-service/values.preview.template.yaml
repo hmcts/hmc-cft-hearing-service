@@ -92,6 +92,7 @@ hmc:
         HMC_SERVICE_BUS_OUTBOUND_QUEUE: ${SERVICE_NAME}-servicebus-hmc-to-hmi
         HMC_SERVICE_BUS_INBOUND_QUEUE: ${SERVICE_NAME}-servicebus-hmc-from-hmi
         HMC_SERVICE_BUS_TOPIC: ${SERVICE_NAME}-servicebus-hmc-to-cft
+        PR_PENDING_WAIT_IN_MILLISECS: 5000
 
   servicebus:
     sbNamespace: hmc-servicebus-preview
