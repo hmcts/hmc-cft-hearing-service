@@ -27,7 +27,15 @@ spring:
             issuer-uri: http://localhost:${wiremock.server.port:5000}/o
 ccd:
   data-store:
+    url-header-name: ${CCD_DATA_STORE_URL_HEADER_NAME:Data-Store-Url}
     host: http://localhost:${wiremock.server.port:4452}
+
+role:
+  assignment:
+    api:
+      url-header-name: ${ROLE_ASSIGNMENT_URL_HEADER_NAME:Role-Assignment-Url}
+      host: http://localhost:${wiremock.server.port:4096}
+
 idam:
   api:
     url: http://localhost:${wiremock.server.port:5000}

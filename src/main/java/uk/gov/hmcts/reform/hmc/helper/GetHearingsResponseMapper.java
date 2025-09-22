@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingDaySchedule;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +43,7 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
             setHearingChannels(entity, caseHearing);
             caseHearingList.add(caseHearing);
         }
+        caseHearingList.sort(Comparator.comparing(CaseHearing::getHearingId).reversed());
         getHearingsResponse.setCaseHearings(caseHearingList);
     }
 
@@ -61,6 +63,7 @@ public class GetHearingsResponseMapper extends GetHearingResponseCommonCode {
                 scheduleList.add(hearingDaySchedule);
             }
         }
+        scheduleList.sort(Comparator.comparing(HearingDaySchedule::getHearingStartDateTime));
         caseHearing.setHearingDaySchedule(scheduleList);
     }
 

@@ -18,9 +18,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.PartiesNotifiedCommonGeneration;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
+import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponse;
@@ -28,6 +30,7 @@ import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotifiedResponses;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.PartiesNotifiedService;
+import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -65,6 +68,15 @@ class PartiesNotifiedControllerTest extends PartiesNotifiedCommonGeneration {
 
     @MockBean
     private AccessControlService accessControlService;
+
+    @MockBean
+    private ApplicationParams applicationParams;
+
+    @MockBean
+    private OverrideAuditService overrideAuditService;
+
+    @MockBean
+    private UrlManager urlManager;
 
     private static final String CLIENT_S2S_TOKEN = "xui_webapp";
 

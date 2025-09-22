@@ -4,8 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingDayPanelEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.PanelUserRequirementsEntity;
@@ -30,10 +34,12 @@ import uk.gov.hmcts.reform.hmc.model.hmi.RequestDetails;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -41,6 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class GetHearingResponseMapperTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(GetHearingResponseMapperTest.class);
 
     @InjectMocks
     private GetHearingResponseMapper getHearingResponseMapper;
@@ -349,6 +357,147 @@ class GetHearingResponseMapperTest {
         assertTrue(response.getPartyDetails().get(0).getUnavailabilityRanges().isEmpty());
     }
 
+    @Test
+    void listsAreSortedCorrectly() {
+        HearingEntity hearingEntity = TestingUtil.createHearingEntity();
+
+        GetHearingResponse response = getHearingResponseMapper.toHearingResponse(hearingEntity);
+
+        List<HearingDaySchedule> schedules = response.getHearingResponse().getHearingDaySchedule();
+        assertThat(isSortedByStartDateTimeAndHearingJudgeId(schedules)).isTrue();
+
+        List<LocalDateTime> startDateTimes = new ArrayList<>();
+
+        if (null != schedules && !schedules.isEmpty()) {
+            for (HearingDaySchedule schedule : schedules) {
+                startDateTimes.add(schedule.getHearingStartDateTime());
+
+                List<Attendee> attendees = schedule.getAttendees();
+                List<String> partyIds = new ArrayList<>();
+
+                if (null != attendees && !attendees.isEmpty()) {
+                    for (Attendee attendee : attendees) {
+                        partyIds.add(attendee.getPartyId());
+                    }
+                }
+                assertThat(isAscendingOrder("partyId", partyIds)).isTrue();
+            }
+        }
+        assertThat(isAscendingLocalDateTimeOrder("startDateTime", startDateTimes)).isTrue();
+    }
+
+    private boolean isSortedByStartDateTimeAndHearingJudgeId(List<HearingDaySchedule> scheduleList) {
+        for (int i = 0; i < scheduleList.size() - 1; i++) {
+            HearingDaySchedule current = scheduleList.get(i);
+            HearingDaySchedule next = scheduleList.get(i + 1);
+            if (current.getHearingStartDateTime().isAfter(next.getHearingStartDateTime())
+                || (current.getHearingStartDateTime().isEqual(next.getHearingStartDateTime())
+                && current.getHearingJudgeId().compareTo(next.getHearingJudgeId()) > 0)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    @Test
+    void setHearingJudgeAndPanelMemberIds_SetsJudgeAndPanelMembersCorrectly() {
+        HearingDayDetailsEntity hearingDayDetails = TestingUtil.createHearingDayDetailsEntity(1,
+                                                   LocalDateTime.of(2025,9,1,10,0,0));
+
+        List<HearingDayPanelEntity> panelEntities = new ArrayList<>();
+        panelEntities.add(TestingUtil.createHearingDayPanelEntity(1, "judge1", true, hearingDayDetails));
+        panelEntities.add(TestingUtil.createHearingDayPanelEntity(2, "panel5", false, hearingDayDetails));
+        panelEntities.add(TestingUtil.createHearingDayPanelEntity(3, "panel1", false, hearingDayDetails));
+        panelEntities.add(TestingUtil.createHearingDayPanelEntity(4, "panel4", false, hearingDayDetails));
+        panelEntities.add(TestingUtil.createHearingDayPanelEntity(5, "panel2", false, hearingDayDetails));
+        panelEntities.add(TestingUtil.createHearingDayPanelEntity(6, "panel3", false, hearingDayDetails));
+
+        HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
+        getHearingResponseMapper.setHearingJudgeAndPanelMemberIds(panelEntities, hearingDaySchedule);
+
+        assertEquals("judge1", hearingDaySchedule.getHearingJudgeId());
+        assertThat(hearingDaySchedule.getPanelMemberIds())
+            .isEqualTo(Arrays.asList("panel1", "panel2","panel3", "panel4","panel5"));
+    }
+
+    @Test
+    void setHearingJudgeAndPanelMemberIds_SetsPanelMembersWhenNoJudge() {
+        HearingDayDetailsEntity hearingDayDetails = TestingUtil.createHearingDayDetailsEntity(1,
+                                                 LocalDateTime.of(2025,9,1,10,0,0));
+
+        List<HearingDayPanelEntity> panelEntities = new ArrayList<>();
+        panelEntities.add(TestingUtil.createHearingDayPanelEntity(1, "panel1", false, hearingDayDetails));
+        panelEntities.add(TestingUtil.createHearingDayPanelEntity(2, "panel2", false, hearingDayDetails));
+
+        HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
+        getHearingResponseMapper.setHearingJudgeAndPanelMemberIds(panelEntities, hearingDaySchedule);
+
+        assertNull(hearingDaySchedule.getHearingJudgeId());
+        assertEquals(Arrays.asList("panel1", "panel2"), hearingDaySchedule.getPanelMemberIds());
+    }
+
+    @Test
+    void setHearingJudgeAndPanelMemberIds_SetsJudgeWhenNoPanelMembers() {
+        HearingDayDetailsEntity hearingDayDetails = TestingUtil.createHearingDayDetailsEntity(1,
+                                                 LocalDateTime.of(2025,9,1,10,0,0));
+
+        List<HearingDayPanelEntity> panelEntities = new ArrayList<>();
+        panelEntities.add(TestingUtil.createHearingDayPanelEntity(1, "judge1", true, hearingDayDetails));
+
+        HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
+        getHearingResponseMapper.setHearingJudgeAndPanelMemberIds(panelEntities, hearingDaySchedule);
+
+        assertEquals("judge1", hearingDaySchedule.getHearingJudgeId());
+        assertTrue(hearingDaySchedule.getPanelMemberIds().isEmpty());
+    }
+
+    @Test
+    void setHearingJudgeAndPanelMemberIds_HandlesNullPanelUserId() {
+        HearingDayDetailsEntity hearingDayDetails = TestingUtil.createHearingDayDetailsEntity(1,
+                                                 LocalDateTime.of(2025,9,1,10,0,0));
+
+        List<HearingDayPanelEntity> panelEntities = new ArrayList<>();
+        panelEntities.add(TestingUtil.createHearingDayPanelEntity(1, null, false, hearingDayDetails));
+        panelEntities.add(TestingUtil.createHearingDayPanelEntity(1, "panel1", false, hearingDayDetails));
+
+        HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
+        getHearingResponseMapper.setHearingJudgeAndPanelMemberIds(panelEntities, hearingDaySchedule);
+
+        assertNull(hearingDaySchedule.getHearingJudgeId());
+        assertEquals(Arrays.asList("panel1", null), hearingDaySchedule.getPanelMemberIds());
+    }
+
+    @Test
+    void setHearingJudgeAndPanelMemberIds_HandlesEmptyList() {
+        List<HearingDayPanelEntity> panelEntities = new ArrayList<>();
+
+        HearingDaySchedule hearingDaySchedule = new HearingDaySchedule();
+        getHearingResponseMapper.setHearingJudgeAndPanelMemberIds(panelEntities, hearingDaySchedule);
+
+        assertNull(hearingDaySchedule.getHearingJudgeId());
+        assertTrue(hearingDaySchedule.getPanelMemberIds().isEmpty());
+    }
+
+    private static <T extends Comparable<T>> boolean isAscendingOrder(String listName, List<T> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            logger.debug("{} {}:{} - {}:{})", listName, i, (i + 1), list.get(i), list.get(i + 1));
+            if (list.get(i).compareTo(list.get(i + 1)) > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isAscendingLocalDateTimeOrder(String listName, List<LocalDateTime> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            logger.debug("{} {}:{} - {}:{})", listName, i, (i + 1), list.get(i), list.get(i + 1));
+            if (list.get(i).isAfter(list.get(i + 1))) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     private void assertRequestDetails(RequestDetails requestDetails) {
         assertAll(

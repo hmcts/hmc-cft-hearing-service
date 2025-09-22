@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.hmc;
 
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.hmc.config.RoleAssignmentUrlManager;
 import uk.gov.hmcts.reform.hmc.exceptions.ServiceException;
 
 import java.io.UnsupportedEncodingException;
@@ -15,6 +17,9 @@ import javax.inject.Singleton;
 @Named
 @Singleton
 public class ApplicationParams {
+
+    @Autowired
+    private RoleAssignmentUrlManager roleAssignmentUrlManager;
 
     @Value("${jms.servicebus.internal.queues.inbound.connection-string}")
     private String internalInboundConnectionString;
@@ -33,9 +38,6 @@ public class ApplicationParams {
 
     @Value("${jms.servicebus.external.topic-name}")
     private String externalTopicName;
-
-    @Value("${role.assignment.api.host}")
-    private String roleAssignmentServiceHost;
 
     @Value("${jms.servicebus.internal.queues.outbound.connection-string}")
     private String internalOutboundConnectionString;
@@ -77,7 +79,7 @@ public class ApplicationParams {
     }
 
     public String roleAssignmentBaseUrl() {
-        return roleAssignmentServiceHost + "/am/role-assignments";
+        return roleAssignmentUrlManager.getActualHost() + "/am/role-assignments";
     }
 
     public String amGetRoleAssignmentsUrl() {

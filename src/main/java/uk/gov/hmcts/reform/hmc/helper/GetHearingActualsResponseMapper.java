@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.hmc.model.hearingactuals.PauseDateTimes;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.PlannedHearingDays;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -48,15 +49,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
         if (hearingResponses.isPresent() && hearingResponses.get().getActualHearingEntity() != null) {
             HearingResponseEntity hearingResponse = hearingResponses.get();
             if (hearingResponse.getActualHearingEntity() != null) {
-                val hearingOutcome = new HearingOutcome();
-                hearingOutcome.setHearingType(hearingResponse.getActualHearingEntity().getActualHearingType());
-                hearingOutcome.setHearingFinalFlag(
-                    hearingResponse.getActualHearingEntity().getActualHearingIsFinalFlag());
-                hearingOutcome.setHearingResult(hearingResponse.getActualHearingEntity().getHearingResultType());
-                hearingOutcome.setHearingResultReasonType(hearingResponse
-                                                              .getActualHearingEntity().getHearingResultReasonType());
-                hearingOutcome.setHearingResultDate(hearingResponse
-                                                        .getActualHearingEntity().getHearingResultDate());
+                final var hearingOutcome = getHearingOutcome(hearingResponse);
                 val hearingActual = new HearingActual();
                 hearingActual.setHearingOutcome(hearingOutcome);
                 getActualHearingDays(hearingResponse, hearingActual);
@@ -65,6 +58,19 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             }
         }
 
+    }
+
+    private static HearingOutcome getHearingOutcome(HearingResponseEntity hearingResponse) {
+        val hearingOutcome = new HearingOutcome();
+        hearingOutcome.setHearingType(hearingResponse.getActualHearingEntity().getActualHearingType());
+        hearingOutcome.setHearingFinalFlag(
+            hearingResponse.getActualHearingEntity().getActualHearingIsFinalFlag());
+        hearingOutcome.setHearingResult(hearingResponse.getActualHearingEntity().getHearingResultType());
+        hearingOutcome.setHearingResultReasonType(hearingResponse
+                                                      .getActualHearingEntity().getHearingResultReasonType());
+        hearingOutcome.setHearingResultDate(hearingResponse
+                                                .getActualHearingEntity().getHearingResultDate());
+        return hearingOutcome;
     }
 
     private void getActualHearingDays(HearingResponseEntity hearingResponse, HearingActual hearingActual) {
@@ -80,6 +86,8 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             actualHearingDay.setNotRequired(actualHearingDayEntity.getNotRequired());
             actualHearingDays.add(actualHearingDay);
         }
+        actualHearingDays.sort(Comparator.comparing(ActualHearingDays::getHearingDate,
+                                                    Comparator.nullsLast(Comparator.naturalOrder())));
         hearingActual.setActualHearingDays(actualHearingDays);
     }
 
@@ -94,7 +102,7 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             if (!CollectionUtils.isEmpty(actualHearingPartyEntity.getActualPartyRelationshipDetail())) {
                 // Only one represented party can be returned, so use the first
                 actualDayParty.setRepresentedParty(actualHearingPartyEntity
-                                                       .getActualPartyRelationshipDetail().get(0)
+                                                       .getActualPartyRelationshipDetail().getFirst()
                                                        .getTargetActualParty()
                                                        .getPartyId());
             }
@@ -111,6 +119,10 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
 
             actualDayParties.add(actualDayParty);
         }
+        actualDayParties.sort(Comparator.comparing(ActualDayParty::getPartyRole,
+                                                   Comparator.nullsLast(Comparator.naturalOrder()))
+                                  .thenComparing(ActualDayParty::getActualPartyId,
+                                                 Comparator.nullsLast(Comparator.naturalOrder())));
         actualHearingDay.setActualDayParties(actualDayParties);
     }
 
@@ -123,6 +135,8 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             pauseDateTime.setPauseStartTime(actualHearingDayPauseEntity.getPauseDateTime());
             pauseDateTimes.add(pauseDateTime);
         }
+        pauseDateTimes.sort(Comparator.comparing(PauseDateTimes::getPauseStartTime,
+                                                 Comparator.nullsLast(Comparator.naturalOrder())));
         actualHearingDay.setPauseDateTimes(pauseDateTimes);
     }
 
@@ -149,8 +163,9 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
                     plannedHearingDays.add(plannedHearingDay);
                 }
             }
-
         }
+        plannedHearingDays.sort(Comparator.comparing(PlannedHearingDays::getPlannedStartTime,
+                                                     Comparator.nullsLast(Comparator.naturalOrder())));
         return plannedHearingDays;
     }
 
@@ -173,12 +188,12 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
                 && hearingEntity.getLatestCaseHearingRequest().getCaseHearingID()
                     .equals(hearingPartyEntity.getCaseHearing().getCaseHearingID());
 
-
             Party partyDetails = new Party();
             partyDetails.setPartyID(hearingAttendeeDetails.getPartyId());
             partyDetails.setPartyChannelSubType(hearingAttendeeDetails.getPartySubChannelType());
             if (hearingPartyEntity != null && caseHearingIdMatches) {
                 partyDetails.setPartyRole(hearingPartyEntity.getPartyRoleType());
+                partyDetails.setPartyType(hearingPartyEntity.getPartyType().getLabel());
                 if (PartyType.IND.getLabel().equals(hearingPartyEntity.getPartyType().getLabel())) {
                     partyDetails.setIndividualDetails(setIndividualDetails(hearingPartyEntity));
                 } else {
@@ -187,6 +202,10 @@ public class GetHearingActualsResponseMapper extends GetHearingResponseCommonCod
             }
             partyDetailsList.add(partyDetails);
         }
+        partyDetailsList.sort(Comparator.comparing(Party::getPartyRole, Comparator.nullsLast(Comparator.naturalOrder()))
+                                  .thenComparing(Party::getPartyChannelSubType,
+                                                 Comparator.nullsLast(Comparator.naturalOrder()))
+                                  .thenComparing(Party::getPartyID, Comparator.nullsLast(Comparator.naturalOrder())));
         return partyDetailsList;
     }
 

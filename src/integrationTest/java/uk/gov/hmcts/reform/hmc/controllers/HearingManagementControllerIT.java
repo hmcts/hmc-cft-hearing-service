@@ -69,6 +69,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200CaseDetailsByCaseId;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignments;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidateHearingObject;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404FromDataStore;
@@ -243,11 +244,6 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenHearingExistsInDb() throws Exception {
-        stubFor(WireMock.get(urlMatching("/cases/9372710950276233"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         mockMvc.perform(get(url + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
@@ -257,11 +253,6 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenHearingHasCancellationReasons() throws Exception {
-        stubFor(WireMock.get(urlMatching("/cases/9372710950276233"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         mockMvc.perform(get(url + "/2000000012")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
@@ -272,11 +263,6 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenHearingStatusIsListed() throws Exception {
-        stubFor(WireMock.get(urlMatching("/cases/9856815055686759"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         mockMvc.perform(get(url + "/2000000011")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
@@ -318,11 +304,6 @@ class HearingManagementControllerIT extends BaseTest {
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         createHearingRequest.setCaseDetails(TestingUtil.getValidCaseDetails());
         stubSuccessfullyValidateHearingObject(createHearingRequest);
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         stubRoleAssignments();
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
             .caseTypeId(CASE_TYPE)
@@ -356,11 +337,6 @@ class HearingManagementControllerIT extends BaseTest {
             .jurisdiction(JURISDICTION)
             .build();
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
-        stubFor(WireMock.get(urlMatching("/cases/1111222233335555"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         mockMvc.perform(post(url)
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -757,6 +733,7 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
 
+
     @Test
     void shouldReturn200_WhenGetHearingsForValidCaseRefLuhn() throws Exception {
         mockMvc.perform(get("/hearings/9372710950276233")
@@ -776,11 +753,6 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndNoStatus() throws Exception {
-        stubFor(WireMock.get(urlMatching("/cases/9372710950276233"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         mockMvc.perform(get("/hearings/9372710950276233")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
@@ -849,6 +821,16 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn400_WhenGetHearingsForListOfCases_NoCaseRefs() throws Exception {
         mockMvc.perform(get("/hearings?ccdCaseRefs=")
+                            .param("caseTypeId", CASE_TYPE)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andReturn();
+    }
+
+    @Test
+    void shouldReturn400_WhenGetHearingsForListOfCases_NoCaseType() throws Exception {
+        mockMvc.perform(get("/hearings")
+                            .param("ccdCaseRefs", "9372710950276233")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
             .andReturn();
@@ -856,7 +838,11 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     void shouldReturn200_WhenGetHearingsForListOfCasesForInvalidCaseRef() throws Exception {
-        mockMvc.perform(get("/hearings?ccdCaseRefs=123456")
+        List<String> caseRefs = Arrays.asList("123456");
+        stubReturn200ForAllCasesFromDataStore(caseRefs, new ArrayList<>());
+        mockMvc.perform(get("/hearings")
+                            .param("ccdCaseRefs", "123456")
+                            .param("caseTypeId", CASE_TYPE)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
@@ -865,8 +851,13 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForOneCaseRef() throws Exception {
-        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9372710950276239")
-                             .contentType(MediaType.APPLICATION_JSON_VALUE)
+        List<String> caseRefs = Arrays.asList("9372710950276233", "9372710950276239");
+        String caseRefsParam = caseRefs.stream().collect(Collectors.joining(","));
+        stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefs);
+        mockMvc.perform(get("/hearings")
+                            .param("ccdCaseRefs", caseRefsParam)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("caseTypeId", CASE_TYPE)
                             .param("status", "HEARING_REQUESTED"))
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.*", hasSize(2)))
@@ -877,9 +868,33 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_Listed() throws Exception {
-        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759")
+    void shouldReturn200_WhenGetHearingsForListOfCasesForMoreThanDefaultSizeCaseRef() throws Exception {
+        List<String> caseRefs = new ArrayList<>(Collections.nCopies(11,  "9372710950276239"));
+        String caseRefsParam = caseRefs.stream().collect(Collectors.joining(","));
+        stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefs);
+        mockMvc.perform(get("/hearings")
+                            .param("ccdCaseRefs", caseRefsParam)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("caseTypeId", CASE_TYPE)
+                            .param("status", "HEARING_REQUESTED"))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.*", hasSize(11)))
+            .andExpect(jsonPath("$[0].caseRef").value("9372710950276239"))
+            .andExpect(jsonPath("$[10].caseRef").value("9372710950276239"))
+            .andReturn();
+    }
+
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_Listed() throws Exception {
+        List<String> caseRefs = Arrays.asList("9372710950276233","9856815055686759");
+        String caseRefsParam = caseRefs.stream().collect(Collectors.joining(","));
+        stubReturn200ForAllCasesFromDataStore(caseRefs, Arrays.asList(caseRefs.get(1)));
+        mockMvc.perform(get("/hearings")
+                            .param("ccdCaseRefs", caseRefsParam)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("caseTypeId", CASE_TYPE)
                             .param("status", "LISTED"))
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.*", hasSize(1)))
@@ -890,8 +905,13 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_NotListed() throws Exception {
-        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759")
+        List<String> caseRefs = Arrays.asList("9372710950276233","9856815055686759");
+        String caseRefsParam = caseRefs.stream().collect(Collectors.joining(","));
+        stubReturn200ForAllCasesFromDataStore(caseRefs, Arrays.asList(caseRefs.get(0)));
+        mockMvc.perform(get("/hearings")
+                            .param("ccdCaseRefs", caseRefsParam)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("caseTypeId", CASE_TYPE)
                             .param("status", "HEARING_REQUESTED"))
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.*", hasSize(1)))
@@ -900,15 +920,44 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_NoStatus() throws Exception {
-        mockMvc.perform(get("/hearings?ccdCaseRefs=9372710950276233,9856815055686759")
+    void shouldReturn400_WhenGetHearingsForListOfCases_CaseTypeIsEmpty() throws Exception {
+        mockMvc.perform(get("/hearings")
+                            .param("ccdCaseRefs", "9372710950276233")
+                            .param("caseTypeId", "")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().is(400))
+            .andReturn();
+    }
+
+    @Test
+    void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRefNotInDB() throws Exception {
+        List<String> caseRefs = Arrays.asList("9372710950276245");
+        stubReturn200ForAllCasesFromDataStore(caseRefs, new ArrayList<>());
+        mockMvc.perform(get("/hearings")
+                            .param("ccdCaseRefs", "9372710950276245")
+                            .param("caseTypeId", CASE_TYPE)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.*", hasSize(2)))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenGetHearingsForListOfCasesForCaseRef_NoStatus() throws Exception {
+        List<String> caseRefs = Arrays.asList("9372710950276233","9856815055686759");
+        String caseRefsParam = caseRefs.stream().collect(Collectors.joining(","));
+        stubReturn200ForAllCasesFromDataStore(caseRefs,Arrays.asList(caseRefs.get(0)));
+        mockMvc.perform(get("/hearings")
+                            .param("ccdCaseRefs", caseRefsParam)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("caseTypeId", CASE_TYPE))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.*", hasSize(1)))
             .andExpect(jsonPath("$[0].caseRef").value("9372710950276233"))
             .andReturn();
     }
+
+
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
@@ -932,11 +981,6 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn201WhenUpdateHearingRequestContainsValidPartyDetails() throws Exception {
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334455"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         stubRoleAssignments();
         UpdateHearingRequest hearingRequest = TestingUtil.validUpdateHearingRequest();
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());
@@ -1375,11 +1419,6 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn400WhenPartyIndividualAndOrgDetailsNull() throws Exception {
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         UpdateHearingRequest request = TestingUtil.updateHearingRequest();
         request.setPartyDetails(TestingUtil.partyDetails());
         mockMvc.perform(put(url + "/2000000000")
@@ -1395,11 +1434,6 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn400WhenPartyIndividualAndOrgDetailsBothExist() throws Exception {
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         stubRoleAssignments();
         UpdateHearingRequest request = TestingUtil.updateHearingRequest();
         request.setPartyDetails(TestingUtil.partyDetails());
@@ -1453,11 +1487,6 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, UPDATE_HEARINGS_DATA_SCRIPT})
     void shouldReturn201WhenUpdateHearingRequestIsValidWith2PartyDetailsAndOrgDetail() throws Exception {
         stubRoleAssignments();
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334466"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequestWithPartyDetails(false);
         hearingRequest.getCaseDetails().setCaseRef("9372710950276233");
         mockMvc.perform(put(url + "/2000000024")
@@ -1508,11 +1537,6 @@ class HearingManagementControllerIT extends BaseTest {
         val hearingRequest = getHearingRequest("P1");
         stubSuccessfullyValidateHearingObject(hearingRequest);
 
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         stubRoleAssignments();
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
             .caseTypeId(CASE_TYPE)
@@ -1536,11 +1560,6 @@ class HearingManagementControllerIT extends BaseTest {
         val hearingRequest = getHearingRequest("P1");
         stubSuccessfullyValidateHearingObject(hearingRequest);
 
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         stubRoleAssignments();
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
             .caseTypeId(CASE_TYPE)
@@ -1568,11 +1587,6 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().setDuration(duration);
         stubSuccessfullyValidateHearingObject(hearingRequest);
 
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         stubRoleAssignments();
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
             .caseTypeId(CASE_TYPE)
@@ -1663,11 +1677,6 @@ class HearingManagementControllerIT extends BaseTest {
         val hearingRequest = getHearingRequest("P1");
         stubSuccessfullyValidateHearingObject(hearingRequest);
 
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         stubRoleAssignments();
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
             .caseTypeId(CASE_TYPE)
@@ -1690,11 +1699,6 @@ class HearingManagementControllerIT extends BaseTest {
         val hearingRequest = getHearingRequest("P1");
         stubSuccessfullyValidateHearingObject(hearingRequest);
 
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         stubRoleAssignments();
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
             .caseTypeId(CASE_TYPE)
@@ -1716,11 +1720,6 @@ class HearingManagementControllerIT extends BaseTest {
         val hearingRequest = getHearingRequest("P1");
         stubSuccessfullyValidateHearingObject(hearingRequest);
 
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         stubRoleAssignments();
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
             .caseTypeId(CASE_TYPE)
@@ -1742,11 +1741,6 @@ class HearingManagementControllerIT extends BaseTest {
         val hearingRequest = getHearingRequest("P1");
         stubSuccessfullyValidateHearingObject(hearingRequest);
 
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         stubRoleAssignments();
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
             .caseTypeId(CASE_TYPE)
@@ -1771,11 +1765,6 @@ class HearingManagementControllerIT extends BaseTest {
         val hearingRequest = getHearingRequest("P1");
         stubSuccessfullyValidateHearingObject(hearingRequest);
 
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         stubRoleAssignments();
         DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
             .caseTypeId(CASE_TYPE)
@@ -1891,11 +1880,6 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldUpdateHearingCompletion() throws Exception {
-        stubFor(WireMock.get(urlMatching("/cases/9372710950276233"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         stubRoleAssignments();
         mockMvc.perform(post(hearingCompletion + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
@@ -1919,11 +1903,6 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn201WhenUpdateHearingRequestContainsValidPartyDetails_reasonable_adjustments() throws Exception {
-        stubFor(WireMock.get(urlMatching("/cases/1111222233334455"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Jurisdiction1\",\n"
-                                           + "\t\"case_type\": \"CaseType1\"\n"
-                                           + "}")));
         stubRoleAssignments();
         UpdateHearingRequest hearingRequest = TestingUtil.validUpdateHearingRequest();
         hearingRequest.setPartyDetails(TestingUtil.partyDetails());

@@ -35,6 +35,7 @@ public final class Constants {
     public static final String DELETE_HEARING = "DELETE_HEARING";
     public static final String CASE_HQ = "CASEHQ";
     public static final String EPIMS = "EPIMS";
+    public static final String OVERRIDE_URL = "OVERRIDE_URL";
     public static final String REGION = "Region";
     public static final String COURT = "Court";
     public static final String CLUSTER = "Cluster";
@@ -61,6 +62,7 @@ public final class Constants {
     public static final String REQUEST_VERSION_UPDATE = "request-version-update";
     public static final String LA_RESPONSE = "list-assist-response";
     public static final String LA_ACK = "list-assist-ack";
+    public static final String OVERRIDE_URL_EVENT = "override-url";
     public static final String HMI = "hmi";
     public static final String FH = "fh";
     public static final String HMC = "hmc";
@@ -78,4 +80,5 @@ public final class Constants {
         + " and Error Description: {} updated to status {}";
     public static final String AMQP_CACHE = "com.azure.core.amqp.cache";
     public static final String AMQP_CACHE_VALUE = "true";
+    public static final Integer ELASTIC_QUERY_DEFAULT_SIZE = 10;
 }

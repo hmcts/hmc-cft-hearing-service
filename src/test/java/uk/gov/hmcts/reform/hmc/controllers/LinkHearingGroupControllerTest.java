@@ -18,8 +18,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
+import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
@@ -28,6 +30,7 @@ import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
 import uk.gov.hmcts.reform.hmc.service.common.DefaultObjectMapperService;
+import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,6 +66,15 @@ class LinkHearingGroupControllerTest {
 
     @MockBean
     private AccessControlService accessControlService;
+
+    @MockBean
+    private ApplicationParams applicationParams;
+
+    @MockBean
+    private UrlManager urlManager;
+
+    @MockBean
+    private OverrideAuditService overrideAuditService;
 
     @MockBean
     SecurityUtils securityUtils;

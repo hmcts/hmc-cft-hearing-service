@@ -48,14 +48,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -546,7 +547,7 @@ class LinkedHearingGroupServiceTest {
             hearingResponse.setRequestVersion(requestVersion);
             hearingResponse.setRequestTimeStamp(requestTimestamp);
             hearingResponse.setHearingDayDetails(
-                hearingDaysStartDateTime.stream().map(this::createHearingDayDetails).collect(Collectors.toList())
+                hearingDaysStartDateTime.stream().map(this::createHearingDayDetails).toList()
             );
             return hearingResponse;
         }
@@ -598,7 +599,7 @@ class LinkedHearingGroupServiceTest {
                 HEARING_REQUESTED.name(),
                 1,
                 true,
-                List.of(generateHearingDetailsEntity(2000000000L, LocalDateTime.now().plusDays(1))),
+                List.of(generateHearingDayDetailsEntity(2000000000L, LocalDateTime.now().plusDays(1))),
                 null
             );
 
@@ -627,6 +628,151 @@ class LinkedHearingGroupServiceTest {
             for (LinkedHearingDetails linkedHearingDetails : response.getHearingsInGroup()) {
                 assertHearingsInGroup(linkedHearingDetails);
             }
+        }
+
+        @Test
+        void sortHearingsInGroup_SortsByHearingOrderAndHearingId() {
+
+            HearingEntity hearingEntity1 = generateHearingEntity(
+                2000000002L, HEARING_REQUESTED.name(), 1, true,
+                List.of(
+                    generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1)),
+                    generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(6))),
+                null, 3L
+            );
+            HearingEntity hearingEntity2 = generateHearingEntity(
+                2000000001L, HEARING_REQUESTED.name(), 1, true,
+                List.of(
+                    generateHearingDayDetailsEntity(2000000001L, LocalDateTime.now().plusDays(1)),
+                    generateHearingDayDetailsEntity(2000000001L, LocalDateTime.now().plusDays(2)),
+                    generateHearingDayDetailsEntity(2000000001L, LocalDateTime.now().plusDays(6))),
+                null, 3L
+            );
+            HearingEntity hearingEntity3 = generateHearingEntity(
+                2000000004L, HEARING_REQUESTED.name(), 1, true,
+                List.of(
+                    generateHearingDayDetailsEntity(2000000004L, LocalDateTime.now().plusDays(1)),
+                    generateHearingDayDetailsEntity(2000000004L, LocalDateTime.now().plusDays(2)),
+                    generateHearingDayDetailsEntity(2000000004L, LocalDateTime.now().plusDays(6))),
+                null, 2L
+            );
+            HearingEntity hearingEntity4 = generateHearingEntity(
+                2000000003L, HEARING_REQUESTED.name(), 1, true,
+                List.of(
+                    generateHearingDayDetailsEntity(2000000003L, LocalDateTime.now().plusDays(1)),
+                    generateHearingDayDetailsEntity(2000000003L, LocalDateTime.now().plusDays(2))),
+                null, 2L
+            );
+            HearingEntity hearingEntity5 = generateHearingEntity(
+                2000000006L, HEARING_REQUESTED.name(), 1, true,
+                List.of(
+                    generateHearingDayDetailsEntity(2000000006L, LocalDateTime.now().plusDays(2)),
+                    generateHearingDayDetailsEntity(2000000006L, LocalDateTime.now().plusDays(6))),
+                null, 1L
+            );
+            HearingEntity hearingEntity6 = generateHearingEntity(
+                2000000005L, HEARING_REQUESTED.name(), 1, true,
+                List.of(
+                    generateHearingDayDetailsEntity(2000000005L, LocalDateTime.now().plusDays(1)),
+                    generateHearingDayDetailsEntity(2000000005L, LocalDateTime.now().plusDays(2)),
+                    generateHearingDayDetailsEntity(2000000005L, LocalDateTime.now().plusDays(6))),
+                null, 1L
+            );
+
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(Long.parseLong(REQUEST_ID));
+
+            LinkedGroupDetails linkedGroupDetails = createLinkedGroupDetails(REQUEST_ID, "ACTIVE");
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(Long.parseLong(REQUEST_ID));
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(linkedGroupDetails);
+            when(hearingRepository.findByLinkedGroupId(any())).thenReturn(List.of(hearingEntity6,hearingEntity5,
+                                                                                  hearingEntity3,hearingEntity4,
+                                                                                  hearingEntity2,hearingEntity1));
+
+            GetLinkedHearingGroupResponse response = service.getLinkedHearingGroupResponse(REQUEST_ID);
+            List<LinkedHearingDetails> hearingsInGroup = response.getHearingsInGroup();
+
+            assertThat(hearingsInGroup.get(0).getHearingOrder()).isEqualTo(1L);
+            assertThat(hearingsInGroup.get(1).getHearingOrder()).isEqualTo(1L);
+            assertThat(hearingsInGroup.get(2).getHearingOrder()).isEqualTo(2L);
+            assertThat(hearingsInGroup.get(3).getHearingOrder()).isEqualTo(2L);
+            assertThat(hearingsInGroup.get(4).getHearingOrder()).isEqualTo(3L);
+            assertThat(hearingsInGroup.get(5).getHearingOrder()).isEqualTo(3L);
+            assertThat(hearingsInGroup.get(0).getHearingId()).isEqualTo(2000000006L);
+            assertThat(hearingsInGroup.get(1).getHearingId()).isEqualTo(2000000005L);
+            assertThat(hearingsInGroup.get(2).getHearingId()).isEqualTo(2000000004L);
+            assertThat(hearingsInGroup.get(3).getHearingId()).isEqualTo(2000000003L);
+            assertThat(hearingsInGroup.get(4).getHearingId()).isEqualTo(2000000002L);
+            assertThat(hearingsInGroup.get(5).getHearingId()).isEqualTo(2000000001L);
+        }
+
+        @Test
+        void sortHearingsInGroup_EmptyList() {
+
+            LinkedGroupDetails linkedGroupDetails = createLinkedGroupDetails(REQUEST_ID, "ACTIVE");
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(Long.parseLong(REQUEST_ID));
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(linkedGroupDetails);
+
+            GetLinkedHearingGroupResponse response = service.getLinkedHearingGroupResponse(REQUEST_ID);
+
+            assertThat(response.getHearingsInGroup()).isEmpty();
+        }
+
+        @Test
+        void sortHearingsInGroup_SingleElement() {
+
+            final Long HEARING_ID = 2000000001L;
+
+            when(linkedGroupDetailsRepository.isFoundForRequestId(anyString())).thenReturn(Long.parseLong(REQUEST_ID));
+            LinkedGroupDetails linkedGroupDetails = createLinkedGroupDetails(REQUEST_ID, "ACTIVE");
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(linkedGroupDetails);
+
+            HearingEntity hearingEntity1 = generateHearingEntity(
+                HEARING_ID, HEARING_REQUESTED.name(), 1, true,
+                List.of(
+                    generateHearingDayDetailsEntity(HEARING_ID, LocalDateTime.now().plusDays(1)),
+                    generateHearingDayDetailsEntity(HEARING_ID, LocalDateTime.now().plusDays(2)),
+                    generateHearingDayDetailsEntity(HEARING_ID, LocalDateTime.now().plusDays(6))),
+                linkedGroupDetails,null);
+            when(hearingRepository.findByLinkedGroupId(any())).thenReturn(List.of(hearingEntity1));
+
+            GetLinkedHearingGroupResponse response = service.getLinkedHearingGroupResponse(REQUEST_ID);
+
+            assertThat(response.getHearingsInGroup().get(0).getHearingId()).isEqualTo(HEARING_ID);
+        }
+
+        @Test
+        void sortHearingsInGroup_NullLinkedHearingOrderIsLast() {
+
+            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(Long.parseLong(REQUEST_ID));
+            LinkedGroupDetails linkedGroupDetails = createLinkedGroupDetails(REQUEST_ID, "ACTIVE");
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(linkedGroupDetails);
+
+            HearingEntity hearingEntity1 = generateHearingEntity(
+                2000000001L, HEARING_REQUESTED.name(), 1, true,
+                List.of(
+                    generateHearingDayDetailsEntity(2000000001L, LocalDateTime.now().plusDays(1)),
+                    generateHearingDayDetailsEntity(2000000001L, LocalDateTime.now().plusDays(2)),
+                    generateHearingDayDetailsEntity(2000000001L, LocalDateTime.now().plusDays(6))),
+                linkedGroupDetails,null);
+
+            HearingEntity hearingEntity2 = generateHearingEntity(
+                2000000002L, HEARING_REQUESTED.name(), 1, true,
+                List.of(
+                    generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1)),
+                    generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(2)),
+                    generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(3)),
+                    generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(4)),
+                    generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(5)),
+                    generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(6))),
+                null,1L);
+
+
+            when(hearingRepository.findByLinkedGroupId(any())).thenReturn(List.of(hearingEntity1, hearingEntity2));
+
+            GetLinkedHearingGroupResponse response = service.getLinkedHearingGroupResponse(REQUEST_ID);
+
+            assertThat(response.getHearingsInGroup().get(0).getHearingId()).isEqualTo(2000000002L);
+            assertThat(response.getHearingsInGroup().get(1).getHearingId()).isEqualTo(2000000001L);
         }
 
         private void assertGroupDetails(GroupDetails returnedGroupDetails) {
@@ -658,11 +804,21 @@ class LinkedHearingGroupServiceTest {
                                                     Integer versionNumber, boolean isLinked,
                                                     List<HearingDayDetailsEntity> hearingDayDetailsEntities,
                                                     LinkedGroupDetails linkedGroupDetails) {
+            return generateHearingEntity(hearingId, status, versionNumber, isLinked, hearingDayDetailsEntities,
+                                        linkedGroupDetails, null);
+        }
+
+        private HearingEntity generateHearingEntity(Long hearingId, String status,
+                                                    Integer versionNumber, boolean isLinked,
+                                                    List<HearingDayDetailsEntity> hearingDayDetailsEntities,
+                                                    LinkedGroupDetails linkedGroupDetails,
+                                                    Long linkedOrder) {
             HearingEntity hearingEntity = new HearingEntity();
             hearingEntity.setId(hearingId);
             hearingEntity.setStatus(status);
             hearingEntity.setIsLinkedFlag(isLinked);
             hearingEntity.setLinkedGroupDetails(linkedGroupDetails);
+            hearingEntity.setLinkedOrder(linkedOrder);
 
             CaseHearingRequestEntity caseHearingRequestEntity = new CaseHearingRequestEntity();
             caseHearingRequestEntity.setHearingRequestReceivedDateTime(LocalDateTime.now());
@@ -707,10 +863,11 @@ class LinkedHearingGroupServiceTest {
         groupDetails.setStatus(groupStatus);
         groupDetails.setLinkedGroupLatestVersion(1L);
         groupDetails.setRequestId(REQUEST_ID);
+        groupDetails.setLinkType(ORDERED);
         return groupDetails;
     }
 
-    private HearingDayDetailsEntity generateHearingDetailsEntity(Long hearingId, LocalDateTime hearingDateTime) {
+    private HearingDayDetailsEntity generateHearingDayDetailsEntity(Long hearingId, LocalDateTime hearingDateTime) {
         HearingDayDetailsEntity hearingDayDetailsEntity = new HearingDayDetailsEntity();
         hearingDayDetailsEntity.setStartDateTime(hearingDateTime);
         hearingDayDetailsEntity.setHearingDayId(hearingId);

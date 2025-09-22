@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.validator.ListingReasonCodeEnumPattern;
 import uk.gov.hmcts.reform.hmc.validator.NotNullNorEmpty;
 import uk.gov.hmcts.reform.hmc.validator.ValidBoolean;
+import uk.gov.hmcts.reform.hmc.validator.ValidBoolean;
 
 import java.util.List;
 import javax.validation.Valid;

@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -138,7 +139,7 @@ class AccessControlServiceTest {
         Exception exception = assertThrows(
             InvalidRoleAssignmentException.class,
             () -> accessControlService.verifyCaseAccess(
-                "1234", requiredRoles, 12345L
+                "1234", requiredRoles, 12345L, null
             )
         );
         assertEquals(ROLE_ASSIGNMENT_MISSING_REQUIRED, exception.getMessage());
@@ -158,7 +159,7 @@ class AccessControlServiceTest {
         List<String> requiredRoles = Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER);
         accessControlService.verifyCaseAccess(
             "1234", requiredRoles,
-            12345L
+            12345L, null
         );
     }
 
@@ -168,7 +169,7 @@ class AccessControlServiceTest {
         List<String> requiredRoles = Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER);
         accessControlService.verifyCaseAccess(
             "1234",
-            requiredRoles
+            requiredRoles, null
         );
     }
 
@@ -197,7 +198,7 @@ class AccessControlServiceTest {
         Exception exception = assertThrows(
             InvalidRoleAssignmentException.class,
             () -> accessControlService.verifyCaseAccess(
-                "1234", requiredRoles)
+                "1234", requiredRoles, null)
         );
         assertEquals(ROLE_ASSIGNMENT_INVALID_ATTRIBUTES, exception.getMessage());
     }
@@ -217,4 +218,13 @@ class AccessControlServiceTest {
         );
         assertEquals(ROLE_ASSIGNMENT_MISSING_REQUIRED, exception.getMessage());
     }
+
+    @Test
+    void shouldReturnEmptyListForVerifyUserRoleAccessIsAccessControlEnabledIsFalse() {
+        when(applicationParams.isAccessControlEnabled()).thenReturn(false);
+        List<RoleAssignment> roles = accessControlService.verifyUserRoleAccess(
+            Lists.newArrayList(HEARING_MANAGER, LISTED_HEARING_VIEWER));
+        assertTrue(roles.isEmpty());
+    }
+
 }

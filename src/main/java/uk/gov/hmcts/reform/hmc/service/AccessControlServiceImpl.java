@@ -80,17 +80,22 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     @Override
-    public List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles) {
+    public List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles,
+                                         DataStoreCaseDetails caseDetails) {
         if (!applicationParams.isAccessControlEnabled()) {
             return Collections.emptyList();
         }
-        return verifyCaseAccess(caseReference, requiredRoles, null);
+        return verifyCaseAccess(caseReference, requiredRoles, null, caseDetails);
     }
 
-    public List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles, Long hearingId) {
+    public List<String> verifyCaseAccess(String caseReference, List<String> requiredRoles, Long hearingId,
+                                         DataStoreCaseDetails caseDetails) {
         List<RoleAssignment> filteredRoleAssignments = verifyRoleAccess(requiredRoles);
 
-        DataStoreCaseDetails caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
+        if (caseDetails == null) {
+            caseDetails = dataStoreRepository.findCaseByCaseIdUsingExternalApi(caseReference);
+        }
+
         List<RoleAssignment> roleAssignmentsMatches = checkRoleAssignmentMatchesCaseDetails(
             caseDetails,
             filteredRoleAssignments
@@ -128,7 +133,7 @@ public class AccessControlServiceImpl implements AccessControlService {
         CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository
             .getLatestCaseHearingRequest(hearingId);
         if (caseHearingRequestEntity != null) {
-            verifyCaseAccess(caseHearingRequestEntity.getCaseReference(), requiredRoles, hearingId);
+            verifyCaseAccess(caseHearingRequestEntity.getCaseReference(), requiredRoles, hearingId, null);
         }
     }
 

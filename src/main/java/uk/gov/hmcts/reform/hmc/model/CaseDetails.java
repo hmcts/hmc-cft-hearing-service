@@ -39,10 +39,14 @@ public class CaseDetails {
 
     @NotEmpty(message = ValidationError.HMCTS_INTERNAL_CASE_NAME_EMPTY)
     @Size(max = 1024, message = ValidationError.HMCTS_INTERNAL_CASE_NAME_MAX_LENGTH)
+    @Pattern(regexp = "^[\\p{Ll}\\p{Lm}\\p{Lt}\\p{Lu}\\p{N}\\p{P}\\p{Zs}\\p{Sc}\\p{Sk}\\p{Sm}\\p{Zs}]*$",
+        message = ValidationError.INVALID_HMCTS_INTERNAL_CASE_NAME)
     private String hmctsInternalCaseName;
 
     @NotEmpty(message = ValidationError.PUBLIC_CASE_NAME_EMPTY)
     @Size(max = 1024, message = ValidationError.PUBLIC_CASE_NAME_MAX_LENGTH)
+    @Pattern(regexp = "^[\\p{Ll}\\p{Lm}\\p{Lt}\\p{Lu}\\p{N}\\p{P}\\p{Zs}\\p{Sc}\\p{Sk}\\p{Sm}\\p{Zs}]*$",
+        message = ValidationError.INVALID_PUBLIC_CASE_NAME)
     private String publicCaseName;
 
     private Boolean caseAdditionalSecurityFlag = false;
