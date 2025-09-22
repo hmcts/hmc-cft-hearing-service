@@ -80,7 +80,8 @@
         },
         "hearingIsLinkedFlag" : false,
         "hearingChannels" : [ "INTER" ],
-        "autolistFlag" : false
+        "autolistFlag" : false,
+        "isAPanelFlag" : "[[ANYTHING_PRESENT]]"
       },
       "partyDetails" : [ {
         "partyID" : "P1",
