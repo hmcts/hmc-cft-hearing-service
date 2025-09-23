@@ -50,6 +50,10 @@ fh:
     client-secret: CLIENT_SECRET
     scope: SCOPE
     grant-type: GRANT_TYPE
+    retryer:
+      period: 100
+      max-period: 1000
+      max-attempts: 3
   hmi:
     host: http://localhost:${wiremock.server.port:5124}
     source-system: SOURCE_SYSTEM

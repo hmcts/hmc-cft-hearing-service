@@ -167,6 +167,10 @@ fh:
     client-secret: ${CLIENT_SECRET:client-secret}
     scope: ${SCOPE:scope}
     grant-type: ${GRANT_TYPE:grant-type}
+    retryer:
+      period: ${FH_RETRYER_PERIOD:100}
+      max-period: ${FH_RETRYER_MAX_PERIOD:1000}
+      max-attempts: ${FM_RETRYER_MAX_ATTEMPTS:3}
   hmi:
     host: ${HMI_BASE_URL:base/url}
     source-system: ${HMI_SOURCE_SYSTEM:source-system}

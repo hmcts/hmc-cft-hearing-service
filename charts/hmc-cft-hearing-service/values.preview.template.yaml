@@ -18,6 +18,9 @@ java:
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
     CFT_HEARING_SERVICE_DB_PORT: 5432
     CCD_DATA_STORE_API_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal
+    HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
+    HMI_SOURCE_SYSTEM: CFT
+    HMI_DESTINATION_SYSTEM: SNL
   postgresql:
     enabled: true
   secrets:
@@ -39,6 +42,14 @@ java:
           alias: app-insights-connection-string
         - name: hmc-cft-hearing-service-s2s-secret
           alias: IDAM_KEY_CFT_HEARING_SERVICE
+        - name: fh-get-token-url
+          alias: FH_GET_TOKEN_URL
+        - name: ClientId
+          alias: CLIENT_ID
+        - name: ClientSecret
+          alias: CLIENT_SECRET
+        - name: Scope
+          alias: SCOPE
 
 servicebus:
   enabled: true
