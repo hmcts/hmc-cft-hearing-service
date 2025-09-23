@@ -121,7 +121,7 @@ class ManageExceptionsServiceTest {
 
         @Test
         void validInvokingServiceAndUserRole() {
-            List<HearingEntity> hearingEntities = createHearingEntities();
+            List<HearingEntity> hearingEntities = createHearingEntitiesForFinalState();
             List<Long> hearingIds = createHearingIds();
             when(hearingRepository.getHearings(hearingIds)).thenReturn(hearingEntities);
             ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateRequest,
@@ -265,7 +265,7 @@ class ManageExceptionsServiceTest {
 
         @Test
         void validateAllHearingsSuccessfully() {
-            List<HearingEntity> hearingEntities = createHearingEntities();
+            List<HearingEntity> hearingEntities = createHearingEntitiesForFinalState();
             List<Long> hearingIds = createHearingIds();
             when(hearingRepository.getHearings(hearingIds)).thenReturn(hearingEntities);
             ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateRequest,
@@ -290,7 +290,7 @@ class ManageExceptionsServiceTest {
 
         @Test
         void hearingDoesNotExistInDB() {
-            List<HearingEntity> hearingEntities = createHearingEntities();
+            List<HearingEntity> hearingEntities = createHearingEntitiesForFinalState();
             hearingEntities.get(2).setId(2000000003L);
             List<Long> hearingIds = createHearingIds();
             when(hearingRepository.getHearings(hearingIds))
@@ -315,7 +315,7 @@ class ManageExceptionsServiceTest {
 
         @Test
         void validateCaseReferenceForHearingId() {
-            List<HearingEntity> hearingEntities = createHearingEntities();
+            List<HearingEntity> hearingEntities = createHearingEntitiesForFinalState();
             hearingEntities.get(2).getLatestCaseHearingRequest().setCaseReference("1742223756874238");
             List<Long> hearingIds = createHearingIds();
             when(hearingRepository.getHearings(hearingIds))
@@ -340,7 +340,7 @@ class ManageExceptionsServiceTest {
 
         @Test
         void hearingStatusNotInExceptionState_final_state_transition() {
-            List<HearingEntity> hearingEntities = createHearingEntities();
+            List<HearingEntity> hearingEntities = createHearingEntitiesForFinalState();
             hearingEntities.get(2).setStatus(HEARING_REQUESTED.name());
             List<Long> hearingIds = createHearingIds();
             when(hearingRepository.getHearings(hearingIds))
@@ -584,6 +584,13 @@ class ManageExceptionsServiceTest {
                 TestingUtil.getHearingEntity(2000000000L, EXCEPTION.name(), "9856815055686759"),
                 TestingUtil.getHearingEntity(2000000001L, EXCEPTION.name(), "9856815055686759"),
                 TestingUtil.getHearingEntity(2000000002L, EXCEPTION.name(), "9372710950276233"));
+    }
+
+    private List<HearingEntity> createHearingEntitiesForFinalState() {
+        return List.of(
+            TestingUtil.getHearingEntityForFinalState(2000000000L, EXCEPTION.name(), "9856815055686759"),
+            TestingUtil.getHearingEntityForFinalState(2000000001L, EXCEPTION.name(), "9856815055686759"),
+            TestingUtil.getHearingEntityForFinalState(2000000002L, EXCEPTION.name(), "9372710950276233"));
     }
 
     private List<Long> createHearingIds() {

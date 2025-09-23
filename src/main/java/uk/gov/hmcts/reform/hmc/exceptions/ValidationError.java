@@ -301,4 +301,5 @@ public final class ValidationError {
     public static final String LAST_GOOD_STATE_EMPTY = "hearing has no last good state defined";
     public static final String INVALID_STATE = "State is valid only for action final state transition";
     public static final String EMPTY_HEARING_STATE = "State is null or empty";
+    public static final String HEARING_ACTUALS_NULL = "No hearing actuals found";
 }

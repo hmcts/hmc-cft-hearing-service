@@ -1861,4 +1861,11 @@ public class TestingUtil {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
 
+    public static HearingEntity getHearingEntityForFinalState(long id, String status, String caseRef) {
+        HearingEntity hearingEntity = getHearingEntity(id, status, caseRef);
+        hearingEntity.setHearingResponses(List.of(hearingResponseEntity()));
+        ActualHearingEntity actualHearingEntity = actualHearingEntity(PartyType.IND);
+        hearingEntity.getHearingResponses().get(0).setActualHearingEntity(actualHearingEntity);
+        return hearingEntity;
+    }
 }

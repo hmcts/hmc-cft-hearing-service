@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -36,8 +37,11 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_COMMI
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_COMMIT_FAIL_EVENT;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCESS_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MAX_HEARING_REQUESTS;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.COMPLETED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DUPLICATE_HEARING_IDS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.EMPTY_HEARING_STATE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NULL;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_CASE_REF_MISMATCH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_FINAL_STATE;
@@ -132,7 +136,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         return firstPresent(
             () -> validateCaseRef(entity, req),
             () -> validateIsInException(entity, req),
-            () -> validateFinalStateTransition(req),
+            () -> validateFinalStateTransition(entity, req),
             () -> validateRollback(entity, req)
         );
     }
@@ -166,19 +170,50 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         return Optional.empty();
     }
 
-    private Optional<String> validateFinalStateTransition(SupportRequest req) {
+    private Optional<String> validateFinalStateTransition(HearingEntity entity, SupportRequest req) {
         ManageRequestAction action = actionFromLabel(req.getAction());
-        if (action == ManageRequestAction.FINAL_STATE_TRANSITION && req.getState() == null) {
-            log.info(
-                "Hearing ID: {} has Action : {} and state is empty or null : {}",
-                req.getHearingId(), req.getAction(), req.getState());
-            return Optional.of(EMPTY_HEARING_STATE);
+        if (action == ManageRequestAction.FINAL_STATE_TRANSITION) {
+            HearingStatus status = HearingStatus.valueOf(req.getState());
+            if (action == ManageRequestAction.FINAL_STATE_TRANSITION) {
+                if ((status == null || req.getState().isEmpty())) {
+                    log.info(
+                        "Hearing ID: {} has Action : {} and state is empty or null : {}",
+                        req.getHearingId(), req.getAction(), req.getState()
+                    );
+                    return Optional.of(EMPTY_HEARING_STATE);
+                }
+                if (!HearingStatus.isFinalStatus(status)) {
+                    log.info(
+                        "Hearing ID: {} has Action : {} and invalid state transition request : {}",
+                        req.getHearingId(), req.getAction(), req.getState()
+                    );
+                    return Optional.of(INVALID_HEARING_ID_FINAL_STATE);
+                }
+                Optional<String> actualsError = getActuals(entity, req, status);
+                if (actualsError.isPresent()) {
+                    return actualsError;
+                }
+            }
         }
-        if (action == ManageRequestAction.FINAL_STATE_TRANSITION
-            && !HearingStatus.isFinalStatus(HearingStatus.valueOf(req.getState()))) {
-            log.info("Hearing ID: {} has Action : {} and invalid state transition request : {}",
-                     req.getHearingId(), req.getAction(), req.getState());
-            return Optional.of(INVALID_HEARING_ID_FINAL_STATE);
+        return Optional.empty();
+    }
+
+    private static Optional<String> getActuals(HearingEntity entity, SupportRequest req, HearingStatus status) {
+        if (status.equals(ADJOURNED) || status.equals(COMPLETED)) {
+            log.info(
+                "checking for hearing actuals for hearing id: {} with Action: {} and state transition request : {}",
+                req.getHearingId(), req.getAction(), req.getState());
+            val hearingResponses = entity.getLatestHearingResponse();
+            if (hearingResponses.isEmpty() || hearingResponses.get().getActualHearingEntity() == null) {
+                log.info(
+                    "Hearing ID: {} has Action : {} and invalid state transition request : {} "
+                        +  "as no hearing response found",
+                    req.getHearingId(),
+                    req.getAction(),
+                    req.getState()
+                );
+                return Optional.of(HEARING_ACTUALS_NULL);
+            }
         }
         return Optional.empty();
     }

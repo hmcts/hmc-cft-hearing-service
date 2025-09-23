@@ -222,7 +222,7 @@ public class ManageExceptionsServiceIT extends BaseTest {
 
 
     @Nested
-    @DisplayName("manageExceptions-Final State Transition")
+    @DisplayName("manageExceptions-Final-State-Transition")
     class ManageExceptionsFinalStateTransition {
 
         @Test
