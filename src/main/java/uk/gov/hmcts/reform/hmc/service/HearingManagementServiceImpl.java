@@ -15,9 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.ElasticSearch;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.Query;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.Terms;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
@@ -30,6 +27,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.helper.ElasticSearchQuery;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
@@ -78,6 +76,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING_REQUEST;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ELASTIC_QUERY_DEFAULT_SIZE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_REQUEST_VERSION;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_STATUS;
@@ -353,16 +352,21 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     public List<DataStoreCaseDetails> getCaseSearchResults(List<String> ccdCaseRefs, String status,
                                                            String caseTypeId) {
         String elasticSearchQuery = createSearchQuery(ccdCaseRefs);
+        log.info("Searching for cases with ccdCaseRefs: {}, status: {}, caseTypeId: {}",
+                 elasticSearchQuery, status, caseTypeId);
         CaseSearchResult caseSearchResult =  dataStoreRepository.findAllCasesByCaseIdUsingExternalApi(caseTypeId,
                                                                                  elasticSearchQuery);
         return caseSearchResult.getCases();
     }
 
     private String createSearchQuery(List<String> ccdCaseRefs) {
-        Terms terms = new Terms(ccdCaseRefs);
-        Query query = new Query(terms);
-        ElasticSearch searchObject = new ElasticSearch(query);
-        return objectMapperService.convertObjectToJsonNode(searchObject).toString();
+        ElasticSearchQuery elasticSearchQuery = ElasticSearchQuery.builder()
+            .caseRefs(ccdCaseRefs)
+            .build();
+        if (ccdCaseRefs.size() > ELASTIC_QUERY_DEFAULT_SIZE) {
+            elasticSearchQuery.setSize(ccdCaseRefs.size());
+        }
+        return objectMapperService.convertObjectToJsonNode(elasticSearchQuery).toString();
     }
 
     private void auditChangeInRequestVersion(HearingEntity hearingEntity, int existingRequestVersion,

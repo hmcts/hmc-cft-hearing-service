@@ -250,7 +250,7 @@ def versions = [
   testcontainers  : '1.20.3',
   netty           : '4.2.1.Final',
   serviceAuthVersion: '4.1.2',
-  tomcatEmbedded  : '9.0.106',
+  tomcatEmbedded  : '9.0.108',
   fasterXmlJackson : '2.16.2',
   snakeyaml       : '2.2'
 ]
@@ -272,6 +272,12 @@ dependencyCheck {
   suppressionFile = 'config/owasp/suppressions.xml'
 }
 
+tasks.register("printSuppressionFile") {
+  doLast {
+    println "SUPPRESSION_FILE=${dependencyCheck.suppressionFile}"
+  }
+}
+
 dependencyManagement {
   imports {
     mavenBom "org.springframework.cloud:spring-cloud-dependencies:${versions.springCloud}"
@@ -282,7 +288,7 @@ dependencyManagement {
       entry 'guava'
     }
 
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.85') {
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.108') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
       entry 'tomcat-embed-websocket'
@@ -390,7 +396,7 @@ dependencies {
   }
   testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '9.2.4'
 
-  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.7.0'
