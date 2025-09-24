@@ -32,10 +32,12 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.MANAGE_EXCEPTION_SUCCE
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_LISTING;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_SUBMITTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.COMPLETED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.DUPLICATE_HEARING_IDS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.EMPTY_HEARING_STATE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NULL;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_CASE_REF_MISMATCH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_FINAL_STATE;
@@ -63,6 +65,7 @@ public class ManageExceptionsServiceIT extends BaseTest {
     private static final String INSERT_HEARINGS = "classpath:sql/get-hearings-ManageSupportRequest.sql";
     private static final String INSERT_HEARINGS_NOT_IN_EXCEPTION = "classpath:sql/get-hearings-NotInException.sql";
     private static final String INSERT_HEARINGS_INVALID_ROLLBACK = "classpath:sql/get-hearings-invalid-Rollback.sql";
+    private static final String INSERT_HEARINGS_NoActuals = "classpath:sql/get-hearings-No-Actuals.sql";
 
     ManageExceptionRequest finalStateRequest = convertJsonToRequest(
         "manage-exceptions/valid-final_state_transition_request.json");
@@ -70,6 +73,8 @@ public class ManageExceptionsServiceIT extends BaseTest {
         "manage-exceptions/valid-roll_back_request.json");
     ManageExceptionRequest finalStateAndRollbackRequest = convertJsonToRequest(
         "manage-exceptions/valid-final-rollback-request.json");
+    ManageExceptionRequest finalStateNoActualsRequest = convertJsonToRequest(
+        "manage-exceptions/final-state-request-NoActuals.json");
 
     private static final String CLIENT_S2S_TOKEN = generateDummyS2SToken("tech_admin_ui");
 
@@ -273,6 +278,21 @@ public class ManageExceptionsServiceIT extends BaseTest {
             assertSupportRequestResponse(response, 2, hearingID3, SUCCESS_STATUS,
                                          createExpectedMessage(hearingID3, EXCEPTION.name(),
                                                                ADJOURNED.toString()));
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS_NoActuals})
+        void testManageExceptions_NoActuals() throws IOException {
+            ManageExceptionResponse response = manageExceptionsService.manageExceptions(finalStateNoActualsRequest,
+                                                                                        CLIENT_S2S_TOKEN);
+            assertEquals(3, response.getSupportRequestResponse().size());
+            assertSupportRequestResponse(response, 0, hearingID1, SUCCESS_STATUS,
+                                         createExpectedMessage(hearingID1, EXCEPTION.name(),
+                                                               CANCELLED.toString()));
+            assertSupportRequestResponse(response, 1, hearingID2, SUCCESS_STATUS,
+                                         createExpectedMessage(hearingID2, EXCEPTION.name(),
+                                                               COMPLETED.toString()));
+            assertSupportRequestResponse(response, 2, hearingID3, FAILURE_STATUS, HEARING_ACTUALS_NULL);
         }
     }
 

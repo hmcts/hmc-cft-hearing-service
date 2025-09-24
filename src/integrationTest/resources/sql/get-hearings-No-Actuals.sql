@@ -15,18 +15,14 @@ insert into case_hearing_request (
 values ( 't'	,'hearingType3',	63,	'Priority type3',	6,'t','t','AB123',null,'TEST'	,9372710950276233,	'2020-08-10 11:20:00','EXT/REF123',	'https://www.google.com',	'Internal case name','Public case name',	't'	,'CMLC333',	't',	'2021-10-10 00:00:00',	1,	2000000002	,'f'	,	'Some listing comments3',	'Some judge3',	'2021-11-01 00:00:00',	'2021-11-12 00:00:00');
 
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)
-values (1, '2000000000', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '1');
+values (1, '2000000001', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '1');
 
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)
-values (2, '2000000001', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '1');
-insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)
-values (3, '2000000001', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '2');
+values (2, '2000000001', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '2');
 
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)
-values (4, '2000000002', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '1');
+values (3, '2000000002', '2020-08-10 11:20:00', 'listingStatus1-1', 'caselistingStatus1-1', '1');
 
 insert into actual_hearing(hearing_response_id, actual_hearing_id, actual_hearing_type, actual_hearing_is_final_flag,hearing_result_type, hearing_result_date)
-values (3, 1, 'witness hearing', 'true', 'COMPLETED', '2022-02-15');
+values (2, 1, 'witness hearing', 'true', 'COMPLETED', '2022-02-15');
 
-insert into actual_hearing(hearing_response_id, actual_hearing_id, actual_hearing_type, actual_hearing_is_final_flag,hearing_result_type, hearing_result_date)
-values (4, 2, 'witness hearing', 'true', 'ADJOURNED', '2022-02-15');

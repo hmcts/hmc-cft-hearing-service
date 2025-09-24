@@ -173,26 +173,22 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
     private Optional<String> validateFinalStateTransition(HearingEntity entity, SupportRequest req) {
         ManageRequestAction action = actionFromLabel(req.getAction());
         if (action == ManageRequestAction.FINAL_STATE_TRANSITION) {
+            if (req.getState() == null || req.getState().isEmpty()) {
+                log.info(
+                    "Hearing ID: {} has Action : {} and state is empty or null : {}",
+                    req.getHearingId(), req.getAction(), req.getState());
+                return Optional.of(EMPTY_HEARING_STATE);
+            }
             HearingStatus status = HearingStatus.valueOf(req.getState());
-            if (action == ManageRequestAction.FINAL_STATE_TRANSITION) {
-                if ((status == null || req.getState().isEmpty())) {
-                    log.info(
-                        "Hearing ID: {} has Action : {} and state is empty or null : {}",
-                        req.getHearingId(), req.getAction(), req.getState()
-                    );
-                    return Optional.of(EMPTY_HEARING_STATE);
-                }
-                if (!HearingStatus.isFinalStatus(status)) {
-                    log.info(
-                        "Hearing ID: {} has Action : {} and invalid state transition request : {}",
-                        req.getHearingId(), req.getAction(), req.getState()
-                    );
-                    return Optional.of(INVALID_HEARING_ID_FINAL_STATE);
-                }
-                Optional<String> actualsError = getActuals(entity, req, status);
-                if (actualsError.isPresent()) {
-                    return actualsError;
-                }
+            if (!HearingStatus.isFinalStatus(status)) {
+                log.info(
+                    "Hearing ID: {} has Action : {} and invalid state transition request : {}",
+                    req.getHearingId(), req.getAction(), req.getState());
+                return Optional.of(INVALID_HEARING_ID_FINAL_STATE);
+            }
+            Optional<String> actualsError = getActuals(entity, req, status);
+            if (actualsError.isPresent()) {
+                return actualsError;
             }
         }
         return Optional.empty();
