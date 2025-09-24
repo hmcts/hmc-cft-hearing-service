@@ -51,14 +51,14 @@ module "postgresql_v15" {
       value = "pg_stat_statements,pg_buffercache,hypopg"
     }
   ]
-  pgsql_version               = "15"
-  product                     = var.product
-  name                        = local.db_name
-  pgsql_sku                   = var.pgsql_sku
-  pgsql_storage_mb            = var.pgsql_storage_mb
-  action_group_name           = join("-", [local.db_name, var.action_group_name])
-  email_address_key           = var.email_address_key
-  email_address_key_vault_id  = data.azurerm_key_vault.hmc_shared_key_vault.id
+  pgsql_version              = "15"
+  product                    = var.product
+  name                       = local.db_name
+  pgsql_sku                  = var.pgsql_sku
+  pgsql_storage_mb           = var.pgsql_storage_mb
+  action_group_name          = join("-", [local.db_name, var.action_group_name])
+  email_address_key          = var.email_address_key
+  email_address_key_vault_id = data.azurerm_key_vault.hmc_shared_key_vault.id
 
   force_user_permissions_trigger = "1"
 }

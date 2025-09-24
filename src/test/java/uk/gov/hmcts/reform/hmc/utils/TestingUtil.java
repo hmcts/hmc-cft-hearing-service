@@ -5,11 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.http.HttpStatus;
 import org.slf4j.helpers.MessageFormatter;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.ElasticSearch;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.Query;
-import uk.gov.hmcts.reform.hmc.client.datastore.model.Terms;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
@@ -48,6 +43,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestAction;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
+import uk.gov.hmcts.reform.hmc.helper.ElasticSearchQuery;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayParties;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPartyDetail;
@@ -1621,6 +1617,17 @@ public class TestingUtil {
         return request;
     }
 
+    public static HearingActual hearingActualWithOutcomeEmpty() {
+        List<ActualHearingDay> actualHearingDays = new ArrayList<>();
+        ActualHearingDay actualHearingDay = new ActualHearingDay();
+        actualHearingDay.setHearingDate(LocalDate.now().plusDays(2));
+        actualHearingDay.setNotRequired(true);
+        actualHearingDays.add(actualHearingDay);
+        HearingActual request = new HearingActual();
+        request.setActualHearingDays(List.of(actualHearingDay));
+        return request;
+    }
+
     public static HearingActualsOutcome hearingActualsOutcome() {
         HearingActualsOutcome hearingActualsOutcome = new HearingActualsOutcome();
         hearingActualsOutcome.setHearingType("Witness Statement");
@@ -1637,6 +1644,38 @@ public class TestingUtil {
         hearingActualsOutcome.setHearingResult(hearingResult);
         hearingActualsOutcome.setHearingResultReasonType(hearingResultReasonType);
         return hearingActualsOutcome;
+    }
+
+    public static HearingActual hearingActualOutcomeAndActualHearingDaysNull(Boolean flag) {
+        HearingActualsOutcome hearingActualsOutcome = new HearingActualsOutcome();
+
+        ActualHearingDay actualHearingDay = new ActualHearingDay();
+        actualHearingDay.setHearingDate(LocalDate.now().plusDays(2));
+        actualHearingDay.setNotRequired(flag);
+
+        HearingActual hearingActual = new HearingActual();
+
+        hearingActual.setHearingOutcome(hearingActualsOutcome);
+        hearingActual.setActualHearingDays(List.of(actualHearingDay));
+
+        return hearingActual;
+    }
+
+    public static HearingActual oneActualHearingDayIsNotNull(Boolean flag1, Boolean flag2) {
+        ActualHearingDay actualHearingDay1 = new ActualHearingDay();
+        actualHearingDay1.setHearingDate(LocalDate.now().plusDays(2));
+        actualHearingDay1.setNotRequired(flag1);
+
+        ActualHearingDay actualHearingDay2 = new ActualHearingDay();
+        actualHearingDay2.setHearingDate(LocalDate.now().plusDays(2));
+        actualHearingDay2.setNotRequired(flag2);
+
+        HearingActual hearingActual = new HearingActual();
+        HearingActualsOutcome hearingActualsOutcome = new HearingActualsOutcome();
+        hearingActual.setHearingOutcome(hearingActualsOutcome);
+        hearingActual.setActualHearingDays(List.of(actualHearingDay1, actualHearingDay2));
+
+        return hearingActual;
     }
 
     public static ActualHearingDay actualHearingDay(LocalDate hearingDate) {
@@ -1754,15 +1793,13 @@ public class TestingUtil {
     }
 
     public static String createSearchQuery(List<String> ccdCaseRefs) {
-        Terms terms = new Terms(ccdCaseRefs);
-        Query query = new Query(terms);
-        ElasticSearch searchObject = ElasticSearch.builder()
-            .query(query)
+        ElasticSearchQuery elasticSearchQuery = ElasticSearchQuery.builder()
+            .caseRefs(ccdCaseRefs)
             .build();
         if (ccdCaseRefs.size() > ELASTIC_QUERY_DEFAULT_SIZE) {
-            searchObject.setSize(ccdCaseRefs.size());
+            elasticSearchQuery.setSize(ccdCaseRefs.size());
         }
-        return objectMapperService.convertObjectToJsonNode(searchObject).toString();
+        return objectMapperService.convertObjectToJsonNode(elasticSearchQuery).toString();
     }
 
     public static ManageExceptionRequest getManageExceptionRequest() {

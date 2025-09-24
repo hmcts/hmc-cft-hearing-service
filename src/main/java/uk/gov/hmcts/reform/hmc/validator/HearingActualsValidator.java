@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
+import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.model.HearingActualsOutcome;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 
@@ -82,10 +83,20 @@ public class HearingActualsValidator {
         });
     }
 
-    public void validateHearingActualDaysNotInTheFuture(List<ActualHearingDay> actualHearingDays) {
+    public void validateHearingActualDaysNotInTheFuture(HearingActual request) {
+        List<ActualHearingDay> actualHearingDays = request.getActualHearingDays();
         actualHearingDays.forEach(hearingDay -> {
-            if (hearingDay.getHearingDate().isAfter(LocalDate.now())) {
-                throw new BadRequestException(HEARING_ACTUALS_HEARING_DAYS_INVALID);
+            if (hearingDay != null && hearingDay.getHearingDate().isAfter(LocalDate.now())) {
+                boolean isOutcomeEmpty = request.getHearingOutcome() == null || request.getHearingOutcome().isEmpty();
+                boolean isHearingDayEmpty = hearingDay.isEmpty();
+                if (Boolean.TRUE.equals(hearingDay.getNotRequired())) {
+                    if (!isOutcomeEmpty || !isHearingDayEmpty) {
+                        throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
+                    }
+                } else {
+                    throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
+                }
+
             }
         });
     }
