@@ -1,26 +1,23 @@
 {
-  "_guid_": "S-001.2",
+  "_guid_": "CreateSecondHearingRequest",
   "_extends_" : "CreateHearingRequestBase",
   "specs": [
-    "has the 200 OK code",
-    "an active profile in CCD",
-    "has 201 Created code",
-    "has a versionNumber of 1",
-    "has a status of HEARING_REQUESTED"
+    "to create a second hearing request"
   ],
   "request": {
     "body": {
-      "_extends_": "createHearingRequestDataMandatoryOnly",
+      "_extends_": "createHearingRequestFullData",
       "caseDetails": {
-        "caseRef": "${[scenarioContext][customValues][GenerateCaseId]}"
+        "caseRef": "${[scenarioContext][siblingContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}"
       }
     }
   },
   "expectedResponse": {
-    "_extends_": "Common_201_Response",
+    "responseCode": 201,
+    "responseMessage": "OK",
     "headers": {
       "Content-Length": "[[ANYTHING_PRESENT]]",
-      "Content-Type": "text/plain; charset=utf-8",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
       "Date": "[[ANYTHING_PRESENT]]",
       "Request-Context": "[[ANY_NULLABLE]]"
     },
