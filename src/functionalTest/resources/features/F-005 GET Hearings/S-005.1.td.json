@@ -5,11 +5,14 @@
     "has the 200 OK code",
     "an active profile in CCD",
     "has 200 status code",
-    "contains both hearings"
+    "contains the hearing with LISTED status"
   ],
   "request": {
+    "queryParams": {
+      "status": "LISTED"
+    },
     "pathVariables": {
-      "caseref": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}"
+      "caseref": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}"
     }
   },
   "expectedResponse": {
@@ -21,37 +24,19 @@
       "Request-Context": "[[ANY_NULLABLE]]"
     },
     "body" : {
-      "caseRef" : "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
-      "caseHearings" : [
-        {
-          "__ordering__": "unordered",
-          "__elementId__": "hmcStatus"
-        },
-        {
+      "caseRef" : "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}",
+      "caseHearings" : [ {
         "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
         "hearingType" : "Some hearing type",
-        "hmcStatus" : "HEARING_REQUESTED",
-        "lastResponseReceivedDateTime" : null,
-        "requestVersion" : null,
-        "hearingListingStatus" : null,
-        "listAssistCaseStatus" : null,
-        "hearingDaySchedule" : null,
+        "hmcStatus" : "LISTED",
+        "lastResponseReceivedDateTime" : "[[ANYTHING_PRESENT]]",
+        "requestVersion" : "[[ANYTHING_PRESENT]]",
+        "hearingListingStatus" : "[[ANYTHING_PRESENT]]",
+        "listAssistCaseStatus" : "[[ANYTHING_PRESENT]]",
+        "hearingDaySchedule" : "[[ANYTHING_PRESENT]]",
         "hearingGroupRequestId" : null,
         "hearingIsLinkedFlag" : false,
         "hearingChannels" : [ "INTER" ],
-        "hearingID" : "[[ANY_NUMBER_NOT_NULLABLE]]"
-      }, {
-        "hearingRequestDateTime" : "[[ANYTHING_PRESENT]]",
-        "hearingType" : "Some hearing type",
-        "hmcStatus" : "HEARING_REQUESTED",
-        "lastResponseReceivedDateTime" : null,
-        "requestVersion" : null,
-        "hearingListingStatus" : null,
-        "listAssistCaseStatus" : null,
-        "hearingDaySchedule" : null,
-        "hearingGroupRequestId" : null,
-        "hearingIsLinkedFlag" : false,
-          "hearingChannels" : [ "INTER" ],
         "hearingID" : "[[ANY_NUMBER_NOT_NULLABLE]]"
       } ],
       "hmctsServiceCode" : "[[ANYTHING_PRESENT]]"

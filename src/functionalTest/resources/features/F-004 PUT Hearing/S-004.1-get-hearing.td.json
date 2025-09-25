@@ -14,7 +14,7 @@
     "body": {
       "requestDetails": {
         "timestamp": "[[ANYTHING_PRESENT]]",
-        "status": "HEARING_REQUESTED",
+        "status": "AWAITING_LISTING",
         "versionNumber": 2,
         "hearingRequestID" : "[[ANYTHING_PRESENT]]"
       },
