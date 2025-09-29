@@ -8,7 +8,7 @@ Feature: F-003: Get hearing request
   @S-003.1
   Scenario: successfully get hearing request
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
-    And a wait time of [10] seconds [to wait for status to come back from hmi]
+    And a wait time of [15] seconds [to wait for status to come back from hmi]
     When a request is prepared with appropriate values,
     And it is submitted to call the [get hearing] operation of [HMC CFT Hearing Service],
     Then a positive response is received,
@@ -18,7 +18,7 @@ Feature: F-003: Get hearing request
   @S-003.2
   Scenario: Getting a hearing using the ?isValid=true param returns a 204 with no payload
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
-    And a wait time of [10] seconds [to wait for status to come back from hmi]
+    And a wait time of [15] seconds [to wait for status to come back from hmi]
     When a request is prepared with appropriate values,
     And the request [uses the query param isValid=true],
     And it is submitted to call the [get hearing] operation of [HMC CFT Hearing Service],
@@ -30,7 +30,7 @@ Feature: F-003: Get hearing request
   @S-003.3
   Scenario: Getting a hearing that doesn't exist returns 404
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
-    And a wait time of [10] seconds [to wait for status to come back from hmi]
+    And a wait time of [15] seconds [to wait for status to come back from hmi]
     When a request is prepared with appropriate values,
     And the request [tries to get a non extant hearing],
     And it is submitted to call the [get hearing] operation of [HMC CFT Hearing Service],
@@ -41,9 +41,9 @@ Feature: F-003: Get hearing request
   @S-003.4
   Scenario: successfully get hearing request in LISTED status
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
-    And a wait time of [10] seconds [to wait for status to come back from hmi]
+    And a wait time of [15] seconds [to wait for status to come back from hmi]
     And a successful call [to list the hearing] as in [ListHearingRequest],
-    And a wait time of [10] seconds [to wait for status to come back from hmi]
+    And a wait time of [15] seconds [to wait for status to come back from hmi]
     And a successful call [to check the hearing status is LISTED] as in [GetHearingRequestListedStatus],
     When a request is prepared with appropriate values,
     And the request [uses the query param status=LISTED],
