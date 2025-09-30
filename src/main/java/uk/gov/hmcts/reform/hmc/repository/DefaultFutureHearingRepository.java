@@ -54,7 +54,7 @@ public class DefaultFutureHearingRepository implements FutureHearingRepository {
             log.debug("Authorization token retrieved successfully for HMI private health check");
         } catch (BadFutureHearingRequestException e) {
             logDebugHealthCheckActiveDirectoryException(e.getClass().getSimpleName());
-            throw new HealthCheckActiveDirectoryException(e.getMessage(), e.getStatusCode(), e.getErrorMessage());
+            throw new HealthCheckActiveDirectoryException(e.getMessage(), e.getStatusCode(), e.getErrorResponse());
         } catch (FutureHearingServerException e) {
             logDebugHealthCheckActiveDirectoryException(e.getClass().getSimpleName());
             throw new HealthCheckActiveDirectoryException(e.getMessage());
@@ -68,7 +68,7 @@ public class DefaultFutureHearingRepository implements FutureHearingRepository {
             return hmiClient.privateHealthCheck(BEARER + authorization);
         } catch (BadFutureHearingRequestException e) {
             logDebugHealthCheckHmiException(e);
-            throw new HealthCheckHmiException(e.getMessage(), e.getStatusCode(), e.getErrorMessage());
+            throw new HealthCheckHmiException(e.getMessage(), e.getStatusCode(), e.getErrorResponse());
         } catch (FutureHearingServerException e) {
             logDebugHealthCheckHmiException(e);
             throw new HealthCheckHmiException(e.getMessage());

@@ -6,17 +6,17 @@ import lombok.Getter;
 public class BadFutureHearingRequestException extends RuntimeException {
 
     private final Integer statusCode;
-    private final String errorMessage;
+    private final String errorResponse;
 
     public BadFutureHearingRequestException(String message) {
         super(message);
         this.statusCode = null;
-        this.errorMessage = null;
+        this.errorResponse = null;
     }
 
-    public BadFutureHearingRequestException(String message, Integer statusCode, String errorMessage) {
+    public BadFutureHearingRequestException(String message, Integer statusCode, String errorResponse) {
         super(message);
         this.statusCode = statusCode;
-        this.errorMessage = errorMessage;
+        this.errorResponse = errorResponse;
     }
 }

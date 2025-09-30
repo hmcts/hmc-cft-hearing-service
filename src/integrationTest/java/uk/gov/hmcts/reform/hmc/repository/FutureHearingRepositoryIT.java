@@ -54,6 +54,8 @@ class FutureHearingRepositoryIT extends BaseTest {
     private static final String TOKEN = "example-token";
     private static final String HMI_REQUEST_URL = "/resources/linked-hearing-group";
     private static final String REQUEST_ID = "12345";
+    private static final String MESSAGE_MISSING_INVALID_PARAMS = "Missing or invalid request parameters";
+    private static final String MESSAGE_SERVER_ERROR = "Server error";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
     private static final String INSERT_LINKED_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-linked-hearings.sql";
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
@@ -138,11 +140,11 @@ class FutureHearingRepositoryIT extends BaseTest {
         @ParameterizedTest
         @MethodSource("adApiErrors")
         void shouldThrowHealthCheckActiveDirectoryExceptionForAdApiErrors(Integer responseStatusCode,
-                                                                          String responseMessage,
+                                                                          String responseErrorDescription,
                                                                           List<Integer> responseErrorCodes,
                                                                           HealthCheckActiveDirectoryException
                                                                               expectedException) {
-            stubFailToReturnToken(responseStatusCode, responseMessage, responseErrorCodes);
+            stubFailToReturnToken(responseStatusCode, responseErrorDescription, responseErrorCodes);
 
             HealthCheckActiveDirectoryException actualException =
                 assertThrows(HealthCheckActiveDirectoryException.class,
@@ -202,12 +204,12 @@ class FutureHearingRepositoryIT extends BaseTest {
                              actualException.getStatusCode(),
                              "Health check exception has unexpected status code");
             }
-            if (expectedException.getErrorMessage() == null) {
-                assertNull(actualException.getErrorMessage(), "Health check exception error message should be null");
+            if (expectedException.getErrorResponse() == null) {
+                assertNull(actualException.getErrorResponse(), "Health check exception error response should be null");
             } else {
-                assertEquals(expectedException.getErrorMessage(),
-                             actualException.getErrorMessage(),
-                             "Health check exception has unexpected error message");
+                assertEquals(expectedException.getErrorResponse(),
+                             actualException.getErrorResponse(),
+                             "Health check exception has unexpected error response");
             }
         }
 
@@ -221,7 +223,7 @@ class FutureHearingRepositoryIT extends BaseTest {
         }
 
         private static Stream<Arguments> adApiErrors() {
-            String expectedAdResponse = """
+            String expectedAdErrorResponse = """
                 {
                     "error_description":"An AD API error",
                     "error_codes":[1000]
@@ -231,19 +233,19 @@ class FutureHearingRepositoryIT extends BaseTest {
                 arguments(400,
                           "An AD API error",
                           List.of(1000),
-                          new HealthCheckActiveDirectoryException("Missing or invalid request parameters",
+                          new HealthCheckActiveDirectoryException(MESSAGE_MISSING_INVALID_PARAMS,
                                                                   400,
-                                                                  expectedAdResponse)
+                                                                  expectedAdErrorResponse)
                 ),
                 arguments(500,
                           "Another AD API error",
                           List.of(2000),
-                          new HealthCheckActiveDirectoryException("Server error"))
+                          new HealthCheckActiveDirectoryException(MESSAGE_SERVER_ERROR))
             );
         }
 
         private static Stream<Arguments> hmiApiErrors() {
-            String expectedHmiResponse = """
+            String expectedHmiErrorResponse = """
                 {
                     "statusCode": 401,
                     "message": "An HMI API error"
@@ -252,13 +254,13 @@ class FutureHearingRepositoryIT extends BaseTest {
             return Stream.of(
                 arguments(401,
                           "An HMI API error",
-                          new HealthCheckHmiException("Missing or invalid request parameters",
+                          new HealthCheckHmiException(MESSAGE_MISSING_INVALID_PARAMS,
                                                       401,
-                                                      expectedHmiResponse)
+                                                      expectedHmiErrorResponse)
                 ),
                 arguments(500,
                           "Another HMI API error",
-                          new HealthCheckHmiException("Server error"))
+                          new HealthCheckHmiException(MESSAGE_SERVER_ERROR))
             );
         }
     }

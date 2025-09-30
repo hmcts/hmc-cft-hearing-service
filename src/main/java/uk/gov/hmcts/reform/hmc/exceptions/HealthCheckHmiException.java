@@ -8,8 +8,8 @@ public class HealthCheckHmiException extends HealthCheckException {
         super(message);
     }
 
-    public HealthCheckHmiException(String message, Integer statusCode, String errorMessage) {
-        super(message, statusCode, errorMessage);
+    public HealthCheckHmiException(String message, Integer statusCode, String errorResponse) {
+        super(message, statusCode, errorResponse);
     }
 
     @Override

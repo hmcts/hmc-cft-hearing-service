@@ -202,10 +202,10 @@ class FutureHearingRepositoryTest {
         return Stream.of(
             arguments(new BadFutureHearingRequestException("Active Directory bad request exception message",
                                                            400,
-                                                           "Active Directory bad request error message"),
+                                                           "Active Directory bad request error response"),
                       new HealthCheckActiveDirectoryException("Active Directory bad request exception message",
                                                               400,
-                                                              "Active Directory bad request error message")
+                                                              "Active Directory bad request error response")
             ),
             arguments(new FutureHearingServerException("Active Directory server exception message"),
                       new HealthCheckActiveDirectoryException("Active Directory server exception message")
@@ -220,10 +220,10 @@ class FutureHearingRepositoryTest {
         return Stream.of(
             arguments(new BadFutureHearingRequestException("HMI bad request exception message",
                                                            401,
-                                                           "HMI bad request error message"),
+                                                           "HMI bad request error response"),
                       new HealthCheckHmiException("HMI bad request exception message",
                                                   401,
-                                                  "HMI bad request error message")
+                                                  "HMI bad request error response")
             ),
             arguments(new FutureHearingServerException("HMI server exception message"),
                       new HealthCheckHmiException("HMI server exception message")
@@ -250,13 +250,13 @@ class FutureHearingRepositoryTest {
                        "Health check exception status code should be null");
         }
 
-        if (expectedException.getErrorMessage() != null) {
-            assertEquals(expectedException.getErrorMessage(),
-                         actualException.getErrorMessage(),
-                         "Health check exception has unexpected error message");
+        if (expectedException.getErrorResponse() != null) {
+            assertEquals(expectedException.getErrorResponse(),
+                         actualException.getErrorResponse(),
+                         "Health check exception has unexpected error response");
         } else {
-            assertNull(actualException.getErrorMessage(),
-                       "Health check exception error message should be null");
+            assertNull(actualException.getErrorResponse(),
+                       "Health check exception error response should be null");
         }
     }
 }

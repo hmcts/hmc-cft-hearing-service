@@ -6,18 +6,18 @@ import lombok.Getter;
 public abstract class HealthCheckException extends RuntimeException {
 
     private final Integer statusCode;
-    private final String errorMessage;
+    private final String errorResponse;
 
     protected HealthCheckException(String message) {
         super(message);
         this.statusCode = null;
-        this.errorMessage = null;
+        this.errorResponse = null;
     }
 
-    protected HealthCheckException(String message, Integer statusCode, String errorMessage) {
+    protected HealthCheckException(String message, Integer statusCode, String errorResponse) {
         super(message);
         this.statusCode = statusCode;
-        this.errorMessage = errorMessage;
+        this.errorResponse = errorResponse;
     }
 
     public abstract String getApiName();

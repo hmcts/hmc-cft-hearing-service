@@ -116,7 +116,7 @@ public class WiremockFixtures {
                     ));
     }
 
-    public static void stubFailToReturnToken(int status, String errorDescripton, List<Integer> errorCodes) {
+    public static void stubFailToReturnToken(int status, String errorDescription, List<Integer> errorCodes) {
         StringJoiner joiner = new StringJoiner(",");
         errorCodes.forEach(value -> joiner.add(String.valueOf(value)));
 
@@ -124,7 +124,7 @@ public class WiremockFixtures {
             {
                 "error_description":"%s",
                 "error_codes":[%s]
-            }""".formatted(errorDescripton, joiner.toString());
+            }""".formatted(errorDescription, joiner.toString());
 
         stubFor(WireMock.post(urlEqualTo(GET_TOKEN_URL))
                     .withMetadata(Metadata.metadata().attr("tag", STUB_TAG_FAIL_TO_RETURN_TOKEN))

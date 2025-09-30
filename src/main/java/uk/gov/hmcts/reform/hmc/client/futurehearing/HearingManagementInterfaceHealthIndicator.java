@@ -16,7 +16,7 @@ public class HearingManagementInterfaceHealthIndicator implements HealthIndicato
     private static final String DETAILS_KEY_MESSAGE = "message";
     private static final String DETAILS_KEY_API_NAME = "apiName";
     private static final String DETAILS_KEY_API_STATUS_CODE = "apiStatusCode";
-    private static final String DETAILS_KEY_API_ERROR_MESSAGE = "apiErrorMessage";
+    private static final String DETAILS_KEY_API_ERROR_RESPONSE = "apiErrorResponse";
 
     private final FutureHearingRepository futureHearingRepository;
 
@@ -49,7 +49,7 @@ public class HearingManagementInterfaceHealthIndicator implements HealthIndicato
         details.put(DETAILS_KEY_MESSAGE, healthCheckException.getMessage());
         details.put(DETAILS_KEY_API_NAME, healthCheckException.getApiName());
         addDetailIfNotNull(details, DETAILS_KEY_API_STATUS_CODE, healthCheckException.getStatusCode());
-        addDetailIfNotNull(details, DETAILS_KEY_API_ERROR_MESSAGE, healthCheckException.getErrorMessage());
+        addDetailIfNotNull(details, DETAILS_KEY_API_ERROR_RESPONSE, healthCheckException.getErrorResponse());
 
         return buildHealthDown(details);
     }

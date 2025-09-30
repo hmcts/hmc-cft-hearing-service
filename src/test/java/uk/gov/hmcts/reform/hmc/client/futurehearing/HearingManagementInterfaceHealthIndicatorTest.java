@@ -32,12 +32,12 @@ class HearingManagementInterfaceHealthIndicatorTest {
     private static final String DETAILS_KEY_MESSAGE = "message";
     private static final String DETAILS_KEY_API_NAME = "apiName";
     private static final String DETAILS_KEY_API_STATUS_CODE = "apiStatusCode";
-    private static final String DETAILS_KEY_API_ERROR_MESSAGE = "apiErrorMessage";
+    private static final String DETAILS_KEY_API_ERROR_RESPONSE = "apiErrorResponse";
 
     private static final String EXCEPTION_MESSAGE_AD = "AD exception message";
-    private static final String ERROR_MESSAGE_AD = "AD error message";
+    private static final String ERROR_RESPONSE_AD = "AD error response";
     private static final String EXCEPTION_MESSAGE_HMI = "HMI exception message";
-    private static final String ERROR_MESSAGE_HMI = "HMI error message";
+    private static final String ERROR_RESPONSE_HMI = "HMI error response";
 
     private static final String API_NAME_AD = "ActiveDirectory";
     private static final String API_NAME_HMI = "HearingManagementInterface";
@@ -139,17 +139,17 @@ class HearingManagementInterfaceHealthIndicatorTest {
                               new ExpectedDetail(DETAILS_KEY_API_STATUS_CODE, 400)
                       )
             ),
-            arguments(new HealthCheckActiveDirectoryException(EXCEPTION_MESSAGE_AD, null, ERROR_MESSAGE_AD),
+            arguments(new HealthCheckActiveDirectoryException(EXCEPTION_MESSAGE_AD, null, ERROR_RESPONSE_AD),
                       List.of(new ExpectedDetail(DETAILS_KEY_MESSAGE, EXCEPTION_MESSAGE_AD),
                               new ExpectedDetail(DETAILS_KEY_API_NAME, API_NAME_AD),
-                              new ExpectedDetail(DETAILS_KEY_API_ERROR_MESSAGE, ERROR_MESSAGE_AD)
+                              new ExpectedDetail(DETAILS_KEY_API_ERROR_RESPONSE, ERROR_RESPONSE_AD)
                       )
             ),
-            arguments(new HealthCheckActiveDirectoryException(EXCEPTION_MESSAGE_AD, 400, ERROR_MESSAGE_AD),
+            arguments(new HealthCheckActiveDirectoryException(EXCEPTION_MESSAGE_AD, 400, ERROR_RESPONSE_AD),
                       List.of(new ExpectedDetail(DETAILS_KEY_MESSAGE, EXCEPTION_MESSAGE_AD),
                               new ExpectedDetail(DETAILS_KEY_API_NAME, API_NAME_AD),
                               new ExpectedDetail(DETAILS_KEY_API_STATUS_CODE, 400),
-                              new ExpectedDetail(DETAILS_KEY_API_ERROR_MESSAGE, ERROR_MESSAGE_AD)
+                              new ExpectedDetail(DETAILS_KEY_API_ERROR_RESPONSE, ERROR_RESPONSE_AD)
                       )
             ),
             arguments(new HealthCheckHmiException(EXCEPTION_MESSAGE_HMI),
@@ -168,17 +168,17 @@ class HearingManagementInterfaceHealthIndicatorTest {
                               new ExpectedDetail(DETAILS_KEY_API_STATUS_CODE, 401)
                       )
             ),
-            arguments(new HealthCheckHmiException(EXCEPTION_MESSAGE_HMI, null, ERROR_MESSAGE_HMI),
+            arguments(new HealthCheckHmiException(EXCEPTION_MESSAGE_HMI, null, ERROR_RESPONSE_HMI),
                       List.of(new ExpectedDetail(DETAILS_KEY_MESSAGE, EXCEPTION_MESSAGE_HMI),
                               new ExpectedDetail(DETAILS_KEY_API_NAME, API_NAME_HMI),
-                              new ExpectedDetail(DETAILS_KEY_API_ERROR_MESSAGE, ERROR_MESSAGE_HMI)
+                              new ExpectedDetail(DETAILS_KEY_API_ERROR_RESPONSE, ERROR_RESPONSE_HMI)
                       )
             ),
-            arguments(new HealthCheckHmiException(EXCEPTION_MESSAGE_HMI, 401, ERROR_MESSAGE_HMI),
+            arguments(new HealthCheckHmiException(EXCEPTION_MESSAGE_HMI, 401, ERROR_RESPONSE_HMI),
                       List.of(new ExpectedDetail(DETAILS_KEY_MESSAGE, EXCEPTION_MESSAGE_HMI),
                               new ExpectedDetail(DETAILS_KEY_API_NAME, API_NAME_HMI),
                               new ExpectedDetail(DETAILS_KEY_API_STATUS_CODE, 401),
-                              new ExpectedDetail(DETAILS_KEY_API_ERROR_MESSAGE, ERROR_MESSAGE_HMI)
+                              new ExpectedDetail(DETAILS_KEY_API_ERROR_RESPONSE, ERROR_RESPONSE_HMI)
                       )
             )
         );

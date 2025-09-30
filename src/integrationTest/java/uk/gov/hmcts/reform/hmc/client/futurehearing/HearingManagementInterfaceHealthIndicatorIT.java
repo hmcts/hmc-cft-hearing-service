@@ -38,7 +38,7 @@ class HearingManagementInterfaceHealthIndicatorIT extends BaseTest {
     private static final String KEY_MESSAGE = "message";
     private static final String KEY_API_NAME = "apiName";
     private static final String KEY_API_STATUS_CODE = "apiStatusCode";
-    private static final String KEY_API_ERROR_MESSAGE = "apiErrorMessage";
+    private static final String KEY_API_ERROR_RESPONSE = "apiErrorResponse";
 
     private static final String MESSAGE_MISSING_INVALID_PARAMS = "Missing or invalid request parameters";
     private static final String MESSAGE_SERVER_ERROR = "Server error";
@@ -116,7 +116,7 @@ class HearingManagementInterfaceHealthIndicatorIT extends BaseTest {
     }
 
     private static Stream<Arguments> activeDirectoryApiErrors() {
-        String errorMessage = """
+        String expectedAdErrorResponse = """
             {
                 "error_description":"An AD API error",
                 "error_codes":[1000]
@@ -126,7 +126,7 @@ class HearingManagementInterfaceHealthIndicatorIT extends BaseTest {
             arguments(400, "An AD API error", List.of(1000), Map.of(KEY_MESSAGE, MESSAGE_MISSING_INVALID_PARAMS,
                                                                     KEY_API_NAME, API_NAME_AD,
                                                                     KEY_API_STATUS_CODE, 400,
-                                                                    KEY_API_ERROR_MESSAGE, errorMessage)
+                                                                    KEY_API_ERROR_RESPONSE, expectedAdErrorResponse)
             ),
             arguments(500, "Another AD API error", List.of(2000), Map.of(KEY_MESSAGE, MESSAGE_SERVER_ERROR,
                                                                          KEY_API_NAME, API_NAME_AD)
@@ -135,7 +135,7 @@ class HearingManagementInterfaceHealthIndicatorIT extends BaseTest {
     }
 
     private static Stream<Arguments> hmiApiErrors() {
-        String errorMessage = """
+        String expectedHmiErrorResponse = """
             {
                 "statusCode": 401,
                 "message": "An HMI API error"
@@ -145,7 +145,7 @@ class HearingManagementInterfaceHealthIndicatorIT extends BaseTest {
             arguments(401, "An HMI API error", Map.of(KEY_MESSAGE, MESSAGE_MISSING_INVALID_PARAMS,
                                                       KEY_API_NAME, API_NAME_HMI,
                                                       KEY_API_STATUS_CODE, 401,
-                                                      KEY_API_ERROR_MESSAGE, errorMessage)
+                                                      KEY_API_ERROR_RESPONSE, expectedHmiErrorResponse)
             ),
             arguments(500, "Another HMI API error", Map.of(KEY_MESSAGE, MESSAGE_SERVER_ERROR,
                                                            KEY_API_NAME, API_NAME_HMI)

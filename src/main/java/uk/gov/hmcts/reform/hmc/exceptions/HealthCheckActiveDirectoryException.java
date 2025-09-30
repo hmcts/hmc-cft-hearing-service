@@ -8,8 +8,8 @@ public class HealthCheckActiveDirectoryException extends HealthCheckException {
         super(message);
     }
 
-    public HealthCheckActiveDirectoryException(String message, Integer statusCode, String errorMessage) {
-        super(message, statusCode, errorMessage);
+    public HealthCheckActiveDirectoryException(String message, Integer statusCode, String errorResponse) {
+        super(message, statusCode, errorResponse);
     }
 
     @Override
