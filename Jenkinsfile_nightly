@@ -1,171 +1,222 @@
 #!groovy
+import uk.gov.hmcts.contino.AppPipelineDsl
+properties(
+    [
+        [
+            $class       : 'GithubProjectProperty',
+            projectUrlStr: 'https://github.com/hmcts/hmc-cft-hearing-service'
+        ],
+        pipelineTriggers([[$class: 'GitHubPushTrigger']])
+    ]
+)
 
-properties([
-  // H allow predefined but random minute see https://en.wikipedia.org/wiki/Cron#Non-standard_characters
-  //CCD-3539 (Stop running Nightly builds on weekends). Original schedule was 'H 05 * * *'
-  pipelineTriggers([cron('H 8 * * 1-5')])
-])
 
 @Library("Infrastructure")
+
+import uk.gov.hmcts.contino.GradleBuilder
 
 def type = "java"
 def product = "hmc"
 def component = "cft-hearing-service"
+def branchesToSync = ['demo', 'ithc', 'perftest']
 
-withNightlyPipeline(type, product, component) {
-  enableFortifyScan('hmc-aat')
-  afterAlways('fortify-scan') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-  }
+// Variables to switch pipeline logic and wiring per type of build
+def definitionStoreDevelopPr = "PR-575"  // This doesn't change frequently, but when it does, only change this value.
+// Variables to switch pipeline logic and wiring per type of build
+def dataStoreApiDevelopPr    = "PR-1260" // This doesn't change frequently, but when it does, only change this value.
 
-  afterAlways('fortify-scan') {
+GradleBuilder builder = new GradleBuilder(this, product)
 
-    stage('Suppress and Send Slack Notification') {
+def secrets = [
+  'rpx-${env}': [
+    secret('mc-idam-client-secret', 'BEFTA_OAUTH2_CLIENT_SECRET_OF_XUIWEBAPP')
+  ],
+  'ccd-${env}': [
+    secret('ccd-api-gateway-oauth2-client-secret', 'OAUTH2_CLIENT_SECRET'),
+    secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
+    secret('definition-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
+    secret('ccd-caseworker-autotest-password', 'CCD_CASEWORKER_AUTOTEST_PASSWORD')
+  ],
+  'hmc-${env}': [
+    secret('hmc-servicebus-connection-string', 'HMC_SERVICE_BUS_CONNECTION_STRING'),
+    secret('hmc-queue-connection-string', 'HMC_QUEUE_CONNECTION_STRING'),
+    secret('hmc-outbound-queue-connection-string', 'HMC_OUTBOUND_QUEUE_CONNECTION_STRING'),
+    secret('hmc-fta-password', 'HMC_FTA_PASSWORD'),
+    secret('hmc-hearing-service-users-pwd', 'HMC_HEARING_SERVICE_USERS_PWD'),
+    secret('fh-get-token-url', 'FH_GET_TOKEN_URL'),
+    secret('ClientId', 'CLIENT_ID'),
+    secret('ClientSecret', 'CLIENT_SECRET'),
+    secret('Scope', 'SCOPE'),
+  ],
+  's2s-${env}': [
+    secret('microservicekey-ccd-data', 'BEFTA_S2S_CLIENT_SECRET_OF_CCD_DATA'),
+    secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_KEY'),
+    secret('microservicekey-ccd-gw', 'BEFTA_S2S_CLIENT_SECRET'),
+    secret('microservicekey-aac-manage-case-assignment', 'BEFTA_S2S_CLIENT_SECRET_OF_AAC_MANAGE_CASE_ASSIGNMENT'),
+    secret('microservicekey-xui-webapp', 'BEFTA_S2S_CLIENT_SECRET_OF_XUI_WEBAPP'),
+    secret('microservicekey-api-gw', 'BEFTA_S2S_CLIENT_SECRET_OF_API_GW')
+  ]
+]
 
-      script {
-        if (env.CHANGE_ID) {
-          echo "This is a PR: #${env.CHANGE_ID}"
-          echo "Source branch: ${env.CHANGE_BRANCH}"
-          echo "Target branch: ${env.CHANGE_TARGET}"
-        } else {
-          echo "Not a pull request — branch: ${env.BRANCH_NAME}"
-        }
-      }
-
-      def suppressionFile = ''
-      script {
-        suppressionFile = sh(
-          script: './gradlew printSuppressionFile -q',
-          returnStdout: true
-        ).trim().split("=")[1]
-
-        echo "Suppression file and path: ${suppressionFile}"
-
-        sh """
-                  echo 'Current contents of ${suppressionFile}:'
-                  cat '${suppressionFile}'
-                """
-      }
-
-      def slackNotificationChannel = '#nightly_cve_suppressions'
-      def branch = env.BRANCH_NAME
-
-      if (env.CHANGE_ID) {
-        // If this is a PR, push changes to the PR branch
-        branch = env.CHANGE_BRANCH
-      }
-
-      sh './gradlew suppressCves'
-
-      // Store the list of changed files
-      def changedFiles = ''
-
-      // Store the changes in the suppression file
-      def changes = ''
-
-      script {
-        // Stage all modified tracked files
-        sh 'git add -u'
-
-        changedFiles = sh(
-          script: 'git diff --cached --name-only',
-          returnStdout: true
-        ).trim().split("\n").findAll { it?.trim() } as List
-
-        echo "List of changed files: ${changedFiles}"
-
-        if (changedFiles.isEmpty()) {
-          echo "No changed files to extract."
-        } else {
-          def fileName = sh(
-            script: """
-                            echo '${changedFiles}' | tr -d '[]' | xargs basename
-                        """,
-            returnStdout: true
-          ).trim()
-
-          echo "Extracted file name: ${fileName}"
-        }
-
-        if (changedFiles.size() == 1 && changedFiles[0] == suppressionFile) {
-          echo "✅ Only suppression file changed. Proceeding..."
-
-          // Verify it includes CVE-related changes
-          changes = sh(
-            script: """
-                          git diff --cached ${suppressionFile} | grep '^+' | grep '<cve>' || true
-                        """,
-            returnStdout: true
-          ).trim()
-
-          if (changes) {
-            echo "✅ CVE-related changes found in suppression file."
-          } else {
-            echo "⚠️ No CVE-related changes detected."
-          }
-
-        } else {
-          echo "✅ Suppression file not changed — marking step as successfull"
-        }
-      }
-
-      if (changes) {
-
-        // Clean and format CVE lines
-        def simplifiedChanges = changes
-          .readLines()
-          .collect { it.replaceFirst(/\+/, '').trim() }                // Remove leading '+'
-          .collect { it.replaceAll(/<\/?[^>]+>/, '') }                 // Strip XML/HTML tags
-        //.collect { it.replace('[Ticket]', '<https://yourtracker.example/TICKET-ID|Ticket>') } // Optional link
-          .join('\n')
-
-        def message = """
-                                📦 *CVE Suppression File Updated*
-                                *Detected CVE changes (Please create Jira backlog ticket):*
-                                ${simplifiedChanges}
-                                *Build Info:*
-                                • *Job*: ${env.JOB_NAME}
-                                • *Build*: #${env.BUILD_NUMBER}
-                                • *URL*: ${env.BUILD_URL}
-                               """.stripIndent().trim()
-
-        slackSend(
-          channel: slackNotificationChannel,
-          color: '#439FE0',
-          message: message
-        )
-
-        echo "Staged files: ${changedFiles}"
-        echo "Changes: ${changes}"
-
-        echo "Commiting changes into branch ${branch}"
-        sh 'git commit -m "Suppressing CVE - Actions"'
-        echo "Pushing changes"
-
-        def credentialsId = env.GIT_CREDENTIALS_ID
-
-        withCredentials([
-          gitUsernamePassword(credentialsId: credentialsId, gitToolName: 'Default')
-        ]) {
-          sh """
-                        git push origin HEAD:${branch}
-                    """
-        }
-      } else {
-        echo "✅ Suppression file not changed — skipping Slack notification"
-      }
-    }
-  }
-  
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   version    : '',
+   envVariable: envVar
+  ]
 }
-
 // env variables needed for BEFTA.
-env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
-env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+//env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
+env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
+//env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 env.BEFTA_S2S_CLIENT_ID = "ccd_gw"
 env.BEFTA_RESPONSE_HEADER_CHECK_POLICY="JUST_WARN"
-env.OAUTH2_CLIENT_ID = "ccd_gateway"
-env.OAUTH2_REDIRECT_URI = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
+env.PACT_BROKER_URL = 'https://pact-broker.platform.hmcts.net'
+
+env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-api-${definitionStoreDevelopPr}.preview.platform.hmcts.net".toLowerCase()
+
+env.HMC_SERVICE_BUS_TOPIC = "hmc-to-cft"
+env.HMC_SERVICE_BUS_SUBSCRIPTION = "hmc-subs-to-cft"
+env.HMC_SERVICE_BUS_QUEUE = "hmc-from-hmi"
+env.HMC_OUTBOUND_SERVICE_BUS_QUEUE = "hmc-to-hmi"
+env.HMC_INBOUND_ADAPTER_URL = "https://hmc-hmi-inbound-adapter-hmc-cft-hearing-service-${env.BRANCH_NAME}.preview.platform.hmcts.net".toLowerCase()
+
+//----------------
+// vars needed for functional tests
+// Assume a feature build branched off 'develop', with dependencies develop-to-develop.
+env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-api-${definitionStoreDevelopPr}.preview.platform.hmcts.net".toLowerCase()
+env.CCD_DATA_STORE_API_BASE_URL = "https://ccd-data-store-api-${dataStoreApiDevelopPr}.preview.platform.hmcts.net".toLowerCase()
+env.MCA_API_BASE_URL = "https://aac-manage-case-assignment-${env.BRANCH_NAME}.preview.platform.hmcts.net".toLowerCase()
+
+// Other env variables needed for BEFTA.
+env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
+//env.BEFTA_S2S_CLIENT_ID = "xui_webapp"
+env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID = "ccd_gateway"
+env.CCD_API_GATEWAY_OAUTH2_REDIRECT_URL = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
+env.DM_STORE_BASE_URL = "http://dm-store-aat.service.core-compute-aat.internal"
+env.RD_PROFESSIONAL_API_BASE_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
+env.CCD_API_GATEWAY_S2S_ID = "ccd_gw"
+env.BEFTA_S2S_CLIENT_ID = "ccd_gw"
+env.BEFTA_S2S_CLIENT_ID_OF_XUI_WEBAPP = "xui_webapp"
+env.BEFTA_S2S_CLIENT_ID_OF_CCD_DATA = "ccd_data"
+env.BEFTA_OAUTH2_CLIENT_ID_OF_XUIWEBAPP = "xuiwebapp"
+env.BEFTA_OAUTH2_REDIRECT_URI_OF_XUIWEBAPP = "https://www-ccd.aat.platform.hmcts.net/oauth2redirect"
+env.BEFTA_OAUTH2_ACCESS_TOKEN_TYPE_OF_XUIWEBAPP = "OIDC"
+env.BEFTA_OAUTH2_SCOPE_VARIABLES_OF_XUIWEBAPP = "profile openid roles manage-user create-user search-user"
+
+// temporary workaround for platform changes: turn BEFTA header checks to warning mode
+env.BEFTA_RESPONSE_HEADER_CHECK_POLICY="JUST_WARN"
+
+//-----------------
 
 // Prevent Docker hub rate limit errors by ensuring that testcontainers uses images from hmctspublic ACR
 env.TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX = "hmctspublic.azurecr.io/imported/"
+
+withPipeline(type, product, component) {
+  syncBranchesWithMaster(branchesToSync)
+  loadVaultSecrets(secrets)
+  enableAksStagingDeployment()
+  disableLegacyDeployment()
+
+  if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'demo' || env.BRANCH_NAME == 'perftest' || env.BRANCH_NAME == 'ithc') {
+    env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
+    //env.HMC_INBOUND_ADAPTER_URL = "https://hmc-hmi-inbound-adapter-hmc-cft-hearing-service-master-aat.service.core-compute-aat.internal"
+    env.HMC_INBOUND_ADAPTER_URL = "http://hmc-hmi-inbound-adapter-aat.service.core-compute-aat.internal"
+  } else {
+    env.CCD_DATA_STORE_API_BASE_URL = "https://ccd-data-store-api-${dataStoreApiDevelopPr}.preview.platform.hmcts.net".toLowerCase()
+  }
+
+  afterAlways('test') {
+    builder.gradle('integration')
+    // hmcts/cnp-jenkins-library may fail to copy artifacts after checkstyle error so repeat command (see /src/uk/gov/hmcts/contino/GradleBuilder.groovy)
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/checkstyle/*.html'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/pmd/*.html'
+
+    //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Unit Tests/**/*'
+    //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Integration Tests/**/*'
+    //copyIgnore('./build/reports/tests/test', './Unit Tests/')
+    //copyIgnore('./build/reports/tests/integration', './Integration Tests/')
+
+      publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : 'build/reports/tests/test',
+            reportFiles          : "index.html",
+            reportName           : "Unit Test Report"
+        ]
+
+
+    publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "build/reports/tests/integration",
+            reportFiles          : "index.html",
+            reportName           : "Integration Test Report"
+        ]
+  }
+
+  afterAlways('smoketest:preview') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/BEFTA Report for Smoke Tests/**/*'
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : 'BEFTA Report for Smoke Tests',
+      reportFiles          : "overview-features.html",
+      reportName           : "Smoke Test Report"
+    ]
+  }
+
+  afterAlways('smoketest:aat') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/BEFTA Report for Smoke Tests/**/*'
+    publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : 'BEFTA Report for Smoke Tests',
+            reportFiles          : "overview-features.html",
+            reportName           : "Smoke Test Report"
+    ]
+  }
+
+  afterAlways('functionalTest:preview') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/BEFTA Report for Functional Tests/**/*'
+    publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : 'BEFTA Report for Functional Tests',
+            reportFiles          : "overview-features.html",
+            reportName           : "Functional Test Report"
+    ]
+  }
+
+  afterAlways('functionalTest:aat') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/BEFTA Report for Functional Tests/**/*'
+    publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : 'BEFTA Report for Functional Tests',
+            reportFiles          : "overview-features.html",
+            reportName           : "Functional Test Report"
+    ]
+  }
+
+  afterAlways('pact-provider-verification') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
+        publishHTML target: [
+             allowMissing         : true,
+             alwaysLinkToLastBuild: true,
+             keepAll              : true,
+            reportDir            : "build/reports/tests/runProviderPactVerification",
+            reportFiles          : "index.html",
+            reportName           : "Contract Tests Report"
+        ]
+    }
+}
