@@ -2,7 +2,7 @@
   "_guid_": "S-002.1-get-hearing",
   "_extends_" : "GetHearingRequestPositiveGeneric",
   "specs": [
-    "to verify versionNumber=2 and status=CANCELLATION_REQUESTED"
+    "to verify versionNumber=2 and status=CANCELLATION_SUBMITTED"
   ],
   "request": {
     "pathVariables": {
@@ -20,7 +20,7 @@
     "body": {
       "requestDetails": {
         "timestamp": "[[ANYTHING_PRESENT]]",
-        "status": "CANCELLATION_REQUESTED",
+        "status": "CANCELLATION_SUBMITTED",
         "versionNumber": 2,
         "cancellationReasonCodes" : [ "test" ],
         "hearingRequestID" : "[[ANYTHING_PRESENT]]"

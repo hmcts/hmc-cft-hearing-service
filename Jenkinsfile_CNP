@@ -42,14 +42,18 @@ def secrets = [
     secret('hmc-outbound-queue-connection-string', 'HMC_OUTBOUND_QUEUE_CONNECTION_STRING'),
     secret('hmc-fta-password', 'HMC_FTA_PASSWORD'),
     secret('hmc-hearing-service-users-pwd', 'HMC_HEARING_SERVICE_USERS_PWD'),
-
+    secret('fh-get-token-url', 'FH_GET_TOKEN_URL'),
+    secret('ClientId', 'CLIENT_ID'),
+    secret('ClientSecret', 'CLIENT_SECRET'),
+    secret('Scope', 'SCOPE'),
   ],
   's2s-${env}': [
     secret('microservicekey-ccd-data', 'BEFTA_S2S_CLIENT_SECRET_OF_CCD_DATA'),
     secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_KEY'),
     secret('microservicekey-ccd-gw', 'BEFTA_S2S_CLIENT_SECRET'),
     secret('microservicekey-aac-manage-case-assignment', 'BEFTA_S2S_CLIENT_SECRET_OF_AAC_MANAGE_CASE_ASSIGNMENT'),
-    secret('microservicekey-xui-webapp', 'BEFTA_S2S_CLIENT_SECRET_OF_XUI_WEBAPP')
+    secret('microservicekey-xui-webapp', 'BEFTA_S2S_CLIENT_SECRET_OF_XUI_WEBAPP'),
+    secret('microservicekey-api-gw', 'BEFTA_S2S_CLIENT_SECRET_OF_API_GW')
   ]
 ]
 
@@ -76,10 +80,7 @@ env.HMC_SERVICE_BUS_TOPIC = "hmc-to-cft"
 env.HMC_SERVICE_BUS_SUBSCRIPTION = "hmc-subs-to-cft"
 env.HMC_SERVICE_BUS_QUEUE = "hmc-from-hmi"
 env.HMC_OUTBOUND_SERVICE_BUS_QUEUE = "hmc-to-hmi"
-
-
-
-
+env.HMC_INBOUND_ADAPTER_URL = "https://hmc-hmi-inbound-adapter-hmc-cft-hearing-service-${env.BRANCH_NAME}.preview.platform.hmcts.net".toLowerCase()
 
 //----------------
 // vars needed for functional tests
