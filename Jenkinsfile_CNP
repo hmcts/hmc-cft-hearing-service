@@ -122,7 +122,8 @@ withPipeline(type, product, component) {
 
   if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'demo' || env.BRANCH_NAME == 'perftest' || env.BRANCH_NAME == 'ithc') {
     env.CCD_DATA_STORE_API_BASE_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
-    env.HMC_INBOUND_ADAPTER_URL = "https://hmc-hmi-inbound-adapter-hmc-cft-hearing-service-master-aat.service.core-compute-aat.internal"
+    //env.HMC_INBOUND_ADAPTER_URL = "https://hmc-hmi-inbound-adapter-hmc-cft-hearing-service-master-aat.service.core-compute-aat.internal"
+    env.HMC_INBOUND_ADAPTER_URL = "http://hmc-hmi-inbound-adapter-aat.service.core-compute-aat.internal"
   } else {
     env.CCD_DATA_STORE_API_BASE_URL = "https://ccd-data-store-api-${dataStoreApiDevelopPr}.preview.platform.hmcts.net".toLowerCase()
   }
