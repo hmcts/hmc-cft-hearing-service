@@ -78,7 +78,6 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
-import uk.gov.hmcts.reform.hmc.service.common.DefaultObjectMapperService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -92,7 +91,6 @@ import java.util.stream.IntStream;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.ELASTIC_QUERY_DEFAULT_SIZE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
@@ -105,8 +103,6 @@ public class TestingUtil {
     public static final String INVALID_CASE_REFERENCE = "1111222233334445";
     public static final List<String> CANCELLATION_REASON_CODES = List.of("test 1", "test 2");
     public static final Long ID = 2000000000L;
-
-    private static DefaultObjectMapperService objectMapperService = new DefaultObjectMapperService(new ObjectMapper());
 
     private TestingUtil() {
     }
@@ -1787,10 +1783,7 @@ public class TestingUtil {
         ElasticSearchQuery elasticSearchQuery = ElasticSearchQuery.builder()
             .caseRefs(ccdCaseRefs)
             .build();
-        if (ccdCaseRefs.size() > ELASTIC_QUERY_DEFAULT_SIZE) {
-            elasticSearchQuery.setSize(ccdCaseRefs.size());
-        }
-        return objectMapperService.convertObjectToJsonNode(elasticSearchQuery).toString();
+        return elasticSearchQuery.getQuery();
     }
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
