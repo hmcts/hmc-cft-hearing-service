@@ -20,7 +20,7 @@ public class ElasticSearchQuery {
         String joinedRefs = caseRefs.stream()
             .map(ref -> "\"" + ref + "\"")
             .collect(Collectors.joining(", "));
-        String sizeField = (caseRefs != null && caseRefs.size() > ELASTIC_QUERY_DEFAULT_SIZE)
+        String sizeField = (caseRefs.size() > ELASTIC_QUERY_DEFAULT_SIZE)
             ? "\"size\": " + caseRefs.size() + ",\n"
             : "";
         return """

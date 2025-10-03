@@ -78,7 +78,6 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
-import uk.gov.hmcts.reform.hmc.service.common.DefaultObjectMapperService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -104,8 +103,6 @@ public class TestingUtil {
     public static final String INVALID_CASE_REFERENCE = "1111222233334445";
     public static final List<String> CANCELLATION_REASON_CODES = List.of("test 1", "test 2");
     public static final Long ID = 2000000000L;
-
-    private static DefaultObjectMapperService objectMapperService = new DefaultObjectMapperService(new ObjectMapper());
 
     private TestingUtil() {
     }
