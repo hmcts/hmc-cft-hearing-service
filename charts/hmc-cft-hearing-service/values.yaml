@@ -58,11 +58,11 @@ java:
     HTTP_CLIENT_MAX_CLIENT_PER_ROUTE: '20'
     HTTP_CLIENT_VALIDATE_AFTER_INACTIVITY: '2000'
     
-    # CCD_DATA_STORE_API_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal
-    CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    CCD_DATA_STORE_API_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal
+    # CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     
-    # HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
-    HMI_BASE_URL: https://hmi-apim.test.platform.hmcts.net/hmi
+    HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
+    # HMI_BASE_URL: https://hmi-apim.test.platform.hmcts.net/hmi
     
     ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
 
