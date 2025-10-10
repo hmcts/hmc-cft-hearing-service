@@ -142,7 +142,7 @@ public class CftLibConfig implements CFTLibConfigurer {
         lib.createIdamUser("ccd.ac.staff7@gmail.com", "caseworker");
         lib.createIdamUser("ccd.ac.staff8@gmail.com", "caseworker");
         lib.createIdamUser("ccd.ac.other1@gmail.com", "caseworker");
-        lib.createIdamUser("hmc.superuser@gmail.com", "caseworker", "caseworker-befta_master");
+        lib.createIdamUser("hmc.superuser@gmail.com", "caseworker", "caseworker-befta_master", "hearing-manager");
         lib.createIdamUser("hmc.hearing-manager@gmail.com", "hearing-manager");
         lib.createIdamUser("hmc.hearing-viewer@gmail.com", "hearing-viewer");
         lib.createIdamUser("hmc.listed-hearing-viewer@gmail.com", "listed-hearing-viewer");
