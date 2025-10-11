@@ -6,6 +6,8 @@ import lombok.Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.hmc.constants.Constants.ELASTIC_QUERY_DEFAULT_SIZE;
+
 @Builder
 @Data
 public class ElasticSearchQuery {
@@ -18,17 +20,19 @@ public class ElasticSearchQuery {
         String joinedRefs = caseRefs.stream()
             .map(ref -> "\"" + ref + "\"")
             .collect(Collectors.joining(", "));
-
+        String sizeField = (caseRefs.size() > ELASTIC_QUERY_DEFAULT_SIZE)
+            ? "\"size\": " + caseRefs.size() + ",\n"
+            : "";
         return """
-            {
-                "query": {
-                    "terms": {
-                        "reference": [%s]
-                    }
-                },
-                "_source": ["id", "jurisdiction", "case_type_id", "reference"]
+        {
+          %s"query": {
+            "terms": {
+              "reference": [%s]
             }
-            """.formatted(joinedRefs);
+          },
+          "_source": ["id", "jurisdiction", "case_type_id", "reference"]
+        }
+        """.formatted(sizeField, joinedRefs);
     }
 }
 
