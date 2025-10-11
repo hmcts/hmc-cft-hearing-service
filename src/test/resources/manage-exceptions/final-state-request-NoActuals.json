@@ -1,0 +1,25 @@
+{
+  "supportRequests": [
+    {
+      "hearingId": "2000000000",
+      "caseRef": "9856815055686759",
+      "action": "final_state_transition",
+      "state": "CANCELLED",
+      "notes": "Modifying to CANCELLED"
+    },
+    {
+      "hearingId": "2000000001",
+      "caseRef": "9856815055686759",
+      "action": "final_state_transition",
+      "notes": "Modifying to COMPLETED",
+      "state": "COMPLETED"
+    },
+    {
+      "hearingId": "2000000002",
+      "caseRef": "9372710950276233",
+      "action": "final_state_transition",
+      "notes": "INC-XXX",
+      "state": "ADJOURNED"
+    }
+  ]
+}

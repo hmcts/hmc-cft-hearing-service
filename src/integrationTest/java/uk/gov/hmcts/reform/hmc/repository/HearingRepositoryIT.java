@@ -6,6 +6,7 @@ import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,7 @@ public class HearingRepositoryIT extends BaseTest {
 
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
     private static final String INSERT_LINKED_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-linked-hearings.sql";
+    private static final String INSERT_HEARINGS = "classpath:sql/get-hearings-ManageSupportRequest.sql";
 
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
@@ -54,5 +56,19 @@ public class HearingRepositoryIT extends BaseTest {
                        .anyMatch(h -> h.equals(2000000005L)));
         assertTrue(hearings.stream().map(HearingEntity::getId)
                        .anyMatch(h -> h.equals(2000000006L)));
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS})
+    void testGetHearings() {
+        List<HearingEntity> entities = hearingRepository.getHearings(Arrays.asList(2000000000L, 2000000001L));
+        assertEquals(2, entities.size());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARINGS})
+    void testGetHearings_NoDataReturned() {
+        List<HearingEntity> entities = hearingRepository.getHearings(Arrays.asList(2000000005L));
+        assertEquals(0, entities.size());
     }
 }

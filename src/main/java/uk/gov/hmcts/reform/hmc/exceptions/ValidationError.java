@@ -282,5 +282,24 @@ public final class ValidationError {
     public static final String INVALID_FIRST_NAME = "First name is invalid";
     public static final String INVALID_LAST_NAME = "Last name is invalid";
     public static final String INVALID_ORGANISATION_NAME = "Organisation name is invalid";
-
+    public static final String INVALID_HEARING_ID_LIMIT = "More than 100 hearings found in the request";
+    public static final String DUPLICATE_HEARING_IDS = "Each hearing can only be defined once";
+    public static final String CASE_REFERENCE_INVALID = "Invalid case reference";
+    public static final String INVALID_HEARING_STATE  = "Hearing is in incorrect state";
+    public static final String INVALID_MANAGE_EXCEPTION_ROLE = "Invalid user role";
+    public static final String MANAGE_EXCEPTION_NOTES_LENGTH = "Notes must not be more than 5000 " + CHARACTERS_LONG;
+    public static final String MANAGE_EXCEPTION_ACTION_EMPTY = "Action must be present";
+    public static final String INVALID_SUPPORT_REQUEST_DETAILS = "Support request Details are required";
+    public static final String STATUS_EMPTY = "Status must be present";
+    public static final String MESSAGE_LENGTH = "Message must not be more than 2000 " + CHARACTERS_LONG;
+    public static final String HEARING_ID_CASE_REF_MISMATCH = "Hearing id and Case Reference do not match";
+    public static final String INVALID_HEARING_ID_FINAL_STATE = "Hearing  has invalid final state";
+    public static final String INVALID_LAST_GOOD_STATE = "Invalid last good state defined";
+    public static final String INVALID_HEARING_ID = "Invalid hearing id";
+    public static final String INVALID_SUPPORT_REQUEST_NOTES = "Notes are required";
+    public static final String INVALID_MANAGE_HEARING_SERVICE_EXCEPTION = "Invalid manage hearing service invoked";
+    public static final String LAST_GOOD_STATE_EMPTY = "hearing has no last good state defined";
+    public static final String INVALID_STATE = "State is valid only for action final state transition";
+    public static final String EMPTY_HEARING_STATE = "State is null or empty";
+    public static final String HEARING_ACTUALS_NULL = "No hearing actuals found";
 }
