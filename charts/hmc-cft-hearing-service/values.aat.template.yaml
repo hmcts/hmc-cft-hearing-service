@@ -2,3 +2,6 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  environment:
+     CCD_DATA_STORE_API_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal
+     HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
