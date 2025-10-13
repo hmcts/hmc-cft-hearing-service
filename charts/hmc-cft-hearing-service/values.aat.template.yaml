@@ -16,7 +16,7 @@ hmc:
     outboundAdapter:
       enabled: true
     servicebus:
-      enabled: true
+      enabled: false
 
   hmc-hmi-outbound-adapter:
     java:
