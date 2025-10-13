@@ -41,7 +41,7 @@
           "First reason",
           "Second reason"
         ],
-        "hearingPriorityType": "Priority type",
+        "hearingPriorityType": "Priority",
         "numberOfPhysicalAttendees": 4,
         "hearingInWelshFlag": false,
         "hearingLocations": [
@@ -68,7 +68,7 @@
             "AuthorisationType2"
           ],
           "authorisationSubType": [
-            "ASubType1", 
+            "ASubType1",
             "ASubType2"
           ],
           "panelPreferences": [

@@ -51,7 +51,7 @@
         },
         "duration" : 60,
         "nonStandardHearingDurationReasons" : [ "First reason", "Second reason" ],
-        "hearingPriorityType" : "Priority type",
+        "hearingPriorityType" : "Priority",
         "numberOfPhysicalAttendees" : 4,
         "hearingInWelshFlag" : false,
         "hearingLocations" : [ {

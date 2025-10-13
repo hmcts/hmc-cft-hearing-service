@@ -16,7 +16,7 @@
       "dateRangeEnd": "2023-05-10"
     },
     "duration": 60,
-    "hearingPriorityType": "Priority type",
+    "hearingPriorityType": "Priority",
     "hearingLocations": [
       {
         "locationType": "court",
