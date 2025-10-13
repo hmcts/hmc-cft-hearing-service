@@ -17,8 +17,8 @@ java:
     CFT_HEARING_SERVICE_DB_PASSWORD: "{{ .Values.postgresql.auth.password}}"
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
     CFT_HEARING_SERVICE_DB_PORT: 5432
-    CCD_DATA_STORE_API_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal
-    HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
+    CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api-aat.service.core-compute-aat.internal
+    HMI_BASE_URL: https://hmi-apim.test.platform.hmcts.net/hmi
     HMI_SOURCE_SYSTEM: CFT
     HMI_DESTINATION_SYSTEM: SNL
     GRANT_TYPE: client_credentials
