@@ -5,3 +5,23 @@ java:
   environment:
      CCD_DATA_STORE_API_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal
      HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
+
+hmc:
+  enabled: true
+  hmc:
+    hearingService:
+      enabled: false
+    inboundAdapter:
+      enabled: false
+    outboundAdapter:
+      enabled: true
+    servicebus:
+      enabled: false
+
+  hmc-hmi-outbound-adapter:
+    java:
+      secrets:
+      environment:
+        HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
+        PR_PENDING_WAIT_IN_MILLISECS: 5000
+
