@@ -33,7 +33,7 @@
     "panelRequirements" : {
       "roleType" : [ "RoleType1", "RoleType2" ],
       "authorisationTypes" : [ "AuthorisationType1", "AuthorisationType2" ],
-      "authorisationSubType" : [ "AuthorisationSubType1", "AuthorisationSubType2" ],
+      "authorisationSubType" : [ "ASubType1", "ASubType2" ],
       "panelPreferences" : [ {
         "memberID" : "MID123",
         "memberType" : "Member type 1",
