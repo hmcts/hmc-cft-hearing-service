@@ -68,8 +68,8 @@
             "AuthorisationType2"
           ],
           "authorisationSubType": [
-            "AuthorisationSubType1",
-            "AuthorisationSubType2"
+            "ASubType1", 
+            "ASubType2"
           ],
           "panelPreferences": [
             {
