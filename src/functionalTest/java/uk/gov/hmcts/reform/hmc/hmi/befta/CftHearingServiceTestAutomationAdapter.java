@@ -4,7 +4,6 @@ import uk.gov.hmcts.befta.BeftaTestDataLoader;
 import uk.gov.hmcts.befta.DefaultBeftaTestDataLoader;
 import uk.gov.hmcts.befta.DefaultTestAutomationAdapter;
 import uk.gov.hmcts.befta.dse.ccd.DataLoaderToDefinitionStore;
-import uk.gov.hmcts.befta.player.BackEndFunctionalTestScenarioContext;
 import uk.gov.hmcts.befta.util.BeftaUtils;
 
 public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomationAdapter {
@@ -31,13 +30,5 @@ public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomatio
 
             }
         };
-    }
-
-    @Override
-    public Object calculateCustomValue(BackEndFunctionalTestScenarioContext scenarioContext, Object key) {
-        if (key.toString().equals("GenerateCaseId")) {
-            return new CaseIdGenerator().generateValidCaseReference();
-        }
-        return super.calculateCustomValue(scenarioContext, key);
     }
 }
