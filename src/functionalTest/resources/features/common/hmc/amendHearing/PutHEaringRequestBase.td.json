@@ -41,7 +41,7 @@
           "First reason",
           "Second reason"
         ],
-        "hearingPriorityType": "Priority",
+        "hearingPriorityType": "Priority type",
         "numberOfPhysicalAttendees": 4,
         "hearingInWelshFlag": false,
         "hearingLocations": [
@@ -68,8 +68,8 @@
             "AuthorisationType2"
           ],
           "authorisationSubType": [
-            "ASubType1",
-            "ASubType2"
+            "AuthorisationSubType1",
+            "AuthorisationSubType2"
           ],
           "panelPreferences": [
             {
@@ -91,7 +91,7 @@
       },
       "caseDetails": {
         "hmctsServiceCode": "TEST",
-        "caseRef": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}",
+        "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
         "requestTimeStamp": "2000-08-10T12:20:00.000Z",
         "externalCaseReference": "EXT/REF123",
         "caseDeepLink": "https://www.google.com",
