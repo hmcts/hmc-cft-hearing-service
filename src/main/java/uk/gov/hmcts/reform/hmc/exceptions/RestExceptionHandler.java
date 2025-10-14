@@ -121,6 +121,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(InvalidManageHearingServiceException.class)
+    protected ResponseEntity<Object> handleManageHearingServiceException(InvalidManageHearingServiceException ex) {
+        log.debug("InvalidManageHearingServiceException: {}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
     private ResponseEntity<Object> toResponseEntity(HttpStatus status, String... errors) {
         List<String> errorList = Arrays.stream(errors).filter(Objects::nonNull).collect(Collectors.toList());
         var apiError = new ApiError(status, errorList);
