@@ -9,7 +9,7 @@
     "hearingChannels": [
       "INTER"
     ],
-    "autolistFlag" : false,
+    "autolistFlag" : true,
     "hearingType" : "Some hearing type",
     "isAPanelFlag" : false,
     "hearingWindow": {
@@ -18,7 +18,7 @@
     },
     "duration" : 60,
     "nonStandardHearingDurationReasons" : [ "First reason", "Second reason" ],
-    "hearingPriorityType" : "Priority",
+    "hearingPriorityType" : "Priority type",
     "numberOfPhysicalAttendees" : 4,
     "hearingInWelshFlag" : false,
     "hearingLocations" : [ {
@@ -33,7 +33,7 @@
     "panelRequirements" : {
       "roleType" : [ "RoleType1", "RoleType2" ],
       "authorisationTypes" : [ "AuthorisationType1", "AuthorisationType2" ],
-      "authorisationSubType" : [ "ASubType1", "ASubType2" ],
+      "authorisationSubType" : [ "AuthorisationSubType1", "AuthorisationSubType2" ],
       "panelPreferences" : [ {
         "memberID" : "MID123",
         "memberType" : "Member type 1",
@@ -49,7 +49,7 @@
   },
   "caseDetails" : {
     "hmctsServiceCode" : "TEST",
-    "caseRef": "${[scenarioContext][customValues][GenerateCaseId]}",
+    "caseRef": "${[scenarioContext][siblingContexts][CreateCase][testData][actualResponse][body][id]}",
     "requestTimeStamp" : "2000-08-10T12:20:00.000Z",
     "externalCaseReference" : "EXT/REF123",
     "caseDeepLink" : "https://www.google.com",

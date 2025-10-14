@@ -7,10 +7,10 @@ java:
   devmemoryLimits: 4096Mi
   devcpuLimits: 4000m
   environment:
-    HMC_SERVICE_BUS_TOPIC: ${SERVICE_NAME}-servicebus-hmc-to-cft
-    HMC_SERVICE_BUS_SUBSCRIPTION: ${SERVICE_NAME}-servicebus-hmc-subs-to-cft
-    HMC_SERVICE_BUS_QUEUE: ${SERVICE_NAME}-servicebus-hmc-from-hmi
-    HMC_OUTBOUND_SERVICE_BUS_QUEUE: ${SERVICE_NAME}-servicebus-hmc-to-hmi
+    HMC_SERVICE_BUS_TOPIC: hmc-to-cft
+    HMC_SERVICE_BUS_SUBSCRIPTION: hmc-subs-to-cft
+    HMC_SERVICE_BUS_QUEUE: hmc-from-hmi
+    HMC_OUTBOUND_SERVICE_BUS_QUEUE: hmc-to-hmi
     CFT_HEARING_SERVICE_DB_HOST: "{{ .Release.Name }}-postgresql"
     CFT_HEARING_SERVICE_DB_NAME: "{{ .Values.postgresql.auth.database}}"
     CFT_HEARING_SERVICE_DB_USERNAME: "{{ .Values.postgresql.auth.username}}"
@@ -18,19 +18,6 @@ java:
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
     CFT_HEARING_SERVICE_DB_PORT: 5432
     CCD_DATA_STORE_API_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal
-    HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
-    HMI_SOURCE_SYSTEM: CFT
-    HMI_DESTINATION_SYSTEM: SNL
-    GRANT_TYPE: client_credentials
-    FH_BASE_URL: https://login.microsoftonline.com
-    IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
-    OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
-    IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
-    S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
-    LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CONFIG: DEBUG
-    LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
-    LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_REPOSITORY: DEBUG
   postgresql:
     enabled: true
   secrets:
@@ -54,66 +41,15 @@ java:
           alias: IDAM_KEY_CFT_HEARING_SERVICE
 
 servicebus:
-  enabled: false
-
-hmc:
   enabled: true
-  hmc:
-    hearingService:
-      enabled: false
-    inboundAdapter:
-      enabled: true
-    outboundAdapter:
-      enabled: true
-    servicebus:
-      enabled: true
-
-  hmc-hmi-outbound-adapter:
-    java:
-      secrets:
-        HMC_SERVICE_BUS_OUTBOUND_CONNECTION_STRING:
-          secretRef: hmc-sb-preview
-          key: connectionString
-        HMC_SERVICE_BUS_INBOUND_CONNECTION_STRING:
-          secretRef: hmc-sb-preview
-          key: connectionString
-        HMC_SERVICE_BUS_CONNECTION_STRING:
-          secretRef: hmc-sb-preview
-          key: connectionString
-      environment:
-        HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
-        HMI_SOURCE_SYSTEM: CFT
-        HMI_DESTINATION_SYSTEM: SNL
-        GRANT_TYPE: client_credentials
-        FH_BASE_URL: https://login.microsoftonline.com
-        LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CONFIG: DEBUG
-        LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
-        LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_REPOSITORY: DEBUG
-        HMC_SERVICE_BUS_OUTBOUND_QUEUE: ${SERVICE_NAME}-servicebus-hmc-to-hmi
-        HMC_SERVICE_BUS_INBOUND_QUEUE: ${SERVICE_NAME}-servicebus-hmc-from-hmi
-        HMC_SERVICE_BUS_TOPIC: ${SERVICE_NAME}-servicebus-hmc-to-cft
-        PR_PENDING_WAIT_IN_MILLISECS: 5000
-        CFT_HEARING_SERVICE_DB_HOST: "{{ .Release.Name }}-postgresql"
-        CFT_HEARING_SERVICE_DB_NAME: "{{ .Values.postgresql.auth.database}}"
-        CFT_HEARING_SERVICE_DB_USERNAME: "{{ .Values.postgresql.auth.username}}"
-        CFT_HEARING_SERVICE_DB_PASSWORD: "{{ .Values.postgresql.auth.password}}"
-        CFT_HEARING_SERVICE_DB_PORT: 5432
-
-  servicebus:
-    sbNamespace: hmc-servicebus-preview
-
-  hmc-hmi-inbound-adapter:
-    java:
-      ingressHost: hmc-hmi-inbound-adapter-${SERVICE_FQDN}
-      environment:
-        CFT_HEARING_SERVICE_URL: http://${SERVICE_NAME}-java
-        IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
-        S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-        LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_CONFIG: DEBUG
-        LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_HMC_SERVICE: DEBUG
-        HMC_SERVICE_BUS_QUEUE: ${SERVICE_NAME}-servicebus-hmc-from-hmi
-      secrets:
-        HMC_SERVICE_BUS_CONNECTION_STRING:
-          secretRef: hmc-sb-preview
-          key: connectionString
-
+  teamName: CCD
+  resourceGroup: hmc-aso-preview-rg
+  sbNamespace: hmc-sb-preview
+  setup:
+    topics:
+      - name: hmc-to-cft
+    subscriptions:
+      - name: hmc-subs-to-cft
+    queues:
+      - name: hmc-from-hmi
+      - name: hmc-to-hmi
