@@ -105,7 +105,7 @@ module "postgresql_v15_replica" {
   }
 
   subnet_suffix        = "expanded"
-  admin_user_object_id = var.jenkins_AAD_objectId
+  admin_user_object_id = null
   business_area        = "cft"
   common_tags          = var.common_tags
   component            = var.component
