@@ -1,0 +1,30 @@
+{
+  "_guid_": "GetHearingRequestCancellationSubmittedStatus",
+  "_extends_" : "GetHearingRequestBase",
+  "specs": [
+    "to check the hearing status is CANCELLATION_SUBMITTED"
+  ],
+  "request": {
+    "pathVariables": {
+      "hearingID": "${[scenarioContext][siblingContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+    }
+  },
+  "expectedResponse": {
+    "responseCode": 200,
+    "responseMessage": "OK",
+
+    "body": {
+      "requestDetails": {
+        "timestamp": "[[ANYTHING_PRESENT]]",
+        "status": "CANCELLATION_SUBMITTED",
+        "versionNumber": "[[ANYTHING_PRESENT]]",
+        "cancellationReasonCodes" : "[[ANYTHING_PRESENT]]",
+        "hearingRequestID" : "[[ANYTHING_PRESENT]]"
+      },
+      "caseDetails": "[[ANYTHING_PRESENT]]",
+      "hearingDetails" : "[[ANYTHING_PRESENT]]",
+      "partyDetails" : "[[ANYTHING_PRESENT]]",
+      "hearingResponse": "[[ANYTHING_PRESENT]]"
+    }
+  }
+}
