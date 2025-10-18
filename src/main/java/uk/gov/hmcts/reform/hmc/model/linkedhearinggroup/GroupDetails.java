@@ -1,11 +1,10 @@
 package uk.gov.hmcts.reform.hmc.model.linkedhearinggroup;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
