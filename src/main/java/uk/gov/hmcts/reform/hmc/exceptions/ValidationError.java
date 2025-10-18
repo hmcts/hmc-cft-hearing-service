@@ -282,5 +282,5 @@ public final class ValidationError {
     public static final String INVALID_FIRST_NAME = "First name is invalid";
     public static final String INVALID_LAST_NAME = "Last name is invalid";
     public static final String INVALID_ORGANISATION_NAME = "Organisation name is invalid";
-
+    public static final String IS_A_PANEL_FLAG_NULL_EMPTY = "Is a panel flag can not be null or empty";
 }

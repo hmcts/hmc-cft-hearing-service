@@ -32,9 +32,6 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_TYPE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CATEGORY_VALUE_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_LOCATION_EMPTY;
@@ -61,26 +58,27 @@ class BeanValidatorTest {
     @Test
     void shouldHaveHearingDetailsViolations() {
         HearingDetails hearingDetails = generateHearingDetails();
-
+        hearingDetails.setIsAPanelFlag(null);
         Set<ConstraintViolation<HearingDetails>> violations = validator.validate(hearingDetails);
         List<String> validationErrors = violations.stream()
             .map(ConstraintViolation::getMessage)
             .toList();
-        assertThat(violations).isNotEmpty().hasSize(9);
+        assertThat(violations).isNotEmpty().hasSize(10);
         assertThat(validationErrors).contains(ValidationError.AUTO_LIST_FLAG_NULL_EMPTY)
-        .contains(ValidationError.HEARING_TYPE_MAX_LENGTH)
-        .contains(ValidationError.DURATION_MIN_VALUE)
-        .contains(ValidationError.HEARING_PRIORITY_TYPE)
-        .contains(ValidationError.NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE)
-        .contains(ValidationError.LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH)
-        .contains(ValidationError.HEARING_LOCATION_EMPTY)
-        .contains(ValidationError.HEARING_CHANNEL_EMPTY);
+            .contains(ValidationError.HEARING_TYPE_MAX_LENGTH)
+            .contains(ValidationError.DURATION_MIN_VALUE)
+            .contains(ValidationError.HEARING_PRIORITY_TYPE)
+            .contains(ValidationError.NUMBER_OF_PHYSICAL_ATTENDEES_MIN_VALUE)
+            .contains(ValidationError.LEAD_JUDGE_CONTRACT_TYPE_MAX_LENGTH)
+            .contains(ValidationError.HEARING_LOCATION_EMPTY)
+            .contains(ValidationError.HEARING_CHANNEL_EMPTY)
+            .contains(ValidationError.IS_A_PANEL_FLAG_NULL_EMPTY);
     }
 
     @ParameterizedTest
     @CsvSource({
-        "null, 9, true, false",
-        "'', 9, true, false",
+        "null, 10, true, false",
+        "'', 10, true, false",
         "'TTT', 10, false, true",
         "'true', 9, false, false",
         "'false', 9, false, false",
@@ -95,7 +93,8 @@ class BeanValidatorTest {
             .map(ConstraintViolation::getMessage)
             .toList();
         assertThat(violations).isNotEmpty().hasSize(expectedViolationCount);
-
+        assertThat(validationErrors.contains(ValidationError.IS_A_PANEL_FLAG_NULL_EMPTY))
+            .isEqualTo(containsNullEmptyError);
         assertThat(validationErrors.contains(ValidationError.IS_A_PANEL_FLAG_INVALID_TYPE))
             .isEqualTo(containsTypeError);
     }
@@ -231,7 +230,7 @@ class BeanValidatorTest {
         Set<ConstraintViolation<CaseDetails>> violations = validator.validate(caseDetails);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertTrue(violations.isEmpty());
+        assertThat(violations.isEmpty());
     }
 
     @Test
@@ -242,10 +241,9 @@ class BeanValidatorTest {
         Set<ConstraintViolation<CaseDetails>> violations = validator.validate(caseDetails);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertFalse(violations.isEmpty());
-        assertEquals(2, violations.size());
-        assertTrue(validationErrors.contains(ValidationError.INVALID_HMCTS_INTERNAL_CASE_NAME));
-        assertTrue(validationErrors.contains(ValidationError.INVALID_PUBLIC_CASE_NAME));
+        assertThat(violations).isNotEmpty().hasSize(2);
+        assertThat(validationErrors).contains(ValidationError.INVALID_HMCTS_INTERNAL_CASE_NAME);
+        assertThat(validationErrors).contains(ValidationError.INVALID_PUBLIC_CASE_NAME);
     }
 
     @Test
@@ -256,10 +254,9 @@ class BeanValidatorTest {
         Set<ConstraintViolation<PartyDetails>> violations = validator.validate(partyDetailsList.get(0));
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertFalse(violations.isEmpty());
-        assertEquals(2, violations.size());
-        assertTrue(validationErrors.contains(ValidationError.INVALID_FIRST_NAME));
-        assertTrue(validationErrors.contains(ValidationError.INVALID_LAST_NAME));
+        assertThat(violations).isNotEmpty().hasSize(2);
+        assertThat(validationErrors.contains(ValidationError.INVALID_FIRST_NAME));
+        assertThat(validationErrors.contains(ValidationError.INVALID_LAST_NAME));
     }
 
     @Test
@@ -269,9 +266,8 @@ class BeanValidatorTest {
         Set<ConstraintViolation<OrganisationDetails>> violations = validator.validate(organisationDetails);
         List<String> validationErrors = new ArrayList<>();
         violations.forEach(e -> validationErrors.add(e.getMessage()));
-        assertFalse(violations.isEmpty());
-        assertEquals(1, violations.size());
-        assertTrue(validationErrors.contains(ValidationError.INVALID_ORGANISATION_NAME));
+        assertThat(violations).isNotEmpty().hasSize(1);
+        assertThat(validationErrors).contains(ValidationError.INVALID_ORGANISATION_NAME);
     }
 
     @Test

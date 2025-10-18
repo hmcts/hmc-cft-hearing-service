@@ -127,7 +127,7 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     @Column(name = "hearing_request_received_date_time", nullable = false)
     private LocalDateTime hearingRequestReceivedDateTime;
 
-    @Column(name = "is_a_panel_flag")
+    @Column(name = "is_a_panel_flag", nullable = false)
     private Boolean isAPanelFlag;
 
     @ManyToOne(fetch = FetchType.EAGER)
