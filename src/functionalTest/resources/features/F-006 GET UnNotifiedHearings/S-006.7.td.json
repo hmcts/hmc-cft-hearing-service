@@ -1,0 +1,31 @@
+{
+  "_guid_": "S-006.7",
+  "_extends_" : "F-006_TestBase",
+  "specs": [
+    "has the 200 OK code",
+    "has 200 status code",
+    "contains both hearings"
+  ],
+  "request": {
+    "pathVariables": {
+      "hmctsServiceCode": "TEST"
+    },
+    "queryParams": {
+      "hearing_start_date_from": "2022-05-20 09:00:00",
+      "hearing_start_date_to": "2022-05-19 10:00:00"
+    }
+  },
+  "expectedResponse": {
+    "_extends_": "Common_200_Response",
+    "headers": {
+      "Content-Length": "[[ANYTHING_PRESENT]]",
+      "Content-Type": "application/vnd.spring-boot.actuator.v3+json",
+      "Date": "[[ANYTHING_PRESENT]]",
+      "Request-Context": "[[ANY_NULLABLE]]"
+    },
+    "body" : {
+      "hearingIds": [],
+      "totalFound": 0
+    }
+  }
+}
