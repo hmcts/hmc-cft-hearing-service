@@ -19,7 +19,7 @@
         "amendReasonCodes": ["test for amend hearing request"]
       },
       "caseDetails": {
-        "caseRef": "${[scenarioContext][siblingContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}",
+        "caseRef": "${[scenarioContext][siblingContexts][CreateCase][testData][actualResponse][body][id]}",
         "individualDetails": {
           "firstName": "john",
           "lastName": "doe"
@@ -32,7 +32,7 @@
     "responseMessage": "OK",
     "body" : {
       "hearingRequestID": "[[ANYTHING_PRESENT]]",
-      "status": "UPDATE_REQUESTED",
+      "status": "HEARING_REQUESTED",
       "timeStamp": "[[ANYTHING_PRESENT]]",
       "versionNumber": 2
     }

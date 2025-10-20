@@ -28,7 +28,7 @@
   },
   "caseDetails": {
     "hmctsServiceCode": "1234",
-    "caseRef": "${[scenarioContext][childContexts][CreateHearingRequest][testData][request][body][caseDetails][caseRef]}",
+    "caseRef": "1641911514704411",
     "requestTimeStamp": "2000-08-10T12:20:00.000Z",
     "caseDeepLink": "https://www.google.com",
     "hmctsInternalCaseName": "Internal case name",

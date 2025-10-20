@@ -167,15 +167,14 @@ task smoke(type: Test) {
     generateCucumberReports.enabled = true
     javaexec {
       environment "OAUTH2_CLIENT_SECRET", "DUMMY"
-      mainClass = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
+      main = "uk.gov.hmcts.reform.hmc.hmi.befta.CftHearingServiceBeftaMain"
       classpath += sourceSets.functionalTest.runtimeClasspath + sourceSets.main.output + sourceSets.test.output
       args = [
         '--threads', '10',
         '--plugin', "json:${rootDir}/target/cucumber.json",
         '--plugin', "junit:${buildDir}/test-results/functional/cucumber.xml",
         '--tags', '@Smoke and not @Ignore',
-        '--glue', 'uk.gov.hmcts.befta.player',
-        '--glue', "uk.gov.hmcts.reform.hmc.hmi.befta", 'src/functionalTest/resources/features'
+        '--glue', 'uk.gov.hmcts.befta.player', 'src/functionalTest/resources/features'
       ]
       // '--add-opens=...' added to suppress 'WARNING: An illegal reflective access operation has occurred' in uk.gov.hmcts.befta.util.CucumberStepAnnotationUtils
       jvmArgs = [ '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED' ]

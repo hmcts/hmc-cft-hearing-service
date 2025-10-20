@@ -9,7 +9,7 @@
       },
       "caseDetails" : {
         "hmctsServiceCode" : "TEST",
-        "caseRef": "${[scenarioContext][customValues][GenerateCaseId]}",
+        "caseRef": "${[scenarioContext][childContexts][CreateCase][testData][actualResponse][body][id]}",
         "externalCaseReference" : "EXT/REF123",
         "caseDeepLink" : "https://www.google.com",
         "hmctsInternalCaseName" : "Internal case name",
@@ -66,7 +66,7 @@
         },
         "hearingIsLinkedFlag" : false,
         "hearingChannels" : [ "INTER" ],
-        "autolistFlag" : false,
+        "autolistFlag" : true,
         "isAPanelFlag" : false
       },
       "partyDetails" : [ {

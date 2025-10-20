@@ -3,14 +3,14 @@ Feature: F-004: Amend hearing request
 
   Background:
     Given an appropriate test context as detailed in the test data source
-    Given a user with [an active profile in CCD]
+    Given a user with [an active profile in CCD],
+    And a case that has just been created as in [CreateCase],
 
-  @S-004.1
+    @S-004.1
   Scenario: successfully amend hearing request
     Given a successful call [to create a hearing request] as in [CreateHearingRequest],
     When a request is prepared with appropriate values,
     And it is submitted to call the [amend hearing] operation of [HMC CFT Hearing Service],
-    And a wait time of [15] seconds [to wait for status to come back from hmi]
     Then a positive response is received,
     And the response [has the 201 code],
     And the response [has a versionNumber of 2],
