@@ -65,6 +65,5 @@ java:
     GRANT_TYPE: client_credentials
     FH_BASE_URL: https://login.microsoftonline.com
 
-hmc:
+servicebus:
   enabled: false
-

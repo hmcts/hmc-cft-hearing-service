@@ -2,7 +2,7 @@
   "_guid_": "S-002.2-get-hearing",
   "_extends_" : "S-002.1-get-hearing",
   "specs": [
-    "to verify versionNumber=3 and status=CANCELLATION_SUBMITTED"
+    "to verify versionNumber=3 and status=CANCELLATION_REQUESTED"
   ],
   "s2sClientId": "xui_webapp",
   "expectedResponse": {
