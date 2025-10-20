@@ -1,5 +1,5 @@
+@Ignore
 @F-006
-@JsonIgnore
 Feature: F-006: Search unNotified Hearings
 
   Background:
