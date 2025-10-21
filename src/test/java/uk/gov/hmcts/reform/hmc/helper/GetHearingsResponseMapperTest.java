@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
+import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
@@ -177,6 +179,67 @@ class GetHearingsResponseMapperTest {
         assertThat(isDescendingOrder("hearingId", hearingIds)).isTrue();
     }
 
+    @Test
+    void caseHearingsAndSchedulesAreSortedCorrectlyWhenPartyIdIsNull() {
+        List<CaseHearingRequestEntity> entities = Arrays.asList(TestingUtil.getCaseHearingsEntities());
+        HearingDayDetailsEntity detailEntity = entities.get(0).getHearing().getHearingResponses().get(0)
+            .getHearingDayDetails().get(0);
+        HearingAttendeeDetailsEntity attendeeDetailsEntity = entities.get(0).getHearing().getHearingResponses().get(0)
+            .getHearingDayDetails().get(0).getHearingAttendeeDetails().get(0);
+        HearingAttendeeDetailsEntity entity = new HearingAttendeeDetailsEntity();
+        entity.setPartySubChannelType("SubChannel1");
+        entity.setPartyId(null);
+        detailEntity.setHearingAttendeeDetails(Arrays.asList(entity, attendeeDetailsEntity));
+
+        GetHearingsResponse response = new GetHearingsResponseMapper().toHearingsResponse(VALID_CASE_REF, entities);
+        assertCommonResponseFields(response, VALID_CASE_REF, "TEST", 1);
+        CaseHearing ch = response.getCaseHearings().get(0);
+        assertThat(ch.getHearingDaySchedule().get(0).getAttendees().get(0).getHearingSubChannel())
+            .isEqualTo("SubChannel1");
+        assertThat(ch.getHearingDaySchedule().get(0).getPanelMemberIds().get(0)).isEqualTo("PanelUser1");
+        assertNull(ch.getHearingDaySchedule().get(0).getHearingJudgeId());
+        assertThat(ch.getHearingChannels()).contains("someChannelType");
+    }
+
+    @Test
+    void caseHearingsAndSchedulesAreSortedCorrectlyWhenPartyIdsAreNull() {
+        List<CaseHearingRequestEntity> entities = Arrays.asList(TestingUtil.getCaseHearingsEntities());
+        HearingAttendeeDetailsEntity attendeeDetailsEntity = entities.get(0).getHearing().getHearingResponses().get(0)
+            .getHearingDayDetails().get(0).getHearingAttendeeDetails().get(0);
+        attendeeDetailsEntity.setPartyId(null);
+
+        HearingAttendeeDetailsEntity entity = new HearingAttendeeDetailsEntity();
+        entity.setPartySubChannelType("SubChannel1");
+        entity.setPartyId(null);
+        HearingDayDetailsEntity detailEntity = entities.get(0).getHearing().getHearingResponses().get(0)
+            .getHearingDayDetails().get(0);
+        detailEntity.setHearingAttendeeDetails(Arrays.asList(entity,attendeeDetailsEntity));
+
+        GetHearingsResponse response = new GetHearingsResponseMapper().toHearingsResponse(VALID_CASE_REF, entities);
+        assertCommonResponseFields(response, VALID_CASE_REF, "TEST", 1);
+        CaseHearing ch = response.getCaseHearings().get(0);
+        assertThat(ch.getHearingDaySchedule().get(0).getAttendees().get(0).getHearingSubChannel())
+            .isEqualTo("SubChannel1");
+        assertThat(ch.getHearingDaySchedule().get(0).getPanelMemberIds().get(0)).isEqualTo("PanelUser1");
+        assertNull(ch.getHearingDaySchedule().get(0).getHearingJudgeId());
+        assertThat(ch.getHearingChannels()).contains("someChannelType");
+    }
+
+    @Test
+    void caseHearingsAndSchedulesAreSortedCorrectlyWhenAttendeeDetailsAreNull() {
+        List<CaseHearingRequestEntity> entities = Arrays.asList(TestingUtil.getCaseHearingsEntities());
+        HearingDayDetailsEntity detailEntity = entities.get(0).getHearing().getHearingResponses().get(0)
+            .getHearingDayDetails().get(0);
+        detailEntity.setHearingAttendeeDetails(null);
+        GetHearingsResponseMapper getHearingsResponseMapper = new GetHearingsResponseMapper();
+        GetHearingsResponse response = new GetHearingsResponseMapper().toHearingsResponse(VALID_CASE_REF, entities);
+        assertCommonResponseFields(response, VALID_CASE_REF, "TEST", 1);
+        CaseHearing ch = response.getCaseHearings().get(0);
+        assertThat(ch.getHearingDaySchedule().get(0).getPanelMemberIds().get(0)).isEqualTo("PanelUser1");
+        assertThat(ch.getHearingDaySchedule().get(0).getHearingJudgeId()).isNull();
+        assertThat(ch.getHearingChannels()).contains("someChannelType");
+    }
+
     private static <T extends Comparable<T>> boolean isAscendingOrder(String listName, List<T> list) {
         for (int i = 0; i < list.size() - 1; i++) {
             logger.debug("{} {}:{} - {}:{})", listName, i, (i + 1), list.get(i), list.get(i + 1));
@@ -205,6 +268,17 @@ class GetHearingsResponseMapperTest {
             }
         }
         return true;
+    }
+
+    private static void assertCommonResponseFields(GetHearingsResponse response, String expectedCaseRef,
+                                                   String expectedServiceCode, int expectedCaseHearings) {
+        assertEquals(expectedCaseRef, response.getCaseRef());
+        if (expectedServiceCode == null) {
+            assertNull(response.getHmctsServiceCode());
+        } else {
+            assertEquals(expectedServiceCode, response.getHmctsServiceCode());
+        }
+        assertEquals(expectedCaseHearings, response.getCaseHearings().size());
     }
 
 }
