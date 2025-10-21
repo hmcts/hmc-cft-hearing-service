@@ -27,6 +27,8 @@ class GetHearingsResponseMapperTest {
     private static final Logger logger = LoggerFactory.getLogger(GetHearingsResponseMapperTest.class);
 
     public static final String VALID_CASE_REF = "9372710950276233";
+    public static final String SUBCHANNEL_1 = "SubChannel1";
+    public static final String SOME_CHANNEL_TYPE = "someChannelType";
 
     @Test
     void toHearingsResponseWhenDataIsPresent() {
@@ -43,12 +45,12 @@ class GetHearingsResponseMapperTest {
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
         assertEquals("venue1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getHearingVenueId());
-        assertEquals("SubChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
+        assertEquals(SUBCHANNEL_1, response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getAttendees().get(0).getHearingSubChannel());
         assertEquals("PanelUser1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getPanelMemberIds().get(0));
         assertNull(response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getHearingJudgeId());
-        assertTrue(response.getCaseHearings().get(0).getHearingChannels().contains("someChannelType"));
+        assertTrue(response.getCaseHearings().get(0).getHearingChannels().contains(SOME_CHANNEL_TYPE));
     }
 
     @Test
@@ -65,7 +67,7 @@ class GetHearingsResponseMapperTest {
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
         assertEquals("venue1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getHearingVenueId());
-        assertEquals("SubChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
+        assertEquals(SUBCHANNEL_1, response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getAttendees().get(0).getHearingSubChannel());
         assertEquals("PanelUser1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getPanelMemberIds().get(0));
@@ -86,7 +88,7 @@ class GetHearingsResponseMapperTest {
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
         assertEquals("venue1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getHearingVenueId());
-        assertEquals("SubChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
+        assertEquals(SUBCHANNEL_1, response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getAttendees().get(0).getHearingSubChannel());
         assertEquals("PanelUser1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getHearingJudgeId());
@@ -107,7 +109,7 @@ class GetHearingsResponseMapperTest {
         assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
         assertEquals("venue1", response.getCaseHearings().get(0)
             .getHearingDaySchedule().get(0).getHearingVenueId());
-        assertEquals("SubChannel1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
+        assertEquals(SUBCHANNEL_1, response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getAttendees().get(0).getHearingSubChannel());
         assertEquals("PanelUser1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getPanelMemberIds().get(0));
@@ -187,7 +189,7 @@ class GetHearingsResponseMapperTest {
         HearingAttendeeDetailsEntity attendeeDetailsEntity = entities.get(0).getHearing().getHearingResponses().get(0)
             .getHearingDayDetails().get(0).getHearingAttendeeDetails().get(0);
         HearingAttendeeDetailsEntity entity = new HearingAttendeeDetailsEntity();
-        entity.setPartySubChannelType("SubChannel1");
+        entity.setPartySubChannelType(SUBCHANNEL_1);
         entity.setPartyId(null);
         detailEntity.setHearingAttendeeDetails(Arrays.asList(entity, attendeeDetailsEntity));
 
@@ -195,10 +197,10 @@ class GetHearingsResponseMapperTest {
         assertCommonResponseFields(response, VALID_CASE_REF, "TEST", 1);
         CaseHearing ch = response.getCaseHearings().get(0);
         assertThat(ch.getHearingDaySchedule().get(0).getAttendees().get(0).getHearingSubChannel())
-            .isEqualTo("SubChannel1");
+            .isEqualTo(SUBCHANNEL_1);
         assertThat(ch.getHearingDaySchedule().get(0).getPanelMemberIds().get(0)).isEqualTo("PanelUser1");
         assertNull(ch.getHearingDaySchedule().get(0).getHearingJudgeId());
-        assertThat(ch.getHearingChannels()).contains("someChannelType");
+        assertThat(ch.getHearingChannels()).contains(SOME_CHANNEL_TYPE);
     }
 
     @Test
@@ -209,7 +211,7 @@ class GetHearingsResponseMapperTest {
         attendeeDetailsEntity.setPartyId(null);
 
         HearingAttendeeDetailsEntity entity = new HearingAttendeeDetailsEntity();
-        entity.setPartySubChannelType("SubChannel1");
+        entity.setPartySubChannelType(SUBCHANNEL_1);
         entity.setPartyId(null);
         HearingDayDetailsEntity detailEntity = entities.get(0).getHearing().getHearingResponses().get(0)
             .getHearingDayDetails().get(0);
@@ -219,10 +221,10 @@ class GetHearingsResponseMapperTest {
         assertCommonResponseFields(response, VALID_CASE_REF, "TEST", 1);
         CaseHearing ch = response.getCaseHearings().get(0);
         assertThat(ch.getHearingDaySchedule().get(0).getAttendees().get(0).getHearingSubChannel())
-            .isEqualTo("SubChannel1");
+            .isEqualTo(SUBCHANNEL_1);
         assertThat(ch.getHearingDaySchedule().get(0).getPanelMemberIds().get(0)).isEqualTo("PanelUser1");
         assertNull(ch.getHearingDaySchedule().get(0).getHearingJudgeId());
-        assertThat(ch.getHearingChannels()).contains("someChannelType");
+        assertThat(ch.getHearingChannels()).contains(SOME_CHANNEL_TYPE);
     }
 
     @Test
@@ -237,7 +239,7 @@ class GetHearingsResponseMapperTest {
         CaseHearing ch = response.getCaseHearings().get(0);
         assertThat(ch.getHearingDaySchedule().get(0).getPanelMemberIds().get(0)).isEqualTo("PanelUser1");
         assertThat(ch.getHearingDaySchedule().get(0).getHearingJudgeId()).isNull();
-        assertThat(ch.getHearingChannels()).contains("someChannelType");
+        assertThat(ch.getHearingChannels()).contains(SOME_CHANNEL_TYPE);
     }
 
     private static <T extends Comparable<T>> boolean isAscendingOrder(String listName, List<T> list) {
