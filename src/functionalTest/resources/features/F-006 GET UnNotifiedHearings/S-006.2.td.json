@@ -1,0 +1,22 @@
+{
+  "_guid_": "S-006.2",
+  "_extends_" : "F-006_TestBase",
+  "specs": [
+    "has the 403 code"
+  ],
+  "request": {
+    "pathVariables": {
+      "hmctsServiceCode": "TEST"
+    },
+    "queryParams": {
+      "hearing_start_date_from": "2022-01-20 09:00:00",
+      "hearing_start_date_to": "2022-01-20 10:00:00"
+    },
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    }
+  },
+  "expectedResponse": {
+    "responseCode" : 403
+  }
+}
