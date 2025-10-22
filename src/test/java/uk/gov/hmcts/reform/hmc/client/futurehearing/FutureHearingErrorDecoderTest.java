@@ -37,7 +37,7 @@ class FutureHearingErrorDecoderTest {
     private FutureHearingErrorDecoder futureHearingErrorDecoder;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         byteArray = INPUT_STRING.getBytes();
     }
@@ -62,9 +62,13 @@ class FutureHearingErrorDecoderTest {
         assertEquals(INVALID_REQUEST, exception.getMessage());
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
-        assertEquals(Level.ERROR, logsList.get(0).getLevel());
+
+        ILoggingEvent loggingEvent = logsList.getFirst();
+        assertEquals(Level.ERROR, loggingEvent.getLevel());
         assertEquals("Response from FH failed with error code 400, "
-            + "error message " + INPUT_STRING, logsList.get(0).getMessage());
+            + "error message " + INPUT_STRING, loggingEvent.getFormattedMessage());
+
+        logger.detachAndStopAllAppenders();
     }
 
     @Test
@@ -87,9 +91,13 @@ class FutureHearingErrorDecoderTest {
         assertEquals(INVALID_REQUEST, exception.getMessage());
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
-        assertEquals(Level.ERROR, logsList.get(0).getLevel());
+
+        ILoggingEvent loggingEvent = logsList.getFirst();
+        assertEquals(Level.ERROR, loggingEvent.getLevel());
         assertEquals("Response from FH failed with error code 401, "
-            + "error message " + INPUT_STRING, logsList.get(0).getMessage());
+            + "error message " + INPUT_STRING, loggingEvent.getFormattedMessage());
+
+        logger.detachAndStopAllAppenders();
     }
 
     @Test
@@ -112,9 +120,13 @@ class FutureHearingErrorDecoderTest {
         assertEquals(INVALID_REQUEST, exception.getMessage());
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
-        assertEquals(Level.ERROR, logsList.get(0).getLevel());
+
+        ILoggingEvent loggingEvent = logsList.getFirst();
+        assertEquals(Level.ERROR, loggingEvent.getLevel());
         assertEquals("Response from FH failed with error code 404, "
-            + "error message " + INPUT_STRING, logsList.get(0).getMessage());
+            + "error message " + INPUT_STRING, loggingEvent.getFormattedMessage());
+
+        logger.detachAndStopAllAppenders();
     }
 
     @Test
@@ -137,8 +149,12 @@ class FutureHearingErrorDecoderTest {
         assertEquals(SERVER_ERROR, exception.getMessage());
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
-        assertEquals(Level.ERROR, logsList.get(0).getLevel());
+
+        ILoggingEvent loggingEvent = logsList.getFirst();
+        assertEquals(Level.ERROR, loggingEvent.getLevel());
         assertEquals("Response from FH failed with error code 500, "
-                         + "error message " + INPUT_STRING, logsList.get(0).getMessage());
+                         + "error message " + INPUT_STRING, loggingEvent.getFormattedMessage());
+
+        logger.detachAndStopAllAppenders();
     }
 }
