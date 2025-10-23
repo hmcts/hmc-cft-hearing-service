@@ -432,7 +432,7 @@ dependencies {
   implementation group: 'io.netty', name: 'netty-buffer', version: versions.netty
   implementation group: 'io.netty', name: 'netty-codec', version: versions.netty
   implementation group: 'io.netty', name: 'netty-codec-dns', version: versions.netty
-  implementation group: 'io.netty', name: 'netty-codec-http', version: versions.netty
+  implementation group: 'io.netty', name: 'netty-codec-http', version: 4.1.125
   implementation group: 'io.netty', name: 'netty-codec-http2', version: versions.netty
   implementation group: 'io.netty', name: 'netty-codec-socks', version: versions.netty
   implementation group: 'io.netty', name: 'netty-common', version: versions.netty
