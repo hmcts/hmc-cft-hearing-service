@@ -8,6 +8,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.hmc.config.RoleAssignmentUrlManager;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -138,6 +141,18 @@ class ApplicationParamsTest {
             VALUE,
             applicationParams.getDestinationSystem()
         );
+    }
+
+    @Test
+    void shouldGetAuthorisedSupportToolServices() {
+        ReflectionTestUtils.setField(applicationParams, "authorisedSupportToolServices", List.of(VALUE));
+        assertThat(applicationParams.getAuthorisedSupportToolServices()).isEqualTo(List.of(VALUE));
+    }
+
+    @Test
+    void shouldGetAuthorisedSupportToolRoles() {
+        ReflectionTestUtils.setField(applicationParams, "authorisedSupportToolRoles", List.of(VALUE));
+        assertThat(applicationParams.getAuthorisedSupportToolRoles()).isEqualTo(List.of(VALUE));
     }
 
 }
