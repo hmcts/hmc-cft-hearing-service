@@ -14,9 +14,9 @@ import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.Assert;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
@@ -46,10 +46,10 @@ public class HearingManagementGetHearingsProviderTest extends BasePactTesting {
     @LocalServerPort
     private int port;
 
-    @MockBean
+    @MockitoBean
     protected HearingManagementService mockService;
 
-    @MockBean
+    @MockitoBean
     private AccessControlService accessControlService;
 
     @Mock

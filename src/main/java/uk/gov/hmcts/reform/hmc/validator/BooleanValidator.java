@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class BooleanValidator implements ConstraintValidator<ValidBoolean, Object> {
     @Override
