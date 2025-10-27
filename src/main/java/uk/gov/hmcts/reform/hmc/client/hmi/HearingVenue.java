@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.hmc.client.hmi;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import javax.validation.Valid;
 
 @Data
 @NoArgsConstructor
