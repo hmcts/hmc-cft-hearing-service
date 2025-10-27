@@ -79,7 +79,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     protected ManageExceptionsService manageExceptionsService;
 
     @BeforeEach
