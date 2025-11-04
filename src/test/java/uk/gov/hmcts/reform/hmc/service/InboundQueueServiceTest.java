@@ -884,6 +884,8 @@ class InboundQueueServiceTest {
         applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
         HearingEntity hearingEntity = generateHearingEntity(2000000000L,400,
                                                             "Violations are Hearing status");
+        hearingEntity.setStatus(null);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         given(messageContext.getMessage()).willReturn(message);
@@ -994,6 +996,7 @@ class InboundQueueServiceTest {
         entity.setId(hearingId);
         entity.setErrorCode(errorCode);
         entity.setErrorDescription(errorDescription);
+        entity.setStatus(HearingStatus.AWAITING_LISTING.name());
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingResponseEntity.setRequestVersion(1);
         entity.setHearingResponses(List.of(hearingResponseEntity));
