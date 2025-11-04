@@ -443,7 +443,7 @@ public class HmiHearingResponseMapper {
     }
 
     private void logFinalHearingStatusMessage(String currentStatus, String laStatus,HearingEntity hearingEntity) {
-        log.error(FINAL_STATE_MESSAGE, hearingEntity.getId(), hearingEntity.getLatestCaseReferenceNumber(),
+        log.info(FINAL_STATE_MESSAGE, hearingEntity.getId(), hearingEntity.getLatestCaseReferenceNumber(),
                   hearingEntity.getLatestCaseHearingRequest().getHmctsServiceCode(), currentStatus, laStatus);
     }
 
