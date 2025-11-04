@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.helper.hmi;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingAttendee;
@@ -30,13 +31,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.FINAL_STATE_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_LISTING;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_SUBMITTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.EXCEPTION;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl.UNSUPPORTED_HEARING_STATUS;
 
 @Component
+@Slf4j
 public class HmiHearingResponseMapper {
     public HearingEntity mapHmiHearingToEntity(HearingResponse hearing, HearingEntity hearingEntity) {
         HearingResponseEntity hearingResponseEntity = mapHearingResponseEntity(hearing, hearingEntity);
@@ -338,7 +342,7 @@ public class HmiHearingResponseMapper {
                 postStatus = currentStatus;
                 break;
             case CLOSED:
-                postStatus = getHearingStatusWhenLaStatusIsClosed(currentStatus);
+                postStatus = getHearingStatusWhenLaStatusIsClosed(currentStatus, hearingEntity);
                 break;
             default:
                 throw new MalformedMessageException(
@@ -412,8 +416,10 @@ public class HmiHearingResponseMapper {
         return postStatus;
     }
 
-    private HearingStatus getHearingStatusWhenLaStatusIsClosed(HearingStatus currentStatus) {
+    private HearingStatus getHearingStatusWhenLaStatusIsClosed(HearingStatus currentStatus,
+                                                               HearingEntity hearingEntity) {
         HearingStatus postStatus = null;
+        currentStatus =  CANCELLED;
         switch (currentStatus) {
             case AWAITING_LISTING, UPDATE_SUBMITTED, LISTED, UPDATE_REQUESTED,
                  CANCELLATION_REQUESTED, CANCELLATION_SUBMITTED:
@@ -422,6 +428,10 @@ public class HmiHearingResponseMapper {
             case EXCEPTION:
                 postStatus = EXCEPTION;
                 break;
+            case COMPLETED, ADJOURNED, CANCELLED:
+                logFinalHearingStatusMessage(currentStatus.name(),
+                                             ListAssistCaseStatus.CASE_CLOSED.name(),
+                                             hearingEntity);
             default:
                 throw new MalformedMessageException(
                         getUnsupportedHearingStatusMessage(currentStatus.name(),
@@ -429,6 +439,12 @@ public class HmiHearingResponseMapper {
         }
         return postStatus;
     }
+
+    private void logFinalHearingStatusMessage(String currentStatus, String laStatus,HearingEntity hearingEntity) {
+        log.error(FINAL_STATE_MESSAGE, hearingEntity.getId(), hearingEntity.getLatestCaseReferenceNumber(),
+                  hearingEntity.getLatestCaseHearingRequest().getHmctsServiceCode(), currentStatus, laStatus);
+    }
+
 
     private String getUnsupportedHearingStatusMessage(String currentStatus, String laStatus) {
         return new StringBuilder(UNSUPPORTED_HEARING_STATUS)
