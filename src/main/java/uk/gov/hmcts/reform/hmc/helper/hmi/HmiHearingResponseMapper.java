@@ -429,9 +429,11 @@ public class HmiHearingResponseMapper {
                 postStatus = EXCEPTION;
                 break;
             case COMPLETED, ADJOURNED, CANCELLED:
+                postStatus = currentStatus;
                 logFinalHearingStatusMessage(currentStatus.name(),
                                              ListAssistCaseStatus.CASE_CLOSED.name(),
                                              hearingEntity);
+                break;
             default:
                 throw new MalformedMessageException(
                         getUnsupportedHearingStatusMessage(currentStatus.name(),
