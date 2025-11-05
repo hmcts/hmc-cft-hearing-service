@@ -605,11 +605,6 @@ class InboundQueueServiceTest {
                 .thenReturn(java.util.Optional.of(hearingEntity));
             ListAppender<ILoggingEvent> listAppender = setupLogger();
             inboundQueueService.processMessage(jsonNodeLocal, messageContext);
-            List<ILoggingEvent> logsList = listAppender.list;
-            assertEquals(4, logsList.size());
-            assertEquals(Level.INFO, logsList.get(0).getLevel());
-            assertEquals(Level.INFO, logsList.get(3).getLevel());
-            assertEquals(FINAL_STATE_MESSAGE, logsList.get(3).getMessage());
             assertDynatraceLogMessageForTerminalState(listAppender, "2000000000", "1111222233334444",
                                       "TEST", terminalStatus.name(),"Closed");
             verify(hearingRepository, never()).save(any());
@@ -1171,6 +1166,7 @@ class InboundQueueServiceTest {
         List<ILoggingEvent> logsList = listAppender.list;
         int finalErrorIndex = logsList.size() - 1;
         assertEquals(Level.INFO, logsList.get(finalErrorIndex).getLevel());
+        assertEquals(FINAL_STATE_MESSAGE, logsList.get(finalErrorIndex).getMessage());
         assertEquals("Hearing id: " + hearingID + " with Case reference: "
                          + caseRef + " , Service Code: " + serviceCode + " and Response received but "
                          + "current hearing status: "
