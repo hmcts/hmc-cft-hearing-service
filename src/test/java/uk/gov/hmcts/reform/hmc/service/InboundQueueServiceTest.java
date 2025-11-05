@@ -59,6 +59,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.FINAL_STATE_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
@@ -602,7 +603,15 @@ class InboundQueueServiceTest {
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L))
                 .thenReturn(java.util.Optional.of(hearingEntity));
+            ListAppender<ILoggingEvent> listAppender = setupLogger();
             inboundQueueService.processMessage(jsonNodeLocal, messageContext);
+            List<ILoggingEvent> logsList = listAppender.list;
+            assertEquals(4, logsList.size());
+            assertEquals(Level.INFO, logsList.get(0).getLevel());
+            assertEquals(Level.INFO, logsList.get(3).getLevel());
+            assertEquals(FINAL_STATE_MESSAGE, logsList.get(3).getMessage());
+            assertDynatraceLogMessageForTerminalState(listAppender, "2000000000", "1111222233334444",
+                                      "TEST", terminalStatus.name(),"Closed");
             verify(hearingRepository, never()).save(any());
             verify(hmiHearingResponseMapper, never()).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).findById(2000000000L);
@@ -1154,5 +1163,18 @@ class InboundQueueServiceTest {
                          + caseRef + " , Service Code: " + serviceCode + " and Error Description: "
                          + errorDescription + " updated to status "
                          + HearingStatus.EXCEPTION.name(), logsList.get(finalErrorIndex).getFormattedMessage());
+    }
+
+    private void assertDynatraceLogMessageForTerminalState(ListAppender<ILoggingEvent> listAppender, String hearingID,
+                                                           String caseRef, String serviceCode, String currentStatus,
+                                                           String terminalStatus) {
+        List<ILoggingEvent> logsList = listAppender.list;
+        int finalErrorIndex = logsList.size() - 1;
+        assertEquals(Level.INFO, logsList.get(finalErrorIndex).getLevel());
+        assertEquals("Hearing id: " + hearingID + " with Case reference: "
+                         + caseRef + " , Service Code: " + serviceCode + " and Response received but "
+                         + "current hearing status: "
+                         + currentStatus + "; LA status: " + terminalStatus + " no further action taken ",
+                     logsList.get(finalErrorIndex).getFormattedMessage());
     }
 }
