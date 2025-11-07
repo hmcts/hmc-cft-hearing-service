@@ -187,9 +187,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
             HearingEntity currentHearing = hearingResult.get();
             HearingStatus currentStatus = HearingStatus.valueOf(currentHearing.getStatus());
             // Terminal statuses: CANCELLED, ADJOURNED, COMPLETED
-            if (currentStatus == HearingStatus.CANCELLED
-                || currentStatus == HearingStatus.ADJOURNED
-                || currentStatus == HearingStatus.COMPLETED) {
+            if (HearingStatus.isFinalStatus(currentStatus)) {
                 log.info(FINAL_STATE_MESSAGE,
                          hearingId,
                          currentHearing.getLatestCaseReferenceNumber(),
