@@ -89,5 +89,7 @@ public final class Constants {
     public static final int MAX_HEARING_REQUESTS = 100;
     public static final String MANAGE_EXCEPTION_COMMIT_FAIL_EVENT = "tech_support_commit_fail";
     public static final String MANAGE_EXCEPTION_COMMIT_FAIL = "Database commit failed";
-
+    public static final String FINAL_STATE_MESSAGE = "Hearing id: {} with Case reference: {} , Service Code: {}"
+        + " and Response received but current hearing status: {}; LA status: {} no further action taken ";
+    public static final String HEARING_FINAL_STATE = "hearing-is-in-final-state";
 }
