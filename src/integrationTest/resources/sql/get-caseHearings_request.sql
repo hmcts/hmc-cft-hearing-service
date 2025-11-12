@@ -30,6 +30,8 @@ values (2, 105, 'reasonTwo');
 
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)
 values (1, '2000000000', '2020-08-10 11:20:00', 'DRAFT', 'CASE_CREATED', 1);
+insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)
+values (6, '2000000000', '2020-08-10 11:20:00', 'DRAFT', 'CASE_CREATED', 1);
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version, parties_notified_datetime)
 values (2, '2000000010', '2021-08-10 11:20:00', 'PROVISIONAL', 'AWAITING_LISTING', 1, '2020-08-10 11:20:00');
 insert into hearing_response(hearing_response_id, hearing_id, received_date_time, listing_status, listing_case_status, request_version)

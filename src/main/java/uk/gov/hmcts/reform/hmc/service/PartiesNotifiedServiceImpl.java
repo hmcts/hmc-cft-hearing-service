@@ -15,13 +15,16 @@ import uk.gov.hmcts.reform.hmc.repository.HearingResponseRepository;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 
+import javax.persistence.NonUniqueResultException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PUT_PARTIES_NOTIFIED;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NON_UNIQUE_HEARING_RESPONSE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ALREADY_SET;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_NO_SUCH_RESPONSE;
@@ -49,8 +52,16 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
                                    LocalDateTime receivedDateTime, PartiesNotified partiesNotified,
                                    String clientS2SToken) {
         hearingIdValidator.validateHearingId(hearingId, PARTIES_NOTIFIED_ID_NOT_FOUND);
-        HearingResponseEntity hearingResponseEntity =
+        HearingResponseEntity hearingResponseEntity;
+        try {
+             hearingResponseEntity =
                 hearingResponseRepository.getHearingResponse(hearingId, requestVersion, receivedDateTime);
+        } catch (NonUniqueResultException ex) {
+            log.error(
+                "Hearing id {} has multiple responses with requestVersion {}, receivedDateTime {}",
+                hearingId, requestVersion, receivedDateTime);
+            throw new PartiesNotifiedBadRequestException(NON_UNIQUE_HEARING_RESPONSE);
+        }
         if (null == hearingResponseEntity) {
             throw new PartiesNotifiedNotFoundException(PARTIES_NOTIFIED_NO_SUCH_RESPONSE);
         } else if (hearingResponseEntity.getPartiesNotifiedDateTime() != null) {
@@ -60,10 +71,11 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
             hearingResponseEntity.setServiceData(partiesNotified.getServiceData());
             hearingResponseRepository.save(hearingResponseEntity);
             HearingEntity hearingEntity = hearingResponseEntity.getHearing();
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                             PUT_PARTIES_NOTIFIED, null,
-                                                            clientS2SToken, HMC, null);
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(
+                hearingEntity, PUT_PARTIES_NOTIFIED, null,
+                clientS2SToken, HMC, null);
         }
+
     }
 
     /**
