@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.
 import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.USER_ID;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NON_UNIQUE_HEARING_RESPONSE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ALREADY_SET;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_NO_SUCH_RESPONSE;
@@ -98,6 +99,23 @@ class PartiesNotifiedControllerIT extends BaseTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(200))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldReturn400_WhenHearingResponse_IsNotUnique() throws Exception {
+            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+            PartiesNotified partiesNotified = new PartiesNotified();
+            partiesNotified.setServiceData(jsonNode);
+
+            final String dateTime = "2020-08-10T14:20:00";
+            mockMvc.perform(put(url + "/2000000013" + "?version=1&received=" + dateTime)
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(partiesNotified)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.errors", hasItem(NON_UNIQUE_HEARING_RESPONSE)))
                 .andReturn();
         }
 
