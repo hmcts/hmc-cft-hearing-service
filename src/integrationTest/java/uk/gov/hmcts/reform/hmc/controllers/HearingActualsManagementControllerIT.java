@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.AfterAll;
@@ -31,7 +32,6 @@ import wiremock.com.jayway.jsonpath.JsonPath;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EntityManager;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;

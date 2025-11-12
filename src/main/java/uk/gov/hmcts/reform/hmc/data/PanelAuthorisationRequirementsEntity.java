@@ -1,21 +1,22 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
-import javax.persistence.Table;
 
 @Table(name = "panel_authorisation_requirements")
 @EqualsAndHashCode(callSuper = true)
@@ -30,8 +31,10 @@ public class PanelAuthorisationRequirementsEntity extends BaseEntity implements 
     private static final long serialVersionUID = 7526815208919075769L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "panel_authorisation_requirements_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+        generator = "panel_authorisation_requirements_id_seq_generator")
+    @SequenceGenerator(name = "panel_authorisation_requirements_id_seq_generator", 
+        sequenceName = "panel_authorisation_requirements_id_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

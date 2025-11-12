@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.service.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.data.util.CastUtils.cast;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.FH;
