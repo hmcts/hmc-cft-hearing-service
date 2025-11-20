@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -222,16 +223,18 @@ class LinkedHearingGroupServiceTest {
                 .willReturn(List.of(hearing1, hearing2));
             given(linkedGroupDetailsAuditMapper.modelToEntity(groupDetails))
                 .willReturn(groupDetailsAudit);
-            given(hearingRepository.findById(HEARING_ID1))
-                .willReturn(Optional.of(hearing1));
-            given(hearingRepository.findById(HEARING_ID2))
-                .willReturn(Optional.of(hearing2));
+            given(hearingRepository.existsById(HEARING_ID1)).willReturn(true);
+            given(hearingRepository.existsById(HEARING_ID2)).willReturn(true);
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
             service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN);
 
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
+            verify(hearingRepository).existsById(HEARING_ID1);
+            verify(hearingRepository).existsById(HEARING_ID2);
+            verify(hearingRepository).removeLinkedGroupDetailsAndOrder(HEARING_ID1);
+            verify(hearingRepository).removeLinkedGroupDetailsAndOrder(HEARING_ID2);
             verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
         }
 
@@ -422,16 +425,18 @@ class LinkedHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing1, hearing2));
-            given(hearingRepository.findById(HEARING_ID1))
-                .willReturn(Optional.of(hearing1));
-            given(hearingRepository.findById(HEARING_ID2))
-                .willReturn(Optional.of(hearing2));
+            given(hearingRepository.existsById(HEARING_ID1)).willReturn(true);
+            given(hearingRepository.existsById(HEARING_ID2)).willReturn(true);
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
             service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN);
 
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
+            verify(hearingRepository).existsById(HEARING_ID1);
+            verify(hearingRepository).existsById(HEARING_ID2);
+            verify(hearingRepository).removeLinkedGroupDetailsAndOrder(HEARING_ID1);
+            verify(hearingRepository).removeLinkedGroupDetailsAndOrder(HEARING_ID2);
             verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
         }
 
@@ -457,14 +462,15 @@ class LinkedHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
-            given(hearingRepository.findById(HEARING_ID1))
-                .willReturn(Optional.of(hearing));
+            given(hearingRepository.existsById(HEARING_ID1)).willReturn(true);
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             doNothing().when(futureHearingRepository).deleteLinkedHearingGroup(REQUEST_ID);
             service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN);
 
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository, times(1)).findByLinkedGroupId(HEARING_GROUP_ID);
+            verify(hearingRepository).existsById(HEARING_ID1);
+            verify(hearingRepository).removeLinkedGroupDetailsAndOrder(HEARING_ID1);
             verify(linkedGroupDetailsRepository, times(1)).delete(groupDetails);
         }
 
@@ -591,43 +597,39 @@ class LinkedHearingGroupServiceTest {
 
         @Test
         void shouldGetLinkedHearingGroupDetails() {
-            GroupDetails groupDetails = generateGroupDetails("group name", ORDERED.label);
-            LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
-            LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000001", 2);
+            LinkedGroupDetails linkedGroupDetails = createLinkedGroupDetails("100", "ACTIVE");
+            linkedGroupDetails.setRequestName("group name");
+            linkedGroupDetails.setReasonForLink("a good reason");
+            linkedGroupDetails.setLinkedComments("comment");
+
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
                 HEARING_REQUESTED.name(),
                 1,
                 true,
                 List.of(generateHearingDayDetailsEntity(2000000000L, LocalDateTime.now().plusDays(1))),
-                null
+                linkedGroupDetails
             );
+            hearingEntity.setLinkedOrder(1L);
 
-            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(Long.parseLong(REQUEST_ID));
-            when(hearingRepository.existsById(any())).thenReturn(true);
-            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(linkedGroupDetailsRepository.isFoundForRequestId(REQUEST_ID)).thenReturn(100L);
+            when(hearingRepository.findByRequestId(REQUEST_ID)).thenReturn(List.of(hearingEntity));
+            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(REQUEST_ID))
+                .thenReturn(linkedGroupDetails);
+            when(hearingRepository.findByLinkedGroupId(100L)).thenReturn(List.of(hearingEntity));
 
-            LinkedGroupDetails linkedGroupDetails = createLinkedGroupDetails(REQUEST_ID, "ACTIVE");
-            when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(Long.parseLong(REQUEST_ID));
-            when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(linkedGroupDetails);
-            when(hearingRepository.findByLinkedGroupId(any())).thenReturn(List.of(hearingEntity));
-            when(linkedGroupDetailsRepository.save(any())).thenReturn(linkedGroupDetails);
-
-            HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
-                groupDetails,
-                List.of(
-                    hearingDetails1,
-                    hearingDetails2
-                )
-            );
-            service.updateLinkHearing(REQUEST_ID, hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
-            GetLinkedHearingGroupResponse response =
-                service.getLinkedHearingGroupResponse(REQUEST_ID);
+            GetLinkedHearingGroupResponse response = service.getLinkedHearingGroupResponse(REQUEST_ID);
 
             assertGroupDetails(response.getGroupDetails());
             for (LinkedHearingDetails linkedHearingDetails : response.getHearingsInGroup()) {
                 assertHearingsInGroup(linkedHearingDetails);
             }
+
+            verify(linkedGroupDetailsRepository).isFoundForRequestId(REQUEST_ID);
+            verify(hearingRepository).findByRequestId(REQUEST_ID);
+            verify(accessControlService).verifyAccess(2000000000L, Lists.newArrayList("hearing-viewer"));
+            verify(linkedGroupDetailsRepository).getLinkedGroupDetailsByRequestId(REQUEST_ID);
+            verify(hearingRepository).findByLinkedGroupId(100L);
         }
 
         @Test

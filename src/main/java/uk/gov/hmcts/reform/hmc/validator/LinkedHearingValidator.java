@@ -434,13 +434,12 @@ public class LinkedHearingValidator {
 
         hearingLinkGroupRequest.getHearingsInGroup()
             .forEach(linkHearingDetails -> {
-                Optional<HearingEntity> hearing = hearingRepository
-                    .findById(Long.valueOf(linkHearingDetails.getHearingId()));
-                if (hearing.isPresent()) {
-                    HearingEntity hearingToSave = hearing.get();
-                    hearingToSave.setLinkedGroupDetails(linkedGroupDetailsSaved);
-                    hearingToSave.setLinkedOrder(getHearingOrder(linkHearingDetails,hearingLinkGroupRequest));
-                    hearingRepository.save(hearingToSave);
+                Long hearingId = Long.valueOf(linkHearingDetails.getHearingId());
+                if (hearingRepository.existsById(hearingId)) {
+                    Long hearingOrder = getHearingOrder(linkHearingDetails, hearingLinkGroupRequest);
+                    hearingRepository.updateLinkedGroupDetailsAndOrder(hearingId,
+                                                                       linkedGroupDetailsSaved,
+                                                                       hearingOrder);
                 }
             });
         return linkedGroupDetailsSaved;
