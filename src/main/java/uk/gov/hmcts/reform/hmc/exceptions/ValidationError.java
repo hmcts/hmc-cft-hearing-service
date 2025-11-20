@@ -303,4 +303,5 @@ public final class ValidationError {
     public static final String EMPTY_HEARING_STATE = "State is null or empty";
     public static final String HEARING_ACTUALS_NULL = "No hearing actuals found";
     public static final String NON_UNIQUE_HEARING_RESPONSE = "Hearing id has multiple responses";
+
 }
