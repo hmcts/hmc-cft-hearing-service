@@ -1,0 +1,21 @@
+{
+  "_guid_": "F-006_TestBase",
+  "productName": "HMC CFT Hearing Service",
+  "operationName": "Search unNotified Hearings",
+  "method": "GET",
+  "uri": "/unNotifiedHearings/{hmctsServiceCode}",
+  "s2sClientId": "xui_webapp",
+  "specs": [
+    "an active profile in CCD"
+  ],
+  "users": {
+    "invokingUser": {
+      "_extends_": "HmcSuperuser"
+    }
+  },
+  "request": {
+    "headers": {
+      "_extends_": "Common_Request_Headers"
+    }
+  }
+}

@@ -6,8 +6,6 @@ management:
   endpoint:
     health:
       show-details: "always"
-      probes:
-        enabled: true
   endpoints:
     web:
       base-path: /
@@ -173,6 +171,10 @@ fh:
     host: ${HMI_BASE_URL:base/url}
     source-system: ${HMI_SOURCE_SYSTEM:source-system}
     destination-system: ${HMI_DESTINATION_SYSTEM:destination-system}
+
+supportTools:
+  service-whitelist: ${SUPPORT_TOOLS_AUTHORISED_SERVICES:tech_admin_ui}
+  role-whitelist:  ${SUPPORT_TOOLS_AUTHORISED_ROLES:hmc_tech_admin}
 
 LOGGING:
   LEVEL:

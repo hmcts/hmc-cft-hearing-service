@@ -24,6 +24,9 @@ public interface HearingRepository extends CrudRepository<HearingEntity, Long> {
     @Query("FROM HearingEntity he WHERE he.linkedGroupDetails.requestId = :requestId")
     List<HearingEntity> findByRequestId(String requestId);
 
+    @Query("FROM HearingEntity he WHERE id in :hearingIds")
+    List<HearingEntity> getHearings(List<Long> hearingIds);
+
     @Modifying
     @Query("UPDATE HearingEntity h "
         + "SET linkedGroupDetails = :linkedGroupDetails, linkedOrder = :linkedOrder WHERE h.id = :hearingId")
