@@ -37,7 +37,8 @@ public class GetHearingResponseCommonCode {
                 attendeeList.add(attendee);
             }
         }
-        attendeeList.sort(Comparator.comparing(Attendee::getPartyId));
+        attendeeList.sort(Comparator.comparing(Attendee::getPartyId,
+                            Comparator.nullsLast(Comparator.naturalOrder())));
         hearingDaySchedule.setAttendees(attendeeList);
     }
 
