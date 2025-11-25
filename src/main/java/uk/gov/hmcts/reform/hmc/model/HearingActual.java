@@ -2,12 +2,12 @@ package uk.gov.hmcts.reform.hmc.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
-import javax.validation.Valid;
 
 @Data
 @NoArgsConstructor

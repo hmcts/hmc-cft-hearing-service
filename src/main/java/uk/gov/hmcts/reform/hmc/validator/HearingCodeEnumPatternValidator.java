@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingCode;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 public class HearingCodeEnumPatternValidator implements ConstraintValidator<HearingCodeEnumPattern, String> {
     private List<String> acceptedValues;

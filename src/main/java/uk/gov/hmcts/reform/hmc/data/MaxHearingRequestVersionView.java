@@ -1,12 +1,11 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Immutable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Table(name = "max_hearing_request_version")
 @EqualsAndHashCode(callSuper = true)
