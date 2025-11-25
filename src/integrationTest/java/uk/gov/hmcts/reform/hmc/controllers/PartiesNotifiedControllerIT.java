@@ -115,8 +115,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
                 .andExpect(status().is(400))
-                .andExpect(jsonPath("$.errors", hasItem(NON_UNIQUE_HEARING_RESPONSE)))
-                .andReturn();
+                .andExpect(jsonPath("$.errors", hasItem(NON_UNIQUE_HEARING_RESPONSE)));
         }
 
         @Test

@@ -70,13 +70,9 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
                 );
             }
         } catch (javax.persistence.NonUniqueResultException | org.hibernate.NonUniqueResultException e) {
-            log.error("Hearing id {} has multiple responses with requestVersion {}, receivedDateTime {}",
-                      hearingId, requestVersion, receivedDateTime);
-            throw new PartiesNotifiedBadRequestException(NON_UNIQUE_HEARING_RESPONSE);
+            nonUniqueException(hearingId, requestVersion, receivedDateTime);
         } catch (IncorrectResultSizeDataAccessException e) {
-            log.error("Hearing id {} has multiple responses with requestVersion {}, receivedDateTime {}",
-                      hearingId, requestVersion, receivedDateTime);
-            throw new PartiesNotifiedBadRequestException(NON_UNIQUE_HEARING_RESPONSE);
+            nonUniqueException(hearingId, requestVersion, receivedDateTime);
         }
     }
 
@@ -119,6 +115,12 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
                                  .comparing(PartiesNotifiedResponse::getRequestVersion).reversed()
                                  .thenComparing(Comparator.comparing(
                                      PartiesNotifiedResponse::getResponseReceivedDateTime).reversed()));
+    }
+
+    private static void nonUniqueException(Long hearingId, Integer requestVersion, LocalDateTime receivedDateTime) {
+        log.error("Hearing id {} has multiple responses with requestVersion {}, receivedDateTime {}",
+                  hearingId, requestVersion, receivedDateTime);
+        throw new PartiesNotifiedBadRequestException(NON_UNIQUE_HEARING_RESPONSE);
     }
 
 }
