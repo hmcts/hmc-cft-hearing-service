@@ -185,12 +185,12 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
         }
 
         @Test
-        void shouldFailWithJavaXNonUniqueResultException() throws JsonProcessingException {
+        void shouldFailWithJakartaNonUniqueResultException() throws JsonProcessingException {
             JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
             PartiesNotified partiesNotified = generatePartiesNotified(jsonNode);
             when(hearingRepository.existsById(anyLong())).thenReturn(true);
             when(hearingResponseRepository.getHearingResponse(anyLong(), anyInt(), any()))
-                .thenThrow(new javax.persistence.NonUniqueResultException("more than one result from the query"));
+                .thenThrow(new jakarta.persistence.NonUniqueResultException("more than one result from the query"));
             LocalDateTime dateTime = LocalDateTime.now();
             Exception exception = assertThrows(PartiesNotifiedBadRequestException.class, () ->
                 partiesNotifiedService.getPartiesNotified(2000000000L, 1,
