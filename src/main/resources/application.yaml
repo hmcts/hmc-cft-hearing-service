@@ -6,6 +6,9 @@ management:
   endpoint:
     health:
       show-details: "always"
+  health:
+    ssl:
+      enabled: false
   endpoints:
     web:
       base-path: /

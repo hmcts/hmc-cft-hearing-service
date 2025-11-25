@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.hmc.config;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,8 +48,6 @@ class RestTemplateConfiguration {
         final RestTemplate restTemplate = new RestTemplate();
         HttpComponentsClientHttpRequestFactory requestFactory =
             new HttpComponentsClientHttpRequestFactory(getHttpClient());
-        requestFactory.setReadTimeout(readTimeout);
-        LOG.info("readTimeout: {}", readTimeout);
         restTemplate.setRequestFactory(requestFactory);
         return restTemplate;
     }
@@ -63,17 +64,28 @@ class RestTemplateConfiguration {
         LOG.info("maxClientPerRoute: {}", maxClientPerRoute);
         LOG.info("validateAfterInactivity: {}", validateAfterInactivity);
         LOG.info("connectionTimeout: {}", timeout);
+        LOG.info("readTimeout: {}", readTimeout);
+
+        cm.setConnectionConfigResolver((route) -> ConnectionConfig.custom()
+            .setConnectTimeout(Timeout.of(timeout, TimeUnit.MILLISECONDS))
+            .setSocketTimeout(Timeout.of(timeout, TimeUnit.MILLISECONDS))
+            .setValidateAfterInactivity(Timeout.of(validateAfterInactivity, TimeUnit.MILLISECONDS))
+            .build()
+        );
+
+        cm.setSocketConfigResolver((route) -> SocketConfig.custom()
+            .setSoTimeout(Timeout.of(readTimeout, TimeUnit.MILLISECONDS))
+            
+            .build()
+        );
 
         cm.setMaxTotal(maxTotalHttpClient);
-        cm.closeIdleConnections(maxSecondsIdleConnection, TimeUnit.SECONDS);
+        cm.closeIdle(Timeout.of(maxSecondsIdleConnection, TimeUnit.SECONDS));
         cm.setDefaultMaxPerRoute(maxClientPerRoute);
-        cm.setValidateAfterInactivity(validateAfterInactivity);
         final RequestConfig
             config =
             RequestConfig.custom()
-                .setConnectTimeout(timeout)
-                .setConnectionRequestTimeout(timeout)
-                .setSocketTimeout(timeout)
+                .setConnectionRequestTimeout(Timeout.of(timeout, TimeUnit.MILLISECONDS))
                 .build();
 
         return HttpClientBuilder.create()
