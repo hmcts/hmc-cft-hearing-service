@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.client.futurehearing;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
@@ -12,12 +11,11 @@ import uk.gov.hmcts.reform.hmc.BaseTest;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.removeStubFailToReturnToken;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.removeStubFailToReturnTokenTimeout;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubFailToReturnToken;
@@ -40,11 +38,7 @@ class HearingManagementInterfaceHealthIndicatorIT extends BaseTest {
     private static final String KEY_API_STATUS_CODE = "apiStatusCode";
     private static final String KEY_API_ERROR_RESPONSE = "apiErrorResponse";
 
-    private static final String MESSAGE_MISSING_INVALID_PARAMS = "Missing or invalid request parameters";
-    private static final String MESSAGE_SERVER_ERROR = "Server error";
-
     private static final String API_NAME_AD = "ActiveDirectory";
-    private static final String API_NAME_HMI = "HearingManagementInterface";
 
     private final HearingManagementInterfaceHealthIndicator hmiHealthIndicator;
 
@@ -54,7 +48,7 @@ class HearingManagementInterfaceHealthIndicatorIT extends BaseTest {
     }
 
     @ParameterizedTest
-    @MethodSource("healthStatuses")
+    @MethodSource("uk.gov.hmcts.reform.hmc.utils.TestingUtil#healthStatuses")
     void healthShouldMatchHealthCheckStatus(Status healthStatus) {
         stubHealthCheck(AUTH_TOKEN, healthStatus);
 
@@ -64,16 +58,19 @@ class HearingManagementInterfaceHealthIndicatorIT extends BaseTest {
     }
 
     @ParameterizedTest
-    @MethodSource("activeDirectoryApiErrors")
+    @MethodSource("uk.gov.hmcts.reform.hmc.utils.TestingUtil#adApiErrorsAndExpectedHealthCheckValues")
     void healthShouldBeDownForActiveDirectoryApiErrors(int responseStatusCode,
                                                        String responseErrorDescription,
                                                        List<Integer> responseErrorCodes,
-                                                       Map<String, Object> expectedDetails) {
+                                                       String apiName,
+                                                       String message,
+                                                       Integer statusCode,
+                                                       String errorResponse) {
         stubFailToReturnToken(responseStatusCode, responseErrorDescription, responseErrorCodes);
 
         Health health = hmiHealthIndicator.health();
 
-        assertHealthDown(health, expectedDetails);
+        assertHealthDown(health, apiName, message, statusCode, errorResponse);
 
         removeStubFailToReturnToken();
     }
@@ -87,88 +84,49 @@ class HearingManagementInterfaceHealthIndicatorIT extends BaseTest {
 
         Health health = hmiHealthIndicator.health();
 
-        Map<String, Object> expectedDetails = Map.of(KEY_MESSAGE, "Connection/Read timeout",
-                                                     KEY_API_NAME, API_NAME_AD);
-        assertHealthDown(health, expectedDetails);
+        assertHealthDown(health, API_NAME_AD, "Connection/Read timeout", null, null);
 
         removeStubFailToReturnTokenTimeout();
     }
 
     @ParameterizedTest
-    @MethodSource("hmiApiErrors")
+    @MethodSource("uk.gov.hmcts.reform.hmc.utils.TestingUtil#hmiApiErrorsAndExpectedHealthCheckValues")
     void healthShouldBeDownForHmiApiErrors(int responseStatusCode,
                                            String responseMessage,
-                                           Map<String, Object> expectedDetails) {
+                                           String apiName,
+                                           String message,
+                                           Integer statusCode,
+                                           String errorResponse) {
         stubHealthCheckThrowingError(AUTH_TOKEN, responseStatusCode, responseMessage);
 
         Health health = hmiHealthIndicator.health();
 
-        assertHealthDown(health, expectedDetails);
+        assertHealthDown(health, apiName, message, statusCode, errorResponse);
     }
 
-    private static Stream<Arguments> healthStatuses() {
-        return Stream.of(
-            arguments(Status.UP),
-            arguments(Status.DOWN),
-            arguments(Status.OUT_OF_SERVICE),
-            arguments(Status.UNKNOWN)
-        );
-    }
-
-    private static Stream<Arguments> activeDirectoryApiErrors() {
-        String expectedAdErrorResponse = """
-            {
-                "error_description":"An AD API error",
-                "error_codes":[1000]
-            }""";
-
-        return Stream.of(
-            arguments(400, "An AD API error", List.of(1000), Map.of(KEY_MESSAGE, MESSAGE_MISSING_INVALID_PARAMS,
-                                                                    KEY_API_NAME, API_NAME_AD,
-                                                                    KEY_API_STATUS_CODE, 400,
-                                                                    KEY_API_ERROR_RESPONSE, expectedAdErrorResponse)
-            ),
-            arguments(500, "Another AD API error", List.of(2000), Map.of(KEY_MESSAGE, MESSAGE_SERVER_ERROR,
-                                                                         KEY_API_NAME, API_NAME_AD)
-            )
-        );
-    }
-
-    private static Stream<Arguments> hmiApiErrors() {
-        String expectedHmiErrorResponse = """
-            {
-                "statusCode": 401,
-                "message": "An HMI API error"
-            }""";
-
-        return Stream.of(
-            arguments(401, "An HMI API error", Map.of(KEY_MESSAGE, MESSAGE_MISSING_INVALID_PARAMS,
-                                                      KEY_API_NAME, API_NAME_HMI,
-                                                      KEY_API_STATUS_CODE, 401,
-                                                      KEY_API_ERROR_RESPONSE, expectedHmiErrorResponse)
-            ),
-            arguments(500, "Another HMI API error", Map.of(KEY_MESSAGE, MESSAGE_SERVER_ERROR,
-                                                           KEY_API_NAME, API_NAME_HMI)
-            )
-        );
-    }
-
-    private void assertHealthDown(Health health, Map<String, Object> expectedHealthDetails) {
+    private void assertHealthDown(Health health,
+                                  String apiName,
+                                  String message,
+                                  Integer statusCode,
+                                  String errorResponse) {
         assertNotNull(health, "Health should not be null");
         assertEquals(Status.DOWN, health.getStatus(), "Health status should be DOWN");
 
         Map<String, Object> actualHealthDetails = health.getDetails();
         assertNotNull(actualHealthDetails, "Health details should not be null");
-        assertEquals(expectedHealthDetails.size(),
-                     actualHealthDetails.size(),
-                     "Health details does not contain expected number of items");
 
-        for (String key : expectedHealthDetails.keySet()) {
-            assertTrue(actualHealthDetails.containsKey(key),
-                       "Health details should contain an entry for '" + key + "'");
-            assertEquals(expectedHealthDetails.get(key),
-                         actualHealthDetails.get(key),
-                         "Details entry for '" + key + "' has unexpected value");
+        assertHealthEntry(actualHealthDetails, KEY_API_NAME, apiName);
+        assertHealthEntry(actualHealthDetails, KEY_MESSAGE, message);
+        assertHealthEntry(actualHealthDetails, KEY_API_STATUS_CODE, statusCode);
+        assertHealthEntry(actualHealthDetails, KEY_API_ERROR_RESPONSE, errorResponse);
+    }
+
+    private void assertHealthEntry(Map<String, Object> healthDetails, String key, Object value) {
+        if (value == null) {
+            assertFalse(healthDetails.containsKey(key), "Health details should not contain an entry for '" + key + "'");
+        } else {
+            assertTrue(healthDetails.containsKey(key), "Health details should contain an entry for '" + key + "'");
+            assertEquals(value, healthDetails.get(key), "Health details entry for '" + key + "' has unexpected value");
         }
     }
 }

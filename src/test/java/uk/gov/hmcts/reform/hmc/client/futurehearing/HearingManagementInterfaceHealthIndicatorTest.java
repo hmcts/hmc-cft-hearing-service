@@ -53,7 +53,7 @@ class HearingManagementInterfaceHealthIndicatorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("healthCheckStatuses")
+    @MethodSource("uk.gov.hmcts.reform.hmc.utils.TestingUtil#healthStatuses")
     void healthShouldMatchHealthCheckStatus(Status healthStatus) {
         HealthCheckResponse response = new HealthCheckResponse();
         response.setStatus(healthStatus);
@@ -110,15 +110,6 @@ class HearingManagementInterfaceHealthIndicatorTest {
                      "Health details has unexpected value for key 'message'");
 
         verify(futureHearingRepository).privateHealthCheck();
-    }
-
-    private static Stream<Arguments> healthCheckStatuses() {
-        return Stream.of(
-            arguments(Status.UP),
-            arguments(Status.DOWN),
-            arguments(Status.OUT_OF_SERVICE),
-            arguments(Status.UNKNOWN)
-        );
     }
 
     private static Stream<Arguments> healthCheckExceptions() {
@@ -184,13 +175,5 @@ class HearingManagementInterfaceHealthIndicatorTest {
         );
     }
 
-    private static class ExpectedDetail {
-        String key;
-        Object value;
-
-        ExpectedDetail(String key, Object value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
+    private record ExpectedDetail(String key, Object value) {}
 }

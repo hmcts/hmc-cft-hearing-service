@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Status;
@@ -23,14 +22,12 @@ import uk.gov.hmcts.reform.hmc.exceptions.HealthCheckException;
 import uk.gov.hmcts.reform.hmc.exceptions.HealthCheckHmiException;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.removeStubFailToReturnToken;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.removeStubFailToReturnTokenTimeout;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubDeleteMethodThrowingError;
@@ -54,14 +51,14 @@ class FutureHearingRepositoryIT extends BaseTest {
     private static final String TOKEN = "example-token";
     private static final String HMI_REQUEST_URL = "/resources/linked-hearing-group";
     private static final String REQUEST_ID = "12345";
-    private static final String MESSAGE_MISSING_INVALID_PARAMS = "Missing or invalid request parameters";
-    private static final String MESSAGE_SERVER_ERROR = "Server error";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
     private static final String INSERT_LINKED_HEARINGS_DATA_SCRIPT = "classpath:sql/insert-linked-hearings.sql";
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
         .modules(new Jdk8Module())
         .build();
     private static final JsonNode data = OBJECT_MAPPER.convertValue("Test data", JsonNode.class);
+
+    private static final String API_NAME_AD = "ActiveDirectory";
 
     private final DefaultFutureHearingRepository defaultFutureHearingRepository;
 
@@ -127,7 +124,7 @@ class FutureHearingRepositoryIT extends BaseTest {
     class PrivateHealthCheck {
 
         @ParameterizedTest
-        @MethodSource("healthStatuses")
+        @MethodSource("uk.gov.hmcts.reform.hmc.utils.TestingUtil#healthStatuses")
         void shouldSuccessfullyGetHealthStatus(Status healthStatus) {
             stubHealthCheck(TOKEN, healthStatus);
 
@@ -138,19 +135,21 @@ class FutureHearingRepositoryIT extends BaseTest {
         }
 
         @ParameterizedTest
-        @MethodSource("adApiErrors")
+        @MethodSource("uk.gov.hmcts.reform.hmc.utils.TestingUtil#adApiErrorsAndExpectedHealthCheckValues")
         void shouldThrowHealthCheckActiveDirectoryExceptionForAdApiErrors(Integer responseStatusCode,
                                                                           String responseErrorDescription,
                                                                           List<Integer> responseErrorCodes,
-                                                                          HealthCheckActiveDirectoryException
-                                                                              expectedException) {
+                                                                          String apiName,
+                                                                          String message,
+                                                                          Integer statusCode,
+                                                                          String errorResponse) {
             stubFailToReturnToken(responseStatusCode, responseErrorDescription, responseErrorCodes);
 
             HealthCheckActiveDirectoryException actualException =
                 assertThrows(HealthCheckActiveDirectoryException.class,
                              defaultFutureHearingRepository::privateHealthCheck);
 
-            assertHealthCheckException(expectedException, actualException);
+            assertHealthCheckException(apiName, message, statusCode, errorResponse, actualException);
 
             removeStubFailToReturnToken();
         }
@@ -166,102 +165,51 @@ class FutureHearingRepositoryIT extends BaseTest {
                 assertThrows(HealthCheckActiveDirectoryException.class,
                              defaultFutureHearingRepository::privateHealthCheck);
 
-            HealthCheckActiveDirectoryException expectedException =
-                new HealthCheckActiveDirectoryException("Connection/Read timeout");
-            assertHealthCheckException(expectedException, actualException);
+            assertHealthCheckException(API_NAME_AD, "Connection/Read timeout", null, null, actualException);
 
             removeStubFailToReturnTokenTimeout();
         }
 
         @ParameterizedTest
-        @MethodSource("hmiApiErrors")
+        @MethodSource("uk.gov.hmcts.reform.hmc.utils.TestingUtil#hmiApiErrorsAndExpectedHealthCheckValues")
         void shouldThrowHealthCheckHmiExceptionForHmiApiErrors(Integer responseStatusCode,
                                                                String responseMessage,
-                                                               HealthCheckHmiException expectedException) {
+                                                               String apiName,
+                                                               String message,
+                                                               Integer statusCode,
+                                                               String errorResponse) {
             stubHealthCheckThrowingError(TOKEN, responseStatusCode, responseMessage);
 
             HealthCheckHmiException actualException =
                 assertThrows(HealthCheckHmiException.class,
                              defaultFutureHearingRepository::privateHealthCheck);
 
-            assertHealthCheckException(expectedException, actualException);
+            assertHealthCheckException(apiName, message, statusCode, errorResponse, actualException);
         }
 
-        private void assertHealthCheckException(HealthCheckException expectedException,
+        private void assertHealthCheckException(String apiName,
+                                                String message,
+                                                Integer statusCode,
+                                                String errorResponse,
                                                 HealthCheckException actualException) {
-            assertEquals(expectedException.getApiName(),
-                         actualException.getApiName(),
-                         "Health check exception has unexpected API name");
+            assertEquals(apiName, actualException.getApiName(), "Health check exception has unexpected API name");
 
-            assertEquals(expectedException.getMessage(),
-                         actualException.getMessage(),
-                         "Health check exception has unexpected message");
+            assertEquals(message, actualException.getMessage(), "Health check exception has unexpected message");
 
-            if (expectedException.getStatusCode() == null) {
-                assertNull(actualException.getStatusCode(), "Health check exception status code should be null");
+            if (statusCode == null) {
+                assertNull(statusCode, "Health check exception status code should be null");
             } else {
-                assertEquals(expectedException.getStatusCode(),
+                assertEquals(statusCode,
                              actualException.getStatusCode(),
                              "Health check exception has unexpected status code");
             }
-            if (expectedException.getErrorResponse() == null) {
+            if (errorResponse == null) {
                 assertNull(actualException.getErrorResponse(), "Health check exception error response should be null");
             } else {
-                assertEquals(expectedException.getErrorResponse(),
+                assertEquals(errorResponse,
                              actualException.getErrorResponse(),
                              "Health check exception has unexpected error response");
             }
-        }
-
-        private static Stream<Arguments> healthStatuses() {
-            return Stream.of(
-                arguments(Status.UP),
-                arguments(Status.DOWN),
-                arguments(Status.OUT_OF_SERVICE),
-                arguments(Status.UNKNOWN)
-            );
-        }
-
-        private static Stream<Arguments> adApiErrors() {
-            String expectedAdErrorResponse = """
-                {
-                    "error_description":"An AD API error",
-                    "error_codes":[1000]
-                }""";
-
-            return Stream.of(
-                arguments(400,
-                          "An AD API error",
-                          List.of(1000),
-                          new HealthCheckActiveDirectoryException(MESSAGE_MISSING_INVALID_PARAMS,
-                                                                  400,
-                                                                  expectedAdErrorResponse)
-                ),
-                arguments(500,
-                          "Another AD API error",
-                          List.of(2000),
-                          new HealthCheckActiveDirectoryException(MESSAGE_SERVER_ERROR))
-            );
-        }
-
-        private static Stream<Arguments> hmiApiErrors() {
-            String expectedHmiErrorResponse = """
-                {
-                    "statusCode": 401,
-                    "message": "An HMI API error"
-                }""";
-
-            return Stream.of(
-                arguments(401,
-                          "An HMI API error",
-                          new HealthCheckHmiException(MESSAGE_MISSING_INVALID_PARAMS,
-                                                      401,
-                                                      expectedHmiErrorResponse)
-                ),
-                arguments(500,
-                          "Another HMI API error",
-                          new HealthCheckHmiException(MESSAGE_SERVER_ERROR))
-            );
         }
     }
 }
