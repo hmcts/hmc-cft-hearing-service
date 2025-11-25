@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.hmc;
 
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,8 +11,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.ServiceException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import java.util.List;
 
 @Getter
 @Component
@@ -68,6 +69,12 @@ public class ApplicationParams {
 
     @Value("${hmcts-deployment-id.enabled}")
     private boolean hmctsDeploymentIdEnabled;
+
+    @Value("#{'${supportTools.service-whitelist}'.split(',')}")
+    private List<String> authorisedSupportToolServices;
+
+    @Value("#{'${supportTools.role-whitelist}'.split(',')}")
+    private List<String> authorisedSupportToolRoles;
 
 
     public static String encode(final String stringToEncode) {

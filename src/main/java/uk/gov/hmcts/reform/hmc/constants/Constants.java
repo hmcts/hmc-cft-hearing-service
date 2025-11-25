@@ -81,4 +81,15 @@ public final class Constants {
     public static final String AMQP_CACHE = "com.azure.core.amqp.cache";
     public static final String AMQP_CACHE_VALUE = "true";
     public static final Integer ELASTIC_QUERY_DEFAULT_SIZE = 10;
+    public static final String MANAGE_EXCEPTION_SUCCESS_MESSAGE = "successfully transitioned hearing : %s, "
+        +  "from state : %s to state: %s";
+    public static final String MANAGE_EXCEPTION_AUDIT_EVENT = "tech_support";
+    public static final String IDAM_TECH_ADMIN_ROLE = "hmc_tech_admin";
+    public static final String TECH_ADMIN_UI_SERVICE = "tech_admin_ui";
+    public static final int MAX_HEARING_REQUESTS = 100;
+    public static final String MANAGE_EXCEPTION_COMMIT_FAIL_EVENT = "tech_support_commit_fail";
+    public static final String MANAGE_EXCEPTION_COMMIT_FAIL = "Database commit failed";
+    public static final String FINAL_STATE_MESSAGE = "Hearing id: {} with Case reference: {} , Service Code: {}"
+        + " and Response received but current hearing status: {}; LA status: {} no further action taken ";
+    public static final String HEARING_FINAL_STATE = "hearing-is-in-final-state";
 }

@@ -62,6 +62,10 @@ fh:
 hmcts-deployment-id:
   enabled: ${HMCTS_DEPLOYMENT_ID:false}
 
+supportTools:
+  service-whitelist: ${SUPPORT_TOOLS_AUTHORISED_SERVICES:tech_admin_ui}
+  role-whitelist:  ${SUPPORT_TOOLS_AUTHORISED_ROLES:hmc_tech_admin}
+
 wiremock:
   server:
     httpsPort: -1

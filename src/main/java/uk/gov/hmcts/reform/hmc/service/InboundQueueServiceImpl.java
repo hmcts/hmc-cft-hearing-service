@@ -4,11 +4,17 @@ import com.azure.messaging.servicebus.ServiceBusReceivedMessageContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
+import uk.gov.hmcts.reform.hmc.client.hmi.HearingCode;
 import uk.gov.hmcts.reform.hmc.client.hmi.HearingResponse;
 import uk.gov.hmcts.reform.hmc.client.hmi.SyncResponse;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
@@ -26,14 +32,11 @@ import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import javax.transaction.Transactional;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.EXCEPTION_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.FH;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.FINAL_STATE_MESSAGE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_FINAL_STATE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_ACK;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LA_FAILURE_STATUS;
@@ -180,10 +183,27 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     public void updateHearingAndStatus(Long hearingId, HearingResponse hearingResponse) {
         Optional<HearingEntity> hearingResult = hearingRepository.findById(hearingId);
         if (hearingResult.isPresent()) {
-            HearingEntity hearingToSave = null;
+            HearingEntity hearingToSave;
+            HearingEntity currentHearing = hearingResult.get();
+            HearingStatus currentStatus = HearingStatus.valueOf(currentHearing.getStatus());
+            // Terminal statuses: CANCELLED, ADJOURNED, COMPLETED
+            if (HearingStatus.isFinalStatus(currentStatus)) {
+                log.info(FINAL_STATE_MESSAGE,
+                         hearingId,
+                         currentHearing.getLatestCaseReferenceNumber(),
+                         currentHearing.getLatestCaseHearingRequest().getHmctsServiceCode(),
+                         currentStatus,
+                         hearingResponse.getHearing().getHearingCaseStatus().getDescription(),
+                         HearingCode.getByNumber(hearingResponse.getHearing().getHearingCaseStatus().getCode())
+                );
+                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(currentHearing,
+                                                                                HEARING_FINAL_STATE,LA_SUCCESS_STATUS,
+                                                                                FH, HMC, null);
+                return;
+            }
             hearingToSave = hmiHearingResponseMapper.mapHmiHearingToEntity(
                 hearingResponse,
-                hearingResult.get()
+                currentHearing
             );
             hearingToSave = hearingToSave.updateLastGoodStatus();
             hearingRepository.save(hearingToSave);

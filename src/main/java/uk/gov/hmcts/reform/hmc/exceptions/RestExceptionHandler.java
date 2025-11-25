@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.hmc.exceptions;
 
 import feign.FeignException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,7 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 @Slf4j
@@ -26,12 +27,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
-        MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         String[] errors = ex.getBindingResult().getFieldErrors().stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .toArray(String[]::new);
         log.debug("MethodArgumentNotValidException:{}", ex.getLocalizedMessage());
-        return toResponseEntity(status, errors);
+        return toResponseEntity(HttpStatus.valueOf(status.value()), errors);
     }
 
     @ExceptionHandler(BadRequestException.class)
@@ -119,6 +120,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleLinkedHearingNotValidForUnlinkingException(Exception ex) {
         log.debug(BAD_REQUEST_EXCEPTION + ":{}", ex.getLocalizedMessage());
         return toResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidManageHearingServiceException.class)
+    protected ResponseEntity<Object> handleManageHearingServiceException(InvalidManageHearingServiceException ex) {
+        log.debug("InvalidManageHearingServiceException: {}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     private ResponseEntity<Object> toResponseEntity(HttpStatus status, String... errors) {

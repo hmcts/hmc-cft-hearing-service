@@ -2,15 +2,15 @@ package uk.gov.hmcts.reform.hmc.client.hmi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor

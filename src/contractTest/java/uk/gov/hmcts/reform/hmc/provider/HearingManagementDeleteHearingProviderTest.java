@@ -13,9 +13,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.hmc.BasePactTesting;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -40,7 +40,7 @@ public class HearingManagementDeleteHearingProviderTest {
     @LocalServerPort
     private int port;
 
-    @MockBean
+    @MockitoBean
     protected HearingManagementService mockService;
 
     @Value("${pact.verifier.publishResults:false}")

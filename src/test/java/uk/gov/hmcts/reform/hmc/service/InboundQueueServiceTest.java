@@ -16,6 +16,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -53,9 +55,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.FINAL_STATE_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
@@ -494,6 +498,124 @@ class InboundQueueServiceTest {
             verify(hearingRepository, times(2)).findById(2000000000L);
         }
 
+        @ParameterizedTest
+        @EnumSource(value = HearingStatus.class, names = {"CANCELLED", "ADJOURNED", "COMPLETED"})
+        void shouldProcessHearingResponseMessageWhenHearingIsInTerminalState(HearingStatus terminalStatus)
+            throws JsonProcessingException {
+            Map<String, Object> applicationProperties = new HashMap<>();
+            applicationProperties.put(HEARING_ID, "2000000000");
+            applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
+
+            final JsonNode jsonNodeLocal = OBJECT_MAPPER.readTree("""
+                                                                {
+                                                                  "meta": {
+                                                                    "transactionIdCaseHQ": "<transactionIdCaseHQ>",
+                                                                    "timestamp": "2021-08-10T12:20:00"
+                                                                  },
+                                                                  "hearing": {
+                                                                    "listingRequestId": "<listingRequestId>",
+                                                                    "hearingCaseVersionId": 10,
+                                                                    "hearingCaseIdHMCTS": "<hearingCaseIdHMCTS>",
+                                                                    "hearingCaseJurisdiction": {
+                                                                      "test": "value"
+                                                                    },
+                                                                    "hearingCaseStatus": {
+                                                                      "code": 100,
+                                                                      "description": "Closed"
+                                                                    },
+                                                                    "hearingIdCaseHQ": "<hearingIdCaseHQ>",
+                                                                    "hearingType": {
+                                                                      "test": "value"
+                                                                    },
+                                                                    "hearingStatus": {
+                                                                      "code": "DRAFT",
+                                                                      "description": "<description>"
+                                                                    },
+                                                                    "hearingCancellationReason": "<reason>",
+                                                                    "hearingStartTime": "2021-08-10T12:20:00",
+                                                                    "hearingEndTime": "2021-08-10T12:20:00",
+                                                                    "hearingPrivate": true,
+                                                                    "hearingRisk": true,
+                                                                    "hearingTranslatorRequired": false,
+                                                                    "hearingCreatedDate": "2021-08-10T12:20:00",
+                                                                    "hearingCreatedBy": "testuser",
+                                                                    "hearingVenue": {
+                                                                      "locationIdCaseHQ": "<locationIdCaseHQ>",
+                                                                      "locationName": "<locationName>",
+                                                                      "locationRegion": "<locationRegion>",
+                                                                      "locationCluster": "<locationCluster>",
+                                                                      "locationReferences": [{
+                                                                        "key": "<key>",
+                                                                        "value": "<value>"
+                                                                      }]
+                                                                    },
+                                                                    "hearingRoom": {
+                                                                      "locationIdCaseHQ": "<locationIdCaseHQ>",
+                                                                      "locationName": "<roomName>",
+                                                                      "locationRegion": {
+                                                                        "key": "<key>",
+                                                                        "value": "<value>"
+                                                                      },
+                                                                      "locationCluster": {
+                                                                        "key": "<key>",
+                                                                        "value": "<value>"
+                                                                      },
+                                                                      "locationReferences": {
+                                                                        "key": "<key>",
+                                                                        "value": "<value>"
+                                                                      }
+                                                                    },
+                                                                    "hearingAttendees": [{
+                                                                      "entityIdCaseHQ": "<id>",
+                                                                      "entityId": "<id>",
+                                                                      "entityType": "<type>",
+                                                                      "entityClass": "<class>",
+                                                                      "entityRole": {
+                                                                        "key": "<key>",
+                                                                        "value": "<value>"
+                                                                      },
+                                                                      "hearingChannel": {
+                                                                        "code": "<key>",
+                                                                        "description": "<value>"
+                                                                      }
+                                                                    }],
+                                                                    "hearingJohs": [{
+                                                                      "johId": "<johId>",
+                                                                      "johCode": "<johCode>",
+                                                                      "johName": "<johName>",
+                                                                      "johPosition": {
+                                                                        "key": "<key>",
+                                                                        "value": "<value>"
+                                                                      },
+                                                                      "isPresiding": false
+                                                                    }],
+                                                                    "hearingSessions": [{
+                                                                      "hearingStartTime": "2021-08-10T12:20:00",
+                                                                      "hearingEndTime": "2021-08-10T12:20:00"
+                                                                    }]
+                                                                  }
+                                                                }
+                                                                """);
+            HearingEntity hearingEntity = generateHearingEntity(2000000000L, null, "");
+            hearingEntity.setStatus(terminalStatus.name());
+            given(messageContext.getMessage()).willReturn(message);
+            given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L))
+                .thenReturn(java.util.Optional.of(hearingEntity));
+            ListAppender<ILoggingEvent> listAppender = setupLogger();
+            inboundQueueService.processMessage(jsonNodeLocal, messageContext);
+            assertDynatraceLogMessageForTerminalState(listAppender, "2000000000", "1111222233334444",
+                                      "TEST", terminalStatus.name(),"Closed");
+            verify(hearingRepository, never()).save(any());
+            verify(hmiHearingResponseMapper, never()).mapHmiHearingToEntity(any(), any());
+            verify(hearingRepository, times(1)).findById(2000000000L);
+            verify(hearingStatusAuditService, times(1))
+                .saveAuditTriageDetailsWithUpdatedDate(any(), any(), any(), any(), any(), any());
+            verify(messageSenderToTopicConfiguration, times(0))
+                .sendMessage(any(), any(), any(), any());
+        }
+
         @Test
         void shouldProcessHearingResponseMessageWithErrors() throws JsonProcessingException {
             Map<String, Object> applicationProperties = new HashMap<>();
@@ -884,6 +1006,8 @@ class InboundQueueServiceTest {
         applicationProperties.put(MESSAGE_TYPE, MessageType.HEARING_RESPONSE);
         HearingEntity hearingEntity = generateHearingEntity(2000000000L,400,
                                                             "Violations are Hearing status");
+        hearingEntity.setStatus(null);
+        when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         hearingEntity.setStatus(HearingStatus.EXCEPTION.name());
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         given(messageContext.getMessage()).willReturn(message);
@@ -994,6 +1118,7 @@ class InboundQueueServiceTest {
         entity.setId(hearingId);
         entity.setErrorCode(errorCode);
         entity.setErrorDescription(errorDescription);
+        entity.setStatus(HearingStatus.AWAITING_LISTING.name());
         HearingResponseEntity hearingResponseEntity = new HearingResponseEntity();
         hearingResponseEntity.setRequestVersion(1);
         entity.setHearingResponses(List.of(hearingResponseEntity));
@@ -1033,5 +1158,19 @@ class InboundQueueServiceTest {
                          + caseRef + " , Service Code: " + serviceCode + " and Error Description: "
                          + errorDescription + " updated to status "
                          + HearingStatus.EXCEPTION.name(), logsList.get(finalErrorIndex).getFormattedMessage());
+    }
+
+    private void assertDynatraceLogMessageForTerminalState(ListAppender<ILoggingEvent> listAppender, String hearingID,
+                                                           String caseRef, String serviceCode, String currentStatus,
+                                                           String terminalStatus) {
+        List<ILoggingEvent> logsList = listAppender.list;
+        int finalErrorIndex = logsList.size() - 1;
+        assertEquals(Level.INFO, logsList.get(finalErrorIndex).getLevel());
+        assertEquals(FINAL_STATE_MESSAGE, logsList.get(finalErrorIndex).getMessage());
+        assertEquals("Hearing id: " + hearingID + " with Case reference: "
+                         + caseRef + " , Service Code: " + serviceCode + " and Response received but "
+                         + "current hearing status: "
+                         + currentStatus + "; LA status: " + terminalStatus + " no further action taken ",
+                     logsList.get(finalErrorIndex).getFormattedMessage());
     }
 }

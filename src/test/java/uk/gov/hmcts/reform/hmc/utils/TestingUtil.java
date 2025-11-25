@@ -7,6 +7,8 @@ import org.apache.http.HttpStatus;
 import org.junit.jupiter.params.provider.Arguments;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
 import uk.gov.hmcts.reform.hmc.data.ActualAttendeeIndividualDetailEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
@@ -42,6 +44,8 @@ import uk.gov.hmcts.reform.hmc.data.UnavailabilityEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestAction;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.helper.ElasticSearchQuery;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
@@ -67,6 +71,8 @@ import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.LocationType;
+import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
+import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.model.OrganisationDetails;
 import uk.gov.hmcts.reform.hmc.model.PanelPreference;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
@@ -76,11 +82,14 @@ import uk.gov.hmcts.reform.hmc.model.RelatedParty;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.RequirementType;
 import uk.gov.hmcts.reform.hmc.model.RoomAttribute;
+import uk.gov.hmcts.reform.hmc.model.SupportRequest;
+import uk.gov.hmcts.reform.hmc.model.SupportRequestResponse;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import uk.gov.hmcts.reform.hmc.model.UnavailabilityRanges;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.hmi.Entity;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -94,12 +103,14 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMI;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_DOW_TYPE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UNAVAILABILITY_RANGE_TYPE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_EMPTY;
 
 public class TestingUtil {
 
@@ -1849,6 +1860,107 @@ public class TestingUtil {
         );
     }
 
+    public static ManageExceptionRequest getManageExceptionRequest() {
+        SupportRequest request = new SupportRequest();
+        request.setCaseRef("Test");
+        request.setHearingId("2000000000");
+        request.setAction(ManageRequestAction.FINAL_STATE_TRANSITION.label);
+        request.setState(CANCELLED);
+        request.setNotes("Inc1234");
+        List<SupportRequest> supportRequestList = new ArrayList<>();
+        supportRequestList.add(request);
+        ManageExceptionRequest manageExceptionRequest = new ManageExceptionRequest();
+        manageExceptionRequest.setSupportRequests(supportRequestList);
+        return manageExceptionRequest;
+    }
+
+    public static ManageExceptionResponse getManageExceptionResponse() {
+        SupportRequestResponse response = new SupportRequestResponse();
+        response.setHearingId("2000000000");
+        response.setStatus(ManageRequestStatus.SUCCESSFUL.label);
+        response.setMessage("Request processed successfully");
+        List<SupportRequestResponse> supportRequestResponseList = new ArrayList<>();
+        supportRequestResponseList.add(response);
+        ManageExceptionResponse manageExceptionResponse = new ManageExceptionResponse();
+        manageExceptionResponse.setSupportRequestResponse(supportRequestResponseList);
+        return manageExceptionResponse;
+    }
+
+    public static ManageExceptionRequest invalidManageExceptionRequest() {
+        SupportRequest request = new SupportRequest();
+        request.setAction(ManageRequestAction.FINAL_STATE_TRANSITION.label);
+        request.setState(CANCELLED);
+        request.setNotes("Inc1234");
+        List<SupportRequest> supportRequestList = new ArrayList<>();
+        supportRequestList.add(request);
+        ManageExceptionRequest manageExceptionRequest = new ManageExceptionRequest();
+        manageExceptionRequest.setSupportRequests(supportRequestList);
+        return manageExceptionRequest;
+    }
+
+    public static ManageExceptionRequest manageExceptionRequest_StateAndActionEmpty() {
+        SupportRequest request = new SupportRequest();
+        request.setHearingId("2000000000");
+        request.setCaseRef("9856815055686759");
+        request.setNotes("Inc1234");
+        List<SupportRequest> supportRequestList = new ArrayList<>();
+        supportRequestList.add(request);
+        ManageExceptionRequest manageExceptionRequest = new ManageExceptionRequest();
+        manageExceptionRequest.setSupportRequests(supportRequestList);
+        return manageExceptionRequest;
+    }
+
+    public static ManageExceptionResponse invalidManageExceptionResponse() {
+        SupportRequestResponse response = new SupportRequestResponse();
+        response.setHearingId(null);
+        response.setStatus(ManageRequestStatus.FAILURE.label);
+        response.setMessage(HEARING_ID_EMPTY);
+        List<SupportRequestResponse> supportRequestResponseList = new ArrayList<>();
+        supportRequestResponseList.add(response);
+        ManageExceptionResponse manageExceptionResponse = new ManageExceptionResponse();
+        manageExceptionResponse.setSupportRequestResponse(supportRequestResponseList);
+        return manageExceptionResponse;
+    }
+
+    public static HearingEntity getHearingEntity(Long id,String status, String caseRef) {
+        HearingEntity hearingEntity = new HearingEntity();
+        hearingEntity.setId(id);
+        hearingEntity.setStatus(status);
+        CaseHearingRequestEntity caseHearingRequestEntity = getCaseHearingRequest(id,caseRef);
+        hearingEntity.setCaseHearingRequests(List.of(caseHearingRequestEntity));
+        return hearingEntity;
+    }
+
+    public static CaseHearingRequestEntity getCaseHearingRequest(Long id, String caseRef) {
+        CaseHearingRequestEntity entity = new CaseHearingRequestEntity();
+        entity.setVersionNumber(1);
+        entity.setCaseHearingID(id);
+        entity.setHearing(getCaseHearingsEntity());
+        entity.setHmctsServiceCode("TEST");
+        entity.setCaseReference(caseRef);
+        entity.setHearingType("Some hearing type");
+        entity.setListingAutoChangeReasonCode(ListingReasonCode.NO_MAPPING_AVAILABLE.getLabel());
+        entity.getHearing().setHearingResponses(List.of(hearingResponseEntities()));
+        entity.getHearing().getHearingResponses().get(0)
+            .setHearingDayDetails(List.of(hearingDayDetailsEntities()));
+        entity.setHearingParties(List.of(hearingPartyEntityInd()));
+        entity.setHearingChannels(hearingChannelsEntity());
+        return entity;
+    }
+
+    public static ManageExceptionRequest convertJsonToRequest(String filePath) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Resource resource = new ClassPathResource(filePath);
+        return objectMapper.readValue(resource.getInputStream(), ManageExceptionRequest.class);
+    }
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
 
+    public static HearingEntity getHearingEntityForFinalState(long id, String status, String caseRef) {
+        HearingEntity hearingEntity = getHearingEntity(id, status, caseRef);
+        hearingEntity.setHearingResponses(List.of(hearingResponseEntity()));
+        ActualHearingEntity actualHearingEntity = actualHearingEntity(PartyType.IND);
+        hearingEntity.getHearingResponses().get(0).setActualHearingEntity(actualHearingEntity);
+        return hearingEntity;
+    }
 }
