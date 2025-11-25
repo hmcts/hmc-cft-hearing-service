@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubHealthCheckThrowingEr
 // Set future-hearing-api read timeout value to force a timeout during AD API timeout test.
 @TestPropertySource(
     properties = {
-        "feign.client.config.future-hearing-api.readTimeout = 10"
+        "spring.cloud.openfeign.client.config.future-hearing-api.readTimeout = 10"
     }
 )
 class HearingManagementInterfaceHealthIndicatorIT extends BaseTest {
@@ -78,8 +78,6 @@ class HearingManagementInterfaceHealthIndicatorIT extends BaseTest {
     @Test
     void healthShouldBeDownForActiveDirectoryTimeout() {
         // Needs to be used in conjunction with the readTimeout property set in the TestPropertySource annotation.
-        // Note that when openfeign is updated to v4.x the property name will need to be changed to
-        // spring.cloud.openfeign.client.config.future-hearing-api.readTimeout
         stubFailToReturnTokenTimeout();
 
         Health health = hmiHealthIndicator.health();

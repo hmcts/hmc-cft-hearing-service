@@ -136,7 +136,7 @@ class FutureHearingRepositoryTest {
         final Request getTokenRequest =
             Request.create(POST, "/get/token/url", Collections.emptyMap(), null, StandardCharsets.UTF_8, null);
         RetryableException retryableException =
-            new RetryableException(400, "Active Directory timeout", POST, null, null, getTokenRequest);
+            new RetryableException(400, "Active Directory timeout", POST, null, (Long) null, getTokenRequest);
 
         given(activeDirectoryApiClient.authenticate(requestString)).willThrow(retryableException);
 
@@ -210,7 +210,7 @@ class FutureHearingRepositoryTest {
             arguments(new FutureHearingServerException("Active Directory server exception message"),
                       new HealthCheckActiveDirectoryException("Active Directory server exception message")
             ),
-            arguments(new RetryableException(400, "Active Directory timeout", POST, null, null, getTokenRequest),
+            arguments(new RetryableException(400, "Active Directory timeout", POST, null, (Long) null, getTokenRequest),
                       new HealthCheckActiveDirectoryException("Connection/Read timeout")
             )
         );
