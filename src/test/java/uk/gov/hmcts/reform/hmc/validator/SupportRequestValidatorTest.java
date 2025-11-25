@@ -1,5 +1,9 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
@@ -9,10 +13,6 @@ import uk.gov.hmcts.reform.hmc.model.SupportRequest;
 
 import java.util.List;
 import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.CASE_REF_EMPTY;

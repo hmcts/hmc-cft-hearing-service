@@ -3,15 +3,13 @@ package uk.gov.hmcts.reform.hmc;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.TextCodec;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.hmc.config.DataStoreUrlManager;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
@@ -36,7 +35,6 @@ import uk.gov.hmcts.reform.hmc.wiremock.extensions.DynamicOAuthJwkSetResponseTra
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-import javax.inject.Inject;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -70,7 +68,7 @@ public class BaseTest {
     protected SecurityUtils securityUtils;
     @Inject
     protected ApplicationParams applicationParams;
-    @MockBean
+    @MockitoBean
     protected MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
 
     @Inject
@@ -148,9 +146,9 @@ public class BaseTest {
 
     public static String generateDummyS2SToken(String serviceName) {
         return Jwts.builder()
-            .setSubject(serviceName)
-            .setIssuedAt(new Date())
-            .signWith(SignatureAlgorithm.HS256, TextCodec.BASE64.encode("AA"))
+            .subject(serviceName)
+            .issuedAt(new Date())
+            .signWith(Jwts.SIG.HS256.key().build(), Jwts.SIG.HS256)
             .compact();
     }
 }

@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.hmc.data;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 import java.io.IOException;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 
 
 @Converter(autoApply = true)

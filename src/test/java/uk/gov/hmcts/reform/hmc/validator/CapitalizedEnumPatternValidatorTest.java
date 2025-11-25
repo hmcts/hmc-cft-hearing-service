@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.hmc.validator;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -9,9 +12,6 @@ import uk.gov.hmcts.reform.hmc.model.UnavailabilityDow;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
