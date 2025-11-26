@@ -108,10 +108,13 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         assertHearingLinked(2000000001L, 2L, hearingLinkGroupRequest.getGroupDetails(), 1L);
 
         HearingEntity hearing = getHearingAndLinkedGroup(2000000000L);
-        Long linkedGroupId = hearing.getLinkedGroupDetails().getLinkedGroupId();
-        assertEquals(String.valueOf(linkedGroupId),
+
+        String linkedGroupRequestId = hearing.getLinkedGroupDetails().getRequestId();
+        assertEquals(String.valueOf(linkedGroupRequestId),
                      response.getHearingGroupRequestId(),
                      "Returned linked group id does not match expected linked group id");
+
+        Long linkedGroupId = hearing.getLinkedGroupDetails().getLinkedGroupId();
 
         LinkedHearingStatusAuditEntity hearingStatusAuditEntryForLinkedGroupId = new LinkedHearingStatusAuditEntity();
         hearingStatusAuditEntryForLinkedGroupId.setLinkedGroupId(String.valueOf(linkedGroupId));
