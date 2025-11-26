@@ -101,6 +101,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Named.named;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLED;
@@ -1816,7 +1817,7 @@ public class TestingUtil {
                 }""";
 
         return Stream.of(
-            arguments(400,
+            arguments(named("HTTP 400 response", 400),
                       "An AD API error",
                       List.of(1000),
                       "ActiveDirectory",
@@ -1824,7 +1825,7 @@ public class TestingUtil {
                       400,
                       expectedAdErrorResponse
             ),
-            arguments(500,
+            arguments(named("HTTP 500 response", 500),
                       "Another AD API error",
                       List.of(2000),
                       "ActiveDirectory",
@@ -1843,14 +1844,14 @@ public class TestingUtil {
                 }""";
 
         return Stream.of(
-            arguments(401,
+            arguments(named("HTTP 401 response", 401),
                       "An HMI API error",
                       "HearingManagementInterface",
                       "Missing or invalid request parameters",
                       401,
                       expectedHmiErrorResponse
             ),
-            arguments(500,
+            arguments(named("HTTP 500 response", 500),
                       "Another HMI API error",
                       "HearingManagementInterface",
                       "Server error",

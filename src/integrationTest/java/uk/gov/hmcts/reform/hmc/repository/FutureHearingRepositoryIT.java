@@ -134,7 +134,7 @@ class FutureHearingRepositoryIT extends BaseTest {
             assertEquals(healthStatus, response.getStatus(), "Health check response has unexpected health status");
         }
 
-        @ParameterizedTest
+        @ParameterizedTest(name = "{index}: {0}")
         @MethodSource("uk.gov.hmcts.reform.hmc.utils.TestingUtil#adApiErrorsAndExpectedHealthCheckValues")
         void shouldThrowHealthCheckActiveDirectoryExceptionForAdApiErrors(Integer responseStatusCode,
                                                                           String responseErrorDescription,
@@ -168,7 +168,7 @@ class FutureHearingRepositoryIT extends BaseTest {
             removeStubFailToReturnTokenTimeout();
         }
 
-        @ParameterizedTest
+        @ParameterizedTest(name = "{index}: {0}")
         @MethodSource("uk.gov.hmcts.reform.hmc.utils.TestingUtil#hmiApiErrorsAndExpectedHealthCheckValues")
         void shouldThrowHealthCheckHmiExceptionForHmiApiErrors(Integer responseStatusCode,
                                                                String responseMessage,

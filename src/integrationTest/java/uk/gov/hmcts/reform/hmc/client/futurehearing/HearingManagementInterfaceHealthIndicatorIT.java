@@ -57,7 +57,7 @@ class HearingManagementInterfaceHealthIndicatorIT extends BaseTest {
         assertEquals(healthStatus, health.getStatus(), "Health status has unexpected value");
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("uk.gov.hmcts.reform.hmc.utils.TestingUtil#adApiErrorsAndExpectedHealthCheckValues")
     void healthShouldBeDownForActiveDirectoryApiErrors(int responseStatusCode,
                                                        String responseErrorDescription,
@@ -87,7 +87,7 @@ class HearingManagementInterfaceHealthIndicatorIT extends BaseTest {
         removeStubFailToReturnTokenTimeout();
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("uk.gov.hmcts.reform.hmc.utils.TestingUtil#hmiApiErrorsAndExpectedHealthCheckValues")
     void healthShouldBeDownForHmiApiErrors(int responseStatusCode,
                                            String responseMessage,
