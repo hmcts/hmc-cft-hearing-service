@@ -25,4 +25,4 @@ COPY --from=builder ${DIR_LAYER_SPRING_BOOT_LOADER} /opt/app/
 COPY --from=builder ${DIR_LAYER_SNAPSHOT_DEPENDENCIES} /opt/app/
 
 EXPOSE 4561
-ENTRYPOINT ["/usr/bin/java", "org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT ["/usr/bin/java", "org.springframework.boot.loader.launch.JarLauncher"]

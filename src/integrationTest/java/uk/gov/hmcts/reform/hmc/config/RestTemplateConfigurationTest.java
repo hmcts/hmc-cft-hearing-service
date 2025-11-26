@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc.config;
 
+import com.azure.core.http.ContentType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +25,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.put;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.apache.http.HttpStatus.SC_OK;
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 import static org.apache.http.protocol.HTTP.CONTENT_TYPE;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -47,7 +47,7 @@ public class RestTemplateConfigurationTest extends BaseTest {
 
     private static final String RESPONSE_BODY = "{ \"test\": \"name\"}";
     private static final String URL = "/ng/itb";
-    private static final String MIME_TYPE = APPLICATION_JSON.getMimeType();
+    private static final String MIME_TYPE = ContentType.APPLICATION_JSON;
 
     @Test
     public void restTemplateShouldBeUsable() throws Exception {

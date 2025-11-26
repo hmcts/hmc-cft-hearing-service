@@ -1,17 +1,18 @@
 package uk.gov.hmcts.reform.hmc.data;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Table(name = "pending_requests")
 @Entity
@@ -23,8 +24,10 @@ public class PendingRequestEntity implements Serializable {
     private static final long serialVersionUID = -5832580267716907071L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,
-        generator = "pending_requests_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+        generator = "pending_requests_id_seq_generator")
+    @SequenceGenerator(name = "pending_requests_id_seq_generator",
+        sequenceName = "pending_requests_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
