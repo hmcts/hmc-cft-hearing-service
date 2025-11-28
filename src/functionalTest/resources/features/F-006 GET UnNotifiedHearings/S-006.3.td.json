@@ -1,0 +1,25 @@
+{
+  "_guid_": "S-006.3",
+  "_extends_" : "F-006_TestBase",
+  "specs": [
+    "has the 400 code"
+  ],
+  "request": {
+    "pathVariables": {
+      "hmctsServiceCode": "TEST12"
+    },
+    "queryParams": {
+      "hearing_start_date_from": "2022-01-20 09:00:00",
+      "hearing_start_date_to": "2022-01-19 10:00:00"
+    }
+  },
+  "expectedResponse": {
+    "responseCode" : 400,
+    "responseMessage" : "Bad Request",
+
+    "body": {
+      "status" : "BAD_REQUEST",
+      "errors" : [ "Invalid hmcts service code" ]
+    }
+  }
+}

@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.CaseCouldNotBeFoundException;
+import uk.gov.hmcts.reform.hmc.exceptions.InvalidManageHearingServiceException;
 import uk.gov.hmcts.reform.hmc.exceptions.InvalidRoleAssignmentException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.ServiceException;
@@ -29,9 +30,12 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.PanelRequirements;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementServiceImpl;
+import uk.gov.hmcts.reform.hmc.service.ManageExceptionsService;
+import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -50,6 +54,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_EXCEPTION_ROLE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_MANAGE_HEARING_SERVICE_EXCEPTION;
 
 @AutoConfigureMockMvc(addFilters = false)
 @ImportAutoConfiguration(TestIdamConfiguration.class)
@@ -59,6 +65,7 @@ public class RestExceptionHandlerTest extends BaseTest {
     public static final String ERROR_PATH_STATUS = "$.status";
     public static final String TEST_EXCEPTION_MESSAGE = "test message";
     HearingRequest validRequest;
+    ManageExceptionRequest manageExceptionRequest;
 
     @MockitoBean
     protected HearingManagementServiceImpl service;
@@ -71,6 +78,9 @@ public class RestExceptionHandlerTest extends BaseTest {
 
     @Autowired
     protected ObjectMapper objectMapper;
+
+    @MockitoBean
+    protected ManageExceptionsService manageExceptionsService;
 
     @BeforeEach
     void setUp() {
@@ -116,6 +126,9 @@ public class RestExceptionHandlerTest extends BaseTest {
         caseDetails.setCaseCategories(caseCategories);
         validRequest.setHearingDetails(hearingDetails);
         validRequest.setCaseDetails(caseDetails);
+
+        manageExceptionRequest = TestingUtil.getManageExceptionRequest();
+        manageExceptionRequest.getSupportRequests().get(0).setCaseRef("9856815055686759");
     }
 
     @DisplayName("should return correct response when InvalidRoleAssignmentException is thrown")
@@ -241,6 +254,47 @@ public class RestExceptionHandlerTest extends BaseTest {
         // THEN
         assertHttpErrorResponse(result, HttpStatus.BAD_REQUEST.value(),
                                 HMCTS_DEPLOYMENT_ID_MAX_LENGTH, "BAD_REQUEST");
+    }
+
+    @DisplayName("should return correct response when InvalidManageHearingServiceException is thrown")
+    @Test
+    void shouldHandleInvalidManageHearingServiceException_WhenRoleIsInvalid() throws Exception {
+        ReflectionTestUtils.setField(applicationParams, "authorisedSupportToolRoles", List.of("invalid-role"));
+
+        /// WHEN
+        Mockito.doThrow(new InvalidManageHearingServiceException(INVALID_MANAGE_EXCEPTION_ROLE))
+            .when(manageExceptionsService).manageExceptions(any(ManageExceptionRequest.class), any());
+
+        ResultActions result =  this.mockMvc.perform(post("/manageExceptions")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
+                                                         .contentType(MediaType.APPLICATION_JSON)
+                                                         .content(objectMapper.writeValueAsString(
+                                                             manageExceptionRequest)));
+
+        // THEN
+        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(),
+                                INVALID_MANAGE_EXCEPTION_ROLE, "FORBIDDEN");
+    }
+
+    @DisplayName("should return correct response when InvalidManageHearingServiceException is thrown")
+    @Test
+    void shouldHandleInvalidManageHearingServiceException_WhenServiceIsInvalid() throws Exception {
+        ReflectionTestUtils.setField(applicationParams, "authorisedSupportToolServices",
+                                     List.of("invalid-service"));
+
+        /// WHEN
+        Mockito.doThrow(new InvalidManageHearingServiceException(INVALID_MANAGE_HEARING_SERVICE_EXCEPTION))
+            .when(manageExceptionsService).manageExceptions(any(ManageExceptionRequest.class), any());
+
+        ResultActions result =  this.mockMvc.perform(post("/manageExceptions")
+                                                         .header(SERVICE_AUTHORIZATION, CLIENT_S2S_TOKEN)
+                                                         .contentType(MediaType.APPLICATION_JSON)
+                                                         .content(objectMapper.writeValueAsString(
+                                                             manageExceptionRequest)));
+
+        // THEN
+        assertHttpErrorResponse(result, HttpStatus.FORBIDDEN.value(),
+                                INVALID_MANAGE_HEARING_SERVICE_EXCEPTION, "FORBIDDEN");
     }
 
     private void assertHttpErrorResponse(ResultActions result, int expectedStatusCode, String expectedMessage,
