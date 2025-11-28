@@ -507,24 +507,24 @@ class FutureHearingsLinkedHearingGroupServiceTest {
     }
 
     private void assertHearingHasNoLinkGroupAndOrder(HearingEntity hearing) {
-        Long hearingId = hearing.getId();
+        String errorMessagePrefix = "Hearing " + hearing.getId() + " ";
 
-        assertNull(hearing.getLinkedGroupDetails(), "Hearing " + hearingId + " linked group details should be null");
-        assertNull(hearing.getLinkedOrder(), "Hearing " + hearingId + " linked order should be null");
+        assertNull(hearing.getLinkedGroupDetails(), errorMessagePrefix + "linked group details should be null");
+        assertNull(hearing.getLinkedOrder(), errorMessagePrefix + "linked order should be null");
     }
 
     private void assertHearingHasLinkGroupAndOrder(HearingEntity hearing, Long expectedLinkedOrder) {
-        Long hearingId = hearing.getId();
+        String errorMessagePrefix = "Hearing " + hearing.getId() + " ";
 
         LinkedGroupDetails linkedGroupDetails = hearing.getLinkedGroupDetails();
-        assertNotNull(linkedGroupDetails, "Hearing " + hearingId + " should have linked group");
+        assertNotNull(linkedGroupDetails, errorMessagePrefix + "should have linked group");
         assertEquals(REQUEST_ID,
                      linkedGroupDetails.getRequestId(),
-                     "Hearing " + hearingId + " has unexpected linked group request id");
+                     errorMessagePrefix + "has unexpected linked group request id");
 
         Long actualLinkedOrder = hearing.getLinkedOrder();
-        assertNotNull(actualLinkedOrder, "Hearing " + hearingId + " should have linked order");
-        assertEquals(expectedLinkedOrder, actualLinkedOrder, "Hearing " + hearingId + " has unexpected linked order");
+        assertNotNull(actualLinkedOrder, errorMessagePrefix + "should have linked order");
+        assertEquals(expectedLinkedOrder, actualLinkedOrder, errorMessagePrefix + "has unexpected linked order");
     }
 
     private void assertLinkedGroupDetailsUpdated(LinkedGroupDetails linkedGroupDetails) {

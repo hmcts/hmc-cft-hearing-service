@@ -587,44 +587,49 @@ class LinkedHearingGroupServiceIT extends BaseTest {
                                      Long expectedLinkedOrder,
                                      GroupDetails expectedGroupDetails,
                                      Long expectedGroupVersion) {
+        String hearingErrorMessagePrefix = "Hearing " + hearingId + " ";
+
         HearingEntity hearing = getHearingAndLinkedGroup(hearingId);
-        assertNotNull(hearing, "Hearing " + hearingId + " should exist");
+        assertNotNull(hearing, hearingErrorMessagePrefix + "should exist");
 
         assertEquals(expectedLinkedOrder,
                      hearing.getLinkedOrder(),
-                     "Hearing " + hearingId + " has unexpected linked order");
+                     hearingErrorMessagePrefix + "has unexpected linked order");
 
         LinkedGroupDetails linkedGroupDetails = hearing.getLinkedGroupDetails();
-        assertNotNull(linkedGroupDetails, "Hearing " + hearingId + " should have linked group details");
+        assertNotNull(linkedGroupDetails, hearingErrorMessagePrefix + "should have linked group details");
+
+        String linkedGroupErrorMessagePrefix = "Hearing " + hearingId + " linked group details ";
 
         assertEquals(expectedGroupVersion,
                      linkedGroupDetails.getLinkedGroupLatestVersion(),
-                     "Linked group details has unexpected version");
+                     linkedGroupErrorMessagePrefix + "has unexpected version");
         assertEquals(expectedGroupDetails.getGroupName(),
                      linkedGroupDetails.getRequestName(),
-                     "Linked group details has unexpected request name");
+                     linkedGroupErrorMessagePrefix + "has unexpected request name");
         assertEquals(expectedGroupDetails.getGroupReason(),
                      linkedGroupDetails.getReasonForLink(),
-                     "Linked group details has unexpected reason for link");
+                     linkedGroupErrorMessagePrefix + "has unexpected reason for link");
         assertEquals(LinkType.getByLabel(expectedGroupDetails.getGroupLinkType()),
                      linkedGroupDetails.getLinkType(),
-                     "Linked group details has unexpected link type");
+                     linkedGroupErrorMessagePrefix + "has unexpected link type");
         assertEquals(expectedGroupDetails.getGroupComments(),
                      linkedGroupDetails.getLinkedComments(),
-                     "Linked group details has unexpected linked comments");
-        assertEquals("ACTIVE", linkedGroupDetails.getStatus(), "Linked group details has unexpected status");
+                     linkedGroupErrorMessagePrefix + "has unexpected linked comments");
+        assertEquals("ACTIVE", linkedGroupDetails.getStatus(), linkedGroupErrorMessagePrefix + "has unexpected status");
         assertNotNull(linkedGroupDetails.getRequestDateTime(),
-                      "Linked group details request date time should not be null");
+                      linkedGroupErrorMessagePrefix + "request date time should not be null");
     }
 
     private void assertHearingNotLinked(Long hearingId) {
+        String errorMessagePrefix = "Hearing " + hearingId + " ";
+
         Optional<HearingEntity> hearing = hearingRepository.findById(hearingId);
-        assertTrue(hearing.isPresent(), "Hearing " + hearingId + " should be present");
+        assertTrue(hearing.isPresent(), errorMessagePrefix + "should be present");
 
         HearingEntity presentHearing = hearing.get();
-        assertNull(presentHearing.getLinkedOrder(), "Hearing " + hearingId + " should not have a linked order");
-        assertNull(presentHearing.getLinkedGroupDetails(),
-                   "Hearing " + hearingId + " should not have link group details");
+        assertNull(presentHearing.getLinkedOrder(), errorMessagePrefix + "should not have a linked order");
+        assertNull(presentHearing.getLinkedGroupDetails(), errorMessagePrefix + "should not have link group details");
     }
 
     private void assertLinkedHearingStatusAudit(LinkedHearingStatusAuditEntity linkedHearingStatusAudit,
@@ -711,18 +716,20 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     }
 
     private void assertLinkedHearingDetailsAudit(Long hearingId, Long expectedLinkedOrder) {
+        String errorMessagePrefix = "Linked hearing details audit for hearing " + hearingId + " ";
+
         LinkedHearingDetailsAudit linkedHearingDetailsAudit = getLinkedHearingDetailsAudit(hearingId);
-        assertNotNull(linkedHearingDetailsAudit, "Linked hearing details audit should exist for hearing " + hearingId);
+        assertNotNull(linkedHearingDetailsAudit, errorMessagePrefix + "should exist");
 
         assertEquals(100000L,
                      linkedHearingDetailsAudit.getLinkedGroup().getLinkedGroupId(),
-                     "Linked hearing details audit for hearing " + hearingId + " has unexpected linked group id");
+                     errorMessagePrefix + "has unexpected linked group id");
         assertEquals(2L,
                      linkedHearingDetailsAudit.getLinkedGroupVersion(),
-                     "Linked hearing details audit for hearing " + hearingId + "has unexpected linked group version");
+                     errorMessagePrefix + "has unexpected linked group version");
         assertEquals(expectedLinkedOrder,
                      linkedHearingDetailsAudit.getLinkedOrder(),
-                     "Linked hearing details audit for hearing " + hearingId + " has unexpected linked order");
+                     errorMessagePrefix + "has unexpected linked order");
     }
 
     private JsonNode convertHearingIdsToJsonNode(List<Long> hearingIds) {
