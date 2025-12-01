@@ -56,7 +56,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -1452,9 +1451,7 @@ class LinkHearingGroupServiceTest {
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
 
-            LinkedGroupDetailsAudit groupDetailsAudit = createGroupDetailsAuditEntity(HEARING_GROUP_ID,
-                                                                                      "ACTIVE", groupDetails
-            );
+            LinkedGroupDetailsAudit groupDetailsAudit = createGroupDetailsAuditEntity("ACTIVE", groupDetails);
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(HEARING_GROUP_ID);
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID)).willReturn(List.of(hearing1, hearing2));
@@ -1836,7 +1833,7 @@ class LinkHearingGroupServiceTest {
             hearingResponse.setRequestVersion(requestVersion);
             hearingResponse.setRequestTimeStamp(requestTimestamp);
             hearingResponse.setHearingDayDetails(
-                hearingDaysStartDateTime.stream().map(this::createHearingDayDetails).collect(Collectors.toList())
+                hearingDaysStartDateTime.stream().map(this::createHearingDayDetails).toList()
             );
             return hearingResponse;
         }
@@ -1856,7 +1853,7 @@ class LinkHearingGroupServiceTest {
             return groupDetails;
         }
 
-        private LinkedGroupDetailsAudit createGroupDetailsAuditEntity(long hearingGroupId, String groupStatus,
+        private LinkedGroupDetailsAudit createGroupDetailsAuditEntity(String groupStatus,
                                                                       LinkedGroupDetails groupDetails) {
             LinkedGroupDetailsAudit groupDetailsAudit = new LinkedGroupDetailsAudit();
             groupDetailsAudit.setLinkedGroup(groupDetails);
