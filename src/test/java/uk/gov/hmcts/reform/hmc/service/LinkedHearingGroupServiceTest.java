@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -188,7 +187,7 @@ class LinkedHearingGroupServiceTest {
 
             verify(linkedGroupDetailsRepository).isFoundForRequestId(REQUEST_ID);
             verify(hearingRepository).findByRequestId(REQUEST_ID);
-            verify(accessControlService).verifyAccess(2000000000L, Lists.newArrayList("hearing-viewer"));
+            verify(accessControlService).verifyAccess(2000000000L, List.of("hearing-viewer"));
             verify(linkedGroupDetailsRepository).getLinkedGroupDetailsByRequestId(REQUEST_ID);
             verify(hearingRepository).findByLinkedGroupId(100L);
         }
