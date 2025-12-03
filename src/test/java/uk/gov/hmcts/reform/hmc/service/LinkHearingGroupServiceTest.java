@@ -544,6 +544,7 @@ class LinkHearingGroupServiceTest {
             when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
 
             given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
+            when(linkedGroupDetailsRepository.existsById(1L)).thenReturn(true);
 
             HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
             response.setResponseCode(200);
@@ -572,6 +573,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(eq(2000000000L), any(), eq(1L));
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(eq(2000000002L), any(), eq(1L));
             verify(linkedGroupDetailsRepository, times(2)).save(any());
+            verify(linkedGroupDetailsRepository).existsById(1L);
             verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
                                                                               any(),any(),any(),any(),any());
         }
@@ -595,6 +597,7 @@ class LinkHearingGroupServiceTest {
             when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
 
             given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
+            when(linkedGroupDetailsRepository.existsById(1L)).thenReturn(true);
 
             HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
             response.setResponseCode(200);
@@ -623,6 +626,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(eq(2000000000L), any(), isNull());
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(eq(2000000002L), any(), isNull());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
+            verify(linkedGroupDetailsRepository).existsById(1L);
             verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
                                                                                any(),any(),any(),any(),any());
         }
@@ -644,6 +648,8 @@ class LinkHearingGroupServiceTest {
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
             given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
+            when(linkedGroupDetailsRepository.existsById(1L)).thenReturn(true);
+
             HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
             response.setResponseCode(200);
             doNothing().when(futureHearingRepository).createLinkedHearingGroup(any());
@@ -672,6 +678,7 @@ class LinkHearingGroupServiceTest {
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(eq(2000000000L), any(), eq(1L));
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(eq(2000000002L), any(), eq(2L));
             verify(linkedGroupDetailsRepository, times(2)).save(any());
+            verify(linkedGroupDetailsRepository).existsById(1L);
             verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
                                                                                any(),any(),any(),any(),any());
         }
@@ -704,6 +711,7 @@ class LinkHearingGroupServiceTest {
                                                                              LocalDateTime.now(),
                                                                              1L);
             given(linkedGroupDetailsRepository.save(any())).willReturn(linkedGroupDetails);
+            when(linkedGroupDetailsRepository.existsById(1L)).thenReturn(true);
             given(hearingRepository.findByLinkedGroupId(1L)).willReturn(
                 List.of(TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
 
@@ -745,6 +753,7 @@ class LinkHearingGroupServiceTest {
             verify(linkedGroupDetailsRepository).getLinkedGroupDetailsByRequestId(null);
             verify(linkedGroupDetailsRepository).getLinkedGroupDetailsByRequestId("1");
             verify(linkedGroupDetailsRepository).save(any(LinkedGroupDetails.class));
+            verify(linkedGroupDetailsRepository).existsById(1L);
             verify(linkedGroupDetailsRepository).delete(linkedGroupDetails);
             verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
                                                                                any(),any(),any(),any(),any());
@@ -778,6 +787,7 @@ class LinkHearingGroupServiceTest {
                                                                              LocalDateTime.now(),
                                                                              1L);
             given(linkedGroupDetailsRepository.save(any())).willReturn(linkedGroupDetails);
+            when(linkedGroupDetailsRepository.existsById(1L)).thenReturn(true);
             given(hearingRepository.findByLinkedGroupId(1L)).willReturn(List.of(
                 TestingUtil.hearingEntityWithLinkDetails(), TestingUtil.hearingEntityWithLinkDetails()));
 
@@ -819,6 +829,7 @@ class LinkHearingGroupServiceTest {
             verify(linkedGroupDetailsRepository).getLinkedGroupDetailsByRequestId(null);
             verify(linkedGroupDetailsRepository).getLinkedGroupDetailsByRequestId("1");
             verify(linkedGroupDetailsRepository).save(any(LinkedGroupDetails.class));
+            verify(linkedGroupDetailsRepository).existsById(1L);
             verify(linkedGroupDetailsRepository).delete(linkedGroupDetails);
             verify(linkedHearingStatusAuditService, times(2)).saveLinkedHearingAuditTriageDetails(any(),any(),
                                                                                any(),any(),any(),any(),any());
