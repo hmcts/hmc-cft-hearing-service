@@ -30,6 +30,10 @@ class LinkedHearingValidatorIT extends BaseTest {
     private static final Long HEARING_ID_DOES_NOT_EXIST_ONE = 2000000002L;
     private static final Long HEARING_ID_DOES_NOT_EXIST_TWO = 2000000003L;
 
+    private static final String GROUP_NAME = "name";
+    private static final String GROUP_REASON = "GR";
+    private static final String GROUP_COMMENTS = "comment";
+
     private static final String SCRIPT_DELETE_HEARING_TABLES = "classpath:sql/delete-hearing-tables.sql";
     private static final String SCRIPT_INSERT_HEARINGS_FOR_LINKING = "classpath:sql/insert-hearings-for-linking.sql";
 
@@ -84,10 +88,10 @@ class LinkedHearingValidatorIT extends BaseTest {
 
     private HearingLinkGroupRequest createHearingLinkGroupRequest(List<LinkHearingDetails> hearingsInGroup) {
         GroupDetails groupDetails = new GroupDetails();
-        groupDetails.setGroupName("name");
-        groupDetails.setGroupReason("GR");
+        groupDetails.setGroupName(GROUP_NAME);
+        groupDetails.setGroupReason(GROUP_REASON);
         groupDetails.setGroupLinkType("ORDERED");
-        groupDetails.setGroupComments("comment");
+        groupDetails.setGroupComments(GROUP_COMMENTS);
 
         HearingLinkGroupRequest hearingLinkGroupRequest = new HearingLinkGroupRequest();
         hearingLinkGroupRequest.setGroupDetails(groupDetails);
@@ -97,22 +101,28 @@ class LinkedHearingValidatorIT extends BaseTest {
     }
 
     private void assertLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails) {
-        String errorMessagePrefix = "Linked group details ";
+        assertLinkedGroupDetails(linkedGroupDetails, GROUP_NAME, GROUP_REASON, GROUP_COMMENTS, "Linked group details ");
+    }
 
+    private void assertLinkedGroupDetails(LinkedGroupDetails linkedGroupDetails,
+                                          String expectedName,
+                                          String expectedReason,
+                                          String expectedComments,
+                                          String errorMessagePrefix) {
         assertNotNull(linkedGroupDetails, errorMessagePrefix + "should not be null");
 
         assertNotNull(linkedGroupDetails.getLinkedGroupId(), errorMessagePrefix + "linked group id should not be null");
         assertNotNull(linkedGroupDetails.getRequestId(), errorMessagePrefix + "request id should not be null");
-        assertEquals("name",
+        assertEquals(expectedName,
                      linkedGroupDetails.getRequestName(),
                      errorMessagePrefix + "request name has unexpected value");
-        assertEquals("GR",
+        assertEquals(expectedReason,
                      linkedGroupDetails.getReasonForLink(),
                      errorMessagePrefix + "reason for link has unexpected value");
         assertEquals(LinkType.ORDERED,
                      linkedGroupDetails.getLinkType(),
                      errorMessagePrefix + "link type has unexpected value");
-        assertEquals("comment",
+        assertEquals(expectedComments,
                      linkedGroupDetails.getLinkedComments(),
                      errorMessagePrefix + "linked comments has unexpected value");
         assertEquals("PENDING",
@@ -141,38 +151,12 @@ class LinkedHearingValidatorIT extends BaseTest {
                      hearingErrorMessagePrefix + "has unexpected linked order");
 
         LinkedGroupDetails hearingLinkedGroupDetails = hearing.getLinkedGroupDetails();
-        assertNotNull(hearingLinkedGroupDetails, linkedGroupDetailsErrorMessagePrefix + "should not be null");
 
-        assertEquals(expectedLinkedGroupDetails.getLinkedGroupId(),
-                     hearingLinkedGroupDetails.getLinkedGroupId(),
-                     linkedGroupDetailsErrorMessagePrefix + "has unexpected linked group id");
-        assertEquals(expectedLinkedGroupDetails.getRequestId(),
-                     hearingLinkedGroupDetails.getRequestId(),
-                     linkedGroupDetailsErrorMessagePrefix + "has unexpected request id");
-        assertEquals(expectedLinkedGroupDetails.getRequestName(),
-                     hearingLinkedGroupDetails.getRequestName(),
-                     linkedGroupDetailsErrorMessagePrefix + "has unexpected request name");
-        assertEquals(expectedLinkedGroupDetails.getReasonForLink(),
-                     hearingLinkedGroupDetails.getReasonForLink(),
-                     linkedGroupDetailsErrorMessagePrefix + "has unexpected reason for link");
-        assertEquals(expectedLinkedGroupDetails.getLinkType(),
-                     hearingLinkedGroupDetails.getLinkType(),
-                     linkedGroupDetailsErrorMessagePrefix + "has unexpected link type");
-        assertEquals(expectedLinkedGroupDetails.getLinkedComments(),
-                     hearingLinkedGroupDetails.getLinkedComments(),
-                     linkedGroupDetailsErrorMessagePrefix + "has unexpected linked comments");
-        assertEquals(expectedLinkedGroupDetails.getStatus(),
-                     hearingLinkedGroupDetails.getStatus(),
-                     linkedGroupDetailsErrorMessagePrefix + "has unexpected status");
-        assertEquals(expectedLinkedGroupDetails.getRequestDateTime(),
-                     hearingLinkedGroupDetails.getRequestDateTime(),
-                     linkedGroupDetailsErrorMessagePrefix + "has unexpected request date time");
-        assertEquals(expectedLinkedGroupDetails.getLinkedGroupLatestVersion(),
-                     hearingLinkedGroupDetails.getLinkedGroupLatestVersion(),
-                     linkedGroupDetailsErrorMessagePrefix + "has unexpected linked group latest version");
-        assertEquals(expectedLinkedGroupDetails.getCreatedDateTime(),
-                     hearingLinkedGroupDetails.getCreatedDateTime(),
-                     linkedGroupDetailsErrorMessagePrefix + "has unexpected created date time");
+        assertLinkedGroupDetails(hearingLinkedGroupDetails,
+                                 expectedLinkedGroupDetails.getRequestName(),
+                                 expectedLinkedGroupDetails.getReasonForLink(),
+                                 expectedLinkedGroupDetails.getLinkedComments(),
+                                 linkedGroupDetailsErrorMessagePrefix);
     }
 
     private void assertHearingNotLinked(Long hearingId) {
