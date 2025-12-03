@@ -156,18 +156,11 @@ public class FutureHearingsLinkedHearingGroupService {
                                           HearingLinkGroupRequest hearingLinkGroupRequest) {
         hearingLinkGroupRequest.getHearingsInGroup()
             .forEach(linkHearingDetails -> {
-                Optional<HearingEntity> hearing = hearingRepository
-                    .findById(Long.valueOf(linkHearingDetails.getHearingId()));
-                if (hearing.isPresent()) {
-                    HearingEntity hearingToSave = hearing.get();
-                    hearingToSave.setLinkedOrder(null);
-                    hearingToSave.setLinkedGroupDetails(null);
-                    hearingRepository.save(hearingToSave);
+                Long hearingId = Long.valueOf(linkHearingDetails.getHearingId());
+                if (hearingRepository.existsById(hearingId)) {
+                    hearingRepository.removeLinkedGroupDetailsAndOrder(hearingId);
                 } else {
-                    throw new HearingNotFoundException(
-                        Long.valueOf(linkHearingDetails.getHearingId()),
-                        HEARING_ID_NOT_FOUND
-                    );
+                    throw new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND);
                 }
             });
         LinkedGroupDetails linkedGroupDetails =
@@ -193,13 +186,13 @@ public class FutureHearingsLinkedHearingGroupService {
     private void unlinkHearingsFromGroup(HearingLinkGroupRequest hearingLinkGroupRequest,
                                          List<HearingEntity> currentHearings) {
         for (HearingEntity hearingEntity : currentHearings) {
-            if (!hearingLinkGroupRequest.getHearingsInGroup()
-                .stream().anyMatch(linkHearingDetails ->
-                                       Long.valueOf(linkHearingDetails.getHearingId())
-                                           .equals(hearingEntity.getId()))) {
+            if (hearingLinkGroupRequest.getHearingsInGroup()
+                .stream().noneMatch(linkHearingDetails ->
+                    Long.valueOf(linkHearingDetails.getHearingId()).equals(hearingEntity.getId()))
+            ) {
                 hearingEntity.setLinkedOrder(null);
                 hearingEntity.setLinkedGroupDetails(null);
-                hearingRepository.save(hearingEntity);
+                hearingRepository.removeLinkedGroupDetailsAndOrder(hearingEntity.getId());
             }
         }
     }
@@ -209,24 +202,16 @@ public class FutureHearingsLinkedHearingGroupService {
         for (Map.Entry<Long, Long> entry : currentHearings.entrySet()) {
             Long hearingId = entry.getKey();
             Long order = entry.getValue();
-            Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
-            HearingEntity hearingEntityToUpdate =
-                (hearingEntityOptional.isPresent()) ? hearingEntityOptional.get() : null;
-            if (hearingEntityToUpdate != null) {
-                hearingEntityToUpdate.setLinkedOrder(order);
-                hearingEntityToUpdate.setLinkedGroupDetails(linkedGroupDetails);
-                hearingRepository.save(hearingEntityToUpdate);
+            if (hearingRepository.existsById(hearingId)) {
+                hearingRepository.updateLinkedGroupDetailsAndOrder(hearingId, linkedGroupDetails, order);
             }
         }
     }
 
     private void unlinkNewHearingsFromGroup(HearingLinkGroupRequest hearingLinkGroupRequest) {
-        hearingLinkGroupRequest.getHearingsInGroup().stream().forEach(hearing -> {
-            HearingEntity hearingEntityToUpdate = hearingRepository.findById(
-                Long.valueOf(hearing.getHearingId())).get();
-            hearingEntityToUpdate.setLinkedOrder(null);
-            hearingEntityToUpdate.setLinkedGroupDetails(null);
-            hearingRepository.save(hearingEntityToUpdate);
+        hearingLinkGroupRequest.getHearingsInGroup().forEach(hearing -> {
+            Long hearingId = Long.valueOf(hearing.getHearingId());
+            hearingRepository.removeLinkedGroupDetailsAndOrder(hearingId);
         });
     }
 
@@ -266,15 +251,13 @@ public class FutureHearingsLinkedHearingGroupService {
                                             LinkedGroupDetails linkedGroupDetailsSaved) {
         hearingLinkGroupRequest.getHearingsInGroup()
             .forEach(linkHearingDetails -> {
-                Optional<HearingEntity> hearing = hearingRepository
-                    .findById(Long.valueOf(linkHearingDetails.getHearingId()));
-                if (hearing.isPresent()) {
-                    HearingEntity hearingToSave = hearing.get();
-                    hearingToSave.setLinkedGroupDetails(linkedGroupDetailsSaved);
-                    hearingToSave.setLinkedOrder(
-                        linkedHearingValidator.getHearingOrder(linkHearingDetails, hearingLinkGroupRequest)
-                    );
-                    hearingRepository.save(hearingToSave);
+                Long hearingId = Long.valueOf(linkHearingDetails.getHearingId());
+                if (hearingRepository.existsById(hearingId)) {
+                    Long hearingOrder =
+                        linkedHearingValidator.getHearingOrder(linkHearingDetails, hearingLinkGroupRequest);
+                    hearingRepository.updateLinkedGroupDetailsAndOrder(hearingId,
+                                                                       linkedGroupDetailsSaved,
+                                                                       hearingOrder);
                 }
             });
     }
