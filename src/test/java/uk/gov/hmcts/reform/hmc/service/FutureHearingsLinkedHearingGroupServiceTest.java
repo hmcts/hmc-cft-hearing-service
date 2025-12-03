@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -258,7 +259,70 @@ class FutureHearingsLinkedHearingGroupServiceTest {
     }
 
     @Test
-    void processAmendLinkedHearingResponse_ShouldUnlinkNewHearingsAndRelinkExistingHearings() {
+    void processAmendLinkedHearingRequest_ShouldIgnoreNonExistingHearingsInGroupRequest() {
+        LinkedGroupDetails currentLinkedGroupDetails =
+            createLinkedGroupDetails("name", "GR", STATUS_ACTIVE, "comment", 1L, ORIGINAL_REQUEST_DATE_TIME);
+
+        HearingEntity hearingOne = createHearing(HEARING_ID_ONE, currentLinkedGroupDetails, 1L);
+        HearingEntity hearingTwo = createHearing(HEARING_ID_TWO, currentLinkedGroupDetails, 2L);
+        final List<HearingEntity> currentHearings = List.of(hearingOne, hearingTwo);
+
+        LinkHearingDetails linkHearingDetailsHearingThree = new LinkHearingDetails(String.valueOf(HEARING_ID_THREE), 1);
+        LinkHearingDetails linkHearingDetailsHearingFour = new LinkHearingDetails(String.valueOf(HEARING_ID_FOUR), 2);
+        List<LinkHearingDetails> hearingsInGroup =
+            List.of(linkHearingDetailsHearingThree, linkHearingDetailsHearingFour);
+
+        final HearingLinkGroupRequest hearingLinkGroupRequest = createHearingLinkGroupRequest(hearingsInGroup);
+
+        Optional<HearingEntity> hearingThreeOptional = Optional.empty();
+        Optional<HearingEntity> hearingFourOptional = Optional.empty();
+
+        LinkedGroupDetailsAudit linkedGroupDetailsAudit = createLinkedGroupDetailsAudit(currentLinkedGroupDetails);
+
+        when(mockLinkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(REQUEST_ID))
+            .thenReturn(currentLinkedGroupDetails);
+        when(mockLinkedGroupDetailsRepository.save(currentLinkedGroupDetails)).thenReturn(currentLinkedGroupDetails);
+
+        when(mockHearingRepository.existsById(HEARING_ID_THREE)).thenReturn(false);
+        when(mockHearingRepository.existsById(HEARING_ID_FOUR)).thenReturn(false);
+
+        when(mockLinkedGroupDetailsAuditMapper.modelToEntity(currentLinkedGroupDetails))
+            .thenReturn(linkedGroupDetailsAudit);
+
+        when(mockHearingRepository.findById(HEARING_ID_THREE)).thenReturn(hearingThreeOptional);
+        when(mockHearingRepository.findById(HEARING_ID_FOUR)).thenReturn(hearingFourOptional);
+
+        futureHearingsLinkedHearingGroupService.processAmendLinkedHearingRequest(hearingLinkGroupRequest,
+                                                                                 currentHearings,
+                                                                                 REQUEST_ID);
+
+        assertHearingHasNoLinkGroupAndOrder(hearingOne);
+        assertHearingHasNoLinkGroupAndOrder(hearingTwo);
+
+        assertLinkedGroupDetailsUpdated(currentLinkedGroupDetails);
+
+        verify(mockHearingRepository).removeLinkedGroupDetailsAndOrder(HEARING_ID_ONE);
+        verify(mockHearingRepository).removeLinkedGroupDetailsAndOrder(HEARING_ID_TWO);
+
+        verify(mockLinkedGroupDetailsRepository).getLinkedGroupDetailsByRequestId(REQUEST_ID);
+        verify(mockLinkedGroupDetailsRepository).save(currentLinkedGroupDetails);
+
+        verify(mockHearingRepository).existsById(HEARING_ID_THREE);
+        verify(mockHearingRepository).existsById(HEARING_ID_FOUR);
+        verify(mockHearingRepository, never())
+            .updateLinkedGroupDetailsAndOrder(HEARING_ID_THREE, currentLinkedGroupDetails, 1L);
+        verify(mockHearingRepository, never())
+            .updateLinkedGroupDetailsAndOrder(HEARING_ID_FOUR, currentLinkedGroupDetails, 2L);
+
+        verify(mockLinkedGroupDetailsAuditMapper).modelToEntity(currentLinkedGroupDetails);
+        verify(mockLinkedGroupDetailsAuditRepository).save(linkedGroupDetailsAudit);
+
+        verify(mockHearingRepository).findById(HEARING_ID_THREE);
+        verify(mockHearingRepository).findById(HEARING_ID_FOUR);
+    }
+
+    @Test
+    void processAmendLinkedHearingResponse_ShouldUnlinkNewHearingsAndRelinkOldHearings() {
         LinkHearingDetails linkHearingDetailsHearingThree = new LinkHearingDetails(String.valueOf(HEARING_ID_THREE), 1);
         LinkHearingDetails linkHearingDetailsHearingFour = new LinkHearingDetails(String.valueOf(HEARING_ID_FOUR), 2);
         List<LinkHearingDetails> hearingsInGroup =
@@ -306,7 +370,7 @@ class FutureHearingsLinkedHearingGroupServiceTest {
     }
 
     @Test
-    void processAmendLinkedHearingResponse_ShouldRelinkExistingHearings() {
+    void processAmendLinkedHearingResponse_ShouldRelinkSameHearings() {
         LinkHearingDetails linkHearingDetailsHearingOne = new LinkHearingDetails(String.valueOf(HEARING_ID_ONE), 1);
         LinkHearingDetails linkHearingDetailsHearingTwo = new LinkHearingDetails(String.valueOf(HEARING_ID_TWO), 2);
         List<LinkHearingDetails> hearingsInGroup = List.of(linkHearingDetailsHearingOne, linkHearingDetailsHearingTwo);
@@ -347,6 +411,56 @@ class FutureHearingsLinkedHearingGroupServiceTest {
         verify(mockHearingRepository).updateLinkedGroupDetailsAndOrder(HEARING_ID_ONE, updatedLinkedGroupDetails, 1L);
         verify(mockHearingRepository).existsById(HEARING_ID_TWO);
         verify(mockHearingRepository).updateLinkedGroupDetailsAndOrder(HEARING_ID_TWO, updatedLinkedGroupDetails, 2L);
+
+        verify(mockLinkedGroupDetailsRepository).getLinkedGroupDetailsByRequestId(REQUEST_ID);
+        verify(mockLinkedGroupDetailsRepository).save(savedUpdatedLinkedGroupDetails);
+    }
+
+    @Test
+    void processAmendLinkedHearingResponse_ShouldUnlinkNewHearingsAndIgnoreNonExistingOldHearings() {
+        LinkHearingDetails linkHearingDetailsHearingThree = new LinkHearingDetails(String.valueOf(HEARING_ID_THREE), 1);
+        LinkHearingDetails linkHearingDetailsHearingFour = new LinkHearingDetails(String.valueOf(HEARING_ID_FOUR), 2);
+        List<LinkHearingDetails> hearingsInGroup =
+            List.of(linkHearingDetailsHearingThree, linkHearingDetailsHearingFour);
+
+        final HearingLinkGroupRequest hearingLinkGroupRequest = createHearingLinkGroupRequest(hearingsInGroup);
+
+        Map<Long, Long> currentHearings = new HashMap<>();
+        currentHearings.put(HEARING_ID_ONE, 1L);
+        currentHearings.put(HEARING_ID_TWO, 2L);
+
+        LinkedGroupDetails updatedLinkedGroupDetails =
+            createLinkedGroupDetails("new name", "NGR", STATUS_PENDING, "new comment", 2L, NEW_REQUEST_DATE_TIME);
+
+        final PreviousLinkedGroupDetails previousLinkedGroupDetails = createPreviousLinkedGroupDetails();
+
+        LinkedGroupDetails savedUpdatedLinkedGroupDetails = cloneLinkedGroupDetails(updatedLinkedGroupDetails);
+
+        when(mockHearingRepository.existsById(HEARING_ID_ONE)).thenReturn(false);
+        when(mockHearingRepository.existsById(HEARING_ID_TWO)).thenReturn(false);
+
+        when(mockLinkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(REQUEST_ID))
+            .thenReturn(savedUpdatedLinkedGroupDetails);
+
+        futureHearingsLinkedHearingGroupService.processAmendLinkedHearingResponse(hearingLinkGroupRequest,
+                                                                                  currentHearings,
+                                                                                  updatedLinkedGroupDetails,
+                                                                                  previousLinkedGroupDetails);
+
+        assertLinkedGroupDetailsNotUpdated(savedUpdatedLinkedGroupDetails);
+
+        verify(mockLinkedGroupDetailsAuditRepository).deleteLinkedGroupDetailsAudit(LINKED_GROUP_ID, 2L);
+        verify(mockLinkedHearingDetailsAuditRepository).deleteLinkedHearingsDetailsAudit(LINKED_GROUP_ID, 2L);
+
+        verify(mockHearingRepository).removeLinkedGroupDetailsAndOrder(HEARING_ID_THREE);
+        verify(mockHearingRepository).removeLinkedGroupDetailsAndOrder(HEARING_ID_FOUR);
+
+        verify(mockHearingRepository).existsById(HEARING_ID_ONE);
+        verify(mockHearingRepository, never())
+            .updateLinkedGroupDetailsAndOrder(HEARING_ID_ONE, updatedLinkedGroupDetails, 1L);
+        verify(mockHearingRepository).existsById(HEARING_ID_TWO);
+        verify(mockHearingRepository, never())
+            .updateLinkedGroupDetailsAndOrder(HEARING_ID_TWO, updatedLinkedGroupDetails, 2L);
 
         verify(mockLinkedGroupDetailsRepository).getLinkedGroupDetailsByRequestId(REQUEST_ID);
         verify(mockLinkedGroupDetailsRepository).save(savedUpdatedLinkedGroupDetails);
