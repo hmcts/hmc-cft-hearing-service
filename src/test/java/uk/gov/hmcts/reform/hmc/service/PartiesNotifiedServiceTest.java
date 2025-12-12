@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import uk.gov.hmcts.reform.hmc.PartiesNotifiedCommonGeneration;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NON_UNIQUE_HEARING_RESPONSE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_NO_SUCH_RESPONSE;
 
 @ExtendWith(MockitoExtension.class)
@@ -166,6 +168,48 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
                 partiesNotifiedService.getPartiesNotified(2000000000L, 1,
                         dateTime, partiesNotified, CLIENT_S2S_TOKEN));
             assertEquals("003 Already set", exception.getMessage());
+        }
+
+        @Test
+        void shouldFailWithIncorrectResultSizeDataAccessException() throws JsonProcessingException {
+            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+            PartiesNotified partiesNotified = generatePartiesNotified(jsonNode);
+            when(hearingRepository.existsById(anyLong())).thenReturn(true);
+            when(hearingResponseRepository.getHearingResponse(anyLong(), anyInt(), any()))
+                .thenThrow(new IncorrectResultSizeDataAccessException("Wrong number of rows", 2));
+            LocalDateTime dateTime = LocalDateTime.now();
+            Exception exception = assertThrows(PartiesNotifiedBadRequestException.class, () ->
+                partiesNotifiedService.getPartiesNotified(2000000000L, 1,
+                                                          dateTime, partiesNotified, CLIENT_S2S_TOKEN));
+            assertEquals(NON_UNIQUE_HEARING_RESPONSE, exception.getMessage());
+        }
+
+        @Test
+        void shouldFailWithJakartaNonUniqueResultException() throws JsonProcessingException {
+            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+            PartiesNotified partiesNotified = generatePartiesNotified(jsonNode);
+            when(hearingRepository.existsById(anyLong())).thenReturn(true);
+            when(hearingResponseRepository.getHearingResponse(anyLong(), anyInt(), any()))
+                .thenThrow(new jakarta.persistence.NonUniqueResultException("more than one result from the query"));
+            LocalDateTime dateTime = LocalDateTime.now();
+            Exception exception = assertThrows(PartiesNotifiedBadRequestException.class, () ->
+                partiesNotifiedService.getPartiesNotified(2000000000L, 1,
+                                                          dateTime, partiesNotified, CLIENT_S2S_TOKEN));
+            assertEquals(NON_UNIQUE_HEARING_RESPONSE, exception.getMessage());
+        }
+
+        @Test
+        void shouldFailWithHibernateNonUniqueResultException() throws JsonProcessingException {
+            JsonNode jsonNode = new ObjectMapper().readTree("{\"query\": {\"match\": \"blah blah\"}}");
+            PartiesNotified partiesNotified = generatePartiesNotified(jsonNode);
+            when(hearingRepository.existsById(anyLong())).thenReturn(true);
+            when(hearingResponseRepository.getHearingResponse(anyLong(), anyInt(), any()))
+                .thenThrow(new org.hibernate.NonUniqueResultException(2));
+            LocalDateTime dateTime = LocalDateTime.now();
+            Exception exception = assertThrows(PartiesNotifiedBadRequestException.class, () ->
+                partiesNotifiedService.getPartiesNotified(2000000000L, 1,
+                                                          dateTime, partiesNotified, CLIENT_S2S_TOKEN));
+            assertEquals(NON_UNIQUE_HEARING_RESPONSE, exception.getMessage());
         }
 
     }
