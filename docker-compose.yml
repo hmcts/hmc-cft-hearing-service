@@ -12,7 +12,7 @@ services:
     container_name: hmc-cft-hearing-service
     environment:
       # these environment variables are used by java-logging library
-      - CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES=xui_webapp,hmc_hmi_inbound_adapter,sscs,fis_hmc_api
+      - CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES=xui_webapp,hmc_hmi_inbound_adapter,sscs,fis_hmc_api,pcs_api
       - ROOT_APPENDER
       - JSON_CONSOLE_PRETTY_PRINT
       - ROOT_LOGGING_LEVEL

@@ -18,15 +18,17 @@ public class FutureHearingErrorDecoder implements ErrorDecoder {
 
     @Override
     public Exception decode(String methodKey, Response response) {
+        String responseBody = null;
+        Integer status = response.status();
+
         try {
-            String responseBody = getResponseBody(response);
-            log.error(String.format("Response from FH failed with error code %s, error message %s",
-                                    response.status(), responseBody));
+            responseBody = getResponseBody(response);
+            log.error("Response from FH failed with error code {}, error message {}", status, responseBody);
         } catch (IOException e) {
             log.error("Error while reading the response:{}", e.getMessage());
         }
         if (String.valueOf(response.status()).startsWith("4")) {
-            return new BadFutureHearingRequestException(INVALID_REQUEST);
+            return new BadFutureHearingRequestException(INVALID_REQUEST, status, responseBody);
         } else {
             return new FutureHearingServerException(SERVER_ERROR);
         }
