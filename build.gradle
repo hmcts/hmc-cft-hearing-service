@@ -232,7 +232,7 @@ ext {
 
   junit                 = '5.11.4'
   junitPlatform         = '1.11.4'
-  lombok                = '1.18.36'
+  lombok                = '1.18.42'
   mapstruct             = '1.6.3'
   azureInsightsVersion  = '2.4.1'
   testcontainers        = '1.20.4'
