@@ -193,15 +193,14 @@ public class WiremockFixtures {
 
     public static void stubPostCreateLinkHearingGroupSuccessWithDelay(String token, int delay) {
         stubFor(WireMock.post(urlEqualTo(HMI_REQUEST_URL))
-                    .withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Accept", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
-                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
-                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}Z"))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
-                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withStatus(HTTP_ACCEPTED)
                                     .withFixedDelay(delay)
                     ));
@@ -212,15 +211,14 @@ public class WiremockFixtures {
         response.setErrorCode(1002);
         response.setErrorDescription("A Case with 'caseListingRequestId' = '" + hearingId + "' does not exist");
         stubFor(WireMock.post(urlEqualTo(HMI_REQUEST_URL))
-                    .withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Accept", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
-                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
-                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}Z"))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
-                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
                                     .withStatus(HTTP_BAD_REQUEST)
                     ));
@@ -231,15 +229,14 @@ public class WiremockFixtures {
         response.setErrorCode(1002);
         response.setErrorDescription("Case does not exist");
         stubFor(WireMock.post(urlEqualTo(HMI_REQUEST_URL))
-                    .withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Accept", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
-                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
-                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}Z"))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
-                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
                                     .withStatus(HTTP_BAD_REQUEST)
                                     .withFixedDelay(delay)
@@ -251,15 +248,14 @@ public class WiremockFixtures {
         response.setErrorCode(9999);
         response.setErrorDescription("A server error occurred");
         stubFor(WireMock.post(urlEqualTo(HMI_REQUEST_URL))
-                    .withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Accept", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
-                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
-                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}Z"))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
-                                    .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
                                     .withStatus(HTTP_INTERNAL_ERROR)
                     ));
@@ -270,15 +266,14 @@ public class WiremockFixtures {
         response.setErrorCode(9999);
         response.setErrorDescription("A server error occurred");
         stubFor(WireMock.post(urlEqualTo(HMI_REQUEST_URL))
-                    .withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Accept", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
-                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
-                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}Z"))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
-                                    .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
                                     .withStatus(HTTP_INTERNAL_ERROR)
                                     .withFixedDelay(delay)
@@ -305,15 +300,14 @@ public class WiremockFixtures {
 
     public static void stubPutUpdateLinkHearingGroupSuccessWithDelay(String requestId, String token, int delay) {
         stubFor(WireMock.put(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
-                    .withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Accept", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
-                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
-                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}Z"))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
-                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withStatus(HTTP_ACCEPTED)
                                     .withFixedDelay(delay)
                     ));
@@ -324,15 +318,14 @@ public class WiremockFixtures {
         response.setErrorCode(1002);
         response.setErrorDescription("Case does not exist");
         stubFor(WireMock.put(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
-                    .withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Accept", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
-                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
-                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}Z"))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
-                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
                                     .withStatus(HTTP_BAD_REQUEST)
                                     .withFixedDelay(delay)
@@ -344,15 +337,14 @@ public class WiremockFixtures {
         response.setErrorCode(9999);
         response.setErrorDescription("A server error occurred");
         stubFor(WireMock.put(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
-                    .withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Accept", equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
-                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
-                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}Z"))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
-                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
                                     .withStatus(HTTP_INTERNAL_ERROR)
                                     .withFixedDelay(delay)
@@ -375,15 +367,14 @@ public class WiremockFixtures {
 
     public static void stubSuccessfullyDeleteLinkedHearingGroupsWithDelay(String token, String requestId, int delay) {
         stubFor(WireMock.delete(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
-                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
-                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
-                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}Z"))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
-                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withStatus(HTTP_ACCEPTED)
                                     .withFixedDelay(delay)
                     ));
@@ -412,15 +403,14 @@ public class WiremockFixtures {
         response.setErrorCode(1002);
         response.setErrorDescription("Case does not exist");
         stubFor(WireMock.delete(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
-                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
-                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
-                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}Z"))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
-                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
                                     .withStatus(HTTP_BAD_REQUEST)
                                     .withFixedDelay(delay)
@@ -486,20 +476,20 @@ public class WiremockFixtures {
         response.setErrorCode(9999);
         response.setErrorDescription("A server error occurred");
         stubFor(WireMock.delete(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
-                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader(HttpHeaders.ACCEPT, equalTo(APPLICATION_JSON_VALUE))
-                    .withHeader("Source-System", equalTo(SOURCE_SYSTEM))
-                    .withHeader("Destination-System", equalTo(DESTINATION_SYSTEM))
-                    .withHeader("Request-Created-At", matching("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]"
-                                                                   + "{2}:[0-9]{2}Z"))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
                     .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
                     .willReturn(aResponse()
-                                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
                                     .withStatus(HTTP_INTERNAL_ERROR)
                                     .withFixedDelay(delay)
                     ));
     }
+
     public static void stubHealthCheck(String token, Status healthStatus) {
         stubFor(get(urlEqualTo(HMI_PRIVATE_HEALTH_URL))
                     .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
