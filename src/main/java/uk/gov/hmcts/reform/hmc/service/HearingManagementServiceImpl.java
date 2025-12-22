@@ -76,6 +76,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING_REQUEST;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_STATE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_REQUEST_VERSION;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_STATUS;
@@ -254,7 +255,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             .modelToEntity(hearingRequest, existingHearing, existingHearing.getNextRequestVersion(), statusToUpdate,
                            reasonableMatch, facilitiesMatch, deploymentId);
 
-        auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken);
+        auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken, null);
 
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
@@ -285,7 +286,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             .modelToEntity(deleteRequest, existingHearing, existingHearing.getNextRequestVersion(),
                            caseHearingRequestEntity);
 
-        auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken);
+        auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken, HEARING_STATE);
 
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
@@ -329,7 +330,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         HearingEntity hearingEntity = updateStatus(hearingId);
 
-        auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken);
+        auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken, HEARING_STATE);
         HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                          POST_HEARING_ACTUALS_COMPLETION,
@@ -366,7 +367,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     private void auditChangeInRequestVersion(HearingEntity hearingEntity, int existingRequestVersion,
-                                             String clientS2SToken) {
+                                             String clientS2SToken, String hearingState) {
         int updatedRequestVersion = hearingEntity.getLatestRequestVersion();
         if (updatedRequestVersion == existingRequestVersion) {
             return;
@@ -384,7 +385,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                                                                 REQUEST_VERSION_UPDATE,
                                                                                 String.valueOf(HttpStatus.OK.value()),
                                                                                 clientS2SToken, HMC, null,
-                                                                                otherInfo);
+                                                                                otherInfo, hearingState);
             } else {
                 hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(hearingEntity,
                                                                                 REQUEST_VERSION_UPDATE,
@@ -464,7 +465,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingEntity savedEntity = saveHearingDetails(createHearingRequest, reasonableMatch, facilitiesMatch,
                                                        deploymentId);
 
-        auditChangeInRequestVersion(savedEntity, 0, clientS2SToken);
+        auditChangeInRequestVersion(savedEntity, 0, clientS2SToken, null);
 
         savePartyRelationshipDetails(createHearingRequest, savedEntity);
         hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(savedEntity,
