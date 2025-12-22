@@ -335,10 +335,10 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken,
                                     "hearingCompletion");
         HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateToNow(hearingEntity,
                                                          POST_HEARING_ACTUALS_COMPLETION,
                                                          String.valueOf(HttpStatus.OK.value()),
-                                                         clientS2SToken, HMC, null);
+                                                         clientS2SToken, HMC, null, null);
         messageSenderToTopicConfiguration
             .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                          hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),

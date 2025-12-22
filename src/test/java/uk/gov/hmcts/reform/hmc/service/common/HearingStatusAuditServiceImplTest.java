@@ -105,5 +105,22 @@ class HearingStatusAuditServiceImplTest {
                                                                             HMC,null, otherInfo);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
+
+        @Test
+        void shouldSaveAuditTriageDetailsWithUpdatedDateToNow() throws JsonProcessingException  {
+            given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
+                TestingUtil.hearingStatusAuditEntity());
+            HearingEntity hearingEntity = TestingUtil.hearingEntity();
+            hearingEntity.setStatus(COMPLETED.toString());
+            hearingEntity.setCreatedDateTime(LocalDateTime.now());
+            hearingEntity.setUpdatedDateTime(LocalDateTime.now());
+            final JsonNode otherInfo = new ObjectMapper().readTree("{\"INCNUMBER\":"
+                                                                       + " \"219876 : Final Transition\"}");
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateToNow(hearingEntity,
+                                                                            MANAGE_EXCEPTION_AUDIT_EVENT,
+                                                                            null, TECH_ADMIN_UI_SERVICE,
+                                                                            HMC,null, otherInfo);
+            verify(hearingStatusAuditRepository, times(1)).save(any());
+        }
     }
 }
