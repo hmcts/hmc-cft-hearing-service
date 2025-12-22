@@ -291,7 +291,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                          DELETE_HEARING_REQUEST, String.valueOf(HttpStatus.OK.value()),
-                                                         clientS2SToken, HMC, null);
+                                                         clientS2SToken, HMC, null,null,
+                                                                        HEARING_STATE );
         generatePendingRequest(hearingId, DELETE_HEARING, existingHearing.getDeploymentId());
         return saveHearingResponseDetails;
     }
