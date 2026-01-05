@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.HearingStatusAuditContext;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 
 import java.time.LocalDateTime;
@@ -56,13 +57,16 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
     }
 
     @Override
-    public void saveAuditTriageDetailsWithUpdatedDate(HearingEntity hearingEntity, String hearingEvent,
-                                                      String httpStatus, String source, String target,
-                                                      JsonNode errorDetails, JsonNode otherInfo, String hearingState) {
-        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetailsWithUpdatedDate(hearingEntity,
-                                                                                         hearingEvent,httpStatus,
-                                                                                         source, target, errorDetails,
-                                                                                         otherInfo, hearingState);
+    public void saveAuditTriageDetailsWithUpdatedDate(HearingStatusAuditContext auditContext) {
+        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetailsWithUpdatedDate(
+            auditContext.getHearingEntity(),
+            auditContext.getHearingEvent(),
+            auditContext.getHttpStatus(),
+            auditContext.getSource(),
+            auditContext.getTarget(),
+            auditContext.getErrorDetails(),
+            auditContext.getOtherInfo(),
+            auditContext.getHearingState());
         saveHearingStatusAudit(hearingStatusAuditEntity);
     }
 
