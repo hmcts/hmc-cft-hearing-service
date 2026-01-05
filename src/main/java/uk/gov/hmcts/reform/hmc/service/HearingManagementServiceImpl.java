@@ -292,7 +292,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                          DELETE_HEARING_REQUEST, String.valueOf(HttpStatus.OK.value()),
                                                          clientS2SToken, HMC, null,null,
-                                                                        HEARING_STATE );
+                                                                        HEARING_STATE);
         generatePendingRequest(hearingId, DELETE_HEARING, existingHearing.getDeploymentId());
         return saveHearingResponseDetails;
     }
