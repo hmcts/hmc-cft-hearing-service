@@ -18,6 +18,11 @@ java:
     CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
     CFT_HEARING_SERVICE_DB_PORT: 5432
     CCD_DATA_STORE_API_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal
+    HMI_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal/hmi
+    HMI_SOURCE_SYSTEM: CFT
+    HMI_DESTINATION_SYSTEM: SNL
+    FH_BASE_URL: http://ccd-test-stubs-service-aat.service.core-compute-aat.internal
+    FH_GET_TOKEN_URL: /oauth2/token
   postgresql:
     enabled: true
   secrets:
