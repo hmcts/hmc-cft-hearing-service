@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.params.provider.Arguments;
 import org.slf4j.helpers.MessageFormatter;
+import org.springframework.boot.actuate.health.Status;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import uk.gov.hmcts.reform.hmc.client.hmi.ListingReasonCode;
@@ -97,7 +99,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Named.named;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
@@ -1616,11 +1621,9 @@ public class TestingUtil {
     }
 
     public static HearingActual hearingActualWithOutcomeEmpty() {
-        List<ActualHearingDay> actualHearingDays = new ArrayList<>();
         ActualHearingDay actualHearingDay = new ActualHearingDay();
         actualHearingDay.setHearingDate(LocalDate.now().plusDays(2));
         actualHearingDay.setNotRequired(true);
-        actualHearingDays.add(actualHearingDay);
         HearingActual request = new HearingActual();
         request.setActualHearingDays(List.of(actualHearingDay));
         return request;
@@ -1795,6 +1798,67 @@ public class TestingUtil {
             .caseRefs(ccdCaseRefs)
             .build();
         return elasticSearchQuery.getQuery();
+    }
+
+    public static Stream<Arguments> healthStatuses() {
+        return Stream.of(
+            arguments(Status.UP),
+            arguments(Status.DOWN),
+            arguments(Status.OUT_OF_SERVICE),
+            arguments(Status.UNKNOWN)
+        );
+    }
+
+    public static Stream<Arguments> adApiErrorsAndExpectedHealthCheckValues() {
+        String expectedAdErrorResponse = """
+                {
+                    "error_description":"An AD API error",
+                    "error_codes":[1000]
+                }""";
+
+        return Stream.of(
+            arguments(named("HTTP 400 response", 400),
+                      "An AD API error",
+                      List.of(1000),
+                      "ActiveDirectory",
+                      "Missing or invalid request parameters",
+                      400,
+                      expectedAdErrorResponse
+            ),
+            arguments(named("HTTP 500 response", 500),
+                      "Another AD API error",
+                      List.of(2000),
+                      "ActiveDirectory",
+                      "Server error",
+                      null,
+                      null
+            )
+        );
+    }
+
+    public static Stream<Arguments> hmiApiErrorsAndExpectedHealthCheckValues() {
+        String expectedHmiErrorResponse = """
+                {
+                    "statusCode": 401,
+                    "message": "An HMI API error"
+                }""";
+
+        return Stream.of(
+            arguments(named("HTTP 401 response", 401),
+                      "An HMI API error",
+                      "HearingManagementInterface",
+                      "Missing or invalid request parameters",
+                      401,
+                      expectedHmiErrorResponse
+            ),
+            arguments(named("HTTP 500 response", 500),
+                      "Another HMI API error",
+                      "HearingManagementInterface",
+                      "Server error",
+                      null,
+                      null
+            )
+        );
     }
 
     public static ManageExceptionRequest getManageExceptionRequest() {

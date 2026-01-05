@@ -9,7 +9,7 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 @FeignClient(
     name = "future-hearing-api",
     url = "${fh.ad.host}",
-    configuration = {FutureHearingApiClientConfig.class}
+    configuration = {FutureHearingApiClientConfig.class, ActiveDirectoryApiClientConfig.class}
 )
 public interface ActiveDirectoryApiClient {
 
