@@ -337,12 +337,17 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         HearingEntity hearingEntity = updateStatus(hearingId);
 
-        auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken, null);
+        auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken, HEARING_STATE);
         HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                         POST_HEARING_ACTUALS_COMPLETION,
-                                                         String.valueOf(HttpStatus.OK.value()),
-                                                         clientS2SToken, HMC, null);
+        HearingStatusAuditContext.HearingStatusAuditContextBuilder hearingStatusAuditContext =
+            HearingStatusAuditContext.builder();
+        hearingStatusAuditContext.hearingEntity(hearingEntity)
+            .hearingEvent(POST_HEARING_ACTUALS_COMPLETION)
+            .httpStatus(String.valueOf(HttpStatus.OK.value()))
+            .source(clientS2SToken)
+            .target(HMC)
+            .hearingState(HEARING_STATE);
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext.build());
         messageSenderToTopicConfiguration
             .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                          hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
