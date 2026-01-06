@@ -337,7 +337,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         HearingEntity hearingEntity = updateStatus(hearingId);
 
-        auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken, HEARING_STATE);
+        auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken, null);
         HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
                                                          POST_HEARING_ACTUALS_COMPLETION,
