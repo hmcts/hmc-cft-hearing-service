@@ -59,7 +59,7 @@ java:
     HTTP_CLIENT_VALIDATE_AFTER_INACTIVITY: '2000'
     CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    HMI_BASE_URL: https://hmi-apim.test.platform.hmcts.net/hmi
+    HMI_BASE_URL: https://sds-api-mgmt.staging.platform.hmcts.net/hmi
     HMI_SOURCE_SYSTEM: CFT
     HMI_DESTINATION_SYSTEM: SNL
     GRANT_TYPE: client_credentials
