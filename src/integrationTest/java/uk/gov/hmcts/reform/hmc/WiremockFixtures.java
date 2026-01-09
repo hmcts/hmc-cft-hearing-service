@@ -17,6 +17,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.client.futurehearing.AuthenticationResponse;
+import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingManagementInterfaceResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
@@ -38,6 +39,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.removeStubsByMetadata;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
@@ -189,6 +191,95 @@ public class WiremockFixtures {
                     ));
     }
 
+    public static void stubPostCreateLinkHearingGroupSuccessWithDelay(String token, int delay) {
+        stubFor(WireMock.post(urlEqualTo(HMI_REQUEST_URL))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withStatus(HTTP_ACCEPTED)
+                                    .withFixedDelay(delay)
+                    ));
+    }
+
+    public static void stubPostCreateLinkHearingGroupReturn400(Long hearingId, String token) {
+        ErrorDetails response = new ErrorDetails();
+        response.setErrorCode(1002);
+        response.setErrorDescription("A Case with 'caseListingRequestId' = '" + hearingId + "' does not exist");
+        stubFor(WireMock.post(urlEqualTo(HMI_REQUEST_URL))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(response))
+                                    .withStatus(HTTP_BAD_REQUEST)
+                    ));
+    }
+
+    public static void stubPostCreateLinkHearingGroupReturn400WithDelay(String token, int delay) {
+        ErrorDetails response = new ErrorDetails();
+        response.setErrorCode(1002);
+        response.setErrorDescription("Case does not exist");
+        stubFor(WireMock.post(urlEqualTo(HMI_REQUEST_URL))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(response))
+                                    .withStatus(HTTP_BAD_REQUEST)
+                                    .withFixedDelay(delay)
+                    ));
+    }
+
+    public static void stubPostCreateLinkHearingGroupReturn500(String token) {
+        ErrorDetails response = new ErrorDetails();
+        response.setErrorCode(9999);
+        response.setErrorDescription("A server error occurred");
+        stubFor(WireMock.post(urlEqualTo(HMI_REQUEST_URL))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(response))
+                                    .withStatus(HTTP_INTERNAL_ERROR)
+                    ));
+    }
+
+    public static void stubPostCreateLinkHearingGroupReturn500WithDelay(String token, int delay) {
+        ErrorDetails response = new ErrorDetails();
+        response.setErrorCode(9999);
+        response.setErrorDescription("A server error occurred");
+        stubFor(WireMock.post(urlEqualTo(HMI_REQUEST_URL))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(response))
+                                    .withStatus(HTTP_INTERNAL_ERROR)
+                                    .withFixedDelay(delay)
+                    ));
+    }
+
     public static void stubPutUpdateLinkHearingGroup(int status, String requestId, String token) {
         HearingManagementInterfaceResponse response = new HearingManagementInterfaceResponse();
         response.setResponseCode(status);
@@ -207,6 +298,59 @@ public class WiremockFixtures {
                     ));
     }
 
+    public static void stubPutUpdateLinkHearingGroupSuccessWithDelay(String requestId, String token, int delay) {
+        stubFor(WireMock.put(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withStatus(HTTP_ACCEPTED)
+                                    .withFixedDelay(delay)
+                    ));
+    }
+
+    public static void stubPutUpdateLinkHearingGroupReturn400WithDelay(String requestId, String token, int delay) {
+        ErrorDetails response = new ErrorDetails();
+        response.setErrorCode(1002);
+        response.setErrorDescription("Case does not exist");
+        stubFor(WireMock.put(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(response))
+                                    .withStatus(HTTP_BAD_REQUEST)
+                                    .withFixedDelay(delay)
+                    ));
+    }
+
+    public static void stubPutUpdateLinkHearingGroupReturn500WithDelay(String requestId, String token, int delay) {
+        ErrorDetails response = new ErrorDetails();
+        response.setErrorCode(9999);
+        response.setErrorDescription("A server error occurred");
+        stubFor(WireMock.put(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(response))
+                                    .withStatus(HTTP_INTERNAL_ERROR)
+                                    .withFixedDelay(delay)
+                    ));
+    }
+
     public static void stubSuccessfullyDeleteLinkedHearingGroups(String token, String requestId) {
         stubFor(WireMock.delete(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
                     .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
@@ -218,6 +362,21 @@ public class WiremockFixtures {
                     .willReturn(aResponse()
                                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withStatus(HTTP_OK)
+                    ));
+    }
+
+    public static void stubSuccessfullyDeleteLinkedHearingGroupsWithDelay(String token, String requestId, int delay) {
+        stubFor(WireMock.delete(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withStatus(HTTP_ACCEPTED)
+                                    .withFixedDelay(delay)
                     ));
     }
 
@@ -236,6 +395,25 @@ public class WiremockFixtures {
                                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
                                     .withStatus(HTTP_BAD_REQUEST)
+                    ));
+    }
+
+    public static void stubDeleteLinkedHearingGroupsReturn400WithDelay(String token, String requestId, int delay) {
+        ErrorDetails response = new ErrorDetails();
+        response.setErrorCode(1002);
+        response.setErrorDescription("Case does not exist");
+        stubFor(WireMock.delete(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(response))
+                                    .withStatus(HTTP_BAD_REQUEST)
+                                    .withFixedDelay(delay)
                     ));
     }
 
@@ -290,6 +468,25 @@ public class WiremockFixtures {
                                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                     .withBody(getJsonString(response))
                                     .withStatus(HTTP_INTERNAL_ERROR)
+                    ));
+    }
+
+    public static void stubDeleteLinkedHearingGroupsReturn500WithDelay(String token, String requestId, int delay) {
+        ErrorDetails response = new ErrorDetails();
+        response.setErrorCode(9999);
+        response.setErrorDescription("A server error occurred");
+        stubFor(WireMock.delete(urlEqualTo(HMI_REQUEST_URL + "/" + requestId))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(HEADER_SOURCE_SYSTEM, equalTo(SOURCE_SYSTEM))
+                    .withHeader(HEADER_DESTINATION_SYSTEM, equalTo(DESTINATION_SYSTEM))
+                    .withHeader(HEADER_REQUEST_CREATED_AT, matching(REGEX_TIMESTAMP))
+                    .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
+                    .willReturn(aResponse()
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withBody(getJsonString(response))
+                                    .withStatus(HTTP_INTERNAL_ERROR)
+                                    .withFixedDelay(delay)
                     ));
     }
 
