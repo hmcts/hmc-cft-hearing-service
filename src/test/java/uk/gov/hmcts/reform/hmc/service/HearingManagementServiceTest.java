@@ -252,7 +252,7 @@ class HearingManagementServiceTest {
         hearingManagementService = createHearingManagementService();
 
         hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
     }
 
 
@@ -1678,7 +1678,7 @@ class HearingManagementServiceTest {
             when(actualHearingRepository.findByHearingResponse(any(HearingResponseEntity.class)))
                 .thenReturn(Optional.of(actualHearingEntity));
             verify(hearingStatusAuditService, times(1)).saveAuditTriageDetailsWithUpdatedDate(
-                any(), any(), any(), any(), any(), any(), any());
+                any(), any(), any(), any(), any(), any());
             mockHearingCompletionRequest();
             hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
         }
