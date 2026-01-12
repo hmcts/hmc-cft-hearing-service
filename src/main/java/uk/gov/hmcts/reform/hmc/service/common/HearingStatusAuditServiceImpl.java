@@ -66,7 +66,7 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
             auditContext.getTarget(),
             auditContext.getErrorDetails(),
             auditContext.getOtherInfo(),
-            auditContext.isHearingState());
+            auditContext.isUseCurrentTimestamp());
         saveHearingStatusAudit(hearingStatusAuditEntity);
     }
 
@@ -130,11 +130,8 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
                                                                                              hearingEvent, httpStatus,
                                                                                              source, target,
                                                                                              errorDetails, otherInfo);
-        if (useCurrentTimestamp) {
-            hearingStatusAuditEntity.setStatusUpdateDateTime(LocalDateTime.now());
-        } else {
-            hearingStatusAuditEntity.setStatusUpdateDateTime(hearingEntity.getUpdatedDateTime());
-        }
+        LocalDateTime ts = useCurrentTimestamp ? LocalDateTime.now() : hearingEntity.getUpdatedDateTime();
+        hearingStatusAuditEntity.setStatusUpdateDateTime(ts);
         return hearingStatusAuditEntity;
     }
 
