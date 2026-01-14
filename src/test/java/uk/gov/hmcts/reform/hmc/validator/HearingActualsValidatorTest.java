@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
+import uk.gov.hmcts.reform.hmc.model.HearingActualsOutcome;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -209,8 +210,18 @@ class HearingActualsValidatorTest {
     }
 
     @Test
-    void validateHearingActualDaysNotInTheFuture() {
+    void validateHearingActualDaysInTheFutureAndOutcomeIsNullAndNotRequiredIsTrue() {
         HearingActual actual = TestingUtil.hearingActualWithOutcomeEmpty();
+        assertDoesNotThrow(() -> {
+            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
+        });
+    }
+
+    @Test
+    void validateHearingActualDaysInTheFutureAndOutcomeIsNotNullAndNotRequiredIsTrue() {
+        HearingActual actual = TestingUtil.hearingActualWithOutcomeEmpty();
+        HearingActualsOutcome outcome = TestingUtil.hearingActualsOutcome();
+        actual.setHearingOutcome(outcome);
         assertDoesNotThrow(() -> {
             hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
         });
