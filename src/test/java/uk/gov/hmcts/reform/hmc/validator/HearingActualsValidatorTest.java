@@ -228,8 +228,18 @@ class HearingActualsValidatorTest {
     }
 
     @Test
-    void shouldThrowErrorWhenNotRequiredTrueAndHearingActualNotNull() {
+    void shouldThrowErrorWhenNotRequiredFalseAndHearingActualNotNull() {
         HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.FALSE);
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
+        });
+        assertTrue(exception.getMessage().contains(HEARING_ACTUALS_INVALID_STATUS));
+    }
+
+    @Test
+    void shouldThrowErrorWhenNotRequiredTrue_FutureDate_AndHearingObjectsPresent() {
+        HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.TRUE);
+        actual.getActualHearingDays().get(0).setHearingStartTime(LocalDate.now().plusDays(5).atStartOfDay());
         Exception exception = assertThrows(BadRequestException.class, () -> {
             hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
         });
