@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
+import uk.gov.hmcts.reform.hmc.model.HearingActualsOutcome;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -209,7 +210,7 @@ class HearingActualsValidatorTest {
     }
 
     @Test
-    void validateHearingActualDaysNotInTheFuture() {
+    void validateHearingActualDaysInTheFutureAndOutcomeIsNullAndNotRequiredIsTrue() {
         HearingActual actual = TestingUtil.hearingActualWithOutcomeEmpty();
         assertDoesNotThrow(() -> {
             hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
@@ -217,8 +218,28 @@ class HearingActualsValidatorTest {
     }
 
     @Test
-    void shouldThrowErrorWhenNotRequiredTrueAndHearingActualNotNull() {
+    void validateHearingActualDaysInTheFutureAndOutcomeIsNotNullAndNotRequiredIsTrue() {
+        HearingActual actual = TestingUtil.hearingActualWithOutcomeEmpty();
+        HearingActualsOutcome outcome = TestingUtil.hearingActualsOutcome();
+        actual.setHearingOutcome(outcome);
+        assertDoesNotThrow(() -> {
+            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
+        });
+    }
+
+    @Test
+    void shouldThrowErrorWhenNotRequiredFalseAndHearingActualNotNull() {
         HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.FALSE);
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
+        });
+        assertTrue(exception.getMessage().contains(HEARING_ACTUALS_INVALID_STATUS));
+    }
+
+    @Test
+    void shouldThrowErrorWhenNotRequiredTrue_FutureDate_AndHearingObjectsPresent() {
+        HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.TRUE);
+        actual.getActualHearingDays().get(0).setHearingStartTime(LocalDate.now().plusDays(5).atStartOfDay());
         Exception exception = assertThrows(BadRequestException.class, () -> {
             hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
         });

@@ -87,10 +87,9 @@ public class HearingActualsValidator {
         List<ActualHearingDay> actualHearingDays = request.getActualHearingDays();
         actualHearingDays.forEach(hearingDay -> {
             if (hearingDay != null && hearingDay.getHearingDate().isAfter(LocalDate.now())) {
-                boolean isOutcomeEmpty = request.getHearingOutcome() == null || request.getHearingOutcome().isEmpty();
                 boolean isHearingDayEmpty = hearingDay.isEmpty();
                 if (Boolean.TRUE.equals(hearingDay.getNotRequired())) {
-                    if (!isOutcomeEmpty || !isHearingDayEmpty) {
+                    if (!isHearingDayEmpty) {
                         throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
                     }
                 } else {
