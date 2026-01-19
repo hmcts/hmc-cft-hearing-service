@@ -14,13 +14,14 @@ public interface HearingStatusAuditService {
                                        String hearingEvent,String httpStatus, String source, String target,
                                        JsonNode errorDetails, JsonNode otherInfo);
 
+    void saveAuditTriageDetailsForSupportTools(HearingEntity hearingEntity,
+                                               String hearingEvent,String httpStatus, String source, String target,
+                                               JsonNode errorDetails, JsonNode otherInfo);
+
+    void saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(HearingStatusAuditContext hearingStatusAuditContext);
+
     void saveAuditTriageDetailsWithUpdatedDate(HearingEntity hearingEntity, String hearingEvent,
                                                String httpStatus,String source, String target,
                                                JsonNode errorDescription);
 
-    void saveAuditTriageDetailsWithUpdatedDate(HearingStatusAuditContext hearingStatusAuditContext);
-
-    void saveAuditTriageDetailsForSupportTools(HearingEntity hearingEntity,
-                                               String hearingEvent,String httpStatus, String source, String target,
-                                               JsonNode errorDetails, JsonNode otherInfo);
 }

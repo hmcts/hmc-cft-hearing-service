@@ -47,30 +47,6 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
     }
 
     @Override
-    public void saveAuditTriageDetailsWithUpdatedDate(HearingEntity hearingEntity,
-                                       String hearingEvent,String httpStatus, String source, String target,
-                                       JsonNode errorDetails) {
-        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetailsWithUpdatedDate(hearingEntity,
-                                                                                         hearingEvent,httpStatus,
-                                                                                         source, target, errorDetails);
-        saveHearingStatusAudit(hearingStatusAuditEntity);
-    }
-
-    @Override
-    public void saveAuditTriageDetailsWithUpdatedDate(HearingStatusAuditContext auditContext) {
-        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetailsWithUpdatedDate(
-            auditContext.getHearingEntity(),
-            auditContext.getHearingEvent(),
-            auditContext.getHttpStatus(),
-            auditContext.getSource(),
-            auditContext.getTarget(),
-            auditContext.getErrorDetails(),
-            auditContext.getOtherInfo(),
-            auditContext.isUseCurrentTimestamp());
-        saveHearingStatusAudit(hearingStatusAuditEntity);
-    }
-
-    @Override
     public void saveAuditTriageDetailsForSupportTools(HearingEntity hearingEntity, String hearingEvent,
                                                       String httpStatus, String source, String target,
                                                       JsonNode errorDetails, JsonNode otherInfo) {
@@ -83,6 +59,43 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
         hearingStatusAuditEntity.setStatusUpdateDateTime(LocalDateTime.now());
         hearingStatusAuditEntity.setResponseDateTime(null);
         saveHearingStatusAudit(hearingStatusAuditEntity);
+    }
+
+    @Override
+    public void saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(HearingStatusAuditContext auditContext) {
+        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetails(auditContext);
+        LocalDateTime ts = auditContext.isUseCurrentTimestamp() ? LocalDateTime.now()
+            : auditContext.getHearingEntity().getUpdatedDateTime();
+        hearingStatusAuditEntity.setStatusUpdateDateTime(ts);
+        saveHearingStatusAudit(hearingStatusAuditEntity);
+    }
+
+    @Override
+    public void saveAuditTriageDetailsWithUpdatedDate(HearingEntity hearingEntity,
+                                                      String hearingEvent,String httpStatus, String source,
+                                                      String target, JsonNode errorDetails) {
+        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetailsWithUpdatedDate(hearingEntity,
+                                                                       hearingEvent,httpStatus, source,
+                                                                       target, errorDetails);
+        saveHearingStatusAudit(hearingStatusAuditEntity);
+    }
+
+    private HearingStatusAuditEntity mapHearingStatusAuditDetails(HearingStatusAuditContext hearingStatusAuditContext) {
+        HearingStatusAuditEntity hearingStatusAuditEntity = new HearingStatusAuditEntity();
+        HearingEntity hearingEntity = hearingStatusAuditContext.getHearingEntity();
+        hearingStatusAuditEntity.setHmctsServiceId(hearingEntity.getLatestCaseHearingRequest().getHmctsServiceCode());
+        hearingStatusAuditEntity.setHearingId(hearingEntity.getId().toString());
+        hearingStatusAuditEntity.setStatus(hearingEntity.getStatus());
+        hearingStatusAuditEntity.setHearingEvent(hearingStatusAuditContext.getHearingEvent());
+        hearingStatusAuditEntity.setHttpStatus(hearingStatusAuditContext.getHttpStatus());
+        hearingStatusAuditEntity.setSource(hearingStatusAuditContext.getSource());
+        hearingStatusAuditEntity.setTarget(hearingStatusAuditContext.getTarget());
+        hearingStatusAuditEntity.setErrorDescription(hearingStatusAuditContext.getErrorDetails());
+        hearingStatusAuditEntity.setRequestVersion(hearingEntity.getLatestCaseHearingRequest().getVersionNumber()
+                                                       .toString());
+        hearingStatusAuditEntity.setResponseDateTime(LocalDateTime.now());
+        hearingStatusAuditEntity.setOtherInfo(hearingStatusAuditContext.getOtherInfo());
+        return hearingStatusAuditEntity;
     }
 
     private HearingStatusAuditEntity mapHearingStatusAuditDetailsWithCreatedDate(HearingEntity hearingEntity,
@@ -117,21 +130,6 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
                                                                                              errorDetails,
                                                                                              null);
         hearingStatusAuditEntity.setStatusUpdateDateTime(hearingEntity.getUpdatedDateTime());
-        return hearingStatusAuditEntity;
-    }
-
-    private HearingStatusAuditEntity mapHearingStatusAuditDetailsWithUpdatedDate(HearingEntity hearingEntity,
-                                                                                 String hearingEvent, String httpStatus,
-                                                                                 String source, String target,
-                                                                                 JsonNode errorDetails,
-                                                                                 JsonNode otherInfo,
-                                                                                 boolean useCurrentTimestamp) {
-        HearingStatusAuditEntity hearingStatusAuditEntity = generateHearingStatusAuditEntity(hearingEntity,
-                                                                                             hearingEvent, httpStatus,
-                                                                                             source, target,
-                                                                                             errorDetails, otherInfo);
-        LocalDateTime ts = useCurrentTimestamp ? LocalDateTime.now() : hearingEntity.getUpdatedDateTime();
-        hearingStatusAuditEntity.setStatusUpdateDateTime(ts);
         return hearingStatusAuditEntity;
     }
 

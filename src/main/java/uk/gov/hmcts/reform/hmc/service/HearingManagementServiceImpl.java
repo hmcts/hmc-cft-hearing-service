@@ -296,7 +296,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             .source(clientS2SToken)
             .target(HMC)
             .useCurrentTimestamp(true);
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext.build());
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext.build());
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
         generatePendingRequest(hearingId, DELETE_HEARING, existingHearing.getDeploymentId());
         return saveHearingResponseDetails;
@@ -346,7 +346,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                 .source(clientS2SToken)
                 .target(HMC)
                 .useCurrentTimestamp(true);
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext.build());
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext.build());
         messageSenderToTopicConfiguration
             .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                          hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
@@ -401,7 +401,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                         .target(HMC)
                         .otherInfo(otherInfo)
                         .useCurrentTimestamp(useNow);
-                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext.build());
+                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(
+                    hearingStatusAuditContext.build());
             } else {
                 hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(hearingEntity,
                                                                                 REQUEST_VERSION_UPDATE,
