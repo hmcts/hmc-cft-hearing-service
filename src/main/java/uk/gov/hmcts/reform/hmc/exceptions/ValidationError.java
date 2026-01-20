@@ -302,4 +302,10 @@ public final class ValidationError {
     public static final String INVALID_STATE = "State is valid only for action final state transition";
     public static final String EMPTY_HEARING_STATE = "State is null or empty";
     public static final String HEARING_ACTUALS_NULL = "No hearing actuals found";
+
+    public static final String PAGE_SIZE_MANDATORY = "Page size is mandatory";
+    public static final String PAGE_SIZE_POSITIVE = "Page size can't be less than one";
+    public static final String OFFSET_MANDATORY = "Offset is mandatory";
+    public static final String OFFSET_MIN_VALUE = "Offset can't be less than 0";
+    public static final String CASE_REFERENCES_MANDATORY = "At least one case reference must be provided";
 }

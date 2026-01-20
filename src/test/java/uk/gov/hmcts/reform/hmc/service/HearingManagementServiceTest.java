@@ -10,6 +10,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -19,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToQueueConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
@@ -95,12 +99,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Named.named;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -1731,6 +1738,103 @@ class HearingManagementServiceTest {
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
             assertNotNull(responseEntity);
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        }
+    }
+
+    @Nested
+    @DisplayName("caseSearch")
+    class CaseSearchResults {
+
+        private static final String CASE_REF_1 = "1000100010001000";
+        private static final String CASE_REF_2 = "2000200020002000";
+
+        @ParameterizedTest(name = "{index}: {0}")
+        @MethodSource("caseReferences")
+        void shouldGetCaseSearchResultsPaginated(List<String> caseReferences) {
+            String elasticSearchQueryPaginated = getElasticSearchQueryPaginated(5, 5, caseReferences);
+
+            List<DataStoreCaseDetails> dataStoreCaseDetailsList = new ArrayList<>();
+            for (String caseReference : caseReferences) {
+                DataStoreCaseDetails dataStoreCaseDetails =
+                    DataStoreCaseDetails.builder()
+                        .caseTypeId(CASE_TYPE).id(caseReference).jurisdiction(JURISDICTION)
+                        .build();
+                dataStoreCaseDetailsList.add(dataStoreCaseDetails);
+            }
+
+            CaseSearchResult caseSearchResult = new CaseSearchResult();
+            caseSearchResult.setCases(dataStoreCaseDetailsList);
+
+            when(dataStoreRepository.findAllCasesByCaseIdUsingExternalApi(CASE_TYPE, elasticSearchQueryPaginated))
+                .thenReturn(caseSearchResult);
+
+            List<DataStoreCaseDetails> returnedDataStoreCaseDetailsList =
+                hearingManagementService.getCaseSearchResultsPaginated(5, 5, caseReferences, null, CASE_TYPE);
+
+            assertNotNull(returnedDataStoreCaseDetailsList, "Case search results should not be null");
+            assertEquals(caseReferences.size(),
+                         returnedDataStoreCaseDetailsList.size(),
+                         "Unexpected number of case search results");
+
+            for (int index = 0; index < caseReferences.size(); index++) {
+                assertDataStoreCaseDetails(returnedDataStoreCaseDetailsList.get(index), caseReferences.get(index));
+            }
+
+            verify(dataStoreRepository).findAllCasesByCaseIdUsingExternalApi(CASE_TYPE, elasticSearchQueryPaginated);
+        }
+
+        @Test
+        void shouldGetCaseSearchResultsPaginatedNoneFound() {
+            List<String> caseReferences = List.of(CASE_REF_1);
+            String elasticSearchQueryPaginated = getElasticSearchQueryPaginated(10, 0, caseReferences);
+
+            CaseSearchResult caseSearchResult = new CaseSearchResult();
+            caseSearchResult.setCases(Collections.emptyList());
+
+            when(dataStoreRepository.findAllCasesByCaseIdUsingExternalApi(CASE_TYPE, elasticSearchQueryPaginated))
+                .thenReturn(caseSearchResult);
+
+            List<DataStoreCaseDetails> returnedDataStoreCaseDetailsList =
+                hearingManagementService.getCaseSearchResultsPaginated(10, 0, caseReferences, null, CASE_TYPE);
+
+            assertNotNull(returnedDataStoreCaseDetailsList, "Case search results should not be null");
+            assertEquals(0, returnedDataStoreCaseDetailsList.size(), "Unexpected number of case search results");
+        }
+
+        private String getElasticSearchQueryPaginated(Integer size, Integer from, List<String> caseReferences) {
+            String commaSeparatedCaseReferences = "\"" + String.join("\", \"", caseReferences) + "\"";
+
+            return """
+                {
+                    "size": %d,
+                    "from": %d,
+                    "query": {
+                        "terms": {"reference": [%s]}
+                    },
+                    "sort": [
+                        {"reference.keyword": "asc"}
+                    ],
+                    "_source": ["id", "jurisdiction", "case_type_id", "reference"]
+                }""".formatted(size, from, commaSeparatedCaseReferences);
+        }
+
+        private void assertDataStoreCaseDetails(DataStoreCaseDetails dataStoreCaseDetails, String expectedCaseRef) {
+            assertEquals(CASE_TYPE,
+                         dataStoreCaseDetails.getCaseTypeId(),
+                         "Case search result has unexpected case type id");
+            assertEquals(expectedCaseRef,
+                         dataStoreCaseDetails.getId(),
+                         "Case search result has unexpected id");
+            assertEquals(JURISDICTION,
+                         dataStoreCaseDetails.getJurisdiction(),
+                         "Case search result has unexpected jurisdiction");
+        }
+
+        private static Stream<Arguments> caseReferences() {
+            return Stream.of(
+                arguments(named("One case reference", List.of(CASE_REF_1))),
+                arguments(named("Two case references", List.of(CASE_REF_1, CASE_REF_2)))
+            );
         }
     }
 

@@ -4,7 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import lombok.val;
 import org.hamcrest.core.IsNull;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +54,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
@@ -57,19 +62,24 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Named.named;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200CaseDetailsByCaseId;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStore;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStorePaginated;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignments;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidateHearingObject;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404FromDataStore;
@@ -212,6 +222,9 @@ class HearingManagementControllerIT extends BaseTest {
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-caseHearings_request.sql";
+
+    private static final String INSERT_CASE_HEARING_REQUEST_PAGINATED_DATA_SCRIPT =
+        "classpath:sql/insert-case_hearing_request_paginated.sql";
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
@@ -1918,6 +1931,197 @@ class HearingManagementControllerIT extends BaseTest {
             .andExpect(status().is(201))
             .andReturn();
         assertChangeReasons();
+    }
+
+    @Nested
+    class GetHearingsForListOfCases {
+
+        @Test
+        void shouldFailValidationNoCaseTypeParameter() throws Exception {
+            String request = """
+                {
+                    "pageSize": 10,
+                    "offset": 0,
+                    "caseReferences": [
+                        {"caseReference": "1234123412341234"}
+                    ]
+                }""";
+
+            mockMvc.perform(post("/hearings")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(request))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("Required parameter 'caseTypeId' is not present."));
+        }
+
+        @ParameterizedTest(name = "{index}: {0}")
+        @MethodSource("bodyValidationErrors")
+        void shouldFailValidationBody(String request, List<String> expectedErrors) throws Exception {
+            mockMvc.perform(post("/hearings?caseTypeId=" + CASE_TYPE)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(request))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors", hasSize(expectedErrors.size())))
+                .andExpect(jsonPath("$.errors", hasItems(expectedErrors.toArray())));
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_REQUEST_PAGINATED_DATA_SCRIPT})
+        void shouldGetHearingsForListOfCases() throws Exception {
+            List<String> caseReferences = List.of("1234123412341234", "5678567856785678");
+            stubReturn200ForAllCasesFromDataStorePaginated(10, 0, caseReferences, CASE_TYPE, caseReferences);
+
+            String request = createGetHearingRequest(10, 0, caseReferences);
+
+            mockMvc.perform(post("/hearings?caseTypeId=" + CASE_TYPE)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(request))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].caseRef").value("1234123412341234"))
+                .andExpect(jsonPath("$[0].caseHearings", hasSize(1)))
+                .andExpect(jsonPath("$[0].caseHearings[0].hearingID").value("2000000000"));
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT})
+        void shouldReturnNoHearingsWhenNoCasesFound() throws Exception {
+            List<String> caseReferences = List.of("5678567856785678");
+            stubReturn200ForAllCasesFromDataStorePaginated(5, 0, caseReferences, CASE_TYPE, Collections.emptyList());
+
+            String request = createGetHearingRequest(5, 0, caseReferences);
+
+            mockMvc.perform(post("/hearings?caseTypeId=" + CASE_TYPE)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(request))
+                .andExpect(status().isOk())
+                .andExpect(content().string(emptyString()));
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT})
+        void shouldReturnNoHearingsWhenNoHearingsForCaseFound() throws Exception {
+            List<String> caseReferences = List.of("5678567856785678");
+            stubReturn200ForAllCasesFromDataStorePaginated(5, 1, caseReferences, CASE_TYPE, caseReferences);
+
+            String request = createGetHearingRequest(5, 1, caseReferences);
+
+            mockMvc.perform(post("/hearings?caseTypeId=" + CASE_TYPE)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(request))
+                .andExpect(status().isOk())
+                .andExpect(content().string(emptyString()));
+        }
+
+        private String createGetHearingRequest(int pageSize, int offset, List<String> caseReferences) {
+            String caseReferenceItems =
+                caseReferences == null || caseReferences.isEmpty() ? "" :
+                    caseReferences.stream()
+                        .map(caseRef -> "{\"caseReference\": \"" + caseRef + "\"}")
+                        .collect(Collectors.joining(", "));
+
+            return """
+                {
+                    "pageSize": %d,
+                    "offset": %d,
+                    "caseReferences": [%s]
+                }""".formatted(pageSize, offset, caseReferenceItems);
+        }
+
+        private static Stream<Arguments> bodyValidationErrors() {
+            return Stream.of(
+                arguments(
+                    named("HasNoPageSize",
+                          """
+                          {
+                              "offset": 0,
+                              "caseReferences": [
+                                  {"caseReference": "1234123412341234"}
+                              ]
+                          }"""),
+                    List.of("Page size is mandatory")
+                ),
+                arguments(
+                    named("PageSizeNotPositive",
+                          """
+                          {
+                              "pageSize": 0,
+                              "offset": 0,
+                              "caseReferences": [
+                                  {"caseReference": "1234123412341234"}
+                              ]
+                          }"""),
+                    List.of("Page size can't be less than one")
+                ),
+                arguments(
+                    named("HasNoOffset",
+                          """
+                          {
+                              "pageSize": 10,
+                              "caseReferences": [
+                                  {"caseReference": "1234123412341234"}
+                              ]
+                          }"""),
+                    List.of("Offset is mandatory")
+                ),
+                arguments(
+                    named("OffsetLessThanZero",
+                          """
+                          {
+                              "pageSize": 10,
+                              "offset": -1,
+                              "caseReferences": [
+                                  {"caseReference": "1234123412341234"}
+                              ]
+                          }"""),
+                    List.of("Offset can't be less than 0")
+                ),
+                arguments(
+                    named("HasNoCaseReferences",
+                          """
+                          {
+                              "pageSize": 10,
+                              "offset": 0
+                          }"""),
+                    List.of("At least one case reference must be provided")
+                ),
+                arguments(
+                    named("CaseReferencesEmpty",
+                          """
+                          {
+                              "pageSize": 10,
+                              "offset": 0,
+                              "caseReferences": []
+                          }"""),
+                    List.of("At least one case reference must be provided")
+                ),
+                arguments(
+                    named("CaseReferencesCaseReferenceBlank",
+                          """
+                          {
+                              "pageSize": 10,
+                              "offset": 0,
+                              "caseReferences": [
+                                  {"caseReference": ""}
+                              ]
+                          }"""
+                    ),
+                    List.of("Case ref has invalid length", "Case ref can not be empty")
+                ),
+                arguments(
+                    named("CaseReferencesCaseReferenceInvalidLength",
+                          """
+                          {
+                              "pageSize": 10,
+                              "offset": 0,
+                              "caseReferences": [
+                                  {"caseReference": "1"}
+                              ]
+                          }"""),
+                    List.of("Case ref has invalid length")
+                )
+            );
+        }
     }
 
     private final String serviceJwtDefinition = generateDummyS2SToken("ccd_definition");

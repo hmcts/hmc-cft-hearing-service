@@ -34,4 +34,9 @@ public interface HearingManagementService {
 
     List<DataStoreCaseDetails> getCaseSearchResults(List<String> ccdCaseRefs, String status, String caseTypeId);
 
+    List<DataStoreCaseDetails> getCaseSearchResultsPaginated(Integer pageSize,
+                                                             Integer offset,
+                                                             List<String> caseReferences,
+                                                             String status,
+                                                             String caseTypeId);
 }

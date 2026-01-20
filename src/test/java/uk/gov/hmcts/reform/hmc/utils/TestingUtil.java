@@ -48,6 +48,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestAction;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.helper.ElasticSearchQuery;
+import uk.gov.hmcts.reform.hmc.helper.ElasticSearchQueryPaginated;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayParties;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDayPartyDetail;
@@ -1798,6 +1799,16 @@ public class TestingUtil {
             .caseRefs(ccdCaseRefs)
             .build();
         return elasticSearchQuery.getQuery();
+    }
+
+    public static String createSearchQueryPaginated(Integer pageSize, Integer offset, List<String> caseReferences) {
+        ElasticSearchQueryPaginated elasticSearchQueryPaginated =
+            ElasticSearchQueryPaginated.builder()
+                .pageSize(pageSize)
+                .offset(offset)
+                .caseReferences(caseReferences)
+                .build();
+        return elasticSearchQueryPaginated.getQuery();
     }
 
     public static Stream<Arguments> healthStatuses() {

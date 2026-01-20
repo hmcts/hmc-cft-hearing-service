@@ -35,6 +35,8 @@ import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingsForListOfCasesPaginatedRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingsForListOfCasesPaginatedRequestCaseReference;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
@@ -196,6 +198,7 @@ public class HearingManagementController {
      * @param status      optional Status
      * @param caseTypeId type of case
      * @return Hearing
+     * @deprecated Use endpoint provided by getHearingsForListOfCasesPaginated() instead
      */
     @Transactional
     @GetMapping(value = { "/hearings" }, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -204,6 +207,7 @@ public class HearingManagementController {
     @ApiResponse(responseCode = "200", description = "Success (with content)")
     @ApiResponse(responseCode = "400", description = "One or more of the following reasons:"
             + "\n1) " + ValidationError.INVALID_HEARING_REQUEST_DETAILS)
+    @Deprecated(forRemoval = true)
 
     public List<GetHearingsResponse> getHearingsForListOfCases(@RequestParam @NotEmpty List<String> ccdCaseRefs,
                                                                @RequestParam(required = false) String status,
@@ -217,6 +221,45 @@ public class HearingManagementController {
                 hearingsResponseList.add(hearingsResponse);
             }
         }
+        return hearingsResponseList.isEmpty() ? null : hearingsResponseList;
+    }
+
+    @PostMapping(path = "/hearings", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get hearings for list of cases.  Pagination details for list of cases must be supplied.")
+    @ApiResponse(responseCode = "200", description = "Success.  "
+        + "Content will be null under certain circumstances, such as if no cases are found.")
+    @ApiResponse(responseCode = "400", description = "One or more of the following reasons:\n"
+        + "1) " + ValidationError.PAGE_SIZE_MANDATORY + "\n"
+        + "2) " + ValidationError.PAGE_SIZE_POSITIVE + "\n"
+        + "3) " + ValidationError.OFFSET_MANDATORY + "\n"
+        + "4) " + ValidationError.OFFSET_MIN_VALUE + "\n"
+        + "5) " + ValidationError.CASE_REFERENCES_MANDATORY + "\n"
+        + "6) " + ValidationError.CASE_REF_EMPTY + "\n"
+        + "7) " + ValidationError.CASE_REF_INVALID_LENGTH)
+
+    public List<GetHearingsResponse> getHearingsForListOfCasesPaginated(
+        @RequestParam(required = false) String status,
+        @RequestParam @NotBlank String caseTypeId,
+        @RequestBody @Valid HearingsForListOfCasesPaginatedRequest hearingsForListOfCasesPaginatedRequest) {
+        List<GetHearingsResponse> hearingsResponseList = new ArrayList<>();
+
+        List<String> caseReferences = getCaseReferences(hearingsForListOfCasesPaginatedRequest.getCaseReferences());
+        List<DataStoreCaseDetails> cases =
+            hearingManagementService.getCaseSearchResultsPaginated(
+                hearingsForListOfCasesPaginatedRequest.getPageSize(),
+                hearingsForListOfCasesPaginatedRequest.getOffset(),
+                caseReferences,
+                status,
+                caseTypeId);
+
+        for (DataStoreCaseDetails caseDetails : cases) {
+            GetHearingsResponse hearingsResponse = getHearingsResponse(caseDetails.getId(), status, caseDetails);
+            if (!hearingsResponse.getCaseHearings().isEmpty()) {
+                hearingsResponseList.add(hearingsResponse);
+            }
+        }
+
         return hearingsResponseList.isEmpty() ? null : hearingsResponseList;
     }
 
@@ -261,5 +304,12 @@ public class HearingManagementController {
 
     private String getServiceName(String clientS2SToken) {
         return securityUtils.getServiceNameFromS2SToken(clientS2SToken);
+    }
+
+    private List<String> getCaseReferences(List<HearingsForListOfCasesPaginatedRequestCaseReference> requestCaseRefs) {
+        List<String> caseRefs = new ArrayList<>();
+        requestCaseRefs.forEach(hearingRequestCaseReference ->
+                                    caseRefs.add(hearingRequestCaseReference.getCaseReference()));
+        return caseRefs;
     }
 }
