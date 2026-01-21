@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
+import uk.gov.hmcts.reform.hmc.domain.model.HearingStatusAuditContext;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestAction;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
@@ -118,15 +119,15 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
             : request.getState();
 
         try {
+            JsonNode otherInfo = objectMapper.convertValue(request.getNotes(), JsonNode.class);
             saveHearingEntity(entity, newStatus);
-            saveAuditEntity(request, entity, serviceName);
+            saveAuditEntity(entity, MANAGE_EXCEPTION_AUDIT_EVENT, serviceName, otherInfo);
             return success(entity.getId(), oldStatus, newStatus);
         } catch (Exception e) {
             log.error("DB commit failed for hearing ID {}: {}", entity.getId(), e.getMessage(), e);
             // Audit the error
-            hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(
-                entity, MANAGE_EXCEPTION_COMMIT_FAIL_EVENT, null, serviceName, HMC, null,
-                objectMapper.convertValue("DB commit failed: " + e.getMessage(), JsonNode.class));
+            JsonNode otherInfo = objectMapper.convertValue("DB commit failed: " + e.getMessage(), JsonNode.class);
+            saveAuditEntity(entity, MANAGE_EXCEPTION_COMMIT_FAIL_EVENT, serviceName, otherInfo);
             return createResponse(String.valueOf(entity.getId()), ManageRequestStatus.FAILURE.label,
                                   MANAGE_EXCEPTION_COMMIT_FAIL);
         }
@@ -266,11 +267,16 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         }
     }
 
-    private void saveAuditEntity(SupportRequest request, HearingEntity hearingEntity, String serviceName) {
-        JsonNode otherInfo = objectMapper.convertValue(request.getNotes(), JsonNode.class);
-        hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(hearingEntity, MANAGE_EXCEPTION_AUDIT_EVENT,
-                                                                        null, serviceName, HMC,
-                                                                        null, otherInfo);
+    private void saveAuditEntity(HearingEntity entity, String hearingEvent,
+                                  String serviceName, JsonNode otherInfo) {
+        HearingStatusAuditContext.HearingStatusAuditContextBuilder hearingStatusAuditContext =
+            HearingStatusAuditContext.builder()
+                .hearingEntity(entity)
+                .hearingEvent(hearingEvent)
+                .source(serviceName)
+                .target(HMC)
+                .otherInfo(otherInfo);
+        hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(hearingStatusAuditContext.build());
     }
 
     private void saveHearingEntity(HearingEntity hearingEntity, String newStatus) {

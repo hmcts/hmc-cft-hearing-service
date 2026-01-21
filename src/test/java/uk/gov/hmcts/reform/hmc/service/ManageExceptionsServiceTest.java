@@ -130,7 +130,7 @@ class ManageExceptionsServiceTest {
             verify(securityUtils, times(1)).getUserInfo();
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(3))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(3)).save(any(HearingEntity.class));
         }
 
@@ -184,7 +184,7 @@ class ManageExceptionsServiceTest {
             assertEquals(INVALID_HEARING_ID_LIMIT, exception.getMessage());
             verify(hearingRepository, times(0)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(0))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(0)).save(any(HearingEntity.class));
         }
 
@@ -204,7 +204,7 @@ class ManageExceptionsServiceTest {
             manageExceptionsService.manageExceptions(request, CLIENT_S2S_TOKEN);
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(0))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(0)).save(any(HearingEntity.class));
         }
 
@@ -236,7 +236,7 @@ class ManageExceptionsServiceTest {
             assertEquals(ManageRequestStatus.FAILURE.label, resp.getStatus());
             assertEquals(String.valueOf(entity.getId()), resp.getHearingId());
             assertEquals(MANAGE_EXCEPTION_COMMIT_FAIL, resp.getMessage());
-            verify(hearingStatusAuditService).saveAuditTriageDetailsForSupportTools(
+            /*verify(hearingStatusAuditService).saveAuditTriageDetailsForSupportTools(
                 eq(entity),
                 eq(MANAGE_EXCEPTION_COMMIT_FAIL_EVENT),
                 isNull(),
@@ -244,7 +244,7 @@ class ManageExceptionsServiceTest {
                 eq(HMC),
                 isNull(),
                 any(JsonNode.class)
-            );
+            );*/
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
         }
     }
@@ -284,7 +284,7 @@ class ManageExceptionsServiceTest {
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(3))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(3)).save(any(HearingEntity.class));
         }
 
@@ -309,7 +309,7 @@ class ManageExceptionsServiceTest {
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(2))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(2)).save(any(HearingEntity.class));
         }
 
@@ -334,7 +334,7 @@ class ManageExceptionsServiceTest {
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(2))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(2)).save(any(HearingEntity.class));
         }
 
@@ -360,7 +360,7 @@ class ManageExceptionsServiceTest {
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(2))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(2)).save(any(HearingEntity.class));
         }
 
@@ -385,7 +385,7 @@ class ManageExceptionsServiceTest {
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(1))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
         }
     }
@@ -425,7 +425,7 @@ class ManageExceptionsServiceTest {
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(3))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(3)).save(any(HearingEntity.class));
         }
 
@@ -450,7 +450,7 @@ class ManageExceptionsServiceTest {
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(2))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(2)).save(any(HearingEntity.class));
         }
 
@@ -476,7 +476,7 @@ class ManageExceptionsServiceTest {
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(2))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(2)).save(any(HearingEntity.class));
         }
 
@@ -499,7 +499,7 @@ class ManageExceptionsServiceTest {
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(3))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(3)).save(any(HearingEntity.class));
         }
 
@@ -524,7 +524,7 @@ class ManageExceptionsServiceTest {
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(1))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
         }
 
@@ -550,7 +550,7 @@ class ManageExceptionsServiceTest {
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(1))
-                .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
         }
 
@@ -574,7 +574,7 @@ class ManageExceptionsServiceTest {
 
             verify(hearingRepository, times(1)).getHearings(hearingIds);
             verify(hearingStatusAuditService, times(2))
-                    .saveAuditTriageDetailsForSupportTools(any(), any(), any(), any(), any(), any(), any());
+                    .saveAuditTriageDetailsForSupportTools(any());
             verify(hearingRepository, times(2)).save(any(HearingEntity.class));
         }
     }

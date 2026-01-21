@@ -14,9 +14,7 @@ public interface HearingStatusAuditService {
                                        String hearingEvent,String httpStatus, String source, String target,
                                        JsonNode errorDetails, JsonNode otherInfo);
 
-    void saveAuditTriageDetailsForSupportTools(HearingEntity hearingEntity,
-                                               String hearingEvent,String httpStatus, String source, String target,
-                                               JsonNode errorDetails, JsonNode otherInfo);
+    void saveAuditTriageDetailsForSupportTools(HearingStatusAuditContext hearingStatusAuditContext);
 
     void saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(HearingStatusAuditContext hearingStatusAuditContext);
 

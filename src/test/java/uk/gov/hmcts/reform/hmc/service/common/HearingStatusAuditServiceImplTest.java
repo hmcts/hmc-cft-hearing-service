@@ -113,10 +113,14 @@ class HearingStatusAuditServiceImplTest {
             hearingEntity.setUpdatedDateTime(LocalDateTime.now());
             final JsonNode otherInfo = new ObjectMapper().readTree("{\"INCNUMBER\":"
                                                                        + " \"219876 : Final Transition\"}");
-            hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(hearingEntity,
-                                                                            MANAGE_EXCEPTION_AUDIT_EVENT,
-                                                                            null, TECH_ADMIN_UI_SERVICE,
-                                                                            HMC,null, otherInfo);
+            HearingStatusAuditContext context = HearingStatusAuditContext.builder()
+                .hearingEntity(hearingEntity)
+                .hearingEvent(MANAGE_EXCEPTION_AUDIT_EVENT)
+                .source(TECH_ADMIN_UI_SERVICE)
+                .target(HMC)
+                .otherInfo(otherInfo)
+                .build();
+            hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(context);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
 
