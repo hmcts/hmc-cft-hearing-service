@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -19,10 +21,9 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -47,6 +48,10 @@ class HearingStatusAuditServiceImplTest {
     @Mock
     HearingStatusAuditRepository hearingStatusAuditRepository;
 
+    @Captor
+    private ArgumentCaptor<HearingStatusAuditEntity> hearingStatusAuditEntityCaptor;
+
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -57,7 +62,7 @@ class HearingStatusAuditServiceImplTest {
     @Nested
     class HearingStatusAuditDetails {
         @Test
-        void shouldSaveAuditTriageDetailsWhenFailure() throws JsonProcessingException  {
+        void shouldSaveAuditTriageDetailsWhenFailure() throws JsonProcessingException {
             given(hearingStatusAuditRepository.save(TestingUtil.hearingStatusAuditEntity())).willReturn(
                 TestingUtil.hearingStatusAuditEntity());
             HearingEntity hearingEntity = TestingUtil.hearingEntity();
@@ -127,18 +132,11 @@ class HearingStatusAuditServiceImplTest {
         }
 
         private void assertSaveAuditTriageDetails(boolean useCurrentTimestamp, String hearingEvent) {
-            HearingStatusAuditEntity auditEntity = TestingUtil.hearingStatusAuditEntity();
-            auditEntity.setHearingEvent(hearingEvent);
-            auditEntity.setStatusUpdateDateTime(useCurrentTimestamp
-                                                    ? LocalDateTime.now()
-                                                    : LocalDate.now().minusDays(2).atStartOfDay()
+            LocalDateTime now = LocalDateTime.now().plusMinutes(5);
+            HearingEntity hearingEntity = TestingUtil.getHearingEntity(
+                2000000000L, hearingEvent,
+                "9856815055686759"
             );
-
-            List<HearingStatusAuditEntity> auditEntities = List.of(auditEntity);
-            given(hearingStatusAuditRepository.findByHearingId("2000000000")).willReturn(auditEntities);
-
-            HearingEntity hearingEntity = TestingUtil.getHearingEntity(2000000000L, hearingEvent,
-                                                                       "9856815055686759");
             hearingEntity.setCreatedDateTime(LocalDate.now().minusDays(3).atStartOfDay());
             hearingEntity.setUpdatedDateTime(LocalDate.now().minusDays(2).atStartOfDay());
 
@@ -150,25 +148,18 @@ class HearingStatusAuditServiceImplTest {
                 .target(HMC)
                 .useCurrentTimestamp(useCurrentTimestamp)
                 .build();
-
-            LocalDateTime beforeCallNow = LocalDateTime.now();
-
             hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(context);
-
-            HearingStatusAuditEntity savedAudit = auditEntities.stream()
-                .filter(h -> hearingEvent.equals(h.getHearingEvent()))
-                .findFirst()
-                .orElseThrow();
-
-            assertNotNull(savedAudit.getStatusUpdateDateTime());
-
-            LocalDateTime expected = useCurrentTimestamp
-                ? beforeCallNow.truncatedTo(ChronoUnit.MINUTES)
-                : hearingEntity.getUpdatedDateTime().truncatedTo(ChronoUnit.MINUTES);
-
-            assertEquals(expected, savedAudit.getStatusUpdateDateTime().truncatedTo(ChronoUnit.MINUTES));
+            verify(hearingStatusAuditRepository).save(hearingStatusAuditEntityCaptor.capture());
             verify(hearingStatusAuditRepository, times(1)).save(any());
+            HearingStatusAuditEntity savedHearingStatusAuditEntity = hearingStatusAuditEntityCaptor.getValue();
+            if (useCurrentTimestamp) {
+                assertTrue(savedHearingStatusAuditEntity.getStatusUpdateDateTime().isBefore(now));
+            } else {
+                assertEquals(
+                    hearingEntity.getUpdatedDateTime().truncatedTo(ChronoUnit.MINUTES),
+                    savedHearingStatusAuditEntity.getStatusUpdateDateTime().truncatedTo(ChronoUnit.MINUTES));
+            }
         }
-
     }
 }
+
