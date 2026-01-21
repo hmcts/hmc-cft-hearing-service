@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -123,16 +122,18 @@ class HearingStatusAuditServiceImplTest {
 
         @Test
         void shouldSaveAuditTriageDetails_WhenUseCurrentTimestampIsTrue() {
-            assertSaveAuditTriageDetails(true, DELETE_HEARING_REQUEST);
+            assertAuditTriageTimestamp(true, DELETE_HEARING_REQUEST);
         }
 
         @Test
         void shouldSaveAuditTriageDetails_WhenUseCurrentTimestampIsFalse() {
-            assertSaveAuditTriageDetails(false, PUT_HEARING_ACTUALS_COMPLETION);
+            assertAuditTriageTimestamp(false, PUT_HEARING_ACTUALS_COMPLETION);
         }
 
-        private void assertSaveAuditTriageDetails(boolean useCurrentTimestamp, String hearingEvent) {
-            LocalDateTime now = LocalDateTime.now().plusMinutes(5);
+        private void assertAuditTriageTimestamp(boolean useCurrentTimestamp, String hearingEvent) {
+            LocalDateTime startDateTime = LocalDateTime.now();
+            LocalDateTime startDateTimePlusFiveMinutes = startDateTime.plusMinutes(5);
+
             HearingEntity hearingEntity = TestingUtil.getHearingEntity(
                 2000000000L, hearingEvent,
                 "9856815055686759"
@@ -150,14 +151,13 @@ class HearingStatusAuditServiceImplTest {
                 .build();
             hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(context);
             verify(hearingStatusAuditRepository).save(hearingStatusAuditEntityCaptor.capture());
-            verify(hearingStatusAuditRepository, times(1)).save(any());
-            HearingStatusAuditEntity savedHearingStatusAuditEntity = hearingStatusAuditEntityCaptor.getValue();
+            HearingStatusAuditEntity savedEntity = hearingStatusAuditEntityCaptor.getValue();
             if (useCurrentTimestamp) {
-                assertTrue(savedHearingStatusAuditEntity.getStatusUpdateDateTime().isBefore(now));
+                assertTrue(savedEntity.getStatusUpdateDateTime().isAfter(startDateTime)
+                               && savedEntity.getStatusUpdateDateTime().isBefore(startDateTimePlusFiveMinutes));
             } else {
                 assertEquals(
-                    hearingEntity.getUpdatedDateTime().truncatedTo(ChronoUnit.MINUTES),
-                    savedHearingStatusAuditEntity.getStatusUpdateDateTime().truncatedTo(ChronoUnit.MINUTES));
+                    hearingEntity.getUpdatedDateTime(), savedEntity.getStatusUpdateDateTime());
             }
         }
     }
