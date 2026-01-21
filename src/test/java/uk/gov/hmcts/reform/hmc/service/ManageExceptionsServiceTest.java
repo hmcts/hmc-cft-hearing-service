@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,9 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
+import uk.gov.hmcts.reform.hmc.domain.model.HearingStatusAuditContext;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ManageRequestStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -39,7 +42,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -102,6 +104,11 @@ class ManageExceptionsServiceTest {
 
     private static final String SUCCESS_STATUS = ManageRequestStatus.SUCCESSFUL.label;
     private static final String FAILURE_STATUS = ManageRequestStatus.FAILURE.label;
+
+    private static final ObjectMapper OBJECT_MAPPER = new Jackson2ObjectMapperBuilder()
+        .modules(new Jdk8Module())
+        .build();
+
 
     @BeforeEach
     void setUp() throws IOException {
@@ -218,11 +225,11 @@ class ManageExceptionsServiceTest {
             req.setCaseRef("9856815055686759");
             req.setAction(ROLLBACK.label);
             req.setNotes("testing DB commit failure");
-
+            JsonNode otherInfo = OBJECT_MAPPER.convertValue("test data", JsonNode.class);
             doThrow(new RuntimeException("Db commit fail"))
                 .when(hearingRepository).save(any(HearingEntity.class));
             when(objectMapper.convertValue(anyString(), eq(JsonNode.class)))
-                .thenReturn(mock(JsonNode.class));
+                .thenReturn(otherInfo);
 
             Method m = ManageExceptionsServiceImpl.class
                 .getDeclaredMethod("processSingle", HearingEntity.class, SupportRequest.class, String.class);
@@ -236,15 +243,15 @@ class ManageExceptionsServiceTest {
             assertEquals(ManageRequestStatus.FAILURE.label, resp.getStatus());
             assertEquals(String.valueOf(entity.getId()), resp.getHearingId());
             assertEquals(MANAGE_EXCEPTION_COMMIT_FAIL, resp.getMessage());
-            /*verify(hearingStatusAuditService).saveAuditTriageDetailsForSupportTools(
-                eq(entity),
-                eq(MANAGE_EXCEPTION_COMMIT_FAIL_EVENT),
-                isNull(),
-                eq(TECH_ADMIN_UI_SERVICE),
-                eq(HMC),
-                isNull(),
-                any(JsonNode.class)
-            );*/
+
+            HearingStatusAuditContext context = HearingStatusAuditContext.builder()
+                .hearingEntity(entity)
+                .hearingEvent(MANAGE_EXCEPTION_COMMIT_FAIL_EVENT)
+                .source(TECH_ADMIN_UI_SERVICE)
+                .target(HMC)
+                .otherInfo(otherInfo)
+                .build();
+            verify(hearingStatusAuditService).saveAuditTriageDetailsForSupportTools(context);
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
         }
     }
