@@ -97,9 +97,14 @@ class HearingStatusAuditServiceImplTest {
             hearingEntity.setUpdatedDateTime(LocalDateTime.now());
             final JsonNode otherInfo = new ObjectMapper().readTree("{\"detail\":"
                                                                        + " \"requestVersion starts at 1\"}");
-            hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(hearingEntity,
-                                                              CREATE_HEARING_REQUEST, REQUEST_VERSION_UPDATE,
-                                                              HMC, HMI,null,otherInfo);
+            HearingStatusAuditContext context = HearingStatusAuditContext.builder()
+                .hearingEntity(hearingEntity)
+                .hearingEvent(REQUEST_VERSION_UPDATE)
+                .source(HMC)
+                .target(HMI)
+                .otherInfo(otherInfo)
+                .build();
+            hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(context);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
 

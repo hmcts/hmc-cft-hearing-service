@@ -269,14 +269,14 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
 
     private void saveAuditEntity(HearingEntity entity, String hearingEvent,
                                   String serviceName, JsonNode otherInfo) {
-        HearingStatusAuditContext.HearingStatusAuditContextBuilder hearingStatusAuditContext =
+        HearingStatusAuditContext hearingStatusAuditContext =
             HearingStatusAuditContext.builder()
                 .hearingEntity(entity)
                 .hearingEvent(hearingEvent)
                 .source(serviceName)
                 .target(HMC)
-                .otherInfo(otherInfo);
-        hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(hearingStatusAuditContext.build());
+                .otherInfo(otherInfo).build();
+        hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(hearingStatusAuditContext);
     }
 
     private void saveHearingEntity(HearingEntity hearingEntity, String newStatus) {

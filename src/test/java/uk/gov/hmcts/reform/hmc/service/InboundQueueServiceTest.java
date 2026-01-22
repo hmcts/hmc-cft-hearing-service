@@ -211,7 +211,7 @@ class InboundQueueServiceTest {
             hearingStatusAuditService
         );
 
-        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any());
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
     }
 

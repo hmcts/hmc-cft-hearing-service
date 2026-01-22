@@ -251,7 +251,7 @@ class HearingManagementServiceTest {
                                                             applicationParams);
         hearingManagementService = createHearingManagementService();
 
-        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any());
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
     }
 

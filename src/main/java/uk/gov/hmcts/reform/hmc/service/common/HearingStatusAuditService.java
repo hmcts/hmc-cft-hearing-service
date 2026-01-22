@@ -6,13 +6,7 @@ import uk.gov.hmcts.reform.hmc.domain.model.HearingStatusAuditContext;
 
 public interface HearingStatusAuditService {
 
-    void saveAuditTriageDetailsWithCreatedDate(HearingEntity hearingEntity, String hearingEvent,
-                                String httpStatus,String source, String target, JsonNode errorDescription);
-
-
-    void saveAuditTriageDetailsWithCreatedDate(HearingEntity hearingEntity,
-                                       String hearingEvent,String httpStatus, String source, String target,
-                                       JsonNode errorDetails, JsonNode otherInfo);
+    void saveAuditTriageDetailsWithCreatedDate(HearingStatusAuditContext hearingStatusAuditContext);
 
     void saveAuditTriageDetailsForSupportTools(HearingStatusAuditContext hearingStatusAuditContext);
 

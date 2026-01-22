@@ -92,7 +92,7 @@ class HearingActualsServiceTest {
                 hearingActualsValidator,
                 hearingStatusAuditService
             );
-        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any());
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
     }
 
@@ -154,7 +154,7 @@ class HearingActualsServiceTest {
                     hearingActualsValidator,
                     hearingStatusAuditService
                 );
-            hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
+            hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any());
             hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
         }
 
