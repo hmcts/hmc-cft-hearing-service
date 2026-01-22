@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.HearingStatusAuditContext;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingActualsResponseMapper;
@@ -89,9 +90,13 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         latestVersionHearingResponse.setActualHearingEntity(actualHearing);
         actualHearing.setHearingResponse(latestVersionHearingResponse);
         actualHearingRepository.save(actualHearing);
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                         PUT_HEARING_ACTUALS_COMPLETION, null,
-                                                         clientS2SToken, HMC, null);
+        HearingStatusAuditContext hearingStatusAuditContext =
+            HearingStatusAuditContext.builder()
+                .hearingEntity(hearingEntity)
+                .hearingEvent(PUT_HEARING_ACTUALS_COMPLETION)
+                .source(clientS2SToken)
+                .target(HMC).build();
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
     }
 
     private void validateRequestPayload(HearingActual request, HearingEntity hearing) {

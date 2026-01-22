@@ -69,9 +69,15 @@ class HearingStatusAuditServiceImplTest {
             hearingEntity.setUpdatedDateTime(LocalDateTime.now());
             final JsonNode errorDetails = new ObjectMapper().readTree("{\"deadLetterReason\":"
                                                                           + " \"MaxDeliveryCountExceeded \"}");
-            hearingStatusAuditService. saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                              CREATE_HEARING_REQUEST,LA_FAILURE_STATUS,
-                                                              HMC, HMI,errorDetails);
+            HearingStatusAuditContext context = HearingStatusAuditContext.builder()
+                .hearingEntity(hearingEntity)
+                .hearingEvent(CREATE_HEARING_REQUEST)
+                .httpStatus(LA_FAILURE_STATUS)
+                .source(HMC)
+                .target(HMI)
+                .errorDetails(errorDetails)
+                .build();
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(context);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
 
@@ -82,9 +88,14 @@ class HearingStatusAuditServiceImplTest {
             HearingEntity hearingEntity = TestingUtil.hearingEntity();
             hearingEntity.setCreatedDateTime(LocalDateTime.now());
             hearingEntity.setUpdatedDateTime(LocalDateTime.now());
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                              CREATE_HEARING_REQUEST,SUCCESS_STATUS,
-                                                              HMC, HMI,null);
+
+            HearingStatusAuditContext context = HearingStatusAuditContext.builder()
+                .hearingEntity(hearingEntity)
+                .hearingEvent(CREATE_HEARING_REQUEST)
+                .httpStatus(SUCCESS_STATUS)
+                .source(HMC)
+                .target(HMI).build();
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(context);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
 

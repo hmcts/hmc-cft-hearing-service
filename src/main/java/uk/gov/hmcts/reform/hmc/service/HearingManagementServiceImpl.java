@@ -260,11 +260,14 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
 
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                                        UPDATE_HEARING_REQUEST,
-                                                                        String.valueOf(HttpStatus.OK.value()),
-                                                                        clientS2SToken, HMC, null);
-
+        HearingStatusAuditContext hearingStatusAuditContext =
+            HearingStatusAuditContext.builder()
+                .hearingEntity(hearingEntity)
+                .hearingEvent(UPDATE_HEARING_REQUEST)
+                .httpStatus(String.valueOf(HttpStatus.OK.value()))
+                .source(clientS2SToken)
+                .target(HMC).build();
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
         Listing listing = getListing(hearingRequest, entities);
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
             getCaseDetails(saveHearingResponseDetails.getHearingRequestId(), hearingRequest), listing, deploymentId);

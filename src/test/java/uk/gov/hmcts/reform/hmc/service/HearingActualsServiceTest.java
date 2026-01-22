@@ -93,7 +93,7 @@ class HearingActualsServiceTest {
                 hearingStatusAuditService
             );
         hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any());
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any());
     }
 
     @Nested
@@ -155,7 +155,7 @@ class HearingActualsServiceTest {
                     hearingStatusAuditService
                 );
             hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any());
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any());
         }
 
         @Test

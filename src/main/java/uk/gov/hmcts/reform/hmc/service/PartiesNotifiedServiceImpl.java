@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.HearingStatusAuditContext;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedBadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.PartiesNotifiedNotFoundException;
 import uk.gov.hmcts.reform.hmc.model.partiesnotified.PartiesNotified;
@@ -60,9 +61,14 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
             hearingResponseEntity.setServiceData(partiesNotified.getServiceData());
             hearingResponseRepository.save(hearingResponseEntity);
             HearingEntity hearingEntity = hearingResponseEntity.getHearing();
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                             PUT_PARTIES_NOTIFIED, null,
-                                                            clientS2SToken, HMC, null);
+
+            HearingStatusAuditContext hearingStatusAuditContext =
+                HearingStatusAuditContext.builder()
+                    .hearingEntity(hearingEntity)
+                    .hearingEvent(PUT_PARTIES_NOTIFIED)
+                    .source(clientS2SToken)
+                    .target(HMC).build();
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
         }
     }
 
