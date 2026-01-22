@@ -18,7 +18,7 @@ INSERT INTO case_hearing_request
 VALUES
 (1, false, 'Hearing type', 60, 'Priority type',
  0, false, false, 'Lead judge contract type', null,
- 'TEST', '1234123412341234', '2026-01-01 13:00:00', 'External case ref', 'https://google.com',
+ 'TEST', '1234123412341238', '2026-01-01 13:00:00', 'External case ref', 'https://google.com',
  'Internal case name', 'Public case name', false, 'OWNLOC1', false,
  '2026-01-01 13:00:00', 1, 2000000000, false, 'Requester',
  '2026-01-02 00:00:00', '2026-01-03 00:00:00', 'Listing comments', '2026-01-01 13:00:00', null,

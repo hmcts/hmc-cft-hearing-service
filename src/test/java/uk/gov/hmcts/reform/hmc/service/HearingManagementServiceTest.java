@@ -1745,8 +1745,8 @@ class HearingManagementServiceTest {
     @DisplayName("caseSearch")
     class CaseSearchResults {
 
-        private static final String CASE_REF_1 = "1000100010001000";
-        private static final String CASE_REF_2 = "2000200020002000";
+        private static final String CASE_REF_1 = "1000100010001002";
+        private static final String CASE_REF_2 = "2000200020002004";
 
         @ParameterizedTest(name = "{index}: {0}")
         @MethodSource("caseReferences")

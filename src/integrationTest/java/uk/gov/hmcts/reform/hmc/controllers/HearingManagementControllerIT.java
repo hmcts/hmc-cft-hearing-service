@@ -1943,7 +1943,7 @@ class HearingManagementControllerIT extends BaseTest {
                     "pageSize": 10,
                     "offset": 0,
                     "caseReferences": [
-                        {"caseReference": "1234123412341234"}
+                        {"caseReference": "1234123412341238"}
                     ]
                 }""";
 
@@ -1968,7 +1968,7 @@ class HearingManagementControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_REQUEST_PAGINATED_DATA_SCRIPT})
         void shouldGetHearingsForListOfCases() throws Exception {
-            List<String> caseReferences = List.of("1234123412341234", "5678567856785678");
+            List<String> caseReferences = List.of("1234123412341238", "5678567856785678");
             stubReturn200ForAllCasesFromDataStorePaginated(10, 0, caseReferences, CASE_TYPE, caseReferences);
 
             String request = createGetHearingRequest(10, 0, caseReferences);
@@ -1978,7 +1978,7 @@ class HearingManagementControllerIT extends BaseTest {
                                 .content(request))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].caseRef").value("1234123412341234"))
+                .andExpect(jsonPath("$[0].caseRef").value("1234123412341238"))
                 .andExpect(jsonPath("$[0].caseHearings", hasSize(1)))
                 .andExpect(jsonPath("$[0].caseHearings[0].hearingID").value("2000000000"));
         }
@@ -2036,7 +2036,7 @@ class HearingManagementControllerIT extends BaseTest {
                           {
                               "offset": 0,
                               "caseReferences": [
-                                  {"caseReference": "1234123412341234"}
+                                  {"caseReference": "1234123412341238"}
                               ]
                           }"""),
                     List.of("Page size is mandatory")
@@ -2048,7 +2048,7 @@ class HearingManagementControllerIT extends BaseTest {
                               "pageSize": 0,
                               "offset": 0,
                               "caseReferences": [
-                                  {"caseReference": "1234123412341234"}
+                                  {"caseReference": "1234123412341238"}
                               ]
                           }"""),
                     List.of("Page size can't be less than one")
@@ -2059,7 +2059,7 @@ class HearingManagementControllerIT extends BaseTest {
                           {
                               "pageSize": 10,
                               "caseReferences": [
-                                  {"caseReference": "1234123412341234"}
+                                  {"caseReference": "1234123412341238"}
                               ]
                           }"""),
                     List.of("Offset is mandatory")
@@ -2071,7 +2071,7 @@ class HearingManagementControllerIT extends BaseTest {
                               "pageSize": 10,
                               "offset": -1,
                               "caseReferences": [
-                                  {"caseReference": "1234123412341234"}
+                                  {"caseReference": "1234123412341238"}
                               ]
                           }"""),
                     List.of("Offset can't be less than 0")
@@ -2106,7 +2106,7 @@ class HearingManagementControllerIT extends BaseTest {
                               ]
                           }"""
                     ),
-                    List.of("Case ref has invalid length", "Case ref can not be empty")
+                    List.of("Case ref has invalid length", "Case ref can not be empty", "Invalid case reference")
                 ),
                 arguments(
                     named("CaseReferencesCaseReferenceInvalidLength",
@@ -2118,7 +2118,19 @@ class HearingManagementControllerIT extends BaseTest {
                                   {"caseReference": "1"}
                               ]
                           }"""),
-                    List.of("Case ref has invalid length")
+                    List.of("Case ref has invalid length", "Invalid case reference")
+                ),
+                arguments(
+                    named("CaseReferencesCaseReferenceFailedLuhnCheck",
+                          """
+                          {
+                              "pageSize": 10,
+                              "offset": 0,
+                              "caseReferences": [
+                                  {"caseReference": "1234123412341230"}
+                              ]
+                          }"""),
+                    List.of("Invalid case reference")
                 )
             );
         }

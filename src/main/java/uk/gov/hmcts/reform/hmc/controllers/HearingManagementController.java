@@ -236,7 +236,8 @@ public class HearingManagementController {
         + "4) " + ValidationError.OFFSET_MIN_VALUE + "\n"
         + "5) " + ValidationError.CASE_REFERENCES_MANDATORY + "\n"
         + "6) " + ValidationError.CASE_REF_EMPTY + "\n"
-        + "7) " + ValidationError.CASE_REF_INVALID_LENGTH)
+        + "7) " + ValidationError.CASE_REF_INVALID_LENGTH + "\n"
+        + "8) " + ValidationError.INVALID_CASE_REFERENCE)
 
     public List<GetHearingsResponse> getHearingsForListOfCasesPaginated(
         @RequestParam(required = false) String status,
