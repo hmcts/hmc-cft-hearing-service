@@ -9,21 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
-import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
-import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
-import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
@@ -34,11 +22,9 @@ import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
-import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.util.List;
@@ -46,57 +32,41 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = HearingManagementController.class,
-    excludeFilters = @ComponentScan.Filter(type = ASSIGNABLE_TYPE, classes =
-        {SecurityConfiguration.class, JwtGrantedAuthoritiesConverter.class}))
-@AutoConfigureMockMvc(addFilters = false)
-@ImportAutoConfiguration(TestIdamConfiguration.class)
+@ExtendWith(MockitoExtension.class)
 class HearingManagementControllerTest {
 
-    @Autowired
-    protected MockMvc mockMvc;
+    private static final String CLIENT_S2S_TOKEN = "xui_webapp";
 
-    @Autowired
-    WebApplicationContext webApplicationContext;
-
-    @MockitoBean
+    @Mock
     private HearingManagementService hearingManagementService;
 
-    @MockitoBean
+    @Mock
     private AccessControlService accessControlService;
 
-    @MockitoBean
+    @Mock
     private ApplicationParams applicationParams;
-
-    @MockitoBean
-    private UrlManager urlManager;
-
-    @MockitoBean
-    private OverrideAuditService overrideAuditService;
 
     @Mock
     HearingStatusAuditService hearingStatusAuditService;
 
-    @MockitoBean
+    @Mock
     SecurityUtils securityUtils;
 
-    private static final String CLIENT_S2S_TOKEN = "xui_webapp";
+    private HearingManagementController controller;
 
     @BeforeEach
-    public void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        doReturn("xui_webapp").when(securityUtils)
-            .getServiceNameFromS2SToken(any());
+    void setUp() {
+        controller = new HearingManagementController(hearingManagementService,
+                                                     accessControlService,
+                                                     applicationParams,
+                                                     securityUtils);
+
         hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any(),any());
     }
@@ -104,6 +74,12 @@ class HearingManagementControllerTest {
     @Nested
     @DisplayName("saveHearing")
     class SaveHearing {
+
+        @BeforeEach
+        void setUp() {
+            when(securityUtils.getServiceNameFromS2SToken(any())).thenReturn(CLIENT_S2S_TOKEN);
+            when(applicationParams.isHmctsDeploymentIdEnabled()).thenReturn(false);
+        }
 
         @Test
         void shouldReturn400_whenHearing_Details_Are_NotPresent() {
@@ -115,12 +91,8 @@ class HearingManagementControllerTest {
             when(hearingManagementService.saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN))
                 .thenReturn(hearingResponse);
 
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams,
-                                                                                     securityUtils);
             controller.saveHearing(null, CLIENT_S2S_TOKEN, hearingRequest);
-            verify(hearingManagementService, times(1)).saveHearingRequest(any(), any(), any());
+            verify(hearingManagementService).saveHearingRequest(any(), any(), any());
         }
 
         @Test
@@ -133,12 +105,8 @@ class HearingManagementControllerTest {
             when(hearingManagementService.saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN))
                 .thenReturn(hearingResponse);
 
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams,
-                                                                                     securityUtils);
             controller.saveHearing(null, CLIENT_S2S_TOKEN,hearingRequest);
-            verify(hearingManagementService, times(1)).saveHearingRequest(any(),any(), any());
+            verify(hearingManagementService).saveHearingRequest(any(), any(), any());
         }
 
         @Test
@@ -150,13 +118,9 @@ class HearingManagementControllerTest {
             when(hearingManagementService.saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN))
                 .thenReturn(hearingResponse);
 
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams, securityUtils);
             controller.saveHearing(null, CLIENT_S2S_TOKEN, hearingRequest);
-            verify(hearingManagementService, times(1)).saveHearingRequest(any(), any(), any());
+            verify(hearingManagementService).saveHearingRequest(any(), any(), any());
         }
-
 
         @Test
         void shouldReturn201_whenHearingRequestDataWithOrgIdNull() {
@@ -167,11 +131,8 @@ class HearingManagementControllerTest {
             when(hearingManagementService.saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN))
                 .thenReturn(hearingResponse);
 
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams, securityUtils);
             controller.saveHearing(null, CLIENT_S2S_TOKEN, hearingRequest);
-            verify(hearingManagementService, times(1)).saveHearingRequest(any(), any(), any());
+            verify(hearingManagementService).saveHearingRequest(any(), any(), any());
         }
 
         @Test
@@ -185,13 +146,10 @@ class HearingManagementControllerTest {
             hearingResponse.setHearingRequestId(1L);
             when(hearingManagementService.saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN))
                 .thenReturn(hearingResponse);
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams, securityUtils);
+
             controller.saveHearing(null, CLIENT_S2S_TOKEN, hearingRequest);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
-            orderVerifier.verify(hearingManagementService).saveHearingRequest(hearingRequest, null,
-                                                                              CLIENT_S2S_TOKEN);
+            orderVerifier.verify(hearingManagementService).saveHearingRequest(hearingRequest, null, CLIENT_S2S_TOKEN);
             verifyNoMoreInteractions(hearingManagementService);
         }
     }
@@ -199,40 +157,31 @@ class HearingManagementControllerTest {
     @Nested
     @DisplayName("getHearing")
     class GetHearing {
+
         @Test
         void shouldReturn204_whenRequestIdIsValid() {
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams,
-                                                                                     securityUtils);
             controller.getHearing(1234L, true);
-            verify(hearingManagementService, times(1)).getHearingRequest(any(), anyBoolean());
+            verify(hearingManagementService).getHearingRequest(any(), anyBoolean());
         }
 
         @Test
         void shouldReturn200_whenRequestIdIsValid() {
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams,
-                                                                                     securityUtils);
             controller.getHearing(1234L, false);
-            verify(hearingManagementService, times(1)).getHearingRequest(any(), anyBoolean());
+            verify(hearingManagementService).getHearingRequest(any(), anyBoolean());
         }
     }
 
     @Nested
     @DisplayName("deleteHearing")
     class DeleteHearing {
+
         @Test
         void shouldReturn200_whenDeleteRequestIdIsValid() {
-            doReturn(TestingUtil.deleteHearingResponse()).when(hearingManagementService)
-                .deleteHearingRequest(any(), any(), any());
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams,
-                                                                                     securityUtils);
+            when(hearingManagementService.deleteHearingRequest(any(), any(), any()))
+                .thenReturn(TestingUtil.deleteHearingResponse());
+
             controller.deleteHearing(1234L, CLIENT_S2S_TOKEN, TestingUtil.deleteHearingRequest());
-            verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any(), any());
+            verify(hearingManagementService).deleteHearingRequest(any(), any(), any());
         }
 
         @Test
@@ -243,29 +192,23 @@ class HearingManagementControllerTest {
             HearingResponse hearingResponse = generateHearingResponse();
             when(hearingManagementService.deleteHearingRequest(any(), any(), any())).thenReturn(hearingResponse);
 
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams,
-                                                                                     securityUtils);
             controller.deleteHearing(1234L, CLIENT_S2S_TOKEN, request);
-            verify(hearingManagementService, times(1)).deleteHearingRequest(any(), any(), any());
+            verify(hearingManagementService).deleteHearingRequest(any(), any(), any());
         }
     }
 
     @Nested
     @DisplayName("getHearings")
     class GetHearings {
+
         @Test
         void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhn() {
             final String validCaseRef = "9372710950276233";
-            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "HEARING_REQUESTED"))
-                .when(hearingManagementService)
-                .getHearings(any(), any());
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams,securityUtils);
+            when(hearingManagementService.getHearings(any(), any()))
+                .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "HEARING_REQUESTED"));
+
             GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, null);
-            verify(hearingManagementService, times(1)).getHearings(any(), any());
+            verify(hearingManagementService).getHearings(any(), any());
             assertThat(hearingRequest.getCaseRef()).isEqualTo(validCaseRef);
             assertThat(hearingRequest.getCaseHearings().getFirst().getHearingIsLinkedFlag()).isTrue();
         }
@@ -273,20 +216,17 @@ class HearingManagementControllerTest {
         @Test
         void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefAndListedStatus() {
             final String validCaseRef = "9372710950276233";
-            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "LISTED"))
-                .when(hearingManagementService)
-                .getHearings(any(), any());
+            when(hearingManagementService.getHearings(any(), any()))
+                .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "LISTED"));
 
             List<String> rolesRequired = Lists.newArrayList(HEARING_VIEWER, LISTED_HEARING_VIEWER);
             List<String> filteredRoleAssignments = Lists.newArrayList(LISTED_HEARING_VIEWER);
 
-            doReturn(filteredRoleAssignments).when(accessControlService).verifyCaseAccess(validCaseRef, rolesRequired,
-                                                                                          null);
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams, securityUtils);
+            when(accessControlService.verifyCaseAccess(validCaseRef, rolesRequired, null))
+                .thenReturn(filteredRoleAssignments);
+
             GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, null);
-            verify(hearingManagementService, times(1)).getHearings(validCaseRef, "LISTED");
+            verify(hearingManagementService).getHearings(validCaseRef, "LISTED");
             assertThat(hearingRequest.getCaseRef()).isEqualTo(validCaseRef);
             assertThat(hearingRequest.getCaseHearings().getFirst().getHmcStatus()).isEqualTo("LISTED");
             assertThat(hearingRequest.getCaseHearings().getFirst().getHearingIsLinkedFlag()).isTrue();
@@ -296,14 +236,11 @@ class HearingManagementControllerTest {
         void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhnAndStatus() {
             final String validCaseRef = "9372710950276233";
             final String status = "UPDATED"; // for example
-            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "HEARING_REQUESTED"))
-                .when(hearingManagementService)
-                .getEmptyHearingsResponse(any());
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams, securityUtils);
+            when(hearingManagementService.getEmptyHearingsResponse(any()))
+                .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "HEARING_REQUESTED"));
+
             GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, status);
-            verify(hearingManagementService, times(1)).getEmptyHearingsResponse(validCaseRef);
+            verify(hearingManagementService).getEmptyHearingsResponse(validCaseRef);
             assertThat(hearingRequest.getCaseRef()).isEqualTo(validCaseRef);
             assertThat(hearingRequest.getCaseHearings().getFirst().getHearingIsLinkedFlag()).isTrue();
         }
@@ -312,22 +249,25 @@ class HearingManagementControllerTest {
     @Nested
     @DisplayName("updateHearing")
     class UpdateHearing {
+
+        @BeforeEach
+        void setUp() {
+            when(securityUtils.getServiceNameFromS2SToken(any())).thenReturn(CLIENT_S2S_TOKEN);
+            when(applicationParams.isHmctsDeploymentIdEnabled()).thenReturn(false);
+        }
+
         @Test
         void shouldCallUpdateHearingRequest() {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = generateUpdateHearingRequest(false);
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest, "",
-                                                               CLIENT_S2S_TOKEN))
-                    .thenReturn(hearingResponse);
+            when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest, "", CLIENT_S2S_TOKEN))
+                .thenReturn(hearingResponse);
 
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams, securityUtils);
-            controller.updateHearing("",hearingRequest,CLIENT_S2S_TOKEN,  hearingId);
+            controller.updateHearing("", hearingRequest,CLIENT_S2S_TOKEN, hearingId);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
-            orderVerifier.verify(hearingManagementService).updateHearingRequest(hearingId, hearingRequest,
-                                                                                "", CLIENT_S2S_TOKEN);
+            orderVerifier.verify(hearingManagementService)
+                .updateHearingRequest(hearingId, hearingRequest, "", CLIENT_S2S_TOKEN);
             verifyNoMoreInteractions(hearingManagementService);
         }
 
@@ -336,17 +276,13 @@ class HearingManagementControllerTest {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = generateUpdateHearingRequest(true);
             HearingResponse hearingResponse = generateHearingResponse();
-            when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest, "",
-                                                               CLIENT_S2S_TOKEN))
+            when(hearingManagementService.updateHearingRequest(hearingId, hearingRequest, "", CLIENT_S2S_TOKEN))
                 .thenReturn(hearingResponse);
 
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams, securityUtils);
             controller.updateHearing("", hearingRequest, CLIENT_S2S_TOKEN, hearingId);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
-            orderVerifier.verify(hearingManagementService).updateHearingRequest(hearingId, hearingRequest,
-                                                                                "", CLIENT_S2S_TOKEN);
+            orderVerifier.verify(hearingManagementService)
+                .updateHearingRequest(hearingId, hearingRequest, "", CLIENT_S2S_TOKEN);
             verifyNoMoreInteractions(hearingManagementService);
         }
     }
@@ -355,12 +291,15 @@ class HearingManagementControllerTest {
     @DisplayName("updateHearingCompletion")
     class UpdateHearingCompletion {
 
+        @BeforeEach
+        void setUp() {
+            when(securityUtils.getServiceNameFromS2SToken(any())).thenReturn(CLIENT_S2S_TOKEN);
+        }
+
         @Test
         void shouldInvokeHearingCompletion() {
             final long hearingId = 2000000000L;
-            HearingManagementController controller = new HearingManagementController(hearingManagementService,
-                                                                                     accessControlService,
-                                                                                     applicationParams, securityUtils);
+
             controller.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
             InOrder orderVerifier = Mockito.inOrder(hearingManagementService);
             orderVerifier.verify(hearingManagementService).hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
@@ -370,6 +309,7 @@ class HearingManagementControllerTest {
     @Nested
     @DisplayName("getHearingsForListOfCases")
     class GetHearingsForListOfCases {
+
         @Test
         void shouldReturnHearingResponseForListed() {
             List<String> ccdCaseRefs  = List.of("9372710950276233");
@@ -378,19 +318,14 @@ class HearingManagementControllerTest {
                 .jurisdiction("CMC")
                 .build();
             List<DataStoreCaseDetails> cases = List.of(caseDetails);
-            doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(ccdCaseRefs.getFirst(),
-                                                                      HearingStatus.LISTED.name()))
-                .when(hearingManagementService)
-                .getHearings(any(), any());
-            doReturn(cases).when(hearingManagementService).getCaseSearchResults(any(), any(), any());
-            HearingManagementController controller = new HearingManagementController(
-                hearingManagementService,
-                accessControlService,
-                applicationParams, securityUtils
-            );
-            List<GetHearingsResponse> hearingsResponseList = controller.getHearingsForListOfCases(ccdCaseRefs,
-                                                               null,"AAT_PRIVATE");
-            verify(hearingManagementService, times(1)).getHearings(any(), any());
+            when(hearingManagementService.getHearings(any(), any()))
+                .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(ccdCaseRefs.getFirst(),
+                                                                             HearingStatus.LISTED.name()));
+            when(hearingManagementService.getCaseSearchResults(any(), any(), any())).thenReturn(cases);
+
+            List<GetHearingsResponse> hearingsResponseList =
+                controller.getHearingsForListOfCases(ccdCaseRefs, null, "AAT_PRIVATE");
+            verify(hearingManagementService).getHearings(any(), any());
             assertThat(hearingsResponseList.getFirst().getCaseRef()).isEqualTo(ccdCaseRefs.getFirst());
             assertThat(hearingsResponseList.getFirst().getCaseHearings().getFirst().getHearingIsLinkedFlag()).isTrue();
         }
@@ -403,20 +338,15 @@ class HearingManagementControllerTest {
                 .jurisdiction("CMC")
                 .build();
             List<DataStoreCaseDetails> cases = List.of(caseDetails);
-            doReturn(cases).when(hearingManagementService).getCaseSearchResults(any(), any(), any());
+            when(hearingManagementService.getCaseSearchResults(any(), any(), any())).thenReturn(cases);
             for (DataStoreCaseDetails dataStoreCaseDetails : cases) {
-                doReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(dataStoreCaseDetails.getId(), null))
-                    .when(hearingManagementService)
-                    .getHearings(any(), any());
+                when(hearingManagementService.getHearings(any(), any()))
+                    .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(dataStoreCaseDetails.getId(), null));
             }
-            HearingManagementController controller = new HearingManagementController(
-                hearingManagementService,
-                accessControlService,
-                applicationParams, securityUtils
-            );
-            List<GetHearingsResponse> hearingsResponseList = controller.getHearingsForListOfCases(ccdCaseRefs,
-                                                                                 null, "AAT_PRIVATE");
-            verify(hearingManagementService, times(1)).getHearings(any(), any());
+
+            List<GetHearingsResponse> hearingsResponseList =
+                controller.getHearingsForListOfCases(ccdCaseRefs, null, "AAT_PRIVATE");
+            verify(hearingManagementService).getHearings(any(), any());
             assertThat(hearingsResponseList.getFirst().getCaseRef()).isEqualTo(ccdCaseRefs.get(1));
             assertThat(hearingsResponseList.getFirst().getCaseHearings().getFirst().getHearingIsLinkedFlag()).isTrue();
         }
