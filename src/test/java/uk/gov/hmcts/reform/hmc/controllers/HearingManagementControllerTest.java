@@ -98,7 +98,7 @@ class HearingManagementControllerTest {
         doReturn("xui_webapp").when(securityUtils)
             .getServiceNameFromS2SToken(any());
         hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any());
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
     }
 
     @Nested

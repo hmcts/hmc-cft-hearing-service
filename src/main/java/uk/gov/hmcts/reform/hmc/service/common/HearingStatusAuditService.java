@@ -10,6 +10,4 @@ public interface HearingStatusAuditService {
 
     void saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(HearingStatusAuditContext hearingStatusAuditContext);
 
-    void saveAuditTriageDetailsWithUpdatedDate(HearingStatusAuditContext hearingStatusAuditContext);
-
 }

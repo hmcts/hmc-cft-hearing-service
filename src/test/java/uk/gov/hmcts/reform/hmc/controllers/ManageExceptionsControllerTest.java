@@ -70,7 +70,7 @@ class ManageExceptionsControllerTest {
     @BeforeEach
      void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
     }
 
     @Nested

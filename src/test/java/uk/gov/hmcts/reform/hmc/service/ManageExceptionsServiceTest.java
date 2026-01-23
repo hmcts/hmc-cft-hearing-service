@@ -244,11 +244,13 @@ class ManageExceptionsServiceTest {
             assertEquals(String.valueOf(entity.getId()), resp.getHearingId());
             assertEquals(MANAGE_EXCEPTION_COMMIT_FAIL, resp.getMessage());
 
-            HearingStatusAuditContext context = HearingStatusAuditContext.builder()
+            HearingStatusAuditContext context =
+                HearingStatusAuditContext.builder()
                 .hearingEntity(entity)
                 .hearingEvent(MANAGE_EXCEPTION_COMMIT_FAIL_EVENT)
                 .source(TECH_ADMIN_UI_SERVICE)
                 .target(HMC)
+                .useCurrentTimestamp(true)
                 .otherInfo(otherInfo)
                 .build();
             verify(hearingStatusAuditService).saveAuditTriageDetailsForSupportTools(context);

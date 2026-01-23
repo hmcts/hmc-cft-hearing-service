@@ -67,8 +67,10 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
                     .hearingEntity(hearingEntity)
                     .hearingEvent(PUT_PARTIES_NOTIFIED)
                     .source(clientS2SToken)
-                    .target(HMC).build();
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
+                    .useCurrentTimestamp(false)
+                    .target(HMC)
+                    .build();
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
         }
     }
 

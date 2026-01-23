@@ -27,27 +27,24 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
     }
 
     @Override
-    public void saveAuditTriageDetailsWithUpdatedDate(HearingStatusAuditContext auditContext) {
-        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetails(auditContext);
-        hearingStatusAuditEntity.setStatusUpdateDateTime(auditContext.getHearingEntity().getUpdatedDateTime());
-        saveHearingStatusAudit(hearingStatusAuditEntity);
-    }
-
-    @Override
     public void saveAuditTriageDetailsForSupportTools(HearingStatusAuditContext auditContext) {
-        HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetails(auditContext);
-        hearingStatusAuditEntity.setStatusUpdateDateTime(LocalDateTime.now());
+        HearingStatusAuditEntity hearingStatusAuditEntity = createAuditEntityWithStatusUpdateTime(auditContext);
         hearingStatusAuditEntity.setResponseDateTime(null);
         saveHearingStatusAudit(hearingStatusAuditEntity);
     }
 
     @Override
     public void saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(HearingStatusAuditContext auditContext) {
+        HearingStatusAuditEntity hearingStatusAuditEntity = createAuditEntityWithStatusUpdateTime(auditContext);
+        saveHearingStatusAudit(hearingStatusAuditEntity);
+    }
+
+    private HearingStatusAuditEntity createAuditEntityWithStatusUpdateTime(HearingStatusAuditContext auditContext) {
         HearingStatusAuditEntity hearingStatusAuditEntity = mapHearingStatusAuditDetails(auditContext);
         LocalDateTime ts = auditContext.isUseCurrentTimestamp() ? LocalDateTime.now()
             : auditContext.getHearingEntity().getUpdatedDateTime();
         hearingStatusAuditEntity.setStatusUpdateDateTime(ts);
-        saveHearingStatusAudit(hearingStatusAuditEntity);
+        return hearingStatusAuditEntity;
     }
 
     private HearingStatusAuditEntity mapHearingStatusAuditDetails(HearingStatusAuditContext hearingStatusAuditContext) {

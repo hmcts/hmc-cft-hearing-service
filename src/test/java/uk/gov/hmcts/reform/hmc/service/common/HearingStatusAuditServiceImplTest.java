@@ -69,15 +69,17 @@ class HearingStatusAuditServiceImplTest {
             hearingEntity.setUpdatedDateTime(LocalDateTime.now());
             final JsonNode errorDetails = new ObjectMapper().readTree("{\"deadLetterReason\":"
                                                                           + " \"MaxDeliveryCountExceeded \"}");
-            HearingStatusAuditContext context = HearingStatusAuditContext.builder()
+            HearingStatusAuditContext context =
+                HearingStatusAuditContext.builder()
                 .hearingEntity(hearingEntity)
                 .hearingEvent(CREATE_HEARING_REQUEST)
                 .httpStatus(LA_FAILURE_STATUS)
                 .source(HMC)
                 .target(HMI)
+                .useCurrentTimestamp(false)
                 .errorDetails(errorDetails)
                 .build();
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(context);
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(context);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
 
@@ -89,13 +91,16 @@ class HearingStatusAuditServiceImplTest {
             hearingEntity.setCreatedDateTime(LocalDateTime.now());
             hearingEntity.setUpdatedDateTime(LocalDateTime.now());
 
-            HearingStatusAuditContext context = HearingStatusAuditContext.builder()
+            HearingStatusAuditContext context =
+                HearingStatusAuditContext.builder()
                 .hearingEntity(hearingEntity)
                 .hearingEvent(CREATE_HEARING_REQUEST)
                 .httpStatus(SUCCESS_STATUS)
                 .source(HMC)
-                .target(HMI).build();
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(context);
+                .target(HMI)
+                .useCurrentTimestamp(false)
+                .build();
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(context);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
 
@@ -108,13 +113,15 @@ class HearingStatusAuditServiceImplTest {
             hearingEntity.setUpdatedDateTime(LocalDateTime.now());
             final JsonNode otherInfo = new ObjectMapper().readTree("{\"detail\":"
                                                                        + " \"requestVersion starts at 1\"}");
-            HearingStatusAuditContext context = HearingStatusAuditContext.builder()
-                .hearingEntity(hearingEntity)
-                .hearingEvent(REQUEST_VERSION_UPDATE)
-                .source(HMC)
-                .target(HMI)
-                .otherInfo(otherInfo)
-                .build();
+            HearingStatusAuditContext context =
+                HearingStatusAuditContext.builder()
+                    .hearingEntity(hearingEntity)
+                    .hearingEvent(REQUEST_VERSION_UPDATE)
+                    .source(HMC)
+                    .target(HMI)
+                    .useCurrentTimestamp(true)
+                    .otherInfo(otherInfo)
+                    .build();
             hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(context);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
@@ -129,13 +136,15 @@ class HearingStatusAuditServiceImplTest {
             hearingEntity.setUpdatedDateTime(LocalDateTime.now());
             final JsonNode otherInfo = new ObjectMapper().readTree("{\"INCNUMBER\":"
                                                                        + " \"219876 : Final Transition\"}");
-            HearingStatusAuditContext context = HearingStatusAuditContext.builder()
-                .hearingEntity(hearingEntity)
-                .hearingEvent(MANAGE_EXCEPTION_AUDIT_EVENT)
-                .source(TECH_ADMIN_UI_SERVICE)
-                .target(HMC)
-                .otherInfo(otherInfo)
-                .build();
+            HearingStatusAuditContext context =
+                HearingStatusAuditContext.builder()
+                    .hearingEntity(hearingEntity)
+                    .hearingEvent(MANAGE_EXCEPTION_AUDIT_EVENT)
+                    .source(TECH_ADMIN_UI_SERVICE)
+                    .target(HMC)
+                    .useCurrentTimestamp(true)
+                    .otherInfo(otherInfo)
+                    .build();
             hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(context);
             verify(hearingStatusAuditRepository, times(1)).save(any());
         }
@@ -161,14 +170,15 @@ class HearingStatusAuditServiceImplTest {
             hearingEntity.setCreatedDateTime(LocalDate.now().minusDays(3).atStartOfDay());
             hearingEntity.setUpdatedDateTime(LocalDate.now().minusDays(2).atStartOfDay());
 
-            HearingStatusAuditContext context = HearingStatusAuditContext.builder()
-                .hearingEntity(hearingEntity)
-                .hearingEvent(hearingEvent)
-                .httpStatus(String.valueOf(HttpStatus.OK.value()))
-                .source("Test Service")
-                .target(HMC)
-                .useCurrentTimestamp(useCurrentTimestamp)
-                .build();
+            HearingStatusAuditContext context =
+                HearingStatusAuditContext.builder()
+                    .hearingEntity(hearingEntity)
+                    .hearingEvent(hearingEvent)
+                    .httpStatus(String.valueOf(HttpStatus.OK.value()))
+                    .source("Test Service")
+                    .target(HMC)
+                    .useCurrentTimestamp(useCurrentTimestamp)
+                    .build();
             hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(context);
             verify(hearingStatusAuditRepository).save(hearingStatusAuditEntityCaptor.capture());
             HearingStatusAuditEntity savedEntity = hearingStatusAuditEntityCaptor.getValue();

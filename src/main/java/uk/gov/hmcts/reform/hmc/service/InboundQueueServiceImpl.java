@@ -122,9 +122,10 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                         .httpStatus(LA_FAILURE_STATUS)
                         .source(FH)
                         .target(HMC)
+                        .useCurrentTimestamp(false)
                         .errorDetails(errorDescription)
                         .build();
-                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
+                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
             } else {
                 log.error("Hearing id {} not found", hearingId);
             }
@@ -188,9 +189,10 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                     .httpStatus(LA_FAILURE_STATUS)
                     .source(FH)
                     .target(HMC)
+                    .useCurrentTimestamp(false)
                     .errorDetails(message)
                     .build();
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
         }
     }
 
@@ -218,8 +220,9 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                         .httpStatus(LA_SUCCESS_STATUS)
                         .source(FH)
                         .target(HMC)
+                        .useCurrentTimestamp(false)
                         .build();
-                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
+                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
                 return;
             }
             hearingToSave = hmiHearingResponseMapper.mapHmiHearingToEntity(
@@ -242,8 +245,9 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                         .httpStatus(LA_SUCCESS_STATUS)
                         .source(FH)
                         .target(HMC)
+                        .useCurrentTimestamp(false)
                         .build();
-                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
+                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
 
             }
         }
@@ -281,9 +285,10 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                     .httpStatus(syncResponse.getListAssistHttpStatus().toString())
                     .source(HMC)
                     .target(FH)
+                    .useCurrentTimestamp(false)
                     .errorDetails(errorDescription)
                     .build();
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
 
         }
     }

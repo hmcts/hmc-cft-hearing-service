@@ -275,6 +275,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
                 .hearingEvent(hearingEvent)
                 .source(serviceName)
                 .target(HMC)
+                .useCurrentTimestamp(true)
                 .otherInfo(otherInfo)
                 .build();
         hearingStatusAuditService.saveAuditTriageDetailsForSupportTools(hearingStatusAuditContext);
