@@ -122,7 +122,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                         .httpStatus(LA_FAILURE_STATUS)
                         .source(FH)
                         .target(HMC)
-                        .errorDetails(errorDescription).build();
+                        .errorDetails(errorDescription)
+                        .build();
                 hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
             } else {
                 log.error("Hearing id {} not found", hearingId);
@@ -187,7 +188,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                     .httpStatus(LA_FAILURE_STATUS)
                     .source(FH)
                     .target(HMC)
-                    .errorDetails(message).build();
+                    .errorDetails(message)
+                    .build();
             hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
         }
     }
@@ -215,7 +217,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                         .hearingEvent(HEARING_FINAL_STATE)
                         .httpStatus(LA_SUCCESS_STATUS)
                         .source(FH)
-                        .target(HMC).build();
+                        .target(HMC)
+                        .build();
                 hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
                 return;
             }
@@ -238,7 +241,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                         .hearingEvent(LA_RESPONSE)
                         .httpStatus(LA_SUCCESS_STATUS)
                         .source(FH)
-                        .target(HMC).build();
+                        .target(HMC)
+                        .build();
                 hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
 
             }
@@ -277,7 +281,8 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                     .httpStatus(syncResponse.getListAssistHttpStatus().toString())
                     .source(HMC)
                     .target(FH)
-                    .errorDetails(errorDescription).build();
+                    .errorDetails(errorDescription)
+                    .build();
             hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
 
         }

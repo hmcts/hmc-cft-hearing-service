@@ -95,7 +95,8 @@ public class HearingActualsServiceImpl implements HearingActualsService {
                 .hearingEntity(hearingEntity)
                 .hearingEvent(PUT_HEARING_ACTUALS_COMPLETION)
                 .source(clientS2SToken)
-                .target(HMC).build();
+                .target(HMC)
+                .build();
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingStatusAuditContext);
     }
 

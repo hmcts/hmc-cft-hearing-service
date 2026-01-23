@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.hmc.service.common;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
@@ -12,8 +10,6 @@ import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 import java.time.LocalDateTime;
 
 @Service
-@Component
-@Slf4j
 public class HearingStatusAuditServiceImpl implements HearingStatusAuditService {
 
     private final HearingStatusAuditRepository hearingStatusAuditRepository;
@@ -21,7 +17,6 @@ public class HearingStatusAuditServiceImpl implements HearingStatusAuditService 
     @Autowired
     public HearingStatusAuditServiceImpl(HearingStatusAuditRepository hearingStatusAuditRepository) {
         this.hearingStatusAuditRepository = hearingStatusAuditRepository;
-
     }
 
     @Override
