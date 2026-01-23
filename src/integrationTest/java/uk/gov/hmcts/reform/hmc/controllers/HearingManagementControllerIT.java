@@ -2109,16 +2109,28 @@ class HearingManagementControllerIT extends BaseTest {
                     List.of("Case ref has invalid length", "Case ref can not be empty", "Invalid case reference")
                 ),
                 arguments(
-                    named("CaseReferencesCaseReferenceInvalidLength",
+                    named("CaseReferencesCaseReferenceLessThanPermittedLength",
                           """
                           {
                               "pageSize": 10,
                               "offset": 0,
                               "caseReferences": [
-                                  {"caseReference": "1"}
+                                  {"caseReference": "123412341234127"}
                               ]
                           }"""),
-                    List.of("Case ref has invalid length", "Invalid case reference")
+                    List.of("Case ref has invalid length")
+                ),
+                arguments(
+                    named("CaseReferencesCaseReferenceMoreThanPermittedLength",
+                          """
+                          {
+                              "pageSize": 10,
+                              "offset": 0,
+                              "caseReferences": [
+                                  {"caseReference": "12341234123412346"}
+                              ]
+                          }"""),
+                    List.of("Case ref has invalid length")
                 ),
                 arguments(
                     named("CaseReferencesCaseReferenceFailedLuhnCheck",
