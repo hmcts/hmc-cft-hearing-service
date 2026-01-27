@@ -6,6 +6,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -16,10 +19,13 @@ import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
+import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
+import uk.gov.hmcts.reform.hmc.model.HearingsForListOfCasesPaginatedRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingsForListOfCasesPaginatedRequestCaseReference;
 import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
@@ -27,9 +33,13 @@ import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.verify;
@@ -349,6 +359,238 @@ class HearingManagementControllerTest {
             verify(hearingManagementService).getHearings(any(), any());
             assertThat(hearingsResponseList.getFirst().getCaseRef()).isEqualTo(ccdCaseRefs.get(1));
             assertThat(hearingsResponseList.getFirst().getCaseHearings().getFirst().getHearingIsLinkedFlag()).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("getHearingsForListOfCasesPaginated")
+    class GetHearingsForListOfCasesPaginated {
+
+        private static final String ACCESS_ROLE_HEARING_MANAGER = "hearing-manager";
+        private static final String ACCESS_ROLE_HEARING_VIEWER = "hearing-viewer";
+        private static final String ACCESS_ROLE_LISTED_HEARING_VIEWER = "listed-hearing-viewer";
+
+        private static final String HEARING_STATUS_LISTED = "LISTED";
+        private static final String HEARING_STATUS_AWAITING_LISTING = "AWAITING_LISTING";
+
+        private static final String CASE_REFERENCE = "1000100010001002";
+        private static final String CASE_TYPE = "AAT_PRIVATE";
+
+        private static final List<String> REQUIRED_ROLES =
+            List.of(ACCESS_ROLE_HEARING_VIEWER, ACCESS_ROLE_LISTED_HEARING_VIEWER);
+
+        @Test
+        void shouldReturnNullWhenNoCasesFound() {
+            List<String> caseReferences = List.of(CASE_REFERENCE);
+
+            when(hearingManagementService.getCaseSearchResultsPaginated(10, 0, caseReferences, null, CASE_TYPE))
+                .thenReturn(Collections.emptyList());
+
+            HearingsForListOfCasesPaginatedRequest request = createRequest(caseReferences);
+            List<GetHearingsResponse> response =
+                controller.getHearingsForListOfCasesPaginated(null, CASE_TYPE, request);
+
+            assertThat(response).isNull();
+
+            verify(hearingManagementService).getCaseSearchResultsPaginated(10, 0, caseReferences, null, CASE_TYPE);
+        }
+
+        @Test
+        void shouldReturnNullWhenCaseHasNoHearings() {
+            List<String> caseReferences = List.of(CASE_REFERENCE);
+
+            DataStoreCaseDetails caseDetails =
+                DataStoreCaseDetails.builder()
+                    .id(CASE_REFERENCE)
+                    .caseTypeId(CASE_TYPE)
+                    .jurisdiction("CMC")
+                    .build();
+            List<DataStoreCaseDetails> caseDetailsList = List.of(caseDetails);
+
+            when(hearingManagementService
+                     .getCaseSearchResultsPaginated(10, 0, caseReferences, null, CASE_TYPE))
+                .thenReturn(caseDetailsList);
+
+            when(accessControlService.verifyCaseAccess(CASE_REFERENCE, REQUIRED_ROLES, caseDetails))
+                .thenReturn(List.of(ACCESS_ROLE_LISTED_HEARING_VIEWER));
+
+            GetHearingsResponse getHearingsResponse = createEmptyGetHearingsResponse();
+            when(hearingManagementService.getHearings(CASE_REFERENCE, HEARING_STATUS_LISTED))
+                .thenReturn(getHearingsResponse);
+
+            HearingsForListOfCasesPaginatedRequest request = createRequest(caseReferences);
+            List<GetHearingsResponse> getHearingsResponseList =
+                controller.getHearingsForListOfCasesPaginated(null, CASE_TYPE, request);
+
+            assertThat(getHearingsResponseList).isNull();
+
+            verify(hearingManagementService)
+                .getCaseSearchResultsPaginated(10, 0, caseReferences, null, CASE_TYPE);
+            verify(accessControlService).verifyCaseAccess(CASE_REFERENCE, REQUIRED_ROLES, caseDetails);
+            verify(hearingManagementService).getHearings(CASE_REFERENCE, HEARING_STATUS_LISTED);
+        }
+
+        @ParameterizedTest(name = "{index}: Hearing status {0}, Role Assignments {1}, Actual Hearing Status {2}")
+        @MethodSource("getHearingsStatusAndRoleAssignments")
+        void shouldGetHearingsUsingStatusBasedOnRoleAssignments(String requestedHearingStatus,
+                                                                List<String> roleAssignments,
+                                                                String actualHearingStatus) {
+            List<String> caseReferences = List.of(CASE_REFERENCE);
+
+            DataStoreCaseDetails caseDetails =
+                DataStoreCaseDetails.builder()
+                    .id(CASE_REFERENCE)
+                    .caseTypeId(CASE_TYPE)
+                    .jurisdiction("CMC")
+                    .build();
+            List<DataStoreCaseDetails> caseDetailsList = List.of(caseDetails);
+
+            when(hearingManagementService
+                     .getCaseSearchResultsPaginated(10, 0, caseReferences, requestedHearingStatus, CASE_TYPE))
+                .thenReturn(caseDetailsList);
+
+            when(accessControlService.verifyCaseAccess(CASE_REFERENCE, REQUIRED_ROLES, caseDetails))
+                .thenReturn(roleAssignments);
+
+            GetHearingsResponse getHearingsResponse = createGetHearingsResponse();
+            when(hearingManagementService.getHearings(CASE_REFERENCE, actualHearingStatus))
+                .thenReturn(getHearingsResponse);
+
+            HearingsForListOfCasesPaginatedRequest request = createRequest(caseReferences);
+            List<GetHearingsResponse> returnedGetHearingsResponseList =
+                controller.getHearingsForListOfCasesPaginated(requestedHearingStatus, CASE_TYPE, request);
+
+            assertThat(returnedGetHearingsResponseList)
+                .isNotNull()
+                .hasSize(1);
+
+            GetHearingsResponse returnedGetHearingsResponse = returnedGetHearingsResponseList.getFirst();
+            assertThat(returnedGetHearingsResponse.getCaseRef()).isEqualTo(CASE_REFERENCE);
+
+            List<CaseHearing> caseHearingList = returnedGetHearingsResponse.getCaseHearings();
+            assertThat(caseHearingList)
+                .isNotNull()
+                .hasSize(1);
+
+            CaseHearing caseHearing = caseHearingList.getFirst();
+            assertThat(caseHearing.getHearingId()).isEqualTo(2000000000L);
+
+            verify(hearingManagementService)
+                .getCaseSearchResultsPaginated(10, 0, caseReferences, requestedHearingStatus, CASE_TYPE);
+            verify(accessControlService).verifyCaseAccess(CASE_REFERENCE, REQUIRED_ROLES, caseDetails);
+            verify(hearingManagementService).getHearings(CASE_REFERENCE, actualHearingStatus);
+        }
+
+        @ParameterizedTest(name = "{index}: Hearing Status {0}, Role Assignments {1}")
+        @MethodSource("emptyHearingsResponseStatusAndRoleAssignments")
+        void shouldGetEmptyHearingsResponse(String requestedHearingStatus, List<String> roleAssignments) {
+            List<String> caseReferences = List.of(CASE_REFERENCE);
+
+            DataStoreCaseDetails caseDetails =
+                DataStoreCaseDetails.builder()
+                    .id(CASE_REFERENCE)
+                    .caseTypeId(CASE_TYPE)
+                    .jurisdiction("CMC")
+                    .build();
+            List<DataStoreCaseDetails> caseDetailsList = List.of(caseDetails);
+
+            when(hearingManagementService
+                     .getCaseSearchResultsPaginated(10, 0, caseReferences, requestedHearingStatus, CASE_TYPE))
+                .thenReturn(caseDetailsList);
+
+            when(accessControlService.verifyCaseAccess(CASE_REFERENCE, REQUIRED_ROLES, caseDetails))
+                .thenReturn(roleAssignments);
+
+            GetHearingsResponse emptyGetHearingsResponse = createEmptyGetHearingsResponse();
+            when(hearingManagementService.getEmptyHearingsResponse(CASE_REFERENCE))
+                .thenReturn(emptyGetHearingsResponse);
+
+            HearingsForListOfCasesPaginatedRequest request = createRequest(caseReferences);
+            List<GetHearingsResponse> response =
+                controller.getHearingsForListOfCasesPaginated(requestedHearingStatus, CASE_TYPE, request);
+
+            assertThat(response).isNull();
+
+            verify(hearingManagementService)
+                .getCaseSearchResultsPaginated(10, 0, caseReferences, requestedHearingStatus, CASE_TYPE);
+            verify(accessControlService).verifyCaseAccess(CASE_REFERENCE, REQUIRED_ROLES, caseDetails);
+            verify(hearingManagementService).getEmptyHearingsResponse(CASE_REFERENCE);
+        }
+
+        private HearingsForListOfCasesPaginatedRequest createRequest(List<String> caseReferences) {
+            List<HearingsForListOfCasesPaginatedRequestCaseReference> requestCaseReferences = new ArrayList<>();
+
+            caseReferences
+                .forEach(caseReference -> requestCaseReferences
+                    .add(new HearingsForListOfCasesPaginatedRequestCaseReference(caseReference)));
+
+            return new HearingsForListOfCasesPaginatedRequest(10, 0, requestCaseReferences);
+        }
+
+        private GetHearingsResponse createEmptyGetHearingsResponse() {
+            GetHearingsResponse response = new GetHearingsResponse();
+            response.setCaseRef(CASE_REFERENCE);
+            response.setCaseHearings(Collections.emptyList());
+
+            return response;
+        }
+
+        private GetHearingsResponse createGetHearingsResponse() {
+            CaseHearing caseHearing = new CaseHearing();
+            caseHearing.setHearingId(2000000000L);
+
+            GetHearingsResponse response = new GetHearingsResponse();
+            response.setCaseRef(CASE_REFERENCE);
+            response.setCaseHearings(List.of(caseHearing));
+
+            return response;
+        }
+
+        private static Stream<Arguments> getHearingsStatusAndRoleAssignments() {
+            return Stream.of(
+                arguments(
+                    HEARING_STATUS_AWAITING_LISTING,
+                    List.of(ACCESS_ROLE_HEARING_MANAGER),
+                    HEARING_STATUS_AWAITING_LISTING
+                ),
+                arguments(
+                    HEARING_STATUS_AWAITING_LISTING,
+                    List.of(ACCESS_ROLE_HEARING_MANAGER, ACCESS_ROLE_LISTED_HEARING_VIEWER),
+                    HEARING_STATUS_AWAITING_LISTING
+                ),
+                arguments(
+                    null,
+                    List.of(ACCESS_ROLE_LISTED_HEARING_VIEWER),
+                    HEARING_STATUS_LISTED
+                ),
+                arguments(
+                    null,
+                    Collections.emptyList(),
+                    HEARING_STATUS_LISTED
+                ),
+                arguments(
+                    HEARING_STATUS_LISTED,
+                    List.of(ACCESS_ROLE_LISTED_HEARING_VIEWER),
+                    HEARING_STATUS_LISTED
+                ),
+                arguments(
+                    HEARING_STATUS_LISTED,
+                    Collections.emptyList(),
+                    HEARING_STATUS_LISTED
+                )
+            );
+        }
+
+        private static Stream<Arguments> emptyHearingsResponseStatusAndRoleAssignments() {
+            return Stream.of(
+                arguments(
+                    HEARING_STATUS_AWAITING_LISTING,
+                    List.of(ACCESS_ROLE_LISTED_HEARING_VIEWER)
+                ),
+                arguments(
+                    HEARING_STATUS_AWAITING_LISTING,
+                    Collections.emptyList())
+            );
         }
     }
 

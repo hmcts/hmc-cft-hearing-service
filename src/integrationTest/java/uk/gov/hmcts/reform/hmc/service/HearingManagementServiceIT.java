@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
+import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.ChangeReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -34,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesFromDataStorePaginated;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING_REQUEST;
@@ -51,6 +53,10 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_INDIVID
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_ORGANISATION_DETAILS;
 
 class HearingManagementServiceIT extends BaseTest {
+
+    private static final String CASE_REF_PAGINATED = "1000100010001002";
+    private static final String CASE_TYPE = "CaseType1";
+    private static final String HEARING_STATUS_LISTED = "LISTED";
 
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
 
@@ -605,6 +611,35 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("9372710950276234", response.getCaseRef());
         assertNull(response.getHmctsServiceCode());
         assertEquals(0, response.getCaseHearings().size());
+    }
+
+    @Test
+    void testGetCaseSearchResultsPaginated() {
+        List<String> caseReferences = List.of(CASE_REF_PAGINATED);
+
+        stubReturn200ForAllCasesFromDataStorePaginated(10, 0, caseReferences, CASE_TYPE, caseReferences);
+
+        List<DataStoreCaseDetails> dataStoreCaseDetailsList = hearingManagementService
+            .getCaseSearchResultsPaginated(10, 0, caseReferences, HEARING_STATUS_LISTED, CASE_TYPE);
+
+        assertNotNull(dataStoreCaseDetailsList, "DataStoreCaseDetailsList should not be null");
+        assertEquals(1, dataStoreCaseDetailsList.size(), "DataStoreCaseDetailsList has unexpected number of items");
+
+        DataStoreCaseDetails dataStoreCaseDetails = dataStoreCaseDetailsList.getFirst();
+        assertEquals(CASE_REF_PAGINATED, dataStoreCaseDetails.getId(), "DataStoreCaseDetails has unexpected id");
+    }
+
+    @Test
+    void testGetCaseSearchResultsPaginated_NoCasesFound() {
+        List<String> caseReferences = List.of(CASE_REF_PAGINATED);
+
+        stubReturn200ForAllCasesFromDataStorePaginated(10, 0, caseReferences, CASE_TYPE, Collections.emptyList());
+
+        List<DataStoreCaseDetails> dataStoreCaseDetailsList = hearingManagementService
+            .getCaseSearchResultsPaginated(10, 0, caseReferences, HEARING_STATUS_LISTED, CASE_TYPE);
+
+        assertNotNull(dataStoreCaseDetailsList, "DataStoreCaseDetailsList should not be null");
+        assertEquals(0, dataStoreCaseDetailsList.size(), "DataStoreCaseDetailsList has unexpected number of items");
     }
 
     private void validateStatusAudit(HearingResponse response, String hearingEvent) {
