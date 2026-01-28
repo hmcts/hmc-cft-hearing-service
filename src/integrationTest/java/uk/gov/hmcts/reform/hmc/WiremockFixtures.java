@@ -393,6 +393,23 @@ public class WiremockFixtures {
 
     }
 
+    public static void stubReturn200ForAllCasesFromDataStorePaginated(Integer pageSize,
+                                                                      Integer offset,
+                                                                      List<String> caseReferences,
+                                                                      String caseType,
+                                                                      List<String> esCaseReferences) {
+        stubFor(post(urlEqualTo("/searchCases" + "?ctid=" + caseType))
+                    .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+                    .withHeader(ACCEPT, equalTo(APPLICATION_JSON_VALUE))
+                    .withRequestBody(equalToJson(TestingUtil.createSearchQueryPaginated(pageSize,
+                                                                                        offset,
+                                                                                        caseReferences)))
+                    .willReturn(aResponse()
+                                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                    .withStatus(HTTP_OK)
+                                    .withBody(getJsonString(getCaseSearchResult(esCaseReferences)))));
+    }
+
     private static CaseSearchResult getCaseSearchResult(List<String> caseRefs) {
         List<DataStoreCaseDetails> caseDetailsList = new ArrayList<>();
         for (String caseRef : caseRefs) {
