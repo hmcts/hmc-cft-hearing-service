@@ -10,6 +10,7 @@ public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomatio
 
     @Override
     protected BeftaTestDataLoader buildTestDataLoader() {
+        BeftaUtils.defaultLog("Creating DataLoaderToDefinitionStore (buildTestDataLoader)");
         return new DataLoaderToDefinitionStore(this,
                                                DataLoaderToDefinitionStore.VALID_CCD_TEST_DEFINITIONS_PATH) {
 
@@ -24,10 +25,11 @@ public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomatio
 
     @Override
     public BeftaTestDataLoader getDataLoader() {
+        BeftaUtils.defaultLog("Creating DefaultBeftaTestDataLoader (getDataLoader)");
         return new DefaultBeftaTestDataLoader() {
             @Override
             public void doLoadTestData() {
-
+                BeftaUtils.defaultLog("Will NOT load test data!");
             }
         };
     }
