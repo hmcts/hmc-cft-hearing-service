@@ -92,8 +92,8 @@ class HearingActualsServiceTest {
                 hearingActualsValidator,
                 hearingStatusAuditService
             );
-        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
     }
 
     @Nested
@@ -154,8 +154,8 @@ class HearingActualsServiceTest {
                     hearingActualsValidator,
                     hearingStatusAuditService
                 );
-            hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
+            hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any());
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test

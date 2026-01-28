@@ -211,8 +211,8 @@ class InboundQueueServiceTest {
             hearingStatusAuditService
         );
 
-        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
     }
 
     @Nested
@@ -611,7 +611,7 @@ class InboundQueueServiceTest {
             verify(hmiHearingResponseMapper, never()).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).findById(2000000000L);
             verify(hearingStatusAuditService, times(2))
-                .saveAuditTriageDetailsWithUpdatedDate(any(), any(), any(), any(), any(), any());
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
             verify(messageSenderToTopicConfiguration, times(0))
                 .sendMessage(any(), any(), any(), any());
         }
