@@ -110,6 +110,9 @@ env.BEFTA_OAUTH2_SCOPE_VARIABLES_OF_XUIWEBAPP = "profile openid roles manage-use
 // temporary workaround for platform changes: turn BEFTA header checks to warning mode
 env.BEFTA_RESPONSE_HEADER_CHECK_POLICY="JUST_WARN"
 
+// Temporarily disable BEFTA retry policy
+env.BEFTA_RETRY_ENABLE_LISTENER="false"
+
 //-----------------
 
 // Prevent Docker hub rate limit errors by ensuring that testcontainers uses images from hmctspublic ACR
