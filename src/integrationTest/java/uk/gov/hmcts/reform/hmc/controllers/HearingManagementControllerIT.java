@@ -207,14 +207,14 @@ class HearingManagementControllerIT extends BaseTest {
     @Autowired
     private ChangeReasonsRepository changeReasonsRepository;
 
-    private static final String url = "/hearing";
+    private static final String URL_HEARING = "/hearing";
     public static final String USER_ID = "e8275d41-7f22-4ee7-8ed3-14644d6db096";
     public static final String JURISDICTION = "Jurisdiction1";
     public static final String CASE_TYPE = "CaseType1";
     public static final String ROLE_NAME = "Hearing Manage";
     public static final String ROLE_TYPE = "ORGANISATION";
     public static final String HEARING_NOT_FOUND_EXCEPTION = "No hearing found for reference: %s";
-    private static final String hearingCompletion = "/hearingActualsCompletion";
+    private static final String URL_HEARING_COMPLETION = "/hearingActualsCompletion";
 
     private static final String INSERT_CASE_HEARING_DATA_SCRIPT = "classpath:sql/insert-case_hearing_request.sql";
     private static final String CASE_HEARING_ACTUAL_HEARING = "classpath:sql/insert-caseHearings_actualhearings.sql";
@@ -230,7 +230,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn204_WhenHearingExists() throws Exception {
         stubRoleAssignments();
-        mockMvc.perform(get(url + "/2000000136" + "?isValid=true")
+        mockMvc.perform(get(URL_HEARING + "/2000000136" + "?isValid=true")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(204))
             .andExpect(header().exists("Latest-Hearing-Request-Version"))
@@ -240,7 +240,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     void shouldReturn400_WhenHearingIdIsInValid() throws Exception {
-        mockMvc.perform(get(url + "/1000000000" + "?isValid=true")
+        mockMvc.perform(get(URL_HEARING + "/1000000000" + "?isValid=true")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
             .andReturn();
@@ -248,7 +248,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     void shouldReturn404_WhenHearingIdDoesNotExist() throws Exception {
-        mockMvc.perform(get(url + "/2000000001" + "?isValid=true")
+        mockMvc.perform(get(URL_HEARING + "/2000000001" + "?isValid=true")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andReturn();
@@ -257,7 +257,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenHearingExistsInDb() throws Exception {
-        mockMvc.perform(get(url + "/2000000000")
+        mockMvc.perform(get(URL_HEARING + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
@@ -266,7 +266,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenHearingHasCancellationReasons() throws Exception {
-        mockMvc.perform(get(url + "/2000000012")
+        mockMvc.perform(get(URL_HEARING + "/2000000012")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.requestDetails.cancellationReasonCodes").value(IsNull.notNullValue()))
@@ -276,7 +276,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenHearingStatusIsListed() throws Exception {
-        mockMvc.perform(get(url + "/2000000011")
+        mockMvc.perform(get(URL_HEARING + "/2000000011")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
@@ -285,7 +285,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     void shouldReturn404_WhenHearingIdIsInValidInDbAndParamIsFalse() throws Exception {
-        mockMvc.perform(get(url + "/2000000010" + "?isValid=false")
+        mockMvc.perform(get(URL_HEARING + "/2000000010" + "?isValid=false")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andReturn();
@@ -293,7 +293,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     void shouldReturn404_WhenHearingIdIsInValidInDb() throws Exception {
-        mockMvc.perform(get(url + "/2000000010")
+        mockMvc.perform(get(URL_HEARING + "/2000000010")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andReturn();
@@ -303,7 +303,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenIsValidIsNotProvided() throws Exception {
-        mockMvc.perform(get(url + "/2000000000")
+        mockMvc.perform(get(URL_HEARING + "/2000000000")
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
@@ -323,7 +323,7 @@ class HearingManagementControllerIT extends BaseTest {
             .jurisdiction(JURISDICTION)
             .build();
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(createHearingRequest)))
@@ -350,7 +350,7 @@ class HearingManagementControllerIT extends BaseTest {
             .jurisdiction(JURISDICTION)
             .build();
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(createHearingRequest)))
@@ -378,7 +378,7 @@ class HearingManagementControllerIT extends BaseTest {
             .jurisdiction(JURISDICTION)
             .build();
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(createHearingRequest)))
@@ -394,7 +394,7 @@ class HearingManagementControllerIT extends BaseTest {
         updateHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         updateHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         stubReturn400WhileValidateHearingObject(updateHearingRequest);
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(updateHearingRequest)))
@@ -408,7 +408,7 @@ class HearingManagementControllerIT extends BaseTest {
         HearingRequest createHearingRequest = new HearingRequest();
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         stubReturn400WhileValidateHearingObject(createHearingRequest);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(createHearingRequest)))
@@ -423,7 +423,7 @@ class HearingManagementControllerIT extends BaseTest {
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         createHearingRequest.getHearingDetails().setPanelRequirements(TestingUtil.panelRequirements());
         stubReturn400WhileValidateHearingObject(createHearingRequest);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(createHearingRequest)))
@@ -438,7 +438,7 @@ class HearingManagementControllerIT extends BaseTest {
         createHearingRequest.setHearingDetails(TestingUtil.hearingDetails());
         createHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         stubReturn400WhileValidateHearingObject(createHearingRequest);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(createHearingRequest)))
@@ -458,7 +458,7 @@ class HearingManagementControllerIT extends BaseTest {
         createHearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil
                                                                                .relatedPartyMandatoryFieldMissing());
         stubReturn400WhileValidateHearingObject(createHearingRequest);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(createHearingRequest)))
@@ -478,7 +478,7 @@ class HearingManagementControllerIT extends BaseTest {
         RoleAssignmentResponse roleAssignmentResponse = new RoleAssignmentResponse();
         roleAssignmentResponse.setRoleAssignments(resourceList);
         stubReturn200RoleAssignments(USER_ID, roleAssignmentResponse);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(createHearingRequest)))
@@ -503,7 +503,7 @@ class HearingManagementControllerIT extends BaseTest {
         RoleAssignmentResponse response = new RoleAssignmentResponse();
         response.setRoleAssignments(roleAssignmentList);
         stubReturn200RoleAssignments(USER_ID, response);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(createHearingRequest)))
@@ -522,7 +522,7 @@ class HearingManagementControllerIT extends BaseTest {
         stubSuccessfullyValidateHearingObject(createHearingRequest);
         stubRoleAssignments();
         stubReturn404FromDataStore(CASE_REFERENCE);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(createHearingRequest)))
@@ -559,7 +559,7 @@ class HearingManagementControllerIT extends BaseTest {
             .jurisdiction("invalidJurisdiction")
             .build();
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(createHearingRequest)))
@@ -595,7 +595,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn404_WhenDeleteHearingIdIsInValid() throws Exception {
-        mockMvc.perform(delete(url + "/2000000001")
+        mockMvc.perform(delete(URL_HEARING + "/2000000001")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.deleteHearingRequest())))
@@ -607,7 +607,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn200_WhenDeleteHearingIdIsValid() throws Exception {
         DeleteHearingRequest deleteHearingRequest = TestingUtil.deleteHearingRequest();
-        mockMvc.perform(delete(url + "/2000000000")
+        mockMvc.perform(delete(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(deleteHearingRequest)))
@@ -625,14 +625,14 @@ class HearingManagementControllerIT extends BaseTest {
 
         assertTrue(StreamSupport.stream(spliterator, false)
                 .map(CancellationReasonsEntity::getCancellationReasonType)
-                .collect(Collectors.toList())
+                .toList()
                 .containsAll(CANCELLATION_REASON_CODES));
     }
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn400_WhenDeleteHearingIdIsNonNumeric() throws Exception {
-        mockMvc.perform(delete(url + "/200000000P")
+        mockMvc.perform(delete(URL_HEARING + "/200000000P")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.deleteHearingRequest())))
@@ -644,11 +644,12 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn400_WhenDeleteHearingIdStatusInValid() throws Exception {
         stubFor(WireMock.get(urlMatching("/cases/1111222233335555"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Test\",\n"
-                                           + "\t\"case_type\": \"CaseType\"\n"
-                                           + "}")));
-        mockMvc.perform(delete(url + "/2000000011")
+                    .willReturn(okJson("""
+                                       {
+                                           "jurisdiction": "Test",
+                                           "case_type": "CaseType"
+                                       }""")));
+        mockMvc.perform(delete(URL_HEARING + "/2000000011")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.deleteHearingRequest())))
@@ -663,7 +664,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn400_WhenCancellationReasonExceedsMaxLength() throws Exception {
         DeleteHearingRequest hearingRequest = new DeleteHearingRequest();
         hearingRequest.setCancellationReasonCodes(List.of("a".repeat(101)));
-        mockMvc.perform(delete(url + "/2000000001")
+        mockMvc.perform(delete(URL_HEARING + "/2000000001")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -680,7 +681,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn400_WhenCancellationReasonIsNull() throws Exception {
         DeleteHearingRequest hearingRequest = new DeleteHearingRequest();
         hearingRequest.setCancellationReasonCodes(null);
-        mockMvc.perform(delete(url + "/2000000001")
+        mockMvc.perform(delete(URL_HEARING + "/2000000001")
                  .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -697,7 +698,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn400_WhenCancellationReasonIsEmpty() throws Exception {
         DeleteHearingRequest hearingRequest = new DeleteHearingRequest();
         hearingRequest.setCancellationReasonCodes(Collections.emptyList());
-        mockMvc.perform(delete(url + "/2000000001")
+        mockMvc.perform(delete(URL_HEARING + "/2000000001")
                  .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -714,7 +715,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn400_WhenCancellationContainsAnEmptyString() throws Exception {
         DeleteHearingRequest hearingRequest = new DeleteHearingRequest();
         hearingRequest.setCancellationReasonCodes(List.of("reason", ""));
-        mockMvc.perform(delete(url + "/2000000001")
+        mockMvc.perform(delete(URL_HEARING + "/2000000001")
                  .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -731,7 +732,7 @@ class HearingManagementControllerIT extends BaseTest {
         DeleteHearingRequest hearingRequest = new DeleteHearingRequest();
         final String cancellationReasonCode = "a".repeat(100);
         hearingRequest.setCancellationReasonCodes(List.of(cancellationReasonCode));
-        mockMvc.perform(delete(url + "/2000000000")
+        mockMvc.perform(delete(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -976,11 +977,12 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn201WhenUpdateHearingRequestIsValid() throws Exception {
         stubFor(WireMock.get(urlMatching("/cases/1111222233334444"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Test\",\n"
-                                           + "\t\"case_type\": \"CaseType\"\n"
-                                           + "}")));
-        mockMvc.perform(put(url + "/2000000000")
+                    .willReturn(okJson("""
+                                       {
+                                           "jurisdiction": "Test",
+                                           "case_type": "CaseType"
+                                       }""")));
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.validUpdateHearingRequest())))
@@ -1000,7 +1002,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
         hearingRequest.getCaseDetails().setCaseRef("9856815055686759");
-        mockMvc.perform(put(url + "/2000000012")
+        mockMvc.perform(put(URL_HEARING + "/2000000012")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1016,7 +1018,7 @@ class HearingManagementControllerIT extends BaseTest {
         updateHearingRequest.getHearingDetails().setAmendReasonCodes(Collections.emptyList());
         updateHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         stubReturn400WhileValidateHearingObject(updateHearingRequest);
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                  .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(updateHearingRequest)))
@@ -1034,7 +1036,7 @@ class HearingManagementControllerIT extends BaseTest {
         updateHearingRequest.getHearingDetails().setAmendReasonCodes(List.of("", "reason"));
         updateHearingRequest.setCaseDetails(TestingUtil.caseDetails());
         stubReturn400WhileValidateHearingObject(updateHearingRequest);
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                 .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(updateHearingRequest)))
@@ -1049,13 +1051,13 @@ class HearingManagementControllerIT extends BaseTest {
         final Spliterator<ChangeReasonsEntity> spliterator = changeReasonsRepository.findAll().spliterator();
         assertEquals(2, spliterator.estimateSize());
         assertTrue(StreamSupport.stream(spliterator, false)
-                .map(ChangeReasonsEntity::getChangeReasonType).collect(Collectors.toList())
+                .map(ChangeReasonsEntity::getChangeReasonType).toList()
                 .containsAll(List.of("reason 1", "reason 2")));
     }
 
     @Test
     void shouldReturn404WhenUpdateHearingIdDoesNotMatchHearingIdInDB() throws Exception {
-        mockMvc.perform(put(url + "/2000000001")
+        mockMvc.perform(put(URL_HEARING + "/2000000001")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.updateHearingRequest())))
@@ -1071,7 +1073,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn400WhenUpdateHearingIdIsNonNumeric() throws Exception {
-        mockMvc.perform(put(url + "/200000000P")
+        mockMvc.perform(put(URL_HEARING + "/200000000P")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.updateHearingRequest())))
@@ -1081,7 +1083,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     void shouldReturn400WhenUpdateHearingIdIsInvalid() throws Exception {
-        mockMvc.perform(put(url + "/3000000000")
+        mockMvc.perform(put(URL_HEARING + "/3000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.updateHearingRequest())))
@@ -1093,7 +1095,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     void shouldReturn400WhenUpdateHearingIdIsTooLong() throws Exception {
-        mockMvc.perform(put(url + "/200000000000000")
+        mockMvc.perform(put(URL_HEARING + "/200000000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.updateHearingRequest())))
@@ -1108,7 +1110,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn400WhenVersionNumberDoesNotMatchRequest() throws Exception {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         hearingRequest.getRequestDetails().setVersionNumber(2);
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1121,7 +1123,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn400WhenRequestIsNull() throws Exception {
         UpdateHearingRequest hearingRequest = new UpdateHearingRequest();
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1139,7 +1141,7 @@ class HearingManagementControllerIT extends BaseTest {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         RequestDetails updateRequestDetails = new RequestDetails();
         hearingRequest.setRequestDetails(updateRequestDetails);
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1155,7 +1157,7 @@ class HearingManagementControllerIT extends BaseTest {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         HearingDetails hearingDetails = new HearingDetails();
         hearingRequest.setHearingDetails(hearingDetails);
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1206,7 +1208,7 @@ class HearingManagementControllerIT extends BaseTest {
         List<PanelPreference> panelPreferences = Arrays.asList(panelPreference, panelPreferenceTwo);
         panelRequirements.setPanelPreferences(panelPreferences);
         hearingRequest.getHearingDetails().setPanelRequirements(panelRequirements);
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1237,7 +1239,7 @@ class HearingManagementControllerIT extends BaseTest {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         CaseDetails caseDetails = new CaseDetails();
         hearingRequest.setCaseDetails(caseDetails);
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1269,7 +1271,7 @@ class HearingManagementControllerIT extends BaseTest {
         List<CaseCategory> caseCategoryList = Collections.singletonList(category);
         hearingRequest.getCaseDetails().setCaseCategories(caseCategoryList);
         logger.info("request body: {}", objectMapper.writeValueAsString(hearingRequest));
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1306,7 +1308,7 @@ class HearingManagementControllerIT extends BaseTest {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         hearingRequest.setPartyDetails(listPartyDetails);
         logger.info("request body: {}", objectMapper.writeValueAsString(hearingRequest));
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1359,7 +1361,7 @@ class HearingManagementControllerIT extends BaseTest {
 
         final String unexpectedTypeForDow = "Unsupported type for dow";
         logger.info("request body: {}", objectMapper.writeValueAsString(hearingRequest));
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1387,7 +1389,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(null);
         hearingRequest.getHearingDetails().getHearingWindow().setDateRangeStart(null);
         hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1404,7 +1406,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().getHearingWindow().setDateRangeStart(LocalDate.parse("2017-03-01"));
         hearingRequest.getHearingDetails().getHearingWindow().setDateRangeEnd(LocalDate.parse("2017-03-01"));
         hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                  .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1419,7 +1421,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn400WhenHearingChannelFieldIsNull() throws Exception {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         hearingRequest.getHearingDetails().setHearingChannels(null);
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                  .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1434,7 +1436,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn400WhenPartyIndividualAndOrgDetailsNull() throws Exception {
         UpdateHearingRequest request = TestingUtil.updateHearingRequest();
         request.setPartyDetails(TestingUtil.partyDetails());
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(request)))
@@ -1452,7 +1454,7 @@ class HearingManagementControllerIT extends BaseTest {
         request.setPartyDetails(TestingUtil.partyDetails());
         request.getPartyDetails().get(0).setIndividualDetails(TestingUtil.individualDetails());
         request.getPartyDetails().get(0).setOrganisationDetails(TestingUtil.organisationDetails());
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(request)))
@@ -1465,7 +1467,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn400WhenUpdateHearingStatusIsInvalid() throws Exception {
-        mockMvc.perform(put(url + "/2000000011")
+        mockMvc.perform(put(URL_HEARING + "/2000000011")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(TestingUtil.updateHearingRequest())))
@@ -1487,7 +1489,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getPartyDetails().get(0).getIndividualDetails().getRelatedParties()
             .get(0).setRelationshipType("a".repeat(10));
         hearingRequest.getCaseDetails().setCaseRef("9856815055686759");
-        mockMvc.perform(put(url + "/2000000012")
+        mockMvc.perform(put(URL_HEARING + "/2000000012")
                  .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1502,7 +1504,7 @@ class HearingManagementControllerIT extends BaseTest {
         stubRoleAssignments();
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequestWithPartyDetails(false);
         hearingRequest.getCaseDetails().setCaseRef("9372710950276233");
-        mockMvc.perform(put(url + "/2000000024")
+        mockMvc.perform(put(URL_HEARING + "/2000000024")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1519,7 +1521,7 @@ class HearingManagementControllerIT extends BaseTest {
         UpdateHearingRequest hearingRequest =
             TestingUtil.updateHearingRequestWithPartyDetails(true);
         hearingRequest.getCaseDetails().setCaseRef("9372710950276233");
-        mockMvc.perform(put(url + "/2000000024")
+        mockMvc.perform(put(URL_HEARING + "/2000000024")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1534,7 +1536,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn400_WhenCaseRefHasInvalidFormat_UpdateHearing() throws Exception {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
         hearingRequest.getCaseDetails().setCaseRef("1111222233334445");
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1557,7 +1559,7 @@ class HearingManagementControllerIT extends BaseTest {
             .build();
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
         hearingRequest.getCaseDetails().setCaseRef("1111222233334445");
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1579,7 +1581,7 @@ class HearingManagementControllerIT extends BaseTest {
             .jurisdiction(JURISDICTION)
             .build();
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1606,7 +1608,7 @@ class HearingManagementControllerIT extends BaseTest {
             .jurisdiction(JURISDICTION)
             .build();
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
-        val result = mockMvc.perform(post(url)
+        val result = mockMvc.perform(post(URL_HEARING)
                                          .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                          .contentType(MediaType.APPLICATION_JSON_VALUE)
                                          .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1658,7 +1660,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getHearingDetails().setDuration(duration);
         hearingRequest.getCaseDetails().setCaseRef("9372710950276233");
 
-        mockMvc.perform(put(url + "/" + hearingId)
+        mockMvc.perform(put(URL_HEARING + "/" + hearingId)
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1674,7 +1676,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn400_WhenHearingRequestHearingPartyTechPartyId_NotFound() throws Exception {
         HearingRequest hearingRequest = getHearingRequest("unknown");
         stubSuccessfullyValidateHearingObject(hearingRequest);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                  .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1696,7 +1698,7 @@ class HearingManagementControllerIT extends BaseTest {
             .jurisdiction(JURISDICTION)
             .build();
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .header(HMCTS_DEPLOYMENT_ID, "TEST")
@@ -1718,7 +1720,7 @@ class HearingManagementControllerIT extends BaseTest {
             .jurisdiction(JURISDICTION)
             .build();
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1739,7 +1741,7 @@ class HearingManagementControllerIT extends BaseTest {
             .jurisdiction(JURISDICTION)
             .build();
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1760,7 +1762,7 @@ class HearingManagementControllerIT extends BaseTest {
             .jurisdiction(JURISDICTION)
             .build();
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .header(HMCTS_DEPLOYMENT_ID, "a".repeat(41))
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -1784,7 +1786,7 @@ class HearingManagementControllerIT extends BaseTest {
             .jurisdiction(JURISDICTION)
             .build();
         stubReturn200CaseDetailsByCaseId(CASE_REFERENCE, caseDetails);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL_HEARING)
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .header(HMCTS_DEPLOYMENT_ID, "ABA1")
                             .header(HMCTS_DEPLOYMENT_ID, "TEST")
@@ -1799,7 +1801,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenHearingIdNotAvailableHearingCompletion() throws Exception {
-        mockMvc.perform(post(hearingCompletion + "/2000000001")
+        mockMvc.perform(post(URL_HEARING_COMPLETION + "/2000000001")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
@@ -1811,7 +1813,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenHearingIdIsNotValidHearingCompletion() throws Exception {
-        mockMvc.perform(post(hearingCompletion + "/30000000")
+        mockMvc.perform(post(URL_HEARING_COMPLETION + "/30000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
@@ -1823,7 +1825,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenHearingStatusIsNotVaidHearingCompletion() throws Exception {
-        mockMvc.perform(post(hearingCompletion + "/2000000009")
+        mockMvc.perform(post(URL_HEARING_COMPLETION + "/2000000009")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
@@ -1835,7 +1837,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenHearingStatusListedAndMinStartDateIsBeforeTodayHearingCompletion() throws Exception {
-        mockMvc.perform(post(hearingCompletion + "/2000000010")
+        mockMvc.perform(post(URL_HEARING_COMPLETION + "/2000000010")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
@@ -1846,11 +1848,12 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn404WhenActualHearingMissingForHearingResponseHearingCompletion() throws Exception {
         stubFor(WireMock.get(urlMatching("/cases/9372710950276233"))
-                    .willReturn(okJson("{\n"
-                                           + "\t\"jurisdiction\": \"Test\",\n"
-                                           + "\t\"case_type\": \"CaseType\"\n"
-                                           + "}")));
-        mockMvc.perform(post(hearingCompletion + "/2000000012")
+                    .willReturn(okJson("""
+                                       {
+                                           "jurisdiction": "Test",
+                                           "case_type": "CaseType"
+                                       }""")));
+        mockMvc.perform(post(URL_HEARING_COMPLETION + "/2000000012")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
@@ -1863,7 +1866,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn200WhenActualHearingDayMissingForResultTypeAdjourned() throws Exception {
-        mockMvc.perform(post(hearingCompletion + "/2000000013")
+        mockMvc.perform(post(URL_HEARING_COMPLETION + "/2000000013")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
@@ -1873,7 +1876,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn200WhenActualHearingDayMissingForResultTypeCompleted() throws Exception {
-        mockMvc.perform(post(hearingCompletion + "/2000000015")
+        mockMvc.perform(post(URL_HEARING_COMPLETION + "/2000000015")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
@@ -1883,7 +1886,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldReturn200WhenActualHearingDayExistsForCanceledResultTypeResponseHearingCompletion() throws Exception {
-        mockMvc.perform(post(hearingCompletion + "/2000000014")
+        mockMvc.perform(post(URL_HEARING_COMPLETION + "/2000000014")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
@@ -1894,7 +1897,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
     void shouldUpdateHearingCompletion() throws Exception {
         stubRoleAssignments();
-        mockMvc.perform(post(hearingCompletion + "/2000000000")
+        mockMvc.perform(post(URL_HEARING_COMPLETION + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
@@ -1905,7 +1908,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
     void shouldReturn200WhenHearingWindowIsNotPresent() throws Exception {
         UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequestWithoutHearingWindow(1);
-        mockMvc.perform(put(url + "/2000000000")
+        mockMvc.perform(put(URL_HEARING + "/2000000000")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
@@ -1924,7 +1927,7 @@ class HearingManagementControllerIT extends BaseTest {
         hearingRequest.getPartyDetails().get(0).setIndividualDetails(individualDetails);
         hearingRequest.getPartyDetails().get(1).setIndividualDetails(individualDetails);
         hearingRequest.getCaseDetails().setCaseRef("9856815055686759");
-        mockMvc.perform(put(url + "/2000000012")
+        mockMvc.perform(put(URL_HEARING + "/2000000012")
                             .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(objectMapper.writeValueAsString(hearingRequest)))
