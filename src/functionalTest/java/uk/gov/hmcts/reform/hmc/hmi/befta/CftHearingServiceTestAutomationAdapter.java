@@ -21,14 +21,4 @@ public class CftHearingServiceTestAutomationAdapter extends DefaultTestAutomatio
 
         };
     }
-
-    @Override
-    public BeftaTestDataLoader getDataLoader() {
-        return new DefaultBeftaTestDataLoader() {
-            @Override
-            public void doLoadTestData() {
-
-            }
-        };
-    }
 }

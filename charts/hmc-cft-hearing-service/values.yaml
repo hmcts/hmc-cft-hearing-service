@@ -1,3 +1,8 @@
+elastic:
+  enabled: false
+ccd:
+  enabled: false
+
 java:
   applicationPort: 4561
   image: 'hmctspublic.azurecr.io/hmc/cft-hearing-service:latest'
