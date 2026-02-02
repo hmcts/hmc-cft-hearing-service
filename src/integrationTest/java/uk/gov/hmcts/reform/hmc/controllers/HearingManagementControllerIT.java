@@ -2051,7 +2051,7 @@ class HearingManagementControllerIT extends BaseTest {
                                   {"caseReference": "1234123412341238"}
                               ]
                           }"""),
-                    List.of("Page size can't be less than one")
+                    List.of("Page size can not be less than one")
                 ),
                 arguments(
                     named("HasNoOffset",
@@ -2074,7 +2074,7 @@ class HearingManagementControllerIT extends BaseTest {
                                   {"caseReference": "1234123412341238"}
                               ]
                           }"""),
-                    List.of("Offset can't be less than 0")
+                    List.of("Offset can not be less than 0")
                 ),
                 arguments(
                     named("HasNoCaseReferences",
