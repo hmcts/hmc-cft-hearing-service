@@ -109,7 +109,6 @@ class ManageExceptionsServiceTest {
         .modules(new Jdk8Module())
         .build();
 
-
     @BeforeEach
     void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);

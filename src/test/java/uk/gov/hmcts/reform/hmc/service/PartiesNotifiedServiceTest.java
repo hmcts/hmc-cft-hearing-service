@@ -106,7 +106,8 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             verify(hearingRepository, times(1)).existsById(hearingId);
             verify(hearingResponseRepository, times(1))
                 .getHearingResponse(hearingId, requestVersion, receivedDateTime);
-
+            verify(hearingStatusAuditService, times(1))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
 
@@ -119,6 +120,8 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             Exception exception = assertThrows(BadRequestException.class, () ->
                 partiesNotifiedService.getPartiesNotified(1000000000L, 1,
                         dateTime, partiesNotified, CLIENT_S2S_TOKEN));
+            verify(hearingStatusAuditService, times(0))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
         }
 
@@ -133,6 +136,8 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             Exception exception = assertThrows(PartiesNotifiedNotFoundException.class, () ->
                 partiesNotifiedService.getPartiesNotified(2000000000L, 1,
                         dateTime, partiesNotified, CLIENT_S2S_TOKEN));
+            verify(hearingStatusAuditService, times(0))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
             assertEquals(PARTIES_NOTIFIED_NO_SUCH_RESPONSE, exception.getMessage());
         }
 
@@ -146,6 +151,8 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             Exception exception = assertThrows(HearingNotFoundException.class, () ->
                 partiesNotifiedService.getPartiesNotified(2000000000L, 1,
                         dateTime, partiesNotified, CLIENT_S2S_TOKEN));
+            verify(hearingStatusAuditService, times(0))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
             assertEquals("001 No such id: 2000000000", exception.getMessage());
         }
 
@@ -165,6 +172,8 @@ class PartiesNotifiedServiceTest extends PartiesNotifiedCommonGeneration {
             Exception exception = assertThrows(PartiesNotifiedBadRequestException.class, () ->
                 partiesNotifiedService.getPartiesNotified(2000000000L, 1,
                         dateTime, partiesNotified, CLIENT_S2S_TOKEN));
+            verify(hearingStatusAuditService, times(0))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
             assertEquals("003 Already set", exception.getMessage());
         }
 

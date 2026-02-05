@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -37,7 +36,6 @@ import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
-import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -84,9 +82,6 @@ class HearingManagementControllerTest {
     @MockitoBean
     private OverrideAuditService overrideAuditService;
 
-    @Mock
-    HearingStatusAuditService hearingStatusAuditService;
-
     @MockitoBean
     SecurityUtils securityUtils;
 
@@ -97,8 +92,6 @@ class HearingManagementControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         doReturn("xui_webapp").when(securityUtils)
             .getServiceNameFromS2SToken(any());
-        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any());
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
     }
 
     @Nested
