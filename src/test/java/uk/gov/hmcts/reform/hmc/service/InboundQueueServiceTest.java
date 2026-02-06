@@ -267,6 +267,8 @@ class InboundQueueServiceTest {
             Exception exception = assertThrows(HearingNotFoundException.class, () ->
                 inboundQueueService.processMessage(jsonNode, messageContext));
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
+            verify(hearingStatusAuditService, never())
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
 
         }
 
@@ -294,6 +296,8 @@ class InboundQueueServiceTest {
             inboundQueueService.processMessage(data, messageContext);
             assertDynatraceLogMessage(listAppender, "2000000000", "1111222233334444",
                                       "TEST", "Unable to create case");
+            verify(hearingStatusAuditService, times(1))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test
@@ -327,6 +331,8 @@ class InboundQueueServiceTest {
             inboundQueueService.processMessage(syncJsonNode, messageContext);
             assertDynatraceLogMessage(listAppender, "2000000000", "1111222233334444",
                                       "TEST", "Unable to create case");
+            verify(hearingStatusAuditService, times(1))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test
@@ -341,6 +347,8 @@ class InboundQueueServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () ->
                 inboundQueueService.processMessage(jsonNode, messageContext));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
+            verify(hearingStatusAuditService, never())
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
 
         }
 
@@ -357,6 +365,8 @@ class InboundQueueServiceTest {
             verify(hmiHearingResponseMapper, times(0)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(0)).existsById(any());
             verify(hearingRepository, times(0)).findById(any());
+            verify(hearingStatusAuditService, never())
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test
@@ -383,6 +393,8 @@ class InboundQueueServiceTest {
             verify(hmiHearingResponseMapper, times(1)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).existsById(2000000000L);
             verify(hearingRepository, times(2)).findById(2000000000L);
+            verify(hearingStatusAuditService, times(1))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test
@@ -497,6 +509,8 @@ class InboundQueueServiceTest {
             verify(hmiHearingResponseMapper, times(1)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).existsById(2000000000L);
             verify(hearingRepository, times(2)).findById(2000000000L);
+            verify(hearingStatusAuditService, times(1))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @ParameterizedTest
@@ -715,6 +729,8 @@ class InboundQueueServiceTest {
             verify(hmiHearingResponseMapper, times(0)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).existsById(2000000000L);
             verify(hearingRepository, times(0)).findById(2000000000L);
+            verify(hearingStatusAuditService, never())
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
 
@@ -817,6 +833,8 @@ class InboundQueueServiceTest {
             verify(hmiHearingResponseMapper, times(0)).mapHmiHearingToEntity(any(), any());
             verify(hearingRepository, times(1)).existsById(2000000000L);
             verify(hearingRepository, times(0)).findById(2000000000L);
+            verify(hearingStatusAuditService, never())
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test
@@ -844,6 +862,8 @@ class InboundQueueServiceTest {
                 inboundQueueService.processMessage(data, messageContext));
             assertEquals("Error received for hearing Id: 2000000000 with an "
                              + "error message of 2000 Unable to create case", exception.getMessage());
+            verify(hearingStatusAuditService, never())
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test
@@ -860,6 +880,8 @@ class InboundQueueServiceTest {
             Exception exception = assertThrows(HearingNotFoundException.class, () ->
                 inboundQueueService.processMessage(data, messageContext));
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
+            verify(hearingStatusAuditService, never())
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test
@@ -876,6 +898,8 @@ class InboundQueueServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () ->
                 inboundQueueService.processMessage(data, messageContext));
             assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
+            verify(hearingStatusAuditService, never())
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test
@@ -893,6 +917,8 @@ class InboundQueueServiceTest {
             verify(hmiHearingResponseMapper, times(0)).mapHmiHearingErrorToEntity(any(), any());
             verify(hearingRepository, times(0)).existsById(any());
             verify(hearingRepository, times(0)).findById(any());
+            verify(hearingStatusAuditService, never())
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
     }
 
@@ -998,6 +1024,8 @@ class InboundQueueServiceTest {
         inboundQueueService.processMessage(jsonNodeLocal, messageContext);
         assertLogMessageForHearingStatusMaxLength(listAppender,
             "Violations are Hearing status code must not be more than 30 characters long");
+        verify(hearingStatusAuditService, never())
+            .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
     }
 
     @Test
@@ -1104,6 +1132,8 @@ class InboundQueueServiceTest {
         inboundQueueService.processMessage(jsonNodeLocal, messageContext);
         assertLogMessageForHearingStatusMaxLength(listAppender,
                           "Violations are Hearing status code can not be null or empty");
+        verify(hearingStatusAuditService, never())
+            .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
     }
 
     private void assertLogMessageForHearingStatusMaxLength(ListAppender<ILoggingEvent> listAppender,
