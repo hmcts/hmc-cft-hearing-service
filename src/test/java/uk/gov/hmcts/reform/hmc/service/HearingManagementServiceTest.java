@@ -108,6 +108,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -359,6 +360,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(null);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest, null,CLIENT_S2S_TOKEN));
+            verify(hearingStatusAuditService,never()).saveAuditTriageDetailsWithCreatedDate(any());
             assertEquals(HEARING_WINDOW_EMPTY_NULL, exception.getMessage());
         }
 
@@ -371,6 +373,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest, null,CLIENT_S2S_TOKEN));
+            verify(hearingStatusAuditService,never()).saveAuditTriageDetailsWithCreatedDate(any());
             assertEquals(HEARING_WINDOW_DETAILS_ARE_INVALID, exception.getMessage());
         }
 
@@ -383,6 +386,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest, null,CLIENT_S2S_TOKEN));
+            verify(hearingStatusAuditService,never()).saveAuditTriageDetailsWithCreatedDate(any());
             assertEquals(HEARING_WINDOW_DETAILS_ARE_INVALID, exception.getMessage());
         }
 
@@ -395,6 +399,7 @@ class HearingManagementServiceTest {
             hearingRequest.getHearingDetails().getHearingWindow().setFirstDateTimeMustBe(LocalDateTime.now());
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest, null,CLIENT_S2S_TOKEN));
+            verify(hearingStatusAuditService,never()).saveAuditTriageDetailsWithCreatedDate(any());
             assertEquals(HEARING_WINDOW_DETAILS_ARE_INVALID, exception.getMessage());
         }
 
@@ -408,11 +413,12 @@ class HearingManagementServiceTest {
             mockGetEntities(hearingRequest);
             mockSubmitRequest();
             given(hearingMapper.modelToEntity(eq(hearingRequest), any(), any(), any(),anyBoolean(), anyBoolean(),
-                                              any()))
-                .willReturn(TestingUtil.hearingEntity());
+                                              any())).willReturn(TestingUtil.hearingEntity());
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
-            HearingResponse response = hearingManagementService. saveHearingRequest(hearingRequest, null,
+            HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null,
                                                                                    CLIENT_S2S_TOKEN);
+            verify(hearingStatusAuditService,times(2))
+                .saveAuditTriageDetailsWithCreatedDate(any());
             assertValidHearingResponse(response);
         }
 
@@ -443,6 +449,7 @@ class HearingManagementServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest,  null, CLIENT_S2S_TOKEN));
             assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
+            verify(hearingStatusAuditService,never()).saveAuditTriageDetailsWithCreatedDate(any());
         }
 
         @Test
@@ -457,6 +464,7 @@ class HearingManagementServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                  .saveHearingRequest(hearingRequest,  null, CLIENT_S2S_TOKEN));
             assertEquals(ValidationError.NON_UNIQUE_CHANNEL_TYPE, exception.getMessage());
+            verify(hearingStatusAuditService,never()).saveAuditTriageDetailsWithCreatedDate(any());
         }
 
         @Test
@@ -465,6 +473,7 @@ class HearingManagementServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .saveHearingRequest(hearingRequest,  null, CLIENT_S2S_TOKEN));
             assertEquals(INVALID_HEARING_REQUEST_DETAILS, exception.getMessage());
+            verify(hearingStatusAuditService,never()).saveAuditTriageDetailsWithCreatedDate(any());
         }
 
         @Test
@@ -490,6 +499,7 @@ class HearingManagementServiceTest {
 
             assertThrows(BadRequestException.class, () -> hearingManagementService
                    .saveHearingRequest(hearingRequest, null,CLIENT_S2S_TOKEN));
+            verify(hearingStatusAuditService,never()).saveAuditTriageDetailsWithCreatedDate(any());
         }
 
         @Test
@@ -506,6 +516,8 @@ class HearingManagementServiceTest {
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null,
                 CLIENT_S2S_TOKEN);
+            verify(hearingStatusAuditService, times(2))
+                .saveAuditTriageDetailsWithCreatedDate(any());
             assertValidHearingResponse(response);
         }
 
@@ -545,6 +557,8 @@ class HearingManagementServiceTest {
                     .willReturn(partyRelationshipDetailsEntities);
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null,
                                                                                    CLIENT_S2S_TOKEN);
+            verify(hearingStatusAuditService, times(2))
+                .saveAuditTriageDetailsWithCreatedDate(any());
             assertValidHearingResponse(response);
         }
 
@@ -566,6 +580,8 @@ class HearingManagementServiceTest {
             given(hearingRepository.save(TestingUtil.hearingEntity())).willReturn(TestingUtil.hearingEntity());
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null,
                                                                                    CLIENT_S2S_TOKEN);
+            verify(hearingStatusAuditService, times(2))
+                .saveAuditTriageDetailsWithCreatedDate(any());
             assertValidHearingResponse(response);
         }
 
@@ -587,6 +603,8 @@ class HearingManagementServiceTest {
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, null,
                                                                                    CLIENT_S2S_TOKEN);
             assertValidHearingResponse(response);
+            verify(hearingStatusAuditService,times(2))
+                .saveAuditTriageDetailsWithCreatedDate(any());
         }
 
         @Test
@@ -606,6 +624,8 @@ class HearingManagementServiceTest {
             HearingResponse response = hearingManagementService.saveHearingRequest(hearingRequest, "TEST",
                                                                                    CLIENT_S2S_TOKEN);
             assertValidHearingResponse(response);
+            verify(hearingStatusAuditService,times(2))
+                .saveAuditTriageDetailsWithCreatedDate(any());
         }
 
         @Test
@@ -620,6 +640,7 @@ class HearingManagementServiceTest {
             hearingRequest.setPartyDetails(partyDetails);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                  .saveHearingRequest(hearingRequest,  null, CLIENT_S2S_TOKEN));
+            verify(hearingStatusAuditService,never()).saveAuditTriageDetailsWithCreatedDate(any());
             assertEquals("Either Individual or Organisation details should be present", exception.getMessage());
         }
 

@@ -328,6 +328,8 @@ class HearingActualsServiceTest {
             assertDoesNotThrow(() -> {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
             });
+            verify(hearingStatusAuditService, times(1))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test
