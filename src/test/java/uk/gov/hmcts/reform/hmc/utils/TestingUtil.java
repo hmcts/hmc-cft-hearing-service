@@ -1668,7 +1668,7 @@ public class TestingUtil {
         actualHearingDay1.setNotRequired(flag1);
 
         ActualHearingDay actualHearingDay2 = new ActualHearingDay();
-        actualHearingDay2.setHearingDate(LocalDate.now().plusDays(2));
+        actualHearingDay2.setHearingDate(LocalDate.now().plusDays(3));
         actualHearingDay2.setNotRequired(flag2);
 
         HearingActual hearingActual = new HearingActual();
