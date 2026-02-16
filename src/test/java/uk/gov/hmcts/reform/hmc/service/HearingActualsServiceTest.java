@@ -313,9 +313,10 @@ class HearingActualsServiceTest {
             given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearing));
             HearingActual hearingActual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.FALSE);
             hearingActual.getActualHearingDays().get(0).setHearingDate(LocalDate.now());
-             Exception exception = assertThrows(BadRequestException.class, () -> {
-                hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
-            });
+            Exception exception = assertThrows(
+                BadRequestException.class, () -> {
+                    hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
+                });
             assertTrue(exception.getMessage().contains(HEARING_ACTUALS_INVALID_STATUS));
         }
 
