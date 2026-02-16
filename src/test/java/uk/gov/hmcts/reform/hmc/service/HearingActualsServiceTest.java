@@ -159,8 +159,6 @@ class HearingActualsServiceTest {
         void shouldUpdateHearingActuals() {
             createActuals();
             HearingActual hearingActual = TestingUtil.hearingActual();
-
-            given(actualHearingRepository.save(any())).willReturn(actualHearingMock);
             assertDoesNotThrow(() -> {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
             });
