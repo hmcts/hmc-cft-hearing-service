@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -47,22 +47,22 @@ class ManageExceptionsControllerTest {
     @Autowired
     protected MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private ApplicationParams applicationParams;
 
-    @MockBean
+    @MockitoBean
     private UrlManager urlManager;
 
     @Autowired
     WebApplicationContext webApplicationContext;
 
-    @MockBean
+    @MockitoBean
     ManageExceptionsService manageExceptionsService;
 
     @Mock
     HearingStatusAuditService hearingStatusAuditService;
 
-    @MockBean
+    @MockitoBean
     private OverrideAuditService overrideAuditService;
 
     private static final String CLIENT_S2S_TOKEN = "hmc_tech_admin";
@@ -70,7 +70,7 @@ class ManageExceptionsControllerTest {
     @BeforeEach
      void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any(),any());
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
     }
 
     @Nested
