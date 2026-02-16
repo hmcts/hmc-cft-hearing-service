@@ -23,6 +23,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PUT_PARTIES_NOTIFIED;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NON_UNIQUE_HEARING_RESPONSE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ALREADY_SET;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PARTIES_NOTIFIED_NO_SUCH_RESPONSE;
@@ -50,27 +51,35 @@ public class PartiesNotifiedServiceImpl implements PartiesNotifiedService {
                                    LocalDateTime receivedDateTime, PartiesNotified partiesNotified,
                                    String clientS2SToken) {
         hearingIdValidator.validateHearingId(hearingId, PARTIES_NOTIFIED_ID_NOT_FOUND);
-        HearingResponseEntity hearingResponseEntity =
+        try {
+            HearingResponseEntity hearingResponseEntity =
                 hearingResponseRepository.getHearingResponse(hearingId, requestVersion, receivedDateTime);
-        if (null == hearingResponseEntity) {
-            throw new PartiesNotifiedNotFoundException(PARTIES_NOTIFIED_NO_SUCH_RESPONSE);
-        } else if (hearingResponseEntity.getPartiesNotifiedDateTime() != null) {
-            throw new PartiesNotifiedBadRequestException(PARTIES_NOTIFIED_ALREADY_SET);
-        } else {
-            hearingResponseEntity.setPartiesNotifiedDateTime(LocalDateTime.now());
-            hearingResponseEntity.setServiceData(partiesNotified.getServiceData());
-            hearingResponseRepository.save(hearingResponseEntity);
-            HearingEntity hearingEntity = hearingResponseEntity.getHearing();
-
-            HearingStatusAuditContext hearingStatusAuditContext =
-                HearingStatusAuditContext.builder()
-                    .hearingEntity(hearingEntity)
-                    .hearingEvent(PUT_PARTIES_NOTIFIED)
-                    .source(clientS2SToken)
-                    .target(HMC)
-                    .useCurrentTimestamp(false)
-                    .build();
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
+            if (null == hearingResponseEntity) {
+                throw new PartiesNotifiedNotFoundException(PARTIES_NOTIFIED_NO_SUCH_RESPONSE);
+            } else if (hearingResponseEntity.getPartiesNotifiedDateTime() != null) {
+                throw new PartiesNotifiedBadRequestException(PARTIES_NOTIFIED_ALREADY_SET);
+            } else {
+                hearingResponseEntity.setPartiesNotifiedDateTime(LocalDateTime.now());
+                hearingResponseEntity.setServiceData(partiesNotified.getServiceData());
+                hearingResponseRepository.save(hearingResponseEntity);
+                HearingEntity hearingEntity = hearingResponseEntity.getHearing();
+                HearingStatusAuditContext hearingStatusAuditContext =
+                    HearingStatusAuditContext.builder()
+                        .hearingEntity(hearingEntity)
+                        .hearingEvent(PUT_PARTIES_NOTIFIED)
+                        .source(clientS2SToken)
+                        .target(HMC)
+                        .useCurrentTimestamp(false)
+                        .build();
+                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
+            }
+        } catch (jakarta.persistence.NonUniqueResultException
+                 | org.hibernate.NonUniqueResultException
+                 | IncorrectResultSizeDataAccessException e) {
+            log.error(
+                "Hearing id {} has multiple responses with requestVersion {}, receivedDateTime {}",
+                hearingId, requestVersion, receivedDateTime);
+            throw new PartiesNotifiedBadRequestException(NON_UNIQUE_HEARING_RESPONSE);
         }
     }
 
