@@ -41,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
@@ -92,8 +93,6 @@ class HearingActualsServiceTest {
                 hearingActualsValidator,
                 hearingStatusAuditService
             );
-        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
     }
 
     @Nested
@@ -154,8 +153,6 @@ class HearingActualsServiceTest {
                     hearingActualsValidator,
                     hearingStatusAuditService
                 );
-            hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
         }
 
         @Test
@@ -165,6 +162,8 @@ class HearingActualsServiceTest {
             assertDoesNotThrow(() -> {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
             });
+            verify(hearingStatusAuditService, times(1))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test
@@ -174,6 +173,8 @@ class HearingActualsServiceTest {
                                                            TestingUtil.hearingActual());
             });
             assertEquals("Invalid hearing Id", exception.getMessage());
+            verify(hearingStatusAuditService, times(0))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test
@@ -182,6 +183,8 @@ class HearingActualsServiceTest {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, TestingUtil.hearingActual());
             });
             assertEquals("001 No such id: 2000000000", exception.getMessage());
+            verify(hearingStatusAuditService, times(0))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test
@@ -295,6 +298,8 @@ class HearingActualsServiceTest {
             assertDoesNotThrow(() -> {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
             });
+            verify(hearingStatusAuditService, times(1))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
         @Test

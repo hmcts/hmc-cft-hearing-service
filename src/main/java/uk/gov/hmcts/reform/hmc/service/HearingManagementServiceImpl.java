@@ -260,11 +260,16 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         savePartyRelationshipDetails(hearingRequest, hearingEntity);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
 
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                                        UPDATE_HEARING_REQUEST,
-                                                                        String.valueOf(HttpStatus.OK.value()),
-                                                                        clientS2SToken, HMC, null);
-
+        HearingStatusAuditContext hearingStatusAuditContext =
+            HearingStatusAuditContext.builder()
+                .hearingEntity(hearingEntity)
+                .hearingEvent(UPDATE_HEARING_REQUEST)
+                .httpStatus(String.valueOf(HttpStatus.OK.value()))
+                .source(clientS2SToken)
+                .target(HMC)
+                .useCurrentTimestamp(false)
+                .build();
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
         Listing listing = getListing(hearingRequest, entities);
         sendRequestToHmiAndQueue(saveHearingResponseDetails.getHearingRequestId(), AMEND_HEARING, hearingRequest,
             getCaseDetails(saveHearingResponseDetails.getHearingRequestId(), hearingRequest), listing, deploymentId);
@@ -288,15 +293,16 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken, true);
 
-        HearingStatusAuditContext.HearingStatusAuditContextBuilder hearingStatusAuditContext =
+        HearingStatusAuditContext hearingStatusAuditContext =
             HearingStatusAuditContext.builder()
-            .hearingEntity(hearingEntity)
-            .hearingEvent(DELETE_HEARING_REQUEST)
-            .httpStatus(String.valueOf(HttpStatus.OK.value()))
-            .source(clientS2SToken)
-            .target(HMC)
-            .useCurrentTimestamp(true);
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext.build());
+                .hearingEntity(hearingEntity)
+                .hearingEvent(DELETE_HEARING_REQUEST)
+                .httpStatus(String.valueOf(HttpStatus.OK.value()))
+                .source(clientS2SToken)
+                .target(HMC)
+                .useCurrentTimestamp(true)
+                .build();
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
         HearingResponse saveHearingResponseDetails = getSaveHearingResponseDetails(hearingEntity);
         generatePendingRequest(hearingId, DELETE_HEARING, existingHearing.getDeploymentId());
         return saveHearingResponseDetails;
@@ -338,15 +344,16 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
         auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken, true);
         HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
-        HearingStatusAuditContext.HearingStatusAuditContextBuilder hearingStatusAuditContext =
+        HearingStatusAuditContext hearingStatusAuditContext =
             HearingStatusAuditContext.builder()
                 .hearingEntity(hearingEntity)
                 .hearingEvent(POST_HEARING_ACTUALS_COMPLETION)
                 .httpStatus(String.valueOf(HttpStatus.OK.value()))
                 .source(clientS2SToken)
                 .target(HMC)
-                .useCurrentTimestamp(true);
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext.build());
+                .useCurrentTimestamp(true)
+                .build();
+        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
         messageSenderToTopicConfiguration
             .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                          hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
@@ -392,7 +399,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
             JsonNode otherInfo = new ObjectMapper().readTree("{\"" + REQUEST_VERSION_UPDATE + "\":" + " \""
                                                                  + versionMessage + "\"}");
             if (existingRequestVersion > 0) {
-                HearingStatusAuditContext.HearingStatusAuditContextBuilder hearingStatusAuditContext =
+                HearingStatusAuditContext hearingStatusAuditContext =
                     HearingStatusAuditContext.builder()
                         .hearingEntity(hearingEntity)
                         .hearingEvent(REQUEST_VERSION_UPDATE)
@@ -400,15 +407,20 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                         .source(clientS2SToken)
                         .target(HMC)
                         .otherInfo(otherInfo)
-                        .useCurrentTimestamp(useNow);
-                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(
-                    hearingStatusAuditContext.build());
+                        .useCurrentTimestamp(useNow)
+                        .build();
+                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
             } else {
-                hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(hearingEntity,
-                                                                                REQUEST_VERSION_UPDATE,
-                                                                                String.valueOf(HttpStatus.OK.value()),
-                                                                                clientS2SToken, HMC, null,
-                                                                                otherInfo);
+                HearingStatusAuditContext hearingStatusAuditContext =
+                    HearingStatusAuditContext.builder()
+                        .hearingEntity(hearingEntity)
+                        .hearingEvent(REQUEST_VERSION_UPDATE)
+                        .httpStatus(String.valueOf(HttpStatus.OK.value()))
+                        .source(clientS2SToken)
+                        .target(HMC)
+                        .otherInfo(otherInfo)
+                        .build();
+                hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(hearingStatusAuditContext);
             }
         } catch (JsonProcessingException e) {
             log.error("Unable to audit requestVersion update: {}", versionMessage);
@@ -485,9 +497,15 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         auditChangeInRequestVersion(savedEntity, 0, clientS2SToken, false);
 
         savePartyRelationshipDetails(createHearingRequest, savedEntity);
-        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(savedEntity,
-                                                         CREATE_HEARING_REQUEST, String.valueOf(HttpStatus.OK.value()),
-                                                         clientS2SToken, HMC, null);
+        HearingStatusAuditContext hearingStatusAuditContext =
+            HearingStatusAuditContext.builder()
+            .hearingEntity(savedEntity)
+            .hearingEvent(CREATE_HEARING_REQUEST)
+            .httpStatus(String.valueOf(HttpStatus.OK.value()))
+            .source(clientS2SToken)
+            .target(HMC)
+            .build();
+        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(hearingStatusAuditContext);
         return getSaveHearingResponseDetails(savedEntity);
     }
 
