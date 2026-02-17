@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.model.SupportRequest;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
-import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,9 +56,6 @@ public class ManageExceptionsServiceIT extends BaseTest {
 
     @Autowired
     private HearingRepository hearingRepository;
-
-    @Autowired
-    private HearingStatusAuditService hearingStatusAuditService;
 
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
     private static final String INSERT_HEARINGS = "classpath:sql/get-hearings-ManageSupportRequest.sql";
