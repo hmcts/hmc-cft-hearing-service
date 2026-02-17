@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
@@ -29,7 +30,6 @@ import uk.gov.hmcts.reform.hmc.model.RequestDetails;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
-import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.util.ArrayList;
@@ -62,9 +62,6 @@ class HearingManagementControllerTest {
     private ApplicationParams applicationParams;
 
     @Mock
-    HearingStatusAuditService hearingStatusAuditService;
-
-    @Mock
     SecurityUtils securityUtils;
 
     private HearingManagementController controller;
@@ -75,9 +72,6 @@ class HearingManagementControllerTest {
                                                      accessControlService,
                                                      applicationParams,
                                                      securityUtils);
-
-        hearingStatusAuditService.saveAuditTriageDetailsWithCreatedDate(any(),any(),any(),any(),any(),any(),any());
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any(),any());
     }
 
     @Nested
