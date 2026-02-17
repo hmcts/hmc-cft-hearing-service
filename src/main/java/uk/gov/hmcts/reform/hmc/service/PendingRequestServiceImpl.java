@@ -37,7 +37,6 @@ public class PendingRequestServiceImpl implements PendingRequestService {
     private PendingRequestEntity newPendingRequestEntity(JsonNode message, Long hearingId, String messageType,
                                                          String deploymentId) {
         PendingRequestEntity pendingRequest = new PendingRequestEntity();
-        pendingRequest.setId(0L);
         pendingRequest.setHearingId(hearingId);
         pendingRequest.setMessage(message.toString());
         pendingRequest.setMessageType(messageType);
