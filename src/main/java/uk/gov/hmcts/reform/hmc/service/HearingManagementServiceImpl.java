@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.helper.ElasticSearchQuery;
+import uk.gov.hmcts.reform.hmc.helper.ElasticSearchQueryPaginated;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingsResponseMapper;
 import uk.gov.hmcts.reform.hmc.helper.HearingMapper;
@@ -377,11 +378,36 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         return caseSearchResult.getCases();
     }
 
+    @Override
+    public List<DataStoreCaseDetails> getCaseSearchResultsPaginated(Integer pageSize,
+                                                                    Integer offset,
+                                                                    List<String> caseReferences,
+                                                                    String status,
+                                                                    String caseTypeId) {
+        String elasticSearchQuery = createSearchQueryPaginated(pageSize, offset, caseReferences);
+        log.info("Searching for cases with ccdCaseRefs: {}, status: {}, caseTypeId: {}, pageSize: {}, offset: {}",
+                 caseReferences, status, caseTypeId, pageSize, offset);
+        CaseSearchResult caseSearchResult =
+            dataStoreRepository.findAllCasesByCaseIdUsingExternalApi(caseTypeId, elasticSearchQuery);
+
+        return caseSearchResult.getCases();
+    }
+
     private String createSearchQuery(List<String> ccdCaseRefs) {
         ElasticSearchQuery elasticSearchQuery = ElasticSearchQuery.builder()
             .caseRefs(ccdCaseRefs)
             .build();
         return elasticSearchQuery.getQuery();
+    }
+
+    private String createSearchQueryPaginated(Integer pageSize, Integer offset, List<String> caseReferences) {
+        ElasticSearchQueryPaginated elasticSearchQueryPaginated =
+            ElasticSearchQueryPaginated.builder()
+                .pageSize(pageSize)
+                .offset(offset)
+                .caseReferences(caseReferences)
+                .build();
+        return elasticSearchQueryPaginated.getQuery();
     }
 
     private void auditChangeInRequestVersion(HearingEntity hearingEntity, int existingRequestVersion,
