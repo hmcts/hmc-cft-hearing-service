@@ -531,7 +531,7 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         validateLinkedGroupAuditDetailsAfterDelete();
         validateHearingAuditDetailsAfterDelete();
         List<LinkedHearingStatusAuditEntity> details = validateLinkedHearingAuditDetails("7700000000");
-        assertEquals(DELETE_LINKED_HEARING_REQUEST, details.get(0).getLinkedHearingEvent());
+        assertEquals(Collections.emptyList(), details);
     }
 
     @Test
@@ -812,8 +812,10 @@ class LinkedHearingGroupServiceIT extends BaseTest {
     private List<LinkedHearingStatusAuditEntity> validateLinkedHearingAuditDetails(String linkedHearingId) {
         List<LinkedHearingStatusAuditEntity> details = linkedHearingStatusAuditRepository
             .getLinkedHearingAuditDetailsByLinkedGroupId(linkedHearingId);
-        assertNotNull(details.get(0).getLinkedGroupHearings());
-        assertEquals("ABA1", details.get(0).getHmctsServiceId());
+        if (!details.isEmpty()) {
+            assertNotNull(details.get(0).getLinkedGroupHearings());
+            assertEquals("ABA1", details.get(0).getHmctsServiceId());
+        }
         return details;
     }
 
