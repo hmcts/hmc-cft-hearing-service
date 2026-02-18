@@ -431,16 +431,18 @@ public class LinkedHearingValidator {
         linkedGroupDetails.setRequestDateTime(LocalDateTime.now());
         linkedGroupDetails.setLinkedGroupLatestVersion(1L);
         LinkedGroupDetails linkedGroupDetailsSaved = linkedGroupDetailsRepository.save(linkedGroupDetails);
+        // The following existsById() call is required to prevent foreign key violation errors
+        // when updating the hearings in the group request with the new linked group
+        linkedGroupDetailsRepository.existsById(linkedGroupDetailsSaved.getLinkedGroupId());
 
         hearingLinkGroupRequest.getHearingsInGroup()
             .forEach(linkHearingDetails -> {
-                Optional<HearingEntity> hearing = hearingRepository
-                    .findById(Long.valueOf(linkHearingDetails.getHearingId()));
-                if (hearing.isPresent()) {
-                    HearingEntity hearingToSave = hearing.get();
-                    hearingToSave.setLinkedGroupDetails(linkedGroupDetailsSaved);
-                    hearingToSave.setLinkedOrder(getHearingOrder(linkHearingDetails,hearingLinkGroupRequest));
-                    hearingRepository.save(hearingToSave);
+                Long hearingId = Long.valueOf(linkHearingDetails.getHearingId());
+                if (hearingRepository.existsById(hearingId)) {
+                    Long hearingOrder = getHearingOrder(linkHearingDetails, hearingLinkGroupRequest);
+                    hearingRepository.updateLinkedGroupDetailsAndOrder(hearingId,
+                                                                       linkedGroupDetailsSaved,
+                                                                       hearingOrder);
                 }
             });
         return linkedGroupDetailsSaved;

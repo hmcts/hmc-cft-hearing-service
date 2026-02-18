@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.hmc.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
+import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 
 import java.util.List;
 
@@ -25,4 +27,12 @@ public interface HearingRepository extends CrudRepository<HearingEntity, Long> {
     @Query("FROM HearingEntity he WHERE id in :hearingIds")
     List<HearingEntity> getHearings(List<Long> hearingIds);
 
+    @Modifying
+    @Query("UPDATE HearingEntity h "
+        + "SET linkedGroupDetails = :linkedGroupDetails, linkedOrder = :linkedOrder WHERE h.id = :hearingId")
+    void updateLinkedGroupDetailsAndOrder(Long hearingId, LinkedGroupDetails linkedGroupDetails, Long linkedOrder);
+
+    @Modifying
+    @Query("UPDATE HearingEntity h SET linkedGroupDetails = null, linkedOrder = null WHERE h.id = :hearingId")
+    void removeLinkedGroupDetailsAndOrder(Long hearingId);
 }

@@ -7,9 +7,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
@@ -38,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -46,6 +46,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -55,11 +57,11 @@ import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.HEARIN
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_GROUP_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_LINKED_GROUP_REQUEST_ID_DETAILS;
 
+@ExtendWith(MockitoExtension.class)
 class LinkedHearingValidatorTest {
 
     private static final Logger logger = LoggerFactory.getLogger(LinkedHearingValidatorTest.class);
 
-    @InjectMocks
     private LinkedHearingValidator linkedHearingValidator;
 
     @InjectMocks
@@ -75,8 +77,7 @@ class LinkedHearingValidatorTest {
     private LinkedHearingDetailsRepository linkedHearingDetailsRepository;
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setUp() {
         linkedHearingValidator =
                 new LinkedHearingValidator(hearingIdValidator,
                         hearingRepository,
@@ -128,7 +129,6 @@ class LinkedHearingValidatorTest {
         String requestName = "Special request";
         final Long hearingId2 = 2000000025L;
         final Long hearingId3 = 2000000026L;
-        when(hearingRepository.findByRequestId(requestId)).thenReturn(null);
         LinkedGroupDetails groupDetails = generateLinkedGroupDetails(1L, requestId,
                 requestName, LinkType.ORDERED.label, "ACTIVE", "Reason1",
                 "Comments 1", LocalDateTime.now().minusDays(1));
@@ -143,14 +143,11 @@ class LinkedHearingValidatorTest {
         assertFalse(errorMessages.isEmpty());
         assertEquals(1, errorMessages.size());
         assertEquals(INVALID_DELETE_HEARING_GROUP_HEARING_STATUS.replace("%s", hearingId3.toString()),
-                errorMessages.get(0));
+                errorMessages.getFirst());
     }
 
     @Test
     void shouldSucceedAsObsoleteDetailsAreForDeleting() {
-        final String requestId = "9176";
-        final String requestName = "Special request";
-
         LinkedGroupDetails groupDetails = generateLinkedGroupDetails(1L, "G112",
                 "Group 112", LinkType.ORDERED.label, "ACTIVE", "Reason1",
                 "Comments 1", LocalDateTime.now().minusDays(1));
@@ -162,19 +159,12 @@ class LinkedHearingValidatorTest {
                 groupDetails, 3L);
         listLinkedHearingDetails.add(hearing3);
 
-        List<HearingEntity> listObsolete = new ArrayList<>();
-        listObsolete.add(listLinkedHearingDetails.get(0));
-
-        when(hearingRepository.findByRequestId(requestId)).thenReturn(listObsolete);
-
         List<String> errorMessages = linkedHearingValidator.validateObsoleteLinkedHearings(listLinkedHearingDetails);
         assertTrue(errorMessages.isEmpty());
     }
 
     @Test
     void shouldExtractObsoleteDetailsForDeleting() {
-        final String requestId = "89176";
-        final String requestName = "compare and extract obsolete details";
         LinkedGroupDetails groupDetails = generateLinkedGroupDetails(1L, "G112",
                 "Group 112", LinkType.ORDERED.label, "ACTIVE", "Reason1",
                 "Comments 1", LocalDateTime.now().minusDays(1));
@@ -204,7 +194,6 @@ class LinkedHearingValidatorTest {
     @Test
     void shouldFailWithObsoleteDetailsNotValidForUnlinking() {
         final String requestId = "78176";
-        final String requestName = "Find obsolete details ARE NOT valid for unlinking";
         LinkedGroupDetails groupDetails = generateLinkedGroupDetails(1L, "G112",
                 "Group 112", LinkType.ORDERED.label, "ACTIVE", "Reason1",
                 "Comments 1", LocalDateTime.now().minusDays(1));
@@ -214,15 +203,14 @@ class LinkedHearingValidatorTest {
         List<LinkHearingDetails> payloadList = new ArrayList<>();
         payloadList.add(new LinkHearingDetails(
                 "2000000007",
-                existingInDataList.get(0).getLinkedOrder().intValue()));
+                existingInDataList.getFirst().getLinkedOrder().intValue()));
         payloadList.add(new LinkHearingDetails(
                 "2000000008",
-                existingInDataList.get(0).getLinkedOrder().intValue()));
+                existingInDataList.getFirst().getLinkedOrder().intValue()));
         HearingEntity hearing9 = generateHearing(2000000009L, PutHearingStatus.LISTED.name(), groupDetails, 2L);
         existingInDataList.add(hearing9);
 
         when(hearingRepository.findByRequestId(requestId)).thenReturn(existingInDataList);
-        when(hearingRepository.findByRequestId(any())).thenReturn(existingInDataList);
 
         Exception exception = assertThrows(LinkedHearingNotValidForUnlinkingException.class, () ->
                 linkedHearingValidator.validateLinkedHearingsForUpdate(requestId, payloadList));
@@ -238,17 +226,12 @@ class LinkedHearingValidatorTest {
     @Test
     void shouldFailWithObsoleteDetailsInvalidForUnlinkingBecauseHearingInPast() {
         final String requestId = "181896";
-        final String requestName = "Find obsolete details ARE NOT valid for unlinking";
         LinkedGroupDetails groupDetails = generateLinkedGroupDetails(1L, "G112",
                 "Group 112", LinkType.ORDERED.label, "ACTIVE", "Reason1",
                 "Comments 1", LocalDateTime.now().minusDays(1));
         HearingEntity hearing9 = generateHearing(2000000009L, PutHearingStatus.LISTED.name(),
                 groupDetails, 1L);
-        HearingEntity hearing8 = generateHearing(2000000008L, PutHearingStatus.LISTED.name(),
-                groupDetails, 2L);
-        HearingEntity hearing7 = generateHearing(2000000007L, PutHearingStatus.LISTED.name(),
-                groupDetails, 3L);
-        hearing9.setHearingResponses(Arrays.asList(
+        hearing9.setHearingResponses(List.of(
                 generateHearingResponseEntityWithHearingDays(1, LocalDateTime.now().minusDays(7),
                         List.of(LocalDateTime.now().minusMonths(4)
                         ))));
@@ -275,13 +258,12 @@ class LinkedHearingValidatorTest {
     @Test
     void shouldPassWithObsoleteDetailsValidForUnlinking() {
         final String requestId = "181896";
-        final String requestName = "Find obsolete details ARE valid for unlinking";
         LinkedGroupDetails groupDetails = generateLinkedGroupDetails(1L, "G112",
                 "Group 112", LinkType.ORDERED.label, "ACTIVE", "Reason1",
                 "Comments 1", LocalDateTime.now().minusDays(1));
         HearingEntity hearing9 = generateHearing(20000000009L, PutHearingStatus.LISTED.name(),
                 groupDetails, 2L);
-        hearing9.setHearingResponses(Arrays.asList(
+        hearing9.setHearingResponses(List.of(
                 generateHearingResponseEntityWithHearingDays(1, LocalDateTime.now().plusDays(7),
                         List.of(LocalDateTime.now().plusMonths(4)
                         ))));
@@ -292,10 +274,10 @@ class LinkedHearingValidatorTest {
         List<LinkHearingDetails> payloadList = new ArrayList<>();
         payloadList.add(new LinkHearingDetails(
                 "7",
-                existingInDataList.get(0).getLinkedOrder().intValue()));
+                existingInDataList.getFirst().getLinkedOrder().intValue()));
         payloadList.add(new LinkHearingDetails(
                 "8",
-                existingInDataList.get(0).getLinkedOrder().intValue()));
+                existingInDataList.getFirst().getLinkedOrder().intValue()));
         existingInDataList.add(hearing9);
 
         when(hearingRepository.findByRequestId(requestId)).thenReturn(existingInDataList);
@@ -317,22 +299,25 @@ class LinkedHearingValidatorTest {
         hearingLinkGroupRequest.setGroupDetails(generateGroupDetails(LinkType.SAME_SLOT));
         hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
+        given(linkedGroupDetailsRepository.save(any(LinkedGroupDetails.class)))
+            .willReturn(TestingUtil.linkedGroupDetailsEntity());
+        when(linkedGroupDetailsRepository.existsById(1L)).thenReturn(true);
+
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-        when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(
-            TestingUtil.hearingEntityWithLinkDetails()));
-
         when(hearingRepository.existsById(2000000002L)).thenReturn(true);
-        when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(
-            TestingUtil.hearingEntityWithLinkDetails()));
-
-        given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntity());
-        given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
 
         linkedHearingValidator.updateHearingWithLinkGroup(hearingLinkGroupRequest);
-        verify(hearingRepository, times(1)).findById(2000000000L);
-        verify(hearingRepository, times(1)).findById(2000000002L);
-        verify(hearingRepository, times(2)).save(any());
-        verify(linkedGroupDetailsRepository, times(1)).save(any());
+
+        verify(linkedGroupDetailsRepository).save(any(LinkedGroupDetails.class));
+        verify(linkedGroupDetailsRepository).existsById(1L);
+
+        verify(hearingRepository).existsById(2000000000L);
+        verify(hearingRepository).existsById(2000000002L);
+        verify(hearingRepository)
+            .updateLinkedGroupDetailsAndOrder(eq(2000000000L), any(LinkedGroupDetails.class), eq(1L));
+        verify(hearingRepository)
+            .updateLinkedGroupDetailsAndOrder(eq(2000000002L), any(LinkedGroupDetails.class), eq(2L));
+
     }
 
     @Test
@@ -347,24 +332,25 @@ class LinkedHearingValidatorTest {
         hearingLinkGroupRequest.setGroupDetails(generateGroupDetails(LinkType.SAME_SLOT));
         hearingLinkGroupRequest.setHearingsInGroup(Arrays.asList(hearingInGroup, hearingInGroup1));
 
+        given(linkedGroupDetailsRepository.save(any(LinkedGroupDetails.class)))
+            .willReturn(TestingUtil.linkedGroupDetailsEntity());
+        when(linkedGroupDetailsRepository.existsById(1L)).thenReturn(true);
+
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-        when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(
-            TestingUtil.hearingEntityWithLinkDetails()));
-
         when(hearingRepository.existsById(2000000002L)).thenReturn(true);
-        when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(
-            TestingUtil.hearingEntityWithLinkDetails()));
-
-        given(hearingRepository.save(any())).willReturn(TestingUtil.hearingEntity());
-        given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
 
         linkedHearingValidator.updateHearingWithLinkGroup(hearingLinkGroupRequest);
-        verify(hearingRepository, times(1)).findById(2000000000L);
-        verify(hearingRepository, times(1)).findById(2000000002L);
-        verify(hearingRepository, times(2)).save(any());
-        verify(linkedGroupDetailsRepository, times(1)).save(any());
-    }
 
+        verify(linkedGroupDetailsRepository).save(any(LinkedGroupDetails.class));
+        verify(linkedGroupDetailsRepository).existsById(1L);
+
+        verify(hearingRepository).existsById(2000000000L);
+        verify(hearingRepository).existsById(2000000002L);
+        verify(hearingRepository)
+            .updateLinkedGroupDetailsAndOrder(eq(2000000000L), any(LinkedGroupDetails.class), isNull());
+        verify(hearingRepository)
+            .updateLinkedGroupDetailsAndOrder(eq(2000000002L), any(LinkedGroupDetails.class), isNull());
+    }
 
     @Nested
     @DisplayName("validateLinkedHearingGroup")
@@ -387,9 +373,9 @@ class LinkedHearingValidatorTest {
 
             when(hearingRepository.existsById(2000000000L)).thenReturn(false);
 
-            Exception exception = assertThrows(HearingNotFoundException.class, () -> {
-                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-            });
+            Exception exception = assertThrows(HearingNotFoundException.class, () ->
+                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+            );
             assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
         }
 
@@ -411,9 +397,9 @@ class LinkedHearingValidatorTest {
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(hearingLinkGroupRequest);
             logger.info(json);
-            Exception exception = assertThrows(BadRequestException.class, () -> {
-                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-            });
+            Exception exception = assertThrows(BadRequestException.class, () ->
+                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+            );
             assertEquals("001 Insufficient requestIds", exception.getMessage());
         }
 
@@ -438,16 +424,16 @@ class LinkedHearingValidatorTest {
                 1,
                 false,
                 LocalDateTime.now(),
-                Arrays.asList(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now())),
+                List.of(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now())),
                 null
             );
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
-            Exception exception = assertThrows(BadRequestException.class, () -> {
-                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-            });
+            Exception exception = assertThrows(BadRequestException.class, () ->
+                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+            );
             assertEquals("002 hearing request isLinked is False", exception.getMessage());
         }
 
@@ -456,9 +442,6 @@ class LinkedHearingValidatorTest {
             LinkedGroupDetails groupDetails1 = generateLinkedGroupDetails(200L, "G112",
                     "Group 112", LinkType.SAME_SLOT.label, "ACTIVE", "Reason1",
                     "Comments 1", LocalDateTime.now().minusDays(1));
-            LinkedGroupDetails groupDetailsAlternate = generateLinkedGroupDetails(202L, "G114",
-                    "Group 114", LinkType.SAME_SLOT.label, "ACTIVE", "Reason2",
-                    "Comments 2", LocalDateTime.now().minusDays(1));
 
             HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
@@ -466,13 +449,11 @@ class LinkedHearingValidatorTest {
                 1,
                 true,
                 LocalDateTime.now(),
-                Arrays.asList(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now())),
+                List.of(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now())),
                 groupDetails1
             );
 
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
-            HearingEntity hearing1 = generateHearing(2000000000L, PutHearingStatus.HEARING_REQUESTED.name(),
-                    groupDetails1, 1L);
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
@@ -490,9 +471,9 @@ class LinkedHearingValidatorTest {
                 )
             );
 
-            Exception exception = assertThrows(BadRequestException.class, () -> {
-                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-            });
+            Exception exception = assertThrows(BadRequestException.class, () ->
+                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+            );
             assertEquals("003 hearing request already in a group", exception.getMessage());
         }
 
@@ -517,16 +498,16 @@ class LinkedHearingValidatorTest {
                 1,
                 true,
                 LocalDateTime.now(),
-                Arrays.asList(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now())),
+                List.of(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now())),
                 null
             );
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
-            Exception exception = assertThrows(BadRequestException.class, () -> {
-                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-            });
+            Exception exception = assertThrows(BadRequestException.class, () ->
+                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+            );
             assertEquals("004 Invalid state for hearing request 2000000000", exception.getMessage());
         }
 
@@ -571,15 +552,15 @@ class LinkedHearingValidatorTest {
                 null
             );
             // set the hearing window to prior to current date - invalid
-            hearingEntity.getLatestHearingResponse().get().getHearingDayDetails().get(0)
+            hearingEntity.getLatestHearingResponse().get().getHearingDayDetails().getFirst()
                     .setStartDateTime(LocalDateTime.now().minusDays(2));
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
-            Exception exception = assertThrows(BadRequestException.class, () -> {
-                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-            });
+            Exception exception = assertThrows(BadRequestException.class, () ->
+                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+            );
             assertEquals("004 Invalid state for hearing request 2000000000", exception.getMessage());
         }
 
@@ -604,16 +585,16 @@ class LinkedHearingValidatorTest {
                 1,
                 true,
                 LocalDateTime.now().plusDays(1),
-                Arrays.asList(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
+                List.of(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
                 null
             );
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
-            Exception exception = assertThrows(BadRequestException.class, () -> {
-                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-            });
+            Exception exception = assertThrows(BadRequestException.class, () ->
+                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+            );
             assertEquals("005 Hearing Order is not unique", exception.getMessage());
         }
 
@@ -639,16 +620,16 @@ class LinkedHearingValidatorTest {
                 1,
                 true,
                 LocalDateTime.now().plusDays(1),
-                Arrays.asList(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
+                List.of(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
                 null
             );
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
-            Exception exception = assertThrows(BadRequestException.class, () -> {
-                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-            });
+            Exception exception = assertThrows(BadRequestException.class, () ->
+                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+            );
             assertEquals("Hearing order must exist and be greater than 0", exception.getMessage());
         }
 
@@ -673,16 +654,16 @@ class LinkedHearingValidatorTest {
                 1,
                 true,
                 LocalDateTime.now().plusDays(1),
-                Arrays.asList(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
+                List.of(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
                 null
             );
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
-            Exception exception = assertThrows(BadRequestException.class, () -> {
-                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-            });
+            Exception exception = assertThrows(BadRequestException.class, () ->
+                linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+            );
             assertTrue(exception.getMessage().startsWith("Invalid value"));
             assertTrue(exception.getMessage().contains("for GroupLinkType"));
         }
@@ -699,7 +680,7 @@ class LinkedHearingValidatorTest {
                 1,
                 true,
                 LocalDateTime.now().plusDays(1),
-                Arrays.asList(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
+                List.of(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
                 null
             );
 
@@ -734,7 +715,7 @@ class LinkedHearingValidatorTest {
                 1,
                 true,
                 LocalDateTime.now().plusDays(1),
-                Arrays.asList(generateHearingDayDetailsEntity(2000000000L, LocalDateTime.now().plusDays(1))),
+                List.of(generateHearingDayDetailsEntity(2000000000L, LocalDateTime.now().plusDays(1))),
                 null
             );
 
@@ -810,16 +791,16 @@ class LinkedHearingValidatorTest {
                 1,
                 true,
                 LocalDateTime.now().plusDays(1),
-                Arrays.asList(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
+                List.of(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
                 null
         );
 
         when(hearingRepository.existsById(any())).thenReturn(true);
         when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
 
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-        });
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+        );
         assertTrue(exception.getMessage().startsWith("Invalid value"));
         assertTrue(exception.getMessage().contains("for GroupLinkType"));
     }
@@ -839,7 +820,7 @@ class LinkedHearingValidatorTest {
                 1,
                 true,
                 LocalDateTime.now().plusDays(1),
-                Arrays.asList(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
+                List.of(generateHearingDayDetailsEntity(2000000002L, LocalDateTime.now().plusDays(1))),
                 null
         );
 
@@ -879,9 +860,9 @@ class LinkedHearingValidatorTest {
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(hearingLinkGroupRequest);
         logger.info(json);
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);;
-        });
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+        );
         assertEquals("001 Insufficient requestIds", exception.getMessage());
     }
 
@@ -906,16 +887,16 @@ class LinkedHearingValidatorTest {
                 1,
                 true,
                 LocalDateTime.now(),
-                Arrays.asList(generateHearingDayDetailsEntity(1L, LocalDateTime.now())),
+                List.of(generateHearingDayDetailsEntity(1L, LocalDateTime.now())),
                 null
         );
 
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
 
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-        });
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+        );
         assertEquals("004 Invalid state for hearing request 2000000000", exception.getMessage());
     }
 
@@ -940,16 +921,16 @@ class LinkedHearingValidatorTest {
                 1,
                 false,
                 LocalDateTime.now(),
-                Arrays.asList(generateHearingDayDetailsEntity(1L, LocalDateTime.now().plusDays(2))),
+                List.of(generateHearingDayDetailsEntity(1L, LocalDateTime.now().plusDays(2))),
                 null
         );
 
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
         when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
 
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-        });
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+        );
         assertEquals("002 hearing request isLinked is False", exception.getMessage());
     }
 
@@ -975,16 +956,16 @@ class LinkedHearingValidatorTest {
                 1,
                 true,
                 LocalDateTime.now().plusDays(2),
-                Arrays.asList(generateHearingDayDetailsEntity(1L, LocalDateTime.now().plusDays(2))),
+                List.of(generateHearingDayDetailsEntity(1L, LocalDateTime.now().plusDays(2))),
                 null
         );
 
         when(hearingRepository.existsById(any())).thenReturn(true);
         when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
 
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-        });
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+        );
         assertEquals("Hearing order must exist and be greater than 0", exception.getMessage());
     }
 
@@ -995,12 +976,12 @@ class LinkedHearingValidatorTest {
         hearing.setId(2000000000L);
         hearing.setStatus("NOTFORDELETE");
         hearing.setIsLinkedFlag(true);
-        hearing.setHearingResponses(Arrays.asList(
+        hearing.setHearingResponses(List.of(
                 generateHearingResponseEntityWithHearingDays(1, LocalDateTime.now().plusDays(7),
                         List.of(LocalDateTime.now().plusMonths(4)
                 ))));
 
-        List<HearingEntity> hearings = Arrays.asList(hearing);
+        List<HearingEntity> hearings = List.of(hearing);
         Exception exception = assertThrows(BadRequestException.class, () ->
                 linkedHearingValidator.validateUnlinkingHearingsStatus(hearings));
         assertEquals("008 Invalid state for unlinking hearing request 2000000000",
@@ -1041,10 +1022,8 @@ class LinkedHearingValidatorTest {
 
     @Test
     void shouldFailWithHearingOrderIsNotUnique() {
-        GroupDetails groupDetails = generateGroupDetails("comment", "name",
+        GroupDetails groupDetails = generateGroupDetails("comment", "name", LinkType.ORDERED.label, "reason");
 
-                LinkType.ORDERED.label, "reason"
-        );
         LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
         LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
         HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
@@ -1055,22 +1034,9 @@ class LinkedHearingValidatorTest {
                 )
         );
 
-        HearingEntity hearingEntity = generateHearingEntity(
-                2000000000L,
-                HEARING_REQUESTED.name(),
-                1,
-                true,
-                LocalDateTime.now().plusDays(1),
-                Arrays.asList(generateHearingDayDetailsEntity(1L, LocalDateTime.now().plusDays(2))),
-                null
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            linkedHearingValidator.checkHearingOrderIsUnique(hearingLinkGroupRequest, hearingDetails1)
         );
-
-        when(hearingRepository.existsById(any())).thenReturn(true);
-        when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
-
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            linkedHearingValidator.checkHearingOrderIsUnique(hearingLinkGroupRequest, hearingDetails1);
-        });
         assertEquals("005 Hearing Order is not unique", exception.getMessage());
     }
 
@@ -1086,7 +1052,7 @@ class LinkedHearingValidatorTest {
                         List.of(LocalDateTime.now().plusDays(7),
                                 LocalDateTime.now().minusDays(8))
                 )));
-        List<HearingEntity> hearings =  Arrays.asList(hearing);
+        List<HearingEntity> hearings = List.of(hearing);
         Exception exception = assertThrows(BadRequestException.class, () ->
                 linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(hearings));
         assertEquals("008 Invalid state for unlinking hearing request 2000000000",
@@ -1105,7 +1071,7 @@ class LinkedHearingValidatorTest {
                         List.of(LocalDateTime.now().plusDays(7),
                                 LocalDateTime.now().minusDays(8))
                 )));
-        List<HearingEntity> hearings = Arrays.asList(hearing);
+        List<HearingEntity> hearings = List.of(hearing);
         Exception exception = assertThrows(BadRequestException.class, () ->
                 linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(hearings));
         assertEquals("008 Invalid state for unlinking hearing request 2000000000",
@@ -1136,16 +1102,6 @@ class LinkedHearingValidatorTest {
                 "comments",
                 LocalDateTime.now().plusDays(4)
         );
-        LinkedGroupDetails groupDetailsAlternate = generateLinkedGroupDetails(
-                202L,
-                "requestId2",
-                "request name2",
-                "Same Slot",
-                "status",
-                "reason",
-                "comments",
-                LocalDateTime.now().plusDays(2)
-        );
 
         HearingEntity hearingEntity = generateHearingEntity(
                 2000000000L,
@@ -1153,7 +1109,7 @@ class LinkedHearingValidatorTest {
                 1,
                 true,
                 LocalDateTime.now(),
-                Arrays.asList(generateHearingDayDetailsEntity(1L, LocalDateTime.now().plusDays(2))),
+                List.of(generateHearingDayDetailsEntity(1L, LocalDateTime.now().plusDays(2))),
                 groupDetails1
         );
 
@@ -1175,9 +1131,9 @@ class LinkedHearingValidatorTest {
                 )
         );
 
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-        });
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
+        );
         assertEquals("003 hearing request already in a group", exception.getMessage());
     }
 
@@ -1374,7 +1330,7 @@ class LinkedHearingValidatorTest {
         hearingResponse.setRequestVersion(requestVersion);
         hearingResponse.setRequestTimeStamp(requestTimestamp);
         hearingResponse.setHearingDayDetails(
-                hearingDaysStartDateTime.stream().map(this::generateHearingDayDetails).collect(Collectors.toList())
+                hearingDaysStartDateTime.stream().map(this::generateHearingDayDetails).toList()
         );
         return hearingResponse;
     }
