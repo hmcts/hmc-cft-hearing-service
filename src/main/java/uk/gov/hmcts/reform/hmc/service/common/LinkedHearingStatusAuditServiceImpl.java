@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingStatusAuditEntity;
@@ -29,6 +31,7 @@ public class LinkedHearingStatusAuditServiceImpl implements  LinkedHearingStatus
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveLinkedHearingAuditTriageDetails(String source, LinkedGroupDetails linkedGroupDetails,
                                                     String hearingEvent, String httpStatus, String target,
                                                     JsonNode errorDetails, List<HearingEntity> hearingEntities) {
