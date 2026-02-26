@@ -94,16 +94,10 @@ public class HearingActualsValidator {
             boolean isHearingDayEmpty = hearingDay.isEmpty();
             Boolean notRequired = hearingDay.getNotRequired();
 
-            if (hearingDate.isAfter(today)) {
-                if (Boolean.TRUE.equals(notRequired) || Boolean.FALSE.equals(notRequired)) {
-                    if (!isHearingDayEmpty) {
-                        throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
-                    }
-                } else {
+            if (hearingDate.isAfter(today) || hearingDate.equals(today)) {
+                if (notRequired == null || !isHearingDayEmpty) {
                     throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
                 }
-            } else if (hearingDate.equals(today) && Boolean.FALSE.equals(notRequired) && isHearingDayEmpty) {
-                throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
             }
         }
     }
