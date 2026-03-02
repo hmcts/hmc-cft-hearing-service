@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,7 +23,6 @@ import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionResponse;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.ManageExceptionsService;
-import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -59,9 +57,6 @@ class ManageExceptionsControllerTest {
     @MockitoBean
     ManageExceptionsService manageExceptionsService;
 
-    @Mock
-    HearingStatusAuditService hearingStatusAuditService;
-
     @MockitoBean
     private OverrideAuditService overrideAuditService;
 
@@ -70,7 +65,6 @@ class ManageExceptionsControllerTest {
     @BeforeEach
      void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(any(),any(),any(),any(),any(),any());
     }
 
     @Nested

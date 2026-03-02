@@ -304,4 +304,9 @@ public final class ValidationError {
     public static final String HEARING_ACTUALS_NULL = "No hearing actuals found";
     public static final String NON_UNIQUE_HEARING_RESPONSE = "Hearing id has multiple responses";
 
+    public static final String PAGE_SIZE_MANDATORY = "Page size is mandatory";
+    public static final String PAGE_SIZE_POSITIVE = "Page size can not be less than one";
+    public static final String OFFSET_MANDATORY = "Offset is mandatory";
+    public static final String OFFSET_MIN_VALUE = "Offset can not be less than 0";
+    public static final String CASE_REFERENCES_MANDATORY = "At least one case reference must be provided";
 }

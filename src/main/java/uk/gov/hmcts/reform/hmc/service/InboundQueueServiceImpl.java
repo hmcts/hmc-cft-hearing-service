@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.HearingStatusAuditContext;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.helper.hmi.HmiHearingResponseMapper;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
@@ -114,9 +115,17 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                                           hearingEntity.getErrorDescription());
 
                 JsonNode errorDescription = objectMapper.convertValue(exception.getMessage(), JsonNode.class);
-                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                                 LA_RESPONSE, LA_FAILURE_STATUS,
-                                                                 FH, HMC, errorDescription);
+                HearingStatusAuditContext hearingStatusAuditContext =
+                    HearingStatusAuditContext.builder()
+                        .hearingEntity(hearingEntity)
+                        .hearingEvent(LA_RESPONSE)
+                        .httpStatus(LA_FAILURE_STATUS)
+                        .source(FH)
+                        .target(HMC)
+                        .useCurrentTimestamp(false)
+                        .errorDetails(errorDescription)
+                        .build();
+                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
             } else {
                 log.error("Hearing id {} not found", hearingId);
             }
@@ -173,9 +182,17 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                                           hearingToSave.getLatestCaseHearingRequest().getHmctsServiceCode(),
                                           hearingToSave.getErrorDescription());
             }
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingToSave,
-                                                             LA_RESPONSE, LA_FAILURE_STATUS,
-                                                             FH, HMC, message);
+            HearingStatusAuditContext hearingStatusAuditContext =
+                HearingStatusAuditContext.builder()
+                    .hearingEntity(hearingToSave)
+                    .hearingEvent(LA_RESPONSE)
+                    .httpStatus(LA_FAILURE_STATUS)
+                    .source(FH)
+                    .target(HMC)
+                    .useCurrentTimestamp(false)
+                    .errorDetails(message)
+                    .build();
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
         }
     }
 
@@ -196,9 +213,16 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                          hearingResponse.getHearing().getHearingCaseStatus().getDescription(),
                          HearingCode.getByNumber(hearingResponse.getHearing().getHearingCaseStatus().getCode())
                 );
-                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(currentHearing,
-                                                                                HEARING_FINAL_STATE,LA_SUCCESS_STATUS,
-                                                                                FH, HMC, null);
+                HearingStatusAuditContext hearingStatusAuditContext =
+                    HearingStatusAuditContext.builder()
+                        .hearingEntity(currentHearing)
+                        .hearingEvent(HEARING_FINAL_STATE)
+                        .httpStatus(LA_SUCCESS_STATUS)
+                        .source(FH)
+                        .target(HMC)
+                        .useCurrentTimestamp(false)
+                        .build();
+                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
                 return;
             }
             hearingToSave = hmiHearingResponseMapper.mapHmiHearingToEntity(
@@ -214,10 +238,17 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                     .sendMessage(objectMapperService.convertObjectToJsonNode(hmcHearingResponse).toString(),
                                  hmcHearingResponse.getHmctsServiceCode(),hearingId.toString(),
                                  getDeploymentIdForHearing(hearingResult.get()));
+                HearingStatusAuditContext hearingStatusAuditContext =
+                    HearingStatusAuditContext.builder()
+                        .hearingEntity(hearingEntity.get())
+                        .hearingEvent(LA_RESPONSE)
+                        .httpStatus(LA_SUCCESS_STATUS)
+                        .source(FH)
+                        .target(HMC)
+                        .useCurrentTimestamp(false)
+                        .build();
+                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
 
-                hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity.get(),
-                                                                 LA_RESPONSE,LA_SUCCESS_STATUS, FH, HMC,
-                                                                 null);
             }
         }
     }
@@ -247,9 +278,18 @@ public class InboundQueueServiceImpl implements InboundQueueService {
                                           hearingEntity.getLatestCaseHearingRequest().getHmctsServiceCode(),
                                           hearingEntity.getErrorDescription());
             }
-            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDate(hearingEntity,
-                                                             LA_ACK, syncResponse.getListAssistHttpStatus()
-                                                                 .toString(),HMC, FH, errorDescription);
+            HearingStatusAuditContext hearingStatusAuditContext =
+                HearingStatusAuditContext.builder()
+                    .hearingEntity(hearingEntity)
+                    .hearingEvent(LA_ACK)
+                    .httpStatus(syncResponse.getListAssistHttpStatus().toString())
+                    .source(HMC)
+                    .target(FH)
+                    .useCurrentTimestamp(false)
+                    .errorDetails(errorDescription)
+                    .build();
+            hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
+
         }
     }
 

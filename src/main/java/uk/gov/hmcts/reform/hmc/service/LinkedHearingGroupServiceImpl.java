@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -188,6 +189,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
 
     @Override
+    @Transactional
     public void deleteLinkedHearingGroup(String requestId, String clientS2SToken) {
         Long linkedGroupId = linkedHearingValidator.validateHearingGroup(requestId);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByLinkedGroupId(linkedGroupId);
@@ -248,13 +250,9 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
 
     private void unlinkHearingsFromGroup(List<HearingEntity> linkedGroupHearings) {
         for (HearingEntity hearingEntity : linkedGroupHearings) {
-            Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingEntity.getId());
-            HearingEntity hearingEntityToUpdate =
-                (hearingEntityOptional.isPresent()) ? hearingEntityOptional.get() : null;
-            if (hearingEntityToUpdate != null) {
-                hearingEntityToUpdate.setLinkedOrder(null);
-                hearingEntityToUpdate.setLinkedGroupDetails(null);
-                hearingRepository.save(hearingEntityToUpdate);
+            Long hearingId = hearingEntity.getId();
+            if (hearingRepository.existsById(hearingId)) {
+                hearingRepository.removeLinkedGroupDetailsAndOrder(hearingId);
             }
         }
     }
