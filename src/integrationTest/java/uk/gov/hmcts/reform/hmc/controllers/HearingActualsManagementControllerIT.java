@@ -239,7 +239,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(
-                                    TestingUtil.actual_Outcome_Empty_HearingDate_Future_NotRequired_True())))
+                                    TestingUtil.hearingActualWithOutcomeNull())))
                 .andExpect(status().is(200))
                 .andReturn();
         }
