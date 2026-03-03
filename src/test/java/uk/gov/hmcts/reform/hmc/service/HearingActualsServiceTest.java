@@ -289,7 +289,7 @@ class HearingActualsServiceTest {
         }
 
         @Test
-        void hearingDate_Future_Outcome_Empty_StartTime_Present_NotRequired_True() {
+        void hearingDate_Future_Outcome_Empty_StartTime_NotEmpty_NotRequired_True() {
             final LocalDate lowestStartDate = LocalDate.of(2022, 1, 31);
             createHearingEntity(VALID_HEARING_STATUS);
             HearingActual hearingActual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.TRUE);
@@ -302,7 +302,7 @@ class HearingActualsServiceTest {
         }
 
         @Test
-        void hearingDate_Future_Outcome_Present_NotRequired_True() {
+        void hearingDate_Future_Outcome_NotEmpty_NotRequired_True() {
             createActuals();
             HearingActual hearingActual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.TRUE);
             HearingActualsOutcome outcome = hearingActual.getHearingOutcome();
@@ -332,7 +332,7 @@ class HearingActualsServiceTest {
         }
 
         @Test
-        void hearingDate_Today_Outcome_Present_StartTime_Present_NotRequired_False() {
+        void hearingDate_Today_Outcome_NotEmpty_StartTime_NotEmpty_NotRequired_False() {
             createHearingEntity(VALID_HEARING_STATUS);
             HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.FALSE);
             actual.getActualHearingDays().get(0).setHearingDate(LocalDate.now());
@@ -358,7 +358,7 @@ class HearingActualsServiceTest {
         }
 
         @Test
-        void hearingDates_Future_First_HearingDay_StartTime_Present_NotRequired_True_False() {
+        void hearingDates_Future_First_HearingDay_StartTime_NotEmpty_NotRequired_True_False() {
             createHearingEntity(VALID_HEARING_STATUS);
             HearingActual hearingActual = TestingUtil.oneActualHearingDayIsNotNull(Boolean.TRUE, Boolean.FALSE);
             hearingActual.getActualHearingDays().get(0).setHearingStartTime(LocalDate.now()

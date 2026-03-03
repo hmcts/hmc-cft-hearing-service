@@ -1621,7 +1621,7 @@ public class TestingUtil {
         return request;
     }
 
-    public static HearingActual hearingActualWithOutcomeEmpty() {
+    public static HearingActual actual_Outcome_Empty_HearingDate_Future_NotRequired_True() {
         ActualHearingDay actualHearingDay = new ActualHearingDay();
         actualHearingDay.setHearingDate(LocalDate.now().plusDays(2));
         actualHearingDay.setNotRequired(true);
