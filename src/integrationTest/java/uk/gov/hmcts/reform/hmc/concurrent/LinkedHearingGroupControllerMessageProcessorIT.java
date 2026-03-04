@@ -9,6 +9,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.hmc.config.MessageType;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -81,6 +83,11 @@ class LinkedHearingGroupControllerMessageProcessorIT extends BaseTest {
     private static final String SQL_SCRIPT_DELETE_HEARING_TABLES = "classpath:sql/delete-hearing-tables.sql";
     private static final String SQL_SCRIPT_CONCURRENT_DATA = "classpath:sql/concurrent-data.sql";
 
+    private static final String HEADER_SIGNATURE = "X-Message-Signature";
+    private static final String HEADER_SENDER = "X-Sender-Service";
+    private static final String HEADER_TIMESTAMP = "X-Timestamp";
+    private static final String SENDER = "HMI-Inbound-Adapter";
+
     @Mock
     private ServiceBusReceivedMessageContext serviceBusReceivedMessageContext;
 
@@ -94,6 +101,9 @@ class LinkedHearingGroupControllerMessageProcessorIT extends BaseTest {
     private final MockMvc mockMvc;
 
     private final MessageProcessor messageProcessor;
+
+    @Value("${hmac.secrets.hmi-to-hmc}")
+    private String hmiToHmcSigningSecret;
 
     @Autowired
     public LinkedHearingGroupControllerMessageProcessorIT(MessageProcessor messageProcessor,
@@ -758,7 +768,8 @@ class LinkedHearingGroupControllerMessageProcessorIT extends BaseTest {
 
     private void setupSyncResponseMockBehaviour(Long hearingId) {
         BinaryData syncResponseSuccessPayload = createSyncResponseSuccess();
-        Map<String, Object> appProperties = createAppProperties(hearingId);
+        String body = syncResponseSuccessPayload.toString();
+        Map<String, Object> appProperties = createAppProperties(hearingId, body);
 
         when(serviceBusReceivedMessage.getBody()).thenReturn(syncResponseSuccessPayload);
         when(serviceBusReceivedMessage.getApplicationProperties()).thenReturn(appProperties);
@@ -767,18 +778,32 @@ class LinkedHearingGroupControllerMessageProcessorIT extends BaseTest {
     }
 
     private void verifySyncResponseMockBehaviour() {
-        verify(serviceBusReceivedMessageContext, times(4)).getMessage();
+        verify(serviceBusReceivedMessageContext, times(5)).getMessage();
         verify(serviceBusReceivedMessage).getMessageId();
-        verify(serviceBusReceivedMessage, times(2)).getApplicationProperties();
-        verify(serviceBusReceivedMessage).getBody();
+        verify(serviceBusReceivedMessage, times(3)).getApplicationProperties();
+        verify(serviceBusReceivedMessage, times(2)).getBody();
     }
 
-    private Map<String, Object> createAppProperties(Long hearingId) {
+    private Map<String, Object> createAppProperties(Long hearingId, String body) {
+        String messageType = MessageType.LA_SYNC_HEARING_RESPONSE.name();
+        String timestamp = Instant.now().toString();
+
         Map<String, Object> appProperties = new HashMap<>();
-
         appProperties.put("hearing_id", String.valueOf(hearingId));
-        appProperties.put("message_type", MessageType.LA_SYNC_HEARING_RESPONSE);
+        appProperties.put("message_type", messageType);
+        appProperties.put(HEADER_SENDER, SENDER);
+        appProperties.put(HEADER_TIMESTAMP, timestamp);
 
+        String payloadToSign = String.join("|",
+            "v1",
+            SENDER,
+            timestamp,
+            messageType,
+            String.valueOf(hearingId),
+            body
+        );
+
+        appProperties.put(HEADER_SIGNATURE, messageProcessor.hmacSha256Base64(payloadToSign, hmiToHmcSigningSecret));
         return appProperties;
     }
 
