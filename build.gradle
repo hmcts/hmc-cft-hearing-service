@@ -237,7 +237,7 @@ ext {
   lombok                = '1.18.38'
   mapstruct             = '1.6.3'
   azureInsightsVersion  = '2.4.1'
-  testcontainers        = '1.21.3'
+  testcontainers        = '1.21.4'
   pactVersion           = getCheckedOutGitCommitHash()
 }
 
