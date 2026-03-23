@@ -50,6 +50,9 @@ public final class Constants {
     public static final String AMEND_REASON_CODE = "AMEND";
     public static final String HMCTS_SERVICE_ID = "hmctsServiceId";
     public static final String HMCTS_DEPLOYMENT_ID = "hmctsDeploymentId";
+    public static final String MESSAGE_SIGNATURE_HEADER = "X-Message-Signature";
+    public static final String MESSAGE_SENDER_HEADER = "X-Sender-Service";
+    public static final String MESSAGE_TIMESTAMP_HEADER = "X-Timestamp";
     public static final String LATEST_HEARING_REQUEST_VERSION = "Latest-Hearing-Request-Version";
     public static final String LATEST_HEARING_STATUS = "Latest-Hearing-Status";
     public static final Integer HMCTS_DEPLOYMENT_ID_MAX_SIZE = 40;

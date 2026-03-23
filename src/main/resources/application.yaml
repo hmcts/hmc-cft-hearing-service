@@ -92,6 +92,12 @@ azure:
 jms:
   servicebus:
     idle-timeout: ${SERVICE_BUS_IDLE_TIMEOUT:30000}
+    integrity:
+      enabled: ${SERVICE_BUS_MESSAGE_INTEGRITY_ENABLED:false}
+      hmac-secret: ${SERVICE_BUS_MESSAGE_INTEGRITY_SECRET:}
+      sender-service: ${SERVICE_BUS_MESSAGE_SENDER_SERVICE:hmc-cft-hearing-service}
+      max-age-seconds: ${SERVICE_BUS_MESSAGE_MAX_AGE_SECONDS:300}
+      allowed-senders: ${SERVICE_BUS_MESSAGE_ALLOWED_SENDERS:}
     internal:
       queues:
         inbound:

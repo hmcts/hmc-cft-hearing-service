@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
+import uk.gov.hmcts.reform.hmc.security.MessageIntegrityService;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 
 import java.util.Map;
@@ -27,6 +28,7 @@ public class MessageProcessor {
 
     private final ObjectMapper objectMapper;
     private final InboundQueueService inboundQueueService;
+    private final MessageIntegrityService messageIntegrityService;
     private static final String MESSAGE_TYPE = "message_type";
     public static final String MISSING_MESSAGE_TYPE = "Message is missing custom header message_type";
     public static final String MESSAGE_PARSE_ERROR = "Unable to parse incoming message with id {}, {}";
@@ -35,9 +37,11 @@ public class MessageProcessor {
     public static final String MESSAGE_SUCCESS = "Message with id '{}' handled successfully";
 
     public MessageProcessor(ObjectMapper objectMapper,
-                            InboundQueueService inboundQueueService) {
+                            InboundQueueService inboundQueueService,
+                            MessageIntegrityService messageIntegrityService) {
         this.objectMapper = objectMapper;
         this.inboundQueueService = inboundQueueService;
+        this.messageIntegrityService = messageIntegrityService;
     }
 
     public void processMessage(ServiceBusReceivedMessageContext messageContext) {
@@ -81,6 +85,7 @@ public class MessageProcessor {
 
     private MessageProcessingResult tryProcessMessage(ServiceBusReceivedMessageContext messageContext) {
         try {
+            messageIntegrityService.validateIncomingMessage(messageContext);
             processMessage(
                     convertMessage(messageContext.getMessage().getBody()),
                     messageContext

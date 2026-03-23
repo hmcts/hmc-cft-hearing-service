@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
+import uk.gov.hmcts.reform.hmc.security.MessageIntegrityService;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.AMQP_CACHE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.AMQP_CACHE_VALUE;
@@ -24,9 +25,12 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.WRITE;
 public class MessageSenderToQueueConfiguration {
 
     private final ApplicationParams applicationParams;
+    private final MessageIntegrityService messageIntegrityService;
 
-    public MessageSenderToQueueConfiguration(ApplicationParams applicationParams) {
+    public MessageSenderToQueueConfiguration(ApplicationParams applicationParams,
+                                             MessageIntegrityService messageIntegrityService) {
         this.applicationParams = applicationParams;
+        this.messageIntegrityService = messageIntegrityService;
     }
 
     public void sendMessageToQueue(String message, Long hearingId, String messageType, String deploymentId) {
@@ -42,6 +46,7 @@ public class MessageSenderToQueueConfiguration {
             log.debug("Connected to queue {}", applicationParams.getInternalOutboundQueueName());
             log.debug("Sending request for hearing Id :{} with messageType : {}, {} ",hearingId, messageType, message);
             ServiceBusMessage serviceBusMessage = new ServiceBusMessage(message);
+            messageIntegrityService.addIntegrityHeaders(serviceBusMessage, message);
             serviceBusMessage.getApplicationProperties().put(MESSAGE_TYPE, messageType);
             serviceBusMessage.getApplicationProperties().put(HEARING_ID, hearingId);
             if (!StringUtils.isEmpty(deploymentId)) {

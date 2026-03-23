@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.reform.hmc.security.MessageIntegrityService;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl;
 
 import java.util.HashMap;
@@ -45,10 +46,13 @@ class MessageProcessorTest {
     @Mock
     private InboundQueueServiceImpl inboundQueueService;
 
+    @Mock
+    private MessageIntegrityService messageIntegrityService;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
+        messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService, messageIntegrityService);
     }
 
     @Test
@@ -62,6 +66,7 @@ class MessageProcessorTest {
         given(messageContext.getMessage().getMessageId()).willReturn("100001");
         given(messageContext.getMessage().getDeliveryCount()).willReturn(1L);
         messageProcessor.processMessage(messageContext);
+        verify(messageIntegrityService, times(1)).validateIncomingMessage(messageContext);
         verify(inboundQueueService).processMessage(any(), any());
     }
 
