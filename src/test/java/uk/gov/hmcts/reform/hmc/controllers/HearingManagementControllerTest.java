@@ -52,7 +52,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.INBOUND_S2S_TOKEN;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.INVALID_SERVICE_AUTHORISATION_MESSAGE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_SERVICE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 
@@ -196,7 +196,7 @@ class HearingManagementControllerTest {
                 InvalidServiceAuthorizationException.class, () ->
                     controller.getHearing(CLIENT_S2S_TOKEN,1234L, true));
             assertEquals(
-                String.format(INVALID_SERVICE_AUTHORISATION_MESSAGE, 1234L, CLIENT_S2S_TOKEN),
+                String.format(INVALID_SERVICE, CLIENT_S2S_TOKEN),
                 exception.getMessage());
             verify(hearingManagementService, never()).getHearingRequest(any(), anyBoolean());
         }

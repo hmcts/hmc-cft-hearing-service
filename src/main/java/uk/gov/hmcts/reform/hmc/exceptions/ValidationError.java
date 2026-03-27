@@ -309,4 +309,5 @@ public final class ValidationError {
     public static final String OFFSET_MANDATORY = "Offset is mandatory";
     public static final String OFFSET_MIN_VALUE = "Offset can not be less than 0";
     public static final String CASE_REFERENCES_MANDATORY = "At least one case reference must be provided";
+    public static final String INVALID_SERVICE = "Failed to invoke ‘getHearing’ from service: %s for hearing id: %s";
 }

@@ -54,6 +54,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.INVALID_SERVICE_AUTHOR
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_SERVICE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
@@ -102,8 +103,7 @@ public class HearingManagementController {
             String s2sToken = getServiceName(clientS2SToken);
             if (!INBOUND_S2S_TOKEN.equals(s2sToken)) {
                 log.info(INVALID_SERVICE_AUTHORISATION_MESSAGE, hearingId, s2sToken);
-                throw new InvalidServiceAuthorizationException(INVALID_SERVICE_AUTHORISATION_MESSAGE, hearingId,
-                                                               s2sToken);
+                throw new InvalidServiceAuthorizationException(INVALID_SERVICE, s2sToken, hearingId);
             }
         }
         return hearingManagementService.getHearingRequest(hearingId, isValid);
