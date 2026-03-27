@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.LuhnCheck;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.InvalidServiceAuthorizationException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
@@ -47,6 +49,8 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID_MAX_SIZE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.INBOUND_S2S_TOKEN;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.INVALID_SERVICE_AUTHORISATION_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
@@ -56,6 +60,7 @@ import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HE
 
 @RestController
 @Validated
+@Slf4j
 public class HearingManagementController {
 
     private final HearingManagementService hearingManagementService;
@@ -78,8 +83,10 @@ public class HearingManagementController {
     @ApiResponse(responseCode = "204", description = "Hearing id is valid")
     @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ID_NOT_FOUND)
     @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HEARING_ID_DETAILS)
+    @ApiResponse(responseCode = "401", description = INVALID_SERVICE_AUTHORISATION_MESSAGE)
 
-    public ResponseEntity<GetHearingResponse> getHearing(@PathVariable("id") Long hearingId,
+    public ResponseEntity<GetHearingResponse> getHearing(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
+            @PathVariable("id") Long hearingId,
             @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {
         if (!isValid) {
             // Only verify access if the user is requesting more than just confirmation of a
@@ -91,6 +98,13 @@ public class HearingManagementController {
             }
 
             accessControlService.verifyHearingCaseAccess(hearingId, requiredRoles);
+        } else {
+            String s2sToken = getServiceName(clientS2SToken);
+            if (!INBOUND_S2S_TOKEN.equals(s2sToken)) {
+                log.info(INVALID_SERVICE_AUTHORISATION_MESSAGE, hearingId, s2sToken);
+                throw new InvalidServiceAuthorizationException(INVALID_SERVICE_AUTHORISATION_MESSAGE, hearingId,
+                                                               s2sToken);
+            }
         }
         return hearingManagementService.getHearingRequest(hearingId, isValid);
     }

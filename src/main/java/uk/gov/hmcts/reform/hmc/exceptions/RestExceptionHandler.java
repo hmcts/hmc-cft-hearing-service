@@ -128,6 +128,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return toResponseEntity(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
+    @ExceptionHandler(InvalidServiceAuthorizationException.class)
+    protected ResponseEntity<Object> handleServiceAuthorizationException(InvalidServiceAuthorizationException ex) {
+        log.debug("InvalidServiceAuthorizationException: {}", ex.getLocalizedMessage());
+        return toResponseEntity(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+
     private ResponseEntity<Object> toResponseEntity(HttpStatus status, String... errors) {
         List<String> errorList = Arrays.stream(errors).filter(Objects::nonNull).collect(Collectors.toList());
         var apiError = new ApiError(status, errorList);
