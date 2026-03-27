@@ -50,11 +50,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID_MAX_SIZE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.INBOUND_S2S_TOKEN;
-import static uk.gov.hmcts.reform.hmc.constants.Constants.INVALID_SERVICE_AUTHORISATION_MESSAGE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.INVALID_SERVICE_AUTHORISATION_LOG_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_SERVICE;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_SERVICE_EXCEPTION_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
@@ -84,7 +84,7 @@ public class HearingManagementController {
     @ApiResponse(responseCode = "204", description = "Hearing id is valid")
     @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ID_NOT_FOUND)
     @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HEARING_ID_DETAILS)
-    @ApiResponse(responseCode = "401", description = INVALID_SERVICE_AUTHORISATION_MESSAGE)
+    @ApiResponse(responseCode = "401", description = INVALID_SERVICE_EXCEPTION_MESSAGE)
 
     public ResponseEntity<GetHearingResponse> getHearing(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
             @PathVariable("id") Long hearingId,
@@ -102,8 +102,8 @@ public class HearingManagementController {
         } else {
             String s2sToken = getServiceName(clientS2SToken);
             if (!INBOUND_S2S_TOKEN.equals(s2sToken)) {
-                log.info(INVALID_SERVICE_AUTHORISATION_MESSAGE, hearingId, s2sToken);
-                throw new InvalidServiceAuthorizationException(INVALID_SERVICE, s2sToken, hearingId);
+                log.info(INVALID_SERVICE_AUTHORISATION_LOG_MESSAGE, hearingId, s2sToken);
+                throw new InvalidServiceAuthorizationException(INVALID_SERVICE_EXCEPTION_MESSAGE, s2sToken, hearingId);
             }
         }
         return hearingManagementService.getHearingRequest(hearingId, isValid);
