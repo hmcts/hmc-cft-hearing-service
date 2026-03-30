@@ -2,7 +2,7 @@
   "_guid_": "S-003.2",
   "_extends_": "GetHearingRequestBase",
   "specs": [
-    "has the 401 OK code",
+    "has the 401 code",
     "an active profile in CCD",
     "has no payload",
     "uses the query param isValid=true"
