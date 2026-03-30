@@ -315,6 +315,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn404_WhenHearingIdIsInValidInDb() throws Exception {
         mockMvc.perform(get(URL_HEARING + "/2000000010")
+                            .header(SERVICE_AUTHORIZATION, inboundServiceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andReturn();
