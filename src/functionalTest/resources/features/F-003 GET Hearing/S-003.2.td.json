@@ -17,6 +17,6 @@
   },
   "expectedResponse": {
     "responseCode": 401,
-    "responseMessage": "OK"
+    "responseMessage": "Unauthorized"
   }
 }
