@@ -12,7 +12,7 @@
       "isValid": "true"
     },
     "pathVariables": {
-      "hearingID": "${[scenarioContext][childContexts][CreateHearingRequest][testData][actualResponse][body][hearingRequestID]}"
+      "hearingID": "2000000007"
     }
   },
   "expectedResponse": {
