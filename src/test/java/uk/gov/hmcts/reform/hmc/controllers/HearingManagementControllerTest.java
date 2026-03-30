@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
+import uk.gov.hmcts.reform.hmc.exceptions.InvalidServiceAuthorizationException;
 import uk.gov.hmcts.reform.hmc.model.CaseDetails;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
@@ -38,12 +39,17 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.INBOUND_S2S_TOKEN;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_SERVICE_EXCEPTION_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 
@@ -162,15 +168,28 @@ class HearingManagementControllerTest {
     class GetHearing {
 
         @Test
-        void shouldReturn204_whenRequestIdIsValid() {
-            controller.getHearing(1234L, true);
+        void validHearingId_IsValid_True_ValidService() {
+            when(securityUtils.getServiceNameFromS2SToken(any())).thenReturn(INBOUND_S2S_TOKEN);
+            controller.getHearing(CLIENT_S2S_TOKEN,1234L, true);
             verify(hearingManagementService).getHearingRequest(any(), anyBoolean());
         }
 
         @Test
-        void shouldReturn200_whenRequestIdIsValid() {
-            controller.getHearing(1234L, false);
+        void validHearingId_IsValid_false() {
+            controller.getHearing(CLIENT_S2S_TOKEN,1234L, false);
             verify(hearingManagementService).getHearingRequest(any(), anyBoolean());
+        }
+
+        @Test
+        void validHearingId_IsValid_True_InvalidService() {
+            when(securityUtils.getServiceNameFromS2SToken(any())).thenReturn(CLIENT_S2S_TOKEN);
+            Exception exception = assertThrows(
+                InvalidServiceAuthorizationException.class, () ->
+                    controller.getHearing(CLIENT_S2S_TOKEN,1234L, true));
+            assertEquals(
+                String.format(INVALID_SERVICE_EXCEPTION_MESSAGE, CLIENT_S2S_TOKEN, 1234L),
+                exception.getMessage());
+            verify(hearingManagementService, never()).getHearingRequest(any(), anyBoolean());
         }
     }
 

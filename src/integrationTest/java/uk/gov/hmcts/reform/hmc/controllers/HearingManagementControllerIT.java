@@ -86,6 +86,7 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404FromDataStor
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyValidateHearingObject;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.INBOUND_S2S_TOKEN;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AMEND_REASON_CODE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG;
@@ -231,6 +232,7 @@ class HearingManagementControllerIT extends BaseTest {
     void shouldReturn204_WhenHearingExists() throws Exception {
         stubRoleAssignments();
         mockMvc.perform(get(URL_HEARING + "/2000000136" + "?isValid=true")
+                            .header(SERVICE_AUTHORIZATION, inboundServiceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(204))
             .andExpect(header().exists("Latest-Hearing-Request-Version"))
@@ -239,8 +241,22 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_CASE_HEARING_DATA_SCRIPT})
+    void shouldReturn401_WhenServiceIsInvalid() throws Exception {
+        stubRoleAssignments();
+        mockMvc.perform(get(URL_HEARING + "/2000000136" + "?isValid=true")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(header().doesNotExist("Latest-Hearing-Request-Version"))
+            .andExpect(header().doesNotExist("Latest-Hearing-Request-Version"))
+            .andExpect(status().is(401))
+            .andReturn();
+    }
+
+    @Test
     void shouldReturn400_WhenHearingIdIsInValid() throws Exception {
         mockMvc.perform(get(URL_HEARING + "/1000000000" + "?isValid=true")
+                            .header(SERVICE_AUTHORIZATION, inboundServiceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(400))
             .andReturn();
@@ -249,6 +265,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn404_WhenHearingIdDoesNotExist() throws Exception {
         mockMvc.perform(get(URL_HEARING + "/2000000001" + "?isValid=true")
+                            .header(SERVICE_AUTHORIZATION, inboundServiceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andReturn();
@@ -258,6 +275,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenHearingExistsInDb() throws Exception {
         mockMvc.perform(get(URL_HEARING + "/2000000000")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
@@ -267,6 +285,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenHearingHasCancellationReasons() throws Exception {
         mockMvc.perform(get(URL_HEARING + "/2000000012")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.requestDetails.cancellationReasonCodes").value(IsNull.notNullValue()))
@@ -277,6 +296,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenHearingStatusIsListed() throws Exception {
         mockMvc.perform(get(URL_HEARING + "/2000000011")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
@@ -286,6 +306,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn404_WhenHearingIdIsInValidInDbAndParamIsFalse() throws Exception {
         mockMvc.perform(get(URL_HEARING + "/2000000010" + "?isValid=false")
+                            .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andReturn();
@@ -294,6 +315,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Test
     void shouldReturn404_WhenHearingIdIsInValidInDb() throws Exception {
         mockMvc.perform(get(URL_HEARING + "/2000000010")
+                            .header(SERVICE_AUTHORIZATION, inboundServiceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(404))
             .andReturn();
@@ -304,6 +326,7 @@ class HearingManagementControllerIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void shouldReturn200_WhenIsValidIsNotProvided() throws Exception {
         mockMvc.perform(get(URL_HEARING + "/2000000000")
+                            .header(SERVICE_AUTHORIZATION, inboundServiceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andReturn();
@@ -1638,6 +1661,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     void assertDurationForHearing(String hearingId, Integer expectedDuration) throws Exception {
         mockMvc.perform(get("/hearing/" + hearingId)
+                            .header(SERVICE_AUTHORIZATION, inboundServiceJwtXuiWeb)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.hearingDetails.duration").value(expectedDuration))
@@ -2153,5 +2177,6 @@ class HearingManagementControllerIT extends BaseTest {
 
     private final String serviceJwtDefinition = generateDummyS2SToken("ccd_definition");
     private final String serviceJwtXuiWeb = generateDummyS2SToken("xui_webapp");
+    private final String inboundServiceJwtXuiWeb = generateDummyS2SToken(INBOUND_S2S_TOKEN);
 
 }
