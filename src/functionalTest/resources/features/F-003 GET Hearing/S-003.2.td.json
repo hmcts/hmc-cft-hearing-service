@@ -17,6 +17,10 @@
   },
   "expectedResponse": {
     "responseCode": 401,
-    "responseMessage": "Unauthorized"
+    "responseMessage": "Unauthorized",
+    "body" : {
+      "status" : "UNAUTHORIZED",
+      "errors" : [ "Failed to invoke ‘getHearing’ from service: xui_webapp for hearing id: 2000000007" ]
+    }
   }
 }
