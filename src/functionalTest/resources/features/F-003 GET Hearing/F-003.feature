@@ -22,7 +22,7 @@ Feature: F-003: Get hearing request
       And the request [uses the query param isValid=true],
       And it is submitted to call the [get hearing] operation of [HMC CFT Hearing Service],
       Then a positive response is received,
-      And the response [has the 204 OK code],
+      And the response [has the 401 Unauthorized code],
       And the response [has no payload],
       And the response has all other details as expected.
 

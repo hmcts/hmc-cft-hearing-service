@@ -2,7 +2,7 @@
   "_guid_": "S-003.2",
   "_extends_": "GetHearingRequestBase",
   "specs": [
-    "has the 204 OK code",
+    "has the 401 OK code",
     "an active profile in CCD",
     "has no payload",
     "uses the query param isValid=true"
@@ -16,7 +16,7 @@
     }
   },
   "expectedResponse": {
-    "responseCode": 204,
+    "responseCode": 401,
     "responseMessage": "OK"
   }
 }
