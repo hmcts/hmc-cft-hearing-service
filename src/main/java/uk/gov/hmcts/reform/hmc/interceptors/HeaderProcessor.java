@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.hmc.interceptors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
@@ -14,7 +14,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class HeaderProcessor implements HandlerInterceptor {
 
     private final ApplicationParams params;
@@ -22,6 +22,19 @@ public class HeaderProcessor implements HandlerInterceptor {
     private final UrlManager dataStoreUrlManager;
 
     private final OverrideAuditService overrideAuditService;
+    private final OverrideUrlValidator overrideUrlValidator;
+
+    @Autowired
+        public HeaderProcessor(ApplicationParams params,UrlManager roleAssignmentUrlManager,
+                               UrlManager dataStoreUrlManager,OverrideAuditService overrideAuditService,
+                               OverrideUrlValidator overrideUrlValidator) {
+        this.params = params;
+        this.roleAssignmentUrlManager = roleAssignmentUrlManager;
+        this.dataStoreUrlManager = dataStoreUrlManager;
+        this.overrideAuditService = overrideAuditService;
+        this.overrideUrlValidator = overrideUrlValidator;
+    }
+
 
     /**
      * Check if role assignment and/or ccd data store url headers are present in the request.
@@ -50,9 +63,12 @@ public class HeaderProcessor implements HandlerInterceptor {
 
     private void processHeader(HttpServletRequest request, UrlManager urlManager) {
         String url = request.getHeader(urlManager.getUrlHeaderName());
-        if (isNotBlank(url)) {
+        if (isNotBlank(url) && overrideUrlValidator.isAllowed(url)) {
             urlManager.setActualHost(url);
         } else {
+            if (isNotBlank(url)) {
+                log.warn("Rejected override url for header {}: {}", urlManager.getUrlHeaderName(), url);
+            }
             urlManager.setActualHost(urlManager.getHost());
         }
     }

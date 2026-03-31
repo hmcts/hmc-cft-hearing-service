@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,12 +20,15 @@ import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.interceptors.OverrideUrlValidator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -43,6 +47,9 @@ class HearingActualControllerIT extends BaseTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Mock
+    private OverrideUrlValidator overrideUrlValidator;
 
     private static final String URL = "/hearingActuals";
 
@@ -120,6 +127,7 @@ class HearingActualControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldCallProvidedCcdAndAmUrl_WhenHeadersProvided() throws Exception {
+            when(overrideUrlValidator.isAllowed(anyString())).thenReturn(true);
             mockMvc.perform(get(URL + "/2000000000")
                                 .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
                                 .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())

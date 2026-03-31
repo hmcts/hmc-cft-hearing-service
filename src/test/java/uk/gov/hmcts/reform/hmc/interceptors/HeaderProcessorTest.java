@@ -30,13 +30,17 @@ class HeaderProcessorTest {
     @Mock
     private UrlManager roleAssignmentUrlManager;
 
+    @Mock
+    private OverrideUrlValidator overrideUrlValidator;
+
     HeaderProcessor headerProcessor;
+
 
     @BeforeEach
     void setUp() {
         openMocks(this);
         headerProcessor = new HeaderProcessor(
-            params, roleAssignmentUrlManager, dataStoreUrlManager, overrideAuditService);
+            params, roleAssignmentUrlManager, dataStoreUrlManager, overrideAuditService, overrideUrlValidator);
     }
 
     @Test
@@ -45,13 +49,15 @@ class HeaderProcessorTest {
         when(dataStoreUrlManager.getUrlHeaderName()).thenReturn("dataStoreUrl");
         when(roleAssignmentUrlManager.getUrlHeaderName()).thenReturn("roleAssignmentUrl");
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("roleAssignmentUrl", "roleAssignmentUrlValue");
-        request.addHeader("dataStoreUrl", "dataStoreUrlValue");
+        String roleAssignmentUrlValue = "https://ccd-data-store-api-test-case-api-pr-XXX.preview.platform.hmcts.net";
+        String dataStoreUrlValue = "https://am-role-assignment-test-case-api-pr-XXX.preview.platform.hmcts.net";
+        request.addHeader("roleAssignmentUrl", roleAssignmentUrlValue);
+        request.addHeader("dataStoreUrl", dataStoreUrlValue);
 
         headerProcessor.preHandle(request, null, null);
 
-        verify(roleAssignmentUrlManager, times(1)).setActualHost("roleAssignmentUrlValue");
-        verify(dataStoreUrlManager, times(1)).setActualHost("dataStoreUrlValue");
+        verify(roleAssignmentUrlManager, times(1)).setActualHost(roleAssignmentUrlValue);
+        verify(dataStoreUrlManager, times(1)).setActualHost(dataStoreUrlValue);
     }
 
     @Test
