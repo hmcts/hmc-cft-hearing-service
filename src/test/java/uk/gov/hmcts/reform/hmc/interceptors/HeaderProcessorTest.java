@@ -50,6 +50,8 @@ class HeaderProcessorTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         String roleAssignmentUrlValue = "https://ccd-data-store-api-test-case-api-pr-XXX.preview.platform.hmcts.net";
         String dataStoreUrlValue = "https://am-role-assignment-test-case-api-pr-XXX.preview.platform.hmcts.net";
+        when(overrideHostPolicy.isAllowed(roleAssignmentUrlValue)).thenReturn(true);
+        when(overrideHostPolicy.isAllowed(dataStoreUrlValue)).thenReturn(true);
         request.addHeader("roleAssignmentUrl", roleAssignmentUrlValue);
         request.addHeader("dataStoreUrl", dataStoreUrlValue);
 

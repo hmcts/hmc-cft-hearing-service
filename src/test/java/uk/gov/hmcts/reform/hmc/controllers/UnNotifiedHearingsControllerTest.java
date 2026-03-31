@@ -8,6 +8,8 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
+import uk.gov.hmcts.reform.hmc.interceptors.OverrideHostPolicyConfig;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.UnNotifiedHearingService;
 import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
@@ -31,10 +34,12 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = UnNotifiedHearingsController.class,
-    excludeFilters = @ComponentScan.Filter(type = ASSIGNABLE_TYPE, classes =
-        {SecurityConfiguration.class, JwtGrantedAuthoritiesConverter.class}))
+        excludeFilters = @ComponentScan.Filter(type = ASSIGNABLE_TYPE, classes =
+                {SecurityConfiguration.class, JwtGrantedAuthoritiesConverter.class}))
 @AutoConfigureMockMvc(addFilters = false)
 @ImportAutoConfiguration(TestIdamConfiguration.class)
+@Import(OverrideHostPolicyConfig.class)
+@ActiveProfiles("test")
 class UnNotifiedHearingsControllerTest {
 
     @Autowired
