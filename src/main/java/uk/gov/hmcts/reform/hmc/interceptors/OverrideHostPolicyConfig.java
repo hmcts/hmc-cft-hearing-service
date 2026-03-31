@@ -21,7 +21,7 @@ public class OverrideHostPolicyConfig {
     }
 
     @Bean
-    @Profile("itest")
+    @Profile("test")
     public OverrideHostPolicy permissiveOverrideHostPolicy() {
         return url -> url != null && !url.trim().isEmpty();
     }
