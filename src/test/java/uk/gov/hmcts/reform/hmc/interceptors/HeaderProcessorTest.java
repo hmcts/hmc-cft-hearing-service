@@ -30,13 +30,16 @@ class HeaderProcessorTest {
     @Mock
     private UrlManager roleAssignmentUrlManager;
 
+    @Mock
+    private OverrideHostPolicy overrideHostPolicy;
+
     HeaderProcessor headerProcessor;
 
     @BeforeEach
     void setUp() {
         openMocks(this);
         headerProcessor = new HeaderProcessor(
-            params, roleAssignmentUrlManager, dataStoreUrlManager, overrideAuditService);
+            params, roleAssignmentUrlManager, dataStoreUrlManager, overrideAuditService, overrideHostPolicy);
     }
 
     @Test
