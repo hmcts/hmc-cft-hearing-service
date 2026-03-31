@@ -2,39 +2,34 @@ package uk.gov.hmcts.reform.hmc.interceptors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
+import java.util.regex.Pattern;
+
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Component
 @Slf4j
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class HeaderProcessor implements HandlerInterceptor {
+
+    private static final Pattern ALLOWED_OVERRIDE_URL_PATTERN = Pattern.compile(
+        "^https://([a-z0-9-]+\\.)*(preview|aat|demo)\\.platform\\.hmcts\\.net"
+            + "(?::\\d{1,5})?(?:/.*)?$",
+        Pattern.CASE_INSENSITIVE
+    );
 
     private final ApplicationParams params;
     private final UrlManager roleAssignmentUrlManager;
     private final UrlManager dataStoreUrlManager;
 
     private final OverrideAuditService overrideAuditService;
-    private final OverrideUrlValidator overrideUrlValidator;
-
-    @Autowired
-        public HeaderProcessor(ApplicationParams params,UrlManager roleAssignmentUrlManager,
-                               UrlManager dataStoreUrlManager,OverrideAuditService overrideAuditService,
-                               OverrideUrlValidator overrideUrlValidator) {
-        this.params = params;
-        this.roleAssignmentUrlManager = roleAssignmentUrlManager;
-        this.dataStoreUrlManager = dataStoreUrlManager;
-        this.overrideAuditService = overrideAuditService;
-        this.overrideUrlValidator = overrideUrlValidator;
-    }
-
 
     /**
      * Check if role assignment and/or ccd data store url headers are present in the request.
@@ -63,7 +58,7 @@ public class HeaderProcessor implements HandlerInterceptor {
 
     private void processHeader(HttpServletRequest request, UrlManager urlManager) {
         String url = request.getHeader(urlManager.getUrlHeaderName());
-        if (isNotBlank(url) && overrideUrlValidator.isAllowed(url)) {
+        if (isNotBlank(url) && isAllowedOverrideUrl(url)) {
             urlManager.setActualHost(url);
         } else {
             if (isNotBlank(url)) {
@@ -71,5 +66,16 @@ public class HeaderProcessor implements HandlerInterceptor {
             }
             urlManager.setActualHost(urlManager.getHost());
         }
+    }
+
+    private boolean isAllowedOverrideUrl(String url) {
+        if (url == null) {
+            return false;
+        }
+        String trimmed = url.trim();
+        if (trimmed.isEmpty()) {
+            return false;
+        }
+        return ALLOWED_OVERRIDE_URL_PATTERN.matcher(trimmed).matches();
     }
 }

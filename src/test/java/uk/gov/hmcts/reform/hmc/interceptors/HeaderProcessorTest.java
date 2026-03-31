@@ -30,17 +30,13 @@ class HeaderProcessorTest {
     @Mock
     private UrlManager roleAssignmentUrlManager;
 
-    @Mock
-    private OverrideUrlValidator overrideUrlValidator;
-
     HeaderProcessor headerProcessor;
-
 
     @BeforeEach
     void setUp() {
         openMocks(this);
         headerProcessor = new HeaderProcessor(
-            params, roleAssignmentUrlManager, dataStoreUrlManager, overrideAuditService, overrideUrlValidator);
+            params, roleAssignmentUrlManager, dataStoreUrlManager, overrideAuditService);
     }
 
     @Test
@@ -96,4 +92,5 @@ class HeaderProcessorTest {
         verify(dataStoreUrlManager, times(1)).setActualHost("http://example.org");
 
     }
+
 }
