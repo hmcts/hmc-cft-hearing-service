@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
+import java.util.regex.Pattern;
+
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Component
@@ -17,11 +19,16 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @RequiredArgsConstructor
 public class HeaderProcessor implements HandlerInterceptor {
 
+    private static final Pattern ALLOWED_OVERRIDE_URL_PATTERN = Pattern.compile(
+        "^https://([a-z0-9-]+\\.)*(preview|aat|demo)\\.platform\\.hmcts\\.net"
+            + "(?::\\d{1,5})?(?:/.*)?$",
+        Pattern.CASE_INSENSITIVE
+    );
+
     private final ApplicationParams params;
     private final UrlManager roleAssignmentUrlManager;
     private final UrlManager dataStoreUrlManager;
     private final OverrideAuditService overrideAuditService;
-    private final OverrideHostPolicy overrideHostPolicy;
 
     /**
      * Check if role assignment and/or ccd data store url headers are present in the request.
@@ -50,7 +57,7 @@ public class HeaderProcessor implements HandlerInterceptor {
 
     private void processHeader(HttpServletRequest request, UrlManager urlManager) {
         String url = request.getHeader(urlManager.getUrlHeaderName());
-        if (isNotBlank(url) && overrideHostPolicy.isAllowed(url)) {
+        if (isNotBlank(url) && isAllowedOverrideUrl(url)) {
             urlManager.setActualHost(url);
         } else {
             if (isNotBlank(url)) {
@@ -58,5 +65,10 @@ public class HeaderProcessor implements HandlerInterceptor {
             }
             urlManager.setActualHost(urlManager.getHost());
         }
+    }
+
+    private boolean isAllowedOverrideUrl(String url) {
+        String trimmed = url == null ? "" : url.trim();
+        return !trimmed.isEmpty() && ALLOWED_OVERRIDE_URL_PATTERN.matcher(trimmed).matches();
     }
 }

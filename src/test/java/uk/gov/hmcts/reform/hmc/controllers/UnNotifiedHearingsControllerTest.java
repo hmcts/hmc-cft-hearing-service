@@ -34,8 +34,8 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = UnNotifiedHearingsController.class,
-        excludeFilters = @ComponentScan.Filter(type = ASSIGNABLE_TYPE, classes =
-                {SecurityConfiguration.class, JwtGrantedAuthoritiesConverter.class}))
+    excludeFilters = @ComponentScan.Filter(type = ASSIGNABLE_TYPE, classes =
+        {SecurityConfiguration.class, JwtGrantedAuthoritiesConverter.class}))
 @AutoConfigureMockMvc(addFilters = false)
 @ImportAutoConfiguration(TestIdamConfiguration.class)
 @Import(OverrideHostPolicyConfig.class)
