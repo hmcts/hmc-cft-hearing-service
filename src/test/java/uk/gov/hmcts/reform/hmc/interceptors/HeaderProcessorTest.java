@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,7 +20,7 @@ import static org.mockito.MockitoAnnotations.openMocks;
 
 @ExtendWith(MockitoExtension.class)
 @Import(OverrideHostPolicyConfig.class)
-@ActiveProfiles("test")
+@ActiveProfiles("itest")
 class HeaderProcessorTest {
 
     @Mock
@@ -51,14 +52,15 @@ class HeaderProcessorTest {
         when(params.isHmctsDeploymentIdEnabled()).thenReturn(true);
         when(dataStoreUrlManager.getUrlHeaderName()).thenReturn("dataStoreUrl");
         when(roleAssignmentUrlManager.getUrlHeaderName()).thenReturn("roleAssignmentUrl");
+        when(overrideHostPolicy.isAllowed(anyString())).thenReturn(true);
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("roleAssignmentUrl", "roleAssignmentUrlValue");
-        request.addHeader("dataStoreUrl", "dataStoreUrlValue");
-
+        String roleAssignmentUrlValue = "https://ccd-data-store-api-test-case-api-pr-XXX.preview.platform.hmcts.net";
+        String dataStoreUrlValue = "https://am-role-assignment-test-case-api-pr-XXX.preview.platform.hmcts.net";
+        request.addHeader("roleAssignmentUrl", roleAssignmentUrlValue);
+        request.addHeader("dataStoreUrl", dataStoreUrlValue);
         headerProcessor.preHandle(request, null, null);
-
-        verify(roleAssignmentUrlManager, times(1)).setActualHost("roleAssignmentUrlValue");
-        verify(dataStoreUrlManager, times(1)).setActualHost("dataStoreUrlValue");
+        verify(roleAssignmentUrlManager, times(1)).setActualHost(roleAssignmentUrlValue);
+        verify(dataStoreUrlManager, times(1)).setActualHost(dataStoreUrlValue);
     }
 
     @Test
