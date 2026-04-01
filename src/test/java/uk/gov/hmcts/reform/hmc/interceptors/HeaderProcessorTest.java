@@ -32,6 +32,9 @@ class HeaderProcessorTest {
 
     HeaderProcessor headerProcessor;
 
+    private final String roleAssignmentUrlValue = "https://ccd-data-store-api-test-case-api-pr-XXX.preview.platform.hmcts.net";
+    private final String dataStoreUrlValue = "https://am-role-assignment-test-case-api-pr-XXX.preview.platform.hmcts.net";
+
     @BeforeEach
     void setUp() {
         openMocks(this);
@@ -45,28 +48,28 @@ class HeaderProcessorTest {
         when(dataStoreUrlManager.getUrlHeaderName()).thenReturn("dataStoreUrl");
         when(roleAssignmentUrlManager.getUrlHeaderName()).thenReturn("roleAssignmentUrl");
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("roleAssignmentUrl", "roleAssignmentUrlValue");
-        request.addHeader("dataStoreUrl", "dataStoreUrlValue");
+        request.addHeader("roleAssignmentUrl", roleAssignmentUrlValue);
+        request.addHeader("dataStoreUrl", dataStoreUrlValue);
 
         headerProcessor.preHandle(request, null, null);
 
-        verify(roleAssignmentUrlManager, times(1)).setActualHost("roleAssignmentUrlValue");
-        verify(dataStoreUrlManager, times(1)).setActualHost("dataStoreUrlValue");
+        verify(roleAssignmentUrlManager, times(1)).setActualHost(roleAssignmentUrlValue);
+        verify(dataStoreUrlManager, times(1)).setActualHost(dataStoreUrlValue);
     }
 
     @Test
     void preHandleShouldCallHandlersWithDefaultIfHeaderNotPresent() throws Exception {
         when(params.isHmctsDeploymentIdEnabled()).thenReturn(true);
-        when(dataStoreUrlManager.getUrlHeaderName()).thenReturn("dataStoreUrl");
-        when(roleAssignmentUrlManager.getUrlHeaderName()).thenReturn("roleAssignmentUrl");
+        when(dataStoreUrlManager.getUrlHeaderName()).thenReturn(dataStoreUrlValue);
+        when(roleAssignmentUrlManager.getUrlHeaderName()).thenReturn(roleAssignmentUrlValue);
         when(roleAssignmentUrlManager.getHost()).thenReturn("roleAssignmentDefaultHost");
         when(dataStoreUrlManager.getHost()).thenReturn("dataStoreDefaultHost");
         MockHttpServletRequest request = new MockHttpServletRequest();
 
         headerProcessor.preHandle(request, null, null);
 
-        verify(roleAssignmentUrlManager, times(0)).setActualHost("roleAssignmentUrlValue");
-        verify(dataStoreUrlManager, times(0)).setActualHost("dataStoreUrlValue");
+        verify(roleAssignmentUrlManager, times(0)).setActualHost(roleAssignmentUrlValue);
+        verify(dataStoreUrlManager, times(0)).setActualHost(dataStoreUrlValue);
         verify(roleAssignmentUrlManager, times(1)).setActualHost("roleAssignmentDefaultHost");
         verify(dataStoreUrlManager, times(1)).setActualHost("dataStoreDefaultHost");
     }
