@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
@@ -16,6 +18,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 @ExtendWith(MockitoExtension.class)
+@Import(OverrideHostPolicyConfig.class)
+@ActiveProfiles("test")
 class HeaderProcessorTest {
 
     @Mock
@@ -28,6 +32,9 @@ class HeaderProcessorTest {
     private OverrideAuditService overrideAuditService;
 
     @Mock
+    private OverrideHostPolicy overrideHostPolicy;
+
+    @Mock
     private UrlManager roleAssignmentUrlManager;
 
     HeaderProcessor headerProcessor;
@@ -36,7 +43,7 @@ class HeaderProcessorTest {
     void setUp() {
         openMocks(this);
         headerProcessor = new HeaderProcessor(
-            params, roleAssignmentUrlManager, dataStoreUrlManager, overrideAuditService);
+            params, roleAssignmentUrlManager, dataStoreUrlManager, overrideAuditService, overrideHostPolicy);
     }
 
     @Test
@@ -45,15 +52,13 @@ class HeaderProcessorTest {
         when(dataStoreUrlManager.getUrlHeaderName()).thenReturn("dataStoreUrl");
         when(roleAssignmentUrlManager.getUrlHeaderName()).thenReturn("roleAssignmentUrl");
         MockHttpServletRequest request = new MockHttpServletRequest();
-        String roleAssignmentUrlValue = "https://ccd-data-store-api-test-case-api-pr-XXX.preview.platform.hmcts.net";
-        String dataStoreUrlValue = "https://am-role-assignment-test-case-api-pr-XXX.preview.platform.hmcts.net";
-        request.addHeader("roleAssignmentUrl", roleAssignmentUrlValue);
-        request.addHeader("dataStoreUrl", dataStoreUrlValue);
+        request.addHeader("roleAssignmentUrl", "roleAssignmentUrlValue");
+        request.addHeader("dataStoreUrl", "dataStoreUrlValue");
 
         headerProcessor.preHandle(request, null, null);
 
-        verify(roleAssignmentUrlManager, times(1)).setActualHost(roleAssignmentUrlValue);
-        verify(dataStoreUrlManager, times(1)).setActualHost(dataStoreUrlValue);
+        verify(roleAssignmentUrlManager, times(1)).setActualHost("roleAssignmentUrlValue");
+        verify(dataStoreUrlManager, times(1)).setActualHost("dataStoreUrlValue");
     }
 
     @Test
@@ -92,5 +97,4 @@ class HeaderProcessorTest {
         verify(dataStoreUrlManager, times(1)).setActualHost("http://example.org");
 
     }
-
 }
