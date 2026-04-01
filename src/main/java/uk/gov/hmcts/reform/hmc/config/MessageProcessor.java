@@ -44,7 +44,7 @@ public class MessageProcessor {
     private static final String HEADER_SIGNATURE = "X-Message-Signature";
     private static final String HEADER_SENDER = "X-Sender-Service";
     private static final String HEADER_TIMESTAMP = "X-Timestamp";
-    private static final Duration MAX_MESSAGE_AGE = Duration.ofMinutes(5);
+    private static final Duration MAX_MESSAGE_AGE = Duration.ofMinutes(30);
     private static final String EXPECTED_INBOUND_SENDER = "HMI-Inbound-Adapter";
 
     @Value("${hmac.secrets.hmi-to-hmc}")
@@ -59,7 +59,10 @@ public class MessageProcessor {
     public void processMessage(ServiceBusReceivedMessageContext messageContext) {
         var processingResult = tryProcessMessage(messageContext);
         if (processingResult.resultType.equals(MessageProcessingResultType.SUCCESS)) {
+            messageContext.complete();
             log.info(MESSAGE_SUCCESS, messageContext.getMessage().getMessageId());
+        } else if (processingResult.resultType.equals(MessageProcessingResultType.UNRECOVERABLE_FAILURE)) {
+            messageContext.deadLetter();
         }
     }
 

@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.HashMap;
@@ -85,6 +86,7 @@ class MessageProcessorTest {
         given(messageContext.getMessage().getDeliveryCount()).willReturn(1L);
         messageProcessor.processMessage(messageContext);
         verify(inboundQueueService).processMessage(any(), any());
+        verify(messageContext).complete();
     }
 
     @Test
@@ -102,6 +104,7 @@ class MessageProcessorTest {
         given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
         messageProcessor.processMessage(messageContext);
         verify(inboundQueueService).processMessage(any(), any());
+        verify(messageContext).complete();
     }
 
     @Test
@@ -150,6 +153,7 @@ class MessageProcessorTest {
         messageProcessor.processMessage(messageContext);
         verify(inboundQueueService, times(1)).catchExceptionAndUpdateHearing(any(), any());
         verify(inboundQueueService, times(0)).processMessage(any(), any());
+        verify(messageContext).deadLetter();
     }
 
     @Test
@@ -185,6 +189,7 @@ class MessageProcessorTest {
         messageProcessor.processMessage(messageContext);
 
         verify(inboundQueueService, times(1)).processMessage(any(), eq(messageContext));
+        verify(messageContext).complete();
     }
 
     @Test
@@ -212,6 +217,7 @@ class MessageProcessorTest {
         messageProcessor.processMessage(context);
 
         verify(inboundQueueService, never()).processMessage(any(), any());
+        verify(context).deadLetter();
     }
 
     @Test
@@ -230,6 +236,7 @@ class MessageProcessorTest {
 
         verify(inboundQueueService, never()).processMessage(any(), any());
         verify(inboundQueueService, never()).catchExceptionAndUpdateHearing(any(), any());
+        verify(messageContext).deadLetter();
     }
 
     @Test
@@ -247,12 +254,13 @@ class MessageProcessorTest {
         messageProcessor.processMessage(messageContext);
 
         verify(inboundQueueService, never()).processMessage(any(), any());
+        verify(messageContext).deadLetter();
     }
 
     @Test
     void shouldNotProcessMessageWhenTimestampExpired() throws JsonProcessingException {
         String body = "{\"test\":\"name\"}";
-        String expiredTimestamp = Instant.now().minusSeconds(600).toString();
+        String expiredTimestamp = Instant.now().minus(Duration.ofMinutes(31)).toString();
         Map<String, Object> props = signedProps(body, MessageType.HEARING_RESPONSE.name(), "12345", expiredTimestamp);
 
         when(message.getApplicationProperties()).thenReturn(props);
@@ -263,6 +271,7 @@ class MessageProcessorTest {
         messageProcessor.processMessage(messageContext);
 
         verify(inboundQueueService, never()).processMessage(any(), any());
+        verify(messageContext).deadLetter();
     }
 
     @Test
@@ -280,6 +289,7 @@ class MessageProcessorTest {
         messageProcessor.processMessage(messageContext);
 
         verify(inboundQueueService, never()).processMessage(any(), any());
+        verify(messageContext).deadLetter();
     }
 
     private Map<String, Object> signedProps(String body, String messageType, String hearingId, String timestamp) {
