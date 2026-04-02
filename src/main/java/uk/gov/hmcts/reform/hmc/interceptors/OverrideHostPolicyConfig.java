@@ -13,7 +13,7 @@ public class OverrideHostPolicyConfig {
     @Profile("!itest")
     public OverrideHostPolicy strictOverrideHostPolicy() {
         Pattern allowed = Pattern.compile(
-            "^https://([a-z0-9-]+\\.)*(preview|aat|demo)\\.platform\\.hmcts\\.net(?::\\d{1,5})?(?:/.*)?$",
+            "^https://(?:[a-z0-9-]+\\.){0,5}(preview|aat|demo)\\.platform\\.hmcts\\.net(?::\\d{1,5})?(?:/.*)?$",
             Pattern.CASE_INSENSITIVE
         );
 
