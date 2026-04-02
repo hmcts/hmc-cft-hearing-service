@@ -20,8 +20,8 @@ public class HeaderProcessor implements HandlerInterceptor {
     private final ApplicationParams params;
     private final UrlManager roleAssignmentUrlManager;
     private final UrlManager dataStoreUrlManager;
-
     private final OverrideAuditService overrideAuditService;
+    private final OverrideHostPolicy overrideHostPolicy;
 
     /**
      * Check if role assignment and/or ccd data store url headers are present in the request.
@@ -50,10 +50,14 @@ public class HeaderProcessor implements HandlerInterceptor {
 
     private void processHeader(HttpServletRequest request, UrlManager urlManager) {
         String url = request.getHeader(urlManager.getUrlHeaderName());
-        if (isNotBlank(url)) {
+        if (isNotBlank(url) && overrideHostPolicy.isAllowed(url)) {
             urlManager.setActualHost(url);
         } else {
+            if (isNotBlank(url)) {
+                log.warn("Rejected override url for header {}: {}", urlManager.getUrlHeaderName(), url);
+            }
             urlManager.setActualHost(urlManager.getHost());
         }
     }
+
 }

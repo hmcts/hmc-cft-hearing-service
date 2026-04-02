@@ -8,9 +8,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,6 +22,7 @@ import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.interceptors.OverrideHostPolicy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +40,16 @@ import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 
-
+@ActiveProfiles("itest")
 class HearingActualControllerIT extends BaseTest {
 
     public static final String ROLE_TYPE = "ORGANISATION";
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    protected OverrideHostPolicy overrideHostPolicy;
 
     private static final String URL = "/hearingActuals";
 
@@ -113,6 +120,7 @@ class HearingActualControllerIT extends BaseTest {
         @BeforeEach
         void setUp() {
             ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(true);
             amServer.resetRequests();
             dataStoreServer.resetRequests();
         }
