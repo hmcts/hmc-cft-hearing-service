@@ -44,7 +44,7 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 @AutoConfigureMockMvc(addFilters = false)
 @ImportAutoConfiguration(TestIdamConfiguration.class)
 @Import(OverrideHostPolicyConfig.class)
-@ActiveProfiles("test")
+@ActiveProfiles("itest")
 class ManageExceptionsControllerTest {
 
     @Autowired

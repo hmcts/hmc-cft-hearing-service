@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class OverrideHostPolicyConfig {
 
     @Bean
-    @Profile("!test")
+    @Profile("!itest")
     public OverrideHostPolicy strictOverrideHostPolicy() {
         Pattern allowed = Pattern.compile(
             "^https://([a-z0-9-]+\\.)*(preview|aat|demo)\\.platform\\.hmcts\\.net(?::\\d{1,5})?(?:/.*)?$",
@@ -21,7 +21,7 @@ public class OverrideHostPolicyConfig {
     }
 
     @Bean
-    @Profile("test")
+    @Profile("itest")
     public OverrideHostPolicy permissiveOverrideHostPolicy() {
         return url -> url != null && !url.trim().isEmpty();
     }
