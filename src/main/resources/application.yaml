@@ -185,8 +185,7 @@ supportTools:
   role-whitelist:  ${SUPPORT_TOOLS_AUTHORISED_ROLES:hmc_tech_admin}
 
 headerBased:
-  allowed-override-hostpatterns: ${OVERRIDE_HOSTS:.*demo\\.platform\\.hmcts\\.net}
-
+  allowed-override-hostpatterns: ${OVERRIDE_HOSTS:^https://(?:[a-z0-9-]+\.){0,5}(preview|aat|demo)\.platform\.hmcts\.net(?::\d{1,5})?(?:/.*)?$}
 
 LOGGING:
   LEVEL:
