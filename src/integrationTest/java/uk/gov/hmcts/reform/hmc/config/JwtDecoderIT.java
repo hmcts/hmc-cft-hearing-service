@@ -6,8 +6,9 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.nimbusds.jose.JOSEException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -52,16 +53,12 @@ class JwtDecoderIT {
 
     private final MockMvc mockMvc;
 
-    private final String validIssuer;
-    private final String validIssuerOverride;
+    private static final String VALID_ISSUER_WEB_PUBLIC = "http://localhost:5000/o";
+    private static final String VALID_ISSUER_FORGEROCK = "http://fr-am:8080/openam/oauth2/hmcts";
 
     @Autowired
-    public JwtDecoderIT(MockMvc mockMvc,
-                        @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}") String validIssuer,
-                        @Value("${oidc.issuer}") String validIssuerOverride) {
+    public JwtDecoderIT(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
-        this.validIssuer = validIssuer;
-        this.validIssuerOverride = validIssuerOverride;
     }
 
     @BeforeEach
@@ -115,23 +112,13 @@ class JwtDecoderIT {
                                        containsString("The issuer is missing or invalid")));
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {VALID_ISSUER_FORGEROCK, VALID_ISSUER_WEB_PUBLIC})
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void multiIssuerValidator_shouldSucceedWithValidIssuer() throws Exception {
+    void multiIssuerValidator_shouldSucceedWithValidIssuer(String validIssuer) throws Exception {
         stubCcdGetCaseDetails();
 
         String userToken = createUserToken(validIssuer);
-
-        RequestBuilder getHearingRequest = createGetHearingRequest(userToken);
-        mockMvc.perform(getHearingRequest).andExpect(status().isOk());
-    }
-
-    @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void multiIssuerValidator_shouldSucceedWithValidIssuerOverride() throws Exception {
-        stubCcdGetCaseDetails();
-
-        String userToken = createUserToken(validIssuerOverride);
 
         RequestBuilder getHearingRequest = createGetHearingRequest(userToken);
         mockMvc.perform(getHearingRequest).andExpect(status().isOk());
@@ -152,7 +139,7 @@ class JwtDecoderIT {
     }
 
     private String createUserToken(Instant issuedAt, Instant expiresAt, Instant notBefore) throws JOSEException {
-        return createUserToken(validIssuer, issuedAt, expiresAt, notBefore);
+        return createUserToken(VALID_ISSUER_FORGEROCK, issuedAt, expiresAt, notBefore);
     }
 
     private String createUserToken(String issuer, Instant issuedAt, Instant expiresAt, Instant notBefore)

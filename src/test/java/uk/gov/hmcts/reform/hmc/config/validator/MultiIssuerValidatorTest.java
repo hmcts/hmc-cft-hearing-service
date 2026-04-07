@@ -12,8 +12,11 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -38,44 +41,41 @@ class MultiIssuerValidatorTest {
     private static final String TOKEN_VALUE = "testTokenValue";
 
     @Test
-    void initialisationShouldFailWithNullIssuer() {
-        assertThrows(NullPointerException.class,
-                     () -> new MultiIssuerValidator((String) null),
-                     "Exception should be thrown if issuer is null");
+    void initialisationShouldFailWithNullList() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                                                          () -> new MultiIssuerValidator(null),
+                                                          "Exception should be thrown if list is null");
+        assertIllegalArgumentException(exception, "Valid issuers list should not be null or empty");
+    }
+
+    @Test
+    void initialisationShouldFailWithEmptyList() {
+        List<String> emptyList = Collections.emptyList();
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                                                          () -> new MultiIssuerValidator(emptyList),
+                                                          "Exception should be thrown is list is empty");
+        assertIllegalArgumentException(exception, "Valid issuers list should not be null or empty");
     }
 
     @ParameterizedTest
-    @MethodSource("arraysWithNullIssuer")
-    void initialisationShouldFailWithNullIssuerInArray(String[] issuers) {
-        assertThrows(NullPointerException.class,
-                     () -> new MultiIssuerValidator(issuers),
-                     "Exception should be thrown if array contains a null issuer");
+    @MethodSource("listsWithNullIssuer")
+    void initialisationShouldFailWithNullIssuer(List<String> issuers) {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                                                          () -> new MultiIssuerValidator(issuers),
+                                                          "Exception should be thrown if list contains a null issuer");
+        assertIllegalArgumentException(exception, "Valid issuers list should not contain any null elements");
     }
 
     @Test
-    void initialisationShouldFailWithEmptyArray() {
-        String[] emptyArray = {};
-        assertThrows(IllegalArgumentException.class,
-                     () -> new MultiIssuerValidator(emptyArray),
-                     "Exception should be thrown if array is empty");
-    }
-
-    @Test
-    void initialisationShouldSucceedWithNonNullIssuer() {
-        assertDoesNotThrow(() -> new MultiIssuerValidator(ISSUER_VALID),
-                           "Exception should not be thrown for non-null issuer");
-    }
-
-    @Test
-    void initialisationShouldSucceedWithNonNullIssuerInArray() {
-        String[] validIssuerArray = {ISSUER_VALID};
-        assertDoesNotThrow(() -> new MultiIssuerValidator(validIssuerArray),
-                           "Exception should not be thrown for non-null, non-empty array of non-null issuers");
+    void initialisationShouldSucceed() {
+        List<String> listWithIssuer = List.of(ISSUER_VALID);
+        assertDoesNotThrow(() -> new MultiIssuerValidator(listWithIssuer),
+                           "Exception should not be thrown for non-null, non-empty list of non-null issuers");
     }
 
     @Test
     void validateShouldFailForNoIssuer() {
-        MultiIssuerValidator validator = new MultiIssuerValidator(ISSUER_VALID);
+        MultiIssuerValidator validator = new MultiIssuerValidator(List.of(ISSUER_VALID));
 
         Jwt jwtWithoutIssuer = createJwtWithoutIssuer();
         OAuth2TokenValidatorResult result = validator.validate(jwtWithoutIssuer);
@@ -85,7 +85,7 @@ class MultiIssuerValidatorTest {
 
     @Test
     void validateShouldFailForEmptyIssuer() {
-        MultiIssuerValidator validator = new MultiIssuerValidator(ISSUER_VALID);
+        MultiIssuerValidator validator = new MultiIssuerValidator(List.of(ISSUER_VALID));
 
         Jwt jwtWithEmptyIssuer = createJwt(ISSUER_EMPTY);
         OAuth2TokenValidatorResult result = validator.validate(jwtWithEmptyIssuer);
@@ -95,7 +95,7 @@ class MultiIssuerValidatorTest {
 
     @Test
     void validateShouldFailForInvalidIssuer() {
-        MultiIssuerValidator validator = new MultiIssuerValidator(ISSUER_VALID);
+        MultiIssuerValidator validator = new MultiIssuerValidator(List.of(ISSUER_VALID));
 
         Jwt jwtIssuerInvalid = createJwt(ISSUER_INVALID);
         OAuth2TokenValidatorResult result = validator.validate(jwtIssuerInvalid);
@@ -106,7 +106,7 @@ class MultiIssuerValidatorTest {
     @ParameterizedTest
     @ValueSource(strings = {ISSUER_VALID_OTHER, ISSUER_VALID})
     void validateShouldSucceed(String issuer) {
-        MultiIssuerValidator validator = new MultiIssuerValidator(ISSUER_VALID, ISSUER_VALID_OTHER);
+        MultiIssuerValidator validator = new MultiIssuerValidator(List.of(ISSUER_VALID, ISSUER_VALID_OTHER));
 
         Jwt jwtValid = createJwt(issuer);
         OAuth2TokenValidatorResult result = validator.validate(jwtValid);
@@ -114,14 +114,22 @@ class MultiIssuerValidatorTest {
         assertValidateSuccess(result);
     }
 
-    private static Stream<Arguments> arraysWithNullIssuer() {
-        String[] onlyNullIssuer = {null};
-        String[] nonNullAndNullIssuer = {ISSUER_VALID, null};
+    private static Stream<Arguments> listsWithNullIssuer() {
+        List<String> onlyNullIssuer = new ArrayList<>();
+        onlyNullIssuer.add(null);
+
+        List<String> nonNullAndNullIssuer = new ArrayList<>();
+        nonNullAndNullIssuer.add(ISSUER_VALID);
+        nonNullAndNullIssuer.add(null);
 
         return Stream.of(
-            arguments((Object) onlyNullIssuer),
-            arguments((Object) nonNullAndNullIssuer)
+            arguments(onlyNullIssuer),
+            arguments(nonNullAndNullIssuer)
         );
+    }
+
+    private void assertIllegalArgumentException(IllegalArgumentException exception, String expectedMessage) {
+        assertEquals(expectedMessage, exception.getMessage(), "Exception has unexpected message");
     }
 
     private void assertValidateFailure(OAuth2TokenValidatorResult result) {

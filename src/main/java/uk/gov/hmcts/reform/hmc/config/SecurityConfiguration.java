@@ -30,7 +30,7 @@ public class SecurityConfiguration {
 
     private final String issuerUri;
 
-    private final String issuerOverride;
+    private final IdamSecurityConfig idamSecurityConfig;
 
     private final ServiceAuthFilter serviceAuthFilter;
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
@@ -51,11 +51,11 @@ public class SecurityConfiguration {
 
     @Autowired
     public SecurityConfiguration(@Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}") String issuerUri,
-                                 @Value("${oidc.issuer}") String issuerOverride,
+                                 IdamSecurityConfig idamSecurityConfig,
                                  final ServiceAuthFilter serviceAuthFilter,
                                  final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter) {
         this.issuerUri = issuerUri;
-        this.issuerOverride = issuerOverride;
+        this.idamSecurityConfig = idamSecurityConfig;
         this.serviceAuthFilter = serviceAuthFilter;
         jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
@@ -83,7 +83,7 @@ public class SecurityConfiguration {
     @Bean
     JwtDecoder jwtDecoder() {
         OAuth2TokenValidator<Jwt> withTimestamp = new JwtTimestampValidator();
-        OAuth2TokenValidator<Jwt> withMultiIssuer = new MultiIssuerValidator(issuerUri, issuerOverride);
+        OAuth2TokenValidator<Jwt> withMultiIssuer = new MultiIssuerValidator(idamSecurityConfig.getAllowedIssuers());
         OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(withTimestamp, withMultiIssuer);
 
         NimbusJwtDecoder jwtDecoder = JwtDecoders.fromOidcIssuerLocation(issuerUri);

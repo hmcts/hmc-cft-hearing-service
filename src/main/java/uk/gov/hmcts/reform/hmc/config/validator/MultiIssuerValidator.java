@@ -19,10 +19,10 @@ public class MultiIssuerValidator implements OAuth2TokenValidator<Jwt> {
     private final OAuth2Error errorIssuerInvalid =
         new OAuth2Error(OAuth2ErrorCodes.INVALID_TOKEN, "The issuer is missing or invalid", null);
 
-    public MultiIssuerValidator(String... validIssuers) {
-        List<String> issuers = List.of(validIssuers);
-        Assert.notEmpty(issuers, "Valid issuers should not be null or empty");
-        this.validIssuers = issuers;
+    public MultiIssuerValidator(List<String> validIssuers) {
+        Assert.notEmpty(validIssuers, "Valid issuers list should not be null or empty");
+        Assert.noNullElements(validIssuers, "Valid issuers list should not contain any null elements");
+        this.validIssuers = validIssuers;
     }
 
     @Override
@@ -30,6 +30,7 @@ public class MultiIssuerValidator implements OAuth2TokenValidator<Jwt> {
         String issuer = jwt.getClaimAsString(JwtClaimNames.ISS) == null ? "" : jwt.getClaimAsString(JwtClaimNames.ISS);
 
         if (!issuer.isEmpty() && validIssuers.contains(issuer)) {
+            log.debug("Valid issuer: [{}]", issuer);
             return OAuth2TokenValidatorResult.success();
         } else {
             log.error("Invalid issuer: [{}]", issuer);
