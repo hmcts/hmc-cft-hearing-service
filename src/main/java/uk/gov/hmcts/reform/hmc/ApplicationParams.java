@@ -76,6 +76,8 @@ public class ApplicationParams {
     @Value("#{'${supportTools.role-whitelist}'.split(',')}")
     private List<String> authorisedSupportToolRoles;
 
+    @Value("#{'${headerBased.allowed-override-hostpatterns}'.split(',')}")
+    private List<String> allowedOverRideHostPatterns;
 
     public static String encode(final String stringToEncode) {
         try {

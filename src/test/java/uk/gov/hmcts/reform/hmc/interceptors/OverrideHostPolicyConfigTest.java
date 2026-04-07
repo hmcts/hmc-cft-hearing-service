@@ -1,13 +1,18 @@
 package uk.gov.hmcts.reform.hmc.interceptors;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import uk.gov.hmcts.reform.hmc.ApplicationParams;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OverrideHostPolicyConfigTest {
 
-    private final OverrideHostPolicyConfig config = new OverrideHostPolicyConfig();
+    @Mock
+    ApplicationParams applicationParams;
+
+    private final OverrideHostPolicyConfig config = new OverrideHostPolicyConfig(applicationParams);
 
     @Test
     void strictOverrideHostPolicy_shouldAllowValidUrls() {

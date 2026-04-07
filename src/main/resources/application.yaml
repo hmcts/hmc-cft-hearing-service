@@ -112,6 +112,7 @@ access-control:
 
 hmcts-deployment-id:
   enabled: ${HMCTS_DEPLOYMENT_ID_ENABLED:false}
+  override-host-allowlist: ${OVERRIDE_HOST_ALLOWLIST:}
 
 room-attributes:
   file: ${ROOM_ATTRIBUTES_FILE:classpath:room-attributes.json}
@@ -182,6 +183,10 @@ fh:
 supportTools:
   service-whitelist: ${SUPPORT_TOOLS_AUTHORISED_SERVICES:tech_admin_ui}
   role-whitelist:  ${SUPPORT_TOOLS_AUTHORISED_ROLES:hmc_tech_admin}
+
+headerBased:
+  allowed-override-hostpatterns: ${OVERRIDE_HOSTS:.*demo\\.platform\\.hmcts\\.net}
+
 
 LOGGING:
   LEVEL:
