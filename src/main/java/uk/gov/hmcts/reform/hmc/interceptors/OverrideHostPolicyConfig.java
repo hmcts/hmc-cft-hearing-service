@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @Configuration
+@Profile("!test")
 public class OverrideHostPolicyConfig {
 
     private ApplicationParams applicationParams;
@@ -18,7 +19,6 @@ public class OverrideHostPolicyConfig {
     }
 
     @Bean
-    @Profile("!test")
     public OverrideHostPolicy strictOverrideHostPolicy() {
 
         List<String> overrideHostAllowList = applicationParams.getAllowedOverRideHostPatterns();
@@ -40,9 +40,4 @@ public class OverrideHostPolicyConfig {
             .anyMatch(pattern -> pattern.matcher(url.trim()).matches());
     }
 
-    @Bean
-    @Profile("itest")
-    public OverrideHostPolicy permissiveOverrideHostPolicy() {
-        return url -> url != null && !url.trim().isEmpty();
-    }
 }
