@@ -64,6 +64,23 @@ class HeaderProcessorTest {
     }
 
     @Test
+    void preHandleShouldCallHandlers_OverrideHost_False() throws Exception {
+        when(params.isHmctsDeploymentIdEnabled()).thenReturn(true);
+        when(overrideHostPolicy.isAllowed(anyString())).thenReturn(false);
+        when(dataStoreUrlManager.getUrlHeaderName()).thenReturn("dataStoreUrl");
+        when(roleAssignmentUrlManager.getUrlHeaderName()).thenReturn("roleAssignmentUrl");
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("roleAssignmentUrl", "roleAssignmentUrlValue");
+        request.addHeader("dataStoreUrl", "dataStoreUrlValue");
+
+        headerProcessor.preHandle(request, null, null);
+
+        verify(roleAssignmentUrlManager, times(0)).setActualHost("roleAssignmentUrlValue");
+        verify(dataStoreUrlManager, times(0)).setActualHost("dataStoreUrlValue");
+    }
+
+    @Test
     void preHandleShouldCallHandlersWithDefaultIfHeaderNotPresent() throws Exception {
         when(params.isHmctsDeploymentIdEnabled()).thenReturn(true);
         when(dataStoreUrlManager.getUrlHeaderName()).thenReturn("dataStoreUrl");
@@ -89,6 +106,27 @@ class HeaderProcessorTest {
         request.addHeader("roleAssignmentUrl", "roleAssignmentUrlValue");
         request.addHeader("dataStoreUrl", "dataStoreUrlValue");
 
+
+        headerProcessor.preHandle(request, null, null);
+
+        verify(roleAssignmentUrlManager, times(1)).getHost();
+        verify(dataStoreUrlManager, times(1)).getHost();
+
+        verify(roleAssignmentUrlManager, times(1)).setActualHost("http://example.org");
+        verify(dataStoreUrlManager, times(1)).setActualHost("http://example.org");
+
+    }
+
+    @Test
+    void preHandleShouldNotProcessHeaders_OverrideHostIsInvalid() throws Exception {
+        when(params.isHmctsDeploymentIdEnabled()).thenReturn(true);
+        when(dataStoreUrlManager.getUrlHeaderName()).thenReturn("dataStoreUrl");
+        when(roleAssignmentUrlManager.getUrlHeaderName()).thenReturn("roleAssignmentUrl");
+        when(roleAssignmentUrlManager.getHost()).thenReturn("http://example.org");
+        when(dataStoreUrlManager.getHost()).thenReturn("http://example.org");
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("roleAssignmentUrl", "roleAssignmentUrlValue");
+        request.addHeader("dataStoreUrl", "dataStoreUrlValue");
 
         headerProcessor.preHandle(request, null, null);
 

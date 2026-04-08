@@ -119,7 +119,6 @@ class HearingActualControllerIT extends BaseTest {
         @BeforeEach
         void setUp() {
             ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
-            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(true);
             amServer.resetRequests();
             dataStoreServer.resetRequests();
         }
@@ -127,6 +126,7 @@ class HearingActualControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldCallProvidedCcdAndAmUrl_WhenHeadersProvided() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(true);
             mockMvc.perform(get(URL + "/2000000000")
                                 .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
                                 .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
@@ -139,7 +139,22 @@ class HearingActualControllerIT extends BaseTest {
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldNotCallProvidedCcdAndAmUrl_WhenHeadersProvidedInvalid() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(false);
+            mockMvc.perform(get(URL + "/2000000000")
+                                .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
+                                .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+            amServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
+            dataStoreServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldCallProvidedCcdUrl_WhenCcdHeaderProvided() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(true);
             mockMvc.perform(get(URL + "/2000000000")
                                 .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -150,13 +165,39 @@ class HearingActualControllerIT extends BaseTest {
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldNotCallProvidedCcdUrl_WhenCcdHeaderInvalid() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(false);
+            mockMvc.perform(get(URL + "/2000000000")
+                                .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+            dataStoreServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
+            WireMock.verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldCallProvidedAmUrl_WhenAmHeaderProvided() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(true);
             mockMvc.perform(get(URL + "/2000000000")
                                 .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
 
             amServer.verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
+            WireMock.verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldNotCallProvidedAmUrl_WhenAmHeaderInvalid() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(false);
+            mockMvc.perform(get(URL + "/2000000000")
+                                .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+            amServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
             WireMock.verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
         }
     }

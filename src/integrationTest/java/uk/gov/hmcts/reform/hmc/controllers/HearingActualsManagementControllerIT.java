@@ -693,6 +693,22 @@ class HearingActualsManagementControllerIT extends BaseTest {
             amServer.verify(2, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
             dataStoreServer.verify(2, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
         }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS1})
+        void shouldNotCallProvidedCcdAndAmUrl_WhenHeaderIsInvalid() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(false);
+            mockMvc.perform(
+                    get(URL + "/2000000000")
+                        .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                        .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
+                        .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200));
+
+            amServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
+            dataStoreServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
+        }
     }
 
     @Test

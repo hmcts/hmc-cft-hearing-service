@@ -53,11 +53,8 @@ public class HeaderProcessor implements HandlerInterceptor {
         if (isNotBlank(url) && overrideHostPolicy.isAllowed(url)) {
             urlManager.setActualHost(url);
         } else {
-            if (isNotBlank(url)) {
-                log.warn("Rejected override url for header {}: {}", urlManager.getUrlHeaderName(), url);
-            }
+            log.warn("Rejected override url for header {}: {}", urlManager.getUrlHeaderName(), url);
             urlManager.setActualHost(urlManager.getHost());
         }
     }
-
 }
