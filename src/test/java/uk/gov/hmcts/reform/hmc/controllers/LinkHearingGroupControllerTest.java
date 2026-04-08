@@ -9,12 +9,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,9 +47,7 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
     excludeFilters = @ComponentScan.Filter(type = ASSIGNABLE_TYPE, classes =
         {SecurityConfiguration.class, JwtGrantedAuthoritiesConverter.class}))
 @AutoConfigureMockMvc(addFilters = false)
-@ImportAutoConfiguration(TestIdamConfiguration.class)
-@Import(OverrideHostPolicyConfig.class)
-@ActiveProfiles("itest")
+@Import({TestIdamConfiguration.class, OverrideHostPolicyConfig.class})
 class LinkHearingGroupControllerTest {
 
     private static final Logger logger = LoggerFactory.getLogger(LinkHearingGroupControllerTest.class);
