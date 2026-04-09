@@ -92,4 +92,7 @@ public final class Constants {
     public static final String FINAL_STATE_MESSAGE = "Hearing id: {} with Case reference: {} , Service Code: {}"
         + " and Response received but current hearing status: {}; LA status: {} no further action taken ";
     public static final String HEARING_FINAL_STATE = "hearing-is-in-final-state";
+    public static final String INBOUND_S2S_TOKEN = "hmc_hmi_inbound_adapter";
+    public static final String INVALID_SERVICE_AUTHORISATION_LOG_MESSAGE = "Failed to invoke ‘getHearing’"
+        + " from service: {} for hearing id: {}";
 }
