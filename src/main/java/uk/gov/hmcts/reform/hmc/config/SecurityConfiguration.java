@@ -42,10 +42,6 @@ public class SecurityConfiguration {
         "/webjars/**",
         "/v3/api-docs",
         "/v3/api-docs/**",
-        "/health",
-        "/health/liveness",
-        "/health/readiness",
-        "/info",
         "/favicon.ico",
         "/"
     };
@@ -62,7 +58,7 @@ public class SecurityConfiguration {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers(AUTH_ALLOWED_LIST);
-    }    
+    }
 
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
