@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OverrideHostPolicyConfigIT extends BaseTest {
 
@@ -14,8 +14,8 @@ class OverrideHostPolicyConfigIT extends BaseTest {
 
     @Test
     void should_use_pattern_from_application_yaml() {
-        assertTrue(policy.isAllowed("https://ccd-data-store-api-pr-3079.preview.platform.hmcts.net"));
-        assertTrue(policy.isAllowed("https://service-pr-123.aat.platform.hmcts.net"));
+        assertThat(policy.isAllowed("https://ccd-data-store-api-pr-3079.preview.platform.hmcts.net"));
+        assertThat(policy.isAllowed("https://service-pr-123.aat.platform.hmcts.net"));
         assertFalse(policy.isAllowed("https://datastore.com"));
         assertFalse(policy.isAllowed(""));
         assertFalse(policy.isAllowed(" "));

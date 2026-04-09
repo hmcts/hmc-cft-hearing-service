@@ -6,9 +6,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.regex.PatternSyntaxException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class OverrideHostPolicyConfigTest {
@@ -19,11 +19,11 @@ class OverrideHostPolicyConfigTest {
     @Test
     void should_allow_url_matching_configured_regex() {
         OverrideHostPolicyConfig policy = new OverrideHostPolicyConfig(REGEX);
-        assertTrue(policy.isAllowed(
+        assertThat(policy.isAllowed(
             "https://ccd-data-store-api-pr-1234.preview.platform.hmcts.net"));
-        assertTrue(policy.isAllowed(
+        assertThat(policy.isAllowed(
             "https://am-role-assignment-pr-56.aat.platform.hmcts.net:443/path"));
-        assertTrue(policy.isAllowed(
+        assertThat(policy.isAllowed(
             "https://service-pr-999.demo.platform.hmcts.net"));
     }
 
