@@ -142,8 +142,8 @@ class HearingActualControllerIT extends BaseTest {
         void shouldNotCallProvidedCcdAndAmUrl_WhenHeadersProvidedInvalid() throws Exception {
             Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(false);
             mockMvc.perform(get(URL + "/2000000000")
-                                .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
-                                .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
+                                .header(dataStoreUrlManager.getUrlHeaderName(), "dataStoreUrl")
+                                .header(roleAssignmentUrlManager.getUrlHeaderName(), "roleAssignmentUrl")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
 
@@ -168,7 +168,7 @@ class HearingActualControllerIT extends BaseTest {
         void shouldNotCallProvidedCcdUrl_WhenCcdHeaderInvalid() throws Exception {
             Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(false);
             mockMvc.perform(get(URL + "/2000000000")
-                                .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
+                                .header(dataStoreUrlManager.getUrlHeaderName(), "ccdDataStoreUrl")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
             dataStoreServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
@@ -193,7 +193,7 @@ class HearingActualControllerIT extends BaseTest {
         void shouldNotCallProvidedAmUrl_WhenAmHeaderInvalid() throws Exception {
             Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(false);
             mockMvc.perform(get(URL + "/2000000000")
-                                .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
+                                .header(roleAssignmentUrlManager.getUrlHeaderName(), "amRoleAssignmentUrl")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
 

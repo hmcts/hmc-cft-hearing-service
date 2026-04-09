@@ -701,8 +701,8 @@ class HearingActualsManagementControllerIT extends BaseTest {
             mockMvc.perform(
                     get(URL + "/2000000000")
                         .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
-                        .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
-                        .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
+                        .header(dataStoreUrlManager.getUrlHeaderName(), "dataStoreUrl")
+                        .header(roleAssignmentUrlManager.getUrlHeaderName(), "roleAssignmentUrl")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(200));
 
