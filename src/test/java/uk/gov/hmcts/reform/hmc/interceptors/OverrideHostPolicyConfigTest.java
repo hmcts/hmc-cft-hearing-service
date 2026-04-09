@@ -46,7 +46,7 @@ class OverrideHostPolicyConfigTest {
     }
 
     @Test
-    void should_reject_invalid_url() {
+    void should_fail_invalid_override_host_patterns() {
         assertThatThrownBy(() -> new OverrideHostPolicyConfig("*invalid[regex"))
             .isInstanceOf(PatternSyntaxException.class);
     }

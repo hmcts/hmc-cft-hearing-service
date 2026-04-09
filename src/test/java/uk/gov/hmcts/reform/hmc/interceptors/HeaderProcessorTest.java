@@ -63,6 +63,8 @@ class HeaderProcessorTest {
     void preHandleShouldCallHandlers_OverrideHost_False() throws Exception {
         when(params.isHmctsDeploymentIdEnabled()).thenReturn(true);
         when(overrideHostPolicy.isAllowed(anyString())).thenReturn(false);
+        when(dataStoreUrlManager.getHost()).thenReturn("dataStoreHost");
+        when(roleAssignmentUrlManager.getHost()).thenReturn("roleAssignmentHost");
         when(dataStoreUrlManager.getUrlHeaderName()).thenReturn("dataStoreUrl");
         when(roleAssignmentUrlManager.getUrlHeaderName()).thenReturn("roleAssignmentUrl");
 
@@ -72,6 +74,8 @@ class HeaderProcessorTest {
 
         headerProcessor.preHandle(request, null, null);
 
+        verify(dataStoreUrlManager).setActualHost("dataStoreHost");
+        verify(roleAssignmentUrlManager).setActualHost("roleAssignmentHost");
         verify(roleAssignmentUrlManager, times(0)).setActualHost("roleAssignmentUrlValue");
         verify(dataStoreUrlManager, times(0)).setActualHost("dataStoreUrlValue");
     }
@@ -115,6 +119,7 @@ class HeaderProcessorTest {
     @Test
     void preHandleShouldNotProcessHeaders_OverrideHostIsInvalid() throws Exception {
         when(params.isHmctsDeploymentIdEnabled()).thenReturn(true);
+        when(overrideHostPolicy.isAllowed(anyString())).thenReturn(false);
         when(dataStoreUrlManager.getUrlHeaderName()).thenReturn("dataStoreUrl");
         when(roleAssignmentUrlManager.getUrlHeaderName()).thenReturn("roleAssignmentUrl");
         when(roleAssignmentUrlManager.getHost()).thenReturn("http://example.org");
