@@ -55,8 +55,8 @@ class HeaderProcessorTest {
         request.addHeader("roleAssignmentUrl", roleAssignmentUrlValue);
         request.addHeader("dataStoreUrl", dataStoreUrlValue);
         headerProcessor.preHandle(request, null, null);
-        verify(roleAssignmentUrlManager, times(1)).setActualHost(roleAssignmentUrlValue);
-        verify(dataStoreUrlManager, times(1)).setActualHost(dataStoreUrlValue);
+        verify(roleAssignmentUrlManager).setActualHost(roleAssignmentUrlValue);
+        verify(dataStoreUrlManager).setActualHost(dataStoreUrlValue);
     }
 
     @Test
@@ -89,8 +89,8 @@ class HeaderProcessorTest {
 
         verify(roleAssignmentUrlManager, times(0)).setActualHost("roleAssignmentUrlValue");
         verify(dataStoreUrlManager, times(0)).setActualHost("dataStoreUrlValue");
-        verify(roleAssignmentUrlManager, times(1)).setActualHost("roleAssignmentDefaultHost");
-        verify(dataStoreUrlManager, times(1)).setActualHost("dataStoreDefaultHost");
+        verify(roleAssignmentUrlManager).setActualHost("roleAssignmentDefaultHost");
+        verify(dataStoreUrlManager).setActualHost("dataStoreDefaultHost");
     }
 
     @Test
@@ -105,12 +105,11 @@ class HeaderProcessorTest {
 
         headerProcessor.preHandle(request, null, null);
 
-        verify(roleAssignmentUrlManager, times(1)).getHost();
-        verify(dataStoreUrlManager, times(1)).getHost();
+        verify(roleAssignmentUrlManager).getHost();
+        verify(dataStoreUrlManager).getHost();
 
-        verify(roleAssignmentUrlManager, times(1)).setActualHost("http://example.org");
-        verify(dataStoreUrlManager, times(1)).setActualHost("http://example.org");
-
+        verify(roleAssignmentUrlManager).setActualHost("http://example.org");
+        verify(dataStoreUrlManager).setActualHost("http://example.org");
     }
 
     @Test
@@ -126,11 +125,10 @@ class HeaderProcessorTest {
 
         headerProcessor.preHandle(request, null, null);
 
-        verify(roleAssignmentUrlManager, times(1)).getHost();
-        verify(dataStoreUrlManager, times(1)).getHost();
+        verify(roleAssignmentUrlManager).getHost();
+        verify(dataStoreUrlManager).getHost();
 
-        verify(roleAssignmentUrlManager, times(1)).setActualHost("http://example.org");
-        verify(dataStoreUrlManager, times(1)).setActualHost("http://example.org");
-
+        verify(roleAssignmentUrlManager).setActualHost("http://example.org");
+        verify(dataStoreUrlManager).setActualHost("http://example.org");
     }
 }
