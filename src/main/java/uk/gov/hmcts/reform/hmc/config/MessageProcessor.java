@@ -7,12 +7,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.exceptions.MalformedMessageException;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Base64;
 import java.util.Map;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CFT_HEARING_SERVICE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.ERROR_PROCESSING_MESSAGE;
@@ -33,6 +41,14 @@ public class MessageProcessor {
     public static final String MESSAGE_ERROR = "Error for message with id ";
     public static final String WITH_ERROR = " with error ";
     public static final String MESSAGE_SUCCESS = "Message with id '{}' handled successfully";
+    private static final String HEADER_SIGNATURE = "X-Message-Signature";
+    private static final String HEADER_SENDER = "X-Sender-Service";
+    private static final String HEADER_TIMESTAMP = "X-Timestamp";
+    private static final Duration MAX_MESSAGE_AGE = Duration.ofMinutes(30);
+    private static final String EXPECTED_INBOUND_SENDER = "HMI-Inbound-Adapter";
+
+    @Value("${hmac.secrets.hmi-to-hmc}")
+    private String hmiToHmcSigningSecret;
 
     public MessageProcessor(ObjectMapper objectMapper,
                             InboundQueueService inboundQueueService) {
@@ -43,7 +59,10 @@ public class MessageProcessor {
     public void processMessage(ServiceBusReceivedMessageContext messageContext) {
         var processingResult = tryProcessMessage(messageContext);
         if (processingResult.resultType.equals(MessageProcessingResultType.SUCCESS)) {
+            messageContext.complete();
             log.info(MESSAGE_SUCCESS, messageContext.getMessage().getMessageId());
+        } else if (processingResult.resultType.equals(MessageProcessingResultType.UNRECOVERABLE_FAILURE)) {
+            messageContext.deadLetter();
         }
     }
 
@@ -81,6 +100,7 @@ public class MessageProcessor {
 
     private MessageProcessingResult tryProcessMessage(ServiceBusReceivedMessageContext messageContext) {
         try {
+            validateMessageSecurity(messageContext);
             processMessage(
                     convertMessage(messageContext.getMessage().getBody()),
                     messageContext
@@ -96,9 +116,97 @@ public class MessageProcessor {
         } catch (MalformedMessageException ex) {
             log.error("Invalid processed message with ID {}",  messageContext.getMessage().getMessageId(), ex);
             return new MessageProcessingResult(MessageProcessingResultType.UNRECOVERABLE_FAILURE, ex);
+        } catch (SecurityException ex) {
+            log.error("Security failure for message {}: {}",
+                messageContext.getMessage().getMessageId(), ex.getMessage(), ex);
+            return new MessageProcessingResult(MessageProcessingResultType.UNRECOVERABLE_FAILURE, ex);
+        } catch (IllegalArgumentException ex) {
+            // covers invalid Base64 signature and invalid timestamp parse.
+            log.error("Malformed security header for message {}: {}",
+                messageContext.getMessage().getMessageId(), ex.getMessage(), ex);
+            return new MessageProcessingResult(MessageProcessingResultType.UNRECOVERABLE_FAILURE, ex);
+        } catch (IllegalStateException ex) {
+            // covers HMAC calculation/configuration failures.
+            log.error("Unable to validate message signature for message {}: {}",
+                messageContext.getMessage().getMessageId(), ex.getMessage(), ex);
+            return new MessageProcessingResult(MessageProcessingResultType.UNRECOVERABLE_FAILURE, ex);
         } catch (Exception ex) {
             log.warn("Unexpected Error");
             return new MessageProcessingResult(MessageProcessingResultType.POTENTIALLY_RECOVERABLE_FAILURE);
+        }
+    }
+
+    private void validateMessageSecurity(ServiceBusReceivedMessageContext context) {
+        var message = context.getMessage();
+        Map<String, Object> applicationProperties = message.getApplicationProperties();
+
+        String signature = asString(applicationProperties.get(HEADER_SIGNATURE));
+        String sender = asString(applicationProperties.get(HEADER_SENDER));
+        String timestamp = asString(applicationProperties.get(HEADER_TIMESTAMP));
+
+        if (signature == null || sender == null || timestamp == null) {
+            throw new SecurityException("Missing required security headers");
+        }
+
+        if (!EXPECTED_INBOUND_SENDER.equals(sender)) {
+            throw new SecurityException("Unexpected sender: " + sender);
+        }
+
+        if (isExpired(timestamp)) {
+            throw new SecurityException("Message expired");
+        }
+
+        String hearingId = asString(applicationProperties.get(HEARING_ID));
+        String messageType = asString(applicationProperties.get(MESSAGE_TYPE));
+        String bodyString = message.getBody().toString();
+        String payloadToSign = buildPayloadToSign(bodyString, timestamp, sender, hearingId, messageType);
+        String expectedSignature = hmacSha256Base64(payloadToSign, hmiToHmcSigningSecret);
+
+        boolean matches = MessageDigest.isEqual(
+            Base64.getDecoder().decode(signature),
+            Base64.getDecoder().decode(expectedSignature)
+        );
+
+        if (!matches) {
+            throw new SecurityException("Invalid message signature");
+        }
+    }
+
+    private String buildPayloadToSign(String body,
+                                      String timestamp,
+                                      String sender,
+                                      String hearingId,
+                                      String messageType) {
+        return String.join("|",
+            "v1",
+            sender,
+            timestamp,
+            messageType == null ? "" : messageType,
+            hearingId == null ? "" : hearingId,
+            body == null ? "" : body
+        );
+    }
+
+    private boolean isExpired(String timestamp) {
+        Instant messageTime = Instant.parse(timestamp);
+        Instant now = Instant.now();
+        return messageTime.isBefore(now.minus(MessageProcessor.MAX_MESSAGE_AGE))
+               || messageTime.isAfter(now.plusSeconds(30));
+    }
+
+    private String asString(Object value) {
+        return value == null ? null : value.toString();
+    }
+
+    public String hmacSha256Base64(String payload, String base64Secret) {
+        try {
+            byte[] secretBytes = Base64.getDecoder().decode(base64Secret);
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(secretBytes, "HmacSHA256"));
+            byte[] rawHmac = mac.doFinal(payload.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(rawHmac);
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to calculate HMAC-SHA256", e);
         }
     }
 
