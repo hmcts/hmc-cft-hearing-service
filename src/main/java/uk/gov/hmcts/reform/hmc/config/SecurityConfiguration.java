@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
+import uk.gov.hmcts.reform.hmc.config.validator.MultiIssuerValidator;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -27,11 +28,9 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
-    private String issuerUri;
+    private final String issuerUri;
 
-    @Value("${oidc.issuer}")
-    private String issuerOverride;
+    private final IdamSecurityConfig idamSecurityConfig;
 
     private final ServiceAuthFilter serviceAuthFilter;
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
@@ -51,9 +50,12 @@ public class SecurityConfiguration {
     };
 
     @Autowired
-    public SecurityConfiguration(final ServiceAuthFilter serviceAuthFilter,
+    public SecurityConfiguration(@Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}") String issuerUri,
+                                 IdamSecurityConfig idamSecurityConfig,
+                                 final ServiceAuthFilter serviceAuthFilter,
                                  final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter) {
-        super();
+        this.issuerUri = issuerUri;
+        this.idamSecurityConfig = idamSecurityConfig;
         this.serviceAuthFilter = serviceAuthFilter;
         jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
@@ -62,7 +64,7 @@ public class SecurityConfiguration {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers(AUTH_ALLOWED_LIST);
-    }    
+    }
 
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -78,13 +80,15 @@ public class SecurityConfiguration {
             .build();
     }
 
-
     @Bean
     JwtDecoder jwtDecoder() {
-        NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder)  JwtDecoders.fromOidcIssuerLocation(issuerUri);
         OAuth2TokenValidator<Jwt> withTimestamp = new JwtTimestampValidator();
-        OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(withTimestamp);
+        OAuth2TokenValidator<Jwt> withMultiIssuer = new MultiIssuerValidator(idamSecurityConfig.getAllowedIssuers());
+        OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(withTimestamp, withMultiIssuer);
+
+        NimbusJwtDecoder jwtDecoder = JwtDecoders.fromOidcIssuerLocation(issuerUri);
         jwtDecoder.setJwtValidator(validator);
+
         return jwtDecoder;
     }
 }
