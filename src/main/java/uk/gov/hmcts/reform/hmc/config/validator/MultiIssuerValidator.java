@@ -22,6 +22,7 @@ public class MultiIssuerValidator implements OAuth2TokenValidator<Jwt> {
     public MultiIssuerValidator(List<String> validIssuers) {
         Assert.notEmpty(validIssuers, "Valid issuers list should not be null or empty");
         Assert.noNullElements(validIssuers, "Valid issuers list should not contain any null elements");
+        log.debug("Valid issuers list: {}", validIssuers);
         this.validIssuers = validIssuers;
     }
 
