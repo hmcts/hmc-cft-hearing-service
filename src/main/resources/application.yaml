@@ -140,7 +140,7 @@ idam:
   security:
     allowed-issuers:
       - ${OIDC_ISSUER_WEB_PUBLIC:http://localhost:5000/o}
-      - ${OIDC_ISSUER_HMCTS_ACCESS:http://localhost:5000/o} # ???
+      - ${OIDC_ISSUER_HMCTS_ACCESS:http://localhost:5000/o}
       - ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}
 
 http:
