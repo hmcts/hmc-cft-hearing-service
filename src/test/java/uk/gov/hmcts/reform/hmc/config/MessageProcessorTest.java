@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
 import uk.gov.hmcts.reform.hmc.service.InboundQueueServiceImpl;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.HashMap;
@@ -258,20 +257,20 @@ class MessageProcessorTest {
     }
 
     @Test
-    void shouldNotProcessMessageWhenTimestampExpired() throws JsonProcessingException {
+    void shouldProcessMessageWhenTimestampOldButSignatureValid() throws JsonProcessingException {
         String body = "{\"test\":\"name\"}";
-        String expiredTimestamp = Instant.now().minus(Duration.ofMinutes(31)).toString();
-        Map<String, Object> props = signedProps(body, MessageType.HEARING_RESPONSE.name(), "12345", expiredTimestamp);
+        String oldTimestamp = "2026-01-01T00:00:00Z";
+        Map<String, Object> props = signedProps(body, MessageType.HEARING_RESPONSE.name(), "12345", oldTimestamp);
 
         when(message.getApplicationProperties()).thenReturn(props);
         when(message.getBody()).thenReturn(BinaryData.fromString(body));
-        when(message.getMessageId()).thenReturn("mid-expired");
+        when(message.getMessageId()).thenReturn("mid-old");
         when(messageContext.getMessage()).thenReturn(message);
 
         messageProcessor.processMessage(messageContext);
 
-        verify(inboundQueueService, never()).processMessage(any(), any());
-        verify(messageContext).deadLetter();
+        verify(inboundQueueService).processMessage(any(), eq(messageContext));
+        verify(messageContext).complete();
     }
 
     @Test
