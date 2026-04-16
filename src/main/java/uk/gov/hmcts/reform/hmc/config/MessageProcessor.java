@@ -15,8 +15,6 @@ import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Base64;
 import java.util.Map;
 import javax.crypto.Mac;
@@ -44,7 +42,6 @@ public class MessageProcessor {
     private static final String HEADER_SIGNATURE = "X-Message-Signature";
     private static final String HEADER_SENDER = "X-Sender-Service";
     private static final String HEADER_TIMESTAMP = "X-Timestamp";
-    private static final Duration MAX_MESSAGE_AGE = Duration.ofMinutes(30);
     private static final String EXPECTED_INBOUND_SENDER = "HMI-Inbound-Adapter";
 
     @Value("${hmac.secrets.hmi-to-hmc}")
@@ -152,10 +149,6 @@ public class MessageProcessor {
             throw new SecurityException("Unexpected sender: " + sender);
         }
 
-        if (isExpired(timestamp)) {
-            throw new SecurityException("Message expired");
-        }
-
         String hearingId = asString(applicationProperties.get(HEARING_ID));
         String messageType = asString(applicationProperties.get(MESSAGE_TYPE));
         String bodyString = message.getBody().toString();
@@ -185,13 +178,6 @@ public class MessageProcessor {
             hearingId == null ? "" : hearingId,
             body == null ? "" : body
         );
-    }
-
-    private boolean isExpired(String timestamp) {
-        Instant messageTime = Instant.parse(timestamp);
-        Instant now = Instant.now();
-        return messageTime.isBefore(now.minus(MessageProcessor.MAX_MESSAGE_AGE))
-               || messageTime.isAfter(now.plusSeconds(30));
     }
 
     private String asString(Object value) {
