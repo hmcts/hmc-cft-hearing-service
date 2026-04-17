@@ -62,12 +62,12 @@ public class MessageSenderToTopicConfiguration {
             log.debug("setting up the connection details for hearingId {}", hearingId);
 
             String timestamp = Instant.now().toString();
-            String normalizedDeploymentId = StringUtils.hasText(deploymentId) ? deploymentId : null;
             ServiceBusMessage serviceBusMessage = new ServiceBusMessage(message);
             serviceBusMessage.getApplicationProperties().put(HMCTS_SERVICE_ID, hmctsServiceId);
             serviceBusMessage.getApplicationProperties().put(HEARING_ID, hearingId);
             serviceBusMessage.getApplicationProperties().put(HEADER_SENDER, SENDER_SERVICE);
             serviceBusMessage.getApplicationProperties().put(HEADER_TIMESTAMP, timestamp);
+            String normalizedDeploymentId = StringUtils.hasText(deploymentId) ? deploymentId : null;
             if (normalizedDeploymentId != null) {
                 serviceBusMessage.getApplicationProperties().put(HMCTS_DEPLOYMENT_ID, normalizedDeploymentId);
             }
