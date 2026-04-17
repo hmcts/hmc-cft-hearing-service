@@ -62,16 +62,18 @@ public class MessageSenderToTopicConfiguration {
             log.debug("setting up the connection details for hearingId {}", hearingId);
 
             String timestamp = Instant.now().toString();
+            String normalizedDeploymentId = StringUtils.hasText(deploymentId) ? deploymentId : null;
             ServiceBusMessage serviceBusMessage = new ServiceBusMessage(message);
             serviceBusMessage.getApplicationProperties().put(HMCTS_SERVICE_ID, hmctsServiceId);
             serviceBusMessage.getApplicationProperties().put(HEARING_ID, hearingId);
             serviceBusMessage.getApplicationProperties().put(HEADER_SENDER, SENDER_SERVICE);
             serviceBusMessage.getApplicationProperties().put(HEADER_TIMESTAMP, timestamp);
-            if (StringUtils.hasText(deploymentId)) {
-                serviceBusMessage.getApplicationProperties().put(HMCTS_DEPLOYMENT_ID, deploymentId);
+            if (normalizedDeploymentId != null) {
+                serviceBusMessage.getApplicationProperties().put(HMCTS_DEPLOYMENT_ID, normalizedDeploymentId);
             }
 
-            String payloadToSign = buildPayloadToSign(message, timestamp, hmctsServiceId, hearingId, deploymentId);
+            String payloadToSign = buildPayloadToSign(message, timestamp, hmctsServiceId, hearingId,
+                normalizedDeploymentId);
             String signature = hmacSha256Base64(payloadToSign, hmiToHmcSigningSecret);
             serviceBusMessage.getApplicationProperties().put(HEADER_SIGNATURE, signature);
 
@@ -107,6 +109,11 @@ public class MessageSenderToTopicConfiguration {
     private void validateInput() {
         if (!StringUtils.hasText(hmiToHmcSigningSecret)) {
             throw new IllegalStateException("hmac.secrets.hmi-to-hmc must be configured");
+        }
+        try {
+            Base64.getDecoder().decode(hmiToHmcSigningSecret);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("hmac.secrets.hmi-to-hmc must be valid Base64", e);
         }
     }
 

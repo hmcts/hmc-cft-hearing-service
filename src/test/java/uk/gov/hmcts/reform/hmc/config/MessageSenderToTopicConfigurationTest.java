@@ -11,6 +11,7 @@ import java.util.Base64;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -85,8 +86,39 @@ class MessageSenderToTopicConfigurationTest {
             applicationParams, "%%%invalid%%%", senderClient
         );
 
-        configuration.sendMessage("{\"message\":\"ok\"}", "BBA3", "12345", "DEPLOY-1");
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> configuration.sendMessage("{\"message\":\"ok\"}", "BBA3", "12345", "DEPLOY-1")
+        );
 
+        assertEquals("hmac.secrets.hmi-to-hmc must be valid Base64", exception.getMessage());
         verify(senderClient, never()).sendMessage(any(ServiceBusMessage.class));
+    }
+
+    @Test
+    void shouldTreatBlankDeploymentIdAsAbsentInPropertyAndSignature() {
+        ApplicationParams applicationParams = mock(ApplicationParams.class);
+        ServiceBusSenderClient senderClient = mock(ServiceBusSenderClient.class);
+
+        MessageSenderToTopicConfiguration configuration = new MessageSenderToTopicConfiguration(
+            applicationParams, SIGNING_SECRET, senderClient
+        );
+
+        configuration.sendMessage("{\"message\":\"ok\"}", "BBA3", "12345", "   ");
+
+        ArgumentCaptor<ServiceBusMessage> messageCaptor = ArgumentCaptor.forClass(ServiceBusMessage.class);
+        verify(senderClient).sendMessage(messageCaptor.capture());
+
+        ServiceBusMessage sent = messageCaptor.getValue();
+        String timestamp = sent.getApplicationProperties().get(MessageSenderToTopicConfiguration.HEADER_TIMESTAMP)
+            .toString();
+
+        assertFalse(sent.getApplicationProperties().containsKey("hmctsDeploymentId"));
+        String expectedPayload = configuration.buildPayloadToSign(
+            "{\"message\":\"ok\"}", timestamp, "BBA3", "12345", null
+        );
+        String actualSignature = sent.getApplicationProperties()
+            .get(MessageSenderToTopicConfiguration.HEADER_SIGNATURE).toString();
+        assertEquals(configuration.hmacSha256Base64(expectedPayload, SIGNING_SECRET), actualSignature);
     }
 }
