@@ -32,6 +32,8 @@ java:
           alias: HMC_QUEUE_CONNECTION_STRING
         - name: hmc-servicebus-connection-string
           alias: HMC_OUTBOUND_QUEUE_CONNECTION_STRING
+        - name: hmi-to-hmc-message-signing-key
+          alias: HMI_TO_HMC_SIGNING_SECRET
         - name: ClientId
           alias: CLIENT_ID
         - name: ClientSecret
