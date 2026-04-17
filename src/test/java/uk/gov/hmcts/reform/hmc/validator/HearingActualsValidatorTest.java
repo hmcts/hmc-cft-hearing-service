@@ -61,30 +61,30 @@ class HearingActualsValidatorTest {
     @Test
     void testExpectedException_BadOutcomeInfo() {
         HearingEntity expectedHearing = generateHearing(VALID_HEARING_ID,
-                PutHearingStatus.HEARING_REQUESTED.name(),
-                null, 1L);
+                                                        PutHearingStatus.HEARING_REQUESTED.name(),
+                                                        null, 1L);
         expectedHearing.setCaseHearingRequests(generateCaseHearingRequests(expectedHearing));
         when(hearingRepository.findById(VALID_HEARING_ID)).thenReturn(Optional.of(expectedHearing));
         when(hearingRepository.existsById(VALID_HEARING_ID)).thenReturn(true);
         Exception exception = assertThrows(BadRequestException.class, () -> hearingActualsValidator
-                .validateHearingOutcomeInformation(VALID_HEARING_ID));
+            .validateHearingOutcomeInformation(VALID_HEARING_ID));
         assertTrue(exception.getMessage().contains(ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME));
     }
 
     @Test
     void testNoException_BadOutcomeInfoIsGood() {
         HearingEntity expectedHearing = generateHearing(VALID_HEARING_ID,
-                PutHearingStatus.HEARING_REQUESTED.name(),
-                null, 1L);
+                                                        PutHearingStatus.HEARING_REQUESTED.name(),
+                                                        null, 1L);
         expectedHearing.setCaseHearingRequests(generateCaseHearingRequests(expectedHearing));
         Optional<ActualHearingEntity> actualHearing = Optional.of(generateActualHearing(VALID_HEARING_ID));
         generateHearingResponseEntity(1, expectedHearing,
-                actualHearing.get());
+                                      actualHearing.get());
         when(hearingRepository.findById(VALID_HEARING_ID)).thenReturn(Optional.of(expectedHearing));
         when(hearingRepository.existsById(VALID_HEARING_ID)).thenReturn(true);
         when(actualHearingRepository.findByHearingResponse(any())).thenReturn(actualHearing);
         hearingActualsValidator
-                .validateHearingOutcomeInformation(VALID_HEARING_ID);
+            .validateHearingOutcomeInformation(VALID_HEARING_ID);
     }
 
     @Test
@@ -210,16 +210,16 @@ class HearingActualsValidatorTest {
     }
 
     @Test
-    void validateHearingActualDaysInTheFutureAndOutcomeIsNullAndNotRequiredIsTrue() {
-        HearingActual actual = TestingUtil.hearingActualWithOutcomeEmpty();
+    void hearingActualWithOutcomeNull() {
+        HearingActual actual = TestingUtil.hearingActualWithOutcomeNull();
         assertDoesNotThrow(() -> {
             hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
         });
     }
 
     @Test
-    void validateHearingActualDaysInTheFutureAndOutcomeIsNotNullAndNotRequiredIsTrue() {
-        HearingActual actual = TestingUtil.hearingActualWithOutcomeEmpty();
+    void hearingDate_Future_Outcome_NotEmpty_StartTime_Present_NotRequired_True() {
+        HearingActual actual = TestingUtil.hearingActualWithOutcomeNull();
         HearingActualsOutcome outcome = TestingUtil.hearingActualsOutcome();
         actual.setHearingOutcome(outcome);
         assertDoesNotThrow(() -> {
@@ -228,8 +228,30 @@ class HearingActualsValidatorTest {
     }
 
     @Test
-    void shouldThrowErrorWhenNotRequiredFalseAndHearingActualNotNull() {
+    void hearingDate_Future_Outcome_Empty_NotRequired_False() {
         HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.FALSE);
+        assertDoesNotThrow(() -> {
+            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
+        });
+    }
+
+    @Test
+    void hearingDate_Today_Outcome_NotEmpty_NotRequired_False() {
+        HearingActual actual = TestingUtil.hearingActualWithOutcomeNull();
+        actual.getActualHearingDays().get(0).setHearingDate(LocalDate.now());
+        actual.getActualHearingDays().get(0).setNotRequired(Boolean.FALSE);
+        HearingActualsOutcome outcome = TestingUtil.hearingActualsOutcome();
+        actual.setHearingOutcome(outcome);
+        assertDoesNotThrow(() -> {
+            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
+        });
+    }
+
+    @Test
+    void hearingDate_Today_StartTime_Present_NotRequired_False() {
+        HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.FALSE);
+        actual.getActualHearingDays().get(0).setHearingDate(LocalDate.now());
+        actual.getActualHearingDays().get(0).setHearingStartTime(LocalDate.now().plusDays(5).atStartOfDay());
         Exception exception = assertThrows(BadRequestException.class, () -> {
             hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
         });
@@ -237,7 +259,7 @@ class HearingActualsValidatorTest {
     }
 
     @Test
-    void shouldThrowErrorWhenNotRequiredTrue_FutureDate_AndHearingObjectsPresent() {
+    void hearingDate_Future_StartTime_Present_NotRequired_True() {
         HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.TRUE);
         actual.getActualHearingDays().get(0).setHearingStartTime(LocalDate.now().plusDays(5).atStartOfDay());
         Exception exception = assertThrows(BadRequestException.class, () -> {
@@ -247,7 +269,7 @@ class HearingActualsValidatorTest {
     }
 
     protected void generateHearingResponseEntity(Integer requestVersion, HearingEntity hearingEntity,
-                                               ActualHearingEntity actualHearingEntity) {
+                                                 ActualHearingEntity actualHearingEntity) {
         HearingResponseEntity responseEntity = new HearingResponseEntity();
         responseEntity.setCancellationReasonType("Test Reason Type");
         responseEntity.setRequestVersion(requestVersion);
@@ -271,9 +293,9 @@ class HearingActualsValidatorTest {
     protected List<CaseHearingRequestEntity> generateCaseHearingRequests(HearingEntity hearing) {
         List<CaseHearingRequestEntity> caseHearingRequests = new ArrayList<>();
         CaseHearingRequestEntity request1 = generateCaseHearingRequest(hearing,
-                1, LocalDateTime.now().plusDays(1));
+                                                                       1, LocalDateTime.now().plusDays(1));
         CaseHearingRequestEntity request2 = generateCaseHearingRequest(hearing,
-                1, LocalDateTime.now().plusDays(2));
+                                                                       1, LocalDateTime.now().plusDays(2));
         caseHearingRequests.add(request1);
         caseHearingRequests.add(request2);
         return caseHearingRequests;
@@ -292,7 +314,7 @@ class HearingActualsValidatorTest {
     }
 
     protected CaseHearingRequestEntity generateCaseHearingRequest(HearingEntity hearing, Integer version,
-                                                                LocalDateTime receivedDateTime) {
+                                                                  LocalDateTime receivedDateTime) {
         CaseHearingRequestEntity request = new CaseHearingRequestEntity();
         request.setHearing(hearing);
         request.setVersionNumber(version);
