@@ -32,7 +32,8 @@ public class ActualHearingDay implements Serializable {
     @Valid
     private List<ActualHearingDayParties> actualDayParties;
 
-    private Boolean notRequired;
+    // TODO: Remove the default after EXUI-1111 deployment (see HMAN-1120)
+    private Boolean notRequired = false;
 
     public boolean isEmpty() {
         return hearingStartTime == null
