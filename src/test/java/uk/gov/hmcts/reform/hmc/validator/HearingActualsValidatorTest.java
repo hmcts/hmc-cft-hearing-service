@@ -248,6 +248,14 @@ class HearingActualsValidatorTest {
     }
 
     @Test
+    void hearingDate_Future_Outcome_Empty_NotRequired_Default() {
+        HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull();
+        assertDoesNotThrow(() -> {
+            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
+        });
+    }
+
+    @Test
     void hearingDate_Today_StartTime_Present_NotRequired_False() {
         HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.FALSE);
         actual.getActualHearingDays().get(0).setHearingDate(LocalDate.now());

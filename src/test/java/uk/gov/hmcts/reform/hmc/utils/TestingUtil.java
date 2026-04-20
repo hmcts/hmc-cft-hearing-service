@@ -1648,18 +1648,23 @@ public class TestingUtil {
         return hearingActualsOutcome;
     }
 
-    public static HearingActual hearingActualOutcomeAndActualHearingDaysNull(Boolean flag) {
+    public static HearingActual hearingActualOutcomeAndActualHearingDaysNull() {
         HearingActualsOutcome hearingActualsOutcome = new HearingActualsOutcome();
 
         ActualHearingDay actualHearingDay = new ActualHearingDay();
         actualHearingDay.setHearingDate(LocalDate.now().plusDays(2));
-        actualHearingDay.setNotRequired(flag);
 
         HearingActual hearingActual = new HearingActual();
 
         hearingActual.setHearingOutcome(hearingActualsOutcome);
         hearingActual.setActualHearingDays(List.of(actualHearingDay));
 
+        return hearingActual;
+    }
+
+    public static HearingActual hearingActualOutcomeAndActualHearingDaysNull(Boolean flag) {
+        HearingActual hearingActual = hearingActualOutcomeAndActualHearingDaysNull();
+        hearingActual.getActualHearingDays().get(0).setNotRequired(flag);
         return hearingActual;
     }
 
