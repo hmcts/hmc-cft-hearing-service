@@ -48,9 +48,9 @@ public class HearingEntity extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 5837513924648640249L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
         generator = "hearing_id_seq_generator")
-    @SequenceGenerator(name = "hearing_id_seq_generator", 
+    @SequenceGenerator(name = "hearing_id_seq_generator",
         sequenceName = "hearing_id_seq", allocationSize = 1)
     @Column(name = "hearing_id")
     private Long id;
@@ -160,8 +160,7 @@ public class HearingEntity extends BaseEntity implements Serializable {
 
     public String getDerivedHearingStatus() {
         String hearingStatus = "";
-        if (this.status.equals(HearingStatus.LISTED.name()) || this.status.equals(HearingStatus.UPDATE_REQUESTED.name())
-            || this.status.equals(HearingStatus.UPDATE_SUBMITTED.name())) {
+        if (this.status.equals(HearingStatus.LISTED.name())) {
             hearingStatus = this.status;
             Optional<HearingResponseEntity> hearingResponse = getLatestHearingResponse();
             if (hearingResponse.isPresent()) {
