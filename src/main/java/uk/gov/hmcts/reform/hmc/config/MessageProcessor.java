@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.hmc.service.InboundQueueService;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Map;
 import javax.crypto.Mac;
@@ -43,6 +45,7 @@ public class MessageProcessor {
     private static final String HEADER_SENDER = "X-Sender-Service";
     private static final String HEADER_TIMESTAMP = "X-Timestamp";
     private static final String EXPECTED_INBOUND_SENDER = "HMI-Inbound-Adapter";
+    private static final Duration MESSAGE_AGE_WARNING_THRESHOLD = Duration.ofMinutes(30);
 
     @Value("${hmac.secrets.hmi-to-hmc}")
     private String hmiToHmcSigningSecret;
@@ -118,7 +121,7 @@ public class MessageProcessor {
                 messageContext.getMessage().getMessageId(), ex.getMessage(), ex);
             return new MessageProcessingResult(MessageProcessingResultType.UNRECOVERABLE_FAILURE, ex);
         } catch (IllegalArgumentException ex) {
-            // covers invalid Base64 signature and invalid timestamp parse.
+            // covers invalid Base64 signature and malformed security header values.
             log.error("Malformed security header for message {}: {}",
                 messageContext.getMessage().getMessageId(), ex.getMessage(), ex);
             return new MessageProcessingResult(MessageProcessingResultType.UNRECOVERABLE_FAILURE, ex);
@@ -152,6 +155,7 @@ public class MessageProcessor {
         String hearingId = asString(applicationProperties.get(HEARING_ID));
         String messageType = asString(applicationProperties.get(MESSAGE_TYPE));
         String bodyString = message.getBody().toString();
+        warnIfTimestampOlderThanThreshold(message.getMessageId(), timestamp);
         String payloadToSign = buildPayloadToSign(bodyString, timestamp, sender, hearingId, messageType);
         String expectedSignature = hmacSha256Base64(payloadToSign, hmiToHmcSigningSecret);
 
@@ -182,6 +186,19 @@ public class MessageProcessor {
 
     private String asString(Object value) {
         return value == null ? null : value.toString();
+    }
+
+    private void warnIfTimestampOlderThanThreshold(String messageId, String timestamp) {
+        try {
+            Instant messageTime = Instant.parse(timestamp);
+            Instant now = Instant.now();
+            if (messageTime.isBefore(now.minus(MESSAGE_AGE_WARNING_THRESHOLD))) {
+                log.warn("Message {} timestamp is older than {}: {}", messageId,
+                    MESSAGE_AGE_WARNING_THRESHOLD, timestamp);
+            }
+        } catch (Exception ex) {
+            log.warn("Unable to parse message timestamp for warning check on message {}: {}", messageId, timestamp);
+        }
     }
 
     public String hmacSha256Base64(String payload, String base64Secret) {

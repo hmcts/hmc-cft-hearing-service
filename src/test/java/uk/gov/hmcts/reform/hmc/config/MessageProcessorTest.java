@@ -1,5 +1,9 @@
 package uk.gov.hmcts.reform.hmc.config;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.azure.core.util.BinaryData;
 import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
 import com.azure.messaging.servicebus.ServiceBusReceivedMessageContext;
@@ -22,6 +26,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -266,9 +271,17 @@ class MessageProcessorTest {
         when(message.getBody()).thenReturn(BinaryData.fromString(body));
         when(message.getMessageId()).thenReturn("mid-old");
         when(messageContext.getMessage()).thenReturn(message);
+        ListAppender<ILoggingEvent> listAppender = setupLogger();
 
         messageProcessor.processMessage(messageContext);
 
+        assertThat(listAppender.list)
+            .anySatisfy(event -> {
+                assertThat(event.getLevel()).isEqualTo(Level.WARN);
+                assertThat(event.getFormattedMessage())
+                    .contains("Message mid-old timestamp is older than PT30M");
+            });
+        detachLogger();
         verify(inboundQueueService).processMessage(any(), eq(messageContext));
         verify(messageContext).complete();
     }
@@ -309,5 +322,18 @@ class MessageProcessorTest {
 
         props.put(HEADER_SIGNATURE, messageProcessor.hmacSha256Base64(payloadToSign, hmiToHmcSigningSecret));
         return props;
+    }
+
+    private ListAppender<ILoggingEvent> setupLogger() {
+        Logger logger = (Logger) org.slf4j.LoggerFactory.getLogger(MessageProcessor.class);
+        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        listAppender.start();
+        logger.addAppender(listAppender);
+        return listAppender;
+    }
+
+    private void detachLogger() {
+        Logger logger = (Logger) org.slf4j.LoggerFactory.getLogger(MessageProcessor.class);
+        logger.detachAndStopAllAppenders();
     }
 }
