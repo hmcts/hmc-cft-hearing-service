@@ -823,6 +823,51 @@ class HearingManagementControllerIT extends BaseTest {
     }
 
     @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndStatusLISTED() throws Exception {
+        mockMvc.perform(get("/hearings/9856815055686759")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("status", "LISTED"))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.caseRef").value("9856815055686759"))
+            .andExpect(jsonPath("$.caseHearings", hasSize(1)))
+            .andExpect(jsonPath("$.caseHearings[0].hearingID").value("2000000011"))
+            .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("AWAITING_ACTUALS"))
+            .andExpect(jsonPath("$.hmctsServiceCode").value("TEST"))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndStatusUPDATE_REQUESTED() throws Exception {
+        mockMvc.perform(get("/hearings/1662105318084922")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("status", "UPDATE_REQUESTED"))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.caseRef").value("1662105318084922"))
+            .andExpect(jsonPath("$.caseHearings", hasSize(1)))
+            .andExpect(jsonPath("$.caseHearings[0].hearingID").value("2000000014"))
+            .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("UPDATE_REQUESTED"))
+            .andExpect(jsonPath("$.hmctsServiceCode").value("TEST"))
+            .andReturn();
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndStatusUPDATE_SUBMITTED() throws Exception {
+        mockMvc.perform(get("/hearings/1111222233334444")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("status", "UPDATE_SUBMITTED"))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.caseRef").value("1111222233334444"))
+            .andExpect(jsonPath("$.caseHearings", hasSize(1)))
+            .andExpect(jsonPath("$.caseHearings[0].hearingID").value("2000000015"))
+            .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("UPDATE_SUBMITTED"))
+            .andExpect(jsonPath("$.hmctsServiceCode").value("TEST"))
+            .andReturn();
+    }
+
+    @Test
     void shouldReturn200_WhenGetHearingsForValidCaseRefLuhnAndStatus() throws Exception {
         mockMvc.perform(get("/hearings/9372710950276233")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)

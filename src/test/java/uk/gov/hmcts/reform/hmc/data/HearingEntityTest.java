@@ -244,6 +244,22 @@ class HearingEntityTest {
         }
 
         @Test
+        void shouldGetDerivedHearingResponseWithStatusUPDATE_REQUESTED() {
+            HearingEntity hearing = new HearingEntity();
+            hearing.setStatus(HearingStatus.UPDATE_REQUESTED.name());
+            String latestResponse = hearing.getDerivedHearingStatus();
+            assertEquals(HearingStatus.UPDATE_REQUESTED.name(), latestResponse);
+        }
+
+        @Test
+        void shouldGetDerivedHearingResponseWithStatusUPDATE_SUBMITTED() {
+            HearingEntity hearing = new HearingEntity();
+            hearing.setStatus(HearingStatus.UPDATE_SUBMITTED.name());
+            String latestResponse = hearing.getDerivedHearingStatus();
+            assertEquals(HearingStatus.UPDATE_SUBMITTED.name(), latestResponse);
+        }
+
+        @Test
         void shouldGetDefaultDerivedHearingResponseWhenStartDateIsAheadOfToday() {
             LocalDateTime startDateTime = LocalDateTime.now().plusDays(1);
             LocalDateTime endDateTime = LocalDateTime.now().plusMonths(6);
