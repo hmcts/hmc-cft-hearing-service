@@ -57,10 +57,11 @@ public class MessageProcessor {
     }
 
     public void processMessage(ServiceBusReceivedMessageContext messageContext) {
-        var processingResult = tryProcessMessage(messageContext);
+        String messageId = messageContext.getMessage().getMessageId();
+        var processingResult = tryProcessMessage(messageContext, messageId);
         if (processingResult.resultType.equals(MessageProcessingResultType.SUCCESS)) {
             messageContext.complete();
-            log.info(MESSAGE_SUCCESS, messageContext.getMessage().getMessageId());
+            log.info(MESSAGE_SUCCESS, messageId);
         } else if (processingResult.resultType.equals(MessageProcessingResultType.UNRECOVERABLE_FAILURE)) {
             messageContext.deadLetter();
         }
@@ -98,9 +99,10 @@ public class MessageProcessor {
         log.error("Processed message queue handle error {}", context.getErrorSource(), context.getException());
     }
 
-    private MessageProcessingResult tryProcessMessage(ServiceBusReceivedMessageContext messageContext) {
+    private MessageProcessingResult tryProcessMessage(ServiceBusReceivedMessageContext messageContext,
+                                                      String messageId) {
         try {
-            validateMessageSecurity(messageContext);
+            validateMessageSecurity(messageContext, messageId);
             processMessage(
                     convertMessage(messageContext.getMessage().getBody()),
                     messageContext
@@ -109,26 +111,26 @@ public class MessageProcessor {
 
             // TODO: decide what's Unrecoverable and what's Potentially Recoverable!
         } catch (JsonProcessingException ex) {
-            log.error(MESSAGE_PARSE_ERROR,  messageContext.getMessage().getMessageId(), ex);
+            log.error(MESSAGE_PARSE_ERROR,  messageId, ex);
             inboundQueueService.catchExceptionAndUpdateHearing(messageContext.getMessage().getApplicationProperties(),
                     ex);
             return new MessageProcessingResult(MessageProcessingResultType.UNRECOVERABLE_FAILURE, ex);
         } catch (MalformedMessageException ex) {
-            log.error("Invalid processed message with ID {}",  messageContext.getMessage().getMessageId(), ex);
+            log.error("Invalid processed message with ID {}",  messageId, ex);
             return new MessageProcessingResult(MessageProcessingResultType.UNRECOVERABLE_FAILURE, ex);
         } catch (SecurityException ex) {
             log.error("Security failure for message {}: {}",
-                messageContext.getMessage().getMessageId(), ex.getMessage(), ex);
+                messageId, ex.getMessage(), ex);
             return new MessageProcessingResult(MessageProcessingResultType.UNRECOVERABLE_FAILURE, ex);
         } catch (IllegalArgumentException ex) {
             // covers invalid Base64 signature and malformed security header values.
             log.error("Malformed security header for message {}: {}",
-                messageContext.getMessage().getMessageId(), ex.getMessage(), ex);
+                messageId, ex.getMessage(), ex);
             return new MessageProcessingResult(MessageProcessingResultType.UNRECOVERABLE_FAILURE, ex);
         } catch (IllegalStateException ex) {
             // covers HMAC calculation/configuration failures.
             log.error("Unable to validate message signature for message {}: {}",
-                messageContext.getMessage().getMessageId(), ex.getMessage(), ex);
+                messageId, ex.getMessage(), ex);
             return new MessageProcessingResult(MessageProcessingResultType.UNRECOVERABLE_FAILURE, ex);
         } catch (Exception ex) {
             log.warn("Unexpected Error");
@@ -136,7 +138,7 @@ public class MessageProcessor {
         }
     }
 
-    private void validateMessageSecurity(ServiceBusReceivedMessageContext context) {
+    private void validateMessageSecurity(ServiceBusReceivedMessageContext context, String messageId) {
         var message = context.getMessage();
         Map<String, Object> applicationProperties = message.getApplicationProperties();
 
@@ -155,7 +157,7 @@ public class MessageProcessor {
         String hearingId = asString(applicationProperties.get(HEARING_ID));
         String messageType = asString(applicationProperties.get(MESSAGE_TYPE));
         String bodyString = message.getBody().toString();
-        warnIfTimestampOlderThanThreshold(message.getMessageId(), timestamp);
+        warnIfTimestampOlderThanThreshold(messageId, timestamp);
         String payloadToSign = buildPayloadToSign(bodyString, timestamp, sender, hearingId, messageType);
         String expectedSignature = hmacSha256Base64(payloadToSign, hmiToHmcSigningSecret);
 
