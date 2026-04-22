@@ -56,7 +56,7 @@ class GetHearingsResponseMapperTest {
     }
 
     @Test
-    void toHearingsResponseWhenHearingStatusIsLISTED() {
+    void toHearingsResponseWhenHearingStatusIsListed() {
         List<CaseHearingRequestEntity> entities = Arrays.asList(TestingUtil.getCaseHearingsEntities());
         entities.get(0).getHearing().setStatus(HearingStatus.LISTED.name());
         GetHearingsResponseMapper getHearingsResponseMapper = new GetHearingsResponseMapper();
@@ -68,7 +68,7 @@ class GetHearingsResponseMapperTest {
     }
 
     @Test
-    void toHearingsResponseWhenHearingStatusIsUPDATE_REQUESTED() {
+    void toHearingsResponseWhenHearingStatusIsUpdate_Requested() {
         List<CaseHearingRequestEntity> entities = Arrays.asList(TestingUtil.getCaseHearingsEntities());
         entities.get(0).getHearing().setStatus(HearingStatus.UPDATE_REQUESTED.name());
         GetHearingsResponseMapper getHearingsResponseMapper = new GetHearingsResponseMapper();
@@ -80,7 +80,7 @@ class GetHearingsResponseMapperTest {
     }
 
     @Test
-    void toHearingsResponseWhenHearingStatusIsUPDATE_SUBMITTED() {
+    void toHearingsResponseWhenHearingStatusIsUpdated_Submitted() {
         List<CaseHearingRequestEntity> entities = Arrays.asList(TestingUtil.getCaseHearingsEntities());
         entities.get(0).getHearing().setStatus(HearingStatus.UPDATE_SUBMITTED.name());
         GetHearingsResponseMapper getHearingsResponseMapper = new GetHearingsResponseMapper();

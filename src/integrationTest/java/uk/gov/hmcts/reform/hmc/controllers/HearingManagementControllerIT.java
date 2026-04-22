@@ -824,7 +824,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndStatusLISTED() throws Exception {
+    void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndStatusListed() throws Exception {
         mockMvc.perform(get("/hearings/9856815055686759")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("status", "LISTED"))
@@ -839,7 +839,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndStatusUPDATE_REQUESTED() throws Exception {
+    void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndStatusUpdate_Requested() throws Exception {
         mockMvc.perform(get("/hearings/1662105318084922")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("status", "UPDATE_REQUESTED"))
@@ -854,7 +854,7 @@ class HearingManagementControllerIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndStatusUPDATE_SUBMITTED() throws Exception {
+    void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndStatusUpdate_Submitted() throws Exception {
         mockMvc.perform(get("/hearings/1111222233334444")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("status", "UPDATE_SUBMITTED"))

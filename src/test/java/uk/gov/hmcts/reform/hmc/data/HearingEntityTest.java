@@ -244,7 +244,7 @@ class HearingEntityTest {
         }
 
         @Test
-        void shouldGetDerivedHearingResponseWithStatusUPDATE_REQUESTED() {
+        void shouldGetDerivedHearingResponseWithStatusUpdate_requested() {
             HearingEntity hearing = new HearingEntity();
             hearing.setStatus(HearingStatus.UPDATE_REQUESTED.name());
             String latestResponse = hearing.getDerivedHearingStatus();
@@ -252,7 +252,7 @@ class HearingEntityTest {
         }
 
         @Test
-        void shouldGetDerivedHearingResponseWithStatusUPDATE_SUBMITTED() {
+        void shouldGetDerivedHearingResponseWithStatusUpdate_submitted() {
             HearingEntity hearing = new HearingEntity();
             hearing.setStatus(HearingStatus.UPDATE_SUBMITTED.name());
             String latestResponse = hearing.getDerivedHearingStatus();
