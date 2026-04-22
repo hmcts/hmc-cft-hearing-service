@@ -238,7 +238,7 @@ class HearingManagementControllerTest {
         }
 
         @Test
-        void shouldReturnHearingRequest_WhenGetHearingIsUPDATE_REQUESTED() {
+        void shouldReturnHearingRequest_WhenGetHearingIsUpdate_Requested() {
             final String validCaseRef = "9372710950276233";
             when(hearingManagementService.getHearings(any(), any()))
                 .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef,
@@ -253,7 +253,7 @@ class HearingManagementControllerTest {
         }
 
         @Test
-        void shouldReturnHearingRequest_WhenGetHearingIsLISTED() {
+        void shouldReturnHearingRequest_WhenGetHearingIsListed() {
             final String validCaseRef = "9372710950276233";
             when(hearingManagementService.getHearings(any(), any()))
                 .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, AWAITING_ACTUALS));
