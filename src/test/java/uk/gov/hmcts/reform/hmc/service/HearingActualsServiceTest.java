@@ -48,7 +48,7 @@ import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingActualsOutcome;
 
 @ExtendWith(MockitoExtension.class)
 class HearingActualsServiceTest {
-    public static final String VALID_HEARING_STATUS = "UPDATE_REQUESTED";
+    public static final String VALID_HEARING_STATUS = "LISTED";
     public static final long INVALID_HEARING_ID = 1000000000L;
     public static final Long HEARING_ID = 2000000000L;
     private static final String CLIENT_S2S_TOKEN = "s2s_token";
