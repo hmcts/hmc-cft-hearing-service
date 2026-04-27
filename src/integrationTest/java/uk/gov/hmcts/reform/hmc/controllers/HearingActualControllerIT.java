@@ -94,6 +94,7 @@ class HearingActualControllerIT extends BaseTest {
         }
 
         @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn404_WhenHearingDoesNotExist() throws Exception {
             mockMvc.perform(get(URL + "/2000000001")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))

@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
@@ -79,16 +81,21 @@ class GetHearingsResponseMapperTest {
         assertEquals(HearingStatus.UPDATE_REQUESTED.name(), response.getCaseHearings().get(0).getHmcStatus());
     }
 
-    @Test
-    void toHearingsResponseWhenHearingStatusIsUpdated_Submitted() {
+    @ParameterizedTest(name = "[{index}] hearingStatus={0}, hmcStatus={1}")
+    @CsvSource({
+        "LISTED, AWAITING_ACTUALS",
+        "UPDATE_REQUESTED, UPDATE_REQUESTED",
+        "UPDATE_SUBMITTED, UPDATE_SUBMITTED"
+    })
+    void toHearingsResponseWhenHearingStatusIsMapped(String hearingStatus, String expectedHmcStatus) {
         List<CaseHearingRequestEntity> entities = Arrays.asList(TestingUtil.getCaseHearingsEntities());
-        entities.get(0).getHearing().setStatus(HearingStatus.UPDATE_SUBMITTED.name());
+        entities.get(0).getHearing().setStatus(hearingStatus);
         GetHearingsResponseMapper getHearingsResponseMapper = new GetHearingsResponseMapper();
         GetHearingsResponse response = getHearingsResponseMapper.toHearingsResponse(VALID_CASE_REF, entities);
         assertEquals(VALID_CASE_REF, response.getCaseRef());
         assertEquals("TEST", response.getHmctsServiceCode());
         assertEquals(1, response.getCaseHearings().size());
-        assertEquals(HearingStatus.UPDATE_SUBMITTED.name(), response.getCaseHearings().get(0).getHmcStatus());
+        assertEquals(expectedHmcStatus, response.getCaseHearings().get(0).getHmcStatus());
     }
 
     @Test
