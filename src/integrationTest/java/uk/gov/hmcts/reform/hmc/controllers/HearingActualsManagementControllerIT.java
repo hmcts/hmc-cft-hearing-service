@@ -687,14 +687,14 @@ class HearingActualsManagementControllerIT extends BaseTest {
             dataStoreServer.verify(1, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
 
             mockMvc.perform(
-                put(URL + "/2000000000") // LISTED
+                put(URL + "/2000000000") // UPDATE_SUBMITTED
                     .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                     .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
                     .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(TestFixtures.fromFileAsString(
                         "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
-                .andExpect(status().is(200))
+                .andExpect(status().is(400))
                 .andReturn();
 
             amServer.verify(2, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
