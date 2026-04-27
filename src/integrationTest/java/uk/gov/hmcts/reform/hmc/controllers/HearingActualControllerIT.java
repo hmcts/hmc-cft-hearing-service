@@ -8,6 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,16 +26,20 @@ import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.getJsonString;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignments;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AWAITING_ACTUALS;
 import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.CASE_TYPE;
 import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.JURISDICTION;
 import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.USER_ID;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 
@@ -59,13 +66,25 @@ class HearingActualControllerIT extends BaseTest {
             stubReturn200RoleAssignments(USER_ID, response);
         }
 
-        @Test
+        @ParameterizedTest(name = "[{index}] hearingId={0}, status={1}")
+        @MethodSource("hearingActualStatuses")
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-        void shouldReturn200_WhenHearingExists() throws Exception {
-            mockMvc.perform(get(URL + "/2000000000")
+        void shouldReturn200_WhenHearingExists(String hearingId,
+                                               String expectedStatus,
+                                               String expectedCaseRef) throws Exception {
+            mockMvc.perform(get(URL + "/" + hearingId)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.hmcStatus").value(expectedStatus))
+                .andExpect(jsonPath("$.caseDetails.caseRef").value(expectedCaseRef))
                 .andReturn();
+        }
+
+        private static Stream<Arguments> hearingActualStatuses() {
+            return Stream.of(
+                arguments("2000000000", UPDATE_SUBMITTED.name(), "9372710950276233"),
+                arguments("2000000004", AWAITING_ACTUALS, "9372710950276239")
+            );
         }
 
         @Test

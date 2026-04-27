@@ -12,6 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
@@ -32,10 +35,12 @@ import wiremock.com.jayway.jsonpath.JsonPath;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -138,18 +143,27 @@ class HearingActualsManagementControllerIT extends BaseTest {
         }
 
         // https://tools.hmcts.net/jira/browse/HMAN-80 AC-03
-        @Test
+        @ParameterizedTest(name = "[{index}] hearingId={0}")
+        @MethodSource("awaitingListingHearingIds")
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenHearingHasInvalidStatusOfAwaitingListing() throws Exception {
-            mockMvc.perform(put(URL + "/2000000200") // status AWAITING_LISTING
+        void shouldReturn400_WhenHearingHasInvalidStatus(String hearingId, String expectedStatus) throws Exception {
+            mockMvc.perform(put(URL + "/" + hearingId)
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem(("002 invalid status AWAITING_LISTING"))))
+                .andExpect(jsonPath("$.errors", hasItem("002 invalid status " + expectedStatus)))
                 .andReturn();
+        }
+
+        private static Stream<Arguments> awaitingListingHearingIds() {
+            return Stream.of(
+                arguments("2000000201", "UPDATE_REQUESTED"),
+                arguments("2000000202", "UPDATE_SUBMITTED"),
+                arguments("2000000203", "HEARING_REQUESTED")
+            );
         }
 
         // https://tools.hmcts.net/jira/browse/HMAN-80 AC-04
@@ -492,7 +506,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn200_WhenSuppliedValidPayloadForHearingStatusOfUpdateRequested()
             throws Exception {
-            mockMvc.perform(put(URL + "/2000001100") // UPDATE_REQUESTED
+            mockMvc.perform(put(URL + "/2000001100")
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
@@ -511,7 +525,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn200_WhenSuppliedValidPayloadForHearingStatusOfUpdateSubmitted()
             throws Exception {
-            mockMvc.perform(put(URL + "/2000001200") // UPDATE_SUBMITTED
+            mockMvc.perform(put(URL + "/2000001200")
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
@@ -529,7 +543,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn200_WhenSuppliedValidPayloadWithHearingResultAsCompleted()
             throws Exception {
-            mockMvc.perform(put(URL + "/2000001200") // UPDATE_SUBMITTED
+            mockMvc.perform(put(URL + "/2000001200")
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
@@ -547,7 +561,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn200_WhenSuppliedValidPayloadWithHearingResultAsCancelled()
             throws Exception {
-            mockMvc.perform(put(URL + "/2000001200") // UPDATE_SUBMITTED
+            mockMvc.perform(put(URL + "/2000001200")
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
@@ -564,7 +578,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn200_WhenSuppliedValidPayloadWithNoActualHearingDaysElementPresent()
             throws Exception {
-            mockMvc.perform(put(URL + "/2000001200") // UPDATE_SUBMITTED
+            mockMvc.perform(put(URL + "/2000001200")
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
