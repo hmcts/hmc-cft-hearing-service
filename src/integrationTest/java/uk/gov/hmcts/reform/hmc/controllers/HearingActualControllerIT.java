@@ -82,17 +82,17 @@ class HearingActualControllerIT extends BaseTest {
 
         private static Stream<Arguments> hearingActualStatuses() {
             return Stream.of(
-                arguments("2000000000", UPDATE_SUBMITTED.name(), "9372710950276233"),
-                arguments("2000000004", AWAITING_ACTUALS, "9372710950276239")
+                arguments("2000000001", UPDATE_SUBMITTED.name(), "9372710950276233"),
+               arguments("2000000000", AWAITING_ACTUALS, "9372710950276233")
             );
         }
 
         @Test
         void shouldReturn404_WhenHearingDoesNotExist() throws Exception {
-            mockMvc.perform(get(URL + "/2000000001")
+            mockMvc.perform(get(URL + "/2000000009")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(HttpStatus.NOT_FOUND.value()))
-                .andExpect(jsonPath("$.errors", hasItem("No hearing found for reference: 2000000001")))
+                .andExpect(jsonPath("$.errors", hasItem("No hearing found for reference: 2000000009")))
                 .andReturn();
         }
 
