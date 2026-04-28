@@ -127,6 +127,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.LATEST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.LISTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.UPDATE_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
@@ -302,7 +303,7 @@ class HearingManagementServiceTest {
         @Test
         void shouldFailWithInvalidHearingId() {
             HearingEntity hearing = new HearingEntity();
-            hearing.setStatus("LISTED");
+            hearing.setStatus(LISTED.name());
             hearing.setId(2000000000L);
 
             Exception exception = assertThrows(HearingNotFoundException.class, () -> {
@@ -314,7 +315,7 @@ class HearingManagementServiceTest {
         @Test
         void shouldFailWithInvalidHearingIdFormat() {
             HearingEntity hearing = new HearingEntity();
-            hearing.setStatus("LISTED");
+            hearing.setStatus(LISTED.name());
             hearing.setId(1L);
 
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
@@ -325,7 +326,7 @@ class HearingManagementServiceTest {
         @Test
         void shouldPassWithValidHearingId() {
             HearingEntity hearing = TestingUtil.hearingEntity();
-            hearing.setStatus("LISTED");
+            hearing.setStatus(LISTED.name());
             hearing.setId(2000000000L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearing));
@@ -383,7 +384,7 @@ class HearingManagementServiceTest {
         @Test
         void shouldPassWithValidHearingIdInDb() {
             HearingEntity hearing = TestingUtil.hearingEntity();
-            hearing.setStatus("LISTED");
+            hearing.setStatus(LISTED.name());
             hearing.setId(2000000000L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearing));
@@ -394,7 +395,7 @@ class HearingManagementServiceTest {
         @Test
         void shouldFailWithInvalidHearingIdForGetHearing() {
             HearingEntity hearing = new HearingEntity();
-            hearing.setStatus("LISTED");
+            hearing.setStatus(LISTED.name());
             hearing.setId(2000000010L);
 
             Exception exception = assertThrows(HearingNotFoundException.class, () -> hearingManagementService
@@ -1595,17 +1596,17 @@ class HearingManagementServiceTest {
         @Test
         void getHearings_shouldReturnDataWithValidDetails() {
             List<CaseHearingRequestEntity> entities = Arrays.asList(TestingUtil.getCaseHearingsEntities());
-            when(caseHearingRequestRepository.getHearingDetailsWithStatus("12345", "HEARING_REQUESTED"))
+            when(caseHearingRequestRepository.getHearingDetailsWithStatus("12345", HEARING_REQUESTED.name()))
                 .thenReturn(entities);
             given(getHearingsResponseMapper.toHearingsResponse("12345", entities))
-                .willReturn(TestingUtil.getHearingsResponseWhenDataIsPresent("12345", "HEARING_REQUESTED"));
+                .willReturn(TestingUtil.getHearingsResponseWhenDataIsPresent("12345", HEARING_REQUESTED.name()));
             GetHearingsResponse response = hearingManagementService.getHearings("12345",
-                    "HEARING_REQUESTED");
+                    HEARING_REQUESTED.name());
             assertEquals("12345", response.getCaseRef());
             assertEquals("AB1A", response.getHmctsServiceCode());
             assertEquals(1, response.getCaseHearings().size());
             assertEquals(2000000000L, response.getCaseHearings().get(0).getHearingId());
-            assertEquals("HEARING_REQUESTED", response.getCaseHearings().get(0).getHmcStatus());
+            assertEquals(HEARING_REQUESTED.name(), response.getCaseHearings().get(0).getHmcStatus());
             assertEquals("listingStatus", response.getCaseHearings().get(0).getHearingListingStatus());
             assertEquals("venue", response.getCaseHearings().get(0)
                 .getHearingDaySchedule().get(0).getHearingVenueId());

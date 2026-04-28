@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.hmc.data;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
@@ -233,30 +235,17 @@ class HearingEntityTest {
             assertEquals(AWAITING_ACTUALS, latestResponse);
         }
 
-        @Test
-        void shouldGetDerivedHearingResponseWithStatusNotUpdated() {
+        @ParameterizedTest(name = "[{index}] status={0}")
+        @EnumSource(value = HearingStatus.class, names = {
+            "HEARING_REQUESTED",
+            "UPDATE_REQUESTED",
+            "UPDATE_SUBMITTED"
+        })
+        void shouldGetDerivedHearingResponseForStatusesThatShouldNotBeUpdated(HearingStatus status) {
             HearingEntity hearing = new HearingEntity();
-            hearing.setStatus(HearingStatus.HEARING_REQUESTED.name());
-
+            hearing.setStatus(status.name());
             String latestResponse = hearing.getDerivedHearingStatus();
-
-            assertEquals(HearingStatus.HEARING_REQUESTED.name(), latestResponse);
-        }
-
-        @Test
-        void shouldGetDerivedHearingResponseWithStatusUpdate_requested() {
-            HearingEntity hearing = new HearingEntity();
-            hearing.setStatus(HearingStatus.UPDATE_REQUESTED.name());
-            String latestResponse = hearing.getDerivedHearingStatus();
-            assertEquals(HearingStatus.UPDATE_REQUESTED.name(), latestResponse);
-        }
-
-        @Test
-        void shouldGetDerivedHearingResponseWithStatusUpdate_submitted() {
-            HearingEntity hearing = new HearingEntity();
-            hearing.setStatus(HearingStatus.UPDATE_SUBMITTED.name());
-            String latestResponse = hearing.getDerivedHearingStatus();
-            assertEquals(HearingStatus.UPDATE_SUBMITTED.name(), latestResponse);
+            assertEquals(status.name(), latestResponse);
         }
 
         @Test
