@@ -137,11 +137,9 @@ idam:
     # same for all environments - not used in hmc but configured as idam mandates for token generation
     redirect_uri: https://cft-hearing-service/oauth2redirect
     secret: ${CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET:AAAAAAAAAAAAAAAA}
-  security:
-    allowed-issuers:
-      - ${OIDC_ISSUER_WEB_PUBLIC:http://localhost:5000/o}
-      - ${OIDC_ISSUER_HMCTS_ACCESS:http://localhost:5000/o}
-      - ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}
+
+oidc:
+  issuer: ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}
 
 http:
   client:
