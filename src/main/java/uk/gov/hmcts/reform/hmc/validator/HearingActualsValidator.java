@@ -27,9 +27,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS
 @Component
 public class HearingActualsValidator {
     private final HearingIdValidator hearingIdValidator;
-    private static final List<String> ALLOWED_ACTUALS_STATUSES = List.of("LISTED",
-            "UPDATE_REQUESTED",
-            "UPDATE_SUBMITTED");
+    private static final List<String> ALLOWED_ACTUALS_STATUSES = List.of("LISTED");
     public static final List<String> HEARING_RESULTS_REASONS = List.of("ADJOURNED", "CANCELLED", "COMPLETED");
     public static final List<String> HEARING_RESULTS_THAT_NEED_REASON_TYPE = List.of("ADJOURNED", "CANCELLED");
 

@@ -70,6 +70,8 @@ import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.HearingsForListOfCasesPaginatedRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingsForListOfCasesPaginatedRequestCaseReference;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.LocationType;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
@@ -1974,5 +1976,15 @@ public class TestingUtil {
         ActualHearingEntity actualHearingEntity = actualHearingEntity(PartyType.IND);
         hearingEntity.getHearingResponses().get(0).setActualHearingEntity(actualHearingEntity);
         return hearingEntity;
+    }
+
+    public static HearingsForListOfCasesPaginatedRequest createRequest(List<String> caseReferences) {
+        List<HearingsForListOfCasesPaginatedRequestCaseReference> requestCaseReferences = new ArrayList<>();
+
+        caseReferences
+            .forEach(caseReference -> requestCaseReferences
+                .add(new HearingsForListOfCasesPaginatedRequestCaseReference(caseReference)));
+
+        return new HearingsForListOfCasesPaginatedRequest(10, 0, requestCaseReferences);
     }
 }
