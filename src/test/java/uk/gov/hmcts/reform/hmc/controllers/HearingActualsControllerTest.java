@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.TestIdamConfiguration;
 import uk.gov.hmcts.reform.hmc.config.SecurityConfiguration;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
+import uk.gov.hmcts.reform.hmc.interceptors.OverrideHostPolicyConfig;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.security.JwtGrantedAuthoritiesConverter;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
@@ -39,7 +40,7 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
     excludeFilters = @ComponentScan.Filter(type = ASSIGNABLE_TYPE, classes =
         {SecurityConfiguration.class, JwtGrantedAuthoritiesConverter.class}))
 @AutoConfigureMockMvc(addFilters = false)
-@ImportAutoConfiguration(TestIdamConfiguration.class)
+@Import({TestIdamConfiguration.class, OverrideHostPolicyConfig.class})
 class HearingActualsControllerTest {
 
     @Autowired
@@ -53,7 +54,7 @@ class HearingActualsControllerTest {
 
     @MockitoBean
     private AccessControlService accessControlService;
-  
+
     @MockitoBean
     ResponseEntity<HearingActualResponse> response;
 
