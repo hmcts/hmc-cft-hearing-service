@@ -56,6 +56,9 @@ class JwtDecoderIT {
     private static final String VALID_ISSUER_WEB_PUBLIC = "http://localhost:5000/o";
     private static final String VALID_ISSUER_FORGEROCK = "http://fr-am:8080/openam/oauth2/hmcts";
 
+    private static final int ONE_HOUR_IN_SECONDS = 3600;
+    private static final int HALF_AN_HOUR_IN_SECONDS = 1800;
+
     @Autowired
     public JwtDecoderIT(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
@@ -71,9 +74,9 @@ class JwtDecoderIT {
     @Test
     void jwtTimestampValidator_shouldFailIfExpiresAtInPast() throws Exception {
         Instant currentInstant = Instant.now();
-        Instant issuedAt = currentInstant.minusSeconds(3600);
-        Instant expiresAt = currentInstant.minusSeconds(1800);
-        Instant notBefore = currentInstant.minusSeconds(3600);
+        Instant issuedAt = currentInstant.minusSeconds(ONE_HOUR_IN_SECONDS);
+        Instant expiresAt = currentInstant.minusSeconds(HALF_AN_HOUR_IN_SECONDS);
+        Instant notBefore = currentInstant.minusSeconds(ONE_HOUR_IN_SECONDS);
 
         String userToken = createUserToken(issuedAt, expiresAt, notBefore);
 
@@ -87,9 +90,9 @@ class JwtDecoderIT {
     @Test
     void jwtTimestampValidator_shouldFailIfNotBeforeInFuture() throws Exception {
         Instant currentInstant = Instant.now();
-        Instant issuedAt = currentInstant.minusSeconds(3600);
-        Instant expiresAt = currentInstant.plusSeconds(3600);
-        Instant notBefore = currentInstant.plusSeconds(1800);
+        Instant issuedAt = currentInstant.minusSeconds(ONE_HOUR_IN_SECONDS);
+        Instant expiresAt = currentInstant.plusSeconds(ONE_HOUR_IN_SECONDS);
+        Instant notBefore = currentInstant.plusSeconds(HALF_AN_HOUR_IN_SECONDS);
 
         String userToken = createUserToken(issuedAt, expiresAt, notBefore);
 
@@ -131,9 +134,9 @@ class JwtDecoderIT {
 
     private String createUserToken(String validIssuer) throws JOSEException {
         Instant currentInstant = Instant.now();
-        Instant issuedAt = currentInstant.minusSeconds(3600);
-        Instant expiresAt = currentInstant.plusSeconds(3600);
-        Instant notBefore = currentInstant.minusSeconds(3600);
+        Instant issuedAt = currentInstant.minusSeconds(ONE_HOUR_IN_SECONDS);
+        Instant expiresAt = currentInstant.plusSeconds(ONE_HOUR_IN_SECONDS);
+        Instant notBefore = currentInstant.minusSeconds(ONE_HOUR_IN_SECONDS);
 
         return createUserToken(validIssuer, issuedAt, expiresAt, notBefore);
     }
