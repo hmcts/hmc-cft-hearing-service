@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.hmc.validator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -78,10 +81,12 @@ class HearingIdValidatorTest {
         assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
     }
 
-    @Test
-    void shouldFailAsAlphamericInvalidHearingIdFormat() {
-        Exception exception = assertThrows(BadRequestException.class, () -> hearingIdValidator
-                .isValidFormat("ABCDEFG"));
+    @ParameterizedTest
+    @ValueSource(strings = {"2", "ABCDEFGHIJ", "234567890A", "1000000000"})
+    @EmptySource
+    void shouldFailAsInvalidHearingIdFormat(String hearingId) {
+        Exception exception = assertThrows(BadRequestException.class,
+                                           () -> hearingIdValidator.isValidFormat(hearingId));
         assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
     }
 

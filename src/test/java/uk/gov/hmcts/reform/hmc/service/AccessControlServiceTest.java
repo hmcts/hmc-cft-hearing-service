@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ATTRIBUTES;
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_MISSING_REQUIRED;
@@ -227,4 +228,24 @@ class AccessControlServiceTest {
         assertTrue(roles.isEmpty());
     }
 
+    @Test
+    void shouldThrowExceptionWhenUserDoesNotHaveHearingRole() {
+        stubRoleAssignments(RoleAssignmentAttributes.builder()
+                                .jurisdiction(Optional.of(JURISDICTION))
+                                .caseType(Optional.of(CASE_TYPE)),
+                            "unknown-role");
+
+        List<String> requiredRoles = List.of(HEARING_MANAGER);
+
+        InvalidRoleAssignmentException exception =
+            assertThrows(InvalidRoleAssignmentException.class,
+                         () -> accessControlService.verifyUserRoleAccess(requiredRoles),
+                         "InvalidRoleAssignmentException should be thrown when user does not have a hearing role");
+
+        assertEquals("User requires a Role Assignment with a valid organisational hearing role",
+                     exception.getMessage(),
+                     "InvalidRoleAssignmentException has unexpected message");
+
+        verify(roleAssignmentService).getRoleAssignments(USER_ID);
+    }
 }
