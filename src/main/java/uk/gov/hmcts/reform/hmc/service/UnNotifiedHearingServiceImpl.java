@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,7 +49,7 @@ public class UnNotifiedHearingServiceImpl implements UnNotifiedHearingService {
         isValidHmctsServiceCode(hmctsServiceCode);
         List<Long> hearings = getUnNotifiedHearingResults(
             hmctsServiceCode, hearingStartDateFrom, hearingStartDateTo, hearingStatus);
-        accessControlService.verifyUserRoleAccess(Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyUserRoleAccess(List.of(HEARING_MANAGER));
         List<String> hearingIds = getHearingIdInStrings(hearings);
         return getUnNotifiedHearingsResponse(hearingIds, Long.valueOf(hearings.size()));
     }

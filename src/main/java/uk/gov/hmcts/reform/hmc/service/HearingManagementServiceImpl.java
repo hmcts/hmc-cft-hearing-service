@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.hmc.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -68,6 +67,7 @@ import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -329,7 +329,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
 
     @Override
     public GetHearingsResponse getEmptyHearingsResponse(String caseRef) {
-        return getHearingsResponseMapper.toHearingsResponse(caseRef, Lists.newArrayList());
+        return getHearingsResponseMapper.toHearingsResponse(caseRef, Collections.emptyList());
     }
 
     @Override
