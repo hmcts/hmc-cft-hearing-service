@@ -341,7 +341,7 @@ dependencies {
   implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.5.3.Final'                   // spring-boot-starter-data-jpa
 
   implementation group: 'commons-fileupload', name:'commons-fileupload', version:'1.6.0'
-  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
   // end::CVE Vulnerability dependency overrides
 
   // Spring Dependencies
