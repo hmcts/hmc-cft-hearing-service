@@ -45,5 +45,4 @@ public class ActualPartyRelationshipDetailEntity extends BaseEntity implements S
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "source_actual_party_id")
     private ActualHearingPartyEntity sourceActualParty;
-
 }

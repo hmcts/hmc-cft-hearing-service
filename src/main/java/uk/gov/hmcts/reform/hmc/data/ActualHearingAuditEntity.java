@@ -19,10 +19,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Table(name = "actual_hearing_audit")
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class ActualHearingAuditEntity extends AuditBaseEntity implements Serializable {
+public class ActualHearingAuditEntity implements Serializable {
 
     private static final long serialVersionUID = -7665052824202241967L;
 
