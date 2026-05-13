@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.repository;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingAuditEntity;
@@ -13,12 +14,13 @@ class ActualHearingAuditRepositoryIT extends BaseTest {
 
     private final ActualHearingAuditRepository actualHearingAuditRepository;
 
+    private static final String INSERT_ACTUAL_HEARING_AUDIT_SCRIPT = "classpath:sql/insert-actual_hearing_audit.sql";
+    private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
+
+    @Autowired
     ActualHearingAuditRepositoryIT(ActualHearingAuditRepository actualHearingAuditRepository) {
         this.actualHearingAuditRepository = actualHearingAuditRepository;
     }
-
-    private static final String INSERT_ACTUAL_HEARING_AUDIT_SCRIPT = "classpath:sql/insert-actual_hearing_audit.sql";
-    private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_ACTUAL_HEARING_AUDIT_SCRIPT})
