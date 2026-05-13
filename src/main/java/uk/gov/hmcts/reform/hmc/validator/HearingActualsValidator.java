@@ -85,19 +85,21 @@ public class HearingActualsValidator {
 
     public void validateHearingActualDaysNotInTheFuture(HearingActual request) {
         List<ActualHearingDay> actualHearingDays = request.getActualHearingDays();
-        actualHearingDays.forEach(hearingDay -> {
-            if (hearingDay != null && hearingDay.getHearingDate().isAfter(LocalDate.now())) {
-                boolean isHearingDayEmpty = hearingDay.isEmpty();
-                if (Boolean.TRUE.equals(hearingDay.getNotRequired())) {
-                    if (!isHearingDayEmpty) {
-                        throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
-                    }
-                } else {
+        LocalDate today = LocalDate.now();
+        for (ActualHearingDay hearingDay : actualHearingDays) {
+            if (hearingDay == null) {
+                continue;
+            }
+            LocalDate hearingDate = hearingDay.getHearingDate();
+            boolean isHearingDayEmpty = hearingDay.isEmpty();
+            Boolean notRequired = hearingDay.getNotRequired();
+
+            if (hearingDate.isAfter(today) || hearingDate.equals(today)) {
+                if (notRequired == null || !isHearingDayEmpty) {
                     throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
                 }
-
             }
-        });
+        }
     }
 
     public void validateDuplicateHearingActualDays(List<ActualHearingDay> actualHearingDays) {
