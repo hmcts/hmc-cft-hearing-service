@@ -26,8 +26,8 @@ class ActualHearingAuditRepositoryIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_ACTUAL_HEARING_AUDIT_SCRIPT})
     void findByHearingResponseId() {
         List<ActualHearingAuditEntity> auditEntityList = actualHearingAuditRepository.findByHearingResponseId(1L);
-        ActualHearingAuditEntity auditEntity = auditEntityList.getFirst();
         assertEquals(1, auditEntityList.size());
+        ActualHearingAuditEntity auditEntity = auditEntityList.getFirst();
         assertEquals(2000000000L, auditEntity.getHearingId());
         assertEquals(1L, auditEntity.getHearingResponseId());
         assertEquals("Some audit details for hearing 2000000000",
@@ -38,8 +38,8 @@ class ActualHearingAuditRepositoryIT extends BaseTest {
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_ACTUAL_HEARING_AUDIT_SCRIPT})
     void findByHearingId() {
         List<ActualHearingAuditEntity> auditEntityList = actualHearingAuditRepository.findByHearingId(2000000001L);
-        ActualHearingAuditEntity auditEntity = auditEntityList.getFirst();
         assertEquals(1, auditEntityList.size());
+        ActualHearingAuditEntity auditEntity = auditEntityList.getFirst();
         assertEquals(2000000001L, auditEntity.getHearingId());
         assertEquals(2L, auditEntity.getHearingResponseId());
         assertEquals("Some audit details for hearing 2000000001",
