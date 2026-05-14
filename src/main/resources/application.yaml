@@ -183,6 +183,10 @@ supportTools:
   service-whitelist: ${SUPPORT_TOOLS_AUTHORISED_SERVICES:tech_admin_ui}
   role-whitelist:  ${SUPPORT_TOOLS_AUTHORISED_ROLES:hmc_tech_admin}
 
+hmac:
+  secrets:
+    hmi-to-hmc: ${HMI_TO_HMC_SIGNING_SECRET:}
+
 LOGGING:
   LEVEL:
     uk:
