@@ -339,6 +339,9 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         hearingActualsValidator.validateHearingOutcomeInformation(hearingId);
         HearingEntity existingHearing = hearingRepository.findById(hearingId)
             .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
+        if (HearingStatus.isFinalStatus(HearingStatus.valueOf(existingHearing.getStatus()))) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
         final int existingRequestVersion = existingHearing.getLatestRequestVersion();
 
         HearingEntity hearingEntity = updateStatus(hearingId);
