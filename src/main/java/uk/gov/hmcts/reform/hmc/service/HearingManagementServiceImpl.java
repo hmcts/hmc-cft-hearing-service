@@ -335,13 +335,13 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     public ResponseEntity hearingCompletion(Long hearingId, String clientS2SToken) {
         hearingIdValidator.validateHearingId(hearingId, HEARING_ACTUALS_ID_NOT_FOUND);
-        linkedHearingValidator.validateHearingActualsStatus(hearingId, HEARING_ACTUALS_INVALID_STATUS);
-        hearingActualsValidator.validateHearingOutcomeInformation(hearingId);
         HearingEntity existingHearing = hearingRepository.findById(hearingId)
             .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
         if (HearingStatus.isFinalStatus(HearingStatus.valueOf(existingHearing.getStatus()))) {
             return ResponseEntity.status(HttpStatus.OK).build();
         }
+        linkedHearingValidator.validateHearingActualsStatus(hearingId, HEARING_ACTUALS_INVALID_STATUS);
+        hearingActualsValidator.validateHearingOutcomeInformation(hearingId);
         final int existingRequestVersion = existingHearing.getLatestRequestVersion();
 
         HearingEntity hearingEntity = updateStatus(hearingId);
