@@ -282,7 +282,7 @@ class HearingManagementServiceIT extends BaseTest {
         validateStatusAudit(response, DELETE_HEARING_REQUEST);
         validateRequestVersionAudit(response);
         assertNotNull(response.getVersionNumber());
-        assertEquals(CANCELLATION_REQUESTED, response.getStatus());
+        assertEquals(CANCELLATION_REQUESTED.name(), response.getStatus());
         assertNotNull(response.getHearingRequestId());
         assertNotNull(response.getTimeStamp());
     }
