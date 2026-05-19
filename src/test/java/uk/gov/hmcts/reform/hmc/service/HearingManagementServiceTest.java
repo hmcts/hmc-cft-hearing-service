@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -1610,13 +1611,13 @@ class HearingManagementServiceTest {
         }
 
         @ParameterizedTest
-        @MethodSource("inValidActualStatuses")
-        void shouldThrowErrorWhenHearingActualStatusIsNotValid(String inValidActualStatus) {
+        @EnumSource(value = HearingStatus.class, names = {"AWAITING_LISTING", "HEARING_REQUESTED"})
+        void shouldThrowErrorWhenHearingActualStatusIsNotValid(HearingStatus inValidActualStatus) {
             final long hearingId = 2000000000L;
-            setupHearingActualsStatusScenario(hearingId, inValidActualStatus, null, null);
+            setupHearingActualsStatusScenario(hearingId, inValidActualStatus.name(), null, null);
             Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
                 .hearingCompletion(hearingId, CLIENT_S2S_TOKEN));
-            assertTrue(exception.getMessage().contains(ValidationError.HEARING_ACTUALS_INVALID_STATUS));
+            assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
             verify(hearingStatusAuditService, never())
                 .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
             verify(actualHearingRepository, never()).findByHearingResponse(any(HearingResponseEntity.class));
@@ -1708,13 +1709,12 @@ class HearingManagementServiceTest {
         }
 
         @ParameterizedTest
-        @MethodSource("finalStatuses")
-        void shouldPassWhenHearingIsInFinalState(String finalStatus) {
+        @EnumSource(value = HearingStatus.class, names = {"COMPLETED", "ADJOURNED", "CANCELLED"})
+        void shouldPassWhenHearingIsInFinalState(HearingStatus finalStatus) {
             final long hearingId = 2000000000L;
             UpdateHearingRequest hearingRequest = TestingUtil.updateHearingRequest();
             final int versionNumber = hearingRequest.getRequestDetails().getVersionNumber();
-            HearingEntity hearingEntity = generateHearingEntity(hearingId, finalStatus,
-                                                                versionNumber);
+            HearingEntity hearingEntity = generateHearingEntity(hearingId, finalStatus.name(), versionNumber);
             when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(hearingId)).thenReturn(true);
             ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
@@ -1749,13 +1749,6 @@ class HearingManagementServiceTest {
             return hearingEntity;
         }
 
-        private static Stream<String> inValidActualStatuses() {
-            return Stream.of(
-                HearingStatus.AWAITING_LISTING.name(),
-                HearingStatus.HEARING_REQUESTED.name()
-            );
-        }
-
         private static Stream<Arguments> completionStatusScenarios() {
             return Stream.of(
                 arguments(LISTED.name(), COMPLETED, COMPLETED.getLabel()),
@@ -1769,15 +1762,6 @@ class HearingManagementServiceTest {
                 arguments(UPDATE_SUBMITTED.name(), ADJOURNED, ADJOURNED.getLabel())
             );
         }
-
-        private static Stream<String> finalStatuses() {
-            return Stream.of(
-                HearingStatus.COMPLETED.name(),
-                HearingStatus.ADJOURNED.name(),
-                HearingStatus.CANCELLED.name()
-            );
-        }
-
     }
 
     @Nested

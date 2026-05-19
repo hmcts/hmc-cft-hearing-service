@@ -55,13 +55,7 @@ import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLAT
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.COMPLETED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_REQUESTED;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_REFERENCE;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_DELETE_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_INDIVIDUAL_DETAILS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_INDIVIDUAL_DETAILS;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_ORGANISATION_DETAILS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.*;
 
 class HearingManagementServiceIT extends BaseTest {
 
@@ -467,7 +461,7 @@ class HearingManagementServiceIT extends BaseTest {
     void shouldThrowErrorWhenHearingActualStatusIsNotValid(Long hearingId, String inValidActualStatus) {
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .hearingCompletion(hearingId, HMC));
-        assertTrue(exception.getMessage().contains(ValidationError.HEARING_ACTUALS_INVALID_STATUS));
+        assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
     }
 
     private static Stream<Arguments> inValidActualStatuses() {
