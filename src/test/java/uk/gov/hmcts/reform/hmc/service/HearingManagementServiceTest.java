@@ -93,6 +93,7 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -1862,6 +1863,10 @@ class HearingManagementServiceTest {
     }
 
     private void mockHearingCompletionRequest() {
+        UserInfo userInfo = mock(UserInfo.class);
+        when(userInfo.getSub()).thenReturn(USER_ID);
+        when(securityUtils.getUserInfo()).thenReturn(userInfo);
+
         HmcHearingResponse hmcHearingResponse = new HmcHearingResponse();
         hmcHearingResponse.setHearingID("2000000000");
         HmcHearingUpdate hmcHearingUpdate = new HmcHearingUpdate();
@@ -1870,7 +1875,7 @@ class HearingManagementServiceTest {
         hmcHearingResponse.setHearingUpdate(hmcHearingUpdate);
         when(hmiHearingResponseMapper.mapEntityToHmcModel(any(HearingResponseEntity.class),
                                                           any(HearingEntity.class))).thenReturn(hmcHearingResponse);
-        when(objectMapperService.convertObjectToJsonNode(hmcHearingResponse)).thenReturn(jsonNode);
+        doReturn(jsonNode).when(objectMapperService).convertObjectToJsonNode(any());
     }
 
     /**
@@ -1997,6 +2002,7 @@ class HearingManagementServiceTest {
                 entitiesMapper,
                 hmiHearingResponseMapper,
                 hearingStatusAuditService,
-                pendingRequestService);
+                pendingRequestService,
+                securityUtils);
     }
 }
