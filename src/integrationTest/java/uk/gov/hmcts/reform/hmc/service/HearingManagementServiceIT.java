@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.hmc.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.ChangeReasonsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingStatusAuditEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.ListAssistCaseStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
@@ -49,6 +51,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_VERSION_UPDATE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UPDATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus.LISTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_LISTING;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_REQUESTED;
@@ -477,6 +480,27 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @ParameterizedTest
+    @MethodSource("validActualStatuses")
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
+    void testUpdateHearingValid_Statuses(Long hearingId, String expectedStatus) {
+        ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
+        assertTrue(hearingEntityOptional.isPresent(), "Hearing " + hearingId + " should be present");
+        HearingEntity hearingEntity = hearingEntityOptional.get();
+        assertEquals(expectedStatus, hearingEntity.getStatus());
+        List<HearingStatusAuditEntity> auditEntityList = hearingStatusAuditRepository.findByHearingId(
+            hearingId.toString());
+        Optional<HearingStatusAuditEntity> auditEntity = auditEntityList.stream()
+            .filter(audit -> POST_HEARING_ACTUALS_COMPLETION.equals(audit.getHearingEvent()))
+            .findFirst();
+        assertTrue(auditEntity.isPresent(), "Audit should be present for hearing " + hearingId);
+        assertNotNull(auditEntity.get().getOtherInfo(), "Audit otherInfo should not be null");
+        assertNotNull(auditEntity.get().getOtherInfo().get("userId"),
+                      "Audit otherInfo.userId should not be null");
+    }
+
+    @ParameterizedTest
     @MethodSource("inValidActualStatuses")
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
     void shouldThrowErrorWhenHearingActualStatusIsNotValid(Long hearingId) {
@@ -497,6 +521,13 @@ class HearingManagementServiceIT extends BaseTest {
             arguments(2000000016L, COMPLETED.name()),
             arguments(2000000017L, ADJOURNED.name()),
             arguments(2000000018L, CANCELLED.name())
+        );
+    }
+
+    private static Stream<Arguments> validActualStatuses() {
+        return Stream.of(
+            arguments(2000000010L, ADJOURNED.name()),
+            arguments(2000000000L, COMPLETED.name())
         );
     }
 
