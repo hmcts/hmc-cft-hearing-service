@@ -44,6 +44,7 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200ForAllCasesF
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CREATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.DELETE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_ACTUALS_COMPLETION;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_VERSION_UPDATE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UPDATE_HEARING_REQUEST;
@@ -62,7 +63,6 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ORG_IND
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_PUT_HEARING_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_INDIVIDUAL_DETAILS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.MISSING_ORGANISATION_DETAILS;
-
 
 class HearingManagementServiceIT extends BaseTest {
 
@@ -454,18 +454,32 @@ class HearingManagementServiceIT extends BaseTest {
     @MethodSource("hearingCompletionStatuses")
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
     void testUpdateHearingCompletion_Statuses(Long hearingId, String expectedStatus) {
+        HearingEntity existingHearing = hearingRepository.findById(hearingId)
+            .orElseThrow(() -> new AssertionError("Hearing " + hearingId + " should be present before completion"));
+        boolean finalStatusBeforeCompletion = uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus
+            .isFinalStatus(uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.valueOf(existingHearing.getStatus()));
+
         ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
         assertTrue(hearingEntityOptional.isPresent(), "Hearing " + hearingId + " should be present");
         HearingEntity hearingEntity = hearingEntityOptional.get();
         assertEquals(expectedStatus, hearingEntity.getStatus());
+        List<HearingStatusAuditEntity> auditEntityList = hearingStatusAuditRepository.findByHearingId(
+            hearingId.toString());
+        if (finalStatusBeforeCompletion) {
+            assertTrue(auditEntityList.stream().noneMatch(audit ->
+                POST_HEARING_ACTUALS_COMPLETION.equals(audit.getHearingEvent())));
+        } else {
+            assertTrue(auditEntityList.stream().anyMatch(audit ->
+                POST_HEARING_ACTUALS_COMPLETION.equals(audit.getHearingEvent())));
+        }
     }
 
     @ParameterizedTest
     @MethodSource("inValidActualStatuses")
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
-    void shouldThrowErrorWhenHearingActualStatusIsNotValid(Long hearingId, String inValidActualStatus) {
+    void shouldThrowErrorWhenHearingActualStatusIsNotValid(Long hearingId) {
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .hearingCompletion(hearingId, HMC));
         assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
