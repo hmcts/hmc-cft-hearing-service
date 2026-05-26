@@ -60,7 +60,7 @@ class HearingActualsValidatorTest {
     private static final Long VALID_HEARING_ID = 2000000000L;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         hearingActualsValidator = new HearingActualsValidator(hearingIdValidator);
     }
