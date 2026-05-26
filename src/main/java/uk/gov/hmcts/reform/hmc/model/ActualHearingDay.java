@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.hmc.model;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 
@@ -32,8 +34,13 @@ public class ActualHearingDay implements Serializable {
     @Valid
     private List<ActualHearingDayParties> actualDayParties;
 
-    // TODO: Remove the default after EXUI-1111 deployment (see HMAN-1120)
+    // TODO: Remove the default and custom setter and add NotNull annotation after EXUI-1111 deployment (see HMAN-1120)
+    @Setter(AccessLevel.NONE)
     private Boolean notRequired = false;
+
+    public void setNotRequired(Boolean notRequired) {
+        this.notRequired = notRequired == null ? false : notRequired;
+    }
 
     public boolean isEmpty() {
         return hearingStartTime == null
@@ -41,5 +48,4 @@ public class ActualHearingDay implements Serializable {
             && (pauseDateTimes == null || pauseDateTimes.isEmpty())
             && (actualDayParties == null || actualDayParties.isEmpty());
     }
-
 }

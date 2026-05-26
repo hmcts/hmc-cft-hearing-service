@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.hmc.validator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -13,8 +16,8 @@ import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
-import uk.gov.hmcts.reform.hmc.model.HearingActualsOutcome;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -22,13 +25,17 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_FINAL_FLAG_NOT_EMPTY;
@@ -210,44 +217,6 @@ class HearingActualsValidatorTest {
     }
 
     @Test
-    void hearingActualWithOutcomeNull() {
-        HearingActual actual = TestingUtil.hearingActualWithOutcomeNull();
-        assertDoesNotThrow(() -> {
-            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
-        });
-    }
-
-    @Test
-    void hearingDate_Future_Outcome_NotEmpty_StartTime_Present_NotRequired_True() {
-        HearingActual actual = TestingUtil.hearingActualWithOutcomeNull();
-        HearingActualsOutcome outcome = TestingUtil.hearingActualsOutcome();
-        actual.setHearingOutcome(outcome);
-        assertDoesNotThrow(() -> {
-            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
-        });
-    }
-
-    @Test
-    void hearingDate_Future_Outcome_Empty_NotRequired_False() {
-        HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.FALSE);
-        assertDoesNotThrow(() -> {
-            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
-        });
-    }
-
-    @Test
-    void hearingDate_Today_Outcome_NotEmpty_NotRequired_False() {
-        HearingActual actual = TestingUtil.hearingActualWithOutcomeNull();
-        actual.getActualHearingDays().get(0).setHearingDate(LocalDate.now());
-        actual.getActualHearingDays().get(0).setNotRequired(Boolean.FALSE);
-        HearingActualsOutcome outcome = TestingUtil.hearingActualsOutcome();
-        actual.setHearingOutcome(outcome);
-        assertDoesNotThrow(() -> {
-            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
-        });
-    }
-
-    @Test
     void hearingDate_Future_Outcome_Empty_NotRequired_Default() {
         HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull();
         assertDoesNotThrow(() -> {
@@ -256,24 +225,113 @@ class HearingActualsValidatorTest {
     }
 
     @Test
-    void hearingDate_Today_StartTime_Present_NotRequired_False() {
-        HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.FALSE);
-        actual.getActualHearingDays().get(0).setHearingDate(LocalDate.now());
-        actual.getActualHearingDays().get(0).setHearingStartTime(LocalDate.now().plusDays(5).atStartOfDay());
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
-        });
-        assertTrue(exception.getMessage().contains(HEARING_ACTUALS_INVALID_STATUS));
+    void validateHearingActualDaysNotInTheFuture_NotRequiredShouldBeFalseWhenSetToNull() {
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+        LocalDateTime futureStartTime = LocalDateTime.of(futureDate, LocalTime.of(13, 0, 0));
+        LocalDateTime futureEndTime = LocalDateTime.of(futureDate, LocalTime.of(14, 0, 0));
+
+        ActualHearingDay actualHearingDay = createActualHearingDay(futureDate, null, futureStartTime, futureEndTime);
+        HearingActual hearingActual = new HearingActual();
+        hearingActual.setActualHearingDays(List.of(actualHearingDay));
+
+        BadRequestException exception =
+            assertThrows(BadRequestException.class,
+                         () -> hearingActualsValidator.validateHearingActualDaysNotInTheFuture(hearingActual),
+                         "BadRequestException should be thrown");
+
+        assertEquals(HEARING_ACTUALS_INVALID_STATUS,
+                     exception.getMessage(),
+                     "BadRequestException has unexpected message");
     }
 
-    @Test
-    void hearingDate_Future_StartTime_Present_NotRequired_True() {
-        HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.TRUE);
-        actual.getActualHearingDays().get(0).setHearingStartTime(LocalDate.now().plusDays(5).atStartOfDay());
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingActualsValidator.validateHearingActualDaysNotInTheFuture(actual);
-        });
-        assertTrue(exception.getMessage().contains(HEARING_ACTUALS_INVALID_STATUS));
+    @ParameterizedTest
+    @MethodSource("actualHearingDayAccepted")
+    void validateHearingActualDaysNotInTheFuture_ShouldAcceptActualHearingDay(ActualHearingDay actualHearingDay) {
+        HearingActual hearingActual = new HearingActual();
+        hearingActual.setActualHearingDays(List.of(actualHearingDay));
+
+        assertDoesNotThrow(() -> hearingActualsValidator.validateHearingActualDaysNotInTheFuture(hearingActual),
+                           "Exception should not be thrown");
+    }
+
+    @ParameterizedTest
+    @MethodSource("actualHearingDayRejected")
+    void validateHearingActualDaysNotInTheFuture_ShouldRejectActualHearingDay(ActualHearingDay actualHearingDay) {
+        HearingActual hearingActual = new HearingActual();
+        hearingActual.setActualHearingDays(List.of(actualHearingDay));
+
+        BadRequestException exception =
+            assertThrows(BadRequestException.class,
+                         () -> hearingActualsValidator.validateHearingActualDaysNotInTheFuture(hearingActual),
+                         "BadRequestException should be thrown");
+
+        assertEquals(HEARING_ACTUALS_INVALID_STATUS,
+                     exception.getMessage(),
+                     "BadRequestException has unexpected message");
+    }
+
+    private static Stream<Arguments> actualHearingDayAccepted() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDateTime currentStartTime = LocalDateTime.of(currentDate, LocalTime.of(13, 0, 0));
+        LocalDateTime currentEndTime = LocalDateTime.of(currentDate, LocalTime.of(14, 0, 0));
+
+        ActualHearingDay dayCurrentRequiredEmpty = createActualHearingDay(currentDate, false);
+        ActualHearingDay dayCurrentRequiredNotEmpty =
+            createActualHearingDay(currentDate, false, currentStartTime, currentEndTime);
+
+        ActualHearingDay dayCurrentNotRequiredEmpty = createActualHearingDay(currentDate, true);
+        ActualHearingDay dayCurrentNotRequiredNotEmpty =
+            createActualHearingDay(currentDate, true, currentStartTime, currentEndTime);
+
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+
+        ActualHearingDay dayFutureRequiredEmpty = createActualHearingDay(futureDate, false);
+        ActualHearingDay dayFutureNotRequiredEmpty = createActualHearingDay(futureDate, true);
+
+        return Stream.of(
+            arguments(dayCurrentRequiredEmpty),
+            arguments(dayCurrentRequiredNotEmpty),
+            arguments(dayCurrentNotRequiredEmpty),
+            arguments(dayCurrentNotRequiredNotEmpty),
+            arguments(dayFutureRequiredEmpty),
+            arguments(dayFutureNotRequiredEmpty)
+        );
+    }
+
+    private static Stream<Arguments> actualHearingDayRejected() {
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+        LocalDateTime futureStartTime = LocalDateTime.of(futureDate, LocalTime.of(13, 0, 0));
+        LocalDateTime futureEndTime = LocalDateTime.of(futureDate, LocalTime.of(14, 0, 0));
+
+        ActualHearingDay dayFutureRequiredNotEmpty =
+            createActualHearingDay(futureDate, false, futureStartTime, futureEndTime);
+
+        ActualHearingDay dayFutureNotRequiredNotEmpty =
+            createActualHearingDay(futureDate, true, futureStartTime, futureEndTime);
+
+        return Stream.of(
+            arguments(dayFutureRequiredNotEmpty),
+            arguments(dayFutureNotRequiredNotEmpty)
+        );
+    }
+
+    private static ActualHearingDay createActualHearingDay(LocalDate hearingDate, Boolean notRequired) {
+        ActualHearingDay actualHearingDay = new ActualHearingDay();
+        actualHearingDay.setHearingDate(hearingDate);
+        actualHearingDay.setNotRequired(notRequired);
+
+        return actualHearingDay;
+    }
+
+    private static ActualHearingDay createActualHearingDay(LocalDate hearingDate,
+                                                           Boolean notRequired,
+                                                           LocalDateTime hearingStartTime,
+                                                           LocalDateTime hearingEndTime) {
+        ActualHearingDay actualHearingDay = createActualHearingDay(hearingDate, notRequired);
+        actualHearingDay.setHearingStartTime(hearingStartTime);
+        actualHearingDay.setHearingEndTime(hearingEndTime);
+
+        return actualHearingDay;
     }
 
     protected void generateHearingResponseEntity(Integer requestVersion, HearingEntity hearingEntity,
@@ -329,5 +387,4 @@ class HearingActualsValidatorTest {
         request.setHearingRequestReceivedDateTime(receivedDateTime);
         return request;
     }
-
 }

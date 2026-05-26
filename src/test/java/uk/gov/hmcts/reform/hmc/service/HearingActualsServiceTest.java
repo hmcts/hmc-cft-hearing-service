@@ -339,17 +339,14 @@ class HearingActualsServiceTest {
 
         @Test
         void hearingDate_Today_Outcome_NotEmpty_StartTime_Present_NotRequired_False() {
-            createHearingEntity(VALID_HEARING_STATUS);
+            createActuals();
             HearingActual actual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull(Boolean.FALSE);
-            actual.getActualHearingDays().get(0).setHearingDate(LocalDate.now());
-            actual.getActualHearingDays().get(0).setHearingStartTime(LocalDate.now()
-                                                                         .plusDays(5).atStartOfDay());
+            actual.getActualHearingDays().getFirst().setHearingDate(LocalDate.now());
+            actual.getActualHearingDays().getFirst().setHearingStartTime(LocalDate.now()
+                                                                             .plusDays(5).atStartOfDay());
             HearingActualsOutcome outcome = actual.getHearingOutcome();
             outcome.setHearingFinalFlag(Boolean.TRUE);
-            Exception exception = assertThrows(BadRequestException.class, () -> {
-                hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, actual);
-            });
-            assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
+            assertDoesNotThrow(() -> hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, actual));
         }
 
         @Test
