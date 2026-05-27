@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.microsoft.applicationinsights.core.dependencies.google.common.collect.Maps.newHashMap;
 import static org.springframework.http.HttpHeaders.ETAG;
 
 @Slf4j
@@ -51,7 +50,7 @@ public class DefaultRoleAssignmentRepository implements RoleAssignmentRepository
     private final SecurityUtils securityUtils;
     private final RestTemplate restTemplate;
 
-    private final Map<String, Pair<String, RoleAssignmentResponse>> roleAssignments = newHashMap();
+    private final Map<String, Pair<String, RoleAssignmentResponse>> roleAssignments = new HashMap<>();
 
     public DefaultRoleAssignmentRepository(final ApplicationParams applicationParams,
                                            final SecurityUtils securityUtils,
