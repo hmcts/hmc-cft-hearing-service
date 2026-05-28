@@ -1711,8 +1711,7 @@ class HearingManagementServiceTest {
             assertAuditDetailsWithUpdatedDateOrCurrentDate();
             assertNotNull(responseEntity);
             verify(hearingRepository, times(1)).save(any(HearingEntity.class));
-            verify(hearingStatusAuditService, times(1))
-                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
+            verify(securityUtils, times(1)).getUserInfo();
             assertEquals(expectedHearingStatus, hearingEntity.getStatus());
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         }
@@ -1763,7 +1762,7 @@ class HearingManagementServiceTest {
                 .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContextCaptor.capture());
             HearingStatusAuditContext auditContext = hearingStatusAuditContextCaptor.getValue();
             assertNotNull(auditContext.getOtherInfo());
-            assertEquals("user@hmcts.net", auditContext.getOtherInfo().get("userId").asText());
+            assertEquals(USER_ID, auditContext.getOtherInfo().get("userId").asText());
         }
 
         private static Stream<Arguments> completionStatusScenarios() {
@@ -1883,7 +1882,7 @@ class HearingManagementServiceTest {
         when(userInfo.getSub()).thenReturn(USER_ID);
         when(securityUtils.getUserInfo()).thenReturn(userInfo);
         JsonNode userIdNode = mock(JsonNode.class);
-        when(userIdNode.asText()).thenReturn("user@hmcts.net");
+        when(userIdNode.asText()).thenReturn(USER_ID);
         when(jsonNode.get("userId")).thenReturn(userIdNode);
 
         HmcHearingResponse hmcHearingResponse = new HmcHearingResponse();
