@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -271,8 +270,8 @@ class HearingManagementControllerTest {
             when(hearingManagementService.getHearings(any(), any()))
                 .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "LISTED"));
 
-            List<String> rolesRequired = Lists.newArrayList(HEARING_VIEWER, LISTED_HEARING_VIEWER);
-            List<String> filteredRoleAssignments = Lists.newArrayList(LISTED_HEARING_VIEWER);
+            List<String> rolesRequired = List.of(HEARING_VIEWER, LISTED_HEARING_VIEWER);
+            List<String> filteredRoleAssignments = List.of(LISTED_HEARING_VIEWER);
 
             when(accessControlService.verifyCaseAccess(validCaseRef, rolesRequired, null))
                 .thenReturn(filteredRoleAssignments);

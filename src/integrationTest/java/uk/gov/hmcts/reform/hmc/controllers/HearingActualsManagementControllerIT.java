@@ -12,11 +12,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +28,7 @@ import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.TestFixtures;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
+import uk.gov.hmcts.reform.hmc.interceptors.OverrideHostPolicy;
 import uk.gov.hmcts.reform.hmc.interceptors.RequestBodyCachingFilter;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -84,6 +87,9 @@ class HearingActualsManagementControllerIT extends BaseTest {
 
     @Autowired
     private EntityManager entityManager;
+
+    @MockitoBean
+    protected OverrideHostPolicy overrideHostPolicy;
 
     private static final String URL = "/hearingActuals";
     private static final String INSERT_HEARING_ACTUALS = "classpath:sql/put-hearing-actuals.sql";
@@ -253,7 +259,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(
-                                    TestingUtil.hearingActualWithOutcomeEmpty())))
+                                    TestingUtil.hearingActualWithOutcomeNull())))
                 .andExpect(status().is(200))
                 .andReturn();
         }
@@ -737,6 +743,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @BeforeEach
         void setUp() {
             ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(true);
             amServer.resetRequests();
             dataStoreServer.resetRequests();
         }
@@ -768,6 +775,22 @@ class HearingActualsManagementControllerIT extends BaseTest {
 
             amServer.verify(2, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
             dataStoreServer.verify(2, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS1})
+        void shouldNotCallProvidedCcdAndAmUrl_WhenHeaderIsInvalid() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(false);
+            mockMvc.perform(
+                    get(URL + "/2000000000")
+                        .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                        .header(dataStoreUrlManager.getUrlHeaderName(), "dataStoreUrl")
+                        .header(roleAssignmentUrlManager.getUrlHeaderName(), "roleAssignmentUrl")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200));
+
+            amServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
+            dataStoreServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
         }
     }
 
