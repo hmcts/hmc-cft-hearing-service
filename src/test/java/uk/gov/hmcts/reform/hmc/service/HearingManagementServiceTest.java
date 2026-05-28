@@ -14,6 +14,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -35,6 +37,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.PartyRelationshipDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
+import uk.gov.hmcts.reform.hmc.domain.model.HearingStatusAuditContext;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignment;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignmentAttributes;
 import uk.gov.hmcts.reform.hmc.domain.model.RoleAssignments;
@@ -93,6 +96,7 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.hmc.validator.LinkedHearingValidator;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -100,6 +104,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -154,7 +159,7 @@ class HearingManagementServiceTest {
 
     public static final String JURISDICTION = "Jurisdiction1";
     public static final String CASE_TYPE = "CaseType1";
-    public static final String USER_ID = "UserId";
+    public static final String USER_ID = "userId";
     public static final String ROLE_NAME = "hearing-manager";
     public static final String ROLE_TYPE = "ORGANISATION";
     private static final String CLIENT_S2S_TOKEN = "s2s_token";
@@ -246,6 +251,9 @@ class HearingManagementServiceTest {
 
     @Mock
     PendingRequestService pendingRequestService;
+
+    @Captor
+    private ArgumentCaptor<HearingStatusAuditContext> hearingStatusAuditContextCaptor;
 
     @BeforeEach
     public void setUp() {
@@ -1700,10 +1708,10 @@ class HearingManagementServiceTest {
                 setupHearingActualsStatusScenario(hearingId, hearingStatus, hearingResultType, 13L);
             mockHearingCompletionRequest();
             ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
-            verify(hearingRepository, times(1)).save(any(HearingEntity.class));
-            verify(hearingStatusAuditService, times(1))
-                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
+            assertAuditDetailsWithUpdatedDateOrCurrentDate();
             assertNotNull(responseEntity);
+            verify(hearingRepository, times(1)).save(any(HearingEntity.class));
+            verify(securityUtils, times(1)).getUserInfo();
             assertEquals(expectedHearingStatus, hearingEntity.getStatus());
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         }
@@ -1747,6 +1755,14 @@ class HearingManagementServiceTest {
                     .thenReturn(Optional.of(actualHearingEntity));
             }
             return hearingEntity;
+        }
+
+        private void assertAuditDetailsWithUpdatedDateOrCurrentDate() {
+            verify(hearingStatusAuditService)
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContextCaptor.capture());
+            HearingStatusAuditContext auditContext = hearingStatusAuditContextCaptor.getValue();
+            assertNotNull(auditContext.getOtherInfo());
+            assertEquals(USER_ID, auditContext.getOtherInfo().get("userId").asText());
         }
 
         private static Stream<Arguments> completionStatusScenarios() {
@@ -1862,6 +1878,13 @@ class HearingManagementServiceTest {
     }
 
     private void mockHearingCompletionRequest() {
+        UserInfo userInfo = mock(UserInfo.class);
+        when(userInfo.getSub()).thenReturn(USER_ID);
+        when(securityUtils.getUserInfo()).thenReturn(userInfo);
+        JsonNode userIdNode = mock(JsonNode.class);
+        when(userIdNode.asText()).thenReturn(USER_ID);
+        when(jsonNode.get("userId")).thenReturn(userIdNode);
+
         HmcHearingResponse hmcHearingResponse = new HmcHearingResponse();
         hmcHearingResponse.setHearingID("2000000000");
         HmcHearingUpdate hmcHearingUpdate = new HmcHearingUpdate();
@@ -1871,6 +1894,7 @@ class HearingManagementServiceTest {
         when(hmiHearingResponseMapper.mapEntityToHmcModel(any(HearingResponseEntity.class),
                                                           any(HearingEntity.class))).thenReturn(hmcHearingResponse);
         when(objectMapperService.convertObjectToJsonNode(hmcHearingResponse)).thenReturn(jsonNode);
+        when(objectMapperService.convertObjectToJsonNode(Map.of("userId", USER_ID))).thenReturn(jsonNode);
     }
 
     /**
@@ -1997,6 +2021,7 @@ class HearingManagementServiceTest {
                 entitiesMapper,
                 hmiHearingResponseMapper,
                 hearingStatusAuditService,
-                pendingRequestService);
+                pendingRequestService,
+                securityUtils);
     }
 }
