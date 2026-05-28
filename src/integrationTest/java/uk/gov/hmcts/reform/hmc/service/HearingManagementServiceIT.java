@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,11 +51,9 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_VERSION_UPDATE
 import static uk.gov.hmcts.reform.hmc.constants.Constants.UPDATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED;
-import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_LISTING;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.COMPLETED;
-import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_REFERENCE;
@@ -463,7 +462,7 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @ParameterizedTest
-    @MethodSource("inValidActualStatuses")
+    @ValueSource(longs = {2000000009L, 2000000019L})
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
     void shouldThrowErrorWhenHearingActualStatusIsNotValid(Long hearingId) {
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
@@ -488,15 +487,7 @@ class HearingManagementServiceIT extends BaseTest {
             .findFirst();
         assertTrue(auditEntity.isPresent(), "Audit should be present for hearing " + hearingId);
         assertNotNull(auditEntity.get().getOtherInfo(), "Audit otherInfo should not be null");
-        assertNotNull(auditEntity.get().getOtherInfo().get("userId"),
-                      "Audit otherInfo.userId should not be null");
-    }
-
-    private static Stream<Arguments> inValidActualStatuses() {
-        return Stream.of(
-            arguments(2000000009L, HEARING_REQUESTED.name()),
-            arguments(2000000019L, AWAITING_LISTING.name())
-        );
+        assertEquals("user@hmcts.net", auditEntity.get().getOtherInfo().get("userId").asText());
     }
 
     private static Stream<Arguments> hearingCompletionStatuses() {
