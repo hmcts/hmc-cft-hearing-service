@@ -175,8 +175,8 @@ class HearingActualsManagementControllerIT extends BaseTest {
 
         private static Stream<Arguments> awaitingListingHearingIds() {
             return Stream.of(
-                //arguments("2000001100", "UPDATE_REQUESTED"),
-               // arguments("2000001200", "UPDATE_SUBMITTED"),
+                arguments("2000001100", "UPDATE_REQUESTED"),
+                arguments("2000001200", "UPDATE_SUBMITTED"),
                 arguments("2000000000", "HEARING_REQUESTED")
             );
         }
