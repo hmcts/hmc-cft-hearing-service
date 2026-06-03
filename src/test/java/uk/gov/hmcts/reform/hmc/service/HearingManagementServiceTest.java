@@ -127,8 +127,6 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCR
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.LISTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SUBMITTED;
-import static uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus.LISTED;
-import static uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus.UPDATE_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus.UPDATE_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME;
