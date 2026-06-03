@@ -19,10 +19,12 @@ import uk.gov.hmcts.reform.hmc.domain.model.enums.LinkType;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.FhBadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.LinkedGroupNotFoundException;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GetLinkedHearingGroupResponse;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.GroupDetails;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupResponse;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkHearingDetails;
+import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.LinkedHearingDetails;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
@@ -548,6 +550,25 @@ class LinkedHearingGroupServiceIT extends BaseTest {
         Exception exception = assertThrows(BadRequestException.class, () -> linkedHearingGroupService
             .deleteLinkedHearingGroup("44445", HMC));
         assertEquals("007 group is in a PENDING state", exception.getMessage());
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_LINKED_HEARINGS_DATA_SCRIPT})
+    void testGetLinkedHearingGroupResponse() {
+        GetLinkedHearingGroupResponse response = linkedHearingGroupService.getLinkedHearingGroupResponse("44447");
+
+        GroupDetails groupDetails = response.getGroupDetails();
+        assertNotNull(groupDetails, "GetLinkedHearingGroupResponse group details should not be null");
+        assertEquals("good reason", groupDetails.getGroupReason(), "Group details has unexpected reason");
+        assertEquals("Ordered", groupDetails.getGroupLinkType(), "Group details has unexpected link type");
+
+        List<LinkedHearingDetails> linkedHearings = response.getHearingsInGroup();
+        assertNotNull(linkedHearings, "GetLinkedHearingGroupResponse hearings in group list should not be null");
+        assertEquals(1, linkedHearings.size(), "Hearings in group list has unexpected number of items");
+
+        LinkedHearingDetails linkedHearingDetails = linkedHearings.getFirst();
+        assertEquals(2000000301L, linkedHearingDetails.getHearingId(), "Linked hearing has unexpected id");
+        assertEquals(1L, linkedHearingDetails.getHearingOrder(), "Linked hearing has unexpected hearing order");
     }
 
     private HearingLinkGroupRequest createHearingLinkGroupOrderedRequest(List<Long> hearings) {
