@@ -5,12 +5,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingActualsResponseMapper;
@@ -18,6 +25,7 @@ import uk.gov.hmcts.reform.hmc.helper.HearingActualsMapper;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.model.HearingActualsOutcome;
+import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
@@ -34,6 +42,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
@@ -48,11 +57,12 @@ import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingActualsOutcome;
 
 @ExtendWith(MockitoExtension.class)
 class HearingActualsServiceTest {
-    public static final String VALID_HEARING_STATUS = "UPDATE_REQUESTED";
+    public static final String VALID_HEARING_STATUS = "LISTED";
     public static final long INVALID_HEARING_ID = 1000000000L;
     public static final Long HEARING_ID = 2000000000L;
     private static final String CLIENT_S2S_TOKEN = "s2s_token";
 
+    @InjectMocks
     private HearingActualsServiceImpl hearingActualsService;
 
     @Mock
@@ -97,7 +107,7 @@ class HearingActualsServiceTest {
         @Test
         void shouldFailWithInvalidHearingId() {
             HearingEntity hearing = new HearingEntity();
-            hearing.setStatus("RESPONDED");
+            hearing.setStatus("UPDATE_SUBMITTED");
             hearing.setId(2000000000L);
 
             Exception exception = assertThrows(HearingNotFoundException.class, () -> {
@@ -107,21 +117,50 @@ class HearingActualsServiceTest {
         }
 
 
-        @Test
-        void shouldPassWithValidHearingIdInDb() {
+        @ParameterizedTest(name = "[{index}] hearingStatus={0}, responseStatus={1}")
+        @CsvSource({
+            "UPDATE_SUBMITTED, UPDATE_SUBMITTED",
+            "LISTED, AWAITING_ACTUALS",
+            "HEARING_REQUESTED, HEARING_REQUESTED"
+        })
+        void shouldReturnExpectedResponseForValidHearingStatuses(String hearingStatus, String expectedHmcStatus) {
             HearingEntity hearing = new HearingEntity();
-            hearing.setStatus("RESPONDED");
+            hearing.setStatus(hearingStatus);
             hearing.setId(2000000000L);
+            HearingActualResponse expectedResponse = new HearingActualResponse();
+            expectedResponse.setHmcStatus(expectedHmcStatus);
+            expectedResponse.setCaseDetails(TestingUtil.caseDetails());
             when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearing));
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            hearingActualsService.getHearingActuals(2000000000L);
+            when(getHearingActualsResponseMapper.toHearingActualResponse(hearing)).thenReturn(expectedResponse);
+
+            ResponseEntity<HearingActualResponse> response = hearingActualsService.getHearingActuals(2000000000L);
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertSame(expectedResponse, response.getBody());
+            assertEquals(expectedResponse.getHmcStatus(), response.getBody().getHmcStatus());
+            verify(hearingRepository).existsById(2000000000L);
+            verify(hearingRepository).findById(2000000000L);
             verify(getHearingActualsResponseMapper).toHearingActualResponse(hearing);
+        }
+
+        @Test
+        void shouldFailWhenHearingIdExistsButHearingCannotBeLoaded() {
+            when(hearingRepository.existsById(2000000000L)).thenReturn(true);
+            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.empty());
+
+            Exception exception = assertThrows(HearingNotFoundException.class, () ->
+                hearingActualsService.getHearingActuals(2000000000L));
+
+            assertEquals("No hearing found for reference: 2000000000", exception.getMessage());
+            verify(hearingRepository).existsById(2000000000L);
+            verify(hearingRepository).findById(2000000000L);
         }
 
         @Test
         void shouldFailWithInvalidHearingIdForGetHearing() {
             HearingEntity hearing = new HearingEntity();
-            hearing.setStatus("RESPONDED");
+            hearing.setStatus("UPDATE_SUBMITTED");
             hearing.setId(2000000010L);
 
             Exception exception = assertThrows(HearingNotFoundException.class, () ->
@@ -184,15 +223,15 @@ class HearingActualsServiceTest {
                 .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
-        @Test
-        void shouldThrowExceptionWhenHearingStatusNotAllowingActuals() {
-            createHearingEntity("HEARING_REQUESTED");
-
+        @ParameterizedTest(name = "[{index}] hearingStatus={0}")
+        @EnumSource(value = HearingStatus.class, names = "LISTED", mode = EnumSource.Mode.EXCLUDE)
+        void shouldThrowExceptionWhenHearingStatusIsNotListed(HearingStatus hearingStatus) {
+            createHearingEntity(hearingStatus.name());
             HearingActual hearingActual = TestingUtil.hearingActual();
-            Exception exception = assertThrows(BadRequestException.class, () ->
-                hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual)
-            );
-            assertEquals("002 invalid status HEARING_REQUESTED", exception.getMessage());
+            Exception exception = assertThrows(BadRequestException.class, () -> {
+                hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
+            });
+            assertEquals("002 invalid status " + hearingStatus.name(), exception.getMessage());
         }
 
         @Test
