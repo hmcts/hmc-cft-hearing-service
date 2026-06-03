@@ -45,12 +45,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PUT_HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.actualHearingDay;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingActualsOutcome;
 
 @ExtendWith(MockitoExtension.class)
 class HearingActualsServiceTest {
-    public static final String VALID_HEARING_STATUS = "UPDATE_REQUESTED";
+    public static final String VALID_HEARING_STATUS = "LISTED";
     public static final long INVALID_HEARING_ID = 1000000000L;
     public static final Long HEARING_ID = 2000000000L;
     private static final String CLIENT_S2S_TOKEN = "s2s_token";
@@ -194,7 +195,8 @@ class HearingActualsServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, TestingUtil.hearingActual());
             });
-            assertEquals("002 invalid status HEARING_REQUESTED", exception.getMessage());
+            assertEquals(String.format(PUT_HEARING_ACTUALS_INVALID_STATUS, "HEARING_REQUESTED"),
+                         exception.getMessage());
         }
 
         @Test

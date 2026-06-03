@@ -23,13 +23,15 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_RESULT_TYPE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PUT_HEARING_ACTUALS_INVALID_STATUS;
 
 @Component
 public class HearingActualsValidator {
     private final HearingIdValidator hearingIdValidator;
     private static final List<String> ALLOWED_ACTUALS_STATUSES = List.of("LISTED",
-            "UPDATE_REQUESTED",
-            "UPDATE_SUBMITTED");
+            "COMPLETED",
+            "ADJOURNED",
+            "CANCELLED");
     public static final List<String> HEARING_RESULTS_REASONS = List.of("ADJOURNED", "CANCELLED", "COMPLETED");
     public static final List<String> HEARING_RESULTS_THAT_NEED_REASON_TYPE = List.of("ADJOURNED", "CANCELLED");
 
@@ -114,7 +116,7 @@ public class HearingActualsValidator {
 
     public void validateHearingStatusForActuals(String hearingStatus) {
         if (ALLOWED_ACTUALS_STATUSES.stream().noneMatch(e -> e.equals(hearingStatus))) {
-            throw new BadRequestException(String.format(HEARING_ACTUALS_INVALID_STATUS, hearingStatus));
+            throw new BadRequestException(String.format(PUT_HEARING_ACTUALS_INVALID_STATUS, hearingStatus));
         }
     }
 

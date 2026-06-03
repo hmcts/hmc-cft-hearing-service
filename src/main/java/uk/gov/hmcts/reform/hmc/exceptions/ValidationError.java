@@ -311,4 +311,6 @@ public final class ValidationError {
     public static final String CASE_REFERENCES_MANDATORY = "At least one case reference must be provided";
     public static final String INVALID_SERVICE_EXCEPTION_MESSAGE = "Failed to invoke ‘getHearing’ "
         + "from service: %s for hearing id: %s";
+    public static final String PUT_HEARING_ACTUALS_INVALID_STATUS = "002 invalid status for awaiting actuals "
+        + "to be accepted %s";
 }
