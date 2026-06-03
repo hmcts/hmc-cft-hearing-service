@@ -47,7 +47,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private static final String url = "/partiesNotified";
+    private static final String URL = "/partiesNotified";
 
     private static final String GET_HEARINGS_DATA_SCRIPT = "classpath:sql/get-caseHearings_request.sql";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
@@ -94,7 +94,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             PartiesNotified partiesNotified = new PartiesNotified();
             partiesNotified.setServiceData(jsonNode);
             final String dateTime = "2020-08-10T11:20:00";
-            mockMvc.perform(put(url + "/2000000000" + "?version=1&received=" + dateTime)
+            mockMvc.perform(put(URL + "/2000000000" + "?version=1&received=" + dateTime)
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
@@ -110,7 +110,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             partiesNotified.setServiceData(jsonNode);
 
             final String dateTime = "2020-08-10T14:20:00";
-            mockMvc.perform(put(url + "/2000000013" + "?version=1&received=" + dateTime)
+            mockMvc.perform(put(URL + "/2000000013" + "?version=1&received=" + dateTime)
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
@@ -125,7 +125,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             partiesNotified.setServiceData(jsonNode);
 
             final String dateTime = "2020-11-30T10:15:21";
-            mockMvc.perform(put(url + "/1000000000" + "?version=2&received=" + dateTime)
+            mockMvc.perform(put(URL + "/1000000000" + "?version=2&received=" + dateTime)
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
@@ -141,7 +141,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             partiesNotified.setServiceData(jsonNode);
 
             final String dateTime = "2020-11-30T10:15:21";
-            mockMvc.perform(put(url + "/2000000001" + "?version=2&received=" + dateTime)
+            mockMvc.perform(put(URL + "/2000000001" + "?version=2&received=" + dateTime)
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
@@ -158,7 +158,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             partiesNotified.setServiceData(jsonNode);
 
             final String dateTime = "2020-11-30T10:15:21";
-            mockMvc.perform(put(url + "/2000000000" + "?version=25&received=" + dateTime)
+            mockMvc.perform(put(URL + "/2000000000" + "?version=25&received=" + dateTime)
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
@@ -175,7 +175,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
             partiesNotified.setServiceData(jsonNode);
 
             final String dateTime = "2021-08-10T11:20:00";
-            mockMvc.perform(put(url + "/2000000010" + "?version=1&received=" + dateTime)
+            mockMvc.perform(put(URL + "/2000000010" + "?version=1&received=" + dateTime)
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(partiesNotified)))
@@ -197,14 +197,14 @@ class PartiesNotifiedControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldReturn200_WhenPartiesNotifiedIsSuccess() throws Exception {
-            mockMvc.perform(get(url + "/2000000000"))
+            mockMvc.perform(get(URL + "/2000000000"))
                 .andExpect(status().is(200))
                 .andReturn();
         }
 
         @Test
         void shouldReturn400_WhenHearingIdIsInValid() throws Exception {
-            mockMvc.perform(get(url + "/1000000000"))
+            mockMvc.perform(get(URL + "/1000000000"))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasItem(INVALID_HEARING_ID_DETAILS)))
                 .andReturn();
@@ -212,7 +212,7 @@ class PartiesNotifiedControllerIT extends BaseTest {
 
         @Test
         void shouldReturn404_WhenHearingIdDoesNotExist() throws Exception {
-            mockMvc.perform(get(url + "/2000000001"))
+            mockMvc.perform(get(URL + "/2000000001"))
                 .andExpect(status().is(404))
                 .andExpect(jsonPath("$.errors", hasItem(PARTIES_NOTIFIED_ID_NOT_FOUND.replace("%s", "2000000001"))))
                 .andReturn();

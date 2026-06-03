@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.CancellationReasonsEntity;
@@ -84,10 +85,16 @@ import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignme
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn400WhileValidateHearingObject;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn404FromDataStore;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubSuccessfullyValidateHearingObject;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AWAITING_ACTUALS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.CANCELLATION_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_UPDATED;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.INBOUND_S2S_TOKEN;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.LISTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AMEND_REASON_CODE_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AUTHORISATION_SUB_TYPE_MAX_LENGTH_MSG;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.AUTHORISATION_TYPE_MAX_LENGTH_MSG;
@@ -191,6 +198,7 @@ import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_M
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CANCELLATION_REASON_CODES;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
+import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.createRequest;
 
 class HearingManagementControllerIT extends BaseTest {
 
@@ -769,8 +777,6 @@ class HearingManagementControllerIT extends BaseTest {
                 cancellationReasonsRepository.findAll().iterator().next().getCancellationReasonType());
     }
 
-
-
     @Test
     void shouldReturn200_WhenGetHearingsForValidCaseRefLuhn() throws Exception {
         mockMvc.perform(get("/hearings/9372710950276233")
@@ -787,39 +793,28 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
-    @Test
+    @ParameterizedTest(name = "[{index}] caseRef={0}, status={1}")
+    @MethodSource("hearingCasesForGetHearings")
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndNoStatus() throws Exception {
-        mockMvc.perform(get("/hearings/9372710950276233")
-                            .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().is(200))
-            .andExpect(jsonPath("$.caseRef").value("9372710950276233"))
-            .andExpect(jsonPath("$.caseHearings", hasSize(3)))
-            .andExpect(jsonPath("$.caseHearings[0].hearingID").value("2000000010"))
-            .andExpect(jsonPath("$.caseHearings[1].hearingID").value("2000000009"))
-            .andExpect(jsonPath("$.caseHearings[2].hearingID").value("2000000000"))
-            .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("HEARING_UPDATED"))
-            .andExpect(jsonPath("$.caseHearings[1].hmcStatus").value("HEARING_REQUESTED"))
-            .andExpect(jsonPath("$.caseHearings[2].hmcStatus").value("HEARING_REQUESTED"))
-            .andExpect(jsonPath("$.hmctsServiceCode").value("TEST"))
-            .andReturn();
-    }
+    void shouldReturn200_WhenGetHearingsForValidCaseDetails(String caseRef, String status,
+                                                            List<String> expectedHearingIds,
+                                                            List<String> expectedStatuses) throws Exception {
 
-    @Test
-    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void shouldReturn200_WhenGetHearingsForValidCaseDetailsAndStatus() throws Exception {
-        mockMvc.perform(get("/hearings/9372710950276233")
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .param("status", "HEARING_REQUESTED"))
+        var request = get("/hearings/{caseRef}", caseRef)
+            .contentType(MediaType.APPLICATION_JSON_VALUE);
+        if (status != null) {
+            request.param("status", status);
+        }
+        var result = mockMvc.perform(request)
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.caseRef").value("9372710950276233"))
-            .andExpect(jsonPath("$.caseHearings", hasSize(2)))
-            .andExpect(jsonPath("$.caseHearings[0].hearingID").value("2000000009"))
-            .andExpect(jsonPath("$.caseHearings[1].hearingID").value("2000000000"))
-            .andExpect(jsonPath("$.caseHearings[0].hmcStatus").value("HEARING_REQUESTED"))
-            .andExpect(jsonPath("$.caseHearings[1].hmcStatus").value("HEARING_REQUESTED"))
-            .andExpect(jsonPath("$.hmctsServiceCode").value("TEST"))
-            .andReturn();
+            .andExpect(jsonPath("$.caseRef").value(caseRef))
+            .andExpect(jsonPath("$.caseHearings", hasSize(expectedHearingIds.size())))
+            .andExpect(jsonPath("$.hmctsServiceCode").value("TEST"));
+
+        for (int i = 0; i < expectedHearingIds.size(); i++) {
+            result.andExpect(jsonPath("$.caseHearings[" + i + "].hearingID").value(expectedHearingIds.get(i)))
+                .andExpect(jsonPath("$.caseHearings[" + i + "].hmcStatus").value(expectedStatuses.get(i)));
+        }
     }
 
     @Test
@@ -885,21 +880,31 @@ class HearingManagementControllerIT extends BaseTest {
             .andReturn();
     }
 
-    @Test
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getHearingsForListOfCases")
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-    void shouldReturn200_WhenGetHearingsForListOfCasesForOneCaseRef() throws Exception {
-        List<String> caseRefs = Arrays.asList("9372710950276233", "9372710950276239");
+    void shouldReturn200_WhenGetHearingsForVariousStatuses(String displayName, List<String> caseRefs, String status,
+                                                           String expectedCaseRef, String expectedHearingId,
+                                                           String expectedHmcStatus) throws Exception {
+
         String caseRefsParam = caseRefs.stream().collect(Collectors.joining(","));
         stubReturn200ForAllCasesFromDataStore(caseRefs, caseRefs);
-        mockMvc.perform(get("/hearings")
-                            .param("ccdCaseRefs", caseRefsParam)
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .param("caseTypeId", CASE_TYPE)
-                            .param("status", "HEARING_REQUESTED"))
+
+        MockHttpServletRequestBuilder request = get("/hearings")
+            .param("ccdCaseRefs", caseRefsParam)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .param("caseTypeId", CASE_TYPE);
+
+        if (status != null) {
+            request.param("status", status);
+        }
+
+        mockMvc.perform(request)
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.*", hasSize(2)))
-            .andExpect(jsonPath("$[0].caseRef").value("9372710950276233"))
-            .andExpect(jsonPath("$[1].caseRef").value("9372710950276239"))
+            .andExpect(jsonPath("$.*", hasSize(caseRefs.size())))
+            .andExpect(jsonPath("$[0].caseRef").value(expectedCaseRef))
+            .andExpect(jsonPath("$[0].caseHearings[0].hearingID").value(expectedHearingId))
+            .andExpect(jsonPath("$[0].caseHearings[0].hmcStatus").value(expectedHmcStatus))
             .andReturn();
     }
 
@@ -913,7 +918,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .param("ccdCaseRefs", caseRefsParam)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("caseTypeId", CASE_TYPE)
-                            .param("status", "HEARING_REQUESTED"))
+                            .param("status", HEARING_REQUESTED.name()))
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.*", hasSize(11)))
             .andExpect(jsonPath("$[0].caseRef").value("9372710950276239"))
@@ -949,7 +954,7 @@ class HearingManagementControllerIT extends BaseTest {
                             .param("ccdCaseRefs", caseRefsParam)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .param("caseTypeId", CASE_TYPE)
-                            .param("status", "HEARING_REQUESTED"))
+                            .param("status", HEARING_REQUESTED.name()))
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.*", hasSize(1)))
             .andExpect(jsonPath("$[0].caseRef").value("9372710950276233"))
@@ -2173,6 +2178,155 @@ class HearingManagementControllerIT extends BaseTest {
                 )
             );
         }
+    }
+
+    @Nested
+    class GetHearing {
+
+        @ParameterizedTest
+        @MethodSource("getHearingDataProvider")
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldReturn200_WhenGetHearings(String hearingId, String expectedCaseRef, String expectedRequestId,
+                                             String expectedStatus, String expectedServiceCode) throws Exception {
+            mockMvc.perform(get("/hearing/" + hearingId)
+                                .header(SERVICE_AUTHORIZATION, serviceJwtDefinition)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.caseDetails.caseRef").value(expectedCaseRef))
+                .andExpect(jsonPath("$.requestDetails.hearingRequestID").value(expectedRequestId))
+                .andExpect(jsonPath("$.requestDetails.status").value(expectedStatus))
+                .andExpect(jsonPath("$.caseDetails.hmctsServiceCode").value(expectedServiceCode))
+                .andReturn();
+        }
+
+        static Stream<Arguments> getHearingDataProvider() {
+            return Stream.of(
+                Arguments.of("2000000010", "9372710950276233", "2000000010", HEARING_UPDATED, "TEST"),
+                Arguments.of("2000000011", "9856815055686759", "2000000011", AWAITING_ACTUALS, "TEST"),
+                Arguments.of("2000000013", "9372710950276239", "2000000013", HEARING_REQUESTED.name(), "TEST"),
+                Arguments.of("2000000015", "1111222233334444", "2000000015", UPDATE_SUBMITTED.name(), "TEST")
+            );
+        }
+    }
+
+    @Nested
+    class GetHearingsForListOfCasesPaginated {
+
+        @ParameterizedTest(name = "[{index}] caseRef={0}")
+        @MethodSource("getHearingsForListOfCasesPaginated")
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldGetHearingsUsingStatusBasedOnRoleAssignments(String caseReference,
+                                                                List<Integer> expectedHearingIds,
+                                                                List<String> expectedStatuses) throws Exception {
+            List<String> caseReferences = List.of(caseReference);
+            stubReturn200ForAllCasesFromDataStorePaginated(10, 0, caseReferences,
+                                                           CASE_TYPE, caseReferences);
+            val request = createRequest(caseReferences);
+            val resultActions = mockMvc.perform(post("/hearings")
+                                                   .param("caseTypeId", CASE_TYPE)
+                                                   .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                   .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].caseRef").value(caseReference))
+                .andExpect(jsonPath("$[0].caseHearings", hasSize(expectedHearingIds.size())))
+                .andExpect(jsonPath("$[0].hmctsServiceCode").value("TEST"));
+
+            for (int i = 0; i < expectedHearingIds.size(); i++) {
+                resultActions
+                    .andExpect(jsonPath("$[0].caseHearings[" + i + "].hearingID")
+                                   .value(expectedHearingIds.get(i)))
+                    .andExpect(jsonPath("$[0].caseHearings[" + i + "].hmcStatus")
+                                   .value(expectedStatuses.get(i)));
+            }
+        }
+
+        private static Stream<Arguments> getHearingsForListOfCasesPaginated() {
+            return Stream.of(
+                arguments(
+                    "9372710950276233",
+                    List.of(2000000010, 2000000009, 2000000000),
+                    List.of(HEARING_UPDATED, HEARING_REQUESTED.name(), HEARING_REQUESTED.name())
+                ),
+                arguments(
+                    "9856815055686759",
+                    List.of(2000000011),
+                    List.of(AWAITING_ACTUALS)
+                )
+            );
+        }
+    }
+
+    private static Stream<Arguments> hearingCasesForGetHearings() {
+        return Stream.of(
+            Arguments.of(
+                "9372710950276233",
+                null,
+                List.of("2000000010", "2000000009", "2000000000"),
+                List.of(HEARING_UPDATED, HEARING_REQUESTED.name(), HEARING_REQUESTED.name())
+            ),
+            Arguments.of(
+                "9372710950276233",
+                HEARING_REQUESTED.name(),
+                List.of("2000000009", "2000000000"),
+                List.of(HEARING_REQUESTED.name(), HEARING_REQUESTED.name())
+            ),
+            Arguments.of(
+                "9856815055686759",
+                "LISTED",
+                List.of("2000000011"),
+                List.of(AWAITING_ACTUALS)
+            ),
+            Arguments.of(
+                "1662105318084922",
+                UPDATE_REQUESTED.name(),
+                List.of("2000000014"),
+                List.of(UPDATE_REQUESTED.name())
+            ),
+            Arguments.of(
+                "1111222233334444",
+                UPDATE_SUBMITTED.name(),
+                List.of("2000000015"),
+                List.of(UPDATE_SUBMITTED.name())
+            )
+        );
+    }
+
+    private static Stream<Arguments> getHearingsForListOfCases() {
+        return Stream.of(
+            Arguments.of(
+                "HEARING_REQUESTED for two cases",
+                Arrays.asList("9372710950276233", "9372710950276239"),
+                HEARING_REQUESTED.name(),
+                "9372710950276233",
+                "2000000009",
+                HEARING_REQUESTED.name()
+            ),
+            Arguments.of(
+                LISTED.name(),
+                Arrays.asList("9856815055686759"),
+                "LISTED",
+                "9856815055686759",
+                "2000000011",
+                AWAITING_ACTUALS
+            ),
+            Arguments.of(
+                UPDATE_REQUESTED.name(),
+                Arrays.asList("1662105318084922"),
+                null,
+                "1662105318084922",
+                "2000000014",
+                UPDATE_REQUESTED.name()
+            ),
+            Arguments.of(
+                UPDATE_SUBMITTED.name(),
+                Arrays.asList("1111222233334444"),
+                null,
+                "1111222233334444",
+                "2000000015",
+                UPDATE_SUBMITTED.name()
+            )
+        );
     }
 
     private final String serviceJwtDefinition = generateDummyS2SToken("ccd_definition");

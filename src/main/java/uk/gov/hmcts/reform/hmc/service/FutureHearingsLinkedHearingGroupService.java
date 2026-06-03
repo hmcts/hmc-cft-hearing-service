@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,7 +72,7 @@ public class FutureHearingsLinkedHearingGroupService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void processDeleteHearingRequest(List<HearingEntity> linkedGroupHearings,
                                             LinkedGroupDetails linkedGroupDetails) {
-        verifyAccess(linkedGroupHearings, Lists.newArrayList(HEARING_MANAGER));
+        verifyAccess(linkedGroupHearings, List.of(HEARING_MANAGER));
         linkedHearingValidator.validateUnlinkingHearingsStatus(linkedGroupHearings);
         linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
 

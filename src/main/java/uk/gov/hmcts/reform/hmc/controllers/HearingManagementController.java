@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
@@ -90,10 +89,11 @@ public class HearingManagementController {
             @PathVariable("id") Long hearingId,
             @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {
         if (!isValid) {
-            // Only verify access if the user is requesting more than just confirmation of a
-            // valid hearing id
+            // Only verify access if the user is requesting more than just confirmation of a valid hearing id
+            List<String> requiredRoles = new ArrayList<>();
+            requiredRoles.add(HEARING_VIEWER);
+
             String status = hearingManagementService.getStatus(hearingId);
-            List<String> requiredRoles = Lists.newArrayList(HEARING_VIEWER);
             if (HearingStatus.LISTED.name().equals(status)) {
                 requiredRoles.add(LISTED_HEARING_VIEWER);
             }
@@ -122,8 +122,7 @@ public class HearingManagementController {
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
             @RequestBody @Valid HearingRequest createHearingRequest) {
         verifyDeploymentIdEnabled(deploymentId);
-        accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER),
-                                              null);
+        accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), List.of(HEARING_MANAGER), null);
         return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId,
                 getServiceName(clientS2SToken));
     }
@@ -138,7 +137,7 @@ public class HearingManagementController {
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
             @RequestBody @Valid DeleteHearingRequest deleteRequest) {
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyHearingCaseAccess(hearingId, List.of(HEARING_MANAGER));
         return hearingManagementService.deleteHearingRequest(
                 hearingId, deleteRequest, getServiceName(clientS2SToken));
     }
@@ -183,7 +182,7 @@ public class HearingManagementController {
         @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
         @PathVariable("id") Long hearingId) {
         verifyDeploymentIdEnabled(deploymentId);
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyHearingCaseAccess(hearingId, List.of(HEARING_MANAGER));
         return hearingManagementService.updateHearingRequest(hearingId, hearingRequest, deploymentId,
                 getServiceName(clientS2SToken));
     }
@@ -201,7 +200,7 @@ public class HearingManagementController {
 
     public ResponseEntity hearingCompletion(@PathVariable("id") Long hearingId,
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken) {
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyHearingCaseAccess(hearingId, List.of(HEARING_MANAGER));
         return hearingManagementService.hearingCompletion(hearingId, getServiceName(clientS2SToken));
     }
 
@@ -280,7 +279,7 @@ public class HearingManagementController {
 
     private GetHearingsResponse getHearingsResponse(String ccdCaseRef, String status,
             DataStoreCaseDetails caseDetails) {
-        List<String> filteredRoleAssignments = accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
+        List<String> filteredRoleAssignments = accessControlService.verifyCaseAccess(ccdCaseRef, List.of(
                 HEARING_VIEWER,
                 LISTED_HEARING_VIEWER), caseDetails);
 

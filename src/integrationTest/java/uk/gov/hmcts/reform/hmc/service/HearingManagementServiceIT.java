@@ -679,6 +679,16 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals(0, dataStoreCaseDetailsList.size(), "DataStoreCaseDetailsList has unexpected number of items");
     }
 
+    @Test
+    void testGetEmptyHearingsResponse() {
+        GetHearingsResponse getHearingsResponse = hearingManagementService.getEmptyHearingsResponse("1111222233334444");
+        assertEquals("1111222233334444",
+                     getHearingsResponse.getCaseRef(),
+                     "GetHearingsResponse has unexpected case ref");
+        assertTrue(getHearingsResponse.getCaseHearings().isEmpty(),
+                   "GetHearingsResponse case hearings list should be empty");
+    }
+
     private void validateStatusAudit(HearingResponse response, String hearingEvent) {
         List<HearingStatusAuditEntity> auditEntityList = hearingStatusAuditRepository.findByHearingId(
             response.getHearingRequestId().toString());

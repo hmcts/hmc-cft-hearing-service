@@ -12,8 +12,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,8 +27,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.TestFixtures;
+import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
+import uk.gov.hmcts.reform.hmc.interceptors.OverrideHostPolicy;
 import uk.gov.hmcts.reform.hmc.interceptors.RequestBodyCachingFilter;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -30,12 +38,21 @@ import wiremock.com.jayway.jsonpath.DocumentContext;
 import wiremock.com.jayway.jsonpath.JsonPath;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Named.named;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -79,6 +96,9 @@ class HearingActualsManagementControllerIT extends BaseTest {
 
     @Autowired
     private EntityManager entityManager;
+
+    @MockitoBean
+    protected OverrideHostPolicy overrideHostPolicy;
 
     private static final String URL = "/hearingActuals";
     private static final String INSERT_HEARING_ACTUALS = "classpath:sql/put-hearing-actuals.sql";
@@ -126,7 +146,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenHearingHasInvalidStatusOfHearingRequested() throws Exception {
-            mockMvc.perform(put(URL + "/2000000000") // status HEARING_REQUESTED
+            mockMvc.perform(put(URL + "/2000000000")
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
@@ -138,18 +158,27 @@ class HearingActualsManagementControllerIT extends BaseTest {
         }
 
         // https://tools.hmcts.net/jira/browse/HMAN-80 AC-03
-        @Test
+        @ParameterizedTest(name = "[{index}] hearingId={0}")
+        @MethodSource("awaitingListingHearingIds")
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenHearingHasInvalidStatusOfAwaitingListing() throws Exception {
-            mockMvc.perform(put(URL + "/2000000200") // status AWAITING_LISTING
+        void shouldReturn400_WhenHearingHasInvalidStatus(String hearingId, String expectedStatus) throws Exception {
+            mockMvc.perform(put(URL + "/" + hearingId)
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem(("002 invalid status AWAITING_LISTING"))))
+                .andExpect(jsonPath("$.errors", hasItem("002 invalid status " + expectedStatus)))
                 .andReturn();
+        }
+
+        private static Stream<Arguments> awaitingListingHearingIds() {
+            return Stream.of(
+                arguments("2000001100", "UPDATE_REQUESTED"),
+                arguments("2000001200", "UPDATE_SUBMITTED"),
+                arguments("2000000000", "HEARING_REQUESTED")
+            );
         }
 
         // https://tools.hmcts.net/jira/browse/HMAN-80 AC-04
@@ -490,14 +519,14 @@ class HearingActualsManagementControllerIT extends BaseTest {
         // https://tools.hmcts.net/jira/browse/HMAN-82 AC02
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn200_WhenSuppliedValidPayloadForHearingStatusOfUpdateRequested()
+        void shouldReturn400_WhenSuppliedValidPayloadForHearingStatusOfUpdateRequested()
             throws Exception {
-            mockMvc.perform(put(URL + "/2000001100") // UPDATE_REQUESTED
+            mockMvc.perform(put(URL + "/2000001100")
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload2.json")))
-                .andExpect(status().is(200))
+                .andExpect(status().is(400))
                 .andReturn();
             mockMvc.perform(get(URL + "/2000001100")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -509,14 +538,14 @@ class HearingActualsManagementControllerIT extends BaseTest {
         // https://tools.hmcts.net/jira/browse/HMAN-82 AC03
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn200_WhenSuppliedValidPayloadForHearingStatusOfUpdateSubmitted()
+        void shouldReturn400_WhenSuppliedValidPayloadForHearingStatusOfUpdateSubmitted()
             throws Exception {
-            mockMvc.perform(put(URL + "/2000001200") // UPDATE_SUBMITTED
+            mockMvc.perform(put(URL + "/2000001200")
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload3-no-partyId-supplied.json")))
-                .andExpect(status().is(200))
+                .andExpect(status().is(400))
                 .andReturn();
             mockMvc.perform(get(URL + "/2000001200")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -527,14 +556,14 @@ class HearingActualsManagementControllerIT extends BaseTest {
         // https://tools.hmcts.net/jira/browse/HMAN-82 AC04
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn200_WhenSuppliedValidPayloadWithHearingResultAsCompleted()
+        void shouldReturn400_WhenSuppliedValidPayloadWithHearingResultAsCompleted()
             throws Exception {
-            mockMvc.perform(put(URL + "/2000001200") // UPDATE_SUBMITTED
+            mockMvc.perform(put(URL + "/2000001200")
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload4-Completed.json")))
-                .andExpect(status().is(200))
+                .andExpect(status().is(400))
                 .andReturn();
             mockMvc.perform(get(URL + "/2000001200")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -545,14 +574,14 @@ class HearingActualsManagementControllerIT extends BaseTest {
         // https://tools.hmcts.net/jira/browse/HMAN-82 AC05
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn200_WhenSuppliedValidPayloadWithHearingResultAsCancelled()
+        void shouldReturn400_WhenSuppliedValidPayloadWithHearingResultAsCancelled()
             throws Exception {
-            mockMvc.perform(put(URL + "/2000001200") // UPDATE_SUBMITTED
+            mockMvc.perform(put(URL + "/2000001200")
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload5-Cancelled.json")))
-                .andExpect(status().is(200))
+                .andExpect(status().is(400))
                 .andReturn();
             mockMvc.perform(get(URL + "/2000001200")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -562,14 +591,14 @@ class HearingActualsManagementControllerIT extends BaseTest {
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn200_WhenSuppliedValidPayloadWithNoActualHearingDaysElementPresent()
+        void shouldReturn400_WhenSuppliedValidPayloadWithNoActualHearingDaysElementPresent()
             throws Exception {
-            mockMvc.perform(put(URL + "/2000001200") // UPDATE_SUBMITTED
+            mockMvc.perform(put(URL + "/2000001200")
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload5-no-actualHearingDays.json")))
-                .andExpect(status().is(200))
+                .andExpect(status().is(400))
                 .andReturn();
             mockMvc.perform(get(URL + "/2000001200")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -621,6 +650,75 @@ class HearingActualsManagementControllerIT extends BaseTest {
             // Multiple requests should replace actual_hearing records and delete orphans, always resulting in 1
             assertEquals(1, numberOfActualHearingRecords.size());
         }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn200_WhenSuppliedValidPayloadWithHearingResultAsCompleted()
+            throws Exception {
+            mockMvc.perform(put(URL + "/2000001201")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN80-ValidPayload3-no-partyId-supplied.json")))
+                .andExpect(status().is(200))
+                .andReturn();
+            mockMvc.perform(get(URL + "/2000001201")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200))
+                .andReturn();
+        }
+
+        // https://tools.hmcts.net/jira/browse/HMAN-82 AC05
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn200_WhenSuppliedValidPayloadWithHearingResultAsCancelled()
+            throws Exception {
+            mockMvc.perform(put(URL + "/2000001201")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN80-ValidPayload5-Cancelled.json")))
+                .andExpect(status().is(200))
+                .andReturn();
+            mockMvc.perform(get(URL + "/2000001201")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn200_WhenSuppliedValidPayloadWithNoActualHearingDaysElementPresent()
+            throws Exception {
+            mockMvc.perform(put(URL + "/2000001201")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN80-ValidPayload5-no-actualHearingDays.json")))
+                .andExpect(status().is(200))
+                .andReturn();
+            mockMvc.perform(get(URL + "/2000001201")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200))
+                .andReturn();
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn200_WhenSuppliedValidPayloadForHearingResultAdjourned()
+            throws Exception {
+            mockMvc.perform(put(URL + "/2000001201")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(TestFixtures.fromFileAsString(
+                                    "hearing-actuals-payload/HMAN80-ValidPayload2.json")))
+                .andExpect(status().is(200))
+                .andReturn();
+            mockMvc.perform(get(URL + "/2000001201")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200))
+                .andReturn();
+        }
     }
 
     @Nested
@@ -654,6 +752,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         @BeforeEach
         void setUp() {
             ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(true);
             amServer.resetRequests();
             dataStoreServer.resetRequests();
         }
@@ -673,7 +772,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
             dataStoreServer.verify(1, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
 
             mockMvc.perform(
-                put(URL + "/2000000000") // LISTED
+                put(URL + "/2000000000")
                     .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                     .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
                     .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
@@ -685,6 +784,22 @@ class HearingActualsManagementControllerIT extends BaseTest {
 
             amServer.verify(2, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
             dataStoreServer.verify(2, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS1})
+        void shouldNotCallProvidedCcdAndAmUrl_WhenHeaderIsInvalid() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(false);
+            mockMvc.perform(
+                    get(URL + "/2000000000")
+                        .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                        .header(dataStoreUrlManager.getUrlHeaderName(), "dataStoreUrl")
+                        .header(roleAssignmentUrlManager.getUrlHeaderName(), "roleAssignmentUrl")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is(200));
+
+            amServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
+            dataStoreServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
         }
     }
 
@@ -1045,8 +1160,451 @@ class HearingActualsManagementControllerIT extends BaseTest {
         }
     }
 
-    private final String serviceJwtXuiWeb = generateDummyS2SToken("ccd_definition");
+    @Nested
+    @DisplayName("PutHearingActuals - hearing day not required field has null value")
+    class PutHearingActualsNotRequiredNull {
 
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn400WhenHearingDayInFutureNotRequiredNullNotEmpty() throws Exception {
+            LocalDate hearingDateFuture = LocalDate.now().plusDays(1L);
+            LocalDateTime hearingStartTimeFuture = LocalDateTime.of(hearingDateFuture, LocalTime.of(12, 0, 0));
+            LocalDateTime hearingEndTimeFuture = hearingStartTimeFuture.plusHours(1L);
+
+            String json =
+                createHearingActualJsonHearingDay(hearingDateFuture, hearingStartTimeFuture, hearingEndTimeFuture);
+
+            mockMvc.perform(put(URL + "/2000001000")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItem(HEARING_ACTUALS_INVALID_STATUS)));
+        }
+
+        @ParameterizedTest(name = "{index}: {0}")
+        @MethodSource("validHearingDays")
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn200WhenHearingDayNotRequiredNull(String json,
+                                                          LocalDate hearingDate,
+                                                          LocalDateTime hearingStartTime,
+                                                          LocalDateTime hearingEndTime) throws Exception {
+            mockMvc.perform(put(URL + "/2000001000")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(json))
+                .andExpect(status().isOk());
+
+            ActualHearingDayEntity day =
+                entityManager.createQuery("SELECT hd FROM ActualHearingDayEntity hd", ActualHearingDayEntity.class)
+                    .getSingleResult();
+
+            assertEquals(hearingDate, day.getHearingDate(), "Actual hearing day has unexpected hearing date");
+            if (hearingStartTime == null) {
+                assertNull(day.getStartDateTime(), "Actual hearing day start time should be null");
+            } else {
+                assertEquals(hearingStartTime, day.getStartDateTime(), "Actual hearing day has unexpected start time");
+            }
+            if (hearingEndTime == null) {
+                assertNull(day.getEndDateTime(), "Actual hearing day end time should be null");
+            } else {
+                assertEquals(hearingEndTime, day.getEndDateTime(), "Actual hearing day has unexpected end time");
+            }
+            assertFalse(day.getNotRequired(), "Actual hearing day not required flag should be false");
+        }
+
+        private static Stream<Arguments> validHearingDays() {
+            LocalDate hearingDateToday = LocalDate.now();
+            LocalDateTime hearingStartTimeToday = LocalDateTime.of(hearingDateToday, LocalTime.of(12, 0, 0));
+            LocalDateTime hearingEndTimeToday = LocalDateTime.of(hearingDateToday, LocalTime.of(13, 0, 0));
+
+            LocalDate hearingDateFuture = hearingDateToday.plusDays(1L);
+
+            return Stream.of(
+                arguments(named("Hearing date in future, hearing day empty",
+                                createHearingActualJsonEmptyHearingDay(hearingDateFuture)
+                          ),
+                          hearingDateFuture,
+                          null,
+                          null),
+                arguments(named("Hearing date today, hearing day empty",
+                                createHearingActualJsonEmptyHearingDay(hearingDateToday)
+                          ),
+                          hearingDateToday,
+                          null,
+                          null),
+                arguments(named("Hearing date today, hearing day not empty",
+                                createHearingActualJsonHearingDay(hearingDateToday,
+                                                                  hearingStartTimeToday,
+                                                                  hearingEndTimeToday)
+                          ),
+                          hearingDateToday,
+                          hearingStartTimeToday,
+                          hearingEndTimeToday)
+            );
+        }
+
+        private static String createHearingActualJsonHearingDay(LocalDate hearingDate,
+                                                                LocalDateTime hearingStartTime,
+                                                                LocalDateTime hearingEndTime) {
+            return """
+                {
+                    "hearingOutcome": {
+                        "hearingType": "Witness Hearing",
+                        "hearingFinalFlag": true,
+                        "hearingResult": "COMPLETED",
+                        "hearingResultDate": "2026-05-26"
+                    },
+                    "actualHearingDays": [
+                        {
+                            "hearingDate": "%s",
+                            "hearingStartTime": "%s",
+                            "hearingEndTime": "%s",
+                            "notRequired": null,
+                            "pauseDateTimes": [],
+                            "actualDayParties": []
+                        }
+                    ]
+                }""".formatted(hearingDate,
+                               hearingStartTime.toInstant(ZoneOffset.UTC).toString(),
+                               hearingEndTime.toInstant(ZoneOffset.UTC).toString());
+        }
+
+        private static String createHearingActualJsonEmptyHearingDay(LocalDate hearingDate) {
+            return """
+                {
+                    "hearingOutcome": {
+                        "hearingType": "Witness Hearing",
+                        "hearingFinalFlag": true,
+                        "hearingResult": "COMPLETED",
+                        "hearingResultDate": "2026-05-26"
+                    },
+                    "actualHearingDays": [
+                        {
+                            "hearingDate": "%s",
+                            "hearingStartTime": null,
+                            "hearingEndTime": null,
+                            "notRequired": null,
+                            "pauseDateTimes": [],
+                            "actualDayParties": []
+                        }
+                    ]
+                }""".formatted(hearingDate);
+        }
+    }
+
+    @Nested
+    @DisplayName("PutHearingActuals - hearing day not required field not present")
+    class PutHearingActualsNotRequiredNotPresent {
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn400WhenHearingDayInFutureNotRequiredNotPresentNotEmpty() throws Exception {
+            LocalDate hearingDateFuture = LocalDate.now().plusDays(1L);
+            LocalDateTime hearingStartTimeFuture = LocalDateTime.of(hearingDateFuture, LocalTime.of(12, 0, 0));
+            LocalDateTime hearingEndTimeFuture = hearingStartTimeFuture.plusHours(1L);
+
+            String json =
+                createHearingActualJsonHearingDay(hearingDateFuture, hearingStartTimeFuture, hearingEndTimeFuture);
+
+            mockMvc.perform(put(URL + "/2000001000")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItem(HEARING_ACTUALS_INVALID_STATUS)));
+        }
+
+        @ParameterizedTest(name = "{index}: {0}")
+        @MethodSource("validHearingDays")
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn200WhenHearingDayNotRequiredNotPresent(String json,
+                                                                LocalDate hearingDate,
+                                                                LocalDateTime hearingStartTime,
+                                                                LocalDateTime hearingEndTime) throws Exception {
+            mockMvc.perform(put(URL + "/2000001000")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(json))
+                .andExpect(status().isOk());
+
+            ActualHearingDayEntity day =
+                entityManager.createQuery("SELECT hd FROM ActualHearingDayEntity hd", ActualHearingDayEntity.class)
+                    .getSingleResult();
+
+            assertEquals(hearingDate, day.getHearingDate(), "Actual hearing day has unexpected hearing date");
+            if (hearingStartTime == null) {
+                assertNull(day.getStartDateTime(), "Actual hearing day start time should be null");
+            } else {
+                assertEquals(hearingStartTime, day.getStartDateTime(), "Actual hearing day has unexpected start time");
+            }
+            if (hearingEndTime == null) {
+                assertNull(day.getEndDateTime(), "Actual hearing day end time should be null");
+            } else {
+                assertEquals(hearingEndTime, day.getEndDateTime(), "Actual hearing day has unexpected end time");
+            }
+            assertFalse(day.getNotRequired(), "Actual hearing day not required flag should be false");
+        }
+
+        private static Stream<Arguments> validHearingDays() {
+            LocalDate hearingDateToday = LocalDate.now();
+            LocalDateTime hearingStartTimeToday = LocalDateTime.of(hearingDateToday, LocalTime.of(12, 0, 0));
+            LocalDateTime hearingEndTimeToday = LocalDateTime.of(hearingDateToday, LocalTime.of(13, 0, 0));
+
+            LocalDate hearingDateFuture = hearingDateToday.plusDays(1L);
+
+            return Stream.of(
+                arguments(named("Hearing date in future, hearing day empty",
+                                createHearingActualJsonEmptyHearingDay(hearingDateFuture)
+                          ),
+                          hearingDateFuture,
+                          null,
+                          null),
+                arguments(named("Hearing date today, hearing day empty",
+                                createHearingActualJsonEmptyHearingDay(hearingDateToday)
+                          ),
+                          hearingDateToday,
+                          null,
+                          null),
+                arguments(named("Hearing date today, hearing day not empty",
+                                createHearingActualJsonHearingDay(hearingDateToday,
+                                                                  hearingStartTimeToday,
+                                                                  hearingEndTimeToday)
+                          ),
+                          hearingDateToday,
+                          hearingStartTimeToday,
+                          hearingEndTimeToday)
+            );
+        }
+
+        private static String createHearingActualJsonHearingDay(LocalDate hearingDate,
+                                                                LocalDateTime hearingStartTime,
+                                                                LocalDateTime hearingEndTime) {
+            return """
+                {
+                    "hearingOutcome": {
+                        "hearingType": "Witness Hearing",
+                        "hearingFinalFlag": true,
+                        "hearingResult": "COMPLETED",
+                        "hearingResultDate": "2026-05-26"
+                    },
+                    "actualHearingDays": [
+                        {
+                            "hearingDate": "%s",
+                            "hearingStartTime": "%s",
+                            "hearingEndTime": "%s",
+                            "pauseDateTimes": [],
+                            "actualDayParties": []
+                        }
+                    ]
+                }""".formatted(hearingDate,
+                               hearingStartTime.toInstant(ZoneOffset.UTC).toString(),
+                               hearingEndTime.toInstant(ZoneOffset.UTC).toString());
+        }
+
+        private static String createHearingActualJsonEmptyHearingDay(LocalDate hearingDate) {
+            return """
+                {
+                    "hearingOutcome": {
+                        "hearingType": "Witness Hearing",
+                        "hearingFinalFlag": true,
+                        "hearingResult": "COMPLETED",
+                        "hearingResultDate": "2026-05-26"
+                    },
+                    "actualHearingDays": [
+                        {
+                            "hearingDate": "%s",
+                            "hearingStartTime": null,
+                            "hearingEndTime": null,
+                            "pauseDateTimes": [],
+                            "actualDayParties": []
+                        }
+                    ]
+                }""".formatted(hearingDate);
+        }
+    }
+
+    @Nested
+    @DisplayName("PutHearingActuals - hearing day not required field has a value set")
+    class PutHearingActualsNotRequiredSet {
+
+        @ParameterizedTest
+        @ValueSource(booleans = {false, true})
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn400(boolean notRequired) throws Exception {
+            LocalDate hearingDateFuture = LocalDate.now().plusDays(1L);
+            LocalDateTime hearingStartTimeFuture = LocalDateTime.of(hearingDateFuture, LocalTime.of(12, 0, 0));
+            LocalDateTime hearingEndTimeFuture = hearingStartTimeFuture.plusHours(1L);
+
+            String json = createHearingActualJsonHearingDay(hearingDateFuture,
+                                                            hearingStartTimeFuture,
+                                                            hearingEndTimeFuture,
+                                                            notRequired);
+
+            mockMvc.perform(put(URL + "/2000001000")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors", hasItem(HEARING_ACTUALS_INVALID_STATUS)));
+        }
+
+        @ParameterizedTest(name = "{index}: {0}")
+        @MethodSource("hearingDaysValid")
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        void shouldReturn200(String json,
+                             LocalDate hearingDate,
+                             LocalDateTime hearingStartTime,
+                             LocalDateTime hearingEndTime,
+                             boolean notRequired) throws Exception {
+
+            mockMvc.perform(put(URL + "/2000001000")
+                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(json))
+                .andExpect(status().isOk());
+
+            ActualHearingDayEntity day =
+                entityManager.createQuery("SELECT hd FROM ActualHearingDayEntity hd", ActualHearingDayEntity.class)
+                    .getSingleResult();
+
+            assertEquals(hearingDate, day.getHearingDate(), "Actual hearing day has unexpected hearing date");
+            if (hearingStartTime == null) {
+                assertNull(day.getStartDateTime(), "Actual hearing day start time should be null");
+            } else {
+                assertEquals(hearingStartTime, day.getStartDateTime(), "Actual hearing day has unexpected start time");
+            }
+            if (hearingEndTime == null) {
+                assertNull(day.getEndDateTime(), "Actual hearing day end time should be null");
+            } else {
+                assertEquals(hearingEndTime, day.getEndDateTime(), "Actual hearing day has unexpected end time");
+            }
+            if (notRequired) {
+                assertTrue(day.getNotRequired(), "Actual hearing day not required flag should be true");
+            } else {
+                assertFalse(day.getNotRequired(), "Actual hearing day not required flag should be false");
+            }
+        }
+
+        private static Stream<Arguments> hearingDaysValid() {
+            LocalDate hearingDateFuture = LocalDate.now().plusDays(1L);
+
+            LocalDate hearingDateToday = LocalDate.now();
+            LocalDateTime hearingStartTimeToday = LocalDateTime.of(hearingDateToday, LocalTime.of(12, 0, 0));
+            LocalDateTime hearingEndTimeToday = hearingStartTimeToday.plusHours(1L);
+
+            return Stream.of(
+                arguments(named("Hearing date in future, hearing day empty, not required is false",
+                                createHearingActualJsonEmptyHearingDay(hearingDateFuture, false)
+                          ),
+                          hearingDateFuture,
+                          null,
+                          null,
+                          false
+                ),
+                arguments(named("Hearing date in future, hearing day empty, not required is true",
+                                createHearingActualJsonEmptyHearingDay(hearingDateFuture, true)
+                          ),
+                          hearingDateFuture,
+                          null,
+                          null,
+                          true
+                ),
+                arguments(named("Hearing date today, hearing day empty, not required is false",
+                                createHearingActualJsonEmptyHearingDay(hearingDateToday, false)
+                          ),
+                          hearingDateToday,
+                          null,
+                          null,
+                          false
+                ),
+                arguments(named("Hearing date today, hearing day not empty, not required is false",
+                                createHearingActualJsonHearingDay(hearingDateToday,
+                                                                  hearingStartTimeToday,
+                                                                  hearingEndTimeToday,
+                                                                  false)
+                          ),
+                          hearingDateToday,
+                          hearingStartTimeToday,
+                          hearingEndTimeToday,
+                          false
+                ),
+                arguments(named("Hearing date today, hearing day empty, not required is true",
+                                createHearingActualJsonEmptyHearingDay(hearingDateToday, true)),
+                          hearingDateToday,
+                          null,
+                          null,
+                          true
+                ),
+                arguments(named("Hearing date today, hearing day not empty, not required is true",
+                                createHearingActualJsonHearingDay(hearingDateToday,
+                                                                  hearingStartTimeToday,
+                                                                  hearingEndTimeToday,
+                                                                  true)
+                          ),
+                          hearingDateToday,
+                          hearingStartTimeToday,
+                          hearingEndTimeToday,
+                          true
+                )
+            );
+        }
+
+        private static String createHearingActualJsonHearingDay(LocalDate hearingDate,
+                                                                LocalDateTime hearingStartTime,
+                                                                LocalDateTime hearingEndTime,
+                                                                boolean notRequired) {
+            return """
+                {
+                    "hearingOutcome": {
+                        "hearingType": "Witness Hearing",
+                        "hearingFinalFlag": true,
+                        "hearingResult": "COMPLETED",
+                        "hearingResultDate": "2026-05-26"
+                    },
+                    "actualHearingDays": [
+                        {
+                            "hearingDate": "%s",
+                            "hearingStartTime": "%s",
+                            "hearingEndTime": "%s",
+                            "notRequired": %s,
+                            "pauseDateTimes": [],
+                            "actualDayParties": []
+                        }
+                    ]
+                }""".formatted(hearingDate,
+                               hearingStartTime.toInstant(ZoneOffset.UTC).toString(),
+                               hearingEndTime.toInstant(ZoneOffset.UTC).toString(),
+                               notRequired);
+        }
+
+        private static String createHearingActualJsonEmptyHearingDay(LocalDate hearingDate, boolean notRequired) {
+            return """
+                {
+                    "hearingOutcome": {
+                        "hearingType": "Witness Hearing",
+                        "hearingFinalFlag": true,
+                        "hearingResult": "COMPLETED",
+                        "hearingResultDate": "2026-05-26"
+                    },
+                    "actualHearingDays": [
+                        {
+                            "hearingDate": "%s",
+                            "hearingStartTime": null,
+                            "hearingEndTime": null,
+                            "notRequired": %s,
+                            "pauseDateTimes": [],
+                            "actualDayParties": []
+                        }
+                    ]
+                }""".formatted(hearingDate, notRequired);
+        }
+    }
+
+    private final String serviceJwtXuiWeb = generateDummyS2SToken("ccd_definition");
 
     private static RoleAssignmentResponse stubRoleAssignments() {
         RoleAssignmentResponse response = new RoleAssignmentResponse();
