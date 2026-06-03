@@ -232,8 +232,7 @@ class HearingActualsServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
             });
-            assertEquals("002 invalid status " + hearingStatus.name(), exception.getMessage());
-            assertEquals(String.format(PUT_HEARING_ACTUALS_INVALID_STATUS, "HEARING_REQUESTED"),
+            assertEquals(String.format(PUT_HEARING_ACTUALS_INVALID_STATUS, hearingStatus.name()),
                          exception.getMessage());
         }
 
