@@ -74,7 +74,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PUT_HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
@@ -207,7 +207,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                     TestingUtil.hearingActualWithHearingDateInFuture())))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem((HEARING_ACTUALS_INVALID_STATUS))))
+                .andExpect(jsonPath("$.errors", hasItem((PUT_HEARING_ACTUALS_INVALID_STATUS))))
                 .andReturn();
         }
 
@@ -223,7 +223,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                     actual)))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem((HEARING_ACTUALS_INVALID_STATUS))))
+                .andExpect(jsonPath("$.errors", hasItem((PUT_HEARING_ACTUALS_INVALID_STATUS))))
                 .andReturn();
         }
 
@@ -239,7 +239,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                     actual)))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem((HEARING_ACTUALS_INVALID_STATUS))))
+                .andExpect(jsonPath("$.errors", hasItem((PUT_HEARING_ACTUALS_INVALID_STATUS))))
                 .andReturn();
         }
 
@@ -1180,7 +1180,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                 .content(json))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem(HEARING_ACTUALS_INVALID_STATUS)));
+                .andExpect(jsonPath("$.errors", hasItem(PUT_HEARING_ACTUALS_INVALID_STATUS)));
         }
 
         @ParameterizedTest(name = "{index}: {0}")
@@ -1314,7 +1314,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                 .content(json))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem(HEARING_ACTUALS_INVALID_STATUS)));
+                .andExpect(jsonPath("$.errors", hasItem(PUT_HEARING_ACTUALS_INVALID_STATUS)));
         }
 
         @ParameterizedTest(name = "{index}: {0}")
@@ -1449,7 +1449,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                 .content(json))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem(HEARING_ACTUALS_INVALID_STATUS)));
+                .andExpect(jsonPath("$.errors", hasItem(PUT_HEARING_ACTUALS_INVALID_STATUS)));
         }
 
         @ParameterizedTest(name = "{index}: {0}")

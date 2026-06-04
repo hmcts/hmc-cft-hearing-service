@@ -225,8 +225,21 @@ class HearingActualsServiceTest {
         }
 
         @ParameterizedTest(name = "[{index}] hearingStatus={0}")
-        @EnumSource(value = HearingStatus.class, names = "LISTED", mode = EnumSource.Mode.EXCLUDE)
-        void shouldThrowExceptionWhenHearingStatusIsNotListed(HearingStatus hearingStatus) {
+        @EnumSource(value = HearingStatus.class, names = {"LISTED", "COMPLETED", "ADJOURNED", "CANCELLED"})
+        void shouldNotThrowExceptionWhenHearingStatusIsValid(HearingStatus hearingStatus) {
+            createActuals();
+            HearingActual hearingActual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull();
+            assertDoesNotThrow(() -> {
+                hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
+            });
+            verify(hearingStatusAuditService, times(1))
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
+        }
+
+        @ParameterizedTest(name = "[{index}] hearingStatus={0}")
+        @EnumSource(value = HearingStatus.class, names = {"HEARING_REQUESTED", "AWAITING_LISTING", "UPDATE_REQUESTED",
+            "UPDATE_SUBMITTED", "CANCELLATION_REQUESTED", "CANCELLATION_SUBMITTED", "CLOSED" })
+        void shouldThrowExceptionWhenHearingStatusIsNotValid(HearingStatus hearingStatus) {
             createHearingEntity(hearingStatus.name());
             HearingActual hearingActual = TestingUtil.hearingActual();
             Exception exception = assertThrows(BadRequestException.class, () -> {
