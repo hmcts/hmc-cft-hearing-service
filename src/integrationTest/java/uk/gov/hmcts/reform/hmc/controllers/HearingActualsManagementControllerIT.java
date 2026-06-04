@@ -74,6 +74,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_END_TIME_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_PAUSE_START_TIME_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_HEARING_DAY_REPRESENTED_PARTY_MAX_LENGTH;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PUT_HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
@@ -294,18 +295,19 @@ class HearingActualsManagementControllerIT extends BaseTest {
 
         // https://tools.hmcts.net/jira/browse/HHMAN-80 AC-08
         // https://tools.hmcts.net/jira/browse/HMAN-82 AC01
-        @Test
+        @ParameterizedTest(name = "[{index}] hearingId={0}")
+        @MethodSource("validHearingActualStatus")
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn200_WhenSuppliedValidPayloadForHearingStatusOfListed()
+        void shouldReturn200_WhenSuppliedValidPayloadForHearingStatusOfListed(String hearingId)
             throws Exception {
-            mockMvc.perform(put(URL + "/2000001000") // LISTED
+            mockMvc.perform(put(URL  + "/" + hearingId)
                                 .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(TestFixtures.fromFileAsString(
                                     "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
                 .andExpect(status().is(200))
                 .andReturn();
-            mockMvc.perform(get(URL + "/2000001000").contentType(MediaType.APPLICATION_JSON_VALUE))
+            mockMvc.perform(get(URL  + "/" + hearingId).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingType").value("Witness Statement"))
                 .andExpect(jsonPath("$.hearingActuals.hearingOutcome.hearingFinalFlag").value("false"))
@@ -341,6 +343,13 @@ class HearingActualsManagementControllerIT extends BaseTest {
                     "$.hearingActuals.actualHearingDays[0].actualDayParties[0].individualDetails.firstName")
                                .value("WitnessForeName1"));
 
+        }
+
+        private static Stream<Arguments> validHearingActualStatus() {
+            return Stream.of(
+                arguments("2000001000"),
+                arguments("2000001202")
+            );
         }
 
         @Test
@@ -1449,7 +1458,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
                                 .content(json))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem(PUT_HEARING_ACTUALS_INVALID_STATUS)));
+                .andExpect(jsonPath("$.errors", hasItem(HEARING_ACTUALS_INVALID_STATUS)));
         }
 
         @ParameterizedTest(name = "{index}: {0}")
