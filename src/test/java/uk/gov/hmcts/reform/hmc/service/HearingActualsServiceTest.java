@@ -51,7 +51,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PUT_HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.actualHearingDay;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingActualsOutcome;
@@ -270,7 +270,7 @@ class HearingActualsServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () ->
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual)
             );
-            assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
+            assertEquals(HEARING_ACTUALS_HEARING_DAYS_INVALID, exception.getMessage());
         }
 
         @Test
@@ -284,7 +284,7 @@ class HearingActualsServiceTest {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN,
                                                            actuals);
             });
-            assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
+            assertEquals(HEARING_ACTUALS_HEARING_DAYS_INVALID, exception.getMessage());
         }
 
         @Test
@@ -331,7 +331,7 @@ class HearingActualsServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
             });
-            assertEquals("003 invalid date", exception.getMessage());
+            assertEquals(HEARING_ACTUALS_HEARING_DAYS_INVALID, exception.getMessage());
         }
 
         @Test
@@ -355,7 +355,7 @@ class HearingActualsServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
             });
-            assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
+            assertEquals(HEARING_ACTUALS_HEARING_DAYS_INVALID, exception.getMessage());
         }
 
         @Test
@@ -424,7 +424,7 @@ class HearingActualsServiceTest {
                 BadRequestException.class, () -> {
                     hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
                 });
-            assertTrue(exception.getMessage().contains(HEARING_ACTUALS_INVALID_STATUS));
+            assertTrue(exception.getMessage().contains(HEARING_ACTUALS_HEARING_DAYS_INVALID));
         }
 
         @Test

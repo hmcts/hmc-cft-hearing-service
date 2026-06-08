@@ -146,7 +146,8 @@ public final class ValidationError {
 
     public static final String HEARING_ACTUALS_ID_NOT_FOUND = "001 No such id: %s";
     public static final String HEARING_ACTUALS_INVALID_STATUS = "002 invalid status %s";
-    public static final String HEARING_ACTUALS_HEARING_DAYS_INVALID = "003 invalid date";
+    public static final String HEARING_ACTUALS_HEARING_DAYS_INVALID = " 003 invalid date. ActualHearingDay in the "
+        + "request fall outside the allowable range";
     public static final String HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS = "004 non-unique dates";
     public static final String HEARING_ACTUALS_MISSING_RESULT_TYPE = "%s result requires a hearingResultReasonType";
     public static final String HEARING_ACTUALS_MISSING_HEARING_OUTCOME = "005 missing hearing outcome";

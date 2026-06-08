@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_RESULT_TYPE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PUT_HEARING_ACTUALS_INVALID_STATUS;
@@ -94,9 +93,9 @@ public class HearingActualsValidator {
             }
             LocalDate hearingDate = hearingDay.getHearingDate();
             boolean isHearingDayEmpty = hearingDay.isEmpty();
-
+            // TODO : confirm if isHearingDayEmpty required or not
             if (hearingDate.isAfter(today) && !isHearingDayEmpty) {
-                throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
+                throw new BadRequestException(HEARING_ACTUALS_HEARING_DAYS_INVALID);
             }
         }
     }

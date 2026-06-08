@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_FINAL_FLAG_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PUT_HEARING_ACTUALS_INVALID_STATUS;
 
 class HearingActualsValidatorTest {
@@ -242,7 +242,7 @@ class HearingActualsValidatorTest {
                          () -> hearingActualsValidator.validateHearingActualDaysNotInTheFuture(hearingActual),
                          "BadRequestException should be thrown");
 
-        assertEquals(HEARING_ACTUALS_INVALID_STATUS,
+        assertEquals(HEARING_ACTUALS_HEARING_DAYS_INVALID,
                      exception.getMessage(),
                      "BadRequestException has unexpected message");
     }
@@ -268,7 +268,7 @@ class HearingActualsValidatorTest {
                          () -> hearingActualsValidator.validateHearingActualDaysNotInTheFuture(hearingActual),
                          "BadRequestException should be thrown");
 
-        assertEquals(HEARING_ACTUALS_INVALID_STATUS,
+        assertEquals(HEARING_ACTUALS_HEARING_DAYS_INVALID,
                      exception.getMessage(),
                      "BadRequestException has unexpected message");
     }

@@ -103,6 +103,9 @@ public class HearingActualsServiceImpl implements HearingActualsService {
 
     private void validateRequestPayload(HearingActual request, HearingEntity hearing) {
         hearingActualsValidator.validateHearingActualDaysNotInTheFuture(request);
+        // TODO does this need to called before duplicate check?
+        /*hearingActualsValidator.validateHearingActualDaysNotBeforeFirstHearingDate(request.getActualHearingDays(),
+                                                                                   hearing);*/
         hearingActualsValidator.validateDuplicateHearingActualDays(request.getActualHearingDays());
         hearingActualsValidator.validateHearingActualDaysNotBeforeFirstHearingDate(request.getActualHearingDays(),
                 hearing);
