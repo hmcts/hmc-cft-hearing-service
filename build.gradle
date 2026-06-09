@@ -231,6 +231,7 @@ ext {
   set('jackson.version', '2.18.2')
   set('diuspactproviderVersion', '4.1.43')
   set('log4j2.version', '2.25.3')
+  set('commons-lang3.version', '3.18.0')
 
   junit                 = '5.13.4'
   junitPlatform         = '1.13.4'
