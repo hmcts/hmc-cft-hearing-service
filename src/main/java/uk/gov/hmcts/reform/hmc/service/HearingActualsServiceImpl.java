@@ -80,23 +80,22 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         String hearingStatus = hearing.getStatus();
         hearingActualsValidator.validateHearingStatusForActuals(hearingStatus);
         validateRequestPayload(request, hearing);
-        hearingIsInTerminalState(hearing,clientS2SToken, request);
-
-        Optional<HearingResponseEntity> latestVersionHearingResponse = hearing.getHearingResponseForLatestRequest();
-        if (latestVersionHearingResponse.isEmpty()) {
-            throw new BadRequestException(String.format(HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND, hearingId));
+        if (HearingStatus.isFinalStatus(HearingStatus.valueOf(hearingStatus))) {
+            hearingIsInTerminalState(hearing, clientS2SToken, request);
+        } else {
+            Optional<HearingResponseEntity> latestVersionHearingResponse = hearing.getHearingResponseForLatestRequest();
+            if (latestVersionHearingResponse.isEmpty()) {
+                throw new BadRequestException(String.format(HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND, hearingId));
+            }
+            upsertNewHearingActuals(latestVersionHearingResponse.get(), request, clientS2SToken, hearing);
         }
-        upsertNewHearingActuals(latestVersionHearingResponse.get(), request, clientS2SToken, hearing);
     }
 
     private void hearingIsInTerminalState(HearingEntity hearingEntity, String clientS2SToken, HearingActual request) {
-        if (HearingStatus.isFinalStatus(HearingStatus.valueOf(hearingEntity.getStatus()))) {
             ActualHearingEntity actualHearingEntity =  hearingActualsValidator.returnActualHearing(hearingEntity);
             HearingResponseEntity hearingResponseEntity = actualHearingEntity.getHearingResponse();
             actualHearingAuditService.saveActualHearingAuditDetails(request, hearingResponseEntity);
             upsertNewHearingActuals(hearingResponseEntity, request, clientS2SToken, hearingEntity);
-        }
-
     }
 
     private void upsertNewHearingActuals(HearingResponseEntity latestVersionHearingResponse, HearingActual request,

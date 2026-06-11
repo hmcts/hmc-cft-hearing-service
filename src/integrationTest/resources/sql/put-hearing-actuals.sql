@@ -69,3 +69,6 @@ VALUES (6, '2000001202', '2022-01-16 11:20:00', 'listingStatus1-1', 'caselisting
 
 INSERT INTO hearing_day_details(hearing_day_id, hearing_response_id, start_date_time, end_date_time, venue_id, room_id)
 VALUES (7, '6', '2022-01-16 11:20:00', '2022-01-16 14:20:00', 'venue2-1', 'room2-1');
+
+insert into actual_hearing(actual_hearing_id, actual_hearing_type, actual_hearing_is_final_flag, hearing_result_type, hearing_result_reason_type, hearing_result_date, hearing_response_id)
+values (1, 'Test Hearing Type', false, 'COMPLETED', 'hearing completed', '2020-08-10 11:20:00', 6);
