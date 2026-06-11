@@ -93,7 +93,6 @@ public class HearingActualsValidator {
             }
             LocalDate hearingDate = hearingDay.getHearingDate();
             boolean isHearingDayEmpty = hearingDay.isEmpty();
-            // TODO : confirm if isHearingDayEmpty required or not
             if (hearingDate.isAfter(today) && !isHearingDayEmpty) {
                 throw new BadRequestException(HEARING_ACTUALS_HEARING_DAYS_INVALID);
             }
@@ -153,6 +152,15 @@ public class HearingActualsValidator {
         if (null == hearingResultDate) {
             throw new BadRequestException(ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY);
         }
+    }
+
+    public ActualHearingEntity returnActualHearing(HearingEntity hearing) {
+
+        Optional<ActualHearingEntity> entity = hearingIdValidator.getActualHearing(hearing.getId());
+        if (entity.isEmpty()) {
+            throw new BadRequestException(ValidationError.HEARING_ACTUALS_NOT_FOUND);
+        }
+        return entity.get();
     }
 
 }

@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ActualHearingAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
@@ -52,6 +53,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PUT_HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.actualHearingDay;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingActualsOutcome;
@@ -84,6 +86,9 @@ class HearingActualsServiceTest {
     @Mock
     private HearingStatusAuditService hearingStatusAuditService;
 
+    @Mock
+    private ActualHearingAuditService actualHearingAuditService;
+
     @BeforeEach
     void setUp() {
         HearingActualsMapper hearingActualsMapper = new HearingActualsMapper();
@@ -98,7 +103,8 @@ class HearingActualsServiceTest {
                 hearingActualsMapper,
                 hearingIdValidator,
                 hearingActualsValidator,
-                hearingStatusAuditService
+                hearingStatusAuditService,
+                actualHearingAuditService
             );
     }
 
@@ -187,7 +193,8 @@ class HearingActualsServiceTest {
                     hearingActualsMapper,
                     hearingIdValidator,
                     hearingActualsValidator,
-                    hearingStatusAuditService
+                    hearingStatusAuditService,
+                    actualHearingAuditService
                 );
         }
 
@@ -259,7 +266,7 @@ class HearingActualsServiceTest {
             Exception exception = assertThrows(BadRequestException.class, () ->
                 hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual)
             );
-            assertEquals("004 non-unique dates", exception.getMessage());
+            assertEquals(HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS, exception.getMessage());
         }
 
         @Test
