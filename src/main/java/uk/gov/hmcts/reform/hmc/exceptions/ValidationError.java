@@ -146,8 +146,10 @@ public final class ValidationError {
 
     public static final String HEARING_ACTUALS_ID_NOT_FOUND = "001 No such id: %s";
     public static final String HEARING_ACTUALS_INVALID_STATUS = "002 invalid status %s";
-    public static final String HEARING_ACTUALS_HEARING_DAYS_INVALID = "003 invalid date";
-    public static final String HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS = "004 non-unique dates";
+    public static final String HEARING_ACTUALS_HEARING_DAYS_INVALID = "003 invalid date. ActualHearingDay in the "
+        + "request fall outside the allowable range";
+    public static final String HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS = "004 non-unique dates. ActualHearingDay(s) "
+        + "in the request is not unique";
     public static final String HEARING_ACTUALS_MISSING_RESULT_TYPE = "%s result requires a hearingResultReasonType";
     public static final String HEARING_ACTUALS_MISSING_HEARING_OUTCOME = "005 missing hearing outcome";
     public static final String HEARING_ACTUALS_MISSING_HEARING_DAY = "003 missing hearing day actuals";
@@ -311,4 +313,7 @@ public final class ValidationError {
     public static final String CASE_REFERENCES_MANDATORY = "At least one case reference must be provided";
     public static final String INVALID_SERVICE_EXCEPTION_MESSAGE = "Failed to invoke ‘getHearing’ "
         + "from service: %s for hearing id: %s";
+    public static final String PUT_HEARING_ACTUALS_INVALID_STATUS = "002 invalid status for awaiting actuals "
+        + "to be accepted %s";
+    public static final String HEARING_ACTUALS_NOT_FOUND = "003 no previous hearing actuals recorded";
 }

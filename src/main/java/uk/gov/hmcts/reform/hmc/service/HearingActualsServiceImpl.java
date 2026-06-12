@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.domain.model.HearingStatusAuditContext;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.hmc.helper.GetHearingActualsResponseMapper;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ActualHearingAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
 import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
@@ -39,6 +41,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     private final HearingIdValidator hearingIdValidator;
     private final HearingActualsValidator hearingActualsValidator;
     private final HearingStatusAuditService hearingStatusAuditService;
+    private final ActualHearingAuditService actualHearingAuditService;
 
     @Autowired
     public HearingActualsServiceImpl(HearingRepository hearingRepository,
@@ -47,7 +50,8 @@ public class HearingActualsServiceImpl implements HearingActualsService {
                                      HearingActualsMapper hearingActualsMapper,
                                      HearingIdValidator hearingIdValidator,
                                      HearingActualsValidator hearingActualsValidator,
-                                     HearingStatusAuditService hearingStatusAuditService) {
+                                     HearingStatusAuditService hearingStatusAuditService,
+                                     ActualHearingAuditService actualHearingAuditService) {
         this.hearingRepository = hearingRepository;
         this.actualHearingRepository = actualHearingRepository;
         this.getHearingActualsResponseMapper = getHearingActualsResponseMapper;
@@ -55,6 +59,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         this.hearingActualsMapper = hearingActualsMapper;
         this.hearingActualsValidator = hearingActualsValidator;
         this.hearingStatusAuditService = hearingStatusAuditService;
+        this.actualHearingAuditService = actualHearingAuditService;
     }
 
     @Override
@@ -75,12 +80,22 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         String hearingStatus = hearing.getStatus();
         hearingActualsValidator.validateHearingStatusForActuals(hearingStatus);
         validateRequestPayload(request, hearing);
-
-        Optional<HearingResponseEntity> latestVersionHearingResponse = hearing.getHearingResponseForLatestRequest();
-        if (latestVersionHearingResponse.isEmpty()) {
-            throw new BadRequestException(String.format(HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND, hearingId));
+        if (HearingStatus.isFinalStatus(HearingStatus.valueOf(hearingStatus))) {
+            hearingIsInTerminalState(hearing, clientS2SToken, request);
+        } else {
+            Optional<HearingResponseEntity> latestVersionHearingResponse = hearing.getHearingResponseForLatestRequest();
+            if (latestVersionHearingResponse.isEmpty()) {
+                throw new BadRequestException(String.format(HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND, hearingId));
+            }
+            upsertNewHearingActuals(latestVersionHearingResponse.get(), request, clientS2SToken, hearing);
         }
-        upsertNewHearingActuals(latestVersionHearingResponse.get(), request, clientS2SToken, hearing);
+    }
+
+    private void hearingIsInTerminalState(HearingEntity hearingEntity, String clientS2SToken, HearingActual request) {
+            ActualHearingEntity actualHearingEntity =  hearingActualsValidator.returnActualHearing(hearingEntity);
+            HearingResponseEntity hearingResponseEntity = actualHearingEntity.getHearingResponse();
+            actualHearingAuditService.saveActualHearingAuditDetails(request, hearingResponseEntity);
+            upsertNewHearingActuals(hearingResponseEntity, request, clientS2SToken, hearingEntity);
     }
 
     private void upsertNewHearingActuals(HearingResponseEntity latestVersionHearingResponse, HearingActual request,
