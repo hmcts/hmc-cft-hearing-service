@@ -106,6 +106,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
     private static final String INSERT_HEARING_ACTUALS = "classpath:sql/put-hearing-actuals.sql";
     private static final String INSERT_HEARING_ACTUALS1 = "classpath:sql/get-HearingsActual_request.sql";
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
+    private static final String CASE_HEARING_ACTUAL_HEARING = "classpath:sql/insert-caseHearings_actualhearings.sql";
 
     @BeforeEach
     void setUp() {
@@ -300,7 +301,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
         // https://tools.hmcts.net/jira/browse/HMAN-82 AC01
         @ParameterizedTest(name = "[{index}] hearingId={0}")
         @MethodSource("validHearingActualStatus")
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, CASE_HEARING_ACTUAL_HEARING})
         void shouldReturn200_WhenSuppliedValidPayloadForHearingStatusOfListed(String hearingId)
             throws Exception {
             mockMvc.perform(put(URL  + "/" + hearingId)
