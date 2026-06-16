@@ -87,6 +87,7 @@ import uk.gov.hmcts.reform.hmc.repository.DataStoreRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedGroupDetailsRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingDetailsRepository;
+import uk.gov.hmcts.reform.hmc.service.common.HearingRequestVersionAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -251,8 +252,14 @@ class HearingManagementServiceTest {
     @Mock
     PendingRequestService pendingRequestService;
 
+    @Mock
+    HearingCompletionService hearingCompletionService;
+
     @Captor
     private ArgumentCaptor<HearingStatusAuditContext> hearingStatusAuditContextCaptor;
+
+    @Mock
+    private HearingRequestVersionAuditService hearingRequestVersionAuditService;
 
     @BeforeEach
     void setUp() {
@@ -2074,9 +2081,9 @@ class HearingManagementServiceTest {
                 listingMapper,
                 hmiCaseDetailsMapper,
                 entitiesMapper,
-                hmiHearingResponseMapper,
                 hearingStatusAuditService,
                 pendingRequestService,
-                securityUtils);
+                hearingCompletionService,
+                hearingRequestVersionAuditService);
     }
 }

@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.hmc.TestFixtures;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
-import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.interceptors.OverrideHostPolicy;
 import uk.gov.hmcts.reform.hmc.interceptors.RequestBodyCachingFilter;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;

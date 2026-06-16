@@ -46,9 +46,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -89,6 +91,9 @@ class HearingActualsServiceTest {
     @Mock
     private ActualHearingAuditService actualHearingAuditService;
 
+    @Mock
+    private HearingCompletionService hearingCompletionService;
+
     @BeforeEach
     void setUp() {
         HearingActualsMapper hearingActualsMapper = new HearingActualsMapper();
@@ -104,7 +109,8 @@ class HearingActualsServiceTest {
                 hearingIdValidator,
                 hearingActualsValidator,
                 hearingStatusAuditService,
-                actualHearingAuditService
+                actualHearingAuditService,
+                hearingCompletionService
             );
     }
 
@@ -194,7 +200,8 @@ class HearingActualsServiceTest {
                     hearingIdValidator,
                     hearingActualsValidator,
                     hearingStatusAuditService,
-                    actualHearingAuditService
+                    actualHearingAuditService,
+                    hearingCompletionService
                 );
         }
 
@@ -231,15 +238,35 @@ class HearingActualsServiceTest {
                 .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
-        @ParameterizedTest(name = "[{index}] hearingStatus={0}")
-        @EnumSource(value = HearingStatus.class, names = {"LISTED", "COMPLETED", "ADJOURNED", "CANCELLED"})
-        void shouldNotThrowExceptionWhenHearingStatusIsValid(HearingStatus hearingStatus) {
-            createActuals();
-            HearingActual hearingActual = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull();
-            assertDoesNotThrow(() -> {
-                hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, hearingActual);
-            });
-            verify(hearingStatusAuditService, times(1))
+        @Test
+        void shouldUpdateHearingActualsForListedHearing() {
+            HearingActual request = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull();
+            HearingResponseEntity hearingResponseEntity = givenHearingWithStatus(HearingStatus.LISTED);
+            assertDoesNotThrow(() ->
+                                   hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, request));
+            verify(hearingResponseEntity, never()).getActualHearingEntity();
+            verify(hearingStatusAuditService)
+                .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
+            verify(actualHearingAuditService, never())
+                .saveActualHearingAuditDetails(any(), any());
+
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = HearingStatus.class, names = {"COMPLETED", "ADJOURNED", "CANCELLED"})
+        void shouldUpdateHearingActualsForFinalHearings(HearingStatus hearingStatus) {
+            HearingResponseEntity hearingResponseEntity = givenHearingWithStatus(hearingStatus);
+            HearingActual request = TestingUtil.hearingActualOutcomeAndActualHearingDaysNull();
+
+            ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
+            given(hearingResponseEntity.getActualHearingEntity()).willReturn(actualHearingEntity);
+
+            assertDoesNotThrow(() ->
+                                   hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, request));
+
+            verify(actualHearingAuditService)
+                .saveActualHearingAuditDetails(eq(request), eq(actualHearingEntity));
+            verify(hearingStatusAuditService)
                 .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         }
 
@@ -467,5 +494,22 @@ class HearingActualsServiceTest {
         given(hearing.getStatus()).willReturn(validHearingStaus);
         given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearing));
         return hearing;
+    }
+
+    private HearingResponseEntity givenHearingWithStatus(HearingStatus hearingStatus) {
+        given(hearingRepository.findById(HEARING_ID)).willReturn(Optional.of(hearingEntity));
+        given(hearingEntity.getStatus()).willReturn(hearingStatus.name());
+
+        HearingResponseEntity hearingResponseEntity = mock(HearingResponseEntity.class);
+        given(hearingEntity.getHearingResponseForLatestRequest())
+            .willReturn(Optional.of(hearingResponseEntity));
+
+        HearingDayDetailsEntity hearingDayDetailsEntity = mock(HearingDayDetailsEntity.class);
+        given(hearingResponseEntity.getEarliestHearingDayDetails())
+            .willReturn(Optional.of(hearingDayDetailsEntity));
+        given(hearingDayDetailsEntity.getStartDateTime())
+            .willReturn(LocalDateTime.of(2024, 1, 1, 10, 0));
+
+        return hearingResponseEntity;
     }
 }

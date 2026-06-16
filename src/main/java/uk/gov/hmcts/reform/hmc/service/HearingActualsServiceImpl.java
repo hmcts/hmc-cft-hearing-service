@@ -29,9 +29,10 @@ import java.util.Optional;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PUT_HEARING_ACTUALS_COMPLETION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_ID_NOT_FOUND;
-import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ACTUALS_POST_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.NO_PREVIOUS_HEARING_ACTUALS_RECORDED;
 
 @Service
 @Slf4j
@@ -44,6 +45,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     private final HearingActualsValidator hearingActualsValidator;
     private final HearingStatusAuditService hearingStatusAuditService;
     private final ActualHearingAuditService actualHearingAuditService;
+    private final HearingCompletionService hearingCompletionService;
 
     @Autowired
     public HearingActualsServiceImpl(HearingRepository hearingRepository,
@@ -53,7 +55,8 @@ public class HearingActualsServiceImpl implements HearingActualsService {
                                      HearingIdValidator hearingIdValidator,
                                      HearingActualsValidator hearingActualsValidator,
                                      HearingStatusAuditService hearingStatusAuditService,
-                                     ActualHearingAuditService actualHearingAuditService) {
+                                     ActualHearingAuditService actualHearingAuditService,
+                                     HearingCompletionService hearingCompletionService) {
         this.hearingRepository = hearingRepository;
         this.actualHearingRepository = actualHearingRepository;
         this.getHearingActualsResponseMapper = getHearingActualsResponseMapper;
@@ -62,6 +65,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         this.hearingActualsValidator = hearingActualsValidator;
         this.hearingStatusAuditService = hearingStatusAuditService;
         this.actualHearingAuditService = actualHearingAuditService;
+        this.hearingCompletionService = hearingCompletionService;
     }
 
     @Override
@@ -79,24 +83,34 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     public void updateHearingActuals(Long hearingId, String clientS2SToken, HearingActual request) {
         hearingIdValidator.isValidFormat(hearingId.toString());
         HearingEntity hearing = getHearing(hearingId);
-        String hearingStatus = hearing.getStatus();
-        hearingActualsValidator.validateHearingStatusForActuals(hearingStatus);
+        HearingStatus hearingStatus = HearingStatus.valueOf(hearing.getStatus());
+
+        hearingActualsValidator.validateHearingStatusForActuals(hearingStatus.name());
         validateRequestPayload(request, hearing);
-        if (HearingStatus.isFinalStatus(HearingStatus.valueOf(hearingStatus))) {
-            HearingResponseEntity latestVersionHearingResponse = getHearingResponseEntity(hearingId, hearing);
-            ActualHearingEntity actualHearingEntity = getActualHearingEntity(latestVersionHearingResponse);
-            actualHearingAuditService.saveActualHearingAuditDetails(request, actualHearingEntity);
-        } else {
-            HearingResponseEntity latestVersionHearingResponse = getHearingResponseEntity(hearingId, hearing);
-            upsertNewHearingActuals(latestVersionHearingResponse, request, clientS2SToken, hearing);
+
+        HearingResponseEntity latestHearingResponse = getHearingResponseEntity(hearingId, hearing);
+        if (!HearingStatus.isFinalStatus(hearingStatus)) {
+            upsertNewHearingActuals(latestHearingResponse, request, clientS2SToken, hearing);
+            return;
         }
+        hearingActualCompletion(hearingId, clientS2SToken, request, latestHearingResponse, hearing);
+    }
+
+    @NotNull
+    private ActualHearingEntity saveHearingActualsAndAudit(String clientS2SToken, HearingActual request,
+                                                   HearingResponseEntity latestVersionHearingResponse,
+                                                   HearingEntity hearing) {
+        ActualHearingEntity actualHearingEntity = getActualHearingEntity(latestVersionHearingResponse);
+        actualHearingAuditService.saveActualHearingAuditDetails(request, actualHearingEntity);
+        upsertNewHearingActuals(latestVersionHearingResponse, request, clientS2SToken, hearing);
+        return actualHearingEntity;
     }
 
     @NotNull
     private static ActualHearingEntity getActualHearingEntity(HearingResponseEntity latestVersionHearingResponse) {
         ActualHearingEntity actualHearingEntity = latestVersionHearingResponse.getActualHearingEntity();
         if (actualHearingEntity == null) {
-            throw new BadRequestException(HEARING_ACTUALS_NOT_FOUND);
+            throw new BadRequestException(NO_PREVIOUS_HEARING_ACTUALS_RECORDED);
         }
         return actualHearingEntity;
     }
@@ -142,6 +156,27 @@ public class HearingActualsServiceImpl implements HearingActualsService {
             throw new HearingNotFoundException(hearingId, HEARING_ACTUALS_ID_NOT_FOUND);
         }
         return hearingEntityOptional.get();
+    }
+
+    private void hearingActualCompletion(Long hearingId,
+                                         String clientS2SToken,
+                                         HearingActual request,
+                                         HearingResponseEntity hearingResponse,
+                                         HearingEntity hearing) {
+        ActualHearingEntity actualHearingEntity =
+            saveHearingActualsAndAudit(clientS2SToken, request, hearingResponse, hearing);
+
+        HearingStatus requestedStatus = HearingStatus.valueOf(request.getHearingOutcome().getHearingResult());
+        if (!HearingStatus.isFinalStatus(requestedStatus)) {
+            throw new BadRequestException(INVALID_ACTUALS_POST_STATUS);
+        }
+
+        hearingActualsValidator.validateActualHearingEntity(actualHearingEntity);
+        hearingCompletionService.completeHearing(
+            hearingId,
+            clientS2SToken,
+            hearing.getLatestRequestVersion()
+        );
     }
 
 }

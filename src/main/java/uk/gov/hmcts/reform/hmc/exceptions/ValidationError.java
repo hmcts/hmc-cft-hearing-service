@@ -315,5 +315,6 @@ public final class ValidationError {
         + "from service: %s for hearing id: %s";
     public static final String PUT_HEARING_ACTUALS_INVALID_STATUS = "002 invalid status for awaiting actuals "
         + "to be accepted %s";
-    public static final String HEARING_ACTUALS_NOT_FOUND = "003 no previous hearing actuals recorded";
+    public static final String NO_PREVIOUS_HEARING_ACTUALS_RECORDED = "003 no previous hearing actuals recorded";
+    public static final String INVALID_ACTUALS_POST_STATUS = "002 invalid status for amending actuals post final state";
 }

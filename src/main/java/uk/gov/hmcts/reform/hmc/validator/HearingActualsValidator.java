@@ -119,7 +119,11 @@ public class HearingActualsValidator {
         if (entity.isEmpty()) {
             throw new BadRequestException(ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME);
         }
-        ActualHearingEntity actualHearingEntity = entity.get();
+        validateActualHearingEntity(entity.get());
+    }
+
+    public void validateActualHearingEntity(ActualHearingEntity entity) {
+        ActualHearingEntity actualHearingEntity = entity;
         validateActualHearingType(actualHearingEntity.getActualHearingType());
         validateActualHearingIsFinalFlag(actualHearingEntity.getActualHearingIsFinalFlag());
         validateHearingResult(actualHearingEntity.getHearingResultType());
