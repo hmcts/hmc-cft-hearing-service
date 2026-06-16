@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.hmc.model.hearingactuals.HearingActualResponse;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ActualHearingAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
@@ -85,6 +86,9 @@ class HearingActualsServiceTest {
     @Mock
     private HearingStatusAuditService hearingStatusAuditService;
 
+    @Mock
+    private ActualHearingAuditService actualHearingAuditService;
+
     @BeforeEach
     void setUp() {
         HearingActualsMapper hearingActualsMapper = new HearingActualsMapper();
@@ -99,7 +103,8 @@ class HearingActualsServiceTest {
                 hearingActualsMapper,
                 hearingIdValidator,
                 hearingActualsValidator,
-                hearingStatusAuditService
+                hearingStatusAuditService,
+                actualHearingAuditService
             );
     }
 
@@ -188,7 +193,8 @@ class HearingActualsServiceTest {
                     hearingActualsMapper,
                     hearingIdValidator,
                     hearingActualsValidator,
-                    hearingStatusAuditService
+                    hearingStatusAuditService,
+                    actualHearingAuditService
                 );
         }
 

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
@@ -42,6 +44,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_FINA
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_REQUEST_DATE_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PUT_HEARING_ACTUALS_INVALID_STATUS;
 
 class HearingActualsValidatorTest {
 
@@ -268,6 +271,25 @@ class HearingActualsValidatorTest {
         assertEquals(HEARING_ACTUALS_HEARING_DAYS_INVALID,
                      exception.getMessage(),
                      "BadRequestException has unexpected message");
+    }
+
+    @ParameterizedTest(name = "[{index}] hearingStatus={0}")
+    @EnumSource(value = HearingStatus.class, names = {"HEARING_REQUESTED", "AWAITING_LISTING", "UPDATE_REQUESTED",
+        "UPDATE_SUBMITTED", "CANCELLATION_REQUESTED", "CANCELLATION_SUBMITTED", "CLOSED" })
+    void shouldThrowExceptionWhenHearingStatusIsNotValid(HearingStatus hearingStatus) {
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+            hearingActualsValidator.validateHearingStatusForActuals(hearingStatus.name());
+        });
+        assertEquals(String.format(PUT_HEARING_ACTUALS_INVALID_STATUS, hearingStatus.name()),
+                     exception.getMessage());
+    }
+
+    @ParameterizedTest(name = "[{index}] hearingStatus={0}")
+    @EnumSource(value = HearingStatus.class, names = {"LISTED", "COMPLETED", "ADJOURNED", "CANCELLED"})
+    void shouldNotThrowExceptionWhenHearingStatusIsValid(HearingStatus hearingStatus) {
+        assertDoesNotThrow(() -> {
+            hearingActualsValidator.validateHearingStatusForActuals(hearingStatus.name());
+        });
     }
 
     private static Stream<Arguments> actualHearingDayAccepted() {

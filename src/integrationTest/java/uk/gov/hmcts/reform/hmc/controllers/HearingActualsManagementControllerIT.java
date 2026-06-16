@@ -145,25 +145,9 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andReturn();
         }
 
-        // https://tools.hmcts.net/jira/browse/HMAN-80 AC-02
-        @Test
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
-        void shouldReturn400_WhenHearingHasInvalidStatusOfHearingRequested() throws Exception {
-            mockMvc.perform(put(URL + "/2000000000")
-                                .header(SERVICE_AUTHORIZATION, serviceJwtXuiWeb)
-                                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .content(TestFixtures.fromFileAsString(
-                                    "hearing-actuals-payload/HMAN80-ValidPayload1.json")))
-                .andExpect(status().is(400))
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors", hasItem(String.format(PUT_HEARING_ACTUALS_INVALID_STATUS,
-                                                                      HearingStatus.HEARING_REQUESTED.name()))))
-                .andReturn();
-        }
-
         // https://tools.hmcts.net/jira/browse/HMAN-80 AC-03
         @ParameterizedTest(name = "[{index}] hearingId={0}")
-        @MethodSource("awaitingListingHearingIds")
+        @MethodSource("invalidHearingStatus")
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, INSERT_HEARING_ACTUALS})
         void shouldReturn400_WhenHearingHasInvalidStatus(String hearingId, String expectedStatus) throws Exception {
             mockMvc.perform(put(URL + "/" + hearingId)
@@ -178,7 +162,7 @@ class HearingActualsManagementControllerIT extends BaseTest {
                 .andReturn();
         }
 
-        private static Stream<Arguments> awaitingListingHearingIds() {
+        private static Stream<Arguments> invalidHearingStatus() {
             return Stream.of(
                 arguments("2000001100", "UPDATE_REQUESTED"),
                 arguments("2000001200", "UPDATE_SUBMITTED"),
