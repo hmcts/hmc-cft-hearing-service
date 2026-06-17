@@ -262,7 +262,7 @@ dependencyCheck {
 
 tasks.register("printSuppressionFile") {
   doLast {
-    println "SUPPRESSION_FILE=${dependencyCheck.suppressionFile}"
+    println "SUPPRESSION_FILE=${dependencyCheck.suppressionFile.get()}"
   }
 }
 
