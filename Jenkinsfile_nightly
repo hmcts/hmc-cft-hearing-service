@@ -34,16 +34,24 @@ withNightlyPipeline(type, product, component) {
 
       def suppressionFile = ''
       script {
-        suppressionFile = sh(
+        def suppressionFileOutput = sh(
           script: './gradlew printSuppressionFile -q',
           returnStdout: true
-        ).trim().split("=")[1]
+        ).trim()
+
+        def suppressionFileLine = suppressionFileOutput.readLines().find { it.startsWith('SUPPRESSION_FILE=') }
+
+        if (!suppressionFileLine) {
+          error "Could not determine dependency-check suppression file from Gradle output:\n${suppressionFileOutput}"
+        }
+
+        suppressionFile = suppressionFileLine.replaceFirst(/^SUPPRESSION_FILE=/, '').trim()
 
         echo "Suppression file and path: ${suppressionFile}"
 
         sh """
-                  echo 'Current contents of ${suppressionFile}:'
-                  cat '${suppressionFile}'
+                  echo "Current contents of ${suppressionFile}:"
+                  cat "${suppressionFile}"
                 """
       }
 
