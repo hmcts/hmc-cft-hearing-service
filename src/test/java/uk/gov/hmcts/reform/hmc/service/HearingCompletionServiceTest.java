@@ -166,6 +166,9 @@ class HearingCompletionServiceTest {
         UserInfo userInfo = mock(UserInfo.class);
         when(userInfo.getSub()).thenReturn(USER_ID);
         when(securityUtils.getUserInfo()).thenReturn(userInfo);
+        JsonNode userIdNode = mock(JsonNode.class);
+        when(userIdNode.asText()).thenReturn(USER_ID);
+        when(jsonNode.get("userId")).thenReturn(userIdNode);
 
         HmcHearingResponse hmcHearingResponse = new HmcHearingResponse();
         hmcHearingResponse.setHearingID("2000000000");
