@@ -262,7 +262,6 @@ class HearingActualsServiceTest {
         @ParameterizedTest
         @EnumSource(value = HearingStatus.class, names = {"COMPLETED", "ADJOURNED", "CANCELLED"})
         void shouldUpdateHearingActualsForFinalHearings(HearingStatus hearingStatus) {
-            HearingResponseEntity hearingResponseEntity = givenHearingWithStatus(hearingStatus);
             HearingActual request = TestingUtil.oneActualHearingDayIsNotNull(Boolean.TRUE, Boolean.FALSE);
             HearingActualsOutcome outcome = hearingActualsOutcome();
             request.setHearingOutcome(outcome);
@@ -273,6 +272,7 @@ class HearingActualsServiceTest {
                 .thenReturn(LocalDate.now().minusDays(13L));
             when(actualHearingEntity.getActualHearingType()).thenReturn("Witness Hearing");
             when(actualHearingEntity.getHearingResultReasonType()).thenReturn("MADE UP REASON");
+            HearingResponseEntity hearingResponseEntity = givenHearingWithStatus(hearingStatus);
             given(hearingResponseEntity.getActualHearingEntity()).willReturn(actualHearingEntity);
 
             assertDoesNotThrow(() ->
