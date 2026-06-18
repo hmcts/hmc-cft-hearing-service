@@ -98,7 +98,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
             throw new BadRequestException(INVALID_ACTUALS_POST_STATUS);
         }
         HearingStatus hearingResult = HearingStatus.valueOf(hearingResultStr);
-        if (!HearingStatus.isFinalStatus(hearingResult) || !HearingStatus.isFinalStatus(hearingStatus)) {
+        if (!HearingStatus.isFinalStatus(hearingResult) && !HearingStatus.isFinalStatus(hearingStatus)) {
             throw new BadRequestException(INVALID_ACTUALS_POST_STATUS);
         }
         hearingActualCompletion(hearingId, clientS2SToken, request, latestHearingResponse, hearing);
