@@ -98,13 +98,12 @@ public class HearingActualsServiceImpl implements HearingActualsService {
             throw new BadRequestException(INVALID_ACTUALS_POST_STATUS);
         }
         HearingStatus hearingResult = HearingStatus.valueOf(hearingResultStr);
-        if (!HearingStatus.isFinalStatus(hearingResult) && !HearingStatus.isFinalStatus(hearingStatus)) {
+        if (!HearingStatus.isFinalStatus(hearingResult) || !HearingStatus.isFinalStatus(hearingStatus)) {
             throw new BadRequestException(INVALID_ACTUALS_POST_STATUS);
         }
         hearingActualCompletion(hearingId, clientS2SToken, request, latestHearingResponse, hearing);
     }
 
-    @NotNull
     private ActualHearingEntity saveHearingActualsAndAudit(String clientS2SToken, HearingActual request,
                                                    HearingResponseEntity latestVersionHearingResponse,
                                                    HearingEntity hearing) {
@@ -114,7 +113,6 @@ public class HearingActualsServiceImpl implements HearingActualsService {
         return actualHearingEntity;
     }
 
-    @NotNull
     private static ActualHearingEntity getActualHearingEntity(HearingResponseEntity latestVersionHearingResponse) {
         ActualHearingEntity actualHearingEntity = latestVersionHearingResponse.getActualHearingEntity();
         if (actualHearingEntity == null) {
