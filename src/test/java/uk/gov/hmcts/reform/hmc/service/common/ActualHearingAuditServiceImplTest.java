@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.service.common;
 
-import com.azure.json.implementation.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -50,7 +49,7 @@ class ActualHearingAuditServiceImplTest {
     }
 
     @Test
-    void saveActualHearingAuditDetails() throws JsonProcessingException {
+    void saveActualHearingAuditDetails()  {
         HearingActual actual = TestingUtil.hearingActual();
         JsonNode expectedAuditRecord = objectMapper.valueToTree(actual);
         HearingResponseEntity responseEntity = getHearingResponseEntity();
