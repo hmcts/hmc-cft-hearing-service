@@ -47,6 +47,9 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.COMPLETED;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
 
 @ExtendWith(MockitoExtension.class)
@@ -81,6 +84,9 @@ class HearingCompletionServiceTest {
     @Captor
     private ArgumentCaptor<HearingStatusAuditContext> hearingStatusAuditContextCaptor;
 
+    @Captor
+    private ArgumentCaptor<HearingEntity> hearingEntityCaptor;
+
     private static final String CLIENT_S2S_TOKEN = "s2s_token";
     public static final String USER_ID = "userId";
     JsonNode jsonNode = mock(JsonNode.class);
@@ -100,7 +106,8 @@ class HearingCompletionServiceTest {
     @ParameterizedTest(name = "[{index}] status={0}, requestStatus={1}")
     @MethodSource("validFinalStatuses")
     void testCompletionHearingWithFinalStatus(HearingStatus finalStatus,
-                                              HearingResultType hearingResultType) {
+                                              HearingResultType hearingResultType,
+                                              String expectedStatus) {
         final long hearingId = 2000000000L;
         final HearingEntity hearingEntity =
             setupHearingActualsStatusScenario(hearingId, finalStatus.name());
@@ -114,17 +121,19 @@ class HearingCompletionServiceTest {
         verify(hearingRequestVersionAuditService).auditChangeInRequestVersion(any(), anyInt(),any(),anyBoolean());
         verify(hearingStatusAuditService).saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         verify(messageSenderToTopicConfiguration).sendMessage(any(), any(), any(), any());
+        verify(hearingRepository).save(hearingEntityCaptor.capture());
+        assertEquals(hearingResultType.name(), hearingEntityCaptor.getValue().getStatus());
         assertAuditDetailsWithUpdatedDateOrCurrentDate();
     }
 
     private static Stream<Arguments> validFinalStatuses() {
         return Stream.of(
-            arguments(HearingStatus.COMPLETED.name(), HearingResultType.ADJOURNED),
-            arguments(HearingStatus.COMPLETED.name(), HearingResultType.CANCELLED),
-            arguments(HearingStatus.ADJOURNED.name(), HearingResultType.COMPLETED),
-            arguments(HearingStatus.ADJOURNED.name(), HearingResultType.CANCELLED),
-            arguments(HearingStatus.CANCELLED.name(), HearingResultType.ADJOURNED),
-            arguments(HearingStatus.CANCELLED.name(), HearingResultType.COMPLETED)
+            arguments(COMPLETED.name(), HearingResultType.ADJOURNED, ADJOURNED.name()),
+            arguments(COMPLETED.name(), HearingResultType.CANCELLED, CANCELLED.name()),
+            arguments(ADJOURNED.name(), HearingResultType.COMPLETED, COMPLETED.name()),
+            arguments(ADJOURNED.name(), HearingResultType.CANCELLED, CANCELLED.name()),
+            arguments(CANCELLED.name(), HearingResultType.ADJOURNED, CANCELLED.name()),
+            arguments(CANCELLED.name(), HearingResultType.COMPLETED, COMPLETED.name())
         );
     }
 
