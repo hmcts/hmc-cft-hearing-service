@@ -13,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
+import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
@@ -82,6 +83,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.UPDATE_HEARING_REQUEST
 import static uk.gov.hmcts.reform.hmc.constants.Constants.VERSION_NUMBER_TO_INCREMENT;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_HEARING_OUTCOME;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ID_NOT_FOUND;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_DETAILS_ARE_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_WINDOW_EMPTY_NULL;
@@ -338,7 +340,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         linkedHearingValidator.validateHearingActualsStatus(hearingId, HEARING_ACTUALS_INVALID_STATUS);
         hearingActualsValidator.validateHearingOutcomeInformation(hearingId);
         final int existingRequestVersion = existingHearing.getLatestRequestVersion();
-        hearingCompletionService.completeHearing(hearingId, clientS2SToken, existingRequestVersion);
+        HearingEntity hearingEntity = updateStatus(hearingId);
+        hearingCompletionService.completeHearing(hearingEntity, clientS2SToken, existingRequestVersion);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -422,6 +425,16 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                 && linkedHearingValidator.filterHearingResponses(existingHearing).isBefore(LocalDate.now());
         }
         return false;
+    }
+
+    private HearingEntity updateStatus(Long hearingId) {
+        ActualHearingEntity actualHearingEntity = hearingIdValidator.getActualHearing(hearingId)
+            .orElseThrow(() -> new BadRequestException(HEARING_ACTUALS_MISSING_HEARING_OUTCOME));
+        HearingEntity hearingEntity = hearingRepository.findById(hearingId)
+            .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
+        hearingEntity.setStatus(actualHearingEntity.getHearingResultType().getLabel());
+        hearingRepository.save(hearingEntity);
+        return hearingEntity;
     }
 
     private String getNextPutHearingStatus(String currentStatus) {

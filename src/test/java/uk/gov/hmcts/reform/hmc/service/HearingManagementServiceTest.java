@@ -151,7 +151,6 @@ import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository
 import static uk.gov.hmcts.reform.hmc.repository.DefaultRoleAssignmentRepository.ROLE_ASSIGNMENT_INVALID_ROLE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
-import static uk.gov.hmcts.reform.hmc.service.HearingActualsServiceTest.HEARING_ID;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.INVALID_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.hearingPartyEntityInd;
@@ -1743,11 +1742,12 @@ class HearingManagementServiceTest {
         @MethodSource("completionStatusScenarios")
         void shouldUpdateCompletionStatusForActualHearing(String hearingStatus,
                                                           HearingResultType hearingResultType) {
-            setupHearingActualsStatusScenario(hearingId, hearingStatus, hearingResultType, 13L);
+            HearingEntity hearingEntity = setupHearingActualsStatusScenario(hearingId, hearingStatus,
+                                                                            hearingResultType, 13L);
             ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, CLIENT_S2S_TOKEN);
             ArgumentCaptor<Integer> versionCaptor = ArgumentCaptor.forClass(Integer.class);
-            verify(hearingCompletionService).completeHearing(eq(HEARING_ID), eq(CLIENT_S2S_TOKEN),
-                                                             versionCaptor.capture());
+            verify(hearingCompletionService).completeHearing(eq(hearingEntity), eq(CLIENT_S2S_TOKEN),
+                                                             versionCaptor.capture().intValue());
             assertAll(
                 () -> assertNotNull(responseEntity),
                 () -> assertEquals(HttpStatus.OK, responseEntity.getStatusCode()),

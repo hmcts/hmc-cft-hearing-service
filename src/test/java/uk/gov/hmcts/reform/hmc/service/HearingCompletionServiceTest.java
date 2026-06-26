@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
+import uk.gov.hmcts.reform.hmc.service.common.ActualHearingAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingRequestVersionAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
@@ -35,7 +35,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,9 +55,6 @@ import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
 class HearingCompletionServiceTest {
 
     private HearingCompletionService hearingCompletionService;
-
-    @Mock
-    private HearingRepository hearingRepository;
 
     @Mock
     HearingStatusAuditService hearingStatusAuditService;
@@ -87,53 +83,49 @@ class HearingCompletionServiceTest {
     @Captor
     private ArgumentCaptor<HearingEntity> hearingEntityCaptor;
 
+    @Mock
+    private ActualHearingAuditService actualHearingAuditService;
+
     private static final String CLIENT_S2S_TOKEN = "s2s_token";
     public static final String USER_ID = "userId";
     JsonNode jsonNode = mock(JsonNode.class);
 
     @BeforeEach
     void setUp() {
-        hearingCompletionService = new HearingCompletionService(hearingRepository,
-            hearingStatusAuditService,
+        hearingCompletionService = new HearingCompletionService(hearingStatusAuditService,
             messageSenderToTopicConfiguration,
             objectMapperService,
             hmiHearingResponseMapper,
             securityUtils,
-            hearingRequestVersionAuditService,
-            hearingIdValidator);
+            hearingRequestVersionAuditService);
     }
 
-    @ParameterizedTest(name = "[{index}] status={0}, requestStatus={1}")
+    @ParameterizedTest(name = "[{index}] status={0}")
     @MethodSource("validFinalStatuses")
     void testCompletionHearingWithFinalStatus(HearingStatus finalStatus,
-                                              HearingResultType hearingResultType,
-                                              String expectedStatus) {
+                                              HearingResultType hearingResultType) {
         final long hearingId = 2000000000L;
         final HearingEntity hearingEntity =
             setupHearingActualsStatusScenario(hearingId, finalStatus.name());
         mockHearingCompletionRequest(hearingResultType.name());
         ActualHearingEntity actualHearingEntity = new ActualHearingEntity();
         actualHearingEntity.setHearingResultType(hearingResultType);
-        when(hearingIdValidator.getActualHearing(hearingId)).thenReturn(Optional.of(actualHearingEntity));
-        when(hearingRepository.findById(hearingId)).thenReturn(Optional.of(hearingEntity));
-        hearingCompletionService.completeHearing(hearingId, CLIENT_S2S_TOKEN,
+        hearingCompletionService.completeHearing(hearingEntity, CLIENT_S2S_TOKEN,
                                                 1);
         verify(hearingRequestVersionAuditService).auditChangeInRequestVersion(any(), anyInt(),any(),anyBoolean());
         verify(hearingStatusAuditService).saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
         verify(messageSenderToTopicConfiguration).sendMessage(any(), any(), any(), any());
-        verify(hearingRepository).save(hearingEntityCaptor.capture());
-        assertEquals(hearingResultType.name(), hearingEntityCaptor.getValue().getStatus());
         assertAuditDetailsWithUpdatedDateOrCurrentDate();
     }
 
     private static Stream<Arguments> validFinalStatuses() {
         return Stream.of(
-            arguments(COMPLETED.name(), HearingResultType.ADJOURNED, ADJOURNED.name()),
-            arguments(COMPLETED.name(), HearingResultType.CANCELLED, CANCELLED.name()),
-            arguments(ADJOURNED.name(), HearingResultType.COMPLETED, COMPLETED.name()),
-            arguments(ADJOURNED.name(), HearingResultType.CANCELLED, CANCELLED.name()),
-            arguments(CANCELLED.name(), HearingResultType.ADJOURNED, CANCELLED.name()),
-            arguments(CANCELLED.name(), HearingResultType.COMPLETED, COMPLETED.name())
+            arguments(COMPLETED.name(), HearingResultType.ADJOURNED),
+            arguments(COMPLETED.name(), HearingResultType.CANCELLED),
+            arguments(ADJOURNED.name(), HearingResultType.COMPLETED),
+            arguments(ADJOURNED.name(), HearingResultType.CANCELLED),
+            arguments(CANCELLED.name(), HearingResultType.ADJOURNED),
+            arguments(CANCELLED.name(), HearingResultType.COMPLETED)
         );
     }
 

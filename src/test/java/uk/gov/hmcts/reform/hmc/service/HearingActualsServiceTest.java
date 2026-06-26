@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ActualHearingAuditService;
+import uk.gov.hmcts.reform.hmc.service.common.HearingRequestVersionAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
@@ -100,6 +101,9 @@ class HearingActualsServiceTest {
 
     @Mock
     private HearingCompletionService hearingCompletionService;
+
+    @Mock
+    private HearingRequestVersionAuditService hearingRequestVersionAuditService;
 
     @BeforeEach
     void setUp() {
@@ -281,16 +285,19 @@ class HearingActualsServiceTest {
             verify(actualHearingAuditService)
                 .saveActualHearingAuditDetails(eq(request), eq(actualHearingEntity));
             verify(hearingCompletionService)
-                .completeHearing(eq(HEARING_ID), eq(CLIENT_S2S_TOKEN), anyInt());
+                .completeHearing(any(HearingEntity.class), eq(CLIENT_S2S_TOKEN), anyInt());
         }
 
         @Test
         void shouldThrowBadRequestWhenHearingResultIsNull() {
-            givenHearingWithStatus(HearingStatus.COMPLETED);
             HearingActual request = TestingUtil.oneActualHearingDayIsNotNull(Boolean.TRUE, Boolean.FALSE);
             HearingActualsOutcome outcome = hearingActualsOutcome();
             outcome.setHearingResult(null);
             request.setHearingOutcome(outcome);
+
+            ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
+            HearingResponseEntity hearingResponseEntity = givenHearingWithStatus(HearingStatus.COMPLETED);
+            given(hearingResponseEntity.getActualHearingEntity()).willReturn(actualHearingEntity);
 
             BadRequestException exception = assertThrows(
                 BadRequestException.class,
@@ -299,7 +306,6 @@ class HearingActualsServiceTest {
 
             assertEquals(INVALID_ACTUALS_POST_STATUS, exception.getMessage());
             verifyNoInteractions(hearingCompletionService);
-            verifyNoInteractions(actualHearingAuditService);
 
         }
 

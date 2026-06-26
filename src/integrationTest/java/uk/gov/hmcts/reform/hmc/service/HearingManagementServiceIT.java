@@ -54,7 +54,6 @@ import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.COMPLETED;
-import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.LISTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_INVALID_STATUS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_AMEND_REASON_CODE;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_CASE_REFERENCE;
