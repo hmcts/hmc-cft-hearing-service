@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.hmc.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.DisplayName;
@@ -11,8 +12,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.util.AopTestUtils;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.TestFixtures;
+import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
+import uk.gov.hmcts.reform.hmc.data.ActualHearingAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingDayEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
@@ -21,6 +25,7 @@ import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.model.ActualHearingDay;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.model.HearingActualsOutcome;
+import uk.gov.hmcts.reform.hmc.repository.ActualHearingAuditRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 
@@ -28,18 +33,31 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+import javax.inject.Inject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_ACTUALS_COMPLETION;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.PUT_HEARING_ACTUALS_COMPLETION;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.AWAITING_LISTING;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLATION_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CLOSED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.COMPLETED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.HEARING_REQUESTED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.LISTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_REQUESTED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS;
@@ -54,8 +72,10 @@ class HearingActualsServiceIT extends BaseTest {
     private String clientS2SToken = "client-token";
 
     private final HearingActualsService hearingActualsService;
+    @Inject
     private final HearingStatusAuditRepository hearingStatusAuditRepository;
     private final HearingRepository hearingRepository;
+    private final ActualHearingAuditRepository actualHearingAuditRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -63,17 +83,18 @@ class HearingActualsServiceIT extends BaseTest {
     @Autowired
     HearingActualsServiceIT(HearingActualsService hearingActualsService,
                             HearingStatusAuditRepository hearingStatusAuditRepository,
-                            HearingRepository hearingRepository) {
+                            HearingRepository hearingRepository,
+                            ActualHearingAuditRepository actualHearingAuditRepository) {
         this.hearingActualsService = hearingActualsService;
         this.hearingStatusAuditRepository = hearingStatusAuditRepository;
         this.hearingRepository = hearingRepository;
+        this.actualHearingAuditRepository = actualHearingAuditRepository;
     }
 
     @Nested
     @DisplayName("updateHearingActuals")
     class UpdateHearingActuals {
 
-        //AC01a
         @ParameterizedTest
         @MethodSource("inValidHearingStatus")
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
@@ -104,13 +125,11 @@ class HearingActualsServiceIT extends BaseTest {
             );
         }
 
-        //AC01b- hearingOutcome.hearingResult is ADJOURNED
         @ParameterizedTest
         @MethodSource("inValidHearingStatusAndValidHearingResult")
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
         void whenInValidHearingStatusAndValidHearingResult(Long hearingId) {
             HearingActual request = buildValidActualRequest();
-            request.getHearingOutcome().setHearingResult(ADJOURNED.name());
             Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
             BadRequestException exception =
                 assertThrows(
@@ -136,7 +155,6 @@ class HearingActualsServiceIT extends BaseTest {
             );
         }
 
-        //AC02
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
         void whenValidHearingStatusMissingHearingActuals() throws JsonProcessingException {
@@ -151,7 +169,6 @@ class HearingActualsServiceIT extends BaseTest {
             assertEquals(NO_PREVIOUS_HEARING_ACTUALS_RECORDED, exception.getMessage());
         }
 
-        //AC03
         @ParameterizedTest
         @MethodSource("hearingDayInFuture")
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
@@ -177,7 +194,6 @@ class HearingActualsServiceIT extends BaseTest {
             );
         }
 
-        //AC04
         @ParameterizedTest
         @MethodSource("duplicateHearingDates")
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
@@ -199,7 +215,6 @@ class HearingActualsServiceIT extends BaseTest {
             );
         }
 
-        //AC05
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
         void whenHearingStatusIsListed() throws JsonProcessingException {
@@ -212,10 +227,11 @@ class HearingActualsServiceIT extends BaseTest {
             assertEquals(LISTED.name(), hearingEntity.getStatus());
             validateActualHearings(hearingEntity, request);
             validatePutHearingActualsAuditInfo(hearingId, LISTED.name());
-            //verify publish message
+            assertTrue(actualHearingAuditRepository.findByHearingId(hearingId).isEmpty());
+            verify(messageSenderToTopicMock(), never())
+                .sendMessage(any(), eq("TEST"), eq(hearingId.toString()), isNull());
         }
 
-        //AC06
         @ParameterizedTest
         @MethodSource("finalHearingStatuses")
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
@@ -229,8 +245,10 @@ class HearingActualsServiceIT extends BaseTest {
             HearingEntity hearingEntity = hearingEntityOptional.get();
             assertEquals(postHearingEventStatus, hearingEntity.getStatus());
             validateActualHearings(hearingEntity, request);
+            validateActualHearingAuditDetails(hearingEntity, request);
             validatePostHearingActualsAuditInfo(hearingId, putHearingEventStatus, postHearingEventStatus);
-            //verify publish message
+            verify(messageSenderToTopicMock())
+                .sendMessage(any(), eq("TEST"), eq(hearingId.toString()), isNull());
         }
 
         private static Stream<Arguments> finalHearingStatuses() {
@@ -245,31 +263,35 @@ class HearingActualsServiceIT extends BaseTest {
             );
         }
 
-        //AC07
         @ParameterizedTest
         @MethodSource("finalHearingStatusesAndInvalidHearingResult")
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
-        void whenHearingStatusIsFinalAndHearingResultIsInvalid(Long hearingId, String putHearingEventStatus)
+        void whenHearingStatusIsFinalAndHearingResultIsInvalid(Long hearingId, String hearingResult)
             throws JsonProcessingException {
             String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload1.json");
             HearingActual request = objectMapper.readValue(json, HearingActual.class);
-            request.getHearingOutcome().setHearingResult(putHearingEventStatus);
-            hearingActualsService.updateHearingActuals(hearingId, clientS2SToken, request);
-            Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
-            HearingEntity hearingEntity = hearingEntityOptional.get();
-            assertEquals(putHearingEventStatus, hearingEntity.getStatus());
-            validateActualHearings(hearingEntity, request);
+            request.getHearingOutcome().setHearingResult(hearingResult);
+            BadRequestException exception =
+                assertThrows(
+                    BadRequestException.class,
+                    () -> hearingActualsService.updateHearingActuals(hearingId, clientS2SToken, request)
+            );
+            assertEquals(HA_OUTCOME_RESULT_NOT_EMPTY, exception.getMessage());
+            assertTrue(hearingStatusAuditRepository.findByHearingId(hearingId.toString()).isEmpty());
+            assertTrue(actualHearingAuditRepository.findByHearingId(hearingId).isEmpty());
+            verify(messageSenderToTopicMock(), never())
+                .sendMessage(any(), eq("TEST"), eq(hearingId.toString()), isNull());
         }
 
         private static Stream<Arguments> finalHearingStatusesAndInvalidHearingResult() {
             return Stream.of(
-                arguments(2000000011L, COMPLETED.name(), COMPLETED.name()),
-                arguments(2000000013L, CANCELLED.name(), CANCELLED.name()),
-                arguments(2000000014L, ADJOURNED.name(), ADJOURNED.name()),
-                arguments(2000000011L, COMPLETED.name(), CANCELLED.name()),
-                arguments(2000000013L, CANCELLED.name(), COMPLETED.name()),
-                arguments(2000000014L, ADJOURNED.name(), CANCELLED.name()),
-                arguments(2000000011L, COMPLETED.name(), ADJOURNED.name())
+                arguments(2000000011L, UPDATE_REQUESTED.name()),
+                arguments(2000000013L, AWAITING_LISTING.name()),
+                arguments(2000000014L, UPDATE_SUBMITTED.name()),
+                arguments(2000000011L, CANCELLATION_REQUESTED.name()),
+                arguments(2000000013L, HEARING_REQUESTED.name()),
+                arguments(2000000014L, CLOSED.name()),
+                arguments(2000000011L, LISTED.name())
             );
         }
 
@@ -299,6 +321,42 @@ class HearingActualsServiceIT extends BaseTest {
                 );
             assertEquals(HA_OUTCOME_RESULT_NOT_EMPTY, exception.getMessage());
         }
+    }
+
+    private void validateActualHearingAuditDetails(HearingEntity hearingEntity, HearingActual request) {
+        List<ActualHearingAuditEntity> auditEntityList = actualHearingAuditRepository
+            .findByHearingId(hearingEntity.getId());
+
+        assertEquals(1, auditEntityList.size());
+
+        ActualHearingAuditEntity auditEntity = auditEntityList.get(0);
+        assertEquals(hearingEntity.getId(), auditEntity.getHearingId());
+        assertEquals(
+            hearingEntity.getHearingResponses().get(0).getHearingResponseId(),
+            auditEntity.getHearingResponseId()
+        );
+        assertNotNull(auditEntity.getAuditCreateDateTime());
+        assertNotNull(auditEntity.getActualHearingAuditRecord());
+
+        JsonNode expectedAuditRecord = objectMapper.valueToTree(request);
+
+        assertEquals(expectedAuditRecord, auditEntity.getActualHearingAuditRecord());
+        assertEquals(
+            request.getHearingOutcome().getHearingResult(),
+            auditEntity.getActualHearingAuditRecord().get("hearingOutcome").get("hearingResult").asText()
+        );
+        assertEquals(
+            request.getHearingOutcome().getHearingResultDate().toString(),
+            auditEntity.getActualHearingAuditRecord().get("hearingOutcome").get("hearingResultDate").asText()
+        );
+        assertEquals(
+            request.getActualHearingDays().size(),
+            auditEntity.getActualHearingAuditRecord().get("actualHearingDays").size()
+        );
+        assertEquals(
+            request.getActualHearingDays().get(0).getHearingDate().toString(),
+            auditEntity.getActualHearingAuditRecord().get("actualHearingDays").get(0).get("hearingDate").asText()
+        );
     }
 
     private void validatePutHearingActualsAuditInfo(Long hearingId, String expectedStatus) {
@@ -378,6 +436,7 @@ class HearingActualsServiceIT extends BaseTest {
         outcome.setHearingType("Civil hearing");
         outcome.setHearingFinalFlag(Boolean.FALSE);
         outcome.setHearingResultDate(LocalDate.now());
+        outcome.setHearingResult("CANCELLED");
 
         HearingActual request = new HearingActual();
         request.setHearingOutcome(outcome);
@@ -390,5 +449,8 @@ class HearingActualsServiceIT extends BaseTest {
         return request;
     }
 
-}
+    private MessageSenderToTopicConfiguration messageSenderToTopicMock() {
+        return AopTestUtils.getUltimateTargetObject(messageSenderToTopicConfiguration);
+    }
 
+}
