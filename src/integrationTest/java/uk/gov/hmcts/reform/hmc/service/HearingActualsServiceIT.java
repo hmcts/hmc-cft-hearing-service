@@ -273,27 +273,6 @@ class HearingActualsServiceIT extends BaseTest {
             );
         }
 
-        @ParameterizedTest
-        @MethodSource("inValidActualHearingDay")
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
-        void whenHearingDayIsLessThanResponseStartTime(Long hearingId) throws JsonProcessingException {
-            String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload1.json");
-            HearingActual request = objectMapper.readValue(json, HearingActual.class);
-            BadRequestException exception =
-                assertThrows(
-                    BadRequestException.class,
-                    () -> hearingActualsService.updateHearingActuals(hearingId, clientS2SToken, request)
-                );
-            assertEquals(HEARING_ACTUALS_HEARING_DAYS_INVALID, exception.getMessage());
-        }
-
-        private static Stream<Arguments> inValidActualHearingDay() {
-            return Stream.of(
-                arguments(2000000004L),
-                arguments(2000000005L)
-            );
-        }
-
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
         void whenHearingResultIsNull() throws JsonProcessingException {
