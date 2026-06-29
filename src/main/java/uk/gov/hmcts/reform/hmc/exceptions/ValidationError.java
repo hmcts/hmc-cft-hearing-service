@@ -315,4 +315,5 @@ public final class ValidationError {
         + "to be accepted %s";
     public static final String NO_PREVIOUS_HEARING_ACTUALS_RECORDED = "003 no previous hearing actuals recorded";
     public static final String INVALID_ACTUALS_POST_STATUS = "002 invalid status for amending actuals post final state";
+    public static final String HEARING_ACTUALS_COMPLETION_FAILED = "002 Could not complete Hearing Actuals";
 }

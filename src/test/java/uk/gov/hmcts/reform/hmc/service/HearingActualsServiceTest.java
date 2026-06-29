@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
@@ -60,6 +61,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_COMPLETION_FAILED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_ACTUALS_POST_STATUS;
@@ -286,6 +288,26 @@ class HearingActualsServiceTest {
                 .saveActualHearingAuditDetails(eq(request), eq(actualHearingEntity));
             verify(hearingCompletionService)
                 .completeHearing(any(HearingEntity.class), eq(CLIENT_S2S_TOKEN), anyInt());
+        }
+
+        @Test
+        void shouldHandleDatabaseFailureWhenCompletingFinalHearing() {
+            HearingActual request = TestingUtil.oneActualHearingDayIsNotNull(Boolean.TRUE, Boolean.FALSE);
+            request.setHearingOutcome(hearingActualsOutcome());
+            final ActualHearingEntity actualHearingEntity =
+                givenFinalHearingWithActuals(HearingStatus.COMPLETED, false);
+            given(actualHearingRepository.save(any()))
+                .willThrow(new DataAccessResourceFailureException("database unavailable"));
+
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, request)
+            );
+
+            assertEquals(HEARING_ACTUALS_COMPLETION_FAILED, exception.getMessage());
+            verify(actualHearingAuditService)
+                .saveActualHearingAuditDetails(eq(request), eq(actualHearingEntity));
+            verifyNoInteractions(hearingCompletionService);
         }
 
         @Test
@@ -589,5 +611,20 @@ class HearingActualsServiceTest {
             .willReturn(LocalDateTime.of(2024, 1, 1, 10, 0));
 
         return hearingResponseEntity;
+    }
+
+    private ActualHearingEntity givenFinalHearingWithActuals(HearingStatus hearingStatus,
+                                                            boolean stubValidationFields) {
+        ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
+        if (stubValidationFields) {
+            when(actualHearingEntity.getHearingResultType()).thenReturn(COMPLETED);
+            when(actualHearingEntity.getHearingResultDate())
+                .thenReturn(LocalDate.now().minusDays(13L));
+            when(actualHearingEntity.getActualHearingType()).thenReturn("Witness Hearing");
+            when(actualHearingEntity.getHearingResultReasonType()).thenReturn("MADE UP REASON");
+        }
+        HearingResponseEntity hearingResponseEntity = givenHearingWithStatus(hearingStatus);
+        given(hearingResponseEntity.getActualHearingEntity()).willReturn(actualHearingEntity);
+        return actualHearingEntity;
     }
 }
