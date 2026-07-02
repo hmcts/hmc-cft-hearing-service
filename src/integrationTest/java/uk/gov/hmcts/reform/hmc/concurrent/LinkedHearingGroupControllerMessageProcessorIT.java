@@ -149,7 +149,7 @@ class LinkedHearingGroupControllerMessageProcessorIT extends BaseTest {
             );
 
             boolean result = latch.await(10, TimeUnit.SECONDS);
-            //assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
+            assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
 
             String newRequestId = futureRequestId.get();
             assertNotNull(newRequestId, "New linked hearing group request id should not be null");
@@ -216,7 +216,7 @@ class LinkedHearingGroupControllerMessageProcessorIT extends BaseTest {
             );
 
             boolean result = latch.await(10, TimeUnit.SECONDS);
-            // assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
+            assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
 
             HearingEntity syncResponseHearing = getHearing(HEARING_ID_ONE);
             assertHearing(syncResponseHearing,
@@ -273,7 +273,7 @@ class LinkedHearingGroupControllerMessageProcessorIT extends BaseTest {
             );
 
             boolean result = latch.await(10, TimeUnit.SECONDS);
-            //assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
+            assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
 
             HearingEntity syncResponseHearing = getHearing(HEARING_ID_ONE);
             assertHearing(syncResponseHearing,
@@ -330,7 +330,7 @@ class LinkedHearingGroupControllerMessageProcessorIT extends BaseTest {
             );
 
             boolean result = latch.await(10, TimeUnit.SECONDS);
-            //assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
+            assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
 
             HearingEntity hearingOne = getHearingAndLinkedGroup(HEARING_ID_ONE);
             assertHearing(hearingOne,
@@ -395,7 +395,7 @@ class LinkedHearingGroupControllerMessageProcessorIT extends BaseTest {
             );
 
             boolean result = latch.await(10, TimeUnit.SECONDS);
-            //assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
+            assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
 
             HearingEntity hearingOne = getHearing(HEARING_ID_ONE);
             assertHearing(hearingOne, new ExpectedHearingDetails(STATUS_HEARING_REQUESTED, null, null, null));
@@ -465,7 +465,7 @@ class LinkedHearingGroupControllerMessageProcessorIT extends BaseTest {
             );
 
             boolean result = latch.await(10, TimeUnit.SECONDS);
-            //assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
+            assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
 
             HearingEntity hearingOne = getHearing(HEARING_ID_ONE);
             assertHearing(hearingOne, new ExpectedHearingDetails(STATUS_HEARING_REQUESTED, null, null, null));
@@ -538,7 +538,7 @@ class LinkedHearingGroupControllerMessageProcessorIT extends BaseTest {
             );
 
             boolean result = latch.await(10, TimeUnit.SECONDS);
-            //assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
+            assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
 
             HearingEntity syncResponseHearing = getHearing(HEARING_ID_THREE);
             assertHearing(syncResponseHearing,
@@ -595,7 +595,7 @@ class LinkedHearingGroupControllerMessageProcessorIT extends BaseTest {
             );
 
             boolean result = latch.await(10, TimeUnit.SECONDS);
-            //assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
+            assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
 
             HearingEntity syncResponseHearing = getHearingAndLinkedGroup(HEARING_ID_THREE);
             assertHearing(syncResponseHearing,
@@ -656,7 +656,7 @@ class LinkedHearingGroupControllerMessageProcessorIT extends BaseTest {
             );
 
             boolean result = latch.await(10, TimeUnit.SECONDS);
-            //assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
+            assertTrue(result, "Both threads did not complete successfully in allotted time - check log for errors");
 
             HearingEntity syncResponseHearing = getHearingAndLinkedGroup(HEARING_ID_THREE);
             assertHearing(syncResponseHearing,
