@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingPartyEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
+import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.HearingStatusAuditContext;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.DeleteHearingStatus;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
@@ -70,6 +71,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -128,7 +130,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     private final HmiHearingResponseMapper hmiHearingResponseMapper;
     private final HearingStatusAuditService hearingStatusAuditService;
     private final PendingRequestService pendingRequestService;
-
+    private final SecurityUtils securityUtils;
 
     @Autowired
     public HearingManagementServiceImpl(@Qualifier("defaultDataStoreRepository")
@@ -151,7 +153,8 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                                         EntitiesMapper entitiesMapper,
                                         HmiHearingResponseMapper hmiHearingResponseMapper,
                                         HearingStatusAuditService hearingStatusAuditService,
-                                        PendingRequestService pendingRequestService) {
+                                        PendingRequestService pendingRequestService,
+                                        SecurityUtils securityUtils) {
         this.dataStoreRepository = dataStoreRepository;
         this.hearingMapper = hearingMapper;
         this.caseHearingRequestRepository = caseHearingRequestRepository;
@@ -172,6 +175,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
         this.hmiHearingResponseMapper = hmiHearingResponseMapper;
         this.hearingStatusAuditService = hearingStatusAuditService;
         this.pendingRequestService = pendingRequestService;
+        this.securityUtils = securityUtils;
     }
 
     @Override
@@ -335,13 +339,18 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     @Override
     public ResponseEntity hearingCompletion(Long hearingId, String clientS2SToken) {
         hearingIdValidator.validateHearingId(hearingId, HEARING_ACTUALS_ID_NOT_FOUND);
-        linkedHearingValidator.validateHearingActualsStatus(hearingId, HEARING_ACTUALS_INVALID_STATUS);
-        hearingActualsValidator.validateHearingOutcomeInformation(hearingId);
         HearingEntity existingHearing = hearingRepository.findById(hearingId)
             .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
+        if (HearingStatus.isFinalStatus(HearingStatus.valueOf(existingHearing.getStatus()))) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+        linkedHearingValidator.validateHearingActualsStatus(hearingId, HEARING_ACTUALS_INVALID_STATUS);
+        hearingActualsValidator.validateHearingOutcomeInformation(hearingId);
         final int existingRequestVersion = existingHearing.getLatestRequestVersion();
 
         HearingEntity hearingEntity = updateStatus(hearingId);
+        String userId = securityUtils.getUserInfo().getSub();
+        JsonNode otherInfo = objectMapperService.convertObjectToJsonNode(Map.of("userId", userId));
 
         auditChangeInRequestVersion(hearingEntity, existingRequestVersion, clientS2SToken, true);
         HmcHearingResponse hmcHearingResponse = getHmcHearingResponse(hearingEntity);
@@ -352,6 +361,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
                 .httpStatus(String.valueOf(HttpStatus.OK.value()))
                 .source(clientS2SToken)
                 .target(HMC)
+                .otherInfo(otherInfo)
                 .useCurrentTimestamp(true)
                 .build();
         hearingStatusAuditService.saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContext);
