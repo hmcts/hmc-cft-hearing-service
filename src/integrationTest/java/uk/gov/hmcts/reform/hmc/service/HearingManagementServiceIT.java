@@ -490,6 +490,33 @@ class HearingManagementServiceIT extends BaseTest {
         assertEquals("user@hmcts.net", auditEntity.get().getOtherInfo().get("userId").asText());
     }
 
+    @ParameterizedTest
+    @MethodSource("notFinalStatus")
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
+    void testUpdateHearingNotFinal_Status(Long hearingId, String expectedStatus) {
+        ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
+        assertTrue(hearingEntityOptional.isPresent(), "Hearing " + hearingId + " should be present");
+        HearingEntity hearingEntity = hearingEntityOptional.get();
+        assertEquals(expectedStatus, hearingEntity.getStatus());
+        List<HearingStatusAuditEntity> auditEntityList = hearingStatusAuditRepository.findByHearingId(
+            hearingId.toString());
+        Optional<HearingStatusAuditEntity> auditEntity = auditEntityList.stream()
+            .filter(audit -> POST_HEARING_ACTUALS_COMPLETION.equals(audit.getHearingEvent()))
+            .findFirst();
+        assertTrue(auditEntity.isPresent(), "Audit should be present for hearing " + hearingId);
+        assertNotNull(auditEntity.get().getOtherInfo(), "Audit otherInfo should not be null");
+        assertEquals("user@hmcts.net", auditEntity.get().getOtherInfo().get("userId").asText());
+    }
+
+    private static Stream<Arguments> notFinalStatus() {
+        return Stream.of(
+            arguments(2000000010L, ADJOURNED.name()),
+            arguments(2000000014L, CANCELLED.name())
+        );
+    }
+
     private static Stream<Arguments> hearingCompletionStatuses() {
         return Stream.of(
             arguments(2000000016L, COMPLETED.name()),

@@ -43,7 +43,7 @@ public class HearingActualsManagementController {
         + "\n1) " + ValidationError.HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND
         + "\n2) " + ValidationError.INVALID_HEARING_ID_DETAILS
         + "\n3) " + ValidationError.HEARING_ACTUALS_ID_NOT_FOUND
-        + "\n4) " + ValidationError.HEARING_ACTUALS_INVALID_STATUS
+        + "\n4) " + ValidationError.PUT_HEARING_ACTUALS_INVALID_STATUS
         + "\n5) " + ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID
         + "\n6) " + ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS)
     @ApiResponse(responseCode = "500", description = ValidationError.INTERNAL_SERVER_ERROR)

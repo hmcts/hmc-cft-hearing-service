@@ -34,7 +34,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
   jpa:
     database: postgresql
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: none
     properties:
