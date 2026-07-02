@@ -28,7 +28,7 @@ data "azurerm_key_vault" "hmc_shared_key_vault" {
 //////////////////////////////////////
 
 module "postgresql_v15" {
-  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
   }
@@ -98,7 +98,7 @@ resource "azurerm_key_vault_secret" "POSTGRES-DATABASE" {
 ////////////////////////////////////////
 
 module "postgresql_v15_replica" {
-  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
   count  = var.enable_replica ? 1 : 0
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
