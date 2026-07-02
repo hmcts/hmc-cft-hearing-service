@@ -26,11 +26,11 @@
         "status": "HEARING_REQUESTED",
         "timestamp": "[[ANYTHING_PRESENT]]",
         "versionNumber": 1,
-        "hearingRequestID": "[[ANYTHING_PRESENT]]"
+        "hearingRequestID" : "[[ANYTHING_PRESENT]]"
       },
       "caseDetails": "[[ANYTHING_PRESENT]]",
-      "hearingDetails": "[[ANYTHING_PRESENT]]",
-      "partyDetails": "[[ANYTHING_PRESENT]]",
+      "hearingDetails" : "[[ANYTHING_PRESENT]]",
+      "partyDetails" : "[[ANYTHING_PRESENT]]",
       "hearingResponse": "[[ANYTHING_PRESENT]]"
     }
   }
