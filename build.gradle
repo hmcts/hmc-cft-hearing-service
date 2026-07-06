@@ -226,6 +226,7 @@ sonarqube {
 ext {
   set('springCloudVersion', '2025.0.0')
   set('snakeyaml.version', '2.3')
+  set('jackson.version', '2.18.8')
   set('diuspactproviderVersion', '4.1.43')
   set('log4j2.version', '2.25.4')
   set('commons-lang3.version', '3.18.0')
