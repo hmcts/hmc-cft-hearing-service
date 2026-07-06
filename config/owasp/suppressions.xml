@@ -8,4 +8,200 @@
     <cve>CVE-2026-33117</cve>
     <cve>CVE-2026-42582</cve>
   </suppress>
+  <suppress>
+      <notes><![CDATA[
+      file name: angus-activation-2.0.3.jar
+      ]]></notes>
+      <packageUrl regex="true">^pkg:maven/org\.eclipse\.angus/angus-activation@.*$</packageUrl>
+      <cve>CVE-2025-7962</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: jackson-databind-2.18.2.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+    <cve>CVE-2026-54512</cve>
+    <cve>CVE-2026-54513</cve>
+    <cve>CVE-2026-54514</cve>
+    <cve>CVE-2026-54515</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-security-config-6.5.7.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-config@.*$</packageUrl>
+    <cve>CVE-2026-41706</cve>
+    <cve>CVE-2026-47838</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-security-core-6.5.7.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-core@.*$</packageUrl>
+    <cve>CVE-2026-41706</cve>
+    <cve>CVE-2026-47838</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-security-crypto-6.5.7.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-crypto@.*$</packageUrl>
+    <cve>CVE-2026-41706</cve>
+    <cve>CVE-2026-47838</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-security-oauth2-client-6.5.7.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-oauth2-client@.*$</packageUrl>
+    <cve>CVE-2026-41706</cve>
+    <cve>CVE-2026-47838</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-security-oauth2-core-6.5.7.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-oauth2-core@.*$</packageUrl>
+    <cve>CVE-2026-41706</cve>
+    <cve>CVE-2026-47838</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-security-oauth2-jose-6.5.7.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-oauth2-jose@.*$</packageUrl>
+    <cve>CVE-2026-41706</cve>
+    <cve>CVE-2026-47838</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-security-oauth2-resource-server-6.5.7.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-oauth2-resource-server@.*$</packageUrl>
+    <cve>CVE-2026-41706</cve>
+    <cve>CVE-2026-47838</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-security-web-6.5.7.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-web@.*$</packageUrl>
+    <cve>CVE-2026-41706</cve>
+    <cve>CVE-2026-47838</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-aop-6.2.14.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-aop@.*$</packageUrl>
+    <cve>CVE-2026-41855</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-aspects-6.2.14.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-aspects@.*$</packageUrl>
+    <cve>CVE-2026-41855</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-beans-6.2.14.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-beans@.*$</packageUrl>
+    <cve>CVE-2026-41855</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-context-support-6.2.14.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-context-support@.*$</packageUrl>
+    <cve>CVE-2026-41855</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-context-6.2.14.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-context@.*$</packageUrl>
+    <cve>CVE-2026-41855</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-core-6.2.14.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-core@.*$</packageUrl>
+    <cve>CVE-2026-41855</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-expression-6.2.14.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-expression@.*$</packageUrl>
+    <cve>CVE-2026-41855</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-jcl-6.2.14.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-jcl@.*$</packageUrl>
+    <cve>CVE-2026-41855</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-jdbc-6.2.14.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-jdbc@.*$</packageUrl>
+    <cve>CVE-2026-41855</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-orm-6.2.14.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-orm@.*$</packageUrl>
+    <cve>CVE-2026-41855</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-tx-6.2.14.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-tx@.*$</packageUrl>
+    <cve>CVE-2026-41855</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-web-6.2.14.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-web@.*$</packageUrl>
+    <cve>CVE-2026-41855</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: spring-webmvc-6.2.14.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-webmvc@.*$</packageUrl>
+    <cve>CVE-2026-41855</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: tomcat-embed-core-10.1.52.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-core@.*$</packageUrl>
+    <cve>CVE-2026-50229</cve>
+    <cve>CVE-2026-53404</cve>
+    <cve>CVE-2026-53434</cve>
+    <cve>CVE-2026-55276</cve>
+    <cve>CVE-2026-55955</cve>
+    <cve>CVE-2026-55956</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: tomcat-embed-websocket-10.1.52.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-websocket@.*$</packageUrl>
+    <cve>CVE-2026-50229</cve>
+    <cve>CVE-2026-53404</cve>
+    <cve>CVE-2026-53434</cve>
+    <cve>CVE-2026-55276</cve>
+    <cve>CVE-2026-55955</cve>
+    <cve>CVE-2026-55956</cve>
+  </suppress>
 </suppressions>
