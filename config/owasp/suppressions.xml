@@ -263,4 +263,28 @@
     <packageUrl regex="true">^pkg:maven/org\.springframework/spring-webmvc@.*$</packageUrl>
     <cve>CVE-2026-41855</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: tomcat-embed-core-10.1.52.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-core@.*$</packageUrl>
+    <cve>CVE-2026-50229</cve>
+    <cve>CVE-2026-53404</cve>
+    <cve>CVE-2026-53434</cve>
+    <cve>CVE-2026-55276</cve>
+    <cve>CVE-2026-55955</cve>
+    <cve>CVE-2026-55956</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: tomcat-embed-websocket-10.1.52.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-websocket@.*$</packageUrl>
+    <cve>CVE-2026-50229</cve>
+    <cve>CVE-2026-53404</cve>
+    <cve>CVE-2026-53434</cve>
+    <cve>CVE-2026-55276</cve>
+    <cve>CVE-2026-55955</cve>
+    <cve>CVE-2026-55956</cve>
+  </suppress>
 </suppressions>
