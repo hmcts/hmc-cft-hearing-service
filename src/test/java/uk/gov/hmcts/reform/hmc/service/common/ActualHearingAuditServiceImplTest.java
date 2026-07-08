@@ -6,11 +6,11 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
@@ -21,14 +21,15 @@ import uk.gov.hmcts.reform.hmc.model.PartyType;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingAuditRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.REQUEST_VERSION_UPDATE;
 
+@ExtendWith(MockitoExtension.class)
 class ActualHearingAuditServiceImplTest {
 
-    @InjectMocks
     private ActualHearingAuditServiceImpl actualHearingAuditService;
 
     @Mock
@@ -42,22 +43,43 @@ class ActualHearingAuditServiceImplTest {
         .build();
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setUp() {
         actualHearingAuditService =
             new ActualHearingAuditServiceImpl(actualHearingAuditRepository, objectMapper);
     }
 
     @Test
-    void saveActualHearingAuditDetails()  {
-        HearingActual actual = TestingUtil.hearingActual();
-        JsonNode expectedAuditRecord = objectMapper.valueToTree(actual);
-        HearingResponseEntity responseEntity = getHearingResponseEntity();
-        actualHearingAuditService.saveActualHearingAuditDetails(actual, responseEntity.getActualHearingEntity());
-        assertSaveActualHearingAuditDetails(expectedAuditRecord);
+    void saveActualHearingAuditDetails_passesExactEntityToRepository() {
+        ActualHearingAuditEntity entity = new ActualHearingAuditEntity();
+        entity.setHearingId(2000000001L);
+        entity.setHearingResponseId(5L);
+
+        actualHearingAuditService.saveActualHearingAuditDetails(entity);
+
+        verify(actualHearingAuditRepository).save(entity);
+        verify(actualHearingAuditRepository).save(actualHearingAuditEntityArgumentCaptor.capture());
+        ActualHearingAuditEntity captured = actualHearingAuditEntityArgumentCaptor.getValue();
+        assertThat(captured.getHearingId(), is(2000000001L));
+        assertThat(captured.getHearingResponseId(), is(5L));
     }
 
-    private static HearingResponseEntity getHearingResponseEntity() {
+    @Test
+    void mapActualHearingAuditDetails_setsHearingIdFromHearingResponse() {
+        HearingActual actual = TestingUtil.hearingActual();
+        HearingResponseEntity responseEntity = getHearingResponseEntity();
+
+        ActualHearingAuditEntity result =
+            actualHearingAuditService.mapActualHearingAuditDetails(actual, responseEntity.getActualHearingEntity());
+
+        assertThat(result.getHearingId(), is(2000000000L));
+        assertThat(result.getHearingResponseId(), is(2L));
+        assertNotNull(result.getActualHearingAuditRecord());
+        assertNotNull(result.getAuditCreateDateTime());
+        JsonNode expectedAuditRecord = objectMapper.valueToTree(actual);
+        assertThat(result.getActualHearingAuditRecord(), is(expectedAuditRecord));
+    }
+
+    private HearingResponseEntity getHearingResponseEntity() {
         HearingResponseEntity responseEntity = TestingUtil.hearingResponseEntity();
         ActualHearingEntity actualHearingEntity = TestingUtil.actualHearingEntity(PartyType.IND);
         responseEntity.setActualHearingEntity(actualHearingEntity);
@@ -68,20 +90,5 @@ class ActualHearingAuditServiceImplTest {
         );
         responseEntity.setHearing(hearingEntity);
         return responseEntity;
-    }
-
-    private void assertSaveActualHearingAuditDetails(JsonNode expectedAuditRecord) {
-        ActualHearingAuditEntity savedEntity = getSavedActualHearingAuditEntity();
-        assertEquals(Long.valueOf(2000000000L), savedEntity.getHearingId());
-        assertEquals(Long.valueOf(2),savedEntity.getHearingResponseId());
-        assertNotNull(savedEntity.getActualHearingAuditRecord());
-        assertEquals(expectedAuditRecord, savedEntity.getActualHearingAuditRecord());
-        assertNotNull(savedEntity.getAuditCreateDateTime());
-    }
-
-    private ActualHearingAuditEntity getSavedActualHearingAuditEntity() {
-        verify(actualHearingAuditRepository).save(actualHearingAuditEntityArgumentCaptor.capture());
-        ActualHearingAuditEntity savedEntity = actualHearingAuditEntityArgumentCaptor.getValue();
-        return savedEntity;
     }
 }
