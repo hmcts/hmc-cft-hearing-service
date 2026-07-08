@@ -97,6 +97,11 @@ resource "azurerm_key_vault_secret" "POSTGRES-DATABASE" {
 // DB version 15 Replication          //
 ////////////////////////////////////////
 
+data "azuread_service_principal" "jenkins_ptl" {
+  display_name = "jenkins-cftsbox-intsvc-mi"
+  )
+}
+
 module "postgresql_v15_replica" {
   source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   count  = var.enable_replica ? 1 : 0
@@ -105,7 +110,7 @@ module "postgresql_v15_replica" {
   }
 
   subnet_suffix        = "expanded"
-  admin_user_object_id = var.jenkins_AAD_objectId
+  admin_user_object_id = data.azuread_service_principal.jenkins_ptl.object_id
   business_area        = "cft"
   common_tags          = var.common_tags
   component            = var.component
