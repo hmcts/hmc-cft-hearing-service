@@ -456,7 +456,7 @@ class HearingManagementServiceIT extends BaseTest {
     @MethodSource("hearingCompletionStatuses")
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
     void testUpdateHearingCompletion_Statuses(Long hearingId, String expectedStatus) {
-        ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
+        ResponseEntity<?> responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
         assertTrue(hearingEntityOptional.isPresent(), "Hearing " + hearingId + " should be present");
@@ -474,33 +474,32 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @ParameterizedTest
-    @MethodSource("validActualStatuses")
+    @MethodSource("finalStatus")
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
-    void testUpdateHearingValid_Statuses(Long hearingId, String expectedStatus) {
-        ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
+    void testUpdateHearingInFinalStatus(Long hearingId, String expectedStatus) {
+        ResponseEntity<?> responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
+        assertNotNull(responseEntity, "hearingCompletion should return a response");
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
         assertThat("Hearing " + hearingId + " should be present",
                    hearingEntityOptional.isPresent(), is(true));
         HearingEntity hearingEntity = hearingEntityOptional.get();
+        assertThat(hearingEntity.getId(), is(hearingId));
         assertThat(hearingEntity.getStatus(), is(expectedStatus));
+
         List<HearingStatusAuditEntity> auditEntityList = hearingStatusAuditRepository.findByHearingId(
             hearingId.toString());
-        Optional<HearingStatusAuditEntity> auditEntity = auditEntityList.stream()
-            .filter(audit -> POST_HEARING_ACTUALS_COMPLETION.equals(audit.getHearingEvent()))
-            .findFirst();
-        assertThat("Audit should be present for hearing " + hearingId,
-                   auditEntity.isPresent(), is(true));
-        assertThat("Audit otherInfo should not be null",
-                   auditEntity.get().getOtherInfo(), notNullValue());
-        assertThat(auditEntity.get().getOtherInfo().get("userId").asText(), is("user@hmcts.net"));
+        assertNotNull(auditEntityList, "Audit list should not be null for hearing " + hearingId);
+        boolean hasCompletionAudit = auditEntityList.stream()
+            .anyMatch(audit -> POST_HEARING_ACTUALS_COMPLETION.equals(audit.getHearingEvent()));
+        assertFalse(hasCompletionAudit, "Audit should not be present for hearing " + hearingId);
     }
 
     @ParameterizedTest
     @MethodSource("notFinalStatus")
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
     void testUpdateHearingNotFinal_Status(Long hearingId, String expectedStatus) {
-        ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
+        ResponseEntity<?> responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
         assertThat("Hearing " + hearingId + " should be present",
@@ -534,10 +533,11 @@ class HearingManagementServiceIT extends BaseTest {
         );
     }
 
-    private static Stream<Arguments> validActualStatuses() {
+    private static Stream<Arguments> finalStatus() {
         return Stream.of(
-            arguments(2000000010L, ADJOURNED.name()),
-            arguments(2000000000L, COMPLETED.name())
+            arguments(2000000016L, COMPLETED.name()),
+            arguments(2000000017L, ADJOURNED.name()),
+            arguments(2000000018L, CANCELLED.name())
         );
     }
 
