@@ -122,8 +122,7 @@ public class HearingActualsValidator {
         validateActualHearingEntity(entity.get());
     }
 
-    public void validateActualHearingEntity(ActualHearingEntity entity) {
-        ActualHearingEntity actualHearingEntity = entity;
+    public void validateActualHearingEntity(ActualHearingEntity actualHearingEntity) {
         validateActualHearingType(actualHearingEntity.getActualHearingType());
         validateActualHearingIsFinalFlag(actualHearingEntity.getActualHearingIsFinalFlag());
         validateHearingResult(actualHearingEntity.getHearingResultType());
