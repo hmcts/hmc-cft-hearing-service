@@ -277,9 +277,9 @@ class HearingActualsValidatorTest {
     @EnumSource(value = HearingStatus.class, names = {"HEARING_REQUESTED", "AWAITING_LISTING", "UPDATE_REQUESTED",
         "UPDATE_SUBMITTED", "CANCELLATION_REQUESTED", "CANCELLATION_SUBMITTED", "CLOSED" })
     void shouldThrowExceptionWhenHearingStatusIsNotValid(HearingStatus hearingStatus) {
-        Exception exception = assertThrows(BadRequestException.class, () -> {
-            hearingActualsValidator.validateHearingStatusForActuals(hearingStatus.name());
-        });
+        Exception exception = assertThrows(BadRequestException.class, () ->
+            hearingActualsValidator.validateHearingStatusForActuals(hearingStatus.name())
+        );
         assertEquals(String.format(PUT_HEARING_ACTUALS_INVALID_STATUS, hearingStatus.name()),
                      exception.getMessage());
     }
@@ -287,9 +287,9 @@ class HearingActualsValidatorTest {
     @ParameterizedTest(name = "[{index}] hearingStatus={0}")
     @EnumSource(value = HearingStatus.class, names = {"LISTED", "COMPLETED", "ADJOURNED", "CANCELLED"})
     void shouldNotThrowExceptionWhenHearingStatusIsValid(HearingStatus hearingStatus) {
-        assertDoesNotThrow(() -> {
-            hearingActualsValidator.validateHearingStatusForActuals(hearingStatus.name());
-        });
+        assertDoesNotThrow(() ->
+            hearingActualsValidator.validateHearingStatusForActuals(hearingStatus.name())
+        );
     }
 
     private static Stream<Arguments> actualHearingDayAccepted() {
