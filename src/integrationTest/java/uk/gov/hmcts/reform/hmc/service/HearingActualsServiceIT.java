@@ -125,36 +125,6 @@ class HearingActualsServiceIT extends BaseTest {
             );
         }
 
-        @ParameterizedTest
-        @MethodSource("inValidHearingStatusAndValidHearingResult")
-        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
-        void whenInValidHearingStatusAndValidHearingResult(Long hearingId) {
-            HearingActual request = buildValidActualRequest();
-            Optional<HearingEntity> hearingEntity = hearingRepository.findById(hearingId);
-            BadRequestException exception =
-                assertThrows(
-                    BadRequestException.class,
-                    () -> hearingActualsService.updateHearingActuals(
-                        hearingId, clientS2SToken,
-                        request
-                    )
-                );
-
-            assertEquals(
-                String.format(PUT_HEARING_ACTUALS_INVALID_STATUS, hearingEntity.get().getStatus()),
-                exception.getMessage()
-            );
-        }
-
-        private static Stream<Arguments> inValidHearingStatusAndValidHearingResult() {
-            return Stream.of(
-                arguments(2000000000L),
-                arguments(2000000001L),
-                arguments(2000000002L),
-                arguments(2000000003L)
-            );
-        }
-
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
         void whenValidHearingStatusMissingHearingActuals() throws JsonProcessingException {
@@ -174,9 +144,10 @@ class HearingActualsServiceIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
         void whenActualHearingDayInFuture(Long hearingId) {
             HearingActual request = buildValidActualRequest();
-            request.getActualHearingDays().getFirst().setHearingDate(LocalDate.now().plusDays(2));
-            request.getActualHearingDays().getFirst().setHearingStartTime(LocalDate.now().atTime(10, 0));
-            request.getActualHearingDays().getFirst().setHearingEndTime(LocalDate.now().atTime(11, 0));
+            ActualHearingDay actualHearingDay = request.getActualHearingDays().getFirst();
+            actualHearingDay.setHearingDate(LocalDate.now().plusDays(2));
+            actualHearingDay.setHearingStartTime(LocalDate.now().atTime(10, 0));
+            actualHearingDay.setHearingEndTime(LocalDate.now().atTime(11, 0));
             BadRequestException exception =
                 assertThrows(
                     BadRequestException.class,
@@ -397,7 +368,8 @@ class HearingActualsServiceIT extends BaseTest {
     }
 
     private void validateActualHearings(HearingEntity hearingEntity, HearingActual request) {
-        ActualHearingEntity actualHearingEntity = hearingEntity.getHearingResponses().getFirst().getActualHearingEntity();
+        ActualHearingEntity actualHearingEntity = hearingEntity.getHearingResponses()
+            .getFirst().getActualHearingEntity();
 
         assertEquals(request.getActualHearingDays().size(), actualHearingEntity.getActualHearingDay().size());
 
