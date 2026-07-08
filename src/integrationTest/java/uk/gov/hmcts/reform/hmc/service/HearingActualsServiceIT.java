@@ -109,7 +109,7 @@ class HearingActualsServiceIT extends BaseTest {
                         request
                     )
                 );
-
+            assertTrue(hearingEntity.isPresent());
             assertEquals(
                 String.format(PUT_HEARING_ACTUALS_INVALID_STATUS, hearingEntity.get().getStatus()),
                 exception.getMessage()
@@ -174,9 +174,9 @@ class HearingActualsServiceIT extends BaseTest {
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_ACTUALS_DATA_SCRIPT})
         void whenActualHearingDayInFuture(Long hearingId) {
             HearingActual request = buildValidActualRequest();
-            request.getActualHearingDays().get(0).setHearingDate(LocalDate.now().plusDays(2));
-            request.getActualHearingDays().get(0).setHearingStartTime(LocalDate.now().atTime(10, 0));
-            request.getActualHearingDays().get(0).setHearingEndTime(LocalDate.now().atTime(11, 0));
+            request.getActualHearingDays().getFirst().setHearingDate(LocalDate.now().plusDays(2));
+            request.getActualHearingDays().getFirst().setHearingStartTime(LocalDate.now().atTime(10, 0));
+            request.getActualHearingDays().getFirst().setHearingEndTime(LocalDate.now().atTime(11, 0));
             BadRequestException exception =
                 assertThrows(
                     BadRequestException.class,
@@ -224,6 +224,7 @@ class HearingActualsServiceIT extends BaseTest {
             hearingActualsService.updateHearingActuals(hearingId, clientS2SToken, request);
             Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
             HearingEntity hearingEntity = hearingEntityOptional.get();
+            assertTrue(hearingEntityOptional.isPresent());
             assertEquals(LISTED.name(), hearingEntity.getStatus());
             validateActualHearings(hearingEntity, request);
             validatePutHearingActualsAuditInfo(hearingId, LISTED.name());
@@ -243,6 +244,7 @@ class HearingActualsServiceIT extends BaseTest {
             hearingActualsService.updateHearingActuals(hearingId, clientS2SToken, request);
             Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
             HearingEntity hearingEntity = hearingEntityOptional.get();
+            assertTrue(hearingEntityOptional.isPresent());
             assertEquals(postHearingEventStatus, hearingEntity.getStatus());
             validateActualHearings(hearingEntity, request);
             validateActualHearingAuditDetails(hearingEntity, request);
@@ -329,10 +331,10 @@ class HearingActualsServiceIT extends BaseTest {
 
         assertEquals(1, auditEntityList.size());
 
-        ActualHearingAuditEntity auditEntity = auditEntityList.get(0);
+        ActualHearingAuditEntity auditEntity = auditEntityList.getFirst();
         assertEquals(hearingEntity.getId(), auditEntity.getHearingId());
         assertEquals(
-            hearingEntity.getHearingResponses().get(0).getHearingResponseId(),
+            hearingEntity.getHearingResponses().getFirst().getHearingResponseId(),
             auditEntity.getHearingResponseId()
         );
         assertNotNull(auditEntity.getAuditCreateDateTime());
@@ -354,7 +356,7 @@ class HearingActualsServiceIT extends BaseTest {
             auditEntity.getActualHearingAuditRecord().get("actualHearingDays").size()
         );
         assertEquals(
-            request.getActualHearingDays().get(0).getHearingDate().toString(),
+            request.getActualHearingDays().getFirst().getHearingDate().toString(),
             auditEntity.getActualHearingAuditRecord().get("actualHearingDays").get(0).get("hearingDate").asText()
         );
     }
@@ -365,6 +367,7 @@ class HearingActualsServiceIT extends BaseTest {
         Optional<HearingStatusAuditEntity> auditEntity = auditEntityList.stream()
             .filter(audit -> PUT_HEARING_ACTUALS_COMPLETION.equals(audit.getHearingEvent()))
             .findFirst();
+        assertTrue(auditEntity.isPresent());
         assertNotNull(auditEntityList);
         assertEquals(expectedStatus, auditEntity.get().getStatus());
         assertNotNull(auditEntity.get().getResponseDateTime());
@@ -382,6 +385,7 @@ class HearingActualsServiceIT extends BaseTest {
         Optional<HearingStatusAuditEntity> auditEntity = auditEntityList.stream()
             .filter(audit -> POST_HEARING_ACTUALS_COMPLETION.equals(audit.getHearingEvent()))
             .findFirst();
+        assertTrue(auditEntity.isPresent());
         assertNotNull(auditEntityList);
         assertEquals(postHearingEventStatus, auditEntity.get().getStatus());
         assertNotNull(auditEntity.get().getResponseDateTime());
@@ -393,7 +397,7 @@ class HearingActualsServiceIT extends BaseTest {
     }
 
     private void validateActualHearings(HearingEntity hearingEntity, HearingActual request) {
-        ActualHearingEntity actualHearingEntity = hearingEntity.getHearingResponses().get(0).getActualHearingEntity();
+        ActualHearingEntity actualHearingEntity = hearingEntity.getHearingResponses().getFirst().getActualHearingEntity();
 
         assertEquals(request.getActualHearingDays().size(), actualHearingEntity.getActualHearingDay().size());
 
@@ -415,8 +419,8 @@ class HearingActualsServiceIT extends BaseTest {
             actualHearingEntity.getHearingResultDate()
         );
 
-        ActualHearingDayEntity actualHearingDayEntity = actualHearingEntity.getActualHearingDay().get(0);
-        ActualHearingDay firstActualHearingDay = request.getActualHearingDays().get(0);
+        ActualHearingDayEntity actualHearingDayEntity = actualHearingEntity.getActualHearingDay().getFirst();
+        ActualHearingDay firstActualHearingDay = request.getActualHearingDays().getFirst();
         assertEquals(firstActualHearingDay.getHearingDate(), actualHearingDayEntity.getHearingDate());
         assertEquals(firstActualHearingDay.getHearingStartTime(), actualHearingDayEntity.getStartDateTime());
         assertEquals(firstActualHearingDay.getHearingEndTime(), actualHearingDayEntity.getEndDateTime());
