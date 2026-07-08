@@ -98,7 +98,7 @@ resource "azurerm_key_vault_secret" "POSTGRES-DATABASE" {
 ////////////////////////////////////////
 
 data "azuread_service_principal" "jenkins_ptl" {
-  display_name = "jenkins-cftsbox-intsvc-mi"
+  display_name = "jenkins-cftptl-intsvc-mi"
 }
 
 module "postgresql_v15_replica" {
