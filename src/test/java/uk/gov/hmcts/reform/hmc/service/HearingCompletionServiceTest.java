@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
@@ -23,12 +24,10 @@ import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HmcHearingUpdate;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
-import uk.gov.hmcts.reform.hmc.service.common.ActualHearingAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingRequestVersionAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
-import uk.gov.hmcts.reform.hmc.validator.HearingIdValidator;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDateTime;
@@ -37,7 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,6 +46,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMC;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.POST_HEARING_ACTUALS_COMPLETION;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLED;
 import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.COMPLETED;
@@ -72,23 +74,16 @@ class HearingCompletionServiceTest {
     private HearingRequestVersionAuditService hearingRequestVersionAuditService;
 
     @Mock
-    HearingIdValidator hearingIdValidator;
-
-    @Mock
     private SecurityUtils securityUtils;
 
     @Captor
     private ArgumentCaptor<HearingStatusAuditContext> hearingStatusAuditContextCaptor;
 
-    @Captor
-    private ArgumentCaptor<HearingEntity> hearingEntityCaptor;
-
     @Mock
-    private ActualHearingAuditService actualHearingAuditService;
+    private JsonNode jsonNode;
 
     private static final String CLIENT_S2S_TOKEN = "s2s_token";
     public static final String USER_ID = "userId";
-    JsonNode jsonNode = mock(JsonNode.class);
 
     @BeforeEach
     void setUp() {
@@ -110,12 +105,10 @@ class HearingCompletionServiceTest {
         mockHearingCompletionRequest(hearingResultType.name());
         ActualHearingEntity actualHearingEntity = new ActualHearingEntity();
         actualHearingEntity.setHearingResultType(hearingResultType);
-        hearingCompletionService.completeHearing(hearingEntity, CLIENT_S2S_TOKEN,
-                                                1);
-        verify(hearingRequestVersionAuditService).auditChangeInRequestVersion(any(), anyInt(),any(),anyBoolean());
-        verify(hearingStatusAuditService).saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
+        hearingCompletionService.completeHearing(hearingEntity, CLIENT_S2S_TOKEN, 1);
+        verify(hearingRequestVersionAuditService).auditChangeInRequestVersion(any(), anyInt(), any(), anyBoolean());
         verify(messageSenderToTopicConfiguration).sendMessage(any(), any(), any(), any());
-        assertAuditDetailsWithUpdatedDateOrCurrentDate();
+        assertAuditDetailsWithUpdatedDateOrCurrentDate(hearingEntity);
     }
 
     private static Stream<Arguments> validFinalStatuses() {
@@ -183,12 +176,22 @@ class HearingCompletionServiceTest {
         when(objectMapperService.convertObjectToJsonNode(Map.of("userId", USER_ID))).thenReturn(jsonNode);
     }
 
-    private void assertAuditDetailsWithUpdatedDateOrCurrentDate() {
+    private void assertAuditDetailsWithUpdatedDateOrCurrentDate(HearingEntity hearingEntity) {
         verify(hearingStatusAuditService)
             .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(hearingStatusAuditContextCaptor.capture());
         HearingStatusAuditContext auditContext = hearingStatusAuditContextCaptor.getValue();
         assertNotNull(auditContext.getOtherInfo());
-        assertEquals(USER_ID, auditContext.getOtherInfo().get("userId").asText());
+        assertThat(auditContext.getOtherInfo().get("userId").asText(), is(USER_ID));
+        assertNotNull(auditContext);
+        assertThat(auditContext.getHearingEntity(), is(hearingEntity));
+        assertThat(auditContext.getHearingEvent(), is(POST_HEARING_ACTUALS_COMPLETION));
+        assertThat(auditContext.getHttpStatus(), is(String.valueOf(HttpStatus.OK.value())));
+        assertThat(auditContext.getSource(), is(CLIENT_S2S_TOKEN));
+        assertThat(auditContext.getTarget(), is(HMC));
+        assertThat(auditContext.isUseCurrentTimestamp(), is(true));
+        assertNotNull(auditContext.getOtherInfo());
+        assertNotNull(auditContext.getOtherInfo().get("userId"));
+
     }
 
 }
