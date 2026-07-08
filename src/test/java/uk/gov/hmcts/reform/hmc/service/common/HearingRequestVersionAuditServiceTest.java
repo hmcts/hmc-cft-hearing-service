@@ -31,14 +31,14 @@ class HearingRequestVersionAuditServiceTest {
     @Mock
     private HearingStatusAuditService hearingStatusAuditService;
 
-    private String clientS2SToken = "client-token";
+    private static final String CLIENT_S2S_TOKEN = "client-token";
 
     @Test
     void shouldDoNothingWhenRequestVersionHasNotChanged() {
         when(hearingEntity.getLatestRequestVersion()).thenReturn(3);
 
         hearingRequestVersionAuditService.auditChangeInRequestVersion(
-            hearingEntity, 3, clientS2SToken, true);
+            hearingEntity, 3, CLIENT_S2S_TOKEN, true);
 
         verifyNoInteractions(hearingStatusAuditService);
     }
@@ -48,7 +48,7 @@ class HearingRequestVersionAuditServiceTest {
         when(hearingEntity.getLatestRequestVersion()).thenReturn(5);
 
         hearingRequestVersionAuditService.auditChangeInRequestVersion(
-            hearingEntity, 0, clientS2SToken, true);
+            hearingEntity, 0, CLIENT_S2S_TOKEN, true);
 
         ArgumentCaptor<HearingStatusAuditContext> captor =
             ArgumentCaptor.forClass(HearingStatusAuditContext.class);
@@ -65,7 +65,7 @@ class HearingRequestVersionAuditServiceTest {
         when(hearingEntity.getLatestRequestVersion()).thenReturn(7);
 
         hearingRequestVersionAuditService.auditChangeInRequestVersion(
-            hearingEntity, 2, clientS2SToken, true);
+            hearingEntity, 2, CLIENT_S2S_TOKEN, true);
 
         ArgumentCaptor<HearingStatusAuditContext> captor =
             ArgumentCaptor.forClass(HearingStatusAuditContext.class);
@@ -83,7 +83,7 @@ class HearingRequestVersionAuditServiceTest {
             () -> assertEquals(hearingEntity, context.getHearingEntity()),
             () -> assertEquals(REQUEST_VERSION_UPDATE, context.getHearingEvent()),
             () -> assertEquals(String.valueOf(HttpStatus.OK.value()), context.getHttpStatus()),
-            () -> assertEquals(clientS2SToken, context.getSource()),
+            () -> assertEquals(CLIENT_S2S_TOKEN, context.getSource()),
             () -> assertEquals(HMC, context.getTarget()),
             () -> assertEquals(useCurrentTimestamp, context.isUseCurrentTimestamp()),
             () -> assertEquals(
