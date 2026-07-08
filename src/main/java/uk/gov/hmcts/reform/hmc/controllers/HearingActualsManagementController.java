@@ -45,7 +45,10 @@ public class HearingActualsManagementController {
         + "\n3) " + ValidationError.HEARING_ACTUALS_ID_NOT_FOUND
         + "\n4) " + ValidationError.PUT_HEARING_ACTUALS_INVALID_STATUS
         + "\n5) " + ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID
-        + "\n6) " + ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS)
+        + "\n6) " + ValidationError.HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS
+        + "\n7) " + ValidationError.NO_PREVIOUS_HEARING_ACTUALS_RECORDED
+        + "\n8) " + ValidationError.INVALID_ACTUALS_POST_STATUS
+        + "\n9) " + ValidationError.HEARING_ACTUALS_COMPLETION_FAILED)
     @ApiResponse(responseCode = "500", description = ValidationError.INTERNAL_SERVER_ERROR)
 
     public void updateHearingActuals(@PathVariable("id") Long hearingId,
