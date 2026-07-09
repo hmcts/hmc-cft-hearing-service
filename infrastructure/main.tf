@@ -130,11 +130,4 @@ module "postgresql_v15_replica" {
   create_mode         = "Replica"
   source_server_id    = var.primary_server_id
   high_availability   = false
-
-  lifecycle {
-    ignore_changes = [
-      module.postgresql_v15_replica[0].azurerm_postgresql_flexible_server_active_directory_administrator.pgsql_additional_principal_admin["14b22215-46e6-48a9-8681-e8cefe66236a"]
-    ]
-  }
-
 }
