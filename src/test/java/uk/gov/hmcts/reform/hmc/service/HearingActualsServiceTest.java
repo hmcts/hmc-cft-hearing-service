@@ -33,7 +33,6 @@ import uk.gov.hmcts.reform.hmc.repository.ActualHearingDayRepository;
 import uk.gov.hmcts.reform.hmc.repository.ActualHearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.service.common.ActualHearingAuditService;
-import uk.gov.hmcts.reform.hmc.service.common.HearingRequestVersionAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import uk.gov.hmcts.reform.hmc.validator.HearingActualsValidator;
@@ -103,9 +102,6 @@ class HearingActualsServiceTest {
 
     @Mock
     private HearingCompletionService hearingCompletionService;
-
-    @Mock
-    private HearingRequestVersionAuditService hearingRequestVersionAuditService;
 
     @BeforeEach
     void setUp() {
@@ -261,8 +257,10 @@ class HearingActualsServiceTest {
             verify(hearingStatusAuditService)
                 .saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
             verify(actualHearingAuditService, never())
-                .saveActualHearingAuditDetails(any(), any());
-
+                .mapActualHearingAuditDetails(any(), any());
+            verify(actualHearingAuditService, never())
+                .saveActualHearingAuditDetails(any());
+            verify(hearingCompletionService, never()).completeHearing(any(), any(), anyInt());
         }
 
         @ParameterizedTest
@@ -285,7 +283,8 @@ class HearingActualsServiceTest {
                                    hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, request));
 
             verify(actualHearingAuditService)
-                .saveActualHearingAuditDetails(eq(request), eq(actualHearingEntity));
+                .mapActualHearingAuditDetails(request, actualHearingEntity);
+            //TO DO add save audit actual
             verify(hearingCompletionService)
                 .completeHearing(any(HearingEntity.class), eq(CLIENT_S2S_TOKEN), anyInt());
         }
@@ -294,8 +293,7 @@ class HearingActualsServiceTest {
         void shouldHandleDatabaseFailureWhenCompletingFinalHearing() {
             HearingActual request = TestingUtil.oneActualHearingDayIsNotNull(Boolean.TRUE, Boolean.FALSE);
             request.setHearingOutcome(hearingActualsOutcome());
-            final ActualHearingEntity actualHearingEntity =
-                givenFinalHearingWithActuals(HearingStatus.COMPLETED, false);
+            givenFinalHearingWithActuals(HearingStatus.COMPLETED, false);
             given(actualHearingRepository.save(any()))
                 .willThrow(new DataAccessResourceFailureException("database unavailable"));
 
@@ -305,8 +303,7 @@ class HearingActualsServiceTest {
             );
 
             assertEquals(HEARING_ACTUALS_COMPLETION_FAILED, exception.getMessage());
-            verify(actualHearingAuditService)
-                .saveActualHearingAuditDetails(eq(request), eq(actualHearingEntity));
+            verifyNoInteractions(actualHearingAuditService);
             verifyNoInteractions(hearingCompletionService);
         }
 
