@@ -53,6 +53,10 @@
     <cve>CVE-2026-54428</cve>
   </suppress>
   <suppress>
+    <notes><![CDATA[
+    file name: postgresql-42.7.11.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
     <cve>CVE-2026-54291</cve>
   </suppress>
 </suppressions>
