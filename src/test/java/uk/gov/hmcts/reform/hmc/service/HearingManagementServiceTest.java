@@ -114,6 +114,7 @@ import static org.junit.jupiter.api.Named.named;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -504,8 +505,8 @@ class HearingManagementServiceTest {
                                                                                    CLIENT_S2S_TOKEN);
             verify(hearingStatusAuditService, times(1))
                 .saveAuditTriageDetailsWithCreatedDate(any());
-            /*verify(hearingRequestVersionAuditService, times(1))
-                .auditChangeInRequestVersion(any(),any(),any(),any());*/
+            verify(hearingRequestVersionAuditService, times(1))
+                .auditChangeInRequestVersion(any(),anyInt(),any(),anyBoolean());
             assertValidHearingResponse(response);
         }
 
@@ -528,8 +529,8 @@ class HearingManagementServiceTest {
             assertValidHearingResponse(response);
             verify(hearingStatusAuditService, times(1))
                 .saveAuditTriageDetailsWithCreatedDate(any());
-            /* verify(hearingRequestVersionAuditService, times(1))
-                .auditChangeInRequestVersion(any(),any(),any(),any());*/
+            verify(hearingRequestVersionAuditService, times(1))
+                .auditChangeInRequestVersion(any(),anyInt(),any(),anyBoolean());
         }
 
         @Test
@@ -607,8 +608,8 @@ class HearingManagementServiceTest {
                 CLIENT_S2S_TOKEN);
             verify(hearingStatusAuditService, times(1))
                 .saveAuditTriageDetailsWithCreatedDate(any());
-            /*verify(hearingRequestVersionAuditService, times(1))
-                .auditChangeInRequestVersion(any(),any(),any(),any());*/
+            verify(hearingRequestVersionAuditService, times(1))
+                .auditChangeInRequestVersion(any(),anyInt(),any(),anyBoolean());
             assertValidHearingResponse(response);
         }
 
@@ -650,8 +651,8 @@ class HearingManagementServiceTest {
                                                                                    CLIENT_S2S_TOKEN);
             verify(hearingStatusAuditService, times(1))
                 .saveAuditTriageDetailsWithCreatedDate(any());
-            /*verify(hearingRequestVersionAuditService, times(1))
-                .auditChangeInRequestVersion(any(),any(),any(),any());*/
+            verify(hearingRequestVersionAuditService, times(1))
+                .auditChangeInRequestVersion(any(),anyInt(),any(),anyBoolean());
             assertValidHearingResponse(response);
         }
 
@@ -675,8 +676,8 @@ class HearingManagementServiceTest {
                                                                                    CLIENT_S2S_TOKEN);
             verify(hearingStatusAuditService, times(1))
                 .saveAuditTriageDetailsWithCreatedDate(any());
-            /*verify(hearingRequestVersionAuditService, times(1))
-                .auditChangeInRequestVersion(any(),any(),any(),any());*/
+            verify(hearingRequestVersionAuditService, times(1))
+                .auditChangeInRequestVersion(any(),anyInt(),any(),anyBoolean());
             assertValidHearingResponse(response);
         }
 
@@ -700,8 +701,8 @@ class HearingManagementServiceTest {
             assertValidHearingResponse(response);
             verify(hearingStatusAuditService, times(1))
                 .saveAuditTriageDetailsWithCreatedDate(any());
-            /*verify(hearingRequestVersionAuditService, times(1))
-                .auditChangeInRequestVersion(any(),any(),any(),any());*/
+            verify(hearingRequestVersionAuditService, times(1))
+                .auditChangeInRequestVersion(any(),anyInt(),any(),anyBoolean());
         }
 
         @Test
@@ -723,8 +724,8 @@ class HearingManagementServiceTest {
             assertValidHearingResponse(response);
             verify(hearingStatusAuditService, times(1))
                 .saveAuditTriageDetailsWithCreatedDate(any());
-            /*verify(hearingRequestVersionAuditService, times(1))
-                .auditChangeInRequestVersion(any(),any(),any(),any());*/
+            verify(hearingRequestVersionAuditService, times(1))
+                .auditChangeInRequestVersion(any(),anyInt(),any(),anyBoolean());
         }
 
         @Test
@@ -1759,10 +1760,10 @@ class HearingManagementServiceTest {
                                                           HearingResultType hearingResultType) {
             HearingEntity hearingEntity = setupHearingActualsStatusScenario(HEARING_ID, hearingStatus,
                                                                             hearingResultType, 13L);
-            ResponseEntity responseEntity = hearingManagementService.hearingCompletion(HEARING_ID, CLIENT_S2S_TOKEN);
+            var responseEntity = hearingManagementService.hearingCompletion(HEARING_ID, CLIENT_S2S_TOKEN);
             ArgumentCaptor<Integer> versionCaptor = ArgumentCaptor.forClass(Integer.class);
             verify(hearingCompletionService).completeHearing(eq(hearingEntity), eq(CLIENT_S2S_TOKEN),
-                                                             versionCaptor.capture().intValue());
+                                                             versionCaptor.capture());
             assertAll(
                 () -> assertNotNull(responseEntity),
                 () -> assertEquals(HttpStatus.OK, responseEntity.getStatusCode()),
@@ -1779,7 +1780,7 @@ class HearingManagementServiceTest {
             HearingEntity hearingEntity = generateHearingEntity(HEARING_ID, finalStatus.name(), versionNumber);
             when(hearingRepository.findById(HEARING_ID)).thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(HEARING_ID)).thenReturn(true);
-            ResponseEntity responseEntity = hearingManagementService.hearingCompletion(HEARING_ID, CLIENT_S2S_TOKEN);
+            var responseEntity = hearingManagementService.hearingCompletion(HEARING_ID, CLIENT_S2S_TOKEN);
             assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
             verifyNoMoreInteractions(hearingCompletionService);
             verifyNoInteractions(hearingStatusAuditService);
