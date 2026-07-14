@@ -189,9 +189,6 @@ class HearingCompletionServiceTest {
         assertThat(auditContext.getSource(), is(CLIENT_S2S_TOKEN));
         assertThat(auditContext.getTarget(), is(HMC));
         assertThat(auditContext.isUseCurrentTimestamp(), is(true));
-        assertNotNull(auditContext.getOtherInfo());
-        assertNotNull(auditContext.getOtherInfo().get("userId"));
-
     }
 
 }

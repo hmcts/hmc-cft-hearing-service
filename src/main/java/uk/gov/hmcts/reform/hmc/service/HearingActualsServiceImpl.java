@@ -159,7 +159,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     private static HearingResponseEntity getHearingResponseEntity(HearingEntity hearing) {
         Optional<HearingResponseEntity> latestVersionHearingResponse = hearing.getHearingResponseForLatestRequest();
         if (latestVersionHearingResponse.isEmpty()) {
-            throw new BadRequestException(HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND);
+            throw new BadRequestException(String.format(HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND, hearing.getId()));
         }
         return latestVersionHearingResponse.get();
     }
