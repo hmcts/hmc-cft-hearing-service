@@ -123,7 +123,7 @@ public class HearingManagementController {
             @RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false) String deploymentId,
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
             @RequestBody @Valid HearingRequest createHearingRequest) {
-        log.debug("saveHearing() called with request: {}", createHearingRequest.getCaseDetails().getCaseRef());
+        log.debug("saveHearing() called with clientS2SToken: {}", clientS2SToken);
         verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), List.of(HEARING_MANAGER), null);
         return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId,
