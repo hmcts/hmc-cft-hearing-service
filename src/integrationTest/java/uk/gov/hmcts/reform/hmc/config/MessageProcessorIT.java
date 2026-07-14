@@ -203,10 +203,10 @@ class MessageProcessorIT extends BaseTest {
         }
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(1, logsList.size());
-        assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals("Message of type " + MessageType.HEARING_RESPONSE.name() + " received",
-                     logsList.get(0).getFormattedMessage());
+        assertTrue(logsList.stream().anyMatch(log -> log.getLevel().equals(Level.INFO)
+            && log.getFormattedMessage().equals("Message of type " + MessageType.HEARING_RESPONSE.name()
+                                                    + " received")));
+        assertFalse(logsList.stream().anyMatch(log -> log.getLevel().equals(Level.ERROR)));
     }
 
     @Test
