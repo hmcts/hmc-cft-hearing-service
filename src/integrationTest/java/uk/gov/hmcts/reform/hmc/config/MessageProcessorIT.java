@@ -238,17 +238,17 @@ class MessageProcessorIT extends BaseTest {
         messageProcessor.processMessage(errorJsonNode, messageContext);
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(3, logsList.size());
+        assertEquals(5, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
         assertEquals("Message of type " + MessageType.ERROR.name() + " received",
                      logsList.get(0).getFormattedMessage());
-        assertEquals(Level.INFO, logsList.get(1).getLevel());
-        assertEquals(Level.ERROR, logsList.get(2).getLevel());
+        assertEquals(Level.INFO, logsList.get(3).getLevel());
+        assertEquals(Level.ERROR, logsList.get(4).getLevel());
         assertEquals(
             "Hearing id: 2000000000 with Case reference: 9372710950276233 , Service Code: "
                 + "TEST and Error Description: unable to create case updated to status "
                 + HearingStatus.EXCEPTION.name(),
-            logsList.get(2).getFormattedMessage()
+            logsList.get(4).getFormattedMessage()
         );
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         logsListMessageProcessor.forEach(System.out::print);
@@ -290,19 +290,19 @@ class MessageProcessorIT extends BaseTest {
         }
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(3, logsList.size());
+        assertEquals(5, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals(Level.ERROR, logsList.get(1).getLevel());
-        assertEquals(Level.ERROR, logsList.get(2).getLevel());
+        assertEquals(Level.ERROR, logsList.get(3).getLevel());
+        assertEquals(Level.ERROR, logsList.get(4).getLevel());
         assertEquals("Message of type " + MessageType.HEARING_RESPONSE.name() + " received",
                      logsList.get(0).getFormattedMessage());
         assertEquals("Error processing message with Hearing id 2000000000 exception was "
                          + "Cannot find request version 10 for hearing 2000000000",
-                     logsList.get(1).getFormattedMessage());
+                     logsList.get(3).getFormattedMessage());
         assertEquals(
             "Hearing id: 2000000000 with Case reference: 9372710950276233 , Service Code: TEST "
                 + "and Error Description: Cannot find request version 10 for hearing 2000000000"
-                + " updated to status " + HearingStatus.EXCEPTION.name(), logsList.get(2).getFormattedMessage());
+                + " updated to status " + HearingStatus.EXCEPTION.name(), logsList.get(4).getFormattedMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         assertEquals(2, logsListMessageProcessor.size());
